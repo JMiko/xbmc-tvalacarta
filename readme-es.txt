@@ -38,13 +38,16 @@ a la carta, y pienso seguir trabajando en él hasta que haya añadido todas las qu
 
 De momento funciona con:
 
-    * TV Andalucía
+    * Andalucía TV
     * TVE
     * Barcelona TV
     * Antena 3
     * Extremadura TV
-    * La Sexta (de momento no disponible)
-    * TV3
+    * La Sexta (currently unavailable)
+    * TV3 
+    * Mallorca TV
+    * TVG
+    * Canal Plus TV
 
 -----------------------------------------
 -- Instalación                         --

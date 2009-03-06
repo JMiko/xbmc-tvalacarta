@@ -4,6 +4,8 @@ import os.path
 import sys, traceback, platform
 import xbmcgui
 
+versionactual = "1.1a1"
+
 sys.path.append(os.path.join(os.getcwd().replace(";",""),'resources','libs'))
 
 import envcontroller
@@ -107,7 +109,25 @@ else:
         globalLogFile.info("Skinfolder = %s", config.skinFolder)
         print("************** Starting %s version v%s **************" % (config.appName, config.version))
         
-        #check for updates
+        # Comprueba actualizaciones...
+        import urllib2,urllib,re
+        if config.checkforupdates:
+            pb.update(50,"Buscando actualizaciones...")
+            try:
+                req = urllib2.Request("http://xbmc-tvalacarta.googlecode.com/files/tvalacarta.ver")
+                response = urllib2.urlopen(req)
+                link=response.read()
+                response.close()
+                patron = 'version=([0-9\.a-z]+)'
+                matches = re.compile(patron,re.MULTILINE).findall(link)
+                versionnueva = matches[0]
+                dialog = xbmcgui.Dialog()
+                if (versionnueva > versionactual):
+                    dialog.ok("Nueva versión disponible","Hay una nueva versión disponible de este script\n"+versionnueva)
+            except:
+                dialog = xbmcgui.Dialog()
+                dialog.ok("Error al buscar actualizaciones","Se ha producido un error al buscar las actualizaciones del script")
+
         """
         pb.update(50,"Checking for updates")
         import update

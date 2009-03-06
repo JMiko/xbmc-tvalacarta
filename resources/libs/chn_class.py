@@ -140,6 +140,7 @@ class Channel(xbmcgui.WindowXML):
         self.pageNavigationRegex = '' 
         self.pageNavigationRegexIndex = 0 
        
+        self.videoSort = True
         self.episodeSort = True
         
         #========================================================================== 
@@ -750,7 +751,8 @@ class Channel(xbmcgui.WindowXML):
             if itemtemporal.type=='video':
                 itemsvideofinales.append(itemtemporal)
 
-        itemsvideofinales.sort(lambda x, y: cmp(x.name,y.name))
+        if self.videoSort:
+            itemsvideofinales.sort(lambda x, y: cmp(x.name,y.name))
 
         return itemsrestofinales + itemsvideofinales
 

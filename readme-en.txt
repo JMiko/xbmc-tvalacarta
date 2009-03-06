@@ -32,16 +32,15 @@ BIOS EEPROM chip with a modified BIOS.
 -- What is this plugin for?            --
 -----------------------------------------
 
-XBMC plugin for tvalacarta is a derivative work of XOT-UZG (http://code.google.com/p/xot-uzg/), 
-a plugin that allows to extract videos from a website and view them inside XBMC. 
+XBMC plugin for tvalacarta is a derivative work of XOT-UZG (http://code.google.com/p/xot-uzg/), a plugin that allows to extract videos from a website and view them inside XBMC. 
 
 Its authors have included connectors for various websites, but have developed the plugin 
 so that anyone can easily add new websites.
 
 So that is exactly what I did. 
 
-I added some of the Spanish television network offering content on demand, and I keep 
-working on it until i have added all you can.
+I added some Spanish TV sites with video on demand, and I keep 
+working on it adding more sites.
 
 Currently works with:
 
@@ -50,8 +49,11 @@ Currently works with:
     * Barcelona TV
     * Antena 3
     * Extremadura TV
-	* La Sexta (currently unavailable)
+    * La Sexta (currently unavailable)
     * TV3 
+    * Mallorca TV
+    * TVG
+    * Canal Plus TV
 
 -----------------------------------------
 -- Installation                        --

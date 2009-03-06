@@ -51,7 +51,7 @@ class XotPlugin:
             # check for updates
             import update
             try:
-                update.CheckVersion(config.version, config.updateUrl)
+                #update.CheckVersion(config.version, config.updateUrl)
                 logFile.CleanUpLog()
                 common.DirectoryPrinter(config.rootDir)
             except:
@@ -206,7 +206,7 @@ class XotPlugin:
             self.params[2] = string.strip(self.params[2])
             ok = False
             
-            episodeItems = self.channelObject.ProcessFolderList(self.params[2])
+            episodeItems = self.channelObject.ProcessFolderList(self.params[2],"GET")
             logFile.debug("ProcessFolderList returned %s items", len(episodeItems))
             for episodeItem in episodeItems:
                 #if episodeItem.date != '':
