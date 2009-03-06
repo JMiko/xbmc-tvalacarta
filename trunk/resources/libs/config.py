@@ -24,3 +24,6 @@ version = "3.2.0b2"
 updateUrl = ""
 
 skinFolder = "" #get's set from default.py
+
+#checkforupdates = False
+checkforupdates = True
