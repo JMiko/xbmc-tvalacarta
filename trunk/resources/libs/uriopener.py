@@ -1,6 +1,7 @@
 import config
 import os, sys, urllib2, cookielib, re, threading, socket, time
 import xbmcgui
+import parameters
 #import urllib
 
 #===============================================================================
@@ -43,7 +44,10 @@ class UriHandler:
         
         cancelled = False
         
-        destFilename = self.CorrectFileName(filename)
+        if parameters.getConfigValue("all.use.long.filenames","true")!="true":
+            destFilename = self.CorrectFileName(filename)
+        else:
+            destFilename = filename
         destFolder = folder
         
         blockMultiplier = 16*8 #to increase blockSize

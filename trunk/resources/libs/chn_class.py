@@ -81,6 +81,7 @@ class Channel(xbmcgui.WindowXML):
         self.noImage = self.GetImageLocation(self.noImage)
         self.backgroundImage = self.GetImageLocation(self.backgroundImage)
         self.backgroundImage16x9 = self.GetImageLocation(self.backgroundImage16x9)
+        self.dictionaryurl = {}
         
         # plugin stuff
         self.pluginMode = False
@@ -717,6 +718,7 @@ class Channel(xbmcgui.WindowXML):
         # now process video items
         if not self.videoItemRegex =='':
             videos = common.DoRegexFindAll(self.videoItemRegex,   data)
+            self.dictionaryurl = {}
             for video in videos:
                 elvideo = self.CreateVideoItem(video)
                 if type(elvideo) is ListType:
@@ -995,7 +997,7 @@ class Channel(xbmcgui.WindowXML):
                 xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(playList)
         except:
             dialog = xbmcgui.Dialog()
-            dialog.ok(config.appName, "Kan dit programma niet afspelen.")
+            dialog.ok(config.appName, "No se puede reproducir ese programa.")
             logFile.critical("Could not playback the url", exc_info=True)
     
     #============================================================================== 

@@ -12,6 +12,9 @@ import config
 import controls
 import contextmenu
 import chn_class
+import md5
+import binascii
+import parameters
 
 logFile = sys.modules['__main__'].globalLogFile
 uriHandler = sys.modules['__main__'].globalUriHandler
@@ -57,7 +60,7 @@ class Channel(chn_class.Channel):
 
         self.contextMenuItems = []
         self.contextMenuItems.append(contextmenu.ContextMenuItem("Update Item", "CtMnUpdateItem", itemTypes="video", completeStatus=None))            
-        #self.contextMenuItems.append(contextmenu.ContextMenuItem("Download Item", "CtMnDownloadItem", itemTypes="video", completeStatus=True))
+        self.contextMenuItems.append(contextmenu.ContextMenuItem("Download Item", "CtMnDownloadItem", itemTypes="video", completeStatus=True))
         self.contextMenuItems.append(contextmenu.ContextMenuItem("Play using Mplayer", "CtMnPlayMplayer", itemTypes="video", completeStatus=True))
         self.contextMenuItems.append(contextmenu.ContextMenuItem("Play using DVDPlayer", "CtMnPlayDVDPlayer", itemTypes="video", completeStatus=True))
                 
@@ -70,7 +73,7 @@ class Channel(chn_class.Channel):
         self.folderItemRegex = '<a href="(/alacarta/todos/[^"]+)">([^<]+)</a>'
         #<param name="FileName" value="http://mfile.akamai.com/47586/wmv/corporacion.download.akamai.com/47589/StreamVideo/cita+16+ene.asx ">
         #20090121 00:21:50 - INFO     - uriopener.py     - 194 - Url http://tv.canalextremadura.es/tv-a-la-carta/videos/planeta-extremadura-23-diciembre was opened successfully
-        self.mediaUrlRegex = '<param name="FileName" value="([^"]+)">'    # used for the UpdateVideoItem
+        self.mediaUrlRegex = 'crea_video_hd\("([^"]+)"\)'    # used for the UpdateVideoItem
         #self.mediaUrlRegex = 'href="([^"]+)"'    # used for the UpdateVideoItem
         #self.pageNavigationRegex = '<ul class="paginacion">\W*<li class="atras">\W*<a title="[^"]+">\W*[^<]+\W*</a>\W*</li>\W*<li>\W*<span id="contador">\W*(\d+)\W+de\W+(\d+)</span>\W*</li>\W*<li class="adelante">\W*<a title="[^"]+" href=[^\']\'([^\']+)\'' # # "
         self.pageNavigationRegex = 'ssssssssssssssssssss'
@@ -79,6 +82,32 @@ class Channel(chn_class.Channel):
         logFile = sys.modules['__main__'].globalLogFile
         logFile.debug('InitialiseVariables %s', self.channelName)
         return True
+    
+    #==============================================================================
+    def ParseMainList(self):
+        items = chn_class.Channel.ParseMainList(self)        
+        
+        nuevo = common.clistItem("(Buscador)", "searchSite" )
+        nuevo.icon = self.folderIcon
+        items.insert(0, nuevo)
+        
+        return items
+
+    #==============================================================================
+    def SearchSite(self):
+        items = []
+        
+        keyboard = xbmc.Keyboard('')
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            tecleado = keyboard.getText()
+            if len(tecleado)>0:
+                tecleado = tecleado.replace(" ", "+")
+                searchUrl = 'http://tv.canalextremadura.es/search/videos/'+tecleado+'+programa%3A0+categoria%3A0'
+                return self.ProcessFolderList(searchUrl,"GET")
+                
+        return items
+    
     #==============================================================================
     def CreateEpisodeItem(self, resultSet):
         """
@@ -141,7 +170,7 @@ class Channel(chn_class.Channel):
         logFile.info('urldetalle=%s', item.url)
         detallevideo = uriHandler.Open(item.url, pb=False)
         enlacevideo = common.DoRegexFindAll(self.mediaUrlRegex, detallevideo)
-        logFile.info('urlasx=%s' % enlacevideo )
+        logFile.info('enlacevideo=%s' % enlacevideo )
         descripcion1 = common.DoRegexFindAll("<div class=\"view-field view-data-title\">([^<]+)<", detallevideo)
         descripcion2 = common.DoRegexFindAll("<div class=\"view-field view-data-body\">([^<]+)<", detallevideo)
         descripcion3 = common.DoRegexFindAll("<div class=\"view-field view-data-created\">([^<]+)<", detallevideo)
@@ -154,11 +183,11 @@ class Channel(chn_class.Channel):
         descripcioncompleta = descripcioncompleta.replace("\t","");
         descripcioncompleta = unicode( descripcioncompleta, "utf-8" ).encode("iso-8859-1")
         #<PARAM NAME="url" VALUE="http://www.barcelonatv.cat/alacarta/generarPubli.php?idVSD=3385&idPrograma=37">
-        descriptorvideo = uriHandler.Open(enlacevideo[0].strip().replace(" ","+"), pb=False)
-        urlvideo = common.DoRegexFindAll('href="([^"]+)"', descriptorvideo)
-        logFile.info('urlvideo=%s' % urlvideo[0])
+        #descriptorvideo = uriHandler.Open(enlacevideo[0].strip().replace(" ","+"), pb=False)
+        #urlvideo = common.DoRegexFindAll('href="([^"]+)"', descriptorvideo)
+        #logFile.info('urlvideo=%s' % urlvideo[0])
 
-        item.mediaurl = urlvideo[0]
+        item.mediaurl = enlacevideo[0].replace(' ','%20')
         item.description = descripcioncompleta
 
         item.complete = True
@@ -197,8 +226,21 @@ class Channel(chn_class.Channel):
         item = self.listItems[selectedIndex]
         self.PlayVideoItem(item,"dvdplayer")    
     
+
     #============================================================================== 
     def DownloadEpisode(self, item):
+
+        # Lee la ruta por configuración
+        destFolder = parameters.getConfigValue("extremaduratv.download.path",config.cacheDir)
+        logFile.info("destFolder="+destFolder)
+
+        dialog = xbmcgui.Dialog()
+        destFolder = dialog.browse(3, 'Elige el directorio', 'files', '', False, False, destFolder)
+        logFile.info("destFolder="+destFolder)
+
+        # Actualiza la ruta en la configuración
+        parameters.setConfigValue("extremaduratv.download.path",destFolder)
+
         #check if data is already present and if video or folder
         if item.type == 'folder':
             logFile.warning("Cannot download a folder")
@@ -206,14 +248,64 @@ class Channel(chn_class.Channel):
             if item.complete == False:
                 logFile.info("Fetching MediaUrl for VideoItem")
                 item = self.UpdateVideoItem(item)
-            destFilename = item.name + ".flv"
+            
+            # Nombre del fichero
+            baseFilename = item.name + " " + binascii.hexlify(md5.new(item.url).digest()) + " [extremaduratv]"
+            baseFilename = baseFilename.replace("á","a")
+            baseFilename = baseFilename.replace("é","e")
+            baseFilename = baseFilename.replace("í","i")
+            baseFilename = baseFilename.replace("ó","o")
+            baseFilename = baseFilename.replace("ú","u")
+            baseFilename = baseFilename.replace("ñ","n")
+            baseFilename = baseFilename.replace("\"","")
+            baseFilename = baseFilename.replace("\'","")
+            baseFilename = baseFilename.replace(":","")
+            
             if item.mediaurl=="":
                 logFile.error("Cannot determine mediaurl")
                 return item
+
+            # Genera el fichero .NFO
+            if parameters.getConfigValue("all.use.long.filenames","true")!="true":
+                baseFilename = uriHandler.CorrectFileName(baseFilename)
+
+            destFilename = baseFilename+".flv"
+            configfilepath = os.path.join(destFolder,baseFilename+".nfo")
+            logFile.info("outfile="+configfilepath)
+            outfile = open(configfilepath,"w")
+            outfile.write("<movie>\n")
+            outfile.write("<title>"+item.name+"</title>\n")
+            outfile.write("<originaltitle></originaltitle>\n")
+            outfile.write("<rating>0.000000</rating>\n")
+            outfile.write("<year>2009</year>\n")
+            outfile.write("<top250>0</top250>\n")
+            outfile.write("<votes>0</votes>\n")
+            outfile.write("<outline>"+item.description+"</outline>\n")
+            outfile.write("<plot>"+item.description+"</plot>\n")
+            outfile.write("<tagline>"+item.description+"</tagline>\n")
+            outfile.write("<runtime></runtime>\n")
+            outfile.write("<thumb>"+item.thumbUrl+"</thumb>\n")
+            outfile.write("<mpaa>Not available</mpaa>\n")
+            outfile.write("<playcount>0</playcount>\n")
+            outfile.write("<watched>false</watched>\n")
+            outfile.write("<id>tt0432337</id>\n")
+            outfile.write("<filenameandpath>"+os.path.join(destFolder,destFilename)+"</filenameandpath>\n")
+            outfile.write("<trailer></trailer>\n")
+            outfile.write("<genre></genre>\n")
+            outfile.write("<credits></credits>\n")
+            outfile.write("<director></director>\n")
+            outfile.write("<actor>\n")
+            outfile.write("<name></name>\n")
+            outfile.write("<role></role>\n")
+            outfile.write("</actor>\n")
+            outfile.write("</movie>")
+            outfile.flush()
+            outfile.close()
+            
             logFile.info("Going to download %s", destFilename)
-            downLoader = uriHandler.Download(item.mediaurl, destFilename)
+            downLoader = uriHandler.Download(item.mediaurl, destFilename, destFolder)
+
             item.downloaded = True
             return item
         else:
             logFile.warning('Error determining folder/video type of selected item');
-

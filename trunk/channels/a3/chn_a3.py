@@ -12,6 +12,7 @@ import config
 import controls
 import contextmenu
 import chn_class
+import parameters
 
 logFile = sys.modules['__main__'].globalLogFile
 uriHandler = sys.modules['__main__'].globalUriHandler
@@ -74,7 +75,7 @@ class Channel(chn_class.Channel):
         #<p>Programa 21 Diciembre 2008</p><p>Serie de ficci&oacute;n</p>
         #</div>
         #<div class="enlacePrograma"><a href="/tvcarta/impe/web/contenido?id=3643" title=" "><img class="imgLista" src="http://rtva.ondemand.flumotion.com/rtva/ondemand/flash8/ARRAYAN_21DIC.00.00.00.00.png" alt="" title=""></a></div><div class="pie_bloq"></div></div>
-        self.episodeItemRegex = '<item>\W+<title>([^<]+)</title>\W+<link>([^<]+)</link>\W+<description>([^<]+)</description>\W+<media:thumbnail url=\'([^\']+)\'/>\W+<media:content type=\'([^\']+)\' url=\'([^\']+)\'/>' # ([^<]+)</description>'
+        self.episodeItemRegex = '<item>[^<]+<title><\!\[CDATA\[([^\]]+)\]\]></title>[^<]+<link>([^<]+)</link>[^<]+<description><\!\[CDATA\[([^\]]+)\]\]></description>[^<]+<media:thumbnail url=\'([^\']+)\'/>[^<]+<media:content type=\'([^\']+)\' url=\'([^\']+)\'/>' # ([^<]+)</description>'
         #<embed width="393" height="344" align="middle" flashvars="&amp;video=http://rtva.ondemand.flumotion.com/rtva/ondemand/flash8/CAMINOS HIERRO_20OCT.flv" src="/tvcarta/html/nav/com/css/cssimg/video2.swf" quality="high" bgcolor="#016a32" menu="false" name="video" allowscriptaccess="always" allowfullscreen="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"/>
         self.videoItemRegex = 'idvideo:\'(\d+)\''
 #        self.folderItemRegex = '<a href="\.([^"]*/)(cat/)(\d+)"( style="color:\s*white;"\s*)*>([^>]+)</a><br'  # used for the CreateFolderItem
@@ -92,9 +93,16 @@ class Channel(chn_class.Channel):
         logFile.debug('starting CreateEpisodeItem for %s', self.channelName)
         logFile.debug(resultSet)
         
-        titulo = unicode( resultSet[0], "utf-8" ).encode("iso-8859-1")
+        try:
+            titulo = unicode( resultSet[0], "utf-8" ).encode("iso-8859-1")
+        except:
+            titulo = resultSet[0]
         item = common.clistItem( titulo , "http://www.antena3videos.com" + resultSet[1] )
-        item.description = unicode( resultSet[2], "utf-8" ).encode("iso-8859-1")
+        try:
+            descripcion = unicode( resultSet[2], "utf-8" ).encode("iso-8859-1")
+        except:
+            descripcion = resultSet[2]
+        item.description = descripcion
         item.thumbUrl = "http://www.antena3videos.com" + resultSet[3]
         item.icon = self.folderIcon
         item.complete = True
@@ -137,6 +145,7 @@ class Channel(chn_class.Channel):
         #original: rtmp://stream.rtve.es/stream/resources/alacarta/flv/2/5/1231404096852.flv
         #original: http://www.rtve.es/resources/alacarta/flv/1/5/1230105693151.flv
         item.mediaurl = item.url
+        item.complete = True
         return item
 
     #==============================================================================
@@ -178,3 +187,86 @@ class Channel(chn_class.Channel):
         else:
             logFile.warning('Error determining folder/video type of selected item');
 
+
+    #============================================================================== 
+    def DownloadEpisode(self, item):
+
+        # Lee la ruta por configuración
+        destFolder = parameters.getConfigValue("a3.download.path",config.cacheDir)
+        logFile.info("destFolder="+destFolder)
+
+        dialog = xbmcgui.Dialog()
+        destFolder = dialog.browse(3, 'Elige el directorio', 'files', '', False, False, destFolder)
+        logFile.info("destFolder="+destFolder)
+
+        # Actualiza la ruta en la configuración
+        parameters.setConfigValue("a3.download.path",destFolder)
+
+        #check if data is already present and if video or folder
+        if item.type == 'folder':
+            logFile.warning("Cannot download a folder")
+        elif item.type == 'video':
+            if item.complete == False:
+                logFile.info("Fetching MediaUrl for VideoItem")
+                item = self.UpdateVideoItem(item)
+            
+            # Nombre del fichero
+            baseFilename = item.name + " [antena3videos.com]"
+            baseFilename = baseFilename.replace("á","a")
+            baseFilename = baseFilename.replace("é","e")
+            baseFilename = baseFilename.replace("í","i")
+            baseFilename = baseFilename.replace("ó","o")
+            baseFilename = baseFilename.replace("ú","u")
+            baseFilename = baseFilename.replace("ñ","n")
+            baseFilename = baseFilename.replace("\"","")
+            baseFilename = baseFilename.replace("\'","")
+            baseFilename = baseFilename.replace(":","")
+            
+            if item.mediaurl=="":
+                logFile.error("Cannot determine mediaurl")
+                return item
+
+            # Genera el fichero .NFO
+            if parameters.getConfigValue("all.use.long.filenames","true")!="true":
+                baseFilename = uriHandler.CorrectFileName(baseFilename)
+
+            destFilename = baseFilename+".flv"
+            configfilepath = os.path.join(destFolder,baseFilename+".nfo")
+            logFile.info("outfile="+configfilepath)
+            outfile = open(configfilepath,"w")
+            outfile.write("<movie>\n")
+            outfile.write("<title>"+item.name+"</title>\n")
+            outfile.write("<originaltitle></originaltitle>\n")
+            outfile.write("<rating>0.000000</rating>\n")
+            outfile.write("<year>2009</year>\n")
+            outfile.write("<top250>0</top250>\n")
+            outfile.write("<votes>0</votes>\n")
+            outfile.write("<outline>"+item.description+"</outline>\n")
+            outfile.write("<plot>"+item.description+"</plot>\n")
+            outfile.write("<tagline>"+item.description+"</tagline>\n")
+            outfile.write("<runtime></runtime>\n")
+            outfile.write("<thumb>"+item.thumbUrl+"</thumb>\n")
+            outfile.write("<mpaa>Not available</mpaa>\n")
+            outfile.write("<playcount>0</playcount>\n")
+            outfile.write("<watched>false</watched>\n")
+            outfile.write("<id>tt0432337</id>\n")
+            outfile.write("<filenameandpath>"+os.path.join(destFolder,destFilename)+"</filenameandpath>\n")
+            outfile.write("<trailer></trailer>\n")
+            outfile.write("<genre></genre>\n")
+            outfile.write("<credits></credits>\n")
+            outfile.write("<director></director>\n")
+            outfile.write("<actor>\n")
+            outfile.write("<name></name>\n")
+            outfile.write("<role></role>\n")
+            outfile.write("</actor>\n")
+            outfile.write("</movie>")
+            outfile.flush()
+            outfile.close()
+            
+            logFile.info("Going to download %s", destFilename)
+            downLoader = uriHandler.Download(item.mediaurl, destFilename, destFolder)
+
+            item.downloaded = True
+            return item
+        else:
+            logFile.warning('Error determining folder/video type of selected item');

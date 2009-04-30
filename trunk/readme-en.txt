@@ -44,16 +44,21 @@ working on it adding more sites.
 
 Currently works with:
 
-    * Andalucía TV
-    * TVE
-    * Barcelona TV
+    * ADNStream
+    * RTVA - Andalucía
     * Antena 3
-    * Extremadura TV
-    * La Sexta (currently unavailable)
-    * TV3 
-    * Mallorca TV
-    * TVG
+    * Barcelona TV
     * Canal Plus TV
+    * EITB - País Vasco
+    * Extremadura TV
+    * TVE
+    * Mediateca TVE
+    * TVG - Galicia
+    * Mallorca TV
+    * TV3 - Catalunya
+    * Turbonick
+    * RTVV - Valencia
+    * Terra.tv
 
 -----------------------------------------
 -- Installation                        --
@@ -91,7 +96,7 @@ XBMC Forum thread
 http://xbmc.org/forum/showthread.php?t=43778
 
 My spanish blog about "Televisión a la carta"
-http://tvalacarta.wordpress.com
+http://blog.tvalacarta.info
 
 ----------------------------------------
 -- Contact                            --

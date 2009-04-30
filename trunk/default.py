@@ -4,7 +4,7 @@ import os.path
 import sys, traceback, platform
 import xbmcgui
 
-versionactual = "1.1a1"
+versionactual = "1.2"
 
 sys.path.append(os.path.join(os.getcwd().replace(";",""),'resources','libs'))
 
