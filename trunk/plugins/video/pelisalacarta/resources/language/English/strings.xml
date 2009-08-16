@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Nombre:</string>
+    <string id="30001">Version:</string>
+    <string id="30002">Autor:</string>
+    <string id="30003">Web:</string>
+    <string id="30100">Modo premium Megavideo:</string>
+    <string id="30101">Usuario Megavideo:</string>
+    <string id="30102">Password Megavideo:</string>
+    <string id="30103">Cookie Megavideo:</string>
+    <string id="30200">Comprobar actualizaciones:</string>
+</strings>
