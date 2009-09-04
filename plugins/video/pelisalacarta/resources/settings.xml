@@ -8,4 +8,5 @@
     <setting id="megavideopassword" type="text" label="30102" default=""/>
     <!--setting id="megavideocookie" type="text" label="30103" default=""/-->
     <setting id="updatecheck2" type="bool" label="30200" default="true"/>
+    <setting id="downloadpath" type="text" label="30201" default=""/>
 </settings>

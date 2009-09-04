@@ -21,6 +21,20 @@ except:
 	pluginhandle = ""
 
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
+import xbmc
+ 
+def get_system_platform():
+	""" fonction: pour recuperer la platform que xbmc tourne """
+	platform = "unknown"
+	if xbmc.getCondVisibility( "system.platform.linux" ):
+		platform = "linux"
+	elif xbmc.getCondVisibility( "system.platform.xbox" ):
+		platform = "xbox"
+	elif xbmc.getCondVisibility( "system.platform.windows" ):
+		platform = "windows"
+	elif xbmc.getCondVisibility( "system.platform.osx" ):
+		platform = "osx"
+	return platform
 
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot ):
 	xbmc.output("pluginhandle=%d" % pluginhandle)
