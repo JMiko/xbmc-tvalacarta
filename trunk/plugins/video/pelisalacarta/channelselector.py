@@ -28,12 +28,12 @@ def listchannels(params,url,category):
 	xbmc.output("[channelselector.py] listchannels")
 
 	# Verifica actualizaciones solo en el primer nivel
-	if xbmcplugin.getSetting("updatecheck") == "true":
-		xbmc.output("updatecheck=true")
+	if xbmcplugin.getSetting("updatecheck2") == "true":
+		xbmc.output("updatecheck2=true")
 		import updater
 		updater.checkforupdates()
 	else:
-		xbmc.output("updatecheck=false")
+		xbmc.output("updatecheck2=false")
 
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist")
@@ -52,6 +52,9 @@ def listchannels(params,url,category):
 	addfolder("MCAnime","mcanime","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")
 	addfolder("tu.tv","tutvsite","mainlist")
+	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
+	addfolder("Configuracion","configuracion","mainlist")
+	addfolder("Descargados","descargados","mainlist")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )
