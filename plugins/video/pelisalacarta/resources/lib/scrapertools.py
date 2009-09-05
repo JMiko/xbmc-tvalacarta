@@ -11,7 +11,7 @@ import md5
 import os
 import xbmc
 
-cacheactiva = True
+cacheactiva = False
 
 def cachePage(url):
 
