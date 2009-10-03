@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para pintadibujos
+# Canal para cinegratis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -16,7 +16,7 @@ import servertools
 import binascii
 import xbmctools
 
-CHANNELNAME = "pintadibujos"
+CHANNELNAME = "cinegratis"
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -25,52 +25,36 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[pintadibujos.py] init")
+xbmc.output("[cinegratis.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[pintadibujos.py] mainlist")
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Ultimas novedades" , "http://www.pintadibujos.com/novedadesf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Clasicos Disney" , "http://www.pintadibujos.com/disneyf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Princesas" , "http://www.pintadibujos.com/princesasf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Superheroes" , "http://www.pintadibujos.com/superheroesf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas series TV" , "http://www.pintadibujos.com/seriesf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Anime" , "http://www.pintadibujos.com/animef.html" , "", "" )
+	xbmc.output("[cinegratis.py] mainlist")
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def movielist(params,url,category):
-	xbmc.output("[pintadibujos.py] mainlist")
+	url = "http://www.cinegratis.net/index.php?module=peliculas"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<td><a href="([^"]+)" target="_blank"><img SRC="([^"]+)"'
+	patronvideos  = "<table.*?<td.*?>([^<]+)<span class='style1'>\(Visto.*?"
+	patronvideos += "<div align='justify'>(.*?)</div>.*?"
+	patronvideos += "<a href='(.*?)'.*?"
+	patronvideos += "<img src='(.*?)'"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = urlparse.urljoin(url,match[0])
-
+		scrapedtitle = match[0]
 		# URL
-		scrapedurl = urlparse.urljoin(url,match[0])
-		
+		scrapedurl = urlparse.urljoin(url,match[2])
 		# Thumbnail
-		scrapedthumbnail = urlparse.urljoin(url,match[1])
-		
-		# procesa el resto
-		scrapeddescription = ""
+		scrapedthumbnail = urlparse.urljoin(url,match[3])
+		# Argumento
+		scrapeddescription = match[1]
 
 		# Depuracion
 		if (DEBUG):
@@ -91,12 +75,12 @@ def movielist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[pintadibujos.py] detail")
+	xbmc.output("[cinegratis.py] detail")
 
 	title = params.get("title")
 	thumbnail = params.get("thumbnail")
-	xbmc.output("[pintadibujos.py] title="+title)
-	xbmc.output("[pintadibujos.py] thumbnail="+thumbnail)
+	xbmc.output("[cinegratis.py] title="+title)
+	xbmc.output("[cinegratis.py] thumbnail="+thumbnail)
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -121,14 +105,14 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[pintadibujos.py] play")
+	xbmc.output("[cinegratis.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[pintadibujos.py] thumbnail="+thumbnail)
-	xbmc.output("[pintadibujos.py] server="+server)
+	xbmc.output("[cinegratis.py] thumbnail="+thumbnail)
+	xbmc.output("[cinegratis.py] server="+server)
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

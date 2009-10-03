@@ -53,12 +53,16 @@ def downloadpage(url):
 	xbmc.output("[scrapertools.py] Descargando " + url)
 	inicio = time.clock()
 	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
+	#if referer!="":
+	#	xbmc.output("[scrapertools.py] Referer=" + referer)
+	#	req.add_header('Referer', referer)
 	try:
 		response = urllib2.urlopen(req)
 	except:
 		req = urllib2.Request(url.replace(" ","%20"))
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
+
 		response = urllib2.urlopen(req)
 	data=response.read()
 	response.close()

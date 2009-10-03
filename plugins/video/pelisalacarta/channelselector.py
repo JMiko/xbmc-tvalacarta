@@ -55,6 +55,8 @@ def listchannels(params,url,category):
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Configuracion","configuracion","mainlist")
 	addfolder("Descargados","descargados","mainlist")
+	addfolder("Cinegratis","cinegratis","mainlist")
+	addfolder("Animeid","animeid","mainlist")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )

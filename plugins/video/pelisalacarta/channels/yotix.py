@@ -145,6 +145,7 @@ def listmirrors(params,url,category):
 	extraevideos('<a.*?href="(http://yotix.tv/media/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
 	extraevideos('<a.*?href="(http://yotix.tv/video/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
 	extraevideos('<a.*?href="(http://yotix.tv/ver/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
+	extraevideos('<a.*?href="(http://yotix.tv/rt/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
