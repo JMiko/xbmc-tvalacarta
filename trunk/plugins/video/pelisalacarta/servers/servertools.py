@@ -41,6 +41,41 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	# Megavideo - Vídeos con título
+	xbmc.output("1b) Megavideo con titulo...")
+	patronvideos  = '<a href\="http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})".*?>([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = match[1].strip()
+		if titulo == "":
+			titulo = "Sin título"
+		titulo = titulo + " (id "+match[0]+")"
+		url = match[0]
+		if url not in encontrados:
+			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("1c) Megavideo sin titulo...")
+	#http://www.megavideo.com/?v=OYGXMZBM
+	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = ""
+		if titulo == "":
+			titulo = "Sin título"
+		titulo = titulo + " (id "+match+")"
+		url = match
+		if url not in encontrados:
+			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	# Megavideo - Vídeos sin título
 	xbmc.output("2) Megavideo sin titulo...")
 	patronvideos  = '<param name="movie" value="http://wwwstatic.megavideo.com/mv_player.swf\?v=([^"]+)">'

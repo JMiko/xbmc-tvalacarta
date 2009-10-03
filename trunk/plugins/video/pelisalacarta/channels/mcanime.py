@@ -110,7 +110,8 @@ def detail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	# Saca el cuerpo del post
 	#logFile.info("data="+data)
-	patronvideos  = '<div class="content">.*?<div class="poster">.*?</div>(.*?)</div>'
+	#patronvideos  = '<div class="content">.*?<div class="poster">.*?</div>(.*?)</div>'
+	patronvideos  = '<div class="content">(.*?)<div class="content">'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	datapost=""
 	if len(matches)>0:

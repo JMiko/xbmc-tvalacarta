@@ -365,11 +365,17 @@ def downloadtitle(url,title):
 	xbmc.output("[downloadtools.py] downloadtitle: plataforma="+plataforma)
 	
 	nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
-	xbmc.log("nombrefichero=%s" % nombrefichero)
+	
+	keyboard = xbmc.Keyboard(nombrefichero)
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		nombrefichero = keyboard.getText()
+	
+	xbmc.log("[downloadtools.py] downloadtitle: nombrefichero=%s" % nombrefichero)
 	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.log("downloadpath=%s" % downloadpath)
+	xbmc.log("[downloadtools.py] downloadtitle: downloadpath=%s" % downloadpath)
 	fullpath = os.path.join( downloadpath , nombrefichero )
-	xbmc.log("fullpath=%s" % fullpath)
+	xbmc.log("[downloadtools.py] downloadtitle: fullpath=%s" % fullpath)
 	downloadfile(url,fullpath)
 
 def downloadtitle2(url,title):
@@ -381,11 +387,13 @@ def downloadtitle2(url,title):
 
 	# Saca el nombre del fichero del título, y la extension de la URL
 	nombrefichero = limpia_nombre_caracteres_especiales(title)
-	if plataforma=="xbox":
-		nombrefichero = nombrefichero[0:8] + url[-4:]
-	else:
-		nombrefichero = nombrefichero + url[-4:]
-	#xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero)
+	#if plataforma=="xbox":
+	nombrefichero = nombrefichero[:8] + url[-4:]
+	#else:
+	#	nombrefichero = nombrefichero + url[-4:]
+	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero)
+	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero[:8])
+	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero[:4])
 
 	# Intenta crear el fichero, y va sustituyendo caracteres inválidos hasta que lo consigue
 	downloadpath = xbmcplugin.getSetting("downloadpath")
