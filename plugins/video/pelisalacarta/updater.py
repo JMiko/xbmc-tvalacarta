@@ -3,7 +3,7 @@
 #------------------------------------------------------------
 # pelisalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta
-# XBMC Plugin v2.1
+# XBMC Plugin
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
@@ -19,7 +19,7 @@ PLUGIN_NAME = "pelisalacarta"
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 ROOT_DIR = os.getcwd()
 
-REMOTE_VERSION_FILE = "http://xbmc-tvalacarta.googlecode.com/files/pelisalacarta-version.xml"
+REMOTE_VERSION_FILE = "http://www.mimediacenter.info/xbmc/pelisalacarta/version.xml"
 LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
 REMOTE_FILE = "http://xbmc-tvalacarta.googlecode.com/files/pelisalacarta-"
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "pelisalacarta-" ) )

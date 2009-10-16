@@ -13,6 +13,7 @@ import sys
 import servertools
 import downloadtools
 import os
+import favoritos
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -37,8 +38,11 @@ def get_system_platform():
 	return platform
 
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot ):
-	xbmc.output("pluginhandle=%d" % pluginhandle)
-	xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	#xbmc.output("pluginhandle=%d" % pluginhandle)
+	try:
+		xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	except:
+		xbmc.output('[xbmctools.py] addnewfolder(<unicode>)')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
@@ -73,6 +77,12 @@ def addvideo( canal , nombre , url , category , server ):
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def playvideo(canal,server,url,category,title,thumbnail,plot):
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,False)
+
+def playvideo2(canal,server,url,category,title,thumbnail,plot):
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,True)
+
+def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 	
 	xbmc.output("[xbmctools.py] playvideo")
 
@@ -82,6 +92,10 @@ def playvideo(canal,server,url,category,title,thumbnail,plot):
 		opciones.append("Ver en calidad alta (Megavideo)")
 		opciones.append("Ver en calidad baja (Megavideo)")
 		opciones.append("Descargar")
+		if desdefavoritos:
+			opciones.append("Quitar de favoritos")
+		else:
+			opciones.append("Añadir a favoritos")
 
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
@@ -92,8 +106,8 @@ def playvideo(canal,server,url,category,title,thumbnail,plot):
 		if seleccion==0:
 			mediaurl = servertools.getmegavideohigh(url)
 		elif seleccion==1:
-			advertencia = xbmcgui.Dialog()
-			resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Aunque tengas una cuenta Premium el límite sigue existiendo' , 'cuando ves los vídeos en calidad baja')
+			#advertencia = xbmcgui.Dialog()
+			#resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Aunque tengas una cuenta Premium el límite sigue existiendo' , 'cuando ves los vídeos en calidad baja')
 			mediaurl = servertools.getmegavideolow(url)
 		elif seleccion==2:
 			if xbmcplugin.getSetting("megavideopremium")=="false":
@@ -102,10 +116,26 @@ def playvideo(canal,server,url,category,title,thumbnail,plot):
 				mediaurl = servertools.getmegavideohigh(url)
 			downloadtools.downloadtitle(mediaurl,title)
 			return
+		elif seleccion==3:
+			if desdefavoritos:
+				# La categoría es el nombre del fichero en favoritos
+				os.remove(urllib.unquote_plus( category ))
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
+			else:
+				favoritos.savebookmark(title,url,thumbnail,server,plot)
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
+			return
+
 	else:
 		opciones = []
 		opciones.append("Ver")
 		opciones.append("Descargar")
+		if desdefavoritos:
+			opciones.append("Quitar de favoritos")
+		else:
+			opciones.append("Añadir a favoritos")
 	
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
@@ -122,7 +152,18 @@ def playvideo(canal,server,url,category,title,thumbnail,plot):
 			mediaurl = servertools.findurl(url,server)
 			downloadtools.downloadtitle(mediaurl,title)
 			return
-		
+		elif seleccion==2:
+			if desdefavoritos:
+				# La categoría es el nombre del fichero en favoritos
+				os.remove(urllib.unquote_plus( category ))
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
+			else:
+				favoritos.savebookmark(title,url,thumbnail,server,plot)
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
+			return
+
 	xbmc.output("[xbmctools.py] mediaurl="+mediaurl)
 	
 	# Abre dialogo
@@ -152,3 +193,7 @@ def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
 		xbmc.output("[xmbctools.py] scrapedurl="+scrapedurl)
 		xbmc.output("[xmbctools.py] scrapedthumbnail="+scrapedthumbnail)
 		xbmc.output("[xmbctools.py] scrapedplot="+scrapedplot)
+
+def alertnodisponible():
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('No se ha encontrado el vídeo' , 'El vídeo ya no está disponible en la página,' , 'o no se ha podido localizar el enlace')

@@ -123,6 +123,9 @@ def list(params,url,category):
 def detail(params,url,category):
 	xbmc.output("[newcineonline.py] detail")
 
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
@@ -132,7 +135,7 @@ def detail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
-		addvideo( "Ver vídeo" , matches[0] , category , "Megavideo" )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title + " - Video en Megavideo" , matches[0], thumbnail , "" )
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -140,7 +143,7 @@ def detail(params,url,category):
 	listavideos = servertools.findvideos(data)
 	
 	for video in listavideos:
-		addvideo( video[0] , video[1] , category , video[2] )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , title +" - "+video[0], video[1], thumbnail , "" )
 	# ------------------------------------------------------------------------------------
 
 	# Label (top-right)...

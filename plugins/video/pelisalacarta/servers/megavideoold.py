@@ -24,8 +24,6 @@ print "Cookiefile="+COOKIEFILE
 #Python Video Decryption and resolving routines.
 #Courtesy of Voinage, Coolblaze.
 
-DEBUG = False
-
 #Megavideo - Coolblaze # Part 1 put this below VIDEOLINKS function. Ctrl & C after highlighting.
 
 def ajoin(arr):
@@ -224,58 +222,23 @@ def Megavideo(mega):
 #####END of part 2
 
 def getlowurl(code):
-	xbmc.output("[megavideo.py] Baja calidad")
+	xbmc.output("[megavideo.py] Usa modo normal")
 	
 	code=getcode(code)
 
-	modoPremium = xbmcplugin.getSetting("megavideopremium")
-	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
-	if modoPremium == "false":
-		xbmc.output("[megavideo.py] usando modo normal para baja calidad")
-		req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-		req.add_header('Referer', 'http://www.megavideo.com/')
-		page = urllib2.urlopen(req);response=page.read();page.close()
-		errort = re.compile(' errortext="(.+?)"').findall(response)
-		movielink = ""
-		if len(errort) <= 0:
-			s = re.compile(' s="(.+?)"').findall(response)
-			k1 = re.compile(' k1="(.+?)"').findall(response)
-			k2 = re.compile(' k2="(.+?)"').findall(response)
-			un = re.compile(' un="(.+?)"').findall(response)
-			movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-			#addLink(name, movielink+'?.flv','')
-	else:
-		xbmc.output("[megavideo.py] usando modo premium para baja calidad")
-		
-		megavideocookie = xbmcplugin.getSetting("megavideocookie")
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-		#if megavideocookie=="":
-		xbmc.output("[megavideo.py] Averiguando cookie...")
-		megavideologin = xbmcplugin.getSetting("megavideouser")
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
-		megavideopassword = xbmcplugin.getSetting("megavideopassword")
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
-		megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-
-		req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code+"&u="+megavideocookie)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-		req.add_header('Referer', 'http://www.megavideo.com/')
-		page = urllib2.urlopen(req);response=page.read();page.close()
-		errort = re.compile(' errortext="(.+?)"').findall(response)
-		movielink = ""
-		if len(errort) <= 0:
-			s = re.compile(' s="(.+?)"').findall(response)
-			k1 = re.compile(' k1="(.+?)"').findall(response)
-			k2 = re.compile(' k2="(.+?)"').findall(response)
-			un = re.compile(' un="(.+?)"').findall(response)
-			movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-			#addLink(name, movielink+'?.flv','')
+	req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+	req.add_header('Referer', 'http://www.megavideo.com/')
+	page = urllib2.urlopen(req);response=page.read();page.close()
+	errort = re.compile(' errortext="(.+?)"').findall(response)
+	movielink = ""
+	if len(errort) <= 0:
+		s = re.compile(' s="(.+?)"').findall(response)
+		k1 = re.compile(' k1="(.+?)"').findall(response)
+		k2 = re.compile(' k2="(.+?)"').findall(response)
+		un = re.compile(' un="(.+?)"').findall(response)
+		movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+		#addLink(name, movielink+'?.flv','')
 	
 	return movielink
 
@@ -285,19 +248,15 @@ def gethighurl(code):
 	code = getcode(code)
 
 	megavideocookie = xbmcplugin.getSetting("megavideocookie")
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+	xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 	#if megavideocookie=="":
 	xbmc.output("[megavideo.py] Averiguando cookie...")
 	megavideologin = xbmcplugin.getSetting("megavideouser")
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
+	xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
 	megavideopassword = xbmcplugin.getSetting("megavideopassword")
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
+	xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 	megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+	xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 	#xbmcplugin.setSetting("megavideocookie",megavideocookie)
 
 	req = urllib2.Request("http://www.megavideo.com/xml/player_login.php?u="+megavideocookie+"&v="+code)
@@ -446,4 +405,5 @@ def GetMegavideoUser(login, password):
 		xbmc.output(cookiedata)
 		xbmc.output("----------------------")
 
+		
 	return matches[0]

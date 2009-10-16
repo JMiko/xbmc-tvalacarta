@@ -38,6 +38,7 @@ def listchannels(params,url,category):
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
+	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
 	addfolder("Newcineonline","newcineonline","mainlist")
 	#addfolder("PeliculasHD","peliculashd","mainlist")
 	addfolder("Pelis24","pelis24","mainlist")
@@ -52,11 +53,13 @@ def listchannels(params,url,category):
 	addfolder("MCAnime","mcanime","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")
 	addfolder("tu.tv","tutvsite","mainlist")
+	addfolder("Cinegratis","cinegratis","mainlist")
+	addfolder("Animeid","animeid","mainlist")
+	addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Configuracion","configuracion","mainlist")
 	addfolder("Descargados","descargados","mainlist")
-	addfolder("Cinegratis","cinegratis","mainlist")
-	addfolder("Animeid","animeid","mainlist")
+	addfolder("Favoritos","favoritos","mainlist")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )

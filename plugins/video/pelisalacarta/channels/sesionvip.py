@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para pintadibujos
+# Canal para sesionvip
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -16,7 +16,7 @@ import servertools
 import binascii
 import xbmctools
 
-CHANNELNAME = "pintadibujos"
+CHANNELNAME = "sesionvip"
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -25,52 +25,65 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[pintadibujos.py] init")
+xbmc.output("[sesionvip.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[pintadibujos.py] mainlist")
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Ultimas novedades" , "http://www.pintadibujos.com/novedadesf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Clasicos Disney" , "http://www.pintadibujos.com/disneyf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Princesas" , "http://www.pintadibujos.com/princesasf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Superheroes" , "http://www.pintadibujos.com/superheroesf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas series TV" , "http://www.pintadibujos.com/seriesf.html" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Anime" , "http://www.pintadibujos.com/animef.html" , "", "" )
+	xbmc.output("[sesionvip.py] mainlist")
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def movielist(params,url,category):
-	xbmc.output("[pintadibujos.py] mainlist")
+	if url=="":
+		url = "http://www.sesionvip.com/"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<td><a href="([^"]+)" target="_blank"><img SRC="([^"]+)"'
+	patronvideos  = '<div class="entry">.*?'
+	patronvideos += '<a href="([^"]+)" rel="bookmark">([^<]+)</a>.*?'
+	patronvideos += '<img.*?src="([^"]+)".*?'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = urlparse.urljoin(url,match[0])
+		scrapedtitle = match[1]
+		if scrapedtitle.startswith("Ver"):
+			if scrapedtitle.startswith("Ver Gratis La Pelicula "):
+				scrapedtitle = scrapedtitle[23:]
+			elif scrapedtitle.startswith("Ver Online La Pelicula "):
+				scrapedtitle = scrapedtitle[23:]
+			# URL
+			scrapedurl = urlparse.urljoin(url,match[0])
+			# Thumbnail
+			scrapedthumbnail = urlparse.urljoin(url,match[2])
+			# Argumento
+			scrapedplot = ""
 
+			# Depuracion
+			if (DEBUG):
+				xbmc.output("scrapedtitle="+scrapedtitle)
+				xbmc.output("scrapedurl="+scrapedurl)
+				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+			# Añade al listado de XBMC
+			xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listmirrors" )
+
+	# Página siguiente
+	patronvideos  = '<div class="back"><a href="([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Titulo
+		scrapedtitle = "Página siguiente"
 		# URL
-		scrapedurl = urlparse.urljoin(url,match[0])
-		
+		scrapedurl = urlparse.urljoin(url,match)
 		# Thumbnail
-		scrapedthumbnail = urlparse.urljoin(url,match[1])
-		
-		# procesa el resto
-		scrapeddescription = ""
+		scrapedthumbnail = ""
+		# Argumento
+		scrapedplot = ""
 
 		# Depuracion
 		if (DEBUG):
@@ -79,7 +92,7 @@ def movielist(params,url,category):
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
+		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -90,17 +103,28 @@ def movielist(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def detail(params,url,category):
-	xbmc.output("[pintadibujos.py] detail")
+def listmirrors(params,url,category):
+	xbmc.output("[sesionvip.py] detail")
 
-	title = urllib.unquote_plus( params.get("title") )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	xbmc.output("[pintadibujos.py] title="+title)
-	xbmc.output("[pintadibujos.py] thumbnail="+thumbnail)
+	title = params.get("title")
+	thumbnail = params.get("thumbnail")
+	xbmc.output("[sesionvip.py] title="+title)
+	xbmc.output("[sesionvip.py] thumbnail="+thumbnail)
 
-	# Descarga la página
+	# Descarga la página y extrae el enlace a la siguiente pagina
 	data = scrapertools.cachePage(url)
+	patronvideos  = '<p style="text-align: center;">.*?<a href\="(http\://www.sesionvip.com/[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
 	#xbmc.output(data)
+
+	if len(matches)==0:
+		xbmctools.alertnodisponible()
+		return
+
+	# Descarga la siguiente página y extrae el enlace a los mirrors
+	url = matches[0]
+	data = scrapertools.cachePage(url)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -108,7 +132,7 @@ def detail(params,url,category):
 	listavideos = servertools.findvideos(data)
 
 	for video in listavideos:
-		xbmctools.addvideo( CHANNELNAME , title+video[0] , video[1] , category , video[2] )
+		xbmctools.addvideo( CHANNELNAME , video[0] , video[1] , category , video[2] )
 	# ------------------------------------------------------------------------------------
 
 	# Label (top-right)...
@@ -121,16 +145,13 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[pintadibujos.py] play")
+	xbmc.output("[sesionvip.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[pintadibujos.py] thumbnail="+thumbnail)
-	xbmc.output("[pintadibujos.py] server="+server)
+	xbmc.output("[sesionvip.py] thumbnail="+thumbnail)
+	xbmc.output("[sesionvip.py] server="+server)
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-
-#mainlist(None,"","mainlist")
-#detail(None,"http://impresionante.tv/ponyo.html","play")

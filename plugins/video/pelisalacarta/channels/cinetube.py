@@ -35,6 +35,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	addfolder("Películas - Novedades","http://www.cinetube.es/subindices/inovedades.html","list")
 	addfolder("Películas - Todas","http://www.cinetube.es/subindices/ipelitodas.html","listtodas")
+	addfolder("Películas - Alfabético","","listalfabetico")
 	addfolder("Series - Novedades","http://www.cinetube.es/subindices/iserienovedades.html","list")
 	addfolder("Series - Todas","http://www.cinetube.es/subindices/iserietodas.html","listtodasseries")
 	addfolder("Documentales - Novedades","http://www.cinetube.es/subindices/idocumentalesnovedades.html","list")
@@ -45,6 +46,44 @@ def mainlist(params,url,category):
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 		
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def listalfabetico(params, url, category):
+	addfolder("0-9","http://www.cinetube.es/subindices/ipelinumero.html","list")
+	addfolder("A","http://www.cinetube.es/subindices/ipelia.html","list")
+	addfolder("B","http://www.cinetube.es/subindices/ipelib.html","list")
+	addfolder("C","http://www.cinetube.es/subindices/ipelic.html","list")
+	addfolder("D","http://www.cinetube.es/subindices/ipelid.html","list")
+	addfolder("E","http://www.cinetube.es/subindices/ipelie.html","list")
+	addfolder("F","http://www.cinetube.es/subindices/ipelif.html","list")
+	addfolder("G","http://www.cinetube.es/subindices/ipelig.html","list")
+	addfolder("H","http://www.cinetube.es/subindices/ipelih.html","list")
+	addfolder("I","http://www.cinetube.es/subindices/ipelii.html","list")
+	addfolder("J","http://www.cinetube.es/subindices/ipelij.html","list")
+	addfolder("K","http://www.cinetube.es/subindices/ipelik.html","list")
+	addfolder("L","http://www.cinetube.es/subindices/ipelil.html","list")
+	addfolder("M","http://www.cinetube.es/subindices/ipelim.html","list")
+	addfolder("N","http://www.cinetube.es/subindices/ipelin.html","list")
+	addfolder("O","http://www.cinetube.es/subindices/ipelio.html","list")
+	addfolder("P","http://www.cinetube.es/subindices/ipelip.html","list")
+	addfolder("Q","http://www.cinetube.es/subindices/ipeliq.html","list")
+	addfolder("R","http://www.cinetube.es/subindices/ipelir.html","list")
+	addfolder("S","http://www.cinetube.es/subindices/ipelis.html","list")
+	addfolder("T","http://www.cinetube.es/subindices/ipelit.html","list")
+	addfolder("U","http://www.cinetube.es/subindices/ipeliu.html","list")
+	addfolder("V","http://www.cinetube.es/subindices/ipeliv.html","list")
+	addfolder("W","http://www.cinetube.es/subindices/ipeliw.html","list")
+	addfolder("X","http://www.cinetube.es/subindices/ipelix.html","list")
+	addfolder("Y","http://www.cinetube.es/subindices/ipeliy.html","list")
+	addfolder("Z","http://www.cinetube.es/subindices/ipeliz.html","list")
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+
 	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
@@ -312,7 +351,7 @@ def listmirrors(params,url,category):
 			# Elimina los espacios multiples
 			titulo = re.sub("\s+"," ",titulo)
 			scrapedurl = urlparse.urljoin("http://www.cinetube.es/subindices/",match2[0]).replace(" ","%20")
-			xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , titulo , scrapedurl , thumbnail, plot )
+			xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , title.strip().replace("(Megavideo)","").replace("  "," ") + " " + titulo , scrapedurl , thumbnail, plot )
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -320,10 +359,13 @@ def listmirrors(params,url,category):
 	listavideos = servertools.findvideos(data)
 	
 	for video in listavideos:
-		title = video[0]
+		videotitle = video[0]
 		url = video[1]
 		server = video[2]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title , url , thumbnail , plot )
+		if server=="Megavideo":
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace("(Megavideo)","").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
+		else:
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
 
 	# ------------------------------------------------------------------------------------
 
