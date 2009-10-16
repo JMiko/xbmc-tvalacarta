@@ -77,7 +77,7 @@ def list(params,url,category):
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
-		addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , "detail" )
+		xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -90,6 +90,9 @@ def list(params,url,category):
 
 def detail(params,url,category):
 	xbmc.output("[pelis24.py] detail")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -115,7 +118,7 @@ def detail(params,url,category):
 	listavideos = servertools.findvideos(data)
 	
 	for video in listavideos:
-		addvideo( video[0] , video[1] , category , video[2] )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , title +" - "+video[0], video[1], thumbnail , "" )
 	# ------------------------------------------------------------------------------------
 
 	# Label (top-right)...

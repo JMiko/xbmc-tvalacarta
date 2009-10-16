@@ -8,16 +8,20 @@ websites on mind, showing them as channels.
 Using it you can see videos published on these sites:
 
     * Cinetube
+    * Cinegratis
     * DeLaTV
+    * Divxonline
+    * e-cartelera (trailers)
     * Frozen Layer
     * MCAnime
     * Newcineonline
     * PeliculasHD
-    * PeliculasYonkis?
-    * SeriesYonkis?
+    * PeliculasYonkis
+    * SeriesYonkis
     * Pelis24
     * Pintadibujos
     * Seriesonline.us
+    * Sessionvip
     * StageVU
     * Tu.tv
     * TuMejorTV
@@ -31,6 +35,7 @@ and let you see them. It recognizes videos from:
 - StageVU
 - Tu.tv
 - Vreel
+- Movshare
 
 -----------------------------------------
 -- What is XBMC?                       --
@@ -141,8 +146,15 @@ It is placed in his tutorial for plugin development for XBMC.
 Thanks man, your plugins are a source of inspiration.
 (http://code.google.com/p/voinage-xbmc-plugins/)
 
+Shaddow solved the decryption of the Yonkis pages.
+(http://www.shaddow.es/)
+
+ErManitu added the channel Divxonline
+
 Icons come from varios sources:
 
 - Some channel icons are mine, captured and edited using Gimp.
 - Some other channel icons are from narfss
 - Some icons are from Crystal Clear Collection
+
+And finally thanks to all my blog readers, who give me ideas and support.
