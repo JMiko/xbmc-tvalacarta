@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="name" type="text" label="30000" default="kideos" enable="false" />
+    <setting type="sep" />
+    <setting id="updatecheck2" type="bool" label="30200" default="true"/>
+    <setting id="downloadpath" type="text" label="30201" default=""/>
+</settings>
