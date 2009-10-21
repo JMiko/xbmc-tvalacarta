@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Nombre:</string>
+    <string id="30001">Version:</string>
+    <string id="30100">Tengo cuenta en Totlol:</string>
+    <string id="30101">Usuario:</string>
+    <string id="30102">Contraseña:</string>
+    <string id="30200">Comprobar actualizaciones:</string>
+    <string id="30201">Directorio de descargas:</string>
+    <string id="30501">Buscar</string>
+    <string id="30504">Configuracion</string>
+    <string id="30505">Descargados</string>
+    <string id="30600">Descargar versión</string>
+    <string id="30601">Nueva versión disponible</string>
+    <string id="30602">Ya puedes descargar la nueva versión del plugin\ndesde el listado principal</string>
+    <string id="30701">Página siguiente</string>
+    <string id="30702">Accediendo al vídeo...</string>
+</strings>
