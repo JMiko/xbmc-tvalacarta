@@ -130,4 +130,9 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&uacute;','ú')
 	cadena = cadena.replace('&amp;','&')
 	cadena = cadena.replace('&iexcl;','¡')
+	cadena = cadena.replace('&iquest;','¿')
+	cadena = cadena.replace('&ordf;','ª')
 	return cadena
+
+def getRandom(str):
+	return binascii.hexlify(md5.new(str).digest())

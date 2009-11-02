@@ -3,7 +3,7 @@
 #------------------------------------------------------------
 # tvalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta
-# XBMC Plugin v2.0
+# XBMC Plugin
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
@@ -19,11 +19,12 @@ PLUGIN_NAME = "tvalacarta"
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 ROOT_DIR = os.getcwd()
 
-REMOTE_VERSION_FILE = "http://xbmc-tvalacarta.googlecode.com/files/tvalacarta-version.xml"
+REMOTE_VERSION_FILE = "http://www.mimediacenter.info/xbmc/tvalacarta/version.xml"
 LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
 REMOTE_FILE = "http://xbmc-tvalacarta.googlecode.com/files/tvalacarta-"
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "tvalacarta-" ) )
-DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+#DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
 def checkforupdates():
 	xbmc.output("[updater.py] checkforupdates")

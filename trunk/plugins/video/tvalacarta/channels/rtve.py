@@ -67,7 +67,7 @@ def videolist(params,url,category):
 
 	for match in matches:
 		# Datos
-		scrapedtitle = match[1]
+		scrapedtitle = scrapertools.entityunescape(match[1])
 		scrapedurl = urlparse.urljoin("http://www.rtve.es", match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
@@ -159,11 +159,11 @@ def anyadevideos(matches):
 		# Datos
 		patron = "Emitido:\s+([^\s]+)\s+\[\s+(\d+)\s+\:\s+(\d+)"
 		fechahora = re.compile(patron,re.DOTALL).findall(match[5])
-		scrapedtitle = match[3] + " ("+fechahora[0][0]+") (" + fechahora[0][1]+"'"+fechahora[0][2]+"s)"
+		scrapedtitle = scrapertools.entityunescape(match[3] + " ("+fechahora[0][0]+") (" + fechahora[0][1]+"'"+fechahora[0][2]+"s)")
 		scrapedurl = "http://www.rtve.es/alacarta/player/%s.xml" % match[0]
 
 		scrapedthumbnail = "http://www.rtve.es%s" % match[2]
-		scrapedplot = match[4]
+		scrapedplot = scrapertools.entityunescape(match[4])
 
 		# Depuracion
 		if (DEBUG):

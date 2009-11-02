@@ -28,7 +28,7 @@ def listchannels(params,url,category):
 	xbmc.output("[channelselector.py] listchannels")
 
 	# Verifica actualizaciones solo en el primer nivel
-	if xbmcplugin.getSetting("updatecheck") == "true":
+	if xbmcplugin.getSetting("updatecheck2") == "true":
 		xbmc.output("updatecheck=true")
 		import updater
 		updater.checkforupdates()

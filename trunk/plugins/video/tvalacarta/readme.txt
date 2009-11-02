@@ -71,12 +71,16 @@ C:\Users\jesus\AppData\Roaming\XBMC\plugins\video\
 C:\Program files\XBMC\plugins\video\
 
 XBMC Linux:
-
+~/.xbmc/plugins/video
+ 
 XBMC XBOX:
+E:\Apps\XBMC\Plugins\video
 
 XBMC Mac:
+~/Library/Application Support/XBMC/plugins/video/ 
 
 XMBC Apple TV:
+~/Library/Application Support/XBMC/plugins/video
 
 Boxee Windows:
 C:\Archivos de programa\Boxee\plugins\video

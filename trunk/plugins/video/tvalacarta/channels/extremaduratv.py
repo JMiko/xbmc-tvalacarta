@@ -150,6 +150,7 @@ def play(params,url,category):
 		url = matches[0].replace(' ','%20')
 	except:
 		url = ""
+	xbmc.output("[extremaduratv.py] play url="+url)
 	
 	# Construye un plot más completo
 	matches = re.compile("<div class=\"view-field view-data-title\">([^<]+)<",re.DOTALL).findall(data)

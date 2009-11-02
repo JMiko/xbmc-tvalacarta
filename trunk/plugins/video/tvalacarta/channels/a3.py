@@ -10,6 +10,7 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
+import xbmctools
 import scrapertools
 import binascii
 
@@ -26,10 +27,74 @@ CHANNELCODE = "a3"
 
 def mainlist(params,url,category):
 	xbmc.output("[a3.py] mainlist")
-	videolist(params,"http://www.antena3videos.com/cooliris.rss",category)
+	#videolist(params,"http://www.antena3videos.com/cooliris.rss",category)
+
+	url = "http://www.antena3videos.com/cooliris.rss"
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# Extrae las entradas (carpetas)
+	patronvideos = '<item>[^<]+<title><\!\[CDATA\[([^\]]+)\]\]></title>[^<]+<link>([^<]+)</link>[^<]+<description><\!\[CDATA\[([^\]]+)\]\]></description>[^<]+<media:thumbnail url=\'([^\']+)\'/>[^<]+<media:content type=\'([^\']+)\' url=\'([^\']+)\'/>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	encontrados = set()
+
+	for match in matches:
+		# Titulo de la serie
+		try:
+			scrapedtitle = unicode( match[0], "utf-8" ).encode("iso-8859-1")
+		except:
+			scrapedtitle = match[0]
+		xbmc.output("[a3.py] mainlist scrapedtitle="+scrapedtitle)
+		
+		patrontitulo = '(.*?)-'
+		matchestitulo = re.compile(patrontitulo,re.DOTALL).findall(scrapedtitle)
+		
+		if len(matchestitulo)>0:
+			scrapedtitle = matchestitulo[0].strip()
+
+		xbmc.output("[a3.py] mainlist scrapedtitle="+scrapedtitle)
+
+		if scrapedtitle not in encontrados:
+			xbmc.output("[a3.py] mainlist   nueva serie "+scrapedtitle)
+			encontrados.add(scrapedtitle)
+
+			# URL
+			scrapedurl = url
+			
+			# Thumbnail
+			scrapedthumbnail = urlparse.urljoin("http://www.antena3videos.com",match[3])
+			
+			scrapedplot = ""
+
+			# Depuracion
+			if (DEBUG):
+				xbmc.output("scrapedtitle="+scrapedtitle)
+				xbmc.output("scrapedurl="+scrapedurl)
+				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+			# Añade al listado de XBMC
+			xbmctools.addnewfolder( CHANNELCODE , "videolist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+			#addvideodescripcionthumbnail( scrapedtitle , scrapeddescription, scrapedthumbnail, scrapedurl , category , len(matches) )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_LABEL )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
 
 def videolist(params,url,category):
 	xbmc.output("[a3.py] videolist")
+
+	# El título es el de la serie
+	title = urllib.unquote_plus( params.get("title") )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -47,26 +112,28 @@ def videolist(params,url,category):
 		except:
 			scrapedtitle = match[0]
 
-		# URL
-		scrapedurl = urlparse.urljoin("http://www.antena3videos.com",urllib.unquote(match[5]))
-		
-		# Thumbnail
-		scrapedthumbnail = urlparse.urljoin("http://www.antena3videos.com",match[3])
-		
-		# procesa el resto
-		try:
-			scrapeddescription = unicode( match[2], "utf-8" ).encode("iso-8859-1")
-		except:
-			scrapeddescription = match[2]
+		# Sólo añade los de la serie elegida
+		if scrapedtitle.startswith(title):
+			# URL
+			scrapedurl = urlparse.urljoin("http://www.antena3videos.com",urllib.unquote(match[5]))
 			
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			# Thumbnail
+			scrapedthumbnail = urlparse.urljoin("http://www.antena3videos.com",match[3])
+			
+			# procesa el resto
+			try:
+				scrapeddescription = unicode( match[2], "utf-8" ).encode("iso-8859-1")
+			except:
+				scrapeddescription = match[2]
+				
+			# Depuracion
+			if (DEBUG):
+				xbmc.output("scrapedtitle="+scrapedtitle)
+				xbmc.output("scrapedurl="+scrapedurl)
+				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
 
-		# Añade al listado de XBMC
-		addvideodescripcionthumbnail( scrapedtitle , scrapeddescription, scrapedthumbnail, scrapedurl , category , len(matches) )
+			# Añade al listado de XBMC
+			addvideodescripcionthumbnail( scrapedtitle , scrapeddescription, scrapedthumbnail, scrapedurl , category , len(matches) )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
