@@ -68,6 +68,7 @@ def videolist(params,url,category):
 			scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
 		except:
 			scrapedtitle = match[1]
+		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
 		
 		scrapedurl = "http://www.rtve.es/mediateca/video/"+match[0]+"/pagines_ajax/pagina1.html"
 		scrapedthumbnail = ""
@@ -97,6 +98,7 @@ def videolist(params,url,category):
 			scrapedtitle = unicode( match[2] + " (" + match[3] + ")", "utf-8" ).encode("iso-8859-1")
 		except:
 			scrapedtitle = match[2] + " (" + match[3] + ")"
+		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
 
 		scrapedurl = urlparse.urljoin(url,match[0])
 
@@ -104,6 +106,7 @@ def videolist(params,url,category):
 			scrapedplot = unicode( match[2] , "utf-8" ).encode("iso-8859-1")
 		except:
 			scrapedplot = match[2]
+		scrapedplot = scrapertools.entityunescape(scrapedplot)
 
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 
@@ -165,17 +168,26 @@ def play(params,url,category):
 	dialogWait.create( 'Descargando datos del vídeo...', title )
 
 	# --------------------------------------------------------
-	# Descarga pagina detalle
+	# Descarga XML con el descriptor del vídeo
 	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	patron = 'addVariable\("file","([^"]+)"\)'
+	# Extrae el código
+	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
+	patron = 'http://.*?/([0-9]+).shtml'
+	data = url
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	try:
-		url = urlparse.urljoin(url,matches[0])
-	except:
-		url = ""
-	xbmc.output("[rtvemediateca.py] url="+url)
+	codigo = matches[0]
+	
+	# Compone la URL
+	url = 'http://www.rtve.es/swf/data/es/videos/video/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
+	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
+	
+	data = scrapertools.cachePage(url)
+	patron = '<file>(.*?)</file>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	url = matches[0]
+	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
 
 	# Playlist vacia
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )

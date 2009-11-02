@@ -29,22 +29,109 @@ CHANNELCODE = "tv3"
 def mainlist(params,url,category):
 	xbmc.output("[tv3.py] mainlist")
 
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Sèries"          , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TSERIES"      , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Actualitat"      , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TACTUALITA"   , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Esports"         , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TESPORTS"     , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Cuina"           , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TCUINA"       , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Entretenimient"  , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TENTRETENI"   , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Divulgació"      , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TDIVULGACI"   , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Juvenil"         , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TJUVENIL"     , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Infantil"        , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TINFANTIL"    , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Música"          , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TMUSICA"      , "", "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Gent TVC"        , "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TGENTTVC"     , "", "" )
+	xbmctools.addnewfolder( CHANNELCODE , "hdvideolist", CHANNELNAME , "Alta definició"  , "http://www.tv3.cat/pprogrames/hd/mhdSeccio.jsp"                , "", "" )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Sèries"          , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=series"     , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TSERIES"    )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Actualitat"      , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=actualitat" , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TACTUALITA" )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Esports"         , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=esports"    , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TESPORTS"   )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Cuina"           , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=cuina"      , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TCUINA"     )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Entretenimient"  , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=entretenim" , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TENTRETENI" )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Divulgació"      , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=divulgacio" , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TDIVULGACI" )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Juvenil"         , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=juvenil"    , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TJUVENIL"   )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist1" , CHANNELNAME , "Infantil"        , "http://www.tv3.cat/ptv3/tv3VideosSeccio.jsp?seccio=infantil"   , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TINFANTIL"  )
+	#xbmctools.addnewfolder( CHANNELCODE , "videolist"  , CHANNELNAME , "Música"          ,   , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TMUSICA"    )
+	#xbmctools.addnewfolder( CHANNELCODE , "videolist"  , CHANNELNAME , "Gent TVC"        ,   , "", "http://www.tv3.cat/searcher/tvc/searchingVideos.jsp?acat=TGENTTVC"   )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 
 	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def videolist1(params,url,category):
+	xbmc.output("[tv3.py] videolist1")
+
+	# --------------------------------------------------------
+	# Descarga la página
+	# --------------------------------------------------------
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# --------------------------------------------------------
+	# Extrae el paginador
+	# --------------------------------------------------------
+	# La URL de la siguiente página va en el campo "plot", que en estos casos está vacío
+	plot = urllib.unquote_plus( params.get("plot") )
+	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Siguiente" , plot , "" , "" )
+
+	# --------------------------------------------------------
+	# Extrae los vídeos
+	# --------------------------------------------------------
+	'''
+	<li>
+	<div class="img_p_txt_mes_a">
+
+	<div class="img_left">
+	<a href="/videos/1591929/Kromlog">
+	<img src="/multimedia/jpg/1/4/1256905876941.jpg" class="w_petita" height="80"/>
+	<img title="Play" alt="Play" src="/img/ico_play.gif" class="ico_play151"/>
+	</a>
+	</div>
+	<div class="titulars1">
+	<span class="avant">02/11/2009 - Club Super3</span>
+	<br/>
+	<h2>
+	<a href="/videos/1591929/Kromlog">Kromlog</a>
+	</h2>
+	<p>Un ser d'un altre planeta visita la casa del Super3...</p>
+	</div>
+
+	</div>
+	</li>
+	<li>
+	<div class="img_p_txt_mes_a">
+	<div class="img_left">
+	<a href="/videos/1591589/La-Claudia-i-els-peixos">
+	<img src="/multimedia/jpg/1/6/1256897450661.jpg" class="w_petita" height="80"/>
+	<img title="Play" alt="Play" src="/img/ico_play.gif" class="ico_play151"/>
+	</a>
+	</div>
+	'''
+	patron  = '<li>[^<]+'
+	patron += '<div class="img_p_txt_mes_a">[^<]+'
+	patron += '<div class="img_left">[^<]+'
+	patron += '<a href="([^"]+)">[^<]+'
+	patron += '<img src="([^"]+)"[^>]+>.*?'
+	patron += '<div class="titulars1">[^<]+<span class="avant">([^<]+)</span>[^<]+<br/>[^<]+'
+	patron += '<h2>[^<]+<a [^>]+>([^<]+)</a>[^<]+</h2>[^<]+'
+	patron += '<p>([^<]+)</p>[^<]+</div>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG:
+		scrapertools.printMatches(matches)
+
+	for match in matches:
+		fecha = match[2][0:10]
+		scrapedtitle = match[2][13:] + " - " + match[3] + " (" + fecha + ")"
+		scrapedurl = "http://www.tv3.cat%s" % match[0]
+		scrapedthumbnail = urlparse.urljoin(url,match[1])
+		scrapedplot = match[4]
+		
+		# Depuracion
+		if (DEBUG):
+			xbmc.output("scrapedtitle="+scrapedtitle)
+			xbmc.output("scrapedurl="+scrapedurl)
+			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+		# Añade al listado de XBMC
+		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -127,6 +214,67 @@ def videolist(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
+def hdvideolist(params,url,category):
+	xbmc.output("[tv3.py] hdvideolist")
+
+	# --------------------------------------------------------
+	# Descarga la página
+	# --------------------------------------------------------
+	data = scrapertools.cachePage(url)
+	#xbmc.output("[tv3.py] hdvideolist descargado")
+	data = data.replace("\\\"","")
+	#xbmc.output("[tv3.py] hdvideolist reemplazado")
+	#xbmc.output(data)
+
+	# --------------------------------------------------------
+	# Extrae los programas
+	# --------------------------------------------------------
+	#addItemToVideoList( 0, 
+	# 0 "Ana Maria Matute: \"making of\"", 
+	# 1 "1427429", 
+	# 2 "http://hd.tv3.cat/720/SAVIS_INTERNET_MATUTE_MAKIN_TV3H264_720.mp4" , 
+	# 3 "http://hd.tv3.cat/1080/SAVIS_INTERNET_MATUTE_MAKIN_TV3H264_1080.mp4" , 
+	# 4 "http://www.tv3.cat/multimedia/jpg/5/4/1253613702545.jpg", 
+	# 5 "http://www.tv3.cat/multimedia/jpg/5/4/1253613702545.jpg", 
+	# 6 "http://www.tv3.cat/multimedia/jpg/5/4/1253613702545.jpg", 
+	# 7 "\"Making of\" del capítol de Savis on s'entrevista a Ana María Matute. Enregistrat al Castell Santa Florentina." , 
+	# 8 "0:58" , 
+	# 9 " mgb.", 
+	#10 " mgb.", 
+	#11 "Savis", "http://www.tv3.cat/multimedia/gif/0/5/1250763975650.gif", "http://www.tv3.cat/multimedia/gif/2/9/1250763944192.gif", "Documental" , "http://www.tv3.cat/programa/11605" , "http://www.tv3.cat/multimedia/jpg/5/0/1253613661005.jpg" , "Web de programa", "20091019");
+	patron  = 'addItemToVideoList\([^\,]+, "([^"]+)", "([^"]+)", "([^"]+)" , "([^"]+)" , "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)" , "([^"]+)" , "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)", "([^"]+)" , "([^"]+)" , "([^"]+)" , "([^"]+)", "([^"]+)"\)\;'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG:
+		scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[11] + " - " + match[0] + " (" + match[8] + ")"
+		# 720 es el 2, 1080 es el 3
+		scrapedurl = ""
+		scrapedthumbnail = match[4]
+		scrapedplot = match[7]
+
+		# Depuracion
+		if (DEBUG):
+			xbmc.output("scrapedtitle="+scrapedtitle)
+			xbmc.output("scrapedurl="+scrapedurl)
+			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+		# Añade el video en 720p
+		scrapedurl = match[2].replace(" ","%20")
+		xbmctools.addnewvideo( CHANNELCODE , "directplay" , CHANNELNAME , "" , scrapedtitle + " (720p)" , scrapedurl , scrapedthumbnail, scrapedplot )
+		scrapedurl = match[3].replace(" ","%20")
+		xbmctools.addnewvideo( CHANNELCODE , "directplay" , CHANNELNAME , "" , scrapedtitle + " (1080p)" , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
 def play(params,url,category):
 	xbmc.output("[tv3.py] play")
 
@@ -147,20 +295,82 @@ def play(params,url,category):
 	scrapertools.printMatches(matches)
 	codigo = matches[0]
 
-	req = urllib2.Request("http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=FLV&rnd=481353")
+	# Prueba con el modo 1
+	url = geturl1(codigo)
+	if url=="":
+		url = geturl2(codigo)
+	
+	# Playlist vacia
+	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+	playlist.clear()
+
+	# Crea la entrada y la añade al playlist
+	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
+	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
+	playlist.add( url, listitem )
+
+	# Cierra dialogo
+	dialogWait.close()
+	del dialogWait
+
+	# Reproduce
+	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
+	xbmcPlayer.play(playlist)   
+
+def geturl1(codigo):
+	#http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID=1594629&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474
+	dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=FLV&rnd=481353"
+	xbmc.output("[tv3.py] geturl1 dataurl="+dataurl)
+	
+	req = urllib2.Request(dataurl)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
 	response = urllib2.urlopen(req)
 	data=response.read()
 	response.close()
-	#xbmc.output("data="+data)
+	xbmc.output("data="+data)
 
 	patron = "(rtmp://[^\?]+)\?"
 	matches = re.compile(patron,re.DOTALL).findall(data)
-
-	url = matches[0]
-	url = url.replace('rtmp://flv-500-str.tv3.cat/ondemand/g/','http://flv-500.tv3.cat/g/')
+	url = ""
+	if len(matches)>0:
+		url = matches[0]
+		url = url.replace('rtmp://flv-500-str.tv3.cat/ondemand/g/','http://flv-500.tv3.cat/g/')
 	xbmc.output("url="+url)
+	return url
+
+def geturl2(codigo):
+	#http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID=1594629&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474
+	dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474"
+	xbmc.output("[tv3.py] geturl2 dataurl="+dataurl)
 	
+	req = urllib2.Request(dataurl)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(req)
+	data=response.read()
+	response.close()
+	xbmc.output("data="+data)
+
+	patron = "(rtmp://[^\?]+)\?"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	url = ""
+	if len(matches)>0:
+		url = matches[0]
+		url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
+	xbmc.output("url="+url)
+	return url
+
+def directplay(params,url,category):
+	xbmc.output("[tv3.py] directplay")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = urllib.unquote_plus( params.get("plot") )
+	xbmc.output("[tv3.py] thumbnail="+thumbnail)
+
+	# Abre dialogo
+	dialogWait = xbmcgui.DialogProgress()
+	dialogWait.create( 'Descargando datos del vídeo...', title )
+
 	# Playlist vacia
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
 	playlist.clear()

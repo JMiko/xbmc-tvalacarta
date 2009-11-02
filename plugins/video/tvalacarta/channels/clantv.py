@@ -40,7 +40,7 @@ def mainlist(params,url,category):
 	# --------------------------------------------------------
 	# Extrae las categorias (carpetas)
 	# --------------------------------------------------------
-	patron = '<li><a rel="([^"]+)" title="[^"]+" href="([^"]+)"><strong>([^<]+)</strong><img src="([^"]+)".*?> \(([^<]+)<abbr title="V\&iacute;deos".*?</li>'
+	patron = '<li.*?><a rel="([^"]+)" title="[^"]+" href="([^"]+)"><strong>([^<]+)</strong><img src="([^"]+)".*?><span>([^<]+)</span>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -50,7 +50,7 @@ def mainlist(params,url,category):
 			scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
 		except:
 			scrapedtitle = match[2]
-		scrapedtitle = scrapedtitle + " ("+match[4]+" vídeos)"
+		scrapedtitle = scrapedtitle + " ("+match[4].replace("&iacute;","i")+")"
 		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
 		
 		#scrapedurl = "http://www.rtve.es/infantil/components/"+match[0]+"/videos/videos-1.inc"
