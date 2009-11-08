@@ -18,6 +18,13 @@ import xbmctools
 
 CHANNELNAME = "seriesyonkis"
 
+
+#xbmc.executebuiltin("Container.SetViewMode(57)")  #57=DVD Thumbs
+#xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
+#xbmc.executebuiltin("Container.SetViewMode(51)")  #51=list
+#xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
+#xbmc.executebuiltin("Container.SetViewMode(54)")  #54=wide icons
+
 # Esto permite su ejecución en modo emulado
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
@@ -30,7 +37,10 @@ DEBUG = True
 
 def mainlist(params,url,category):
 	xbmc.output("[seriesyonkis.py] mainlist")
-	
+
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
+
 	xbmctools.addnewfolder( CHANNELNAME , "lastepisodeslist" , category , "Últimos capítulos","http://www.seriesyonkis.com/ultimos-capitulos.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico"   , category , "Listado alfabético","","","")
 	xbmctools.addnewfolder( CHANNELNAME , "alltvserieslist"  , category , "Listado completo de series","http://www.seriesyonkis.com/","","")
@@ -62,6 +72,9 @@ def search(params,url,category):
 
 def searchresults(params,url,category):
 	xbmc.output("[seriesyonkis.py] searchresults")
+
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -110,6 +123,9 @@ def searchresults(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listalfabetico(params, url, category):
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
+	
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "0-9","http://www.seriesyonkis.com/lista-series/listaSeriesNumeric.php","","")
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "A","http://www.seriesyonkis.com/lista-series/listaSeriesA.php","","")
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "B","http://www.seriesyonkis.com/lista-series/listaSeriesB.php","","")
@@ -149,6 +165,8 @@ def listalfabetico(params, url, category):
 
 def listseriesthumbnails(params,url,category):
 	xbmc.output("[seriesyonkis.py] listseriesthumbnails")
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -157,16 +175,16 @@ def listseriesthumbnails(params,url,category):
 	# Extrae las entradas (carpetas)
 	#<td><center><a href='http://www.seriesyonkis.com/serie/a-camara-super-lenta/' title='A cámara súper lenta'><img src='http://images.seriesyonkis.com/images/a-camara-super-lenta.jpg' alt='A cámara súper lenta'/><br />A cámara súper lenta</a></center></td>
 	
-	patronvideos  = "<td><center><a href='([^']+)' title='([^']+)'><img src='([^']+)'.*?</td>"
+	patronvideos  = "<td><center><a title='([^']+)' href='([^']+)'><img src='([^']+)'.*?</td>"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = match[1]
+		scrapedtitle = match[0]
 
 		# URL
-		scrapedurl = match[0]
+		scrapedurl = match[1]
 		
 		# Thumbnail
 		scrapedthumbnail = match[2]
@@ -194,6 +212,8 @@ def listseriesthumbnails(params,url,category):
 
 def lastepisodeslist(params,url,category):
 	xbmc.output("[seriesyonkis.py] lastepisodeslist")
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -203,7 +223,7 @@ def lastepisodeslist(params,url,category):
 	#<div class="ficha" style="background:url(http://images.seriesyonkis.com/images/house.jpg) #000000 center top no-repeat"><a href="http://www.seriesyonkis.com/capitulo/house/capitulo-01/44647/" title="(y 6x2) Broken">House - 6x01 - (y 6x2) Broken</a><br /><br /><img src="http://images.peliculasyonkis.com/images/tmegavideo.png" alt="Megavideo" style="vertical-align: middle;" /><img height="30" src="http://images.seriesyonkis.com/images/f/spanish.png" alt="Audio Español" title="Audio Español" style="vertical-align: middle;" /></div>
 	#<div class="ficha" style="background:url(http://images.seriesyonkis.com/images/cinco-hermanos.jpg) #000000 center top no-repeat"><a href="http://www.seriesyonkis.com/capitulo/cinco-hermanos/capitulo-15/29162/" title="Capitulo 15">Cinco Hermanos - 3x15 - Capitulo 15</a><br /><br /><img src="http://images.peliculasyonkis.com/
 	
-	patronvideos  = '<div class="ficha" style="background:url\(([^\)]+)\)[^>]+><a href="([^"]+)"[^>]+>([^<]+)</a>'
+	patronvideos  = '<div class="ficha" style="background:url\(([^\)]+)\)[^>]+><a.*?href="([^"]+)".*?>([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -249,6 +269,8 @@ def allanimelist(params,url,category):
 
 def allserieslist(params,url,category,clave):
 	xbmc.output("[seriesyonkis.py] allserieslist")
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -297,6 +319,8 @@ def allserieslist(params,url,category,clave):
 
 def list(params,url,category):
 	xbmc.output("[seriesyonkis.py] list")
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -343,11 +367,7 @@ def detail(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-
-	# Descarga la página
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -366,28 +386,3 @@ def detail(params,url,category):
 
 	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot)
 	# ------------------------------------------------------------------------------------
-
-	'''
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-		
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-	'''
-
-'''
-def play(params,url,category):
-	xbmc.output("[seriesyonkis.py] play")
-
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = params["server"]
-	xbmc.output("[seriesyonkis.py] thumbnail="+thumbnail)
-	xbmc.output("[seriesyonkis.py] server="+server)
-	
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-'''

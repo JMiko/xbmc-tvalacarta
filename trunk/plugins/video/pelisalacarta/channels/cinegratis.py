@@ -32,7 +32,27 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[cinegratis.py] mainlist")
 
-	url = "http://www.cinegratis.net/index.php?module=peliculas"
+	# Añade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas"    ,"http://www.cinegratis.net/index.php?module=peliculas","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Estrenos"     ,"http://www.cinegratis.net/index.php?module=estrenos","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series"       ,"http://www.cinegratis.net/index.php?module=series","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Anime"        ,"http://www.cinegratis.net/index.php?module=anime","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales" ,"http://www.cinegratis.net/index.php?module=documentales","","")
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def listvideos(params,url,category):
+	xbmc.output("[cinegratis.py] listvideos")
+
+	if url=="":
+		url = "http://www.cinegratis.net/index.php?module=peliculas"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -54,7 +74,7 @@ def mainlist(params,url,category):
 		# Thumbnail
 		scrapedthumbnail = urlparse.urljoin(url,match[3])
 		# Argumento
-		scrapeddescription = match[1]
+		scrapedplot = match[1]
 
 		# Depuracion
 		if (DEBUG):
@@ -63,7 +83,19 @@ def mainlist(params,url,category):
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
+		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Extrae la marca de siguiente página
+	patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	if len(matches)>0:
+		scrapedtitle = "Página siguiente"
+		scrapedurl = urlparse.urljoin(url,matches[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -77,10 +109,9 @@ def mainlist(params,url,category):
 def detail(params,url,category):
 	xbmc.output("[cinegratis.py] detail")
 
-	title = params.get("title")
-	thumbnail = params.get("thumbnail")
-	xbmc.output("[cinegratis.py] title="+title)
-	xbmc.output("[cinegratis.py] thumbnail="+thumbnail)
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = urllib.unquote_plus( params.get("plot") )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -92,7 +123,10 @@ def detail(params,url,category):
 	listavideos = servertools.findvideos(data)
 
 	for video in listavideos:
-		xbmctools.addvideo( CHANNELNAME , "Megavideo - "+video[0] , video[1] , category , video[2] )
+		videotitle = video[0]
+		url = video[1]
+		server = video[2]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
 
 	# Label (top-right)...
@@ -108,13 +142,8 @@ def play(params,url,category):
 	xbmc.output("[cinegratis.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[cinegratis.py] thumbnail="+thumbnail)
-	xbmc.output("[cinegratis.py] server="+server)
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-
-#mainlist(None,"","mainlist")
-#detail(None,"http://impresionante.tv/ponyo.html","play")

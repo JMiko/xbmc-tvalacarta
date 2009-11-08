@@ -32,8 +32,20 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[sesionvip.py] mainlist")
 
-	if url=="":
-		url = "http://www.sesionvip.com/"
+	xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , "Novedades","http://www.sesionvip.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "search"  , category , "Buscar","","","")
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+		
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def newlist(params,url,category):
+	xbmc.output("[sesionvip.py] newlist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -49,11 +61,9 @@ def mainlist(params,url,category):
 	for match in matches:
 		# Titulo
 		scrapedtitle = match[1]
-		if scrapedtitle.startswith("Ver"):
-			if scrapedtitle.startswith("Ver Gratis La Pelicula "):
-				scrapedtitle = scrapedtitle[23:]
-			elif scrapedtitle.startswith("Ver Online La Pelicula "):
-				scrapedtitle = scrapedtitle[23:]
+		if not scrapedtitle.startswith("Descargar"):
+			#Elimina todos los prefijos SEO
+			scrapedtitle = xbmctools.unseo(scrapedtitle)
 			# URL
 			scrapedurl = urlparse.urljoin(url,match[0])
 			# Thumbnail
@@ -92,7 +102,7 @@ def mainlist(params,url,category):
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
+		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "newlist" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -143,6 +153,61 @@ def listmirrors(params,url,category):
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def search(params,url,category):
+	xbmc.output("[sesionvip.py] search")
+
+	keyboard = xbmc.Keyboard('')
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		tecleado = keyboard.getText()
+		if len(tecleado)>0:
+			#convert to HTML
+			tecleado = tecleado.replace(" ", "+")
+			searchUrl = "http://www.sesionvip.com/?s="+tecleado
+			searchresults(params,searchUrl,category)
+
+def searchresults(params,url,category):
+	xbmc.output("[sesionvip.py] searchresults")
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	patronvideos  = '<div class="entry">.*?'
+	patronvideos += '<a href="([^"]+)" rel="bookmark">([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Titulo
+		scrapedtitle = match[1]
+		if not scrapedtitle.startswith("Descargar"):
+			#Elimina todos los prefijos SEO
+			scrapedtitle = xbmctools.unseo(scrapedtitle)
+			# URL
+			scrapedurl = urlparse.urljoin(url,match[0])
+			# Thumbnail
+			scrapedthumbnail = ""
+			# Argumento
+			scrapedplot = ""
+
+			# Depuracion
+			if (DEBUG):
+				xbmc.output("scrapedtitle="+scrapedtitle)
+				xbmc.output("scrapedurl="+scrapedurl)
+				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+			# Añade al listado de XBMC
+			xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listmirrors" )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
 
 def play(params,url,category):
 	xbmc.output("[sesionvip.py] play")

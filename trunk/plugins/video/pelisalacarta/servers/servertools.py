@@ -13,10 +13,12 @@ import xbmcplugin
 import scrapertools
 
 import megavideo
+import megaupload
 import tutv
 import stagevu
 import vreel
 import movshare
+import veoh
 
 xbmc.output("[servertools.py] init")
 
@@ -62,6 +64,24 @@ def findvideos(data):
 	xbmc.output("1c) Megavideo sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
 	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = ""
+		if titulo == "":
+			titulo = "Vídeo en Megavideo"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("1d) Megavideo sin titulo...")
+	#http://www.megavideo.com/?v=OYGXMZBM
+	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -204,6 +224,21 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("9b) Tu.tv sin título...")
+	#<embed src="http://tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aW
+	patronvideos  = '<embed src="(http://tu.tv/[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "Vídeo en tu.tv"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'tu.tv' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	# Megavideo - Vídeos sin título
 	xbmc.output("10 ) Megavideo sin titulo...")
 	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9]{8})[^"]+"'
@@ -295,8 +330,7 @@ def findvideos(data):
 			devuelve.append( [ titulo , url , 'Stagevu' ] )
 			encontrados.add(url)
 		else:
-			logFile.info("  url duplicada="+url)
-
+			xbmc.output("  url duplicada="+url)
 
 	xbmc.output("0) Megavideo... formato d=XXXXXXX")
 	patronvideos  = '"http://www.megavideo.com/.*?\&d\=([^"]+)"'
@@ -310,7 +344,21 @@ def findvideos(data):
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			logFile.info("  url duplicada="+url)
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("0) Megaupload... formato megavideo con d=XXXXXXX")
+	patronvideos  = '"http://www.megavideo.com/\?d\=([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "Vídeo en Megavideo"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megaupload' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
 
 	xbmc.output("0) Movshare...")
 	patronvideos  = '"(http://www.movshare.net/video/[^"]+)"'
@@ -324,7 +372,26 @@ def findvideos(data):
 			devuelve.append( [ titulo , url , 'movshare' ] )
 			encontrados.add(url)
 		else:
-			logFile.info("  url duplicada="+url)
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("0) Veoh...")
+	patronvideos  = '"http://www.veoh.com/veohplayer.swf.*?permalinkId=([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "Vídeo en Veoh"
+		if match.count("&")>0:
+			primera = match.find("&")
+			url = match[:primera]
+		else:
+			url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'veoh' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
 
 	return devuelve
 
@@ -332,6 +399,9 @@ def findurl(code,server):
 	mediaurl = "ERROR"
 	if server == "Megavideo":
 		mediaurl = megavideo.Megavideo(code)
+		
+	if server == "Megaupload":
+		mediaurl = megaupload.getvideo(code)
 		
 	if server == "Wuapi":
 		mediaurl = wuapi.Wuapi(code)
@@ -348,6 +418,9 @@ def findurl(code,server):
 	if server == "movshare":
 		mediaurl = movshare.getvideo(code)
 	
+	if server == "veoh":
+		mediaurl = veoh.getvideo(code)
+	
 	if server == "Directo":
 		mediaurl = code
 	return mediaurl
@@ -357,3 +430,9 @@ def getmegavideolow(code):
 
 def getmegavideohigh(code):
 	return megavideo.gethighurl(code)
+
+def getmegauploadhigh(code):
+	return megaupload.gethighurl(code)
+
+def getmegauploadlow(code):
+	return megaupload.getlowurl(code)
