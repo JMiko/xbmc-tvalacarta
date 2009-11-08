@@ -202,8 +202,8 @@ def play(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	server = urllib.unquote_plus( params.get("server") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = params["server"]
 
 	# En tu.tv, la URL es la del detalle en el servidor
 	if server=="tu.tv":

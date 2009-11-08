@@ -112,7 +112,7 @@ def listmirrors(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 
 	# Descarga la página de detalle
 	# http://delatv.com/sorority-row/
@@ -166,8 +166,8 @@ def play(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	server = urllib.unquote_plus( params.get("server") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = params["server"]
 
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()

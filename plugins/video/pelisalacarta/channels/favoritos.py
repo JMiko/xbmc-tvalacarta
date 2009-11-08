@@ -15,7 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
-import tempfile
+import downloadtools
 
 CHANNELNAME = "favoritos"
 
@@ -39,12 +39,15 @@ def mainlist(params,url,category):
 	ficheros = os.listdir(BOOKMARK_PATH)
 	for fichero in ficheros:
 
-		# Lee el bookmark
-		titulo,thumbnail,plot,server,url = readbookmark(fichero)
+		try:
+			# Lee el bookmark
+			titulo,thumbnail,plot,server,url = readbookmark(fichero)
 
-		# Crea la entrada
-		# En la categoría va el nombre del fichero para poder borrarlo
-		xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( BOOKMARK_PATH, fichero ) , server , titulo , url , thumbnail, plot )
+			# Crea la entrada
+			# En la categoría va el nombre del fichero para poder borrarlo
+			xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( BOOKMARK_PATH, fichero ) , server , titulo , url , thumbnail, plot )
+		except:
+			pass
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -75,11 +78,30 @@ def readbookmark(filename):
 	bookmarkfile = open(filepath)
 	lines = bookmarkfile.readlines()
 
-	titulo = lines[0].strip()
-	url = lines[1].strip()
-	thumbnail = lines[2].strip()
-	server = lines[3].strip()
-	plot = lines[4].strip()
+	try:
+		titulo = urllib.unquote_plus(lines[0].strip())
+	except:
+		titulo = lines[0].strip()
+	
+	try:
+		url = urllib.unquote_plus(lines[1].strip())
+	except:
+		url = lines[1].strip()
+	
+	try:
+		thumbnail = urllib.unquote_plus(lines[2].strip())
+	except:
+		thumbnail = lines[2].strip()
+	
+	try:
+		server = urllib.unquote_plus(lines[3].strip())
+	except:
+		server = lines[3].strip()
+		
+	try:
+		plot = urllib.unquote_plus(lines[4].strip())
+	except:
+		plot = lines[4].strip()
 
 	bookmarkfile.close();
 
@@ -88,15 +110,25 @@ def readbookmark(filename):
 def savebookmark(titulo,url,thumbnail,server,plot):
 	xbmc.output("[favoritos.py] savebookmark")
 
-	bookmarkfiledescriptor,bookmarkfilepath = tempfile.mkstemp(suffix=".txt",prefix="",dir=BOOKMARK_PATH)
+	# No va bien más que en Windows
+	#bookmarkfiledescriptor,bookmarkfilepath = tempfile.mkstemp(suffix=".txt",prefix="",dir=BOOKMARK_PATH)
 	
-	xbmc.output("[favoritos.py] savebookmark bookmarkfilepath="+bookmarkfilepath)
-	bookmarkfile = os.fdopen(bookmarkfiledescriptor)
-	#open(bookmarkfilepath,"w")
-	bookmarkfile.write(titulo+'\n')
-	bookmarkfile.write(url+'\n')
-	bookmarkfile.write(thumbnail+'\n')
-	bookmarkfile.write(server+'\n')
-	bookmarkfile.write(plot+'\n')
+	filenumber=0
+	salir = False
+	while not salir:
+		filename = '%08d.txt' % filenumber
+		xbmc.output("[favoritos.py] savebookmark filename="+filename)
+		fullfilename = os.path.join(BOOKMARK_PATH,filename)
+		xbmc.output("[favoritos.py] savebookmark fullfilename="+fullfilename)
+		if not os.path.exists(fullfilename):
+			salir=True
+		filenumber = filenumber + 1
+
+	bookmarkfile = open(fullfilename,"w")
+	bookmarkfile.write(urllib.quote_plus(downloadtools.limpia_nombre_excepto_1(titulo))+'\n')
+	bookmarkfile.write(urllib.quote_plus(url)+'\n')
+	bookmarkfile.write(urllib.quote_plus(thumbnail)+'\n')
+	bookmarkfile.write(urllib.quote_plus(server)+'\n')
+	bookmarkfile.write(urllib.quote_plus(downloadtools.limpia_nombre_excepto_1(plot))+'\n')
 	bookmarkfile.flush();
 	bookmarkfile.close()

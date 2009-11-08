@@ -32,6 +32,9 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[peliculasyonkis.py] mainlist")
 
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
+
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Últimas películas","http://www.peliculasyonkis.com/ultimas-peliculas.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Listado por categorias","http://www.peliculasyonkis.com/","","")
@@ -62,6 +65,9 @@ def search(params,url,category):
 
 def searchresults(params,url,category):
 	xbmc.output("[peliculasyonkis.py] searchresults")
+
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -106,6 +112,10 @@ def searchresults(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listalfabetico(params, url, category):
+
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
+
 	xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "0-9","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasNumeric.php","","")
 	xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "A","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasA.php","","")
 	xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "B","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasB.php","","")
@@ -145,6 +155,9 @@ def listalfabetico(params, url, category):
 
 def listnovedades(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listnovedades")
+
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -192,6 +205,9 @@ def listnovedades(params,url,category):
 def listcategorias(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listcategorias")
 
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
+
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
@@ -238,6 +254,9 @@ def listcategorias(params,url,category):
 
 def listvideos(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listvideos")
+
+	if xbmcplugin.getSetting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -311,10 +330,10 @@ def listvideos(params,url,category):
 
 def detail(params,url,category):
 	xbmc.output("[peliculasyonkis.py] detail")
-	
+
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)

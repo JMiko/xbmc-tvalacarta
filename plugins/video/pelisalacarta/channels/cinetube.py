@@ -102,7 +102,7 @@ def list(params,url,category):
 	# ------------------------------------------------------
 	# Extrae las entradas
 	# ------------------------------------------------------
-	patronvideos  = '<tr>[^<]*<td(?: class="top")?>'
+	patronvideos  = '<tr>[^<]*<td.*?>'
 	patronvideos += '<img src="([^"]+)".*?'
 	patronvideos += '<a href="([^"]+)".*?>(.*?)</a>(.*?)</tr>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -122,9 +122,9 @@ def list(params,url,category):
 		if len(argumento)>0:
 			xbmc.output('argumento[0]=' + argumento[0])
 			try:
-				scrapedplot = unicode( argumento[0], "utf-8" ).encode("iso-8859-1")
+				scrapedplot = unicode( argumento[0].strip(), "utf-8" ).encode("iso-8859-1")
 			except:
-				scrapedplot = argumento[0]
+				scrapedplot = argumento[0].strip()
 
 		matchesconectores = re.compile('<img.*?alt="([^"]+)"',re.DOTALL).findall(match[3])
 		conectores = ""
@@ -312,6 +312,7 @@ def listmirrors(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	#plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	plot = urllib.unquote_plus( params.get("plot") )
 
 	# ------------------------------------------------------------------------------------
@@ -383,8 +384,8 @@ def play(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	server = urllib.unquote_plus( params.get("server") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = params["server"]
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

@@ -8,24 +8,30 @@ websites on mind, showing them as channels.
 Using it you can see videos published on these sites:
 
     * Cinetube
+    * SeriesYonkis
+    * PeliculasYonkis
+    * Divxonline (thanks to ermanitu)
     * Cinegratis
+    * Newcineonline
+    * Pelis24
+    * Veocine
+    * Seriesonline.us
+    * TuMejorTV
     * DeLaTV
-    * Divxonline
-    * e-cartelera (trailers)
+    * Pintadibujos
+    * Yotix.tv
     * Frozen Layer
     * MCAnime
-    * Newcineonline
-    * PeliculasHD
-    * PeliculasYonkis
-    * SeriesYonkis
-    * Pelis24
-    * Pintadibujos
-    * Seriesonline.us
-    * Sessionvip
     * StageVU
     * Tu.tv
-    * TuMejorTV
-    * Yotix.tv
+	* AnimeID
+    * SesionVIP
+	* PeliculasEroticas (thanks to bandavi)
+	* Descarga Cine Clásico (thanks to ermanitu)
+	* DocumaniaTV (thanks to bandavi)
+	* DocumentalesYonkis (thanks to messi86)
+	* Documentalesatonline
+	* e-cartelera trailers
 
 This sites usually publish movies and tv shows by uploading videos to an 
 external server, so the plugin locate this videos inside the html pages
@@ -36,6 +42,7 @@ and let you see them. It recognizes videos from:
 - Tu.tv
 - Vreel
 - Movshare
+- Veoh
 
 -----------------------------------------
 -- What is XBMC?                       --
@@ -82,12 +89,16 @@ C:\Users\jesus\AppData\Roaming\XBMC\plugins\video\
 C:\Program files\XBMC\plugins\video\
 
 XBMC Linux:
-
+~/.xbmc/plugins/video
+ 
 XBMC XBOX:
+E:\Apps\XBMC\Plugins\video
 
 XBMC Mac:
+~/Library/Application Support/XBMC/plugins/video/ 
 
 XMBC Apple TV:
+~/Library/Application Support/XBMC/plugins/video
 
 Boxee Windows:
 C:\Archivos de programa\Boxee\plugins\video
@@ -104,6 +115,8 @@ Boxee Mac
 Plex:
 /Librería/Application Support/Plex/plugins/video
 
+After installation go to XBMC, section "Video / Plugins" and you will see the pelisalacarta icon.
+
 ---------------------------------------
 -- Why i do this?                    --
 ---------------------------------------
@@ -114,7 +127,7 @@ I don't know if a lot of users will use it, but even if I am the only user i sti
 
 And I publish it because this never would be possible without XBMC, an incredible project totally open and free. 
 
-This way i return a fraction of what I received. 
+This way i return a fraction of what I have received. 
 
 ----------------------------------------
 -- Links                              --
@@ -149,7 +162,11 @@ Thanks man, your plugins are a source of inspiration.
 Shaddow solved the decryption of the Yonkis pages.
 (http://www.shaddow.es/)
 
-ErManitu added the channel Divxonline
+ErManitu added the channels "Divxonline" and "Descarga Cine Clásico"
+
+Bandavi added the channels "PeliculasEroticas" and "DocumaniaTV"
+
+Messi86 from the telebision.com forum made the DocumentalesYonkis plugin, which i converted to a pelisalacarta channel.
 
 Icons come from varios sources:
 
@@ -157,4 +174,4 @@ Icons come from varios sources:
 - Some other channel icons are from narfss
 - Some icons are from Crystal Clear Collection
 
-And finally thanks to all my blog readers, who give me ideas and support.
+And finally thanks to all my blog readers, who give me lot of ideas and support.

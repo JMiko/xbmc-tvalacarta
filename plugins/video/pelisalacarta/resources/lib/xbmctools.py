@@ -22,7 +22,7 @@ except:
 	pluginhandle = ""
 
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
-import xbmc
+DEBUG = True
  
 def get_system_platform():
 	""" fonction: pour recuperer la platform que xbmc tourne """
@@ -44,6 +44,7 @@ def addnewfolder( canal , accion , category , title , url , thumbnail , plot ):
 	except:
 		xbmc.output('[xbmctools.py] addnewfolder(<unicode>)')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
+	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
@@ -73,7 +74,7 @@ def addvideo( canal , nombre , url , category , server ):
 	xbmc.output('[xbmctools.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
-	itemurl = '%s?channel=%s&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , canal , category , urllib.quote_plus(url) , server )
+	itemurl = '%s?channel=%s&action=play&category=%s&url=%s&server=%s&title=%s' % ( sys.argv[ 0 ] , canal , category , urllib.quote_plus(url) , server , urllib.quote_plus( nombre ) )
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def playvideo(canal,server,url,category,title,thumbnail,plot):
@@ -85,9 +86,13 @@ def playvideo2(canal,server,url,category,title,thumbnail,plot):
 def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 	
 	xbmc.output("[xbmctools.py] playvideo")
+	xbmc.output("[xbmctools.py] playvideo canal="+canal)
+	xbmc.output("[xbmctools.py] playvideo server="+server)
+	xbmc.output("[xbmctools.py] playvideo url="+url)
+	xbmc.output("[xbmctools.py] playvideo category="+category)
 
 	# Abre el diálogo de selección
-	if server=="Megavideo" and xbmcplugin.getSetting("megavideopremium")=="true":
+	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
 		opciones = []
 		opciones.append("Ver en calidad alta (Megavideo)")
 		opciones.append("Ver en calidad baja (Megavideo)")
@@ -104,16 +109,28 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 		if seleccion==-1:
 			return
 		if seleccion==0:
-			mediaurl = servertools.getmegavideohigh(url)
+			if server=="Megaupload":
+				mediaurl = servertools.getmegauploadhigh(url)
+			else:
+				mediaurl = servertools.getmegavideohigh(url)
 		elif seleccion==1:
 			#advertencia = xbmcgui.Dialog()
 			#resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Aunque tengas una cuenta Premium el límite sigue existiendo' , 'cuando ves los vídeos en calidad baja')
-			mediaurl = servertools.getmegavideolow(url)
+			if server=="Megaupload":
+				mediaurl = servertools.getmegauploadlow(url)
+			else:
+				mediaurl = servertools.getmegavideolow(url)
 		elif seleccion==2:
 			if xbmcplugin.getSetting("megavideopremium")=="false":
-				mediaurl = servertools.getmegavideolow(url)
+				if server=="Megaupload":
+					mediaurl = servertools.getmegauploadlow(url)
+				else:
+					mediaurl = servertools.getmegavideolow(url)
 			else:
-				mediaurl = servertools.getmegavideohigh(url)
+				if server=="Megaupload":
+					mediaurl = servertools.getmegauploadhigh(url)
+				else:
+					mediaurl = servertools.getmegavideohigh(url)
 			downloadtools.downloadtitle(mediaurl,title)
 			return
 		elif seleccion==3:
@@ -123,6 +140,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
 			else:
+				keyboard = xbmc.Keyboard(title)
+				keyboard.doModal()
+				if (keyboard.isConfirmed()):
+					title = keyboard.getText()
 				favoritos.savebookmark(title,url,thumbnail,server,plot)
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
@@ -159,12 +180,20 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
 			else:
+				keyboard = xbmc.Keyboard(title)
+				keyboard.doModal()
+				if (keyboard.isConfirmed()):
+					title = keyboard.getText()
 				favoritos.savebookmark(title,url,thumbnail,server,plot)
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
 			return
 
 	xbmc.output("[xbmctools.py] mediaurl="+mediaurl)
+	
+	if mediaurl=="":
+		alertnodisponibleserver(server)
+		return
 	
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
@@ -196,4 +225,21 @@ def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
 
 def alertnodisponible():
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('No se ha encontrado el vídeo' , 'El vídeo ya no está disponible en la página,' , 'o no se ha podido localizar el enlace')
+	resultado = advertencia.ok('Vídeo no disponible' , 'El vídeo ya no está disponible en la página,' , 'o no se ha podido localizar el enlace')
+
+def alertnodisponibleserver(server):
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('Vídeo borrado' , 'El vídeo ya no está en '+server , 'Prueba con otro distinto')
+
+def unseo(cadena):
+	if cadena.upper().startswith("VER GRATIS LA PELICULA "):
+		cadena = cadena[23:]
+	elif cadena.upper().startswith("VER GRATIS PELICULA "):
+		cadena = cadena[20:]
+	elif cadena.upper().startswith("VER ONLINE LA PELICULA "):
+		cadena = cadena[23:]
+	elif cadena.upper().startswith("VER GRATIS "):
+		cadena = cadena[11:]
+	elif cadena.upper().startswith("VER ONLINE "):
+		cadena = cadena[11:]
+	return cadena

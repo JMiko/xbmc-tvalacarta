@@ -24,7 +24,7 @@ print "Cookiefile="+COOKIEFILE
 #Python Video Decryption and resolving routines.
 #Courtesy of Voinage, Coolblaze.
 
-DEBUG = False
+DEBUG = True
 
 #Megavideo - Coolblaze # Part 1 put this below VIDEOLINKS function. Ctrl & C after highlighting.
 
