@@ -537,4 +537,10 @@ def getDownloadPath():
 			xbmcplugin.setSetting("downloadpath",downloadpath)
 	except:
 		pass
+
+	try:
+		os.mkdir(downloadpath)
+	except:
+		pass
+
 	return downloadpath
