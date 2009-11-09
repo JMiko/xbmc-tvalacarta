@@ -31,7 +31,7 @@ xbmc.output("[divxonline.py] init")
 DEBUG = False
 Generate = False # poner a true para generar listas de peliculas
 Notas = False # indica si hay que añadir la nota a las películas
-LoadThumbs = True # indica si deben cargarse los carteles de las películas; en MacOSX cuelga a veces el XBMC
+LoadThumbs = False # indica si deben cargarse los carteles de las películas; en MacOSX cuelga a veces el XBMC
 
 def mainlist(params,url,category):
 	xbmc.output("[divxonline.py] mainlist")
@@ -110,6 +110,25 @@ def veoh(params,url,category):
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+
+def stepinto (url, data, pattern): # expand a page adding "next page" links given pattern
+	# Obtiene el trozo donde están los links a todas las páginas de la categoría
+	match = re.search(pattern,data)
+	trozo = match.group(1)
+	#xbmc.output(trozo)
+
+	# carga todas las paginas juntas para luego extraer las urls
+	patronpaginas = '<a href="([^"]+)"'
+	matches = re.compile(patronpaginas,re.DOTALL).findall(trozo)
+	#scrapertools.printMatches(matches)
+	res = ''
+	for match in matches:
+		urlpage = urlparse.urljoin(url,match)
+		#xbmc.output(match)
+		#xbmc.output(urlpage)
+		res += scrapertools.cachePage(urlpage)
+	return res
 
 
 def pelisporletra(params,url,category):
@@ -208,13 +227,25 @@ def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabé
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
+	# carga N páginas
+	N = 10
+	match = re.search('(.*?)(\d+?)(\.html)',url)
+	xbmc.output("url="+url)
+	pag = int(match.group(2))
+	
+	for i in range(pag+1,pag+N):
+		newurl = match.group(1) + str(i) + match.group(3)
+		data += scrapertools.cachePage(newurl)
+
+	nexturl = match.group(1) + str(pag+N) + match.group(3)
+
 	# Extrae las entradas
 	patronvideos  = '<td class="contenido"><img src="(.*?)"' # cartel
 	patronvideos += '.*?alt="(.*?)"' # título
 	patronvideos += '.*?<a href="(.*?)"' # url
 		
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+#	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
@@ -247,12 +278,7 @@ def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabé
 
 
 	# añade siguiente página
-	match = re.search('(.*?)(\d+?)(\.html)',url)
-	xbmc.output("url="+url)
-	pag = match.group(2)
-	newpag = match.group(1) + str(int(pag)+1) + match.group(3)
-	xbmc.output("newpag="+newpag)
-	xbmctools.addnewfolder( CHANNELNAME , "pelisconfichaB" , CHANNELNAME , "Siguiente" , newpag , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "pelisconfichaB" , CHANNELNAME , "Siguiente" , nexturl , "", "" )
 	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -260,7 +286,6 @@ def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabé
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-		
 
 def movielist(params,url,category): # pelis sin ficha (en listados por género)
 	xbmc.output("[divxonline.py] movielist")
@@ -269,21 +294,7 @@ def movielist(params,url,category): # pelis sin ficha (en listados por género)
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
-	# Obtiene el trozo donde están los links a todas las páginas de la categoría
-	match0 = re.search('Ver página:(.*?)</p>',data)
-	trozo = match0.group(1)
-	#xbmc.output(trozo)
-
-	# carga todas las paginas juntas para luego extraer las urls
-	patronpaginas = '<a href="([^"]+)"'
-	matches = re.compile(patronpaginas,re.DOTALL).findall(trozo)
-	#scrapertools.printMatches(matches)
-	data = ''
-	for match in matches:
-		urlpage = urlparse.urljoin(url,match)
-		#xbmc.output(match)
-		#xbmc.output(urlpage)
-		data += scrapertools.cachePage(urlpage)
+	data = stepinto(url,data,'Ver página:(.*?)</p>')
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<li><a href="([^"]+)">(.*?)</a>'
@@ -337,6 +348,7 @@ def movielist(params,url,category): # pelis sin ficha (en listados por género)
 
 	if (Generate):
 		f.close()
+	
 
 def detail(params,url,category):
 	xbmc.output("[divxonline.py] detail")
@@ -348,12 +360,10 @@ def detail(params,url,category):
 
 	# url del frame con los videos
 	data2 = scrapertools.cachePage(url) # descarga pagina de reproduccion
-	match = re.search('</p><iframe src="(.*?)"',data2) # el link esta dentro de un iframe
-	url = match.group(1)
-	#xbmc.output(url)
+	match = re.search('<iframe src="(.*?)"',data2) # el link esta dentro de un iframe
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.cachePage(urlparse.urljoin(url,match.group(1)))
 	#xbmc.output(data)
 
 	# ------------------------------------------------------------------------------------

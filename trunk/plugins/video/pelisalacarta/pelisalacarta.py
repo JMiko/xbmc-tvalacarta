@@ -46,7 +46,6 @@ def run():
 			category = ""
 	xbmc.output("[pelisalacarta.py] category="+category)
 
-
 	# Accion por defecto - elegir canal
 	if ( action=="selectchannel" ):
 		import channelselector as plugin
