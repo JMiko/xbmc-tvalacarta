@@ -372,9 +372,7 @@ def downloadtitle(url,title):
 		nombrefichero = keyboard.getText()
 	
 	xbmc.log("[downloadtools.py] downloadtitle: nombrefichero=%s" % nombrefichero)
-	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.log("[downloadtools.py] downloadtitle: downloadpath=%s" % downloadpath)
-	fullpath = os.path.join( downloadpath , nombrefichero )
+	fullpath = os.path.join( getDownloadPath() , nombrefichero )
 	xbmc.log("[downloadtools.py] downloadtitle: fullpath=%s" % fullpath)
 	downloadfile(url,fullpath)
 
@@ -396,7 +394,7 @@ def downloadtitle2(url,title):
 	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero[:4])
 
 	# Intenta crear el fichero, y va sustituyendo caracteres inválidos hasta que lo consigue
-	downloadpath = xbmcplugin.getSetting("downloadpath")
+	downloadpath = getDownloadPath()
 	fullpath = ""
 	try:
 		fullpath = os.path.join( downloadpath , nombrefichero )
@@ -436,7 +434,7 @@ def downloadfile(url,nombrefichero):
 	xbmc.output("[downloadtools.py] downloadfile: url="+url)
 	
 	# Ese es el fichero local
-	rutalocal = os.path.join( xbmcplugin.getSetting("downloadpath") , nombrefichero )
+	rutalocal = os.path.join( getDownloadPath() , nombrefichero )
 	#xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
 
 	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , rutalocal )
@@ -497,7 +495,7 @@ def downloadfile2(url,nombrefichero):
 	#xbmc.output("[downloadtools.py] nombretemporal="+nombretemporal)
 	
 	# Ese es el fichero local
-	rutalocal = os.path.join( xbmcplugin.getSetting("downloadpath") , nombrefichero )
+	rutalocal = os.path.join( getDownloadPath() , nombrefichero )
 	#xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
 
 	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , rutalocal )
@@ -528,3 +526,15 @@ def download_callback(count, blocksize, totalsize):
 	progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( float( float(count * blocksize) / float(1024*1024) ) , float( float(totalsize) / float(1024*1024)) , percent ) )
 	if progreso.iscanceled():
 		raise KeyboardInterrupt
+
+def getDownloadPath():
+	downloadpath = xbmcplugin.getSetting("downloadpath")
+	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	try:
+		if downloadpath=="":
+			downloadpath = xbmc.translatePath( "special://home/downloads")
+			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+			xbmcplugin.setSetting("downloadpath",downloadpath)
+	except:
+		pass
+	return downloadpath
