@@ -92,6 +92,9 @@ def mainlist(params,url,category):
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
 
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 
@@ -134,8 +137,8 @@ def play(params,url,category):
 	xbmc.output("[documentalesatonline.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	thumbnail = "" #urllib.unquote_plus( params.get("thumbnail") )
+	plot = "" #unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
