@@ -99,6 +99,9 @@ def mainlist(params,url,category):
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 
@@ -126,7 +129,8 @@ def play(params,url,category):
 	# ------------------------------------------------------
 	# Extrae las películas
 	# ------------------------------------------------------
-	patron  = "s1\.addParam\('flashvars'\,'file\=([^\&]+)\&"
+	patron  = "so\.addVariable\('file','([^']+)'\)"
+	#patron  = "s1\.addParam\('flashvars'\,'file\=([^\&]+)\&"
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
