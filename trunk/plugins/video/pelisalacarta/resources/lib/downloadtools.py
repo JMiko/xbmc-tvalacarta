@@ -19,6 +19,7 @@ import cachedhttp
 import binascii
 import md5
 import xbmctools
+import httplib
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -321,6 +322,42 @@ entitydefs3 = {
     u'æ':       u'ae'
 }
 
+def getDownloadPath():
+	downloadpath = xbmcplugin.getSetting("downloadpath")
+	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	try:
+		if downloadpath=="":
+			downloadpath = xbmc.translatePath( "special://home/downloads")
+			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+			xbmcplugin.setSetting("downloadpath",downloadpath)
+	except:
+		pass
+
+	try:
+		os.mkdir(downloadpath)
+	except:
+		pass
+
+	return downloadpath
+
+def getDownloadListPath():
+	downloadpath = xbmcplugin.getSetting("downloadlistpath")
+	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	try:
+		if downloadpath=="":
+			downloadpath = xbmc.translatePath( "special://home/downloads/list")
+			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+			xbmcplugin.setSetting("downloadlistpath",downloadpath)
+	except:
+		pass
+
+	try:
+		os.mkdir(downloadpath)
+	except:
+		pass
+
+	return downloadpath
+
 def limpia_nombre_caracteres_especiales(s):
     if not s:
         return ''
@@ -338,11 +375,53 @@ def limpia_nombre_sin_acentos(s):
     return s;
 
 def limpia_nombre_excepto_1(s):
-    if not s:
-        return ''
-    validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
-    stripped = ''.join(c for c in s if c in validchars)
-    return stripped;
+	if not s:
+		return ''
+
+	# Titulo de entrada
+	try:
+		xbmc.output("s1="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s1=no printable")
+
+	# Convierte a unicode
+	try:
+		s = unicode( s, "utf-8" )
+	except:
+		xbmc.output("no es utf-8")
+		try:
+			s = unicode( s, "iso-8859-1" )
+		except:
+			xbmc.output("no es iso-8859-1")
+			pass
+	try:
+		xbmc.output("s2="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s2=no printable")
+
+	# Elimina acentos
+	s = limpia_nombre_sin_acentos(s)
+	try:
+		xbmc.output("s3="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s3=no printable")	
+
+	# Elimina caracteres prohibidos
+	validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+	stripped = ''.join(c for c in s if c in validchars)
+	try:
+		xbmc.output("s4="+urllib.quote_plus(stripped))
+	except:
+		xbmc.output("s4=no printable")
+	
+	# Convierte a iso
+	s = stripped.encode("iso-8859-1")
+	try:
+		xbmc.output("s5="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s5=no printable")
+
+	return s;
 
 def limpia_nombre_excepto_2(s):
     if not s:
@@ -364,183 +443,88 @@ def downloadtitle(url,title):
 	plataforma = xbmctools.get_system_platform();
 	xbmc.output("[downloadtools.py] downloadtitle: plataforma="+plataforma)
 	
-	nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+	nombrefichero = title + url[-4:]
 	
+	'''
 	keyboard = xbmc.Keyboard(nombrefichero)
 	keyboard.doModal()
 	if (keyboard.isConfirmed()):
 		nombrefichero = keyboard.getText()
+	'''
 	
 	xbmc.log("[downloadtools.py] downloadtitle: nombrefichero=%s" % nombrefichero)
 	fullpath = os.path.join( getDownloadPath() , nombrefichero )
 	xbmc.log("[downloadtools.py] downloadtitle: fullpath=%s" % fullpath)
-	downloadfile(url,fullpath)
-
-def downloadtitle2(url,title):
-	# Imprime en el log lo que va a descartar
-	xbmc.output("[downloadtools.py] downloadtitle: url="+url )
-	#xbmc.output("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
-	plataforma = xbmctools.get_system_platform();
-	xbmc.output("[downloadtools.py] downloadtitle: plataforma="+plataforma)
-
-	# Saca el nombre del fichero del título, y la extension de la URL
-	nombrefichero = limpia_nombre_caracteres_especiales(title)
-	#if plataforma=="xbox":
-	nombrefichero = nombrefichero[:8] + url[-4:]
-	#else:
-	#	nombrefichero = nombrefichero + url[-4:]
-	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero)
-	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero[:8])
-	xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero[:4])
-
-	# Intenta crear el fichero, y va sustituyendo caracteres inválidos hasta que lo consigue
-	downloadpath = getDownloadPath()
-	fullpath = ""
-	try:
-		fullpath = os.path.join( downloadpath , nombrefichero )
-		testfile = open( fullpath, "wb")
-		testfile.close()
-		os.remove(fullpath)
-		xbmc.output("[downloadtools.py] downloadtitle: ok 1")
-	except:
-		try:
-			fullpath = os.path.join( downloadpath , limpia_nombre_sin_acentos(nombrefichero) )
-			testfile = open( fullpath, "wb")
-			testfile.close()
-			os.remove(fullpath)
-			xbmc.output("[downloadtools.py] downloadtitle: ok 2")
-		except:
-			try:
-				fullpath = os.path.join( downloadpath , limpia_nombre_excepto_1(nombrefichero) )
-				testfile = open( fullpath, "wb")
-				testfile.close()
-				os.remove(fullpath)
-				xbmc.output("[downloadtools.py] downloadtitle: ok 3")
-			except:
-				try:
-					fullpath = os.path.join( downloadpath , limpia_nombre_excepto_2(nombrefichero) )
-					testfile = open( fullpath, "wb")
-					testfile.close()
-					os.remove(fullpath)
-					xbmc.output("[downloadtools.py] downloadtitle: ok 4")
-				except:
-					xbmc.output("[downloadtools.py] downloadtitle: ERROR no se ha podido crear el fichero")
-
-	#xbmc.output("[downloadtools.py] downloadtitle: nombrefichero="+nombrefichero)
-
-	downloadfile(url,fullpath)
+	return downloadfile(url,fullpath)
 
 def downloadfile(url,nombrefichero):
 	xbmc.output("[downloadtools.py] downloadfile: url="+url)
-	
-	# Ese es el fichero local
-	rutalocal = os.path.join( getDownloadPath() , nombrefichero )
-	#xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
+	xbmc.output("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+	# antes
+	#f=open(nombrefichero,"wb")
+	nombrefichero = xbmc.makeLegalFilename(nombrefichero)
+	xbmc.output("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
 
-	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , rutalocal )
+	# despues
+	if os.path.exists(nombrefichero):
+		f = open(nombrefichero, 'r+b')
+		existSize = os.path.getsize(nombrefichero)
+		xbmc.output("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
+		grabado = existSize
+		f.seek(existSize)
+	else:
+		existSize = 0
+		xbmc.output("[downloadtools.py] downloadfile: el fichero no existe")
+		f = open(nombrefichero, 'wb')
+		grabado = 0
+
+	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
 	socket.setdefaulttimeout(10)
-	
+
 	h=urllib2.HTTPHandler(debuglevel=0)
 	request = urllib2.Request(url)
+	if existSize > 0:
+		request.add_header('Range', 'bytes=%d-' % (existSize, ))
 
-	'''
-	#request.add_header('Host','www.canalplus.fr')
-	request.add_header('Referer', 'http://www.canalplus.fr/flash/loader/loader_canalplus_V0_1.swf')
-	request.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9) Gecko/2008052906 Firefox/3.0')
-	request.add_header('Accept','text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
-	request.add_header('Accept-Language','fr,fr-fr;q=0.8,en-us;q=0.5,en;q=0.3')
-	request.add_header('Accept-Charset','ISO-8859-1,utf-8;q=0.7,*;q=0.7')
-	#request.add_header('Accept-Encoding','gzip,deflate')
-	request.add_header('Keep-Alive','300')
-	request.add_header('Connection','keep-alive')
-	#request.add_header('Content-type','application/x-www-form-urlencoded')
-	#request.add_header('Content-length',len(urllib.urlencode(params)))
-	'''
 	opener = urllib2.build_opener(h)
 	urllib2.install_opener(opener)
 	connexion = opener.open(request)
-	taille = int(connexion.headers["Content-Length"])
-	xbmc.log("Content-Length=%s" % taille)
-	f=open(nombrefichero,"wb")
-	ultimo = 0
+	totalfichero = int(connexion.headers["Content-Length"])
+	if existSize > 0:
+		totalfichero = totalfichero + existSize
+
+	xbmc.log("Content-Length=%s" % totalfichero)
+
 	blocksize = 100*1024
-	for i in range(1,taille,blocksize):
-		ultimo = i
-		f.write(connexion.read(blocksize))
+
+	bloqueleido = connexion.read(blocksize)
+	xbmc.log("bloqueleido=%s" % len(bloqueleido))
+	
+	while len(bloqueleido)>0:
 		try:
-			percent = int(i*100/taille)
-			totalmb = float(float(taille)/(1024*1024))
-			descargadosmb = float(float(i)/(1024*1024))
+			f.write(bloqueleido)
+			grabado = grabado + len(bloqueleido)
+			percent = int(float(grabado)*100/float(totalfichero))
+			totalmb = float(float(totalfichero)/(1024*1024))
+			descargadosmb = float(float(grabado)/(1024*1024))
 			progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent ) )
+			bloqueleido = connexion.read(blocksize)
+			#xbmc.log("bloqueleido=%s" % len(bloqueleido))
+			
 			if progreso.iscanceled():
 				f.close()
 				return -1
 		except:
-			xbmc.log(xbmc.output(sys.exc_info()[0],xbmc.LOGERROR))
+			for line in sys.exc_info():
+				xbmc.output( "%s" % line , xbmc.LOGERROR )
+			f.close()
+			
+			#advertencia = xbmcgui.Dialog()
+			#resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
+			
+			return -2
 
-	# Acaba
-	bloque = connexion.read(taille - ultimo)
-	f.write(bloque)
-	#f.write(connexion.read(int(connexion.headers["Content-Length"])))
-	# open(filename,"wb").write(connexion.read(int(connexion.headers["Content-Length"])))
 	f.close()
-
-def downloadfile2(url,nombrefichero):
-	#xbmc.output("[downloadtools.py] downloadfile: url="+url+", nombrefichero="+nombrefichero)
-	
-	# Crea un fichero temporal que no de problemas
-	#nombretemporal = binascii.hexlify(md5.new(url).digest()) + ".dnl"
-	#xbmc.output("[downloadtools.py] nombretemporal="+nombretemporal)
-	
-	# Ese es el fichero local
-	rutalocal = os.path.join( getDownloadPath() , nombrefichero )
-	#xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-
-	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , rutalocal )
-
-	try:
-		#socket.setdefaulttimeout(10)
-		urllib.urlretrieve(url, rutalocal, download_callback)
-	except KeyboardInterrupt:
-		xbmc.output("Interrumpida por el usuario")
-
-	progreso.close()
-
-def download(url):
-	xbmc.output("[downloadtools.py] download: url="+url)
-
-	# Saca el fichero de la URL
-	nombrefichero =  urllib.unquote_plus( url.split("/")[-1] )
-	xbmc.output("[downloadtools.py] download: nombrefichero="+nombrefichero)
-
-	downloadfile(url,nombrefichero)
-
-def download_callback(count, blocksize, totalsize):
-	#print "count=",count
-	#print "blocksize=",blocksize
-	#print "totalsize=",totalsize
-	percent = int( float(count * blocksize * 100) / totalsize)
-	#print "percent=",percent
-	progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( float( float(count * blocksize) / float(1024*1024) ) , float( float(totalsize) / float(1024*1024)) , percent ) )
-	if progreso.iscanceled():
-		raise KeyboardInterrupt
-
-def getDownloadPath():
-	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-	try:
-		if downloadpath=="":
-			downloadpath = xbmc.translatePath( "special://home/downloads")
-			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-			xbmcplugin.setSetting("downloadpath",downloadpath)
-	except:
-		pass
-
-	try:
-		os.mkdir(downloadpath)
-	except:
-		pass
-
-	return downloadpath

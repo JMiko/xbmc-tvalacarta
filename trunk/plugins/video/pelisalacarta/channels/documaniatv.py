@@ -551,7 +551,7 @@ def detail(params,url,category):
         #       titulo = title.replace("%28"," ")
         #       titulo = titulo.replace("%29"," ")
         #	xbmctools.addvideo( CHANNELNAME , video[0], video[1] , category ,         #plot )
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title.strip().replace("(Megavideo)","").replace("+"," ") +" - "+video[0]  , video[1] ,thumbnail, plot )
+                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title.strip().replace("(Megavideo)","").replace("+"," ") +" "+video[0]  , video[1] ,thumbnail, plot )
        # xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , match[1] , match[0] , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
        #  ---- Extrae los videos directos ----- 
@@ -568,7 +568,7 @@ def detail(params,url,category):
        #  --- Extrae los videos de veoh  ----
         patronvideos = 'var embed_code[^>]+>   <param name="movie" value="http://www.veoh.com/static/swf/webplayer/WebPlayer.swf.*?permalinkId=(.*?)&player=videodetailsembedded&videoAutoPlay=0&id=anonymous"></param>'
         servidor = "Veoh"
-        extraevideos(patronvideos,data,category,title+" - Video en Veoh no funciona de momento",thumbnail,plot,servidor)
+        extraevideos(patronvideos,data,category,title+" [Veoh]",thumbnail,plot,servidor)
        # ---------------------------------------
 
 
@@ -578,7 +578,7 @@ def detail(params,url,category):
        #  --- Extrae los videos de google  ----
         patronvideos = '<embed id="VideoPlayback" src="http://video.google.com/googleplayer.swf.*?docid=(.*?)&hl=en&'
         servidor = "Google"
-        extraevideos(patronvideos,data,category,title+" - Video en google",thumbnail,plot,servidor)
+        extraevideos(patronvideos,data,category,title+" [Google]",thumbnail,plot,servidor)
        # --------------------------------------- 
 
 	# Label (top-right)...
@@ -604,14 +604,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
 		   xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, matches[0] , thumbnail , plot )
 
               elif servidor == "Veoh":
-                   veohurl = "http://www.flashvideodownloader.org/download.php?u=http://www.veoh.com/browse/videos/category/entertainment/watch/"+matches[0]
-                   xbmc.output(" veohurl = " +veohurl) 
-                   veohdata = scrapertools.cachePage(veohurl)
-                   newpatron = '><a href="(.*?)" title="Click to Download"><font color=red>'
-                   newmatches = re.compile(newpatron,re.DOTALL).findall(veohdata)
-                   if len(newmatches)>0:
-                     xbmc.output(" newmatches = "+newmatches[0])
-                     xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, newmatches[0] , thumbnail , plot )
+                   xbmctools.addnewvideo( CHANNELNAME , "play" , category , "veoh" , title, matches[0] , thumbnail , plot )
 
               elif servidor == "Google":
                    url = "http://www.flashvideodownloader.org/download.php?u=http://video.google.com/videoplay?docid="+matches[0]

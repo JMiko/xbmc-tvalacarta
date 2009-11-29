@@ -14,6 +14,7 @@ import servertools
 import downloadtools
 import os
 import favoritos
+import descargadoslist
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -78,12 +79,15 @@ def addvideo( canal , nombre , url , category , server ):
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def playvideo(canal,server,url,category,title,thumbnail,plot):
-	playvideoEx(canal,server,url,category,title,thumbnail,plot,False)
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False)
 
 def playvideo2(canal,server,url,category,title,thumbnail,plot):
-	playvideoEx(canal,server,url,category,title,thumbnail,plot,True)
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,True,False)
 
-def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
+def playvideo3(canal,server,url,category,title,thumbnail,plot):
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,True)
+
+def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados):
 	
 	xbmc.output("[xbmctools.py] playvideo")
 	xbmc.output("[xbmctools.py] playvideo canal="+canal)
@@ -94,13 +98,17 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 	# Abre el diálogo de selección
 	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
 		opciones = []
-		opciones.append("Ver en calidad alta (Megavideo)")
-		opciones.append("Ver en calidad baja (Megavideo)")
+		opciones.append("Ver en calidad alta [Megavideo]")
+		opciones.append("Ver en calidad baja [Megavideo]")
 		opciones.append("Descargar")
 		if desdefavoritos:
 			opciones.append("Quitar de favoritos")
 		else:
 			opciones.append("Añadir a favoritos")
+		if desdedescargados:
+			opciones.append("Quitar de lista de descargas")
+		else:
+			opciones.append("Añadir a lista de descargas")
 
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
@@ -140,7 +148,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
 			else:
-				keyboard = xbmc.Keyboard(title)
+				keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
 				keyboard.doModal()
 				if (keyboard.isConfirmed()):
 					title = keyboard.getText()
@@ -148,15 +156,34 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
 			return
+		elif seleccion==4:
+			if desdedescargados:
+				# La categoría es el nombre del fichero en favoritos
+				os.remove(urllib.unquote_plus( category ))
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Vídeo quitado de lista de descargas' , title , 'Se ha quitado de lista de descargas')
+			else:
+				keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+				keyboard.doModal()
+				if (keyboard.isConfirmed()):
+					title = keyboard.getText()
+				descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Nuevo vídeo en lista de descargas' , title , 'se ha añadido a la lista de descargas')
+			return
 
 	else:
 		opciones = []
-		opciones.append("Ver")
+		opciones.append("Ver ["+server+"]")
 		opciones.append("Descargar")
 		if desdefavoritos:
 			opciones.append("Quitar de favoritos")
 		else:
 			opciones.append("Añadir a favoritos")
+		if desdedescargados:
+			opciones.append("Quitar de lista de descargas")
+		else:
+			opciones.append("Añadir a lista de descargas")
 	
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
@@ -180,13 +207,28 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos):
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
 			else:
-				keyboard = xbmc.Keyboard(title)
+				keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
 				keyboard.doModal()
 				if (keyboard.isConfirmed()):
 					title = keyboard.getText()
 				favoritos.savebookmark(title,url,thumbnail,server,plot)
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
+			return
+		elif seleccion==3:
+			if desdedescargados:
+				# La categoría es el nombre del fichero en favoritos
+				os.remove(urllib.unquote_plus( category ))
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Vídeo quitado de lista de descargas' , title , 'Se ha quitado de lista de descargas')
+			else:
+				keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+				keyboard.doModal()
+				if (keyboard.isConfirmed()):
+					title = keyboard.getText()
+				descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Nuevo vídeo en lista de descargas' , title , 'se ha añadido a la lista de descargas')
 			return
 
 	xbmc.output("[xbmctools.py] mediaurl="+mediaurl)

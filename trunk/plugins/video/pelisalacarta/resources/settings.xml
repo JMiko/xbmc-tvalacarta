@@ -9,5 +9,6 @@
     <!--setting id="megavideocookie" type="text" label="30103" default=""/-->
     <setting id="updatecheck2" type="bool" label="30200" default="true"/>
     <setting id="downloadpath" type="text" label="30201" default=""/>
+    <setting id="downloadlistpath" type="text" label="30203" default=""/>
     <setting id="forceview" type="bool" label="30202" default="false"/>
 </settings>

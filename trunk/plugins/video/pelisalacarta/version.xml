@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>pelisalacarta</name>
-	<tag>2.8.1</tag>
-	<date>08/11/2009</date>
-	<changes>25 canales y conector con Veoh</changes>
+	<tag>2.9</tag>
+	<date>29/11/2009</date>
+	<changes>Lista de descargas y Megaupload</changes>
 </version>

@@ -32,8 +32,8 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[animeid.py] mainlist")
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://animeid.com/" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Todos" , "http://animeid.com/" , "", "" )
-	#xbmctools.addnewvideo( CHANNELNAME , "playdirecto" , category , "Directo" , "Directo" , "rtmp://flashmedia.indiana.edu/live/goltv/mm" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://animeid.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "catlist" , CHANNELNAME , "Listado por categorias" , "http://animeid.com/" , "", "" )
 	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -44,15 +44,52 @@ def mainlist(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def fulllist(params,url,category):
-	url = "http://animeid.com/"
+def catlist(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	#<li><a href="anime/ga-rei-zero.html"><span>Ga-rei Zero</span></a></li>
+	patronvideos  = '<li><a href="([^"]+)"><span>([^<]+)</span></a></li>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Titulo
+		scrapedtitle = match[1]
+		# URL
+		scrapedurl = urlparse.urljoin(url,match[0])
+		# Thumbnail
+		scrapedthumbnail = ""
+		# Argumento
+		scrapeddescription = ""
+
+		# Depuracion
+		if (DEBUG):
+			xbmc.output("scrapedtitle="+scrapedtitle)
+			xbmc.output("scrapedurl="+scrapedurl)
+			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+		# Añade al listado de XBMC
+		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "newlist" )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def fulllist(params,url,category):
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# Extrae las entradas (carpetas)
 	patronvideos  = '<li><a href="([^"]+)"><span>([^<]+)</span></a></li>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
@@ -86,14 +123,13 @@ def fulllist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def newlist(params,url,category):
-	url = "http://animeid.com/"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<div class="item">.*?<a href="([^"]+)" ><img src="([^"]+)".*?<div class="cover boxcaption">[^<]+<h1>([^<]+)</h1>'
+	patronvideos  = '<div class="item">.*?<a href="([^"]+)"[^<]+<img src="([^"]+)".*?<div class="cover boxcaption">[^<]+<h1>([^<]+)</h1>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -134,9 +170,17 @@ def detail(params,url,category):
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
+	
+	# Extrae el argumento
+	patronvideos = '<div class="contenido">.*<p>([^<]+)<'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	plot = ""
+	if len(matches)>0:
+		plot=matches[0]
 
 	# Extrae las entradas (capítulos)
-	patronvideos = '<a href="([^"]+)" target="_blank">([^<]+)</a>'
+	patronvideos = '<a href="([^"]+)".*?target="_blank">([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -146,9 +190,9 @@ def detail(params,url,category):
 		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
 		# Thumbnail
-		scrapedthumbnail = ""
+		scrapedthumbnail = thumbnail
 		# Argumento
-		scrapedplot = ""
+		scrapedplot = plot
 
 		# Depuracion
 		if (DEBUG):

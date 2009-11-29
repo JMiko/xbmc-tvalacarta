@@ -23,8 +23,11 @@ REMOTE_VERSION_FILE = "http://www.mimediacenter.info/xbmc/pelisalacarta/version.
 LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
 REMOTE_FILE = "http://xbmc-tvalacarta.googlecode.com/files/pelisalacarta-"
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "pelisalacarta-" ) )
-#DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
-DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
+
+try:
+	DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+except:
+	DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
 def checkforupdates():
 	xbmc.output("[updater.py] checkforupdates")

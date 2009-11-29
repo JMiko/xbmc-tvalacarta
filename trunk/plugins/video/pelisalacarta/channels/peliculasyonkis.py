@@ -164,7 +164,8 @@ def listnovedades(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<td align=\'center\'><center><span style=\'font-size: 0.7em\'><a href="([^"]+)" title="([^"]+)"><img.*?src=\'([^\']+)\'[^>]+>.*?<img src="(http://images.peliculasyonkis.com/images/[^"]+)"'
+	patronvideos  = '<td align=\'center\'><center><span style=\'font-size: 0.7em\'><a href="([^"]+)" title="([^"]+)">'
+	patronvideos += '<img.*?src=\'([^\']+)\'[^>]+>.*?<img src="(http://simages.peliculasyonkis.com/images/[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -290,7 +291,7 @@ def listvideos(params,url,category):
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<li>[^<]+<a href="([^"]+)" title="([^"]+)"><img.*?src="([^"]+)"[^>]+>.*?<span[^>]+>(.*?)<img.*?src="([^"])+"'
+	patronvideos  = '<li>[^<]+<a href="([^"]+)" title="([^"]+)"><img.*?src="([^"]+)"[^>]+>.*?<span[^>]+>(.*?)</span>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -308,7 +309,29 @@ def listvideos(params,url,category):
 		scrapedthumbnail = match[2]
 		
 		# procesa el resto
-		scrapedplot = match[3]
+		try:
+			scrapedplot = unicode( match[3], "utf-8" ).encode("iso-8859-1")
+		except:
+			scrapedplot = match[3]
+		
+		scrapedplot = scrapedplot.replace("\r"," ")
+		scrapedplot = scrapedplot.replace("\n"," ")
+		scrapedplot = scrapedplot.replace("&quot;","'")
+		scrapedplot = scrapedplot.replace("<br />","|")
+		patronhtml = re.compile( '<img[^>]+>' )
+		scrapedplot = patronhtml.sub( "", scrapedplot )
+		patronhtml = re.compile( 'Uploader:[^\|]+\|' )
+		scrapedplot = patronhtml.sub( "", scrapedplot )
+		patronhtml = re.compile( 'Idioma:[^\|]+\|' )
+		scrapedplot = patronhtml.sub( "", scrapedplot )
+		patronhtml = re.compile( 'Tiene descarga directa:[^\|]+\|' )
+		scrapedplot = patronhtml.sub( "", scrapedplot )
+		patronhtml = re.compile( '\W*\|\W*' )
+		scrapedplot = patronhtml.sub( "|", scrapedplot )
+		patronhtml = re.compile( '\|Descripci.n:' )
+		scrapedplot = patronhtml.sub( "\n\n", scrapedplot )
+		
+		scrapedplot = scrapedplot.replace("|b>Servidor:</b|","")
 
 		# Depuracion
 		if (DEBUG):
