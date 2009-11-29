@@ -35,7 +35,7 @@ def findvideos(data):
 	for match in matches:
 		titulo = match[0].strip()
 		if titulo == "":
-			titulo = "Vídeo en Megavideo"
+			titulo = "[Megavideo]"
 		url = match[1]
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -52,7 +52,7 @@ def findvideos(data):
 	for match in matches:
 		titulo = match[1].strip()
 		if titulo == "":
-			titulo = "Vídeo en Megavideo"
+			titulo = "[Megavideo]"
 		url = match[0]
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -70,7 +70,7 @@ def findvideos(data):
 	for match in matches:
 		titulo = ""
 		if titulo == "":
-			titulo = "Vídeo en Megavideo"
+			titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -88,11 +88,29 @@ def findvideos(data):
 	for match in matches:
 		titulo = ""
 		if titulo == "":
-			titulo = "Vídeo en Megavideo"
+			titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("1d) Megaupload sin titulo...")
+	#http://www.megavideo.com/?v=OYGXMZBM
+	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9]{8})'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = ""
+		if titulo == "":
+			titulo = "[Megaupload]"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 		else:
 			xbmc.output("  url duplicada="+url)
@@ -103,7 +121,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Megavideo"
+		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -120,7 +138,7 @@ def findvideos(data):
 	for match in matches:
 		titulo = match[0].strip()
 		if titulo == "":
-			titulo = "Vídeo en Vreel"
+			titulo = "[Vreel]"
 		url = match[1]
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -137,7 +155,7 @@ def findvideos(data):
 	for match in matches:
 		titulo = match[0].strip()
 		if titulo == "":
-			titulo = "Vídeo en Vreel"
+			titulo = "[Vreel]"
 		url = match[1]
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -184,7 +202,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Stagevu"
+		titulo = "[Stagevu]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -199,7 +217,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en tu.tv"
+		titulo = "[tu.tv]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -215,7 +233,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en tu.tv"
+		titulo = "[tu.tv]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -230,7 +248,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en tu.tv"
+		titulo = "[tu.tv]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -245,7 +263,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Megavideo"
+		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -260,7 +278,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Megavideo"
+		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -292,7 +310,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Vreel"
+		titulo = "[Vreel]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -309,7 +327,7 @@ def findvideos(data):
 	for match in matches:
 		titulo = match[1].strip()
 		if titulo == "":
-			titulo = "Vídeo en Megavideo"
+			titulo = "[Megavideo]"
 		url = match[0]
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -323,7 +341,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
-		titulo = "Vídeo en Stagevu"
+		titulo = "[Stagevu]"
 		url = "http://stagevu.com/video/"+match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -337,7 +355,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
-		titulo = "Vídeo en Megavideo"
+		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -351,7 +369,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Megavideo"
+		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -365,7 +383,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
-		titulo = "Vídeo en Movshare"
+		titulo = "[Movshare]"
 		url = match
 		if url not in encontrados:
 			xbmc.output("  url="+url)
@@ -379,7 +397,7 @@ def findvideos(data):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		titulo = "Vídeo en Veoh"
+		titulo = "[Veoh]"
 		if match.count("&")>0:
 			primera = match.find("&")
 			url = match[:primera]

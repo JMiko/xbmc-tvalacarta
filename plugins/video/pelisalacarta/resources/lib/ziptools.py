@@ -33,8 +33,8 @@ class ziptools:
 					pass
 				outfilename = os.path.join(dir, name)
 				xbmc.output("outfilename=%s" % outfilename)
-				outfile = open(outfilename, 'wb')
 				try:
+					outfile = open(outfilename, 'wb')
 					outfile.write(zf.read(name))
 				except:
 					xbmc.output("Error en fichero "+name)

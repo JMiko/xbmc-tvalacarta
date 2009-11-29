@@ -34,13 +34,20 @@ def mainlist(params,url,category):
 
 	downloadpath = xbmcplugin.getSetting("downloadpath")
 	xbmc.output("[descargados.py] downloadpath="+downloadpath)
-	
+
+	xbmctools.addnewfolder( "descargadoslist" , "mainlist"  , category , "Descargas pendientes","","","")
+	xbmctools.addnewfolder( "descargadoslist" , "errorlist"  , category , "Descargas con error","","","")
+
 	# Añade al listado de XBMC
-	ficheros = os.listdir(downloadpath)
-	for fichero in ficheros:
-		url = os.path.join( downloadpath , fichero )
-		listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
-		xbmcplugin.addDirectoryItem( handle = pluginhandle, url = url, listitem=listitem, isFolder=False)
+	try:
+		ficheros = os.listdir(downloadpath)
+		for fichero in ficheros:
+			if fichero!="lista" and fichero!="error":
+				url = os.path.join( downloadpath , fichero )
+				listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
+				xbmcplugin.addDirectoryItem( handle = pluginhandle, url = url, listitem=listitem, isFolder=False)
+	except:
+		pass
 	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )

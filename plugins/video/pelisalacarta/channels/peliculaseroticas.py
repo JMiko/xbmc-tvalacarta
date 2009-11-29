@@ -32,19 +32,20 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[peliculaseroticas.py] mainlist")
 
-	url = "http://www.peliculaseroticas.net/"
+	if url=="":
+		url = "http://www.peliculaseroticas.net/"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = "<a href='([^']+)'.*?src='([^']+)'.*?<span class='caption'>(.*?)<"
+	patronvideos  = '<div class="polaroid"[^<]+<a href="([^"]+)"><img src="([^"]+)"[^<]+</a>([^<]+)<'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-        c = 1
+
 	for match in matches:
-              if c == 8 : 
+	
 		# Titulo
 		try:
 			scrapedtitle = unicode( match[2] , "utf-8" ).encode("iso-8859-1")
@@ -55,8 +56,7 @@ def mainlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		
 		# Thumbnail
-		scrapedthumbnail = match[1]
-		imagen = match[1]
+		scrapedthumbnail = match[1].strip()
 		# procesa el resto
 		scrapeddescription = ""
 
@@ -68,7 +68,34 @@ def mainlist(params,url,category):
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
-              else: c = c + 1
+	
+	# Extrae página siguiente
+	patronvideos  = "<a class='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Entradas antiguas'>"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+	
+		# Titulo
+		scrapedtitle = "(Página siguiente)"
+
+		# URL
+		scrapedurl = match
+		
+		# Thumbnail
+		scrapedthumbnail = ""
+		# procesa el resto
+		scrapeddescription = ""
+
+		# Depuracion
+		if (DEBUG):
+			xbmc.output("scrapedtitle="+scrapedtitle)
+			xbmc.output("scrapedurl="+scrapedurl)
+			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+
+		# Añade al listado de XBMC
+		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
+	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 

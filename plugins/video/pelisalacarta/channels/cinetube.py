@@ -182,7 +182,7 @@ def listtodas(params,url,category):
 	# ------------------------------------------------------
 	# Extrae las entradas
 	# ------------------------------------------------------
-	patronvideos  = '<tr>[^<]*<td height="35" align="center">'
+	patronvideos  = '<tr[^>]*>[^<]*<td height="35" align="center">'
 	patronvideos += '<a href="([^"]+)".*?>(.*?)</a>(.*?)</tr>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)

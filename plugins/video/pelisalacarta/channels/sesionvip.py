@@ -51,23 +51,40 @@ def newlist(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
+	'''
+	<div class="entry"><!-- Entry -->
+	<h3 class="post-title">
+	<a href="http://www.sesionvip.com/ver-online-millennium-2-la-chica-que-sonaba-con-una-cerilla-y-un-bidon-de-gasolina-en-alta-calidad" rel="bookmark">ver online millennium 2 La Chica Que Soñaba Con Una Cerilla Y Un Bidón De Gasolina en alta calidad</a>
+	</h3>
+	<p style="text-align: center;">YA DISPONIBLE &#8211; CALIDAD TS-SCREENER ALTO</p>
+	<p style="text-align: center;"><img class="aligncenter size-medium wp-image-9125" title="peliculas online" src="http://www.sesionvip.com/wp-content/uploads/2009/08/1843318212-222x300.jpg" alt="peliculas online" width="222" height="300" /></p>
+	<p style="text-align: left;"> <a href="http://www.sesionvip.com/ver-online-millennium-2-la-chica-que-sonaba-con-una-cerilla-y-un-bidon-de-gasolina-en-alta-calidad#more-9124" class="more-link">PULSA AQUI PARA <strong>Ver la pelicula online</strong></a></p>
+	<div id="postmeta" class="postmetabox">
+	Categoria: <a href="http://www.sesionvip.com/category/estrenos-online" title="Ver todas las entradas en Estrenos Online" rel="category tag">Estrenos Online</a>												<br/><a href="http://www.sesionvip.com/ver-online-millennium-2-la-chica-que-sonaba-con-una-cerilla-y-un-bidon-de-gasolina-en-alta-calidad#comments" title="Comentarios en ver online millennium 2 La Chica Que Soñaba Con Una Cerilla Y Un Bidón De Gasolina en alta calidad"><strong>Comments (3)</strong></a>
+	</div>
+	</div><!--/entry-->
+	'''
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<div class="entry">.*?'
-	patronvideos += '<a href="([^"]+)" rel="bookmark">([^<]+)</a>.*?'
-	patronvideos += '<img.*?src="([^"]+)".*?'
+	
+	patronvideos  = '<div class="entry"><!-- Entry -->(.*?)<!--/entry-->'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-
 	for match in matches:
+		xbmc.output("match="+match)
+		nuevopatron = '<a href="([^"]+)" rel="bookmark">([^<]+)</a>'#<img.*?src="([^"]+)"'
+		nuevomatches = re.compile(nuevopatron,re.DOTALL).findall(match)
+		xbmc.output("len(nuevomatches)=%d" % len(nuevomatches))
+		scrapertools.printMatches(nuevomatches)
+
 		# Titulo
-		scrapedtitle = match[1]
+		scrapedtitle = nuevomatches[0][1]
 		if not scrapedtitle.startswith("Descargar"):
 			#Elimina todos los prefijos SEO
 			scrapedtitle = xbmctools.unseo(scrapedtitle)
 			# URL
-			scrapedurl = urlparse.urljoin(url,match[0])
+			scrapedurl = urlparse.urljoin(url,nuevomatches[0][0])
 			# Thumbnail
-			scrapedthumbnail = urlparse.urljoin(url,match[2])
+			scrapedthumbnail = ""#urlparse.urljoin(url,nuevomatches[2])
 			# Argumento
 			scrapedplot = ""
 
@@ -121,6 +138,7 @@ def listmirrors(params,url,category):
 	xbmc.output("[sesionvip.py] title="+title)
 	xbmc.output("[sesionvip.py] thumbnail="+thumbnail)
 
+	'''
 	# Descarga la página y extrae el enlace a la siguiente pagina
 	data = scrapertools.cachePage(url)
 	patronvideos  = '<p style="text-align: center;">.*?<a href\="(http\://www.sesionvip.com/[^"]+)"'
@@ -134,6 +152,7 @@ def listmirrors(params,url,category):
 
 	# Descarga la siguiente página y extrae el enlace a los mirrors
 	url = matches[0]
+	'''
 	data = scrapertools.cachePage(url)
 
 	# ------------------------------------------------------------------------------------

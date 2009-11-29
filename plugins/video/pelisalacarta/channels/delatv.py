@@ -141,16 +141,25 @@ def listmirrors(params,url,category):
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title + " (" + etiquetaservidor + ")" , match[0] , thumbnail , plot )
 
 	# Extrae los enlaces a los vídeos (Directo)
-	patron = '<a href="(http://delatv.com/playlist[^"]+)"><font color="white">([^<]+)</font></a>'
+	patron = '<a href="http://delatv.com/playlist/([^\/]+)/'
+	#patron = '<a href="(http://delatv.com/playlist[^"]+)"><font color="white">([^<]+)</font></a>'
 	#patronvideos  = '<tr>[^<]+'
 	#patronvideos += '<td[^>]+><h2>([^<]+)</h2></td>[^<]+'
 	#patronvideos += '<td[^>]+><a href="([^"]+)"><span class="flashflv"></span>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)		
-
-	for match in matches:
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " (" + match[1] + ")" , match[0] , thumbnail , plot )
+	scrapertools.printMatches(matches)
+	
+	if len(matches)>0:
+		url = "http://www.delatv.com/xml/"+matches[0]+".xml"
+		data = scrapertools.cachePage(url)
+		#xbmc.output(data)
+		patron = '<media\:content url="([^"]+)"'
+		matches = re.compile(patron,re.DOTALL).findall(data)
+		scrapertools.printMatches(matches)
+		
+		for match in matches:
+			# Añade al listado de XBMC
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]" , match , thumbnail , plot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -192,18 +201,6 @@ def play(params,url,category):
 		data = scrapertools.cachePage(url)
 		xbmc.output("data="+data)
 		patron = '<embed src="http\:\/\/wwwstatic.megavideo.com/mv_player.swf\?v\=([^\&]+)&'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		if len(matches)>0:
-			url = matches[0]
-	elif server=="Directo":
-		patron = "http\:\/\/delatv\.com\/playlist\/([^\/]+)\/"
-		matches = re.compile(patron,re.DOTALL).findall(url)
-		if len(matches)>0:
-			url = "http://www.delatv.com/xml/"+matches[0]+".xml"
-		xbmc.output("url="+url)
-		data = scrapertools.cachePage(url)
-		xbmc.output("data="+data)
-		patron = '<media\:content url\="([^"]+)"'
 		matches = re.compile(patron,re.DOTALL).findall(data)
 		if len(matches)>0:
 			url = matches[0]

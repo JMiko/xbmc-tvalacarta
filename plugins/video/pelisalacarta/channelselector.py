@@ -48,7 +48,7 @@ def listchannels(params,url,category):
 	addfolder("tumejortv.com","tumejortv","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
 	#addfolder("Wuapi","wuapisite","mainlist")
-	addfolder("Pintadibujos","pintadibujos","mainlist")
+	#addfolder("Pintadibujos","pintadibujos","mainlist")
 	addfolder("Yotix.tv","yotix","mainlist")
 	addfolder("Frozen Layer","frozenlayer","mainlist")
 	addfolder("MCAnime","mcanime","mainlist")
@@ -63,7 +63,7 @@ def listchannels(params,url,category):
 	addfolder("Documentalesatonline","documentalesatonline","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Configuracion","configuracion","mainlist")
-	addfolder("Descargados","descargados","mainlist")
+	addfolder("Descargas","descargados","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
 
 	# Label (top-right)...
