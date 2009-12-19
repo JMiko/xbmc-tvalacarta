@@ -354,6 +354,21 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	# Megavideo - Vídeos con título
+	xbmc.output("14b) Megavideo con titulo...")
+	patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9]{8})" />'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	for match in matches:
+		titulo = "[Megavideo]"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	xbmc.output("0) Stagevu...")
 	patronvideos  = '"http://stagevu.com.*?uid\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
