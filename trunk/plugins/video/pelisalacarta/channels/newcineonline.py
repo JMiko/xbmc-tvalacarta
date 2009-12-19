@@ -135,7 +135,7 @@ def detail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title + " - Video en Megavideo" , matches[0], thumbnail , "" )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title + " - [Megavideo]" , matches[0], thumbnail , "" )
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos

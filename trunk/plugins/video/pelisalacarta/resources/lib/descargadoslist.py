@@ -61,6 +61,9 @@ def mainlist(params,url,category):
 			xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( DOWNLOAD_PATH, fichero ) , server , titulo , url , thumbnail, plot )
 		except:
 			pass
+			xbmc.output("[downloadall.py] error al leer bookmark")
+			for line in sys.exc_info():
+				xbmc.output( "%s" % line , xbmc.LOGERROR )
 
 	xbmctools.addnewvideo( CHANNELNAME , "downloadall" , "category" , "server" , "(Empezar la descarga de la lista)" , "" , os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png"), "" )
 
@@ -110,15 +113,20 @@ def errorlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def downloadall(params,url,category):
-	xbmc.output("[downloadall.py] mainlist")
+	xbmc.output("[downloadall.py] downloadall")
+
+	xbmc.output("[downloadall.py] DOWNLOAD_PATH=%s" % DOWNLOAD_PATH)
+
+	lista = os.listdir(DOWNLOAD_PATH)
+
+	xbmc.output("[downloadall.py] numero de ficheros=%d" % len(lista))
 
 	# Crea un listado con las entradas de favoritos
-	while len(os.listdir(DOWNLOAD_PATH))>0:
+	for fichero in lista:
 		# El primer video de la lista
-		fichero = os.listdir(DOWNLOAD_PATH)[0]
-		if fichero!="error":
-			xbmc.output("[downloadall.py] fichero="+fichero)
+		xbmc.output("[downloadall.py] fichero="+fichero)
 
+		if fichero!="error":
 			# Descarga el vídeo
 			try:
 				# Lee el bookmark
@@ -134,11 +142,58 @@ def downloadall(params,url,category):
 				else:
 					mediaurl = servertools.findurl(url,server)
 				xbmc.output("[downloadall.py] mediaurl="+mediaurl)
-			
+				
+				# Genera el NFO
+				nfofilepath = downloadtools.getfilefromtitle("sample.nfo",titulo)
+				outfile = open(nfofilepath,"w")
+				outfile.write("<movie>\n")
+				outfile.write("<title>"+titulo+")</title>\n")
+				outfile.write("<originaltitle></originaltitle>\n")
+				outfile.write("<rating>0.000000</rating>\n")
+				outfile.write("<year>2009</year>\n")
+				outfile.write("<top250>0</top250>\n")
+				outfile.write("<votes>0</votes>\n")
+				outfile.write("<outline></outline>\n")
+				outfile.write("<plot>"+plot+"</plot>\n")
+				outfile.write("<tagline></tagline>\n")
+				outfile.write("<runtime></runtime>\n")
+				outfile.write("<thumb></thumb>\n")
+				outfile.write("<mpaa>Not available</mpaa>\n")
+				outfile.write("<playcount>0</playcount>\n")
+				outfile.write("<watched>false</watched>\n")
+				outfile.write("<id>tt0432337</id>\n")
+				outfile.write("<filenameandpath></filenameandpath>\n")
+				outfile.write("<trailer></trailer>\n")
+				outfile.write("<genre></genre>\n")
+				outfile.write("<credits></credits>\n")
+				outfile.write("<director></director>\n")
+				outfile.write("<actor>\n")
+				outfile.write("<name></name>\n")
+				outfile.write("<role></role>\n")
+				outfile.write("</actor>\n")
+				outfile.write("</movie>")
+				outfile.flush()
+				outfile.close()
+				xbmc.output("[downloadall.py] Creado fichero NFO")
+				
+				# Descarga el thumbnail
+				xbmc.output("[downloadall.py] thumbnail="+thumbnail)
+				thumbnailfile = downloadtools.getfilefromtitle(thumbnail,titulo)
+				thumbnailfile = thumbnailfile[:-4] + ".tbn"
+				xbmc.output("[downloadall.py] thumbnailfile="+thumbnailfile)
+				try:
+					downloadtools.downloadfile(thumbnail,thumbnailfile)
+					xbmc.output("[downloadall.py] Thumbnail descargado")
+				except:
+					xbmc.output("[downloadall.py] error al descargar thumbnail")
+					for line in sys.exc_info():
+						xbmc.output( "%s" % line , xbmc.LOGERROR )
+				
+				# Descarga el video
 				dev = downloadtools.downloadtitle(mediaurl,titulo)
 				if dev == -1:
 					# El usuario ha cancelado la descarga
-					xbmc.output("[downloadall.py] cancelando descarga")
+					xbmc.output("[downloadall.py] Descarga cancelada")
 					return
 				elif dev == -2:
 					# Error en la descarga, lo mueve a ERROR y continua con el siguiente
@@ -147,9 +202,11 @@ def downloadall(params,url,category):
 					destino = os.path.join( ERROR_PATH , fichero )
 					shutil.move( origen , destino )
 				else:
+					xbmc.output("[downloadall.py] Video descargado")
 					# Borra el bookmark e itera para obtener el siguiente video
 					filepath = os.path.join( DOWNLOAD_PATH , fichero )
 					os.remove(filepath)
+					xbmc.output("[downloadall.py] "+fichero+" borrado")
 			except:
 				xbmc.output("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
 				origen = os.path.join( DOWNLOAD_PATH , fichero )
@@ -183,32 +240,45 @@ def readbookmark(filename):
 	# Lee el fichero de configuracion
 	xbmc.output("[descargadoslist.py] filepath="+filepath)
 	bookmarkfile = open(filepath)
-	lines = bookmarkfile.readlines()
 
 	try:
-		titulo = urllib.unquote_plus(lines[0].strip())
-	except:
-		titulo = lines[0].strip()
+		lines = bookmarkfile.readlines()
+
+		xbmc.output("[descargadoslist.py] numero lines=%d" % len(lines))
+		try:
+			titulo = urllib.unquote_plus(lines[0].strip())
+		except:
+			titulo = lines[0].strip()
 	
-	try:
-		url = urllib.unquote_plus(lines[1].strip())
-	except:
-		url = lines[1].strip()
+		try:
+			url = urllib.unquote_plus(lines[1].strip())
+		except:
+			url = lines[1].strip()
 	
-	try:
-		thumbnail = urllib.unquote_plus(lines[2].strip())
-	except:
-		thumbnail = lines[2].strip()
+		try:
+			thumbnail = urllib.unquote_plus(lines[2].strip())
+		except:
+			thumbnail = lines[2].strip()
 	
-	try:
-		server = urllib.unquote_plus(lines[3].strip())
+		if len(lines)>3:
+			try:
+				server = urllib.unquote_plus(lines[3].strip())
+			except:
+				server = lines[3].strip()
+		else:
+			server=""
+
+		if len(lines)>4:
+			try:
+				plot = urllib.unquote_plus(lines[4].strip())
+			except:
+				plot = lines[4].strip()
+		else:
+			plot=""
 	except:
-		server = lines[3].strip()
-		
-	try:
-		plot = urllib.unquote_plus(lines[4].strip())
-	except:
-		plot = lines[4].strip()
+		xbmc.output("[descargadoslist.py] Error inesperado al leer el bookmark")
+		for line in sys.exc_info():
+			xbmc.output( "%s" % line , xbmc.LOGERROR )
 
 	bookmarkfile.close();
 

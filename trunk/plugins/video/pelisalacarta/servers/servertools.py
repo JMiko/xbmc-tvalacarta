@@ -115,6 +115,24 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("13) Megaupload sin titulo...")
+	#http://www.megaupload.com/?s=tumejortv&confirmed=1&d=6FQOWHTI
+	patronvideos  = 'http\:\/\/www.megaupload.com/.*?d\=([A-Z0-9]{8})'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = ""
+		if titulo == "":
+			titulo = "[Megaupload]"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megaupload' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	# Megavideo - Vídeos sin título
 	xbmc.output("2) Megavideo sin titulo...")
 	patronvideos  = '<param name="movie" value="http://wwwstatic.megavideo.com/mv_player.swf\?v=([^"]+)">'
