@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import downloadtools
 
 CHANNELNAME = "configuracion"
 
@@ -31,4 +32,9 @@ DEBUG = True
 
 def mainlist(params,url,category):
 	xbmc.output("[configuracion.py] mainlist")
+	
+	# Verifica ruta de descargas
+	downloadpath = downloadtools.getDownloadPath()
+	downloadlistpath = downloadtools.getDownloadListPath()
+	
 	xbmcplugin.openSettings( sys.argv[ 0 ] )

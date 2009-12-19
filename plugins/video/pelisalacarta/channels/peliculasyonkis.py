@@ -39,6 +39,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Últimas películas","http://www.peliculasyonkis.com/ultimas-peliculas.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Listado por categorias","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico" , category , "Listado alfabético","http://www.peliculasyonkis.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , category , "Buscar","","","")
 
 	# Label (top-right)...
@@ -252,6 +253,40 @@ def listcategorias(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
+def buscaporanyo(params,url,category):
+	xbmc.output("[peliculasyonkis.py] buscaporanyo")
+
+	anyoactual = 2010
+	anyoinic   = 1977
+	opciones = []
+	for i in range(34):
+		opciones.append(str(anyoactual))
+		anyoactual = anyoactual - 1           
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("Listar desde el Año: ", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion == -1 :return
+	if seleccion == 0:
+		url = "http://www.peliculasyonkis.com/estreno/"+opciones[seleccion]+"/"+opciones[seleccion]+"/0/"
+		listvideos(params,url,category)
+		return
+
+	anyoactual = 2010
+	desde      = opciones[seleccion]
+	rangonuevo = seleccion + 1
+	opciones2 = []
+	for j in range(rangonuevo):
+		opciones2.append(str(anyoactual))
+		anyoactual = anyoactual - 1
+	dia2 = xbmcgui.Dialog()
+	seleccion2 = dia2.select("Listar hasta el año:",opciones2)
+	if seleccion == -1 :
+		url = "http://www.peliculasyonkis.com/estreno/"+desde+"/"+desde+"/0/"
+		listvideos(params,url,category)
+		return
+	url = "http://www.peliculasyonkis.com/estreno/"+desde+"/"+opciones2[seleccion2]+"/0/"
+	listvideos(params,url,category)
+	return
 
 def listvideos(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listvideos")

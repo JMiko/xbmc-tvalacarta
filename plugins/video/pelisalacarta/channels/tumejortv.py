@@ -96,9 +96,9 @@ def newlist(params,url,category):
 	if DEBUG:
 		scrapertools.printMatches(matches)
 
-	for match in matches:
-		scrapedtitle = "Pagina siguiente"
-		scrapedurl = match
+	if len(matches)>0:
+		scrapedtitle = "!Pagina siguiente"
+		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapeddescription = ""
 
@@ -164,9 +164,9 @@ def shortlist(params,url,category):
 	if DEBUG:
 		scrapertools.printMatches(matches)
 
-	for match in matches:
-		scrapedtitle = "Pagina siguiente"
-		scrapedurl = match
+	if len(matches)>0:
+		scrapedtitle = "!Pagina siguiente"
+		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
@@ -231,9 +231,9 @@ def shortlistserie(params,url,category):
 	if DEBUG:
 		scrapertools.printMatches(matches)
 
-	for match in matches:
+	if len(matches)>0:
 		scrapedtitle = "Pagina siguiente"
-		scrapedurl = match
+		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
@@ -269,8 +269,8 @@ def moviecategorylist(params,url,category):
 	# ------------------------------------------------------
 	# Extrae las películas
 	# ------------------------------------------------------
-	#<li class="cat-item cat-item-94"><a href="http://www.tumejortv.com/peliculas-online-es/accion" title="Ver todos los videos de Acción">Acción</a></li>
-	patron  = '<li class="cat-item[^<]+<a href="(http\:\/\/www\.tumejortv\.com\/peliculas\-online\-es\/[^"]+)"[^>]+>([^<]+)</a></li>'
+	#<li class="cat-item cat-item-94"><a href="http://www.tumejortv.com/peliculas-online-es/accion" title="Ver todas las entradas de Acción">Acción</a>
+	patron  = '<li class="cat-item[^<]+<a href="(http\:\/\/www\.tumejortv\.com\/peliculas\-online\-es\/[^"]+)"[^>]+>([^<]+)</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -492,6 +492,11 @@ def detail(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
+	patron = '<div id="blogitem">[^<]+<p>([^<]+)</p>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if len(matches)>0:
+		plot = matches[0]
+
 	listavideos = servertools.findvideos(data)
 	
 	for video in listavideos:
@@ -510,6 +515,8 @@ def detail(params,url,category):
 def detailserie(params,url,category):
 	xbmc.output("[tumejortv.py] detailserie")
 
+	title = urllib.unquote_plus( params.get("title") )
+
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
@@ -525,13 +532,20 @@ def detailserie(params,url,category):
 		scrapertools.printMatches(matches)
 
 	for match in matches:
-		patron2 = '<li><a href="([^"]+)">([^<]+)</a></li>'
+		patron2 = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
 		matches2 = re.compile(patron2,re.DOTALL).findall(match)
 		if DEBUG:
 			scrapertools.printMatches(matches2)
 
 		for match2 in matches2:
 			scrapedtitle = match2[1]
+			scrapedtitle = scrapedtitle.replace("Temporada ","")
+			scrapedtitle = scrapedtitle.replace(", Capitulo ","x")
+			scrapedtitle = scrapedtitle.replace("&#215;","x")
+
+			if scrapedtitle.startswith(title+", "):
+				scrapedtitle = scrapedtitle[ len(title)+2 : ]
+			
 			scrapedurl = match2[0]
 			scrapedthumbnail = ""
 			scrapedplot = ""

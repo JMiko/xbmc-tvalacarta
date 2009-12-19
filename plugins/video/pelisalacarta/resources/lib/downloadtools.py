@@ -15,7 +15,6 @@ import xbmc, xbmcgui
 import re, os, time, datetime, traceback
 import cookielib, htmlentitydefs
 import socket, base64
-import cachedhttp
 import binascii
 import md5
 import xbmctools
@@ -430,32 +429,28 @@ def limpia_nombre_excepto_2(s):
     stripped = ''.join(c for c in s if c in validchars)
     return stripped;
 
-#-----------------------------------------------------------------------
-# Diálogo de progreso
-#-----------------------------------------------------------------------
-
-progreso = xbmcgui.DialogProgress()
-
-def downloadtitle(url,title):
+def getfilefromtitle(url,title):
 	# Imprime en el log lo que va a descartar
-	xbmc.output("[downloadtools.py] downloadtitle: url="+url )
+	xbmc.output("[downloadtools.py] getfilefromtitle: url="+url )
 	#xbmc.output("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
 	plataforma = xbmctools.get_system_platform();
-	xbmc.output("[downloadtools.py] downloadtitle: plataforma="+plataforma)
+	xbmc.output("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
 	
 	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
-	nombrefichero = title + url[-4:]
-	
-	'''
-	keyboard = xbmc.Keyboard(nombrefichero)
-	keyboard.doModal()
-	if (keyboard.isConfirmed()):
-		nombrefichero = keyboard.getText()
-	'''
-	
-	xbmc.log("[downloadtools.py] downloadtitle: nombrefichero=%s" % nombrefichero)
+	if plataforma=="xbox":
+		nombrefichero = title[:38] + url[-4:]
+		nombrefichero = limpia_nombre_excepto_1(nombrefichero)
+	else:
+		nombrefichero = title + url[-4:]
+
+	xbmc.log("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 	fullpath = os.path.join( getDownloadPath() , nombrefichero )
-	xbmc.log("[downloadtools.py] downloadtitle: fullpath=%s" % fullpath)
+	xbmc.log("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
+	
+	return fullpath
+
+def downloadtitle(url,title):
+	fullpath = getfilefromtitle(url,title)
 	return downloadfile(url,fullpath)
 
 def downloadfile(url,nombrefichero):
@@ -479,6 +474,8 @@ def downloadfile(url,nombrefichero):
 		f = open(nombrefichero, 'wb')
 		grabado = 0
 
+	# Crea el diálogo de progreso
+	progreso = xbmcgui.DialogProgress()
 	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
@@ -501,26 +498,53 @@ def downloadfile(url,nombrefichero):
 	blocksize = 100*1024
 
 	bloqueleido = connexion.read(blocksize)
-	xbmc.log("bloqueleido=%s" % len(bloqueleido))
+	xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
+
+	maxreintentos = 3
 	
 	while len(bloqueleido)>0:
 		try:
+			# Escribe el bloque leido
 			f.write(bloqueleido)
 			grabado = grabado + len(bloqueleido)
 			percent = int(float(grabado)*100/float(totalfichero))
 			totalmb = float(float(totalfichero)/(1024*1024))
 			descargadosmb = float(float(grabado)/(1024*1024))
 			progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent ) )
-			bloqueleido = connexion.read(blocksize)
-			#xbmc.log("bloqueleido=%s" % len(bloqueleido))
+
+			# Lee el siguiente bloque, reintentando para no parar todo al primer timeout
+			reintentos = 0
+			while reintentos <= maxreintentos:
+				try:
+					bloqueleido = connexion.read(blocksize)
+					break
+				except:
+					reintentos = reintentos + 1
+					xbmc.log("ERROR en la descarga del bloque, reintento %d" % reintentos)
+					for line in sys.exc_info():
+						xbmc.output( "%s" % line , xbmc.LOGERROR )
 			
+			# El usuario cancelo la descarga
 			if progreso.iscanceled():
+				xbmc.log("Descarga del fichero cancelada")
 				f.close()
+				progreso.close()
 				return -1
+
+			# Ha habido un error en la descarga
+			if reintentos > maxreintentos:
+				xbmc.log("ERROR en la descarga del fichero")
+				f.close()
+				progreso.close()
+
+				return -2
+
 		except:
+			xbmc.log("ERROR en la descarga del fichero")
 			for line in sys.exc_info():
 				xbmc.output( "%s" % line , xbmc.LOGERROR )
 			f.close()
+			progreso.close()
 			
 			#advertencia = xbmcgui.Dialog()
 			#resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
@@ -528,3 +552,5 @@ def downloadfile(url,nombrefichero):
 			return -2
 
 	f.close()
+	progreso.close()
+	xbmc.log("Fin descarga del fichero")
