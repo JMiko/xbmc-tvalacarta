@@ -22,7 +22,7 @@ except:
 
 xbmc.output("[rtvemediateca.py] init")
 
-DEBUG = True
+DEBUG = False
 CHANNELNAME = "Mediateca TVE"
 CHANNELCODE = "rtvemediateca"
 
@@ -158,10 +158,10 @@ def videolist(params,url,category):
 def play(params,url,category):
 	xbmc.output("[rtvemediateca.py] play")
 
-	title = urllib.unquote_plus( params.get("title") )
+	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[rtvemediateca.py] thumbnail="+thumbnail)
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = "Directo"
 
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
@@ -189,19 +189,8 @@ def play(params,url,category):
 	url = matches[0]
 	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
 
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
-
-	# Crea la entrada y la añade al playlist
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
-	playlist.add( url, listitem )
-
 	# Cierra dialogo
 	dialogWait.close()
 	del dialogWait
-
-	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-	xbmcPlayer.play(playlist)   
+	
+	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
