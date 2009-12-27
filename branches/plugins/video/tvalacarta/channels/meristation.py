@@ -30,10 +30,11 @@ def mainlist(params,url,category):
 	xbmc.output("[meristation.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "listaporconsola" , CHANNELNAME , "Listado por consola", "http://www.rtve.es/alacarta/todos/recomendados/index.html"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "listaporgenero"  , CHANNELNAME , "Listado por género" , "http://www.rtve.es/alacarta/todos/ultimos/index.html"       , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "listaalfabetica" , CHANNELNAME , "Listado alfabético" , "http://www.rtve.es/alacarta/todos/temas/index.html"         , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "search"          , CHANNELNAME , "Buscar"             , "http://www.rtve.es/alacarta/todos/abecedario/index.html"    , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "listaporconsola" , CHANNELNAME , "Listado por consola", "http://www.meristation.com/v3/GEN_videos.php" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "listaalfabetica" , CHANNELNAME , "Listado alfabético" , "" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "listaporgenero"  , CHANNELNAME , "Listado por género" , "http://www.meristation.com/v3/GEN_videos.php" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "ultimosvideos"   , CHANNELNAME , "Últimos vídeos"     , "http://www.meristation.com/v3/GEN_videos.php" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "search"          , CHANNELNAME , "Buscar"             , "" , "" , "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -65,87 +66,89 @@ def searchresults(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	#<li> <a href="http://www.peliculasyonkis.com/pelicula/las-edades-de-lulu-1990/" title="Las edades de Lulú (1990)"><img width="77" height="110" src="http://images.peliculasyonkis.com/thumbs/las-edades-de-lulu-1990.jpg" alt="Las edades de Lulú (1990)" align="right" />
+	'''
+	   onMouseOut="this.style.background='#ffffff'"> 
+		           <td class="tabla_borde_down" valign="top" width="250">
+
+		             <font face="Arial, Helvetica, sans-serif" size="2">
+		                              <a href="des_videos.php?pic=WII&idj=cw45ba12c3a8156&COD=cw4b002ff355067" class="mslink9">
+		                              
+		             <b>MeriStation TV Noticias 3x11</b></a></font>
+		             <font face="Arial, Helvetica, sans-serif" size="2"> 
+		             <a href="WII_portada.php" class="mslink8">
+		             <font color="#3366CC"><b>WII</b></font></a><span class="mstrucos"></span> 
+		             <br>
+		             <a href="empresa.php?pic=GEN&id=cw428d365050c81" class="mslink9">
+		             Nintendo</a></font>
+
+		             <font face="Arial, Helvetica, sans-serif" size="2"></font>
+		             <font face="Arial, Helvetica, sans-serif" size="2"> 
+		             </font>
+		           </td>
+		           <td class="tabla_borde_down" valign="top" width="100">
+		             <font face="Arial, Helvetica, sans-serif" size="2">
+		             <a href="GEN_.php" class="mslink9">
+		             Simulador</a></font>
+		             <font face="Arial, Helvetica, sans-serif" size="2"></font><br>
+
+		             <span class=fecha>
+											16/11/09					                 </span>
+		           </td>
+		           <td class="tabla_borde_down" valign="top" width="200">
+		             <a href="shopping.php?idj=cw45ba12c3a8156" target="_blank">
+		             <img src="imgs/icono_busqueda_carrito1.gif" width="22" height="20" alt="Comprar" border="0"></a>
+
+		                              <a href="listado_imagenes.php?pic=WII&idj=cw45ba12c3a8156">
+		             <img src="imgs/icono_busqueda_imagenes.gif" width="22" height="20" alt="Galería de Imágenes" border="0"></a>
+
+		                                       
+		                              <a href="des_avances.php?pic=WII&pes=1&idj=cw45ba12c3a8156" >
+		             <img src="imgs/icono_busqueda_avances.gif" width="22" height="20" alt="Avance" border="0"></a>
+		                                       
+		             
+		                              <a href="des_videos.php?pic=WII&pes=1&idj=cw45ba12c3a8156" >
+		             <img src="imgs/icono_busqueda_videos.gif" width="22" height="20" alt="Vídeos" border="0"></a>
+		                                       
+		                                       
+		                                        
+		             
+		                             </td>
+		            <td class="tabla_borde_down" width="50" valign="top" align="center"> 
+		              <font face="Arial, Helvetica, sans-serif" size="2">
+		                     
+		                                <b>--</b></a></font>
+		                              </td>
+	'''
 	
-	patronvideos  = '<tr onMouseOver="this.style.background =''  "; this.style.cursor = 'hand'" 
-   onMouseOut="this.style.background='#ffffff'"> 
-               <td class="tabla_borde_down" valign="top" width="250">
-                 <font face="Arial, Helvetica, sans-serif" size="2">
-                                  <a href="des_videos.php?pic=WII&idj=cw45ba12c3a8156&COD=cw4b002ff355067" class="mslink9">
-                                  
-                 <b>MeriStation TV Noticias 3x11</b></a></font>
-                 <font face="Arial, Helvetica, sans-serif" size="2"> 
-                 <a href="WII_portada.php" class="mslink8">
-
-                 <font color="#3366CC"><b>WII</b></font></a><span class="mstrucos"></span> 
-                 <br>
-                 <a href="empresa.php?pic=GEN&id=cw428d365050c81" class="mslink9">
-                 Nintendo</a></font>
-                 <font face="Arial, Helvetica, sans-serif" size="2"></font>
-                 <font face="Arial, Helvetica, sans-serif" size="2"> 
-                 </font>
-               </td>
-               <td class="tabla_borde_down" valign="top" width="100">
-
-                 <font face="Arial, Helvetica, sans-serif" size="2">
-                 <a href="GEN_.php" class="mslink9">
-                 Simulador</a></font>
-                 <font face="Arial, Helvetica, sans-serif" size="2"></font><br>
-                 <span class=fecha>
-										16/11/09					                 </span>
-               </td>
-               <td class="tabla_borde_down" valign="top" width="200">
-
-                 <a href="shopping.php?idj=cw45ba12c3a8156" target="_blank">
-                 <img src="imgs/icono_busqueda_carrito1.gif" width="22" height="20" alt="Comprar" border="0"></a>
-
-                                  <a href="listado_imagenes.php?pic=WII&idj=cw45ba12c3a8156">
-                 <img src="imgs/icono_busqueda_imagenes.gif" width="22" height="20" alt="Galería de Imágenes" border="0"></a>
-                                           
-                                  <a href="des_avances.php?pic=WII&pes=1&idj=cw45ba12c3a8156" >
-                 <img src="imgs/icono_busqueda_avances.gif" width="22" height="20" alt="Avance" border="0"></a>
-                                           
-                 
-                                  <a href="des_videos.php?pic=WII&pes=1&idj=cw45ba12c3a8156" >
-                 <img src="imgs/icono_busqueda_videos.gif" width="22" height="20" alt="Vídeos" border="0"></a>
-
-                                           
-                                           
-                                            
-                 
-                                 </td>
-                <td class="tabla_borde_down" width="50" valign="top" align="center"> 
-                  <font face="Arial, Helvetica, sans-serif" size="2">
-                         
-                                    <b>--</b></a></font>
-                                  </td>
-            </tr>
-'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	patron  = '<tr onMouseOver="this.style.background =\'\'  "; this.style.cursor = \'hand\'"(.*?)</tr>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
-		scrapedtitle = match[1]
 
-		# URL
-		scrapedurl = match[0]
-		
-		# Thumbnail
-		scrapedthumbnail = match[2]
-		
-		# procesa el resto
-		scrapedplot = ""
+		patron2  = '<td class="tabla_borde_down" valign="top" width="250">[^<]+'
+		patron2 += '<font face="Arial, Helvetica, sans-serif" size="2">[^<]+'
+		patron2 += '<a href="([^"]+)" class="mslink9">[^<]+'
+		patron2 += '<b>([^<]+)</b></a></font>[^<]+'
+		patron2 += '<font face="Arial, Helvetica, sans-serif" size="2">[^<]+'
+		patron2 += '<a href="[^"]+" class="mslink8">[^<]+'
+		patron2 += '<font color="[^"]+"><b>([^<]+)</b></font></a><span class="mstrucos"></span>[^<]+'
+		patron2 += '<br>[^<]+'
+		patron2 += '<a href="empresa.php[^"]+" class="mslink9">([^<]+)</a></font>[^<]+'
+		matches2 = re.compile(patron2,re.DOTALL).findall(match)
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		for match2 in matches2:
 
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+			# Atributos del vídeo
+			scrapedtitle = match2[1].strip()+" "+match2[2].strip()+" "+match2[3].strip()
+			scrapedurl = match2[0]
+			scrapedthumbnail = ""
+			scrapedplot = ""
+			if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
+			# Añade al listado de XBMC
+			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
@@ -155,10 +158,22 @@ def searchresults(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
+def detail(params,url,category):
+	# URL de detalle
+	# http://www.meristation.com/v3/des_videos.php?pic=WII&idj=cw49944ba621067&COD=cw4a8d04e8e355d
+	# URL con el vídeo
+	# http://www.meristation.com/v3/des_videos.php?id=cw4a8d04e8e355d&c=1&pic=WII&idj=cw49944ba621067
+	# URL descargar vídeo
+	# http://www.meristation.com/v3/des_videos.php?id=cw4a8d04e8e355d&c=1&pic=WII&idj=cw49944ba621067
+
 def listaalfabetica(params,url,category):
+	xbmc.output("[meristation.py] listaalfabetica")
+
 def listaporgenero(params,url,category):
+	xbmc.output("[meristation.py] listaporgenero")
+
 def listaporconsola(params,url,category):
-	xbmc.output("[meristation.py] mainlist")
+	xbmc.output("[meristation.py] listaporconsola")
 
 	url = 'http://www.meristation.com/v3/GEN_videos.php'
 
