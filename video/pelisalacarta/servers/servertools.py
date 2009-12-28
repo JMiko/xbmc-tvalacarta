@@ -444,6 +444,21 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("0) Directo - myspace")
+	patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Directo]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Directo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	return devuelve
 
 def findurl(code,server):

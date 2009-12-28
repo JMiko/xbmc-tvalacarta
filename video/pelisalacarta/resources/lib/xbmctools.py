@@ -293,3 +293,8 @@ def unseo(cadena):
 	elif cadena.upper().startswith("VER ONLINE "):
 		cadena = cadena[11:]
 	return cadena
+
+def addSingleChannelOptions(params,url,category):
+	addnewfolder( "configuracion" , "mainlist" , "configuracion" , "Configuracion" , "" , "" , "" )
+	addnewfolder( "descargados"   , "mainlist" , "descargados"   , "Descargas"     , "" , "" , "" )
+	addnewfolder( "favoritos"     , "mainlist" , "favoritos"     , "Favoritos"     , "" , "" , "" )

@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import downloadtools
 
 CHANNELNAME = "descargados"
 
@@ -32,8 +33,8 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[descargados.py] mainlist")
 
-	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.output("[descargados.py] downloadpath="+downloadpath)
+	# Verifica ruta de descargas
+	downloadpath = downloadtools.getDownloadPath()
 
 	xbmctools.addnewfolder( "descargadoslist" , "mainlist"  , category , "Descargas pendientes","","","")
 	xbmctools.addnewfolder( "descargadoslist" , "errorlist"  , category , "Descargas con error","","","")

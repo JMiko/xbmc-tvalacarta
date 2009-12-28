@@ -87,8 +87,10 @@ def mainlist(params,url,category):
 		scrapedthumbnail = ""
 		scrapedplot = ""
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )        
-              #else: c = c + 1
-	# Label (top-right)...
+
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 
 	# Disable sorting...
