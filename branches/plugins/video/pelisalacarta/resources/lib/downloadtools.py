@@ -322,16 +322,36 @@ entitydefs3 = {
 }
 
 def getDownloadPath():
+	
+	# La ruta de descarga es un parámetro
 	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	
+	# No está fijada, intenta forzarla
 	try:
-		if downloadpath=="":
-			downloadpath = xbmc.translatePath( "special://home/downloads")
-			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-			xbmcplugin.setSetting("downloadpath",downloadpath)
+		if downloadpath == "":
+			xbmc.output("[downloadtools.py] downloadpath está vacio")
+			
+			# Busca un setting del skin (Telebision)
+			downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
+			xbmc.output("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+			
+			# No es Telebision, fuerza el directorio home de XBMC
+			if downloadpath == "":
+				downloadpath = xbmc.translatePath( "special://home/downloads")
+				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+				xbmcplugin.setSetting("downloadpath",downloadpath)
+			
+			# Es Telebision, lo pone en el skin
+			else:
+				# guardar setting del skin en setting del plugin
+				downloadpath = xbmc.translatePath( downloadpath )
+				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
+				xbmcplugin.setSetting("downloadpath", downloadpath)
 	except:
 		pass
-
+	
+	xbmc.output("[downloadtools.py] downloadpath="+downloadpath)
+	
 	try:
 		os.mkdir(downloadpath)
 	except:
@@ -340,16 +360,37 @@ def getDownloadPath():
 	return downloadpath
 
 def getDownloadListPath():
+	
+	# La ruta de la lista de descargas es un parámetro
 	downloadpath = xbmcplugin.getSetting("downloadlistpath")
-	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	
+	# No está fijada, intenta forzarla
 	try:
-		if downloadpath=="":
-			downloadpath = xbmc.translatePath( "special://home/downloads/list")
-			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-			xbmcplugin.setSetting("downloadlistpath",downloadpath)
+		if downloadpath == "":
+			xbmc.output("[downloadtools.py] downloadpath está vacio")
+			
+			# Busca un setting del skin (Telebision)
+			downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
+			xbmc.output("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+			
+			# No es Telebision, fuerza el directorio home de XBMC
+			if downloadpath == "":
+				downloadpath = xbmc.translatePath( "special://home/downloads/list")
+				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+				xbmcplugin.setSetting("downloadlistpath",downloadpath)
+			
+			# Es Telebision, lo pone en el skin
+			else:
+				# guardar setting del skin en setting del plugin
+				downloadpath = os.path.join( downloadpath , "list" )
+				downloadpath = xbmc.translatePath( downloadpath )
+				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
+				xbmcplugin.setSetting("downloadlistpath", downloadpath)
 	except:
 		pass
-
+	
+	xbmc.output("[downloadtools.py] downloadlistpath="+downloadpath)
+	
 	try:
 		os.mkdir(downloadpath)
 	except:

@@ -42,6 +42,9 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , category , "Buscar","","","")
 
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 

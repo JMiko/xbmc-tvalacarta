@@ -35,6 +35,9 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , "Novedades","http://www.sesionvip.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"  , category , "Buscar","","","")
 
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 		

@@ -34,7 +34,10 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://animeid.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://animeid.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "catlist" , CHANNELNAME , "Listado por categorias" , "http://animeid.com/" , "", "" )
-	
+
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 

@@ -42,6 +42,9 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "pelisporletra" , CHANNELNAME , "Películas de la A a la Z" , "" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "pelisporanio" , CHANNELNAME , "Películas por año de estreno" , "" , "", "" )
 
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 

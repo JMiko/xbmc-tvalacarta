@@ -45,32 +45,18 @@ def mainlist(params,url,category):
 	# Extrae las películas
 	# ------------------------------------------------------
 	#patron  = '<div class="thumb">[^<]+<a href="([^"]+)"><img src="([^"]+)".*?alt="([^"]+)"/></a>'
-	patron = '<div class="item">[^<]+<h1 class="titulo">[^>]+</h1>[^<]+<a href="([^<]+)"><img src="([^"]+)".*?alt="([^"]+)"'
-	'''
-	patron  = '<div class="item">[^<]+'
-	patron += '<div class="background"></div>[^<]+'
-	patron += '<a href="([^"]+)">[^<]+'
-	patron += '<img src="([^"]+)">[^<]+'
-	patron += '</a>[^<]+'
-	patron += '<div class="content">[^<]+'
-	patron += '<h1>([^<]+)</h1>'
-	'''
+	patron  = '<div class="galleryitem">[^<]+'
+	patron += '<h1>([^<]+)</h1>[^<]+'
+	patron += '<a href="([^"]+)"><img src="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[2]
-		scrapedurl = match[0]
-		scrapedthumbnail = match[1].replace(" ","%20")
+		scrapedtitle = match[0]
+		scrapedurl = match[1]
+		scrapedthumbnail = match[2].replace(" ","%20")
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -88,15 +74,13 @@ def mainlist(params,url,category):
 		scrapedurl = match
 		scrapedthumbnail = ""
 		scrapeddescription = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl=#"+scrapedurl+"#")
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
+
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

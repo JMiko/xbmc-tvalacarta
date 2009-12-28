@@ -32,7 +32,10 @@ def mainlist(params,url,category):
 
 	# Añade al listado de XBMC
 	addfolder("Buscar","http://www.tu.tv/","search")
-	
+
+	if xbmcplugin.getSetting("singlechannel"):
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
