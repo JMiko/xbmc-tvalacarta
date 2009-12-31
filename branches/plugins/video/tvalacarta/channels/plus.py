@@ -64,8 +64,6 @@ def mainlist(params,url,category):
 		scrapedurl = urlparse.urljoin( url, match[0]).replace("index.html?idlist","emisiones.html?id")
 		scrapedthumbnail = urlparse.urljoin(url,match[2])
 		scrapedplot = ""
-
-		# Depuracion
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
@@ -91,53 +89,64 @@ def videolist(params,url,category):
 	#xbmc.output(data)
 
 	# --------------------------------------------------------
-	# Extrae los programas
+	# Extrae los vídeos de la página
 	# --------------------------------------------------------
 	'''
-	<li class="v537147 ">
-		<div class="imagen">
+	<li class="video estirar">
+	<div class="imagen">
+		<a title="Estrellas de Canal+: Heath Ledger" href="index.html?idlist=PLTVCN&amp;idvid=537147&amp;pos=3">
 			<img alt="" src="http://www.plus.es/plustv/images/fotogramas/plustv/PO805296.jpg">
-			<a href="index.html?idlist=PLTVCN&amp;idvid=537147&amp;pos=3" title="Reproducir Estrellas de Canal+: Heath Ledger" class="play">Reproducir</a>
-			<div class="transparencia"></div>
-			<div class="descripcion">
-				<p><a href="index.html?idlist=PLTVCN&amp;idvid=537147&amp;pos=3">Programa que repasa la trayectoria de las caras más conocidas del cine.</a></p>
+			<span>Play</span>
+		</a>
+	</div>
+	<div class="tooltip" title="Programa que repasa la trayectoria de las caras más conocidas del cine.">
+		<div class="textos">
 
-				<a class="addmiplustv show" href="miplustv.html?id=537147&amp;action=add" rel="nofollow">Añadir a Mi PLUSTV</a>
-				<span>Añadido a Mi Plus TV</span>
-			</div>
-			<div class="estasviendo">
-			<p>Estás viendo...</p>
-			</div>		
+			<p class="titulo"><a href="index.html?idlist=PLTVCN&amp;idvid=537147&amp;pos=3">Estrellas de Canal+: Heath Ledger</a></p>
 		</div>
-		<a href="index.html?idlist=PLTVCN&amp;idvid=537147&amp;pos=3" title="Reproducir Estrellas de Canal+: Heath Ledger" class="titulo">Estrellas de Canal+: Heath Ledger</a>
+		<a class="addmiplustv show" href="miplustv.html?id=537147&amp;action=add" rel="nofollow">Añadir a Mi PLUSTV</a>
+		<span>Añadido a Mi PlusTV</span>
+	</div>
 	</li>
 	'''
-	patron  = '<li class="v[^"]+">[^<]+'
+	patron  = '<li class="video estirar">[^<]+'
 	patron += '<div class="imagen">[^<]+'
-	patron += '<img alt="[^"]*" src="([^"]+)">[^<]+'
-	patron += '<a href="([^"]+)" title="([^"]+)".*?'
-	patron += '<div class="descripcion">[^<]+'
-	patron += '<p><a href="[^"]+">([^<]+)</a>'
+	patron += '<a title="([^"]+)" href="([^"]+)">[^<]+'
+	patron += '<img alt="[^"]*" src="([^"]+)">.*?'
+	patron += '<div class="tooltip" title="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Datos
-		scrapedtitle = match[2]
+		scrapedtitle = match[0]
 		scrapedurl = urlparse.urljoin( url , match[1] )
-		scrapedthumbnail = match[0]
+		scrapedthumbnail = urlparse.urljoin( url , match[2] )
 		scrapedplot = match[3]
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
 		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# --------------------------------------------------------
+	# Extrae el enlace a la siguiente página
+	# --------------------------------------------------------
+	patron = '<li class="siguiente"><a href="([^"]+)">siguiente \&gt\;</a></li>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Datos
+		scrapedtitle = "Página siguiente"
+		scrapedurl = "http://www.plus.es/plustv/emisiones.html"+match
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		#addvideo( scrapedtitle , scrapedurl , category )
+		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

@@ -243,6 +243,8 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&iexcl;','¡')
 	cadena = cadena.replace('&iquest;','¿')
 	cadena = cadena.replace('&ordf;','ª')
+	cadena = cadena.replace('&quot;','"')
+	cadena = cadena.replace('&#39;','\'')
 	return cadena
 
 def getRandom(str):
