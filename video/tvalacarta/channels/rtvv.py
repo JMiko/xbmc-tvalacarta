@@ -50,12 +50,7 @@ def mainlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0].replace("&amp;","&"))
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
@@ -88,7 +83,7 @@ def videolist(params,url,category):
 		scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[1]
+		scrapedtitle = scrapertools.entityunescape(match[1])
 		# TODO: Sacar la fecha de la descripcion
 		patronfechas = "<p>Emissi&oacute;: ([^<]+)<"
 		matchesfechas = re.compile(patronfechas,re.DOTALL).findall(match[2])
@@ -103,12 +98,9 @@ def videolist(params,url,category):
 		scrapedplot = scrapedplot.replace("</a>","")
 		scrapedplot = scrapedplot.replace("</p>","")
 		scrapedplot = scrapedplot.replace("<p>","")
+		scrapedplot = scrapertools.entityunescape(scrapedplot)
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
