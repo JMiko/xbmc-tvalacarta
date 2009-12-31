@@ -128,6 +128,98 @@ def downloadpage(url):
 	xbmc.output("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
 	return data
 
+def downloadpagewithcookies(url):
+	#  Inicializa la librería de las cookies
+	ficherocookies = os.path.join( os.getcwd(), 'cookies.lwp' )
+	print "Cookiefile="+ficherocookies
+
+	cj = None
+	ClientCookie = None
+	cookielib = None
+
+	# Let's see if cookielib is available
+	try:
+		import cookielib
+	except ImportError:
+		# If importing cookielib fails
+		# let's try ClientCookie
+		try:
+			import ClientCookie
+		except ImportError:
+			# ClientCookie isn't available either
+			urlopen = urllib2.urlopen
+			Request = urllib2.Request
+		else:
+			# imported ClientCookie
+			urlopen = ClientCookie.urlopen
+			Request = ClientCookie.Request
+			cj = ClientCookie.LWPCookieJar()
+
+	else:
+		# importing cookielib worked
+		urlopen = urllib2.urlopen
+		Request = urllib2.Request
+		cj = cookielib.LWPCookieJar()
+		# This is a subclass of FileCookieJar
+		# that has useful load and save methods
+
+	# ---------------------------------
+	# Instala las cookies
+	# ---------------------------------
+
+	if cj is not None:
+	# we successfully imported
+	# one of the two cookie handling modules
+
+		if os.path.isfile(ficherocookies):
+			# if we have a cookie file already saved
+			# then load the cookies into the Cookie Jar
+			cj.load(ficherocookies)
+
+		# Now we need to get our Cookie Jar
+		# installed in the opener;
+		# for fetching URLs
+		if cookielib is not None:
+			# if we use cookielib
+			# then we get the HTTPCookieProcessor
+			# and install the opener in urllib2
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+			urllib2.install_opener(opener)
+
+		else:
+			# if we use ClientCookie
+			# then we get the HTTPCookieProcessor
+			# and install the opener in ClientCookie
+			opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(cj))
+			ClientCookie.install_opener(opener)
+
+	#print "-------------------------------------------------------"
+	theurl = url
+	# an example url that sets a cookie,
+	# try different urls here and see the cookie collection you can make !
+
+	#txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
+	#			  'Referer':'http://www.megavideo.com/?s=signup'}
+	txheaders =  {
+	'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
+	'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Host':'www.meristation.com',
+	'Accept-Language':'es-es,es;q=0.8,en-us;q=0.5,en;q=0.3',
+	'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+	'Keep-Alive':'300',
+	'Connection':'keep-alive'}
+
+	# fake a user agent, some websites (like google) don't like automated exploration
+
+	req = Request(theurl, None, txheaders)
+	handle = urlopen(req)
+	cj.save(ficherocookies) # save the cookies again
+
+	data=handle.read()
+	handle.close()
+
+	return data
+
 def printMatches(matches):
 	i = 0
 	for match in matches:

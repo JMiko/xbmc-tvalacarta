@@ -233,15 +233,17 @@ def play(params,url,category):
 	except:
 		url = ""
 
+	xbmc.output("[eitb.py] url="+url)
 	data = scrapertools.cachePage(url)
 	xbmc.output("[eitb.py] data="+data)
-	patron  = '<media\:content url\="([^"]+)"'
+	patron  = "<media\:content url\='([^']+)'"
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	try:
 		url = matches[0]
 	except:
 		url = ""
+	xbmc.output("[eitb.py] url="+url)
 
 	# Playlist vacia
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
