@@ -21,7 +21,7 @@ except:
 
 xbmc.output("[a3.py] init")
 
-DEBUG = True
+DEBUG = False
 CHANNELNAME = "Antena3"
 CHANNELCODE = "a3"
 
@@ -38,7 +38,8 @@ def mainlist(params,url,category):
 	# Extrae las entradas (carpetas)
 	patronvideos = '<item>[^<]+<title><\!\[CDATA\[([^\]]+)\]\]></title>[^<]+<link>([^<]+)</link>[^<]+<description><\!\[CDATA\[([^\]]+)\]\]></description>[^<]+<media:thumbnail url=\'([^\']+)\'/>[^<]+<media:content type=\'([^\']+)\' url=\'([^\']+)\'/>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+	if DEBUG:
+		scrapertools.printMatches(matches)
 
 	encontrados = set()
 
@@ -48,7 +49,7 @@ def mainlist(params,url,category):
 			scrapedtitle = unicode( match[0], "utf-8" ).encode("iso-8859-1")
 		except:
 			scrapedtitle = match[0]
-		xbmc.output("[a3.py] mainlist scrapedtitle="+scrapedtitle)
+		#xbmc.output("[a3.py] mainlist scrapedtitle="+scrapedtitle)
 		
 		patrontitulo = '(.*?)-'
 		matchestitulo = re.compile(patrontitulo,re.DOTALL).findall(scrapedtitle)
@@ -56,7 +57,7 @@ def mainlist(params,url,category):
 		if len(matchestitulo)>0:
 			scrapedtitle = matchestitulo[0].strip()
 
-		xbmc.output("[a3.py] mainlist scrapedtitle="+scrapedtitle)
+		#xbmc.output("[a3.py] mainlist scrapedtitle="+scrapedtitle)
 
 		if scrapedtitle not in encontrados:
 			xbmc.output("[a3.py] mainlist   nueva serie "+scrapedtitle)
@@ -147,42 +148,12 @@ def videolist(params,url,category):
 def play(params,url,category):
 	xbmc.output("[a3.py] play")
 
-	# Titulo
-	infotitle = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	#xbmc.output("[a3.py] infotitle="+infotitle)
-	
-	# Averigua la descripcion (plot)
-	infoplot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	#xbmc.output("[a3.py] infoplot="+infoplot)
+	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = "Directo"
 
-	# Averigua el thumbnail
-	infothumbnail = unicode( xbmc.getInfoLabel( "ListItem.Thumb" ), "utf-8" )
-	xbmc.output("[a3.py] infothumbnail="+infothumbnail)
-
-	# Averigua la URL del video
-	mediaurl = url
-	xbmc.output("[a3.py] mediaurl="+mediaurl)
-
-	# Abre dialogo
-	#dialogWait = xbmcgui.DialogProgress()
-	#dialogWait.create( 'Descargando datos del vídeo...', infotitle )
-
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
-
-	# Crea la entrada y la añade al playlist
-	listitem = xbmcgui.ListItem( infotitle, iconImage="DefaultVideo.png", thumbnailImage=infothumbnail )
-	listitem.setInfo( "video", { "Title": infotitle, "Plot" : infoplot , "Studio" : CHANNELNAME , "Genre" : category } )
-	playlist.add( mediaurl, listitem )
-
-	# Cierra dialogo
-	#dialogWait.close()
-	#del dialogWait
-
-	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-	xbmcPlayer.play(playlist)   
+	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
 	xbmc.output('[a3.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
@@ -201,7 +172,7 @@ def addvideodescripcionthumbnail(nombre,descripcion,thumbnail,url,category,total
 	xbmc.output('[a3.py] addvideo( "'+nombre+'" , "' + url + '" , "'+category+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : descripcion } )
-	itemurl = '%s?channel=%s&action=play&category=%s&url=%s' % ( sys.argv[ 0 ] , CHANNELCODE , category , urllib.quote_plus(url) )
+	itemurl = '%s?channel=%s&action=play&category=%s&url=%s&thumbnail=%s' % ( sys.argv[ 0 ] , CHANNELCODE , category , urllib.quote_plus(url) , urllib.quote_plus(thumbnail) )
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False, totalItems=totalitems)
 
 def addvideodirecto(nombre,url,category):
