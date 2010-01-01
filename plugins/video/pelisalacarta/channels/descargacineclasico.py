@@ -46,6 +46,9 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Novedades" , "http://descargacineclasico.blogspot.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Todas" , "http://descargacineclasico.blogspot.com/search?updated-max=&max-results=1000" , "", "" )
 
+	if xbmcplugin.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 

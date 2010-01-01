@@ -11,4 +11,5 @@
     <setting id="downloadpath" type="text" label="30201" default=""/>
     <setting id="downloadlistpath" type="text" label="30203" default=""/>
     <setting id="forceview" type="bool" label="30202" default="false"/>
+    <setting id="singlechannel" type="bool" label="30203" default="false" enable="false"/>
 </settings>

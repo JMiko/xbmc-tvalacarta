@@ -281,6 +281,10 @@ def alertnodisponibleserver(server):
 	advertencia = xbmcgui.Dialog()
 	resultado = advertencia.ok('Vídeo borrado' , 'El vídeo ya no está en '+server , 'Prueba con otro distinto')
 
+def alerterrorpagina():
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('Error en la página' , 'No se puede acceder' , 'por un error en la página')
+
 def unseo(cadena):
 	if cadena.upper().startswith("VER GRATIS LA PELICULA "):
 		cadena = cadena[23:]
@@ -293,3 +297,8 @@ def unseo(cadena):
 	elif cadena.upper().startswith("VER ONLINE "):
 		cadena = cadena[11:]
 	return cadena
+
+def addSingleChannelOptions(params,url,category):
+	addnewfolder( "configuracion" , "mainlist" , "configuracion" , "Configuracion" , "" , "" , "" )
+	addnewfolder( "descargados"   , "mainlist" , "descargados"   , "Descargas"     , "" , "" , "" )
+	addnewfolder( "favoritos"     , "mainlist" , "favoritos"     , "Favoritos"     , "" , "" , "" )
