@@ -227,6 +227,7 @@ def printMatches(matches):
 		i = i + 1
 
 def entityunescape(cadena):
+	cadena = cadena.replace('&amp;','&')
 	cadena = cadena.replace('&Aacute;','Á')
 	cadena = cadena.replace('&Eacute;','É')
 	cadena = cadena.replace('&Iacute;','Í')
@@ -239,13 +240,54 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&iacute;','í')
 	cadena = cadena.replace('&oacute;','ó')
 	cadena = cadena.replace('&uacute;','ú')
-	cadena = cadena.replace('&amp;','&')
 	cadena = cadena.replace('&iexcl;','¡')
 	cadena = cadena.replace('&iquest;','¿')
 	cadena = cadena.replace('&ordf;','ª')
 	cadena = cadena.replace('&quot;','"')
+	cadena = cadena.replace('&hellip;','...')
 	cadena = cadena.replace('&#39;','\'')
 	return cadena
 
 def getRandom(str):
 	return binascii.hexlify(md5.new(str).digest())
+
+def getLocationHeaderFromResponse(url):
+	xbmc.output("[scrapertools.py] getLocationHeaderFromResponse")
+
+	if url=='':
+		return None
+
+	location = None
+	import httplib
+	parsedurl = urlparse.urlparse(url)
+	print "parsedurl=",parsedurl
+
+	try:
+		host = parsedurl.netloc
+	except:
+		host = parsedurl[1]
+	print "host=",host
+
+	try:
+		print "1"
+		query = parsedurl.path+";"+parsedurl.query
+	except:
+		print "2"
+		query = parsedurl[2]+";"+parsedurl[3]+"?"
+	print "query=",query
+	query = urllib.unquote( query )
+	print "query = " + query
+
+	import httplib
+	conn = httplib.HTTPConnection(host)
+	conn.request("GET", query)
+	response = conn.getresponse()
+	location = response.getheader("location")
+	conn.close()
+	
+	print "location=",location
+
+	if location!=None:
+		print "Encontrado header location"
+	
+	return location
