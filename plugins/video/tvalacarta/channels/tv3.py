@@ -278,14 +278,10 @@ def hdvideolist(params,url,category):
 def play(params,url,category):
 	xbmc.output("[tv3.py] play")
 
-	title = urllib.unquote_plus( params.get("title") )
+	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[tv3.py] thumbnail="+thumbnail)
-
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Descargando datos del vídeo...', title )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = "Directo"
 
 	# --------------------------------------------------------
 	# Saca el codigo de la URL y descarga
@@ -299,23 +295,8 @@ def play(params,url,category):
 	url = geturl1(codigo)
 	if url=="":
 		url = geturl2(codigo)
-	
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
 
-	# Crea la entrada y la añade al playlist
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
-	playlist.add( url, listitem )
-
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
-
-	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-	xbmcPlayer.play(playlist)   
+	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def geturl1(codigo):
 	#http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID=1594629&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474
@@ -362,28 +343,9 @@ def geturl2(codigo):
 def directplay(params,url,category):
 	xbmc.output("[tv3.py] directplay")
 
-	title = urllib.unquote_plus( params.get("title") )
+	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[tv3.py] thumbnail="+thumbnail)
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = "Directo"
 
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Descargando datos del vídeo...', title )
-
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
-
-	# Crea la entrada y la añade al playlist
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
-	playlist.add( url, listitem )
-
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
-
-	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-	xbmcPlayer.play(playlist)   
+	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)

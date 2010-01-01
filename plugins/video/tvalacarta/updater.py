@@ -2,7 +2,7 @@
 
 #------------------------------------------------------------
 # tvalacarta
-# http://blog.tvalacarta.info/plugin-xbmc/tvalacarta
+# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta
 # XBMC Plugin
 #------------------------------------------------------------
 
@@ -23,8 +23,11 @@ REMOTE_VERSION_FILE = "http://www.mimediacenter.info/xbmc/tvalacarta/version.xml
 LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
 REMOTE_FILE = "http://xbmc-tvalacarta.googlecode.com/files/tvalacarta-"
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "tvalacarta-" ) )
-#DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
-DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
+
+try:
+	DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+except:
+	DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
 def checkforupdates():
 	xbmc.output("[updater.py] checkforupdates")
@@ -52,7 +55,41 @@ def checkforupdates():
 		versionlocal = matches[0]
 		xbmc.output("version local="+versionlocal)
 
-		if (versiondescargada > versionlocal):
+		arraydescargada = versiondescargada.split(".")
+		arraylocal = versionlocal.split(".")
+		
+		# local 2.8.0 - descargada 2.8.0 -> no descargar
+		# local 2.9.0 - descargada 2.8.0 -> no descargar
+		# local 2.8.0 - descargada 2.9.0 -> descargar
+		if len(arraylocal) == len(arraydescargada):
+			xbmc.output("caso 1")
+			hayqueactualizar = False
+			for i in range(0, len(arraylocal)):
+				print arraylocal[i], arraydescargada[i], int(arraydescargada[i]) > int(arraylocal[i])
+				if int(arraydescargada[i]) > int(arraylocal[i]):
+					hayqueactualizar = True
+		# local 2.8.0 - descargada 2.8 -> no descargar
+		# local 2.9.0 - descargada 2.8 -> no descargar
+		# local 2.8.0 - descargada 2.9 -> descargar
+		if len(arraylocal) > len(arraydescargada):
+			xbmc.output("caso 2")
+			hayqueactualizar = False
+			for i in range(0, len(arraydescargada)):
+				print arraylocal[i], arraydescargada[i], int(arraydescargada[i]) > int(arraylocal[i])
+				if int(arraydescargada[i]) > int(arraylocal[i]):
+					hayqueactualizar = True
+		# local 2.8 - descargada 2.8.8 -> descargar
+		# local 2.9 - descargada 2.8.8 -> no descargar
+		# local 2.10 - descargada 2.9.9 -> no descargar
+		if len(arraylocal) < len(arraydescargada):
+			xbmc.output("caso 3")
+			hayqueactualizar = True
+			for i in range(0, len(arraylocal)):
+				print arraylocal[i], arraydescargada[i], int(arraylocal[i])>int(arraydescargada[i])
+				if int(arraylocal[i]) > int(arraydescargada[i]):
+					hayqueactualizar = False
+
+		if (hayqueactualizar):
 			xbmc.output("actualizacion disponible")
 			
 			# Añade al listado de XBMC

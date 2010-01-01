@@ -15,7 +15,10 @@ import xbmc, xbmcgui
 import re, os, time, datetime, traceback
 import cookielib, htmlentitydefs
 import socket, base64
-import cachedhttp
+import binascii
+import md5
+import xbmctools
+import httplib
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -318,7 +321,43 @@ entitydefs3 = {
     u'æ':       u'ae'
 }
 
-def first_clean_filename(s):
+def getDownloadPath():
+	downloadpath = xbmcplugin.getSetting("downloadpath")
+	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	try:
+		if downloadpath=="":
+			downloadpath = xbmc.translatePath( "special://home/downloads")
+			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+			xbmcplugin.setSetting("downloadpath",downloadpath)
+	except:
+		pass
+
+	try:
+		os.mkdir(downloadpath)
+	except:
+		pass
+
+	return downloadpath
+
+def getDownloadListPath():
+	downloadpath = xbmcplugin.getSetting("downloadlistpath")
+	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	try:
+		if downloadpath=="":
+			downloadpath = xbmc.translatePath( "special://home/downloads/list")
+			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+			xbmcplugin.setSetting("downloadlistpath",downloadpath)
+	except:
+		pass
+
+	try:
+		os.mkdir(downloadpath)
+	except:
+		pass
+
+	return downloadpath
+
+def limpia_nombre_caracteres_especiales(s):
     if not s:
         return ''
     badchars = '\\/:*?\"<>|'
@@ -326,7 +365,7 @@ def first_clean_filename(s):
         s = s.replace(c, '')
     return s;
 
-def second_clean_filename(s):
+def limpia_nombre_sin_acentos(s):
     if not s:
         return ''
     for key, value in entitydefs3.iteritems():
@@ -334,46 +373,61 @@ def second_clean_filename(s):
             s = s.replace(c, value)
     return s;
 
-def third_clean_filename(s):
+def limpia_nombre_excepto_1(s):
+	if not s:
+		return ''
+
+	# Titulo de entrada
+	try:
+		xbmc.output("s1="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s1=no printable")
+
+	# Convierte a unicode
+	try:
+		s = unicode( s, "utf-8" )
+	except:
+		xbmc.output("no es utf-8")
+		try:
+			s = unicode( s, "iso-8859-1" )
+		except:
+			xbmc.output("no es iso-8859-1")
+			pass
+	try:
+		xbmc.output("s2="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s2=no printable")
+
+	# Elimina acentos
+	s = limpia_nombre_sin_acentos(s)
+	try:
+		xbmc.output("s3="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s3=no printable")	
+
+	# Elimina caracteres prohibidos
+	validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+	stripped = ''.join(c for c in s if c in validchars)
+	try:
+		xbmc.output("s4="+urllib.quote_plus(stripped))
+	except:
+		xbmc.output("s4=no printable")
+	
+	# Convierte a iso
+	s = stripped.encode("iso-8859-1")
+	try:
+		xbmc.output("s5="+urllib.quote_plus(s))
+	except:
+		xbmc.output("s5=no printable")
+
+	return s;
+
+def limpia_nombre_excepto_2(s):
     if not s:
         return ''
-    validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+    validchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890."
     stripped = ''.join(c for c in s if c in validchars)
     return stripped;
-
-def download(url):
-	nombrefichero =  urllib.unquote_plus( url.split("/")[-1] )
-	
-	rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-	xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-	
-	httpFetcher=cachedhttp.CachedHTTPWithProgress() #this class automatically puts up a cancelable progress bar while downloading
-
-	try:
-		try:
-			filename = httpFetcher.urlretrieve(url,localfile=rutalocal)
-		except IOError:
-			nombrefichero =  downloadtools.first_clean_filename(nombrefichero)
-			rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-			xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-			try:
-				filename = httpFetcher.urlretrieve(url,localfile=rutalocal)
-			except IOError:
-				nombrefichero =  downloadtools.second_clean_filename(nombrefichero)
-				rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-				xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-				try:
-					filename = httpFetcher.urlretrieve(url,localfile=rutalocal)
-				except IOError:
-					nombrefichero =  downloadtools.third_clean_filename(nombrefichero)
-					rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-					xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-					try:
-						filename = httpFetcher.urlretrieve(url,localfile=rutalocal)
-					except IOError:
-						pass
-	except KeyboardInterrupt:
-		xbmc.output("Interrumpida por el usuario")
 
 #-----------------------------------------------------------------------
 # Diálogo de progreso
@@ -381,50 +435,93 @@ def download(url):
 
 progreso = xbmcgui.DialogProgress()
 
-def download2(url):
-	xbmc.output("[downloadtools.py] url="+url)
-	#progreso = xbmcgui.DialogProgress()
-
-	nombrefichero =  urllib.unquote_plus( url.split("/")[-1] )
-	rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
+def getfilefromtitle(url,title):
+	# Imprime en el log lo que va a descartar
+	xbmc.output("[downloadtools.py] getfilefromtitle: url="+url )
+	#xbmc.output("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
+	plataforma = xbmctools.get_system_platform();
+	xbmc.output("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
 	
-	xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , rutalocal )
+	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+	nombrefichero = title + url[-4:]
+	
+	xbmc.log("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
+	fullpath = os.path.join( getDownloadPath() , nombrefichero )
+	xbmc.log("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
+	
+	return fullpath
 
-	try:
+def downloadtitle(url,title):
+	fullpath = getfilefromtitle(url,title)
+	return downloadfile(url,fullpath)
+
+def downloadfile(url,nombrefichero):
+	xbmc.output("[downloadtools.py] downloadfile: url="+url)
+	xbmc.output("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+	# antes
+	#f=open(nombrefichero,"wb")
+	nombrefichero = xbmc.makeLegalFilename(nombrefichero)
+	xbmc.output("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+
+	# despues
+	if os.path.exists(nombrefichero):
+		f = open(nombrefichero, 'r+b')
+		existSize = os.path.getsize(nombrefichero)
+		xbmc.output("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
+		grabado = existSize
+		f.seek(existSize)
+	else:
+		existSize = 0
+		xbmc.output("[downloadtools.py] downloadfile: el fichero no existe")
+		f = open(nombrefichero, 'wb')
+		grabado = 0
+
+	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , nombrefichero )
+
+	# Timeout del socket a 60 segundos
+	socket.setdefaulttimeout(10)
+
+	h=urllib2.HTTPHandler(debuglevel=0)
+	request = urllib2.Request(url)
+	if existSize > 0:
+		request.add_header('Range', 'bytes=%d-' % (existSize, ))
+
+	opener = urllib2.build_opener(h)
+	urllib2.install_opener(opener)
+	connexion = opener.open(request)
+	totalfichero = int(connexion.headers["Content-Length"])
+	if existSize > 0:
+		totalfichero = totalfichero + existSize
+
+	xbmc.log("Content-Length=%s" % totalfichero)
+
+	blocksize = 100*1024
+
+	bloqueleido = connexion.read(blocksize)
+	xbmc.log("bloqueleido=%s" % len(bloqueleido))
+	
+	while len(bloqueleido)>0:
 		try:
-			urllib.urlretrieve(url, rutalocal, download_callback)
-		except IOError:
-			nombrefichero =  downloadtools.first_clean_filename(nombrefichero)
-			rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-			xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-			try:
-				urllib.urlretrieve(url, rutalocal, download_callback)
-			except IOError:
-				nombrefichero =  downloadtools.second_clean_filename(nombrefichero)
-				rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-				xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-				try:
-					urllib.urlretrieve(url, rutalocal, download_callback)
-				except IOError:
-					nombrefichero =  downloadtools.third_clean_filename(nombrefichero)
-					rutalocal = os.path.join( xbmc.translatePath( "special://home/plugins/video/pelisalacarta/" ) , nombrefichero )
-					xbmc.output("[downloadtools.py] rutalocal="+rutalocal)
-					try:
-						urllib.urlretrieve(url, rutalocal, download_callback)
-					except IOError:
-						pass
-	except KeyboardInterrupt:
-		xbmc.output("Interrumpida por el usuario")
+			f.write(bloqueleido)
+			grabado = grabado + len(bloqueleido)
+			percent = int(float(grabado)*100/float(totalfichero))
+			totalmb = float(float(totalfichero)/(1024*1024))
+			descargadosmb = float(float(grabado)/(1024*1024))
+			progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent ) )
+			bloqueleido = connexion.read(blocksize)
+			#xbmc.log("bloqueleido=%s" % len(bloqueleido))
+			
+			if progreso.iscanceled():
+				f.close()
+				return -1
+		except:
+			for line in sys.exc_info():
+				xbmc.output( "%s" % line , xbmc.LOGERROR )
+			f.close()
+			
+			#advertencia = xbmcgui.Dialog()
+			#resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
+			
+			return -2
 
-	progreso.close()
-
-def download_callback2(count, blocksize, totalsize):
-	#print "count=",count
-	#print "blocksize=",blocksize
-	#print "totalsize=",totalsize
-	percent = int( float(count * blocksize * 100) / totalsize)
-	#print "percent=",percent
-	progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( float( float(count * blocksize) / float(1024*1024) ) , float( float(totalsize) / float(1024*1024)) , percent ) )
-	if progreso.iscanceled():
-		raise KeyboardInterrupt
+	f.close()

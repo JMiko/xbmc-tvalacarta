@@ -52,6 +52,13 @@ def listchannels(params,url,category):
 	addfolder("TV3","tv3","mainlist")
 	addfolder("TVG","tvg","mainlist")
 	addfolder("Mallorca TV","tvmallorca","mainlist")
+	addfolder("Meristation","meristation","mainlist")
+	addfolder("7rm","sieterm","mainlist")
+	addfolder("Internautas TV","internautastv","mainlist")
+	addfolder("Publico.tv","publicotv","mainlist")
+	addfolder("Favoritos","favoritos","mainlist")
+	addfolder("Descargas","descargados","mainlist")
+	addfolder("Configuración","configuracion","mainlist")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )
