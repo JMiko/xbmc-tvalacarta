@@ -30,7 +30,7 @@ def mainlist(params,url,category):
 	xbmc.output("[internautastv.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "ultimosvideos"   , CHANNELNAME , "Últimos vídeos"     , "http://www.internautas.tv/backend/m4v.xml" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "ultimosvideos"   , CHANNELNAME , "Últimos vídeos"     , "http://www.internautas.tv/backend/ogg.xml" , "" , "" )
 	xbmctools.addnewfolder( CHANNELCODE , "archivo"         , CHANNELNAME , "Archivo"            , "http://www.internautas.tv/" , "" , "" )
 
 	# Label (top-right)...
@@ -64,7 +64,7 @@ def ultimosvideos(params,url,category):
 	patron += '<title>([^<]+)</title>[^<]+'
 	patron += '<link>[^<]+</link>[^<]+'
 	patron += '<description>([^<]+)</description>[^<]+'
-	patron += '<enclosure url="([^"]+)" type="video/m4v" />[^<]+'
+	patron += '<enclosure url="([^"]+)"[^>]+>[^<]+'
 	patron += '<pubDate>([^<]+)</pubDate>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
@@ -100,11 +100,13 @@ def archivo(params,url,category):
 	patron  = '<div class="barraopcion"><a href="([^"]+)">Archivo</a></div>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	if len(matches)>0:
+	if len(matches)==0:
 		xbmctools.alerterrorpagina()
 		return
+	
+	url = urlparse.urljoin(url,matches[0])
 
-	videosmes(params,matches[0],category)
+	videosmes(params,url,category)
 
 def videosmes(params,url,category):
 	xbmc.output("[internautastv.py] videosmes")
@@ -113,17 +115,85 @@ def videosmes(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
-	# Busca la URL del archivo
-	patron  = '<div class="ie"><a href="/programa/690.html" title="El Gobierno propondrá que la banda ancha sea servicio universal en toda Europa. El Partido Pirata quiere impulsar la Declaración de Derechos de Internet" alt=""><img src="http://www.internautas.tv/imagenes/20091201_1.jpg" alt="" width="80" /></a></div>'
+	# Busca los videos del mes
+	patron  = '<div class="cx7">([^<]+)<div class="ie"><a href="([^"]+)" title="([^"]+)" alt=""><img src="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Atributos del vídeo
-		scrapedtitle = match[0].strip()+" ("+match[3].strip()+")"
-		scrapedurl = urlparse.urljoin(url,match[2])
+		scrapedtitle = "Día "+match[0]+" - "+match[2].strip()
+		scrapedurl = urlparse.urljoin(url,match[1])
+		scrapedthumbnail = urlparse.urljoin(url,match[3])
+		scrapedplot = scrapedtitle
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELCODE , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+
+	# Busca el enlace al mes anterior
+	patron  = '<a href="([^"]+)">&lt;&lt;&lt;&nbsp;([^<]+)</a>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Atributos del vídeo
+		scrapedtitle = "<< "+match[1].strip()
+		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
-		scrapedplot = match[1].strip()
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELCODE , "videosmes" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+
+	# Busca el enlace al mes siguiente
+	patron  = '<a href="([^"]+)">([^\&]+)&nbsp;&gt;&gt;&gt;</a>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Atributos del vídeo
+		scrapedtitle = ">> "+match[1].strip()
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELCODE , "videosmes" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+	
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def detail(params,url,category):
+	xbmc.output("[internautastv.py] detail")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# Busca los videos del mes
+	patron  = '<div class="c">.*?<span class="t2">([^<]+)</span>.*?'
+	patron += '<div class="v1"><a href="([^"]+)"><img src="\/graficos\/logg\.jpg"'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Atributos del vídeo
+		scrapedtitle = title
+		scrapedurl = match[1]
+		scrapedthumbnail = thumbnail
+		scrapedplot = match[0]
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC

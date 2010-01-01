@@ -55,6 +55,7 @@ def listchannels(params,url,category):
 	addfolder("Meristation","meristation","mainlist")
 	addfolder("7rm","sieterm","mainlist")
 	addfolder("Internautas TV","internautastv","mainlist")
+	addfolder("Publico.tv","publicotv","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
 	addfolder("Descargas","descargados","mainlist")
 	addfolder("Configuración","configuracion","mainlist")
