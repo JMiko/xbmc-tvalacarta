@@ -59,6 +59,7 @@ def listchannels(params,url,category):
 	addfolder("Animeid","animeid","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Ovasid","ovasid","mainlist")
+	addfolder("Kochikame","kochikame","mainlist")
 	addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
