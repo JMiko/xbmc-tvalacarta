@@ -263,7 +263,21 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	del dialogWait
 
 	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_DVDPLAYER )
+	playersettings = xbmcplugin.getSetting('player_type')
+	xbmc.output("[xbmctools.py] playersettings="+playersettings)
+
+	player_type = xbmc.PLAYER_CORE_AUTO
+	if playersettings == "0":
+		player_type = xbmc.PLAYER_CORE_AUTO
+		xbmc.output("[xbmctools.py] PLAYER_CORE_AUTO")
+	elif playersettings == "1":
+		player_type = xbmc.PLAYER_CORE_MPLAYER
+		xbmc.output("[xbmctools.py] PLAYER_CORE_MPLAYER")
+	elif playersettings == "2":
+		player_type = xbmc.PLAYER_CORE_DVDPLAYER
+		xbmc.output("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
+
+	xbmcPlayer = xbmc.Player( player_type )
 	xbmcPlayer.play(playlist)   
 
 def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
