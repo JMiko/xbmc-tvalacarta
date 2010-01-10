@@ -54,6 +54,8 @@ def listchannels(params,url,category):
 	addfolder("Yotix.tv","yotix","mainlist")
 	addfolder("Frozen Layer","frozenlayer","mainlist")
 	addfolder("MCAnime","mcanime","mainlist")
+	addfolder("Animetakus","animetakus","mainlist")
+	addfolder("Ver-anime","veranime","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")
 	addfolder("tu.tv","tutvsite","mainlist")
 	addfolder("Animeid","animeid","mainlist")
