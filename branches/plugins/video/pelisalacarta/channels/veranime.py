@@ -91,7 +91,7 @@ def newlist(params,url,category):
 	for match in matches:
 		scrapedtitle = match[1]
 		scrapedurl = urlparse.urljoin(url,match[0])
-		scrapedthumbnail = "" #urlparse.urljoin(url,match[2]).replace(" ","%20")
+		scrapedthumbnail = urlparse.urljoin(url,match[2]).replace(" ","%20")
 		scrapedplot = ""
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
@@ -134,7 +134,7 @@ def listmirrors(params,url,category):
 	for match in matches:
 		scrapedtitle = match[0]
 		scrapedurl = urlparse.urljoin(url,match[1])
-		scrapedthumbnail = ""
+		scrapedthumbnail = thumbnail
 		scrapedplot = plot
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 

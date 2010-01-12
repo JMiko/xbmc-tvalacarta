@@ -92,7 +92,7 @@ def newlist(params,url,category):
 	for match in matches:
 		scrapedtitle = match[1]
 		scrapedurl = urlparse.urljoin(url,match[0])
-		scrapedthumbnail = "" #urlparse.urljoin(url,match[2])
+		scrapedthumbnail = urlparse.urljoin(url,match[2])
 		scrapedplot = match[3]
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
