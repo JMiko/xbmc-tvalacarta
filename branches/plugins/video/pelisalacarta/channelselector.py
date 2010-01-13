@@ -44,6 +44,7 @@ def listchannels(params,url,category):
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")
 	addfolder("Newcineonline","newcineonline","mainlist")
+	addfolder("Dospuntocerovision","dospuntocerovision","mainlist")
 	addfolder("PeliculasHD","peliculashd","mainlist")
 	addfolder("Pelis24","pelis24","mainlist")
 	#addfolder("Pelis-Sevillista56","sevillista","mainlist")
@@ -61,6 +62,8 @@ def listchannels(params,url,category):
 	addfolder("tu.tv","tutvsite","mainlist")
 	addfolder("Animeid","animeid","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
+	#addfolder("Cinegratis24h","cinegratis24h","mainlist") # en proceso
+	#addfolder("Peliculas21","peliculas21","mainlist")     # en proceso
 	addfolder("Ovasid","ovasid","mainlist")
 	addfolder("Kochikame","kochikame","mainlist")
 	addfolder("SesionVIP","sesionvip","mainlist")
