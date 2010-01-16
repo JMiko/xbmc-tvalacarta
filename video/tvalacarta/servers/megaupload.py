@@ -146,7 +146,7 @@ def getmegauploaduser(login,password):
 		patronvideos  = 'user=([^\;]+);'
 		matches = re.compile(patronvideos,re.DOTALL).findall(cookiedata)
 
-	if len(matches)==0:
+	if len(matches)==0 and DEBUG:
 		xbmc.output("No se ha encontrado la cookie de Megaupload")
 		xbmc.output("----------------------")
 		xbmc.output("Respuesta de Megaupload")
@@ -173,7 +173,8 @@ def getmegauploadvideo(code,user):
 		response = urllib2.urlopen(req)
 	data=response.read()
 	response.close()
-	xbmc.output("[megaupload.py] data=#"+data+"#")
+	#if DEBUG:
+	#	xbmc.output("[megaupload.py] data=#"+data+"#")
 	
 	patronvideos  = '<div.*?id="downloadlink">[^<]+<a href="([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
