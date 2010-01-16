@@ -97,6 +97,28 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	# KOCHIKAME - Megaupload - Vídeos con título
+	xbmc.output("1k) Megaupload con titulo...")
+	patronvideos  = '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)".*?>([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	for match in matches:
+		titulo = match[1].strip()+" - [Megaupload]"
+		if titulo[0:3] == "Cap":
+			titulo = titulo[9:]
+		url = match[0]
+		if url == "3P78ET7H":
+			titulo = "012 - "+titulo
+		if url == "99D5HEEY":
+			titulo = "000 - (muestra <1min)"
+			titulo = titulo.replace('&#33;' , '!') 
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megaupload' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	xbmc.output("1d) Megaupload sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
 	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9]{8})'
@@ -354,6 +376,21 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	# Megavideo - Vídeos con título
+	xbmc.output("14b) Megavideo con titulo...")
+	patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9]{8})" />'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	for match in matches:
+		titulo = "[Megavideo]"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	xbmc.output("0) Stagevu...")
 	patronvideos  = '"http://stagevu.com.*?uid\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -425,6 +462,21 @@ def findvideos(data):
 		if url not in encontrados:
 			xbmc.output("  url="+url)
 			devuelve.append( [ titulo , url , 'veoh' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("0) Directo - myspace")
+	patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Directo]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Directo' ] )
 			encontrados.add(url)
 		else:
 			xbmc.output("  url duplicada="+url)
