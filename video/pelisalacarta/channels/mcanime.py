@@ -31,8 +31,139 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[mcanime.py] mainlist")
 
+	# Añade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELNAME , "home"       , category , "Novedades"                             ,"http://www.mcanime.net/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "onlineforum", category , "Foro anime en línea"                   ,"http://www.mcanime.net/foro/viewforum.php?f=113","","")
+	xbmctools.addnewfolder( CHANNELNAME , "ddnovedades", category , "Descarga directa - Novedades"          ,"http://www.mcanime.net/descarga_directa/anime","","")
+	xbmctools.addnewfolder( CHANNELNAME , "ddalpha"    , category , "Descarga directa - Listado alfabético" ,"http://www.mcanime.net/descarga_directa/anime","","")
+	xbmctools.addnewfolder( CHANNELNAME , "ddcat"      , category , "Descarga directa - Categorías"         ,"http://www.mcanime.net/descarga_directa/anime","","")
+
+	if xbmcplugin.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
+	# Propiedades
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def home(params,url,category):
+	xbmc.output("[cine15.py] listvideos")
+
 	# Descarga la página
-	url = "http://www.mcanime.net/foro/viewforum.php?f=113"
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="release" style="background-image.url\(\'http.//images.mcanime.net/images/anime/icons/anime.gif\'\)\;">[^<]+'
+	patronvideos += '<h4>[RAW] <a href="/fansubs/raws/anime/to_aru_kagaku_no_railgun/episodio_15/61434">To Aru Kagaku no Railgun Ep. 15</a> <span class="date">~ hace 2 hrs. 26 mins.</span></h4>[^<]+'
+	patronvideos += '<div class="rimg"><img src="http://images.mcanime.net/images/default_anime_img.gif" width="82" height="54" alt="[Sin imagen]" /></div>[^<]+'
+	patronvideos += '<div class="rtext">Bueno ahora es turno de To Aru Kagaku no Railgun ahora queda esperar versiones en ingles y espa&ntilde;ol respectivamente</div>[^<]+'
+	patronvideos += '<div class="rfinfo">[^<]+'
+	patronvideos += '<span class="pad">[AVI - 206MB]</span>[^<]+'
+	patronvideos += '</div>[^<]+'
+	patronvideos += '<div class="rflinks">[^<]+'
+	patronvideos += '<span class="pad">[^<]+'
+	patronvideos += '<a href="http://www.filefactory.com/file/a2aeccf/n/To_Aru_Kagaku_no_Railgun_15_RAW.avi" target="_blank"><img src="http://images.mcanime.net/images/hosters/filefactory.gif" width="16" height="16" alt="[]" title="FileFactory" /></a>[^<]+'
+	patronvideos += '<a href="http://www.megaupload.com/?d=GHFTLSKY" target="_blank"><img src="http://images.mcanime.net/images/hosters/megaupload.gif" width="16" height="16" alt="[]" title="Megaupload" /></a>[^<]+'
+	patronvideos += '<a href="http://www.megavideo.com/?d=GHFTLSKY" target="_blank"><img src="http://images.mcanime.net/images/hosters/megavideo.gif" width="16" height="16" alt="[]" title="Megavideo" /></a>[^<]+'
+	patronvideos += '</span>[^<]+'
+	patronvideos += '</div>[^<]+'
+	patronvideos += '<div class="rinfo">[^<]+'
+	patronvideos += '<span>Audios: <img src="http://images.mcanime.net//images/flags/jp.png" width="16" height="11" alt="Japón" title="Japón" /></span>[^<]+'
+	patronvideos += '<span>Subtitulos: <img src="http://images.mcanime.net//images/flags/jp.png" width="16" height="11" alt="[JP]" title="Japón" /></span>[^<]+'
+	patronvideos += '<span>|</span>[^<]+'
+	patronvideos += '<span>Comentarios: <a href="/fansubs/raws/anime/to_aru_kagaku_no_railgun/episodio_15/61434#comentarios" class="c">4</a></span>[^<]+'
+	patronvideos += '<span>|</span>[^<]+'
+	patronvideos += '<span>@<a href="/fansubs/raws/1" class="f">RAWS</a></span>[^<]+'
+	patronvideos += '</div>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = urlparse.urljoin(url,match[2])
+		scrapedplot = match[3]
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Extrae la marca de siguiente página
+	patronvideos = '<a href="([^"]+)"[^>]*>\&raquo\;</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	if len(matches)>0:
+		scrapedtitle = "Página siguiente"
+		scrapedurl = urlparse.urljoin(url,matches[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Propiedades
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def ddalpha(params,url,category):
+	xbmc.output("[mcanime.py] ddcat")
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<a href="(/descarga_directa/anime/lista/[^"]+)">([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Propiedades
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def ddcat(params,url,category):
+	xbmc.output("[mcanime.py] ddcat")
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<a href="(/descarga_directa/anime/genero/[^"]+)">([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Propiedades
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def onlineforum(params,url,category):
+	xbmc.output("[mcanime.py] novedades")
+
+	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
