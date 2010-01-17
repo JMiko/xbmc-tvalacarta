@@ -34,14 +34,14 @@ def mainlist(params,url,category):
 	xbmc.output("[peliculas21.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Peliculas - Novedades"            ,"http://www.peliculas21.com","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Peliculas - Estrenos"             ,"http://www.peliculas21.com/estrenos/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Trailes - Proximos Estrenos","http://www.peliculas21.com/trailers/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliscat"   , category , "Peliculas - Lista por categorías" ,"http://www.peliculas21.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Películas - Novedades"            ,"http://www.peliculas21.com","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Películas - Estrenos"             ,"http://www.peliculas21.com/estrenos/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Trailers - Próximos Estrenos","http://www.peliculas21.com/trailers/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "peliscat"   , category , "Películas - Lista por categorías" ,"http://www.peliculas21.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"  , category , "Peliculas - Lista alfabética"     ,"","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listaActoresMasBuscados" , category , "Actores - Lista Los Mas Buscados"     ,"http://www.peliculas21.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listaActoresMasBuscados" , category , "Actores - Lista Los Más Buscados"     ,"http://www.peliculas21.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor" , category , "Actores - Busqueda Alfabética"  ,"http://www.peliculas21.com/?actdos=Smart","","")	
-	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Peliculas - Buscar"                           ,"","","")
+	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Películas - Buscar"                           ,"","","")
 
 	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
