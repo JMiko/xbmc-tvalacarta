@@ -277,7 +277,7 @@ def listarvideos(params,url,category,data):
         
     if DEBUG and ("+" == plot):
 		
-		detalle = "Esta opcion permite buscar el trailer en youtube para esta pelicula y muestra hasta seis videos mas aproximados si los hay \n (esto es experimental)"
+		detalle = "Esta opcion permite buscar el trailer en youtube para esta pelicula y muestra hasta seis titulos mas aproximados si los hay \n (esto es experimental)"
 		xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category ,"Buscar Trailer para - "+scrapedtitle  , scrapedtitle , scrapedthumbnail, detalle )
 #-------------------------------------------------------------------------------    
        
