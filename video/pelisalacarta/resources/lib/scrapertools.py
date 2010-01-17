@@ -250,6 +250,10 @@ def entityunescape(cadena):
 
 
 def htmlclean(cadena):
+	cadena = cadena.replace("<center>","")
+	cadena = cadena.replace("</center>","")
+	cadena = cadena.replace("<b>","")
+	cadena = cadena.replace("</b>","")
 	cadena = cadena.replace("<p>","")
 	cadena = cadena.replace("</p>","")
 	cadena = cadena.replace("</span>","")
@@ -259,7 +263,10 @@ def htmlclean(cadena):
 	cadena = cadena.replace("</ul>","")
 	cadena = cadena.replace("<li>","")
 	cadena = cadena.replace("</li>","")
+	cadena = cadena.replace("</dd>","")
 
+	cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<a[^>]*>",re.DOTALL).sub("",cadena)
