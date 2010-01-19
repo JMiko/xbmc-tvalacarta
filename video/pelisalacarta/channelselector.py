@@ -63,7 +63,7 @@ def listchannels(params,url,category):
 	addfolder("tu.tv","tutvsite","mainlist")
 	addfolder("Animeid","animeid","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
-	#addfolder("Cinegratis24h","cinegratis24h","mainlist") # en proceso
+	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("Peliculas21","peliculas21","mainlist")
 	addfolder("Ovasid","ovasid","mainlist")
 	addfolder("Kochikame","kochikame","mainlist")
