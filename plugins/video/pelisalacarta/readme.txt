@@ -84,7 +84,7 @@ XBMC Windows XP:
 C:\Documents and Settings\jesus\...\XBMC\plugins\video\ 
 C:\Program files\XBMC\plugins\video\
 
-XBMC Windows Vista:
+XBMC Windows Vista / 7:
 C:\Users\jesus\AppData\Roaming\XBMC\plugins\video\ 
 C:\Program files\XBMC\plugins\video\
 

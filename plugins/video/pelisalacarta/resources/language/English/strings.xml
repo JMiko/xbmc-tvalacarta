@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-    <string id="30000">Nombre:</string>
+    <string id="30000">Name:</string>
     <string id="30001">Version:</string>
-    <string id="30002">Autor:</string>
+    <string id="30002">Author:</string>
     <string id="30003">Web:</string>
-    <string id="30100">Modo premium Megavideo:</string>
-    <string id="30101">Usuario Megavideo:</string>
-    <string id="30102">Password Megavideo:</string>
-    <string id="30103">Cookie Megavideo:</string>
-    <string id="30200">Comprobar actualizaciones:</string>
-    <string id="30202">Forzar modo de vista óptimo:</string>
-    <string id="30201">Directorio de descargas:</string>
-    <string id="30203">Directorio de lista descargas:</string>
+
+    <string id="30007">Player type</string>
+    <string id="30004">Auto</string>
+    <string id="30005">MPlayer</string>
+    <string id="30006">DVDPlayer</string>
+
+    <string id="30100">Megavideo premium mode:</string>
+    <string id="30101">Megavideo user:</string>
+    <string id="30102">Megavideo password:</string>
+    <string id="30103">Megavideo cookie:</string>
+    <string id="30200">Check for updates:</string>
+    <string id="30202">Force view mode:</string>
+    <string id="30201">Download path:</string>
+    <string id="30203">Download list path:</string>
+    <string id="30204">Enable adult mode:</string>
 </strings>

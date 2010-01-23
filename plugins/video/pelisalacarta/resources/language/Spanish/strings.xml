@@ -4,6 +4,10 @@
     <string id="30001">Version:</string>
     <string id="30002">Autor:</string>
     <string id="30003">Web:</string>
+    <string id="30007">Reproductor:</string>
+    <string id="30004">Auto</string>
+    <string id="30005">MPlayer</string>
+    <string id="30006">DVDPlayer</string>
     <string id="30100">Modo premium Megavideo:</string>
     <string id="30101">Usuario Megavideo:</string>
     <string id="30102">Password Megavideo:</string>
@@ -12,4 +16,5 @@
     <string id="30202">Forzar modo de vista óptimo:</string>
     <string id="30201">Directorio de descargas:</string>
     <string id="30203">Directorio de lista descargas:</string>
+    <string id="30204">Activar modo adultos:</string>
 </strings>
