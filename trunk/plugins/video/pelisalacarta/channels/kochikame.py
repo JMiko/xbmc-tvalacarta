@@ -12,7 +12,7 @@ import xbmcgui
 import xbmcplugin
 import scrapertools
 import megavideo
-import servertools
+import megaupload
 import binascii
 import xbmctools
 
@@ -31,52 +31,61 @@ DEBUG = True
 
 Generate = False # poner a true para generar listas de peliculas
 
-LoadThumbnails = True # indica si cargar los carteles
+LoadThumbnails = False # indica si cargar los carteles
 
 def mainlist(params,url,category):
 	xbmc.output("[kochikame.py] mainlist")
 
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Kochikame (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: elisa_chan, friki100, kouta-kun & sunnyghiba")
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def detail(params,url,category):
-	xbmc.output("[kochikame.py] detail")
-
-	title = urllib.unquote_plus( params.get("title") )
-        if title == "Kochikame (by friki100)":
-	       title = "Kochikame"
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	xbmc.output("[kochikame.py] title="+title)
-	xbmc.output("[kochikame.py] thumbnail="+thumbnail)
+	url = "http://www.astroteamrg.org/foro/index.php?showtopic=15845"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
-	# ------------------------------------------------------------------------------------
-	# Busca los enlaces a los videos
-	# ------------------------------------------------------------------------------------
-	listavideos = servertools.findvideos(data)
-
-	for video in listavideos:
-		xbmctools.addvideo( CHANNELNAME , title+" - "+video[0] , video[1] , category , video[2] )
-	# ------------------------------------------------------------------------------------
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
+	patronvideos  = '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)".*?>([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = match[1]
+		if titulo[0:3] == "Cap":
+			     titulo = titulo[9:]
+		url = match[0]
+		if url == "3P78ET7H":
+		     titulo = "012 - "+titulo
+		if url == "99D5HEEY":
+		     url = ""
+		if titulo[0:3] == "000":
+	             url = ""
+                titulo = titulo.replace('&#33;' , '!')
+		titulo = "Kochikame - "+titulo+" - [Megaupload] - by friki100"
+		plot = "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: elisa_chan, friki100, kouta-kun & sunnyghiba"
+		
+		# Añade al listado de XBMC 
+		if url <> "":
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megaupload" , titulo , url , "" , plot )
+			
+	# Extrae la fecha de la próxima actualización
+	patronvideos  = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->(.*?)<!--sizec-->'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = match[1]
+		url = "UPFO7JTH"
+		# Añade al listado de XBMC 
+		xbmctools.addvideo( CHANNELNAME , titulo , url , category , "Megaupload" )
 
 	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
 	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
+
 	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+			
 
 def play(params,url,category):
 	xbmc.output("[kochikame.py] play")
@@ -84,10 +93,8 @@ def play(params,url,category):
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = params["server"]
-
+	server = params["server"]	
 	xbmc.output("[kochikame.py] thumbnail="+thumbnail)
 	xbmc.output("[kochikame.py] server="+server)
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-

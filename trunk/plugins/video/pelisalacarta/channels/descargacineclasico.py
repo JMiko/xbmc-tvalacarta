@@ -3,6 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal para descargacineclasico
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+# contribución de ermanitu
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os

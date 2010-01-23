@@ -419,6 +419,20 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("0) Megavideo... formato watchanimeon")
+	patronvideos  = 'src="http://wwwstatic.megavideo.com/mv_player.swf.*?\&v\=([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	for match in matches:
+		titulo = "[Megavideo]"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Megavideo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	xbmc.output("0) Megaupload... formato megavideo con d=XXXXXXX")
 	patronvideos  = '"http://www.megavideo.com/\?d\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -468,6 +482,36 @@ def findvideos(data):
 
 	xbmc.output("0) Directo - myspace")
 	patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Directo]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Directo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("0) Directo - myspace")
+	patronvideos  = '(http://[^\.]+\.myspacecdn.*?\.flv)'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Directo]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Directo' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("0) Directo - ning")
+	patronvideos  = '(http://api.ning.com.*?\.flv)'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:

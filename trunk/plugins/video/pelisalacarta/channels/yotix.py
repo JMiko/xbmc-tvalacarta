@@ -32,11 +32,39 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[yotix.py] mainlist")
 
-	#53=wall
-	#xbmc.executebuiltin("Container.SetViewMode(53)")
+	# Añade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELNAME , "videolist"      , "" , "Novedades","http://yotix.tv/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , "" , "Listado por categorías","http://yotix.tv/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "search"         , "" , "Buscador","http://yotix.tv/","","")
 
-	if url=='':
-		url = "http://yotix.tv/"
+	if xbmcplugin.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def search(params,url,category):
+	xbmc.output("[yotix.py] search")
+
+	keyboard = xbmc.Keyboard('')
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		tecleado = keyboard.getText()
+		if len(tecleado)>0:
+			#convert to HTML
+			tecleado = tecleado.replace(" ", "+")
+			searchUrl = "http://yotix.tv/?s="+tecleado
+			videolist(params,searchUrl,category)
+
+
+def listcategorias(params,url,category):
+	xbmc.output("[yotix.py] listcategorias")
 
 	# ------------------------------------------------------
 	# Descarga la página
@@ -45,36 +73,59 @@ def mainlist(params,url,category):
 	#xbmc.output(data)
 
 	# ------------------------------------------------------
-	# Extrae las películas
+	# Extrae las entradas de la home como carpetas
 	# ------------------------------------------------------
-	#patron  = '<div class="item">[^<]+'
-	#patron += '<div class="background"></div>[^<]+'
-	#patron += '<div class="content">[^<]+'
-	#patron += '<a href="([^"]+)"><h1>([^<]+)</h1></a>.*?'
-	#patron += '<img src="([^"]+)"/>'
-	patron  = '<div class="galleryitem">[^<]+'
-	patron += '<a title="[^"]+" rel="[^"]+" href="[^"]+">[^<]+'
-	patron += '<img alt="[^"]+" src="([^"]+)" style="[^"]+"/>[^<]+'
-	patron += '</a>[^<]+'
-	patron += '<h3><a title="[^"]+" rel="[^"]+" href="([^"]+)">([^<]+)</a></h3>[^<]+'
-	patron += '</div>'
+	patron  = '<a href="(/categoria/[^"]+)">([^<]+)</a>'
 
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[2]
-		scrapedurl = match[1]
-		scrapedthumbnail = match[0]
+		# Atributos
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = ""
 		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def videolist(params,url,category):
+	xbmc.output("[yotix.py] videolist")
+
+	# ------------------------------------------------------
+	# Descarga la página
+	# ------------------------------------------------------
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# ------------------------------------------------------
+	# Extrae las entradas de la home como carpetas
+	# ------------------------------------------------------
+	patron  = '<div class="galleryitem">[^<]+'
+	patron += '<h1><a title="([^"]+)"[^<]+</a></h1>[^<]+'
+	patron += '<a href="([^"]+)"><img src="([^"]+)"'
+
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[0].replace("&#8211;","-")
+		scrapedurl = match[1]
+		scrapedthumbnail = match[2]
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -84,27 +135,18 @@ def mainlist(params,url,category):
 	# ------------------------------------------------------
 	patron = '<a href="([^"]+)" >&raquo;</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
 		scrapedtitle = "Pagina siguiente"
 		scrapedurl = match
 		scrapedthumbnail = ""
 		scrapeddescription = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
 
-
-	if xbmcplugin.getSetting("singlechannel")=="true":
-		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -130,10 +172,15 @@ def listmirrors(params,url,category):
 	#xbmc.output(data)
 	
 	# Extrae el argumento
-	patronvideos  = '<div class="postcontent">.*?<p>(.*?)</p>'
+	patronvideos  = '<div class="texto.sinopsis">(.*?)<div'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
 	if len(matches)>0:
-		plot = matches[0]
+		plot = matches[0].strip()
+		plot = plot.replace("<p>"," ")
+		plot = plot.replace("</p>"," ")
+		plot = plot.replace('<p style="text-align: justify;">'," ")
+		xbmc.output(plot)
 
 	# Extrae los enlaces a los vídeos (Megavídeo)
 	patronvideos  = '<a.*?href="(http://yotix.tv/flash/[^"]+)"[^>]*>([^<]+)</a>'
@@ -142,7 +189,9 @@ def listmirrors(params,url,category):
 
 	for match in matches:
 		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , match[1] , match[0] , thumbnail , plot )
+		scrapedtitle = match[1].replace("&#8211;","-")
+		scrapedurl = match[0]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , scrapedtitle , scrapedurl , thumbnail , plot )
 
 	# Extrae los enlaces a los vídeos (Directo)
 	extraevideos('<a.*?href="(http://yotix.tv/sitio/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
@@ -150,6 +199,8 @@ def listmirrors(params,url,category):
 	extraevideos('<a.*?href="(http://yotix.tv/video/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
 	extraevideos('<a.*?href="(http://yotix.tv/ver/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
 	extraevideos('<a.*?href="(http://yotix.tv/rt/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
+	extraevideos('<a.*?href="(http://yotix.tv/anime/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
+	extraevideos('<a.*?href="(http://yotix.tv/gb/[^"]+)"[^>]*>([^<]+)</a>',data,category,thumbnail,plot)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -166,8 +217,9 @@ def extraevideos(patronvideos,data,category,thumbnail,plot):
 	scrapertools.printMatches(matches)		
 
 	for match in matches:
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , match[1] , match[0] , thumbnail , plot )
+		scrapedtitle = match[1].replace("&#8211;","-")
+		scrapedurl = match[0]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , thumbnail , plot )
 
 def play(params,url,category):
 	xbmc.output("[yotix.py] play")

@@ -15,7 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
-
+import string
 CHANNELNAME = "pintadibujos"
 
 # Esto permite su ejecución en modo emulado
@@ -65,18 +65,26 @@ def movielist(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<td><a href="([^"]+)" target="_blank"><img SRC="([^"]+)"'
+	patronvideos  = '<td><a href="([^"]+)" target="_blank"><img SRC="([^"]+)"(| ALT=".*?") BORDER'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = urlparse.urljoin(url,match[0])
+		if match[2] == "":
+				longitud = len(match[1])
+				scrapedtitle = match[1][:longitud-4]
+				scrapedtitle = scrapedtitle.replace("_"," ")
+		else:
+			scrapedtitle = match[2].replace(" ALT=","")
+			scrapedtitle = scrapedtitle.replace('"','')
+		
 
 		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
 		
 		# Thumbnail
+		
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		
 		# procesa el resto
