@@ -171,19 +171,16 @@ def detail(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
-	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los mirrors, o a los capítulos de las series...
-	# ------------------------------------------------------------------------------------
+	patronvideos  = '<a href="([^"]+)">Sigu'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	for match in matches:
+		xbmctools.addnewfolder( CHANNELNAME , "list", category , "!Página siguiente",urlparse.urljoin(url,match),"","")
 
-	xbmc.output("Busca el enlace de página siguiente...")
-	try:
-		# La siguiente página
-		patronvideos  = '<a href="([^"]+)">Sigu'
-		matches = re.compile(patronvideos,re.DOTALL).findall(data)
-		for match in matches:
-			xbmctools.addnewfolder( CHANNELNAME , "list", category , "!Página siguiente",urlparse.urljoin(url,match),"","")
-	except:
-		xbmc.output("No encuentro la pagina...")
+	patronvideos  = 'file\=(http\://www.pelis24.com/xml[^\&]+)\&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	for match in matches:
+		xbmctools.addnewfolder( CHANNELNAME , "detail", category , title + " (partes)",match,"","")
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a videos directos
@@ -191,16 +188,19 @@ def detail(params,url,category):
 
 	patronvideos  = "url:'([^']+)'"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	i = 1
 	for match in matches:
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title +" - [Directo]", match, thumbnail , "" )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title +" %d - [Directo]" % i, match, thumbnail , "" )
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
 	listavideos = servertools.findvideos(data)
 	
+	i = 1
 	for video in listavideos:
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , title +" - "+video[0], video[1], thumbnail , "" )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , (title +" %d - "+video[0]) % i, video[1], thumbnail , "" )
+		i = i + 1
 	# ------------------------------------------------------------------------------------
 
 	# Label (top-right)...

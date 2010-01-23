@@ -264,7 +264,9 @@ def htmlclean(cadena):
 	cadena = cadena.replace("<li>","")
 	cadena = cadena.replace("</li>","")
 	cadena = cadena.replace("</dd>","")
+	cadena = cadena.replace("</div>","")
 
+	cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)

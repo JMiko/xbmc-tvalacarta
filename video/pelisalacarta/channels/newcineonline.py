@@ -77,17 +77,11 @@ def list(params,url,category):
 		
 		# procesa el resto
 		scrapeddescription = match[3]
-		scrapeddescription = scrapeddescription.replace("<br />","\n")
-		scrapeddescription = scrapeddescription.replace("<b>","")
-		scrapeddescription = scrapeddescription.replace("</b>","")
-		scrapeddescription = scrapeddescription.replace("<i>","")
-		scrapeddescription = scrapeddescription.replace("</i>","")
+		scrapeddescription = scrapertools.htmlclean(scrapeddescription)
 		scrapeddescription = scrapeddescription.replace("<!--colorstart:#589BB9-->","")
 		scrapeddescription = scrapeddescription.replace("<!--colorend-->","")
 		scrapeddescription = scrapeddescription.replace("<!--/colorend-->","")
 		scrapeddescription = scrapeddescription.replace("<!--/colorstart-->","")
-		scrapeddescription = scrapeddescription.replace('<span style="color:#589BB9">',"")
-		scrapeddescription = scrapeddescription.replace("</span>","")
 		scrapeddescription = scrapeddescription.strip()
 
 		# Depuracion
