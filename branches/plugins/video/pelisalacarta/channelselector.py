@@ -45,6 +45,7 @@ def listchannels(params,url,category):
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")
 	addfolder("Newcineonline","newcineonline","mainlist")
+	addfolder("CastTV","casttv","mainlist")
 	addfolder("Dospuntocerovision","dospuntocerovision","mainlist")
 	#addfolder("PeliculasHD","peliculashd","mainlist")
 	addfolder("Pelis24","pelis24","mainlist")
