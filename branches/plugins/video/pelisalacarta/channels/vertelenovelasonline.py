@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para animetakus
+# Canal para vertelenovelasonline
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -16,7 +16,7 @@ import servertools
 import binascii
 import xbmctools
 
-CHANNELNAME = "animetakus"
+CHANNELNAME = "vertelenovelasonline"
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -25,17 +25,16 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[animetakus.py] init")
+xbmc.output("[vertelenovelasonline.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[animetakus.py] mainlist")
+	xbmc.output("[vertelenovelasonline.py] mainlist")
 
 	# Menu principal
-	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://www.animetakus.com/" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://www.animetakus.com/" , "", "" )
-
+	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://www.vertelenovelasonline.com/" , "", "" )
+	
 	# Si es un canal independiente, añade "Configuracion", "Descargas" y "Favoritos"
 	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
@@ -45,49 +44,20 @@ def mainlist(params,url,category):
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def fulllist(params,url,category):
-	xbmc.output("[animetakus.py] fulllist")
-
-	# Descarga la página
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
-
-	# Patron de las entradas
-	patron = "<a dir='ltr' href='(http.//www.animetakus.com/search/label/[^']+)'>([^<]+)</a>"
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	# Añade las entradas encontradas
-	for match in matches:
-		# Atributos
-		scrapedtitle = match[1]
-		scrapedurl = urlparse.urljoin(url,match[0])
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-	# Asigna el título, desactiva la ordenación, y cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
 def newlist(params,url,category):
-	xbmc.output("[animetakus.py] listmirrors")
+	xbmc.output("[vertelenovelasonline.py] listmirrors")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patron  = '<a onblur="[^"]+" href="([^"]+)"><img style="cursor: pointer; width: 135px; height: 190px;" src="([^"]+)" alt="" id="BLOGGER_PHOTO[^>]+></a>'
+	patron  = '<a onblur="[^"]+" href="([^"]+)"><img style="cursor:pointer; cursor:hand;width: 186px; height: 320px;" src="([^"]+)" border="0" alt=""id="BLOGGER_PHOTO[^>]+></a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[0][34:-5]
+		scrapedtitle = match[1][44:-5]
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
@@ -96,29 +66,13 @@ def newlist(params,url,category):
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-	# Siguiente página
-	patron = "<a class='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Entradas antiguas'>"
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	for match in matches:
-		scrapedtitle = "Página siguiente"
-		scrapedurl = urlparse.urljoin(url,match)
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[animetakus.py] listmirrors")
+	xbmc.output("[vertelenovelasonline.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -128,15 +82,26 @@ def listmirrors(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
-	patron = '<a style="[^"]+" href="(http.//www.megavideoflv.com[^"]+)" target="_blank">([^<]+)</a>'
+	# Extrae la sinopsis
+	patron  = "<div class='post-body entry-content'>.*?</div>"
+
+	if len(matches)>0:
+
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		plot = matches[0].strip()
+		xbmc.output(plot)
+
+	patron = '<div id="listanime"><a title="([^"]+)" href="([^"]+)"><strong>[^<]+</strong></a></div>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = title + " " + match[1]
-		scrapedurl = urlparse.urljoin(url,match[0])
-		scrapedthumbnail = ""
-		scrapedplot = ""
+		scrapedtitle = match[0]
+		scrapedurl = urlparse.urljoin(url,match[1])
+		scrapedthumbnail = thumbnail
+		scrapedplot = plot
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
@@ -148,7 +113,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[animetakus.py] detail")
+	xbmc.output("[vertelenovelasonline.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -157,6 +122,14 @@ def detail(params,url,category):
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
+
+	patron  = '<div id="listacapdd"><div class="listddserie">[^<]+'
+	patron += '<a title="[^"]+" href="([^"]+)"><strong>[^<]+</strong></a>[^<]+'
+	patron += '</div>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if len(matches)>0:
+		url = matches[0]
+		data = scrapertools.cachePage(url)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -176,7 +149,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[animetakus.py] play")
+	xbmc.output("[vertelenovelasonline.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
