@@ -256,7 +256,7 @@ def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabé
 	# Extrae las entradas
 	patronvideos  = '<td class="contenido"><img src="(.*?)"' # cartel
 	patronvideos += '.*?alt="(.*?)"' # título
-	patronvideos += '.*?<b>Descripci.*?<a href="(.*?)"' # url
+	patronvideos += '.*?<b>Sinopsis.*?<a href="(.*?)"' # url
 		
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
