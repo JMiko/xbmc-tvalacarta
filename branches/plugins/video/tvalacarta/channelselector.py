@@ -54,6 +54,7 @@ def listchannels(params,url,category):
 	addfolder("Mallorca TV","tvmallorca","mainlist")
 	addfolder("Meristation","meristation","mainlist")
 	addfolder("7rm","sieterm","mainlist")
+	addfolder("Televisión Canaria","rtvc","mainlist")
 	addfolder("Internautas TV","internautastv","mainlist")
 	addfolder("Publico.tv","publicotv","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
