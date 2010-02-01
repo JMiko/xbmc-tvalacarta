@@ -363,9 +363,9 @@ def ddseriedetail(params,url,category):
 def ddpostdetail(params,url,category):
 	xbmc.output("[mcanime.py] ddpostdetail")
 
-	title = urllib.unquote_plus( params.get("title") )
+	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" ).encode("iso-8859-1")
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -392,11 +392,23 @@ def ddpostdetail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	listavideos = servertools.findvideos(data)
 
+	i = 1
+
 	for video in listavideos:
-		videotitle = video[0]
+		try:
+			fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
+		except:
+			fulltitle = title.strip() + " (%d) " + video[0]
+		fulltitle = fulltitle % i
+		i = i + 1
 		url = video[1]
 		server = video[2]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+		#xbmc.output("videotitle="+urllib.quote_plus( videotitle ))
+		#xbmc.output("plot="+urllib.quote_plus( plot ))
+		#plot = ""
+		#xbmc.output("title="+urllib.quote_plus( title ))
+
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , fulltitle , url , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
 
 	# Cierra el directorio
@@ -477,7 +489,7 @@ def forumdetail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	for match in matches:
 		xbmc.output("Encontrada pagina siguiente")
-		addfolder("Pagina siguiente",urlparse.urljoin(url,match).replace("&amp;","&"),"list")
+		xbmctools.addnewfolder( CHANNELNAME , "list" , category , "Pagina siguiente" ,urlparse.urljoin(url,match).replace("&amp;","&"),"","")
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -520,7 +532,12 @@ def forumdetail(params,url,category):
 	
 	for video in listavideos:
 		titulo = descripcion = re.sub("<[^>]+>","",video[0])
-		addthumbnailvideo( titulo , video[1] , thumbnailurl , descripcion , category , video[2] )
+		url = video[1]
+		thumbnail = thumbnailurl
+		plot = descripcion
+		server = video[2]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , titulo , url , thumbnail , plot )
+
 	# ------------------------------------------------------------------------------------
 
 	# Cierra el directorio
@@ -532,22 +549,9 @@ def play(params,url,category):
 	xbmc.output("[mcanime.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
-def addfolder(nombre,url,accion):
-	xbmc.output('[mcanime.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
-	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
-	listitem.setInfo( "video", { "Title" : nombre, "Date" : str(int(time.clock()*100000000)) } )
-	itemurl = '%s?channel=mcanime&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
-	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
-
-def addthumbnailvideo(nombre,url,thumbnail,descripcion,category,server):
-	xbmc.output('[mcanime.py] addvideo( "'+nombre+'" , "' + url + '" , "'+thumbnail+'" , "'+server+'")"')
-	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title" : nombre, "Plot" : descripcion } )
-	itemurl = '%s?channel=mcanime&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , url , server )
-	xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
