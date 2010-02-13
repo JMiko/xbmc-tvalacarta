@@ -3,6 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # XBMC Tools
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+# 2010/02/13 Añadida funcionalidad de Biblioteca - JUR
 #------------------------------------------------------------
 
 import urllib
