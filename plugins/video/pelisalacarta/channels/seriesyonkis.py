@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import library
 
 CHANNELNAME = "seriesyonkis"
 
@@ -106,15 +107,18 @@ def searchresults(params,url,category):
 		
 		# procesa el resto
 		scrapedplot = match[3]
+		
+		Serie = scrapedtitle    # JUR-Añade nombre serie para librería
 
 		# Depuracion
 		if (DEBUG):
 			xbmc.output("scrapedtitle="+scrapedtitle)
 			xbmc.output("scrapedurl="+scrapedurl)
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.output("Serie="+Serie)
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "list" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		xbmctools.addnewfolder( CHANNELNAME , "list" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot , Serie)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -194,15 +198,17 @@ def listseriesthumbnails(params,url,category):
 		
 		# procesa el resto
 		scrapedplot = ""
+		Serie = scrapedtitle    # JUR-Añade nombre serie para librería
 
 		# Depuracion
 		if (DEBUG):
 			xbmc.output("scrapedtitle="+scrapedtitle)
 			xbmc.output("scrapedurl="+scrapedurl)
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.output("Serie="+Serie)
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "list" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		xbmctools.addnewfolder( CHANNELNAME , "list" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot, Serie )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -243,14 +249,24 @@ def lastepisodeslist(params,url,category):
 		# procesa el resto
 		scrapedplot = ""
 
+		#Serie - Trata de extraerla del título (no hay carpeta de serie aquí)
+		#Esto son pruebas "muy preliminares" esto puede dar problemas con series añadidas completas
+		try:
+			Serie = scrapedtitle[:scrapedtitle.find("- ")-1]
+		except:
+			xbmc.output ("[seriesyonkis.py] ERROR extrayendo y limpiando nombre de serie de:"+scrapedtitle)
+			Serie = ""
+
 		# Depuracion
 		if (DEBUG):
 			xbmc.output("scrapedtitle="+scrapedtitle)
+			xbmc.output("Serie="+Serie)
 			xbmc.output("scrapedurl="+scrapedurl)
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.output("Serie="+Serie)
 
 		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot ,Serie)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -301,15 +317,17 @@ def allserieslist(params,url,category,clave):
 		
 		# procesa el resto
 		scrapedplot = ""
+		Serie = scrapedtitle    # JUR-Añade nombre serie para librería
 
 		# Depuracion
 		if (DEBUG):
 			xbmc.output("scrapedtitle="+scrapedtitle)
 			xbmc.output("scrapedurl="+scrapedurl)
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.output("Serie="+Serie)
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "list" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		xbmctools.addnewfolder( CHANNELNAME , "list" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot , Serie)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -328,6 +346,19 @@ def list(params,url,category):
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
+
+	if params.has_key("Serie"):
+		Serie = params.get("Serie")
+	else:
+	  Serie = ""
+
+	if params.has_key("thumbnail"):
+		thumbnail = params.get("thumbnail")
+	else:
+	  thumbnail = ""
+
+	# Añade "Agregar todos a la librería"
+	xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "Megavideo", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , thumbnail , "" , Serie)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<a href="(http://www.seriesyonkis.com/capitulo[^"]+)"[^>]+>([^<]+)</a>'
@@ -352,9 +383,10 @@ def list(params,url,category):
 			xbmc.output("scrapedtitle="+scrapedtitle)
 			xbmc.output("scrapedurl="+scrapedurl)
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.output("Serie="+Serie)
 
 		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot , Serie)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -371,21 +403,128 @@ def detail(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-
+	Serie = urllib.unquote_plus( params.get("Serie") )
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
+	url = scrapvideoURL(url)
+	if url == "":
+		xbmctools.alertnodisponible()
+		return
+	xbmc.output("[seriesyonkis - detail] url="+url)
+
+	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot,Serie=Serie)
+	# ------------------------------------------------------------------------------------
+
+def addlist2Library(params,url,category):
+	xbmc.output("[seriesyonkis.py] addlist2Library")
+
+	# Descarga la página
 	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	if params.has_key("Serie"):
+		Serie = params.get("Serie")
+	else:
+	  Serie = ""
+
+	if params.has_key("server"):
+		server = params.get("server")
+	else:
+	  server = ""
+
+	if params.has_key("thumbnail"):
+		thumbnail = params.get("thumbnail")
+	else:
+	  thumbnail = ""
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<a href="(http://www.seriesyonkis.com/capitulo[^"]+)"[^>]+>([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	pDialog = xbmcgui.DialogProgress()
+	ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
+	pDialog.update(0, 'Añadiendo episodio...')
+	totalepisodes = len(matches)
+	xbmc.output ("[seriesyonkis.py - addlist2Library] Total Episodios:"+str(totalepisodes))
+	i = 0
+	errores = 0
+	for match in matches:
+		# Titulo
+		scrapedtitle = match[1]
+		i = i + 1
+		pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',scrapedtitle)
+		if (pDialog.iscanceled()):
+			return
+
+		# URL
+		#  Tenemos 2 opciones. Scrapear todos los episodios en el momento de añadirlos 
+		#  a la biblioteca o bien dejarlo para cuando se vea cada episodio. Esto segundo
+		#  añade los episodios mucho más rápido, pero implica añadir una función
+		#  strm_detail en cada módulo de canal. Por el bien del rendimiento elijo la
+		#  segunda opción de momento (hacer la primera es simplemente descomentar un par de
+		#  líneas.
+		#  QUIZÁ SEA BUENO PARAMETRIZARLO (PONER OPCIÓN EN LA CONFIGURACIÓN DEL PLUGIN)
+		#  PARA DEJAR QUE EL USUARIO DECIDA DONDE Y CUANDO QUIERE ESPERAR.
+		url = match [0]
+		# JUR-Las 3 líneas siguientes son para OPCIÓN 1
+		#scrapedurl = scrapvideoURL(url)
+		#if scrapedurl == "":
+		#	errores = errores + 1
+			
+		# Thumbnail
+		scrapedthumbnail = ""
+		
+		# procesa el resto
+		scrapedplot = ""
+		# Depuracion
+		if (DEBUG):
+			xbmc.output("scrapedtitle="+scrapedtitle)
+#			xbmc.output("scrapedurl="+scrapedurl) #OPCION 1.
+			xbmc.output("url="+url) #OPCION 2.
+			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.output("Serie="+Serie)
+			xbmc.output("Episodio "+str(i)+" de "+str(totalepisodes)+"("+str(i*100/totalepisodes)+"%)")
+
+		# Añade a la librería #Comentada la opción 2. Para cambiar invertir los comentarios
+		#OPCION 1:
+		#library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False)
+		#OPCION 2
+		library.savelibrary(scrapedtitle,url,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False,accion="strm_detail")
+
+#	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+	pDialog.close()
+	
+	#Actualización de la biblioteca
+	if errores > 0:
+		xbmc.output ("[seriesyonkis.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
+	library.update(totalepisodes-errores)
+
+def strm_detail (params,url,category):
+	xbmc.output("[seriesyonkis.py] strm_detail")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	# ------------------------------------------------------------------------------------
+	# Busca los enlaces a los videos
+	# ------------------------------------------------------------------------------------
+	url = scrapvideoURL(url)
+	if url == "":
+		xbmctools.alertnodisponible()
+		return
+	xbmc.output("[seriesyonkis] strm_detail url="+url)
+
+	xbmctools.playvideo("STRM_Channel","Megavideo",url,category,title,thumbnail,plot,1)
+
+def scrapvideoURL(urlSY):
+	data = scrapertools.cachePage(urlSY)
 	patronvideos  = 'href="(http://www.seriesyonkis.com/player/visor_pymeno2.php[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	
-	if len(matches)==0:
-		xbmctools.alertnodisponible()
-		return
-	
-	url = scrapertools.cachePage('http://www.atrapavideo.com/es/videomonkey/yonkis/url='+matches[0])
-	xbmc.output("url="+url)
 
-	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot)
-	# ------------------------------------------------------------------------------------
+	if len(matches)==0:
+		return ""
+	else:
+		return scrapertools.cachePage('http://www.atrapavideo.com/es/videomonkey/yonkis/url='+matches[0])

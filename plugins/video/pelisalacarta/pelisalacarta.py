@@ -9,6 +9,9 @@ import urllib
 import os
 import sys
 import xbmc
+import xbmctools
+import xbmcgui
+import urllib,urllib2
 
 def run():
 	xbmc.output("[pelisalacarta.py] run")
@@ -36,6 +39,13 @@ def run():
 		action = "selectchannel"
 	xbmc.output("[pelisalacarta.py] action="+action)
 
+	# Extrae el server
+	if (params.has_key("server")):
+		server = params.get("server")
+	else:
+		server = ""
+	xbmc.output("[pelisalacarta.py] server="+server)
+
 	# Extrae la categoria
 	if (params.has_key("category")):
 		category = params.get("category")
@@ -46,17 +56,26 @@ def run():
 			category = ""
 	xbmc.output("[pelisalacarta.py] category="+category)
 
+	#JUR - Gestión de Errores de Internet (Para que no casque el plugin 
+	#      si no hay internet (que queda feo)
+	try:
 	# Accion por defecto - elegir canal
-	if ( action=="selectchannel" ):
-		import channelselector as plugin
-		plugin.listchannels(params, url, category)
-	# Actualizar version
-	elif ( action=="update" ):
-		import updater
-		updater.update(params)
-		import channelselector as plugin
-		plugin.listchannels(params, url, category)
-	# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
-	else:
-		exec "import "+params.get("channel")+" as plugin"
-		exec "plugin."+action+"(params, url, category)"
+		if ( action=="selectchannel" ):
+			import channelselector as plugin
+			plugin.listchannels(params, url, category)
+		# Actualizar version
+		elif ( action=="update" ):
+			import updater
+			updater.update(params)
+			import channelselector as plugin
+			plugin.listchannels(params, url, category)
+		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
+		elif (action=="strm"):
+			xbmctools.playstrm(params, url, category)
+		else:
+			exec "import "+params.get("channel")+" as plugin"
+			exec "plugin."+action+"(params, url, category)"
+	except urllib2.URLError:
+		xbmc.output("[pelisalacarta.py] Error de conexión a Internet - Interceptado")
+		ventana_error = xbmcgui.Dialog()
+		ok= ventana_error.ok ("Plugin Pelisalacarta", "No se ha podido acceder a internet", "Comprueba la conexión")
