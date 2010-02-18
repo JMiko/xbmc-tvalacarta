@@ -41,7 +41,7 @@ def listchannels(params,url,category):
 	addfolder("Cinegratis","cinegratis","mainlist")
 	addfolder("tumejortv.com","tumejortv","mainlist")
 	addfolder("Cine15","cine15","mainlist")
-	addfolder("Seriesyonkis","seriesyonkis","mainlist")
+	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")
 	addfolder("Newcineonline","newcineonline","mainlist")
@@ -93,7 +93,9 @@ def listchannels(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-def addfolder(nombre,channelname,accion):
+def addfolder(nombre,channelname,accion,category=""):
+	if category == "":
+		category = nombre
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png"))
-	itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(nombre) )
+	itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(category) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
