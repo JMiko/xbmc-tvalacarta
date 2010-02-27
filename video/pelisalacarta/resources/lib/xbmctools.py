@@ -105,6 +105,184 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	xbmc.output("[xbmctools.py] playvideo serie="+Serie)
 	
 	# Abre el diálogo de selección
+	opciones = []
+	# Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
+	# Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
+	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
+		opciones.append("Ver en calidad alta ["+server+"]")
+	# Los vídeos de Megavídeo o Megaupload se pueden ver en calidad baja sin cuenta premium, aunque con el límite
+	if (server=="Megavideo" or server=="Megaupload"):
+		opciones.append("Ver en calidad baja [Megavideo]")
+	opciones.append("Descargar")
+	if desdefavoritos: 
+		opciones.append("Quitar de favoritos")
+	else:
+		opciones.append("Añadir a favoritos")
+	if desdedescargados:
+		opciones.append("Quitar de lista de descargas")
+	else:
+		opciones.append("Añadir a lista de descargas")
+	if canal == "seriesyonkis": #De momento sólo en seriesyonkis
+		opciones.append("Añadir a Biblioteca")    
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("Elige una opción", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	xbmc.output("seleccion=%s" % opciones[seleccion])
+
+	# No ha elegido nada, lo más probable porque haya dado al ESC 
+	if seleccion==-1:
+		if strmfile:  #Para evitar el error "Uno o más elementos fallaron" al cancelar la selección desde fichero strm
+			listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path="")    # JUR Modified
+			xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,listitem)    # JUR Added
+		return
+	# Ver en calidad alta
+	if opciones[seleccion].startswith("Ver en calidad alta"):
+		if server=="Megaupload":
+			mediaurl = servertools.getmegauploadhigh(url)
+		else:
+			mediaurl = servertools.getmegavideohigh(url)
+	# Ver (calidad baja megavideo o resto servidores)
+	elif opciones[seleccion].startswith("Ver"):
+		if server=="Megaupload":
+			mediaurl = servertools.getmegauploadlow(url)
+		elif server=="Megavideo":
+			if xbmcplugin.getSetting("megavideopremium")=="false":
+				advertencia = xbmcgui.Dialog()
+				resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Para evitar que los vídeos se corten pasado ese tiempo' , 'necesitas una cuenta Premium')			mediaurl = servertools.getmegavideolow(url)
+		else:
+			mediaurl = servertools.findurl(url,server)
+
+	# Descargar
+	elif opciones[seleccion]=="Descargar":
+		if server=="Megaupload":
+			if xbmcplugin.getSetting("megavideopremium")=="false":
+				mediaurl = servertools.getmegauploadlow(url)
+			else:
+				mediaurl = servertools.getmegauploadhigh(url)
+		elif server=="Megavideo":
+			if xbmcplugin.getSetting("megavideopremium")=="false":
+				mediaurl = servertools.getmegavideolow(url)
+			else:
+				mediaurl = servertools.getmegavideohigh(url)
+		else:
+			mediaurl = servertools.findurl(url,server)
+
+		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+		keyboard.doModal()
+		if (keyboard.isConfirmed()):
+			title = keyboard.getText()
+		downloadtools.downloadtitle(mediaurl,title)
+		return
+
+	elif opciones[seleccion]=="Quitar de favoritos":
+		# La categoría es el nombre del fichero en favoritos
+		os.remove(urllib.unquote_plus( category ))
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
+		return
+
+	elif opciones[seleccion]=="Añadir a favoritos":
+		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+		keyboard.doModal()
+		if (keyboard.isConfirmed()):
+			title = keyboard.getText()
+		favoritos.savebookmark(title,url,thumbnail,server,plot)
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
+		return
+
+	elif opciones[seleccion]=="Quitar de lista de descargas":
+		# La categoría es el nombre del fichero en la lista de descargas
+		os.remove(urllib.unquote_plus( category ))
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Vídeo quitado de lista de descargas' , title , 'Se ha quitado de lista de descargas')
+		return
+
+	elif opciones[seleccion]=="Añadir a lista de descargas":
+		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+		keyboard.doModal()
+		if (keyboard.isConfirmed()):
+			title = keyboard.getText()
+		descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Nuevo vídeo en lista de descargas' , title , 'se ha añadido a la lista de descargas')
+		return
+
+	elif opciones[seleccion]=="Añadir a Biblioteca":  # Library
+		library.savelibrary(title,url,thumbnail,server,plot,canal=canal,category=category,Serie=Serie)
+		return
+
+	# Si no hay mediaurl es porque el vídeo no está :)
+	xbmc.output("[xbmctools.py] mediaurl="+mediaurl)
+	if mediaurl=="":
+		alertnodisponibleserver(server)
+		return
+
+	# Crea la playlist para pasársela al reproductor
+	playlist = createplaylist(canal,title,mediaurl,thumbnail,plot,category)
+
+	# Lanza el reproductor
+	launchplayer(strmfile,playlist)
+
+# Crea una playlist para pasársela al reproductor
+def createplaylist(canal,title,mediaurl,thumbnail,plot,category):
+	# Abre dialogo
+	dialogWait = xbmcgui.DialogProgress()
+	dialogWait.create( 'Accediendo al video...', title )
+	dialogWait.update(0) #Jur. Para evitar los porcentajes aleatorios
+
+	# Playlist vacia
+	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+	playlist.clear()
+
+	# Crea la entrada y la añade al playlist
+	# JUR - Modificación para evitar error "Playback failed" en ficheros strm
+	xbmc.output("[xbmctools.py] JUR-Modif 1 added mediaurl to ListItem ,path=")    # JUR Added
+	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)    # JUR Modified
+	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
+	xbmc.output("[xbmctools.py] JUR-Modif 2. Added call to xmbcplugin.setResolvedUrl")    # JUR Added
+	xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)    # JUR Added
+	playlist.add( mediaurl, listitem )
+
+	# Cierra dialogo
+	dialogWait.close()
+	del dialogWait
+
+	return playlist
+
+# Lanza el reproductor
+def launchplayer(strmfile,playlist):
+	# Reproduce
+	playersettings = xbmcplugin.getSetting('player_type')
+	xbmc.output("[xbmctools.py] playersettings="+playersettings)
+
+	player_type = xbmc.PLAYER_CORE_AUTO
+	if playersettings == "0":
+		player_type = xbmc.PLAYER_CORE_AUTO
+		xbmc.output("[xbmctools.py] PLAYER_CORE_AUTO")
+	elif playersettings == "1":
+		player_type = xbmc.PLAYER_CORE_MPLAYER
+		xbmc.output("[xbmctools.py] PLAYER_CORE_MPLAYER")
+	elif playersettings == "2":
+		player_type = xbmc.PLAYER_CORE_DVDPLAYER
+		xbmc.output("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
+
+	if strmfile: #Si es un fichero strm no hace falta el play
+		xbmc.output("[xbmctools.py] strm file. Avoid .play")
+	else:
+		xbmcPlayer = xbmc.Player( player_type )
+		xbmcPlayer.play(playlist)
+'''
+def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,strmfile=False,Serie=""):
+	
+	xbmc.output("[xbmctools.py] playvideo")
+	xbmc.output("[xbmctools.py] playvideo canal="+canal)
+	xbmc.output("[xbmctools.py] playvideo server="+server)
+	xbmc.output("[xbmctools.py] playvideo url="+url)
+	xbmc.output("[xbmctools.py] playvideo category="+category)
+	xbmc.output("[xbmctools.py] playvideo serie="+Serie)
+	
+	# Abre el diálogo de selección
 	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
 		opciones = []
 		opciones.append("Ver en calidad alta [Megavideo]")
@@ -303,7 +481,15 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	else:
 		xbmcPlayer = xbmc.Player( player_type )
 		xbmcPlayer.play(playlist)
-
+'''
+'''
+	# Accion por defecto: Ver
+	if xbmcplugin.getSetting("default_action")=="1":
+	# Accion por defecto: Ver calidad alta
+	elif xbmcplugin.getSetting("default_action")=="2":
+	# Accion por defecto: Pregunar
+	else:
+'''
 def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
 	if (DEBUG):
 		xbmc.output("[xmbctools.py] scrapedtitle="+scrapedtitle)
