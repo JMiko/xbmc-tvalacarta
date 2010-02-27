@@ -35,6 +35,12 @@ BOOKMARK_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks' ) )
 def mainlist(params,url,category):
 	xbmc.output("[favoritos.py] mainlist")
 
+	# Crea el directorio de favoritos si no existe
+	try:
+		os.mkdir(BOOKMARK_PATH)
+	except:
+		pass
+
 	# Crea un listado con las entradas de favoritos
 	ficheros = os.listdir(BOOKMARK_PATH)
 	for fichero in ficheros:
@@ -112,6 +118,12 @@ def savebookmark(titulo,url,thumbnail,server,plot):
 
 	# No va bien más que en Windows
 	#bookmarkfiledescriptor,bookmarkfilepath = tempfile.mkstemp(suffix=".txt",prefix="",dir=BOOKMARK_PATH)
+
+	# Crea el directorio de favoritos si no existe
+	try:
+		os.mkdir(BOOKMARK_PATH)
+	except:
+		pass
 	
 	filenumber=0
 	salir = False

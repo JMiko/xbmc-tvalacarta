@@ -106,26 +106,47 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	
 	# Abre el diálogo de selección
 	opciones = []
+
 	# Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
 	# Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
 	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
 		opciones.append("Ver en calidad alta ["+server+"]")
+		# Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
+		if xbmcplugin.getSetting("default_action")=="2":
+			seleccion = len(opciones)-1
+
 	# Los vídeos de Megavídeo o Megaupload se pueden ver en calidad baja sin cuenta premium, aunque con el límite
 	if (server=="Megavideo" or server=="Megaupload"):
 		opciones.append("Ver en calidad baja [Megavideo]")
+		# Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
+		if xbmcplugin.getSetting("default_action")=="1":
+			seleccion = len(opciones)-1
+	else:
+		opciones.append("Ver ["+server+"]")
+		# Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
+		if xbmcplugin.getSetting("default_action")=="1":
+			seleccion = len(opciones)-1
+
 	opciones.append("Descargar")
+
 	if desdefavoritos: 
 		opciones.append("Quitar de favoritos")
 	else:
 		opciones.append("Añadir a favoritos")
+
 	if desdedescargados:
 		opciones.append("Quitar de lista de descargas")
 	else:
 		opciones.append("Añadir a lista de descargas")
+
 	if canal == "seriesyonkis": #De momento sólo en seriesyonkis
-		opciones.append("Añadir a Biblioteca")    
-	dia = xbmcgui.Dialog()
-	seleccion = dia.select("Elige una opción", opciones)
+		opciones.append("Añadir a Biblioteca")
+
+	# Si la accion por defecto es "Preguntar", pregunta
+	if xbmcplugin.getSetting("default_action")=="0":
+		dia = xbmcgui.Dialog()
+		seleccion = dia.select("Elige una opción", opciones)
+		#dia.close()
 	xbmc.output("seleccion=%d" % seleccion)
 	xbmc.output("seleccion=%s" % opciones[seleccion])
 
@@ -481,14 +502,6 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	else:
 		xbmcPlayer = xbmc.Player( player_type )
 		xbmcPlayer.play(playlist)
-'''
-'''
-	# Accion por defecto: Ver
-	if xbmcplugin.getSetting("default_action")=="1":
-	# Accion por defecto: Ver calidad alta
-	elif xbmcplugin.getSetting("default_action")=="2":
-	# Accion por defecto: Pregunar
-	else:
 '''
 def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
 	if (DEBUG):
