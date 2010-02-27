@@ -322,6 +322,8 @@ def GetMegavideoUser(login, password):
 	#  Inicializa la librería de las cookies
 	# ---------------------------------------
 	ficherocookies = COOKIEFILE
+	os.remove(ficherocookies)
+
 	# the path and filename to save your cookies in
 
 	cj = None
