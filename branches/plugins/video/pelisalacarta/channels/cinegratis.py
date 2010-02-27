@@ -33,18 +33,18 @@ def mainlist(params,url,category):
 	xbmc.output("[cinegratis.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Novedades"            ,"http://www.cinegratis.net/index.php?module=peliculas","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Estrenos"             ,"http://www.cinegratis.net/index.php?module=estrenos","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliscat"   , category , "Películas - Lista por categorías" ,"http://www.cinegratis.net/index.php?module=generos","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Novedades"            ,"http://www.cinegratis.org/index.php?module=peliculas","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Estrenos"             ,"http://www.cinegratis.org/index.php?module=estrenos","","")
+	xbmctools.addnewfolder( CHANNELNAME , "peliscat"   , category , "Películas - Lista por categorías" ,"http://www.cinegratis.org/index.php?module=generos","","")
 	xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"  , category , "Películas - Lista alfabética"     ,"","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Alojadas en Veoh"     ,"http://www.cinegratis.net/index.php?module=servers&varserver=veoh","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Alojadas en Megavideo","http://www.cinegratis.net/index.php?module=servers&varserver=megavideo","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , category , "Series - Novedades"               ,"http://www.cinegratis.net/index.php?module=series","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Series - Todas"                   ,"http://www.cinegratis.net/index.php?module=serieslist","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , category , "Dibujos - Novedades"              ,"http://www.cinegratis.net/index.php?module=anime","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Dibujos - Todos"                  ,"http://www.cinegratis.net/index.php?module=animelist","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales - Novedades"         ,"http://www.cinegratis.net/index.php?module=documentales","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Documentales - Todos"             ,"http://www.cinegratis.net/index.php?module=documentaleslist","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Alojadas en Veoh"     ,"http://www.cinegratis.org/index.php?module=servers&varserver=veoh","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Alojadas en Megavideo","http://www.cinegratis.org/index.php?module=servers&varserver=megavideo","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listseries" , category , "Series - Novedades"               ,"http://www.cinegratis.org/index.php?module=series","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Series - Todas"                   ,"http://www.cinegratis.org/index.php?module=serieslist","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listseries" , category , "Dibujos - Novedades"              ,"http://www.cinegratis.org/index.php?module=anime","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Dibujos - Todos"                  ,"http://www.cinegratis.org/index.php?module=animelist","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales - Novedades"         ,"http://www.cinegratis.org/index.php?module=documentales","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Documentales - Todos"             ,"http://www.cinegratis.org/index.php?module=documentaleslist","","")
 	xbmctools.addnewfolder( CHANNELNAME , "deportes"   , category , "Deportes"                         ,"","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
@@ -62,33 +62,33 @@ def mainlist(params,url,category):
 
 def pelisalfa(params, url, category):
 
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "0-9","http://www.cinegratis.net/index.php?module=peliculaslist&init=","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "A","http://www.cinegratis.net/index.php?module=peliculaslist&init=a","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "B","http://www.cinegratis.net/index.php?module=peliculaslist&init=b","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "C","http://www.cinegratis.net/index.php?module=peliculaslist&init=c","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "D","http://www.cinegratis.net/index.php?module=peliculaslist&init=d","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "E","http://www.cinegratis.net/index.php?module=peliculaslist&init=e","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "F","http://www.cinegratis.net/index.php?module=peliculaslist&init=f","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "G","http://www.cinegratis.net/index.php?module=peliculaslist&init=g","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "H","http://www.cinegratis.net/index.php?module=peliculaslist&init=h","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "I","http://www.cinegratis.net/index.php?module=peliculaslist&init=i","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "J","http://www.cinegratis.net/index.php?module=peliculaslist&init=j","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "K","http://www.cinegratis.net/index.php?module=peliculaslist&init=k","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "L","http://www.cinegratis.net/index.php?module=peliculaslist&init=l","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "M","http://www.cinegratis.net/index.php?module=peliculaslist&init=m","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "N","http://www.cinegratis.net/index.php?module=peliculaslist&init=n","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "O","http://www.cinegratis.net/index.php?module=peliculaslist&init=o","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "P","http://www.cinegratis.net/index.php?module=peliculaslist&init=p","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Q","http://www.cinegratis.net/index.php?module=peliculaslist&init=q","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "R","http://www.cinegratis.net/index.php?module=peliculaslist&init=r","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "S","http://www.cinegratis.net/index.php?module=peliculaslist&init=s","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "T","http://www.cinegratis.net/index.php?module=peliculaslist&init=t","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "U","http://www.cinegratis.net/index.php?module=peliculaslist&init=u","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "V","http://www.cinegratis.net/index.php?module=peliculaslist&init=v","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "W","http://www.cinegratis.net/index.php?module=peliculaslist&init=w","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "X","http://www.cinegratis.net/index.php?module=peliculaslist&init=x","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Y","http://www.cinegratis.net/index.php?module=peliculaslist&init=y","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Z","http://www.cinegratis.net/index.php?module=peliculaslist&init=z","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "0-9","http://www.cinegratis.org/index.php?module=peliculaslist&init=","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "A","http://www.cinegratis.org/index.php?module=peliculaslist&init=a","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "B","http://www.cinegratis.org/index.php?module=peliculaslist&init=b","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "C","http://www.cinegratis.org/index.php?module=peliculaslist&init=c","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "D","http://www.cinegratis.org/index.php?module=peliculaslist&init=d","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "E","http://www.cinegratis.org/index.php?module=peliculaslist&init=e","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "F","http://www.cinegratis.org/index.php?module=peliculaslist&init=f","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "G","http://www.cinegratis.org/index.php?module=peliculaslist&init=g","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "H","http://www.cinegratis.org/index.php?module=peliculaslist&init=h","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "I","http://www.cinegratis.org/index.php?module=peliculaslist&init=i","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "J","http://www.cinegratis.org/index.php?module=peliculaslist&init=j","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "K","http://www.cinegratis.org/index.php?module=peliculaslist&init=k","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "L","http://www.cinegratis.org/index.php?module=peliculaslist&init=l","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "M","http://www.cinegratis.org/index.php?module=peliculaslist&init=m","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "N","http://www.cinegratis.org/index.php?module=peliculaslist&init=n","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "O","http://www.cinegratis.org/index.php?module=peliculaslist&init=o","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "P","http://www.cinegratis.org/index.php?module=peliculaslist&init=p","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Q","http://www.cinegratis.org/index.php?module=peliculaslist&init=q","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "R","http://www.cinegratis.org/index.php?module=peliculaslist&init=r","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "S","http://www.cinegratis.org/index.php?module=peliculaslist&init=s","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "T","http://www.cinegratis.org/index.php?module=peliculaslist&init=t","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "U","http://www.cinegratis.org/index.php?module=peliculaslist&init=u","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "V","http://www.cinegratis.org/index.php?module=peliculaslist&init=v","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "W","http://www.cinegratis.org/index.php?module=peliculaslist&init=w","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "X","http://www.cinegratis.org/index.php?module=peliculaslist&init=x","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Y","http://www.cinegratis.org/index.php?module=peliculaslist&init=y","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Z","http://www.cinegratis.org/index.php?module=peliculaslist&init=z","","")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -101,10 +101,10 @@ def pelisalfa(params, url, category):
 
 def deportes(params, url, category):
 
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Fórmula 1","http://www.cinegratis.net/index.php?module=deporte&cat=Formula-1","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "NBA","http://www.cinegratis.net/index.php?module=deporte&cat=NBA","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Moto GP","http://www.cinegratis.net/deporte.php?cat=MotoGP","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Fútbol","http://www.cinegratis.net/index.php?module=deporte&cat=Futbol","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Fórmula 1","http://www.cinegratis.org/index.php?module=deporte&cat=Formula-1","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "NBA","http://www.cinegratis.org/index.php?module=deporte&cat=NBA","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Moto GP","http://www.cinegratis.org/deporte.php?cat=MotoGP","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Fútbol","http://www.cinegratis.org/index.php?module=deporte&cat=Futbol","","")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -125,14 +125,14 @@ def search(params,url,category):
 		if len(tecleado)>0:
 			#convert to HTML
 			tecleado = tecleado.replace(" ", "+")
-			searchUrl = "http://www.cinegratis.net/index.php?module=search&title="+tecleado
+			searchUrl = "http://www.cinegratis.org/index.php?module=search&title="+tecleado
 			listsimple(params,searchUrl,category)
 
 def peliscat(params,url,category):
 	xbmc.output("[cinegratis.py] peliscat")
 
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Versión original"     ,"http://www.cinegratis.net/index.php?module=search&title=subtitulado","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Versión latina"       ,"http://www.cinegratis.net/index.php?module=search&title=latino","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Versión original"     ,"http://www.cinegratis.org/index.php?module=search&title=subtitulado","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Versión latina"       ,"http://www.cinegratis.org/index.php?module=search&title=latino","","")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -205,7 +205,7 @@ def listvideos(params,url,category):
 	xbmc.output("[cinegratis.py] listvideos")
 
 	if url=="":
-		url = "http://www.cinegratis.net/index.php?module=peliculas"
+		url = "http://www.cinegratis.org/index.php?module=peliculas"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -263,7 +263,7 @@ def listseries(params,url,category):
 	xbmc.output("[cinegratis.py] listvideos")
 
 	if url=="":
-		url = "http://www.cinegratis.net/index.php?module=peliculas"
+		url = "http://www.cinegratis.org/index.php?module=peliculas"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
