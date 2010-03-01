@@ -240,13 +240,13 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		return
 
 	# Crea la playlist para pasársela al reproductor
-	playlist = createplaylist(canal,title,mediaurl,thumbnail,plot,category)
+	playlist = createplaylist(canal,title,mediaurl,thumbnail,plot,category,strmfile)
 
 	# Lanza el reproductor
 	launchplayer(strmfile,playlist)
 
 # Crea una playlist para pasársela al reproductor
-def createplaylist(canal,title,mediaurl,thumbnail,plot,category):
+def createplaylist(canal,title,mediaurl,thumbnail,plot,category,strmfile=False):
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
 	dialogWait.create( 'Accediendo al video...', title )
@@ -261,8 +261,9 @@ def createplaylist(canal,title,mediaurl,thumbnail,plot,category):
 	xbmc.output("[xbmctools.py] JUR-Modif 1 added mediaurl to ListItem ,path=")    # JUR Added
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)    # JUR Modified
 	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
-	xbmc.output("[xbmctools.py] JUR-Modif 2. Added call to xmbcplugin.setResolvedUrl")    # JUR Added
-	xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)    # JUR Added
+	if strmfile: #Necesario para Boxee
+		xbmc.output("[xbmctools.py] JUR-Modif 2. Added call to xmbcplugin.setResolvedUrl")    # JUR Added
+		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)    # JUR Added
 	playlist.add( mediaurl, listitem )
 
 	# Cierra dialogo
@@ -292,7 +293,7 @@ def launchplayer(strmfile,playlist):
 		xbmc.output("[xbmctools.py] strm file. Avoid .play")
 	else:
 		xbmcPlayer = xbmc.Player( player_type )
-		xbmcPlayer.play(playlist)
+		xbmcPlayer.play(playlist)
 '''
 def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,strmfile=False,Serie=""):
 	
