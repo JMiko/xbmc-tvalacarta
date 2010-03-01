@@ -17,7 +17,7 @@ def Vreel(urlvideo):
     #  Inicializa la libreria de las cookies
     # ---------------------------------------
     ficherocookies = COOKIEFILE
-	os.remove(ficherocookies)
+    os.remove(ficherocookies)
     xbmc.output("ficherocookies %s", ficherocookies)
     # the path and filename to save your cookies in
 
