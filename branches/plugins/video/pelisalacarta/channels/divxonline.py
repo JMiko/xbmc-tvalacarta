@@ -37,7 +37,7 @@ def mainlist(params,url,category):
 	xbmc.output("[divxonline.py] mainlist")
 
 	xbmctools.addnewfolder( CHANNELNAME , "megavideo" , CHANNELNAME , "Películas en Megavideo" , "" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "veoh" , CHANNELNAME , "Películas en Veoh" , "" , "", "" )
+#	xbmctools.addnewfolder( CHANNELNAME , "veoh" , CHANNELNAME , "Películas en Veoh" , "" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "pelisconficha" , CHANNELNAME , "Estrenos" , "http://www.divxonline.info/peliculas-estreno/1.html" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "pelisporletra" , CHANNELNAME , "Películas de la A a la Z" , "" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "pelisporanio" , CHANNELNAME , "Películas por año de estreno" , "" , "", "" )
@@ -376,21 +376,25 @@ def detail(params,url,category):
 	xbmc.output("[divxonline.py] title="+title)
 	xbmc.output("[divxonline.py] thumbnail="+thumbnail)
 
-	# tipo 1: los vídeos están en la página
 	data0 = scrapertools.cachePage(url) # descarga pagina de reproduccion
-	listavideos = servertools.findvideos(data0)
 	
-	# tipo 2: hay un frame con una página con los videos
+	# tipo 1: hay un iframe con una página con los videos
+	# obtiene la url del frame con los videos	
+	match = re.search('<iframe src="(.*?)"',data0,re.DOTALL | re.IGNORECASE)
 	
-	if len(listavideos)==0:
-		# obtiene la url del frame con los videos	
-		match = re.search('<iframe src="(.*?)"',data0,re.DOTALL | re.IGNORECASE)
-
+	if match:
+		xbmc.output("URLVideo: " + match.group(1)) # los cambios suelen afectar por aquí
+		
 		# Descarga el frame con los videos
 		data = scrapertools.cachePage(urlparse.urljoin(url,match.group(1)))
 		#xbmc.output(data)
 
 		listavideos = servertools.findvideos(data)
+
+	else:
+		# tipo 2: los vídeos están en la página (no sé si sigue siendo vigente)
+		listavideos = servertools.findvideos(data0)
+
 
 	# ------------------------------------------------------------------------------------
 	# Añade los enlaces a los videos
