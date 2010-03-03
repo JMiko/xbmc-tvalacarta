@@ -109,6 +109,54 @@ def search(params,url,category):
 			searchUrl = "http://www.peliculas21.com/?palabra="+tecleado
 			listsimple(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[peliculas.py] performsearch")
+	url = "http://www.peliculas21.com/?palabra="+texto
+	url1 = "http://www.peliculas21.com"
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="fichafilm"><a href="([^"]+)"  target="_blank" ' # url
+	patronvideos += 'class="titulo"><img src="([^"]+)"  '                        # Imagen
+	patronvideos += 'width=[^>]+>([^<]+)</a>.*?<[^/]+/>.*?<div.*?>.*?'           # Titulo 
+	patronvideos += '(<b>Doblaje:</b>[^<]+|<b>PROXIMAMENTE</b></span>-->)</div>' # Doblaje para Peliculas | Proximamente para trailers
+	patronvideos += '(.*?)<b>(G&eacute;nero:</b>'                                # Duracion si hay
+	patronvideos += '.*?)<div style=[^>]+>'                                      # Genero
+	patronvideos += '<b>(Sinopsis:</b>.*?)<.*?'                                  # Sinopsis
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[2]
+		#scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
+		#scrapedtitle = scrapedtitle.replace("</span>","")
+		scrapedurl = urlparse.urljoin(url1,match[0])
+		scrapedthumbnail = urlparse.urljoin(url1,match[1])
+		scrapedthumbnail = scrapedthumbnail.replace(" ","")
+		scrapedplot  = match[3].replace("\n"," ")+"\n"
+		
+		
+		scrapedplot += match[4][4:].replace("\n","")+"\n"	
+		
+		scrapedplot += match[5].replace("\n"," ")+"\n"
+		scrapedplot += match[6]
+		scrapedplot  = re.sub("<[^>]+>","",scrapedplot)
+		scrapedplot  = scrapedplot.replace("&eacute;","é")
+		scrapedplot  = scrapedplot.replace("&oacute;","ó")
+		scrapedplot  = scrapedplot.replace("&ntilde;","ñ")
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "listvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def peliscat(params,url,category):
 	xbmc.output("[peliculas21.py] peliscat")
 	
