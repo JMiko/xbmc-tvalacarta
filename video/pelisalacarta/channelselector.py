@@ -55,6 +55,7 @@ def listchannels(params,url,category):
 	addfolder("Pelis24","pelis24","mainlist")
 	addfolder("Veocine","veocine","mainlist")
 	addfolder("Pintadibujos","pintadibujos","mainlist")
+	addfolder("Anime Foros","animeforos","mainlist")
 	addfolder("Yotix.tv","yotix","mainlist")
 	addfolder("MCAnime","mcanime","mainlist")
 	addfolder("Animetakus","animetakus","mainlist")
