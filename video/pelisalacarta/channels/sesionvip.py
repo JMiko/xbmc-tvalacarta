@@ -189,6 +189,37 @@ def search(params,url,category):
 			searchUrl = "http://www.sesionvip.com/?s="+tecleado
 			searchresults(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[sesionvip.py] performsearch")
+	url = "http://www.sesionvip.com/?s="+texto
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="entry">.*?'
+	patronvideos += '<a href="([^"]+)" rel="bookmark">([^<]+)</a>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Titulo
+		scrapedtitle = match[1]
+		if not scrapedtitle.startswith("Descargar"):
+			scrapedtitle = xbmctools.unseo(scrapedtitle)
+			scrapedurl = urlparse.urljoin(url,match[0])
+			scrapedthumbnail = ""
+			scrapedplot = ""
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "listmirrors" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def searchresults(params,url,category):
 	xbmc.output("[sesionvip.py] searchresults")
 

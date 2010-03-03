@@ -58,6 +58,40 @@ def search(params,url,category):
 			searchUrl = "http://www.tu.tv/buscar/?str="+tecleado
 			list(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[tutvsite.py] performsearch")
+	url = "http://www.tu.tv/buscar/?str="+texto
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="fila clearfix">[^<]+<div.*?</div>[^<]+<a href="([^"]+)"[^<]+<img src="([^"]+)".*?<span id="txtN">(.*?)</span>.*?<span class="tmp">([^<]+)</span.*?<span id="txtN">(.*?)</span>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Titulo
+		try:
+			scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
+		except:
+			scrapedtitle = match[2]
+		scrapedtitle = scrapedtitle.replace("<b>","")
+		scrapedtitle = scrapedtitle.replace("</b>","")
+		scrapedtitle = scrapedtitle.strip()
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = urlparse.urljoin(url,match[1])
+		scrapedplot = match[4].strip()
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "play" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def list(params,url,category):
 	xbmc.output("[tutvsite.py] list")
 
@@ -71,13 +105,8 @@ def list(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = "#Siguiente"
-
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		
-		# Thumbnail
 		scrapedthumbnail = ""
 		
 		# Depuracion

@@ -62,6 +62,35 @@ def search(params,url,category):
 			searchUrl = "http://yotix.tv/?s="+tecleado
 			videolist(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[yotix.py] performsearch")
+	url = "http://yotix.tv/?s="+texto
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="galleryitem">[^<]+'
+	patronvideos += '<h1><a title="([^"]+)"[^<]+</a></h1>[^<]+'
+	patronvideos += '<a href="([^"]+)"><img src="([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[0].replace("&#8211;","-")
+		scrapedurl = match[1]
+		scrapedthumbnail = match[2]
+		scrapedplot = ""
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "listmirrors" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
 
 def listcategorias(params,url,category):
 	xbmc.output("[yotix.py] listcategorias")

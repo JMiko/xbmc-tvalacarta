@@ -74,6 +74,34 @@ def search(params,url,category):
 			searchUrl = "http://www.seriesyonkis.com/buscarSerie.php?s="+tecleado
 			searchresults(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[cine15.py] performsearch")
+	url = "http://www.seriesyonkis.com/buscarSerie.php?s="+texto
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<h2><li><a href="([^"]+)" title="([^"]+)"><img.*?src="([^"]+)".*?'
+	patronvideos += '<span[^>]+>(.*?)</span>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	resultados = []
+
+	for match in matches:
+		scrapedtitle = match[1]
+		scrapedurl = match[0]
+		scrapedthumbnail = match[2]
+		scrapedplot = match[3]
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "list" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def searchresults(params,url,category):
 	xbmc.output("[seriesyonkis.py] searchresults")
 
@@ -96,16 +124,9 @@ def searchresults(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-
-		# URL
 		scrapedurl = match[0]
-		
-		# Thumbnail
 		scrapedthumbnail = match[2]
-		
-		# procesa el resto
 		scrapedplot = match[3]
 		
 		Serie = scrapedtitle    # JUR-Añade nombre serie para librería

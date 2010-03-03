@@ -128,6 +128,36 @@ def search(params,url,category):
 			searchUrl = "http://www.cinegratis.org/index.php?module=search&title="+tecleado
 			listsimple(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[cinegratis.py] performsearch")
+	url = "http://www.cinegratis.org/index.php?module=search&title="+texto
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = "<a href='(index.php\?module\=player[^']+)'[^>]*>(.*?)</a>"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[1]
+		scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
+		scrapedtitle = scrapedtitle.replace("</span>","")
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def peliscat(params,url,category):
 	xbmc.output("[cinegratis.py] peliscat")
 
