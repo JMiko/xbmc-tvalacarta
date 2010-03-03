@@ -142,6 +142,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	if canal == "seriesyonkis": #De momento sólo en seriesyonkis
 		opciones.append("Añadir a Biblioteca")
 
+	# Busqueda de trailers en youtube	
+	if not canal in ["Trailer","ecarteleratrailers"]:
+		opciones.append("Buscar Trailer")
+
 	# Si la accion por defecto es "Preguntar", pregunta
 	if xbmcplugin.getSetting("default_action")=="0":
 		dia = xbmcgui.Dialog()
@@ -231,6 +235,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 
 	elif opciones[seleccion]=="Añadir a Biblioteca":  # Library
 		library.savelibrary(title,url,thumbnail,server,plot,canal=canal,category=category,Serie=Serie)
+		return
+
+	elif opciones[seleccion]=="Buscar Trailer":
+		xbmc.executebuiltin("Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server ))
 		return
 
 	# Si no hay mediaurl es porque el vídeo no está :)
