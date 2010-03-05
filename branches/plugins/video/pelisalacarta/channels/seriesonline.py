@@ -31,7 +31,19 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[seriesonline.py] mainlist")
 
-	url = "http://www.seriesonline.us/"
+	# Añade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELNAME , "novedadeslist"      , "" , "Novedades","http://www.seriesonline.us/","","")
+
+	if xbmcplugin.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def novedadeslist(params,url,category):
+	xbmc.output("[seriesonline.py] mainlist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
