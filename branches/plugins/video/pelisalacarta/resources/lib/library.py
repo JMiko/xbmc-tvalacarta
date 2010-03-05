@@ -22,7 +22,7 @@ import string
 
 CHANNELNAME = "library"
 allchars = string.maketrans('', '')
-deletechars = '\\/:*"<>|?' #Caracteres no válidos en nombres de archivo
+deletechars = '\\/:*"<>|?	' #Caracteres no válidos en nombres de archivo
 
 # Esto permite su ejecución en modo emulado (preguntar a jesus por esto)
 # seguro que viene bien para debuguear
@@ -55,10 +55,10 @@ if not os.path.exists(SERIES_PATH):
 	os.mkdir(SERIES_PATH)
 
 
-def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="",Serie="",verbose=True,accion="strm"):
+def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
 	# category puede ser "Series", "Cine", "Documental" u "Otros". Si es Otros se permite un tipo personalizado
 	# Si category="Series" entonces Serie contiene el nombre de la serie
-	# Si asktitulo  = True entonces se muestra pantalla de selección
+	# Si pedirnombre  = True entonces se muestra pantalla de selección
 
 	xbmc.output("[favoritos.py] saveLIBRARY")
 	xbmc.output("[library.py] saveLIBRARY titulo="+titulo)
@@ -78,8 +78,24 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="
 	#		titulo = keyboard.getText()
 	
 	#Limpiamos el título para usarlo como fichero
-	filename = string.translate(titulo,allchars,deletechars)+".strm"
+	try:
+		filename = string.translate(titulo,allchars,deletechars)
+	except:
+		filename = titulo
 
+	if pedirnombre:
+		keyboard = xbmc.Keyboard(filename)
+		keyboard.doModal()
+		if (keyboard.isConfirmed()):
+			filename = keyboard.getText()
+	try:
+		filename = string.translate(filename,allchars,deletechars)+".strm" #Volvemos a limpiar por si acaso
+	except:
+		filename = filename + ".strm"
+
+	if category != "Series":  #JUR - DEBUGIN INTERNO PARA 2.14
+		category = "Cine"
+		
 	if category == "Cine":
 		fullfilename = os.path.join(MOVIES_PATH,filename)
 	elif category == "Series":
@@ -96,12 +112,16 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="
 		fullfilename = os.path.join(pathserie,filename)
 	else:    #Resto de categorias de momento en la raiz de library
 		fullfilename = os.path.join(LIBRARY_PATH,filename)
+	
 		
 	xbmc.output("[favoritos.py] saveLIBRARY fullfilename="+fullfilename)
 	if os.path.exists(fullfilename):
 		xbmc.output("[favoritos.py] el fichero existe. Se sobreescribe")
-
-	LIBRARYfile = open(fullfilename,"w")
+	try:
+		LIBRARYfile = open(fullfilename,"w")
+	except IOError:
+		xbmc.output("Error al grabar el archivo "+fullfilename)
+		raise
 #	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 # Eliminación de plot i thumnai
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server )
@@ -119,12 +139,30 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="
 		advertencia = xbmcgui.Dialog()
 		resultado = advertencia.ok('pelisalacarta' , titulo , 'se ha añadido a Librería')
 
-def update(total):
+def update(total,errores=0):
+	"""Pide confirmación para actualizar la biblioteca de xbmc despues de añadir serie.
+
+	total:  Número de episodios actualizados. Se muestra como resumen en la ventana 
+	        de confirmación.
+	Erores: Número de episodios que no se pudo añadir (generalmente por caracteres 
+	        no válidos en el nombre del archivo o por problemas de permisos.
+	"""
+	
 	if total == 1:
 		texto = 'Se ha añadido 1 episodio a la Biblioteca'
 	else:
 		texto = 'Se han añadido '+str(total)+' episodios a la Biblioteca'
-	
 	advertencia = xbmcgui.Dialog()
-	if advertencia.yesno('pelisalacarta' , texto ,'¿Deseas que actualice ahora la Biblioteca?'):
+
+	# Pedir confirmación para actualizar la biblioteca
+	if errores == 0:
+		actualizar = advertencia.yesno('pelisalacarta' , texto ,'¿Deseas que actualice ahora la Biblioteca?')
+	else:  # Si hubo errores muestra una línea adicional en la pregunta de actualizar biblioteca
+		if errores == 1:
+			texto2 = '(No se pudo añadir 1 episodio)'
+		else:
+			texto2 = '(No se pudieron añadir '+str(errores)+' episodios)'
+		actualizar = advertencia.yesno('pelisalacarta' , texto , texto2 , '¿Deseas que actualice ahora la Biblioteca?')
+
+	if actualizar:
 		xbmc.executebuiltin('UpdateLibrary(video)')
