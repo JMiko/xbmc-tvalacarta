@@ -11,6 +11,7 @@ import os.path
 import sys
 import xbmc
 import xbmcplugin
+import xbmcgui
 import megavideo
 import scrapertools
 
@@ -164,8 +165,11 @@ def getmegauploaduser(login,password):
 		xbmc.output("----------------------")
 		xbmc.output(cookiedata)
 		xbmc.output("----------------------")
+		devuelve = ""
+	else:
+		devuelve = matches[0]
 
-	return matches[0]
+	return devuelve
 
 def getmegauploadvideo(code,user):
 	req = urllib2.Request("http://www.megaupload.com/?d="+code)
@@ -205,6 +209,12 @@ def gethighurl(code):
 	cookie = getmegauploaduser(megavideologin,megavideopassword)
 	if DEBUG:
 		xbmc.output("[megaupload.py] cookie=#"+cookie+"#")
+
+	if len(cookie) == 0:
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Cuenta de Megaupload errónea' , 'La cuenta de Megaupload que usas no es válida' , 'Comprueba el login y password en la configuración')
+		return ""
+
 	return getmegauploadvideo(code,cookie)
 
 def getlowurl(code):
