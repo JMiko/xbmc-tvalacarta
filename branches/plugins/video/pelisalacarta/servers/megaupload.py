@@ -118,7 +118,8 @@ def getmegauploaduser(login,password):
 	# an example url that sets a cookie,
 	# try different urls here and see the cookie collection you can make !
 
-	txdata = "login=1&redir=1&username="+login+"&password="+password
+	passwordesc=password.replace("&","%26")
+	txdata = "login=1&redir=1&username="+login+"&password="+passwordesc
 	# if we were making a POST type request,
 	# we could encode a dictionary of values here,
 	# using urllib.urlencode(somedict)
