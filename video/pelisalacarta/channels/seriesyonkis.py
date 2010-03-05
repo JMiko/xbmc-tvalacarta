@@ -47,6 +47,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "alltvserieslist"  , category , "Listado completo de series","http://www.seriesyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "allcartoonslist"  , category , "Listado completo de dibujos animados","http://www.seriesyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "allanimelist"     , category , "Listado completo de anime","http://www.seriesyonkis.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "allminilist"      , category , "Listado completo de miniseries","http://www.seriesyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"           , category , "Buscar","","","")
 
 	if xbmcplugin.getSetting("singlechannel")=="true":
@@ -307,6 +308,9 @@ def allcartoonslist(params,url,category):
 def allanimelist(params,url,category):
 	allserieslist(params,url,category,"anime")
 
+def allminilist(params,url,category):
+	allserieslist(params,url,category,"miniseries")
+
 def allserieslist(params,url,category,clave):
 	xbmc.output("[seriesyonkis.py] allserieslist")
 	if xbmcplugin.getSetting("forceview")=="true":
@@ -378,8 +382,26 @@ def list(params,url,category):
 	else:
 	  thumbnail = ""
 
+	# Busca la descripción
+	patronvideos  = '<h3>Descripci.n.</h3>([^<]+)<'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		scrapedplot = matches[0]
+	else:
+		scrapedplot = ""
+	
+	# Busca el thumbnail
+	patronvideos = '<div class="post">.*?<img.*?src="(http\:\/\/images.seriesyonkis[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		scrapedthumbnail = matches[0]
+	else:
+		scrapedthumbnail = ""
+
 	# Añade "Agregar todos a la librería"
-	xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "Megavideo", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , thumbnail , "" , Serie)
+	xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "Megavideo", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , scrapedthumbnail , scrapedplot , Serie)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<a href="(http://www.seriesyonkis.com/capitulo[^"]+)"[^>]+>([^<]+)</a>'
@@ -393,12 +415,6 @@ def list(params,url,category):
 		# URL
 		scrapedurl = match[0]
 		
-		# Thumbnail
-		scrapedthumbnail = ""
-		
-		# procesa el resto
-		scrapedplot = ""
-
 		# Depuracion
 		if (DEBUG):
 			xbmc.output("scrapedtitle="+scrapedtitle)
