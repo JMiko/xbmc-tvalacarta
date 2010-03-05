@@ -512,15 +512,19 @@ def addlist2Library(params,url,category):
 		#OPCION 1:
 		#library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False)
 		#OPCION 2
-		library.savelibrary(scrapedtitle,url,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False,accion="strm_detail")
-
+		try:
+			library.savelibrary(scrapedtitle,url,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False,accion="strm_detail",pedirnombre=False)
+		except IOError:
+			xbmc.output("Error al grabar el archivo "+scrapedtitle)
+			errores = errores + 1
+		
 #	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	pDialog.close()
 	
 	#Actualización de la biblioteca
 	if errores > 0:
 		xbmc.output ("[seriesyonkis.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
-	library.update(totalepisodes-errores)
+	library.update(totalepisodes-errores,errores)
 
 def strm_detail (params,url,category):
 	xbmc.output("[seriesyonkis.py] strm_detail")
