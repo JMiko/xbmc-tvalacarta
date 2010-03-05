@@ -322,7 +322,11 @@ def GetMegavideoUser(login, password):
 	#  Inicializa la librería de las cookies
 	# ---------------------------------------
 	ficherocookies = COOKIEFILE
-	os.remove(ficherocookies)
+	# Borra el fichero de cookies para evitar errores
+	try:
+		os.remove(ficherocookies)
+	except:
+		pass
 
 	# the path and filename to save your cookies in
 
@@ -394,7 +398,8 @@ def GetMegavideoUser(login, password):
 	# an example url that sets a cookie,
 	# try different urls here and see the cookie collection you can make !
 
-	txdata = "action=login&cnext=&snext=&touser=&user=&nickname="+login+"&password="+password
+	passwordesc=password.replace("&","%26")
+	txdata = "action=login&cnext=&snext=&touser=&user=&nickname="+login+"&password="+passwordesc
 	# if we were making a POST type request,
 	# we could encode a dictionary of values here,
 	# using urllib.urlencode(somedict)

@@ -17,7 +17,10 @@ def getvideo(urlpagina):
     #  Inicializa la libreria de las cookies
     # ---------------------------------------
     ficherocookies = COOKIEFILE
-    os.remove(ficherocookies)
+    try:
+        os.remove(ficherocookies)
+    except:
+        pass
     xbmc.output("ficherocookies %s" % ficherocookies)
     # the path and filename to save your cookies in
 
