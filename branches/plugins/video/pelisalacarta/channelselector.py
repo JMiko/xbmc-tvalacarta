@@ -97,8 +97,16 @@ def listchannels(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def addfolder(nombre,channelname,accion,category=""):
+
+	#Si no se indica categoría poner "Otros" por defecto
 	if category == "":
-		category = nombre
-	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png"))
+		category = "Otros"
+	
+	#Preferir cartel en jpg a png (para ir sustituyendo)
+	thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".jpg")
+	if not os.path.exists(thumbnail):
+		thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png")
+	
+	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
 	itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(category) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
