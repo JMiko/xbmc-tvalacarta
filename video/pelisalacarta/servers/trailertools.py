@@ -147,6 +147,8 @@ def gettrailer(titulovideo,category):
 	print "[trailertools.py] Modulo: gettrailer(titulo = %s , category = %s)"  % (titulovideo,category)
 	titulo = re.sub('\([^\)]+\)','',titulovideo)
 	titulo = title = re.sub('\[[^\]]+\]','',titulo)
+	titulo = titulo.replace("Mirror 1","").strip()
+	titulo = titulo.replace("parte 1","").strip()
 	sopa_palabras_invalidas = ("dvdrip" ,  "dvdscreener2" ,"tsscreener" , "latino" ,     # Esto es para peliculasyonkis o parecidos
 							   "dvdrip1",  "dvdscreener"  ,"tsscreener1", "latino1",
 							   "latino2",  "dvdscreener1" ,"screener"    ,
@@ -160,8 +162,8 @@ def gettrailer(titulovideo,category):
 			titulo = titulo.replace(trozo ,"")
 	titulo = re.sub(' $','',titulo)
 	titulo = titulo.replace("ver pelicula online vos","")
-	titulo = titulo.replace("ver pelicula online","")
-	titulo = titulo.replace("miroor 1","").strip()	
+	titulo = titulo.replace("ver pelicula online","").strip()
+		
 	encontrados = []
 	if len(titulo)==0:
 		titulo = "El_video_no_tiene_titulo"
