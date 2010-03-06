@@ -46,10 +46,12 @@ def listchannels(params,url,category):
 	addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
+	addfolder("FilmesOnlineBr","filmesonlinebr","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")
+	addfolder("Series21","series21","mainlist")
 	addfolder("Newcineonline","newcineonline","mainlist")
 	addfolder("CastTV [EN]","casttv","mainlist")
 	addfolder("Pelis24","pelis24","mainlist")
