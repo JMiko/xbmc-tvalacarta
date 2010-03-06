@@ -311,8 +311,14 @@ def listvideos(params,url,category):
 		for match in matchtrailer:
 		# Añade al listado de XBMC
 			xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category ,"Directo", "Ver El Trailer de : "+title , match , thumbnail, plot )
+	else:
+		import trailertools
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category , "Buscar trailer para : "+title , url , thumbnail, plot )
+		
+		
 	matchesBK = matches[0]
-	# Extrae las entradas (videos) para megavideo
+	# Extrae las entradas (videos) para megavideo con tipo de audio
 	patronvideos  = '<span  style="font-size:12px;"><strong>(.*?)</strong></span><br/>.*?'
 	patronvideos += '<span.*?>.*?<a href="http\:\/\/www.megavideo.com\/[\?v=|v/]+([A-Z0-9]{8}).*?" target="_blank">1</a>.</span><br />'
 	
