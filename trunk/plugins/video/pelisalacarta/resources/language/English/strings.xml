@@ -10,6 +10,11 @@
     <string id="30005">MPlayer</string>
     <string id="30006">DVDPlayer</string>
 
+    <string id="30011">Default action on play:</string>
+    <string id="30008">Ask</string>
+    <string id="30009">Watch</string>
+    <string id="30010">Watch in high quality</string>
+
     <string id="30100">Megavideo premium mode:</string>
     <string id="30101">Megavideo user:</string>
     <string id="30102">Megavideo password:</string>

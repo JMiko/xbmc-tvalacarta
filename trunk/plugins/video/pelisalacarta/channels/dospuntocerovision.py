@@ -30,6 +30,7 @@ except:
 xbmc.output("[dospuntocerovision.py] init")
 
 DEBUG = True
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 
 def mainlist(params,url,category):
 	xbmc.output("[dospuntocerovision.py] mainlist")
@@ -207,7 +208,7 @@ def listnovedades(params,url,category):
 			elif "2010" in scrapedtitle:
 				scrapedplot = " "
 			else:
-				scrapedplot = ""
+				scrapedplot = " "
 			# Depuracion
 			if (DEBUG):
 			      xbmc.output("scrapedtitle="+scrapedtitle)
@@ -253,9 +254,10 @@ def listvideos(params,url,category):
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
   
 def listarvideos(params,url,category,data):
+    titulo = params.get("title")
     xbmc.output("[dospuntocerovision.py] listarvideos ")
     plot = params.get("plot")
-    patronmovshare   = 'href="(http://www.movshare.net/.*?)"'         
+    patronmovshare   = 'href="(http://www.movshare.net/.*?)"[^>]+>(.*?)<'         
     patronmegavideoflv= 'href="(http://www.megavideoflv.com/.*?)"'
     patronmegavideo  = 'href="http://www.megavideo.com/.*?v=(.*?)\&.*?>(.*?)</a>'
     patronmegavideo2 = '(<b[^"]+|<b[^<]+<b[^"]+)".*?http\:\/\/www.megavideo.com/\?(v\=|d\=)([A-Z0-9]{8})".*?>(.*?)</a>(.*?)<'
@@ -277,8 +279,8 @@ def listarvideos(params,url,category,data):
         
     if DEBUG and ("+" == plot):
 		
-		detalle = "Esta opcion permite buscar el trailer en youtube para esta pelicula y muestra hasta seis titulos mas aproximados si los hay \n (esto es experimental)"
-		xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category ,"Buscar Trailer para - "+scrapedtitle  , scrapedtitle , scrapedthumbnail, detalle )
+		detalle = "Esta opcion permite buscar el trailer en youtube para esta pelicula y muestra hasta seis titulos mas aproximados si los hay \n "
+		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category ,"Buscar trailer para : "+scrapedtitle  , titulo , os.path.join(IMAGES_PATH, 'trailertools.png'), detalle )
 #-------------------------------------------------------------------------------    
        
     matchesmegavideo = re.compile(patronmegavideo,re.DOTALL).findall(data) # busca los links de megavideo
@@ -337,10 +339,16 @@ def listarvideos(params,url,category,data):
     matchesmovshare = re.compile(patronmovshare,re.DOTALL).findall(data)
     if len(matchesmovshare)>0:
        #import movshare
+        
+       total = len(matchesmovshare)
        for match in matchesmovshare:
-         import movshare
-         scrapedurl = movshare.getvideo(match)
-         xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle +" - "+"parte "+str(c)+" (Movshare)", scrapedurl , scrapedthumbnail , scrapedplot )     
+		xbmc.output("movshare link : "+match[0])
+		
+		import movshare
+		scrapedurl = movshare.getvideo(match[0])
+		if len(scrapedurl)>0:
+			
+			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle +" - "+match[1]+" (Movshare)", scrapedurl , scrapedthumbnail , scrapedplot )     
 
 #-------------------------------------------------------------------------------
    
@@ -568,8 +576,8 @@ def buscaporletra(params,url,category,data):
                      xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
         else:
-            patron = 'http://.*?/.*?/.*?/'+letras[seleccion-2]+'.*?html'
-            xbmc.output("patroooooooooooooooooooo  "+patron)
+            #patron = 'http://.*?/.*?/.*?/'+letras[seleccion-2]+'.*?html'
+            #xbmc.output("patroooooooooooooooooooo  "+patron)
             for match in matches:   
                if match[1][0:1] == letras[seleccion-2]:
                   
@@ -706,7 +714,10 @@ def youtubeplay(params,url,category):
         except:
            plot = xbmc.getInfoLabel( "ListItem.Plot" )
         server = "Directo"
-	youtubeurlcatch  = 'http://www.flashvideodownloader.org/download.php?u=http://www.youtube.com'+url
+	if "www.youtube" in url:
+		youtubeurlcatch  = 'http://www.flashvideodownloader.org/download.php?u='+url
+	else:
+		youtubeurlcatch  = 'http://www.flashvideodownloader.org/download.php?u=http://www.youtube.com'+url
         data2 = scrapertools.cachePage(youtubeurlcatch)
         patronlinkdirecto = '<div class="mod_download"><a href="([^"]+)"'
         linkdirectoyoutube = re.compile(patronlinkdirecto,re.DOTALL).findall(data2)
@@ -771,15 +782,15 @@ def buscartrailer(params,url,category):
 			thumbnail  = video[2]
 			xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" ,  videotitle , url , thumbnail , "Ver Video" )
 			
-	else:
-		respuesta = trailertools.alertnoencontrado(titulo)
-		if respuesta:
-			listavideos = trailertools.trailerbykeyboard(titulo)
-			for video in listavideos:
-				videotitle = video[1]
-				url        = video[0]
-				thumbnail  = video[2]
-				xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" ,  videotitle , url , thumbnail , "Ver Video" )
+	#else:
+	#	respuesta = trailertools.alertnoencontrado(titulo)
+	#	if respuesta:
+	#		listavideos = trailertools.trailerbykeyboard(titulo)
+	#		for video in listavideos:
+	#			videotitle = video[1]
+	#			url        = video[0]
+	#			thumbnail  = video[2]
+	#			xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" ,  videotitle , url , thumbnail , "Ver Video" )
 	# ------------------------------------------------------------------------------------
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )

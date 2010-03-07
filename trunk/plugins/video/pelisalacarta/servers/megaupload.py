@@ -11,6 +11,7 @@ import os.path
 import sys
 import xbmc
 import xbmcplugin
+import xbmcgui
 import megavideo
 import scrapertools
 
@@ -43,6 +44,11 @@ def getmegauploaduser(login,password):
 	#  Inicializa la librería de las cookies
 	# ---------------------------------------
 	ficherocookies = COOKIEFILE
+	try:
+		os.remove(ficherocookies)
+	except:
+		pass
+
 	# the path and filename to save your cookies in
 
 	cj = None
@@ -113,7 +119,8 @@ def getmegauploaduser(login,password):
 	# an example url that sets a cookie,
 	# try different urls here and see the cookie collection you can make !
 
-	txdata = "login=1&redir=1&username="+login+"&password="+password
+	passwordesc=password.replace("&","%26")
+	txdata = "login=1&redir=1&username="+login+"&password="+passwordesc
 	# if we were making a POST type request,
 	# we could encode a dictionary of values here,
 	# using urllib.urlencode(somedict)
@@ -158,8 +165,11 @@ def getmegauploaduser(login,password):
 		xbmc.output("----------------------")
 		xbmc.output(cookiedata)
 		xbmc.output("----------------------")
+		devuelve = ""
+	else:
+		devuelve = matches[0]
 
-	return matches[0]
+	return devuelve
 
 def getmegauploadvideo(code,user):
 	req = urllib2.Request("http://www.megaupload.com/?d="+code)
@@ -199,6 +209,12 @@ def gethighurl(code):
 	cookie = getmegauploaduser(megavideologin,megavideopassword)
 	if DEBUG:
 		xbmc.output("[megaupload.py] cookie=#"+cookie+"#")
+
+	if len(cookie) == 0:
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Cuenta de Megaupload errónea' , 'La cuenta de Megaupload que usas no es válida' , 'Comprueba el login y password en la configuración')
+		return ""
+
 	return getmegauploadvideo(code,cookie)
 
 def getlowurl(code):

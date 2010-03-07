@@ -30,10 +30,22 @@ xbmc.output("[delatv.py] init")
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[delatv.py] mainlist")
+	xbmc.output("[cinegratis.py] mainlist")
 
-	if url=='':
-		url = "http://delatv.com/"
+	# Añade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Novedades" ,"http://delatv.com/","","")
+
+	if xbmcplugin.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+	
+def novedades(params,url,category):
+	xbmc.output("[delatv.py] novedades")
 
 	# ------------------------------------------------------
 	# Descarga la página
@@ -64,7 +76,8 @@ def mainlist(params,url,category):
 	# ------------------------------------------------------
 	# Extrae la página siguiente
 	# ------------------------------------------------------
-	patron = '<a href="([^"]+)" >\&raquo\;</a>'
+	#patron = '<a href="([^"]+)" >\&raquo\;</a>'
+	patron  = 'class="current">[^<]+</span><a href="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -77,18 +90,11 @@ def mainlist(params,url,category):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
-
-	if xbmcplugin.getSetting("singlechannel")=="true":
-		xbmctools.addSingleChannelOptions(params,url,category)
+		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "novedades" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
@@ -137,21 +143,28 @@ def listmirrors(params,url,category):
 		url = "http://www.delatv.com/xml/"+matches[0]+".xml"
 		data = scrapertools.cachePage(url)
 		#xbmc.output(data)
-		patron = '<media\:content url="([^"]+)"'
+		#patron = '<media\:content url="([^"]+)"'
+		patron  = '<track>[^<]+<creator>([^<]+)</creator>[^<]+<location>([^<]+)</location>'
+		patron += '[^<]+(<meta rel="streamer">.*?</meta>.*?|)</track>'
 		matches = re.compile(patron,re.DOTALL).findall(data)
 		scrapertools.printMatches(matches)
 		
 		for match in matches:
+			titulo = title + " - " + match[0]
+			if match[2] == "":
+				url = match[1]
+			else:
+				url   = re.sub("<[^>]+>","",match[2])
+				url   = url+"/"+match[1]
+				url   = url.replace("\n","").replace(" ","")
+				titulo = titulo + " [RTMPE]"
+			print ' esta es la url: %s' %url
 			# Añade al listado de XBMC
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]" , match , thumbnail , plot )
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , titulo + " [Directo]" , url , thumbnail , plot )
 
-	# Label (top-right)...
+	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):

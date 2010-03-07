@@ -13,6 +13,8 @@ import xbmcplugin
 import scrapertools
 import megavideo
 import servertools
+import downloadtools
+import descargadoslist
 import time
 import xbmctools
 
@@ -365,7 +367,7 @@ def ddpostdetail(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -392,12 +394,90 @@ def ddpostdetail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	listavideos = servertools.findvideos(data)
 
+	i = 1
+
 	for video in listavideos:
-		videotitle = video[0]
+		try:
+			fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
+		except:
+			fulltitle = title.strip() + " (%d) " + video[0]
+		fulltitle = fulltitle % i
+		i = i + 1
+		videourl = video[1]
+		server = video[2]
+		#xbmc.output("videotitle="+urllib.quote_plus( videotitle ))
+		#xbmc.output("plot="+urllib.quote_plus( plot ))
+		#plot = ""
+		#xbmc.output("title="+urllib.quote_plus( title ))
+
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , fulltitle , videourl , thumbnail , plot )
+	# ------------------------------------------------------------------------------------
+
+	# ------------------------------------------------------------------------------------
+	# Añade la opción "Añadir todos los vídeos a la lista de descarga"
+	# ------------------------------------------------------------------------------------
+	xbmctools.addnewvideo( CHANNELNAME , "addalltodownloadlist" , title , "" , "(Añadir todos los vídeos a la lista de descarga)" , url , thumbnail , plot )
+	
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def addalltodownloadlist(params,url,category):
+	xbmc.output("[mcanime.py] addalltodownloadlist")
+
+	title = urllib.unquote_plus( params.get("category") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+
+	# Pide el título de la serie como "prefijo"
+	keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		title = keyboard.getText()
+	else:
+		return
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# ------------------------------------------------------------------------------------
+	# Busca los enlaces a los videos
+	# ------------------------------------------------------------------------------------
+	listavideos = servertools.findvideos(data)
+
+	# Diálogo de progreso
+	pDialog = xbmcgui.DialogProgress()
+	ret = pDialog.create('pelisalacarta', 'Añadiendo vídeos a la lista de descargas')
+	pDialog.update(0, 'Vídeo...')
+	totalepisodes = len(listavideos)
+
+	i = 1
+
+	for video in listavideos:
+		try:
+			fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
+		except:
+			fulltitle = title.strip() + " (%d) " + video[0]
+		fulltitle = fulltitle % i
+		i = i + 1
 		url = video[1]
 		server = video[2]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+
+		# Añade el enlace a la lista de descargas
+		descargadoslist.savebookmark(fulltitle,url,thumbnail,server,plot)
+		
+		pDialog.update(i*100/totalepisodes, 'Vídeo...',fulltitle)
+		if (pDialog.iscanceled()):
+			pDialog.close()
+			return
+
 	# ------------------------------------------------------------------------------------
+	pDialog.close()
+
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('Vídeos en lista de descargas' , 'Se han añadido todos los vídeos' , 'a la lista de descargas')
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -477,7 +557,7 @@ def forumdetail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	for match in matches:
 		xbmc.output("Encontrada pagina siguiente")
-		addfolder("Pagina siguiente",urlparse.urljoin(url,match).replace("&amp;","&"),"list")
+		xbmctools.addnewfolder( CHANNELNAME , "list" , category , "Pagina siguiente" ,urlparse.urljoin(url,match).replace("&amp;","&"),"","")
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -520,7 +600,12 @@ def forumdetail(params,url,category):
 	
 	for video in listavideos:
 		titulo = descripcion = re.sub("<[^>]+>","",video[0])
-		addthumbnailvideo( titulo , video[1] , thumbnailurl , descripcion , category , video[2] )
+		url = video[1]
+		thumbnail = thumbnailurl
+		plot = descripcion
+		server = video[2]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , titulo , url , thumbnail , plot )
+
 	# ------------------------------------------------------------------------------------
 
 	# Cierra el directorio
@@ -532,22 +617,9 @@ def play(params,url,category):
 	xbmc.output("[mcanime.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
-def addfolder(nombre,url,accion):
-	xbmc.output('[mcanime.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
-	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
-	listitem.setInfo( "video", { "Title" : nombre, "Date" : str(int(time.clock()*100000000)) } )
-	itemurl = '%s?channel=mcanime&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
-	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
-
-def addthumbnailvideo(nombre,url,thumbnail,descripcion,category,server):
-	xbmc.output('[mcanime.py] addvideo( "'+nombre+'" , "' + url + '" , "'+thumbnail+'" , "'+server+'")"')
-	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title" : nombre, "Plot" : descripcion } )
-	itemurl = '%s?channel=mcanime&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , url , server )
-	xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)

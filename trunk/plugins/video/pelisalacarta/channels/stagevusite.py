@@ -58,6 +58,51 @@ def search(params,url,category):
 			searchUrl = 'http://stagevu.com/search?for='+tecleado+'&in=Videos&x=0&y=0&perpage=25&page=2'
 			list(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[stagevusite.py] performsearch")
+	url = 'http://stagevu.com/search?for='+texto+'&in=Videos&x=0&y=0&perpage=25&page=2'
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="result[^>]+>[^<]+<div class="resultcont">[^<]+<h2><a href="([^"]+)">([^<]+)</a>.*?<img src="([^"]+)".*?</a>(.*?)</div>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Titulo
+		try:
+			scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
+		except:
+			scrapedtitle = match[1]
+
+		# URL
+		scrapedurl = match[0]
+		
+		# Thumbnail
+		scrapedthumbnail = match[2]
+		
+		# procesa el resto
+		try:
+			scrapedplot = unicode( match[3], "utf-8" ).encode("iso-8859-1")
+		except:
+			scrapedplot = match[3]
+		scrapedplot = scrapedplot.replace("\\t","")
+		scrapedplot = scrapedplot.replace("<p>"," ")
+		scrapedplot = scrapedplot.replace("</p>"," ")
+		scrapedplot = scrapedplot.strip()
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "play" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
+
+
 def list(params,url,category):
 	xbmc.output("[stagevusite.py] list")
 

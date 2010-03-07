@@ -67,6 +67,34 @@ def search(params,url,category):
 			searchUrl = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+tecleado
 			searchresults(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[peliculasyonkis.py] performsearch")
+	url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<li> <a href="([^"]+)" title="([^"]+)"><img.*?src="([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Atributos
+		scrapedtitle = match[1]
+		scrapedurl = match[0]
+		scrapedthumbnail = match[2]
+		scrapedplot = ""
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def searchresults(params,url,category):
 	xbmc.output("[peliculasyonkis.py] searchresults")
 

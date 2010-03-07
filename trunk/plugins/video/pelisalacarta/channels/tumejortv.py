@@ -452,8 +452,9 @@ def seriealllist(params,url,category):
 	# ------------------------------------------------------
 	# Extrae las películas
 	# ------------------------------------------------------
-	#<li class="cat-item cat-item-136"><a href="http://www.tumejortv.com/series-tv-online/24" title="Ver todos los videos de 24">24</a></li>
-	patron  = '<li class="cat-item[^<]+<a href="(http\:\/\/www\.tumejortv\.com\/series\-tv\-online\/[^"]+)"[^>]+>([^<]+)</a></li>'
+	#<li class='cat-item cat-item-1929'><a href='http://www.tumejortv.com/series-tv-online/2-de-mayo' title='Todas las temporadas de 2 de Mayo'>2 de Mayo</a></li>
+
+	patron  = "<li class='cat-item[^<]+<a href='(http\:\/\/www\.tumejortv\.com\/series\-tv\-online\/[^']+)'[^>]+>([^<]+)</a></li>"
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
