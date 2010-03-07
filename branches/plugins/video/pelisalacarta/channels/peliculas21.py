@@ -315,7 +315,7 @@ def listvideos(params,url,category):
 	else:
 		import trailertools
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category , "Buscar trailer para : "+title , url , os.path.join(IMAGES_PATH, 'buscatrailers.png'), plot )
+		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category , "Buscar trailer para : "+title , url , os.path.join(IMAGES_PATH, 'trailertools.png'), plot )
 		
 		
 	matchesBK = matches[0]
