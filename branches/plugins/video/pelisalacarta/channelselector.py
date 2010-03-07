@@ -50,7 +50,7 @@ def listchannels(params,url,category):
 	addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
-	addfolder("FilmesOnlineBr","filmesonlinebr","mainlist")
+	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
@@ -73,7 +73,8 @@ def listchannels(params,url,category):
 	if xbmcplugin.getSetting("enableadultmode") == "true":
 		addfolder("MocosoftX","mocosoftx","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
-	addfolder("Documaniatv","documaniatv","mainlist")
+	addfolder("DocumaniaTV","documaniatv","mainlist")
+	addfolder("DocumentariesTV [EN]","documentariestv","mainlist")
 	addfolder("Documentalesyonkis","documentalesyonkis","mainlist")
 	addfolder("Documentalesatonline","documentalesatonline","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
