@@ -13,6 +13,8 @@ import xbmcplugin
 import scrapertools
 import megavideo
 import servertools
+import downloadtools
+import descargadoslist
 import time
 import xbmctools
 
@@ -363,7 +365,7 @@ def ddseriedetail(params,url,category):
 def ddpostdetail(params,url,category):
 	xbmc.output("[mcanime.py] ddpostdetail")
 
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" ).encode("iso-8859-1")
+	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 
@@ -401,15 +403,81 @@ def ddpostdetail(params,url,category):
 			fulltitle = title.strip() + " (%d) " + video[0]
 		fulltitle = fulltitle % i
 		i = i + 1
-		url = video[1]
+		videourl = video[1]
 		server = video[2]
 		#xbmc.output("videotitle="+urllib.quote_plus( videotitle ))
 		#xbmc.output("plot="+urllib.quote_plus( plot ))
 		#plot = ""
 		#xbmc.output("title="+urllib.quote_plus( title ))
 
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , fulltitle , url , thumbnail , plot )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , fulltitle , videourl , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
+
+	# ------------------------------------------------------------------------------------
+	# Añade la opción "Añadir todos los vídeos a la lista de descarga"
+	# ------------------------------------------------------------------------------------
+	xbmctools.addnewvideo( CHANNELNAME , "addalltodownloadlist" , title , "" , "(Añadir todos los vídeos a la lista de descarga)" , url , thumbnail , plot )
+	
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def addalltodownloadlist(params,url,category):
+	xbmc.output("[mcanime.py] addalltodownloadlist")
+
+	title = urllib.unquote_plus( params.get("category") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+
+	# Pide el título de la serie como "prefijo"
+	keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		title = keyboard.getText()
+	else:
+		return
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# ------------------------------------------------------------------------------------
+	# Busca los enlaces a los videos
+	# ------------------------------------------------------------------------------------
+	listavideos = servertools.findvideos(data)
+
+	# Diálogo de progreso
+	pDialog = xbmcgui.DialogProgress()
+	ret = pDialog.create('pelisalacarta', 'Añadiendo vídeos a la lista de descargas')
+	pDialog.update(0, 'Vídeo...')
+	totalepisodes = len(listavideos)
+
+	i = 1
+
+	for video in listavideos:
+		try:
+			fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
+		except:
+			fulltitle = title.strip() + " (%d) " + video[0]
+		fulltitle = fulltitle % i
+		i = i + 1
+		url = video[1]
+		server = video[2]
+
+		# Añade el enlace a la lista de descargas
+		descargadoslist.savebookmark(fulltitle,url,thumbnail,server,plot)
+		
+		pDialog.update(i*100/totalepisodes, 'Vídeo...',fulltitle)
+		if (pDialog.iscanceled()):
+			pDialog.close()
+			return
+
+	# ------------------------------------------------------------------------------------
+	pDialog.close()
+
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('Vídeos en lista de descargas' , 'Se han añadido todos los vídeos' , 'a la lista de descargas')
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
