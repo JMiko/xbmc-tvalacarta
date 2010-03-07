@@ -76,7 +76,8 @@ def novedades(params,url,category):
 	# ------------------------------------------------------
 	# Extrae la página siguiente
 	# ------------------------------------------------------
-	patron = '<a href="([^"]+)" >\&raquo\;</a>'
+	#patron = '<a href="([^"]+)" >\&raquo\;</a>'
+	patron  = 'class="current">[^<]+</span><a href="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -89,7 +90,7 @@ def novedades(params,url,category):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
+		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "novedades" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -142,13 +143,24 @@ def listmirrors(params,url,category):
 		url = "http://www.delatv.com/xml/"+matches[0]+".xml"
 		data = scrapertools.cachePage(url)
 		#xbmc.output(data)
-		patron = '<media\:content url="([^"]+)"'
+		#patron = '<media\:content url="([^"]+)"'
+		patron  = '<track>[^<]+<creator>([^<]+)</creator>[^<]+<location>([^<]+)</location>'
+		patron += '[^<]+(<meta rel="streamer">.*?</meta>.*?|)</track>'
 		matches = re.compile(patron,re.DOTALL).findall(data)
 		scrapertools.printMatches(matches)
 		
 		for match in matches:
+			titulo = title + " - " + match[0]
+			if match[2] == "":
+				url = match[1]
+			else:
+				url   = re.sub("<[^>]+>","",match[2])
+				url   = url+"/"+match[1]
+				url   = url.replace("\n","").replace(" ","")
+				titulo = titulo + " [RTMPE]"
+			print ' esta es la url: %s' %url
 			# Añade al listado de XBMC
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]" , match , thumbnail , plot )
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , titulo + " [Directo]" , url , thumbnail , plot )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
