@@ -77,6 +77,7 @@ def listchannels(params,url,category):
 	addfolder("DocumentariesTV [EN]","documentariestv","mainlist")
 	addfolder("Documentalesyonkis","documentalesyonkis","mainlist")
 	addfolder("Documentalesatonline","documentalesatonline","mainlist")
+	addfolder("Buscador de Trailer (Youtube)","trailertools","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")
 	addfolder("tu.tv","tutvsite","mainlist")
@@ -86,7 +87,7 @@ def listchannels(params,url,category):
 	addfolder("Descargas","descargados","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
 	addfolder("Buscador","buscador","mainlist")
-	addfolder("Buscar Trailer","trailertools","mainlist")
+	
 
 	#addfolder("Kochikame","kochikame","mainlist")
 	#addfolder("Ver telenovelas online","vertelenovelasonline","mainlist")
