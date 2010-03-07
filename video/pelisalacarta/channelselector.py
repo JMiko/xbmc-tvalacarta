@@ -11,7 +11,11 @@ import scrapertools
 xbmc.output("[channelselector.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
+if xbmcplugin.getSetting("thumbnail_type")=="0":
+	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
+else:
+	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
+
 
 #57=DVD Thumbs
 #xbmc.executebuiltin("Container.SetViewMode(57)")
