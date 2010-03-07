@@ -30,7 +30,20 @@ except:
 
 DEBUG = True
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images'  ) )
-
+def mainlist(params,url,category):
+	xbmc.output("[trailertools.py] mainlist")
+	titulo = ""
+	listavideos = GetTrailerbyKeyboard(titulo,category)
+	if len(listavideos)>0:
+		for video in listavideos:
+			titulo = video[1]
+			url        = video[0]
+			thumbnail  = video[2]
+			xbmctools.addnewvideo( "trailertools" , "youtubeplay" , category , "Directo" ,  titulo , url , thumbnail , "Ver Video" )
+			
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )		
 def buscartrailer(params,url,category):
 	print "[trailertools.py] Modulo: buscartrailer()"
 	thumbnail = ""
@@ -50,7 +63,7 @@ def buscartrailer(params,url,category):
 			thumbnail  = video[2]
 			xbmctools.addnewvideo( "trailertools" , "youtubeplay" , category , "Directo" ,  titulo , url , thumbnail , "Ver Video" )
 	
-	xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , "Insatisfecho?, busca otra vez : "+videotitle , url , os.path.join(IMAGES_PATH, 'buscatrailers.png'), "" )		
+	xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , "Insatisfecho?, busca otra vez : "+videotitle , url , os.path.join(IMAGES_PATH, 'trailertools.png'), "" )		
 	# Propiedades
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -195,7 +208,10 @@ def GetTrailerbyKeyboard(titulo,category):
 	devuelve = []
 	keyboard = xbmc.Keyboard('default','heading')
 	keyboard.setDefault(titulo)
-	keyboard.setHeading('Puedes recortar el titulo ó bien cambiar a otro idioma')
+	if titulo == "":
+		keyboard.setHeading("Introduce el Titulo a buscar")
+	else:
+		keyboard.setHeading('Puedes recortar el titulo ó bien cambiar a otro idioma')
 	keyboard.doModal()
 	if (keyboard.isConfirmed()):
 		tecleado = keyboard.getText()
