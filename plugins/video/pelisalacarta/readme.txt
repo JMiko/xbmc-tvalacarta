@@ -113,9 +113,11 @@ Boxee Mac
 /Applications/boxee.app/contents/resources/boxee/plugins/video
 
 Plex:
-/Librería/Application Support/Plex/plugins/video
+Library/Application Support/Plex/plugins/video
 
-After installation go to XBMC, section "Video / Plugins" and you will see the pelisalacarta icon.
+
+
+After installation go to XBMC, section "Video / Video Plugins" and you will see the pelisalacarta icon.
 
 ---------------------------------------
 -- Why i do this?                    --

@@ -38,8 +38,10 @@ def mainlist(params,url,category):
 	addfolder("Películas - Alfabético","","listalfabetico")
 	addfolder("Series - Novedades","http://www.cinetube.es/subindices/iserienovedades.html","list")
 	addfolder("Series - Todas","http://www.cinetube.es/subindices/iserietodas.html","listtodasseries")
+	addfolder("Series - Alfabético","","listalfabeticoseries")
 	addfolder("Documentales - Novedades","http://www.cinetube.es/subindices/idocumentalesnovedades.html","list")
 	addfolder("Documentales - Todos","http://www.cinetube.es/subindices/idocumentalestodos.html","listtodasseries")
+	addfolder("Documentales - Alfabético","","listalfabeticodocumentales")
 	addfolder("Anime - Series","http://www.cinetube.es/subindices/ianimeseries.html","list")
 	addfolder("Anime - Peliculas","http://www.cinetube.es/subindices/ianimepeliculas.html","list")
 
@@ -84,13 +86,77 @@ def listalfabetico(params, url, category):
 	addfolder("Y","http://www.cinetube.es/subindices/ipeliy.html","list")
 	addfolder("Z","http://www.cinetube.es/subindices/ipeliz.html","list")
 
-	# Label (top-right)...
+	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-	# End of directory...
+def listalfabeticoseries(params, url, category):
+	addfolder("0-9","http://www.cinetube.es/subindices/iserienumero.html","list")
+	addfolder("A","http://www.cinetube.es/subindices/iseriea.html","list")
+	addfolder("B","http://www.cinetube.es/subindices/iserieb.html","list")
+	addfolder("C","http://www.cinetube.es/subindices/iseriec.html","list")
+	addfolder("D","http://www.cinetube.es/subindices/iseried.html","list")
+	addfolder("E","http://www.cinetube.es/subindices/iseriee.html","list")
+	addfolder("F","http://www.cinetube.es/subindices/iserief.html","list")
+	addfolder("G","http://www.cinetube.es/subindices/iserieg.html","list")
+	addfolder("H","http://www.cinetube.es/subindices/iserieh.html","list")
+	addfolder("I","http://www.cinetube.es/subindices/iseriei.html","list")
+	addfolder("J","http://www.cinetube.es/subindices/iseriej.html","list")
+	addfolder("K","http://www.cinetube.es/subindices/iseriek.html","list")
+	addfolder("L","http://www.cinetube.es/subindices/iseriel.html","list")
+	addfolder("M","http://www.cinetube.es/subindices/iseriem.html","list")
+	addfolder("N","http://www.cinetube.es/subindices/iserien.html","list")
+	addfolder("O","http://www.cinetube.es/subindices/iserieo.html","list")
+	addfolder("P","http://www.cinetube.es/subindices/iseriep.html","list")
+	addfolder("Q","http://www.cinetube.es/subindices/iserieq.html","list")
+	addfolder("R","http://www.cinetube.es/subindices/iserier.html","list")
+	addfolder("S","http://www.cinetube.es/subindices/iseries.html","list")
+	addfolder("T","http://www.cinetube.es/subindices/iseriet.html","list")
+	addfolder("U","http://www.cinetube.es/subindices/iserieu.html","list")
+	addfolder("V","http://www.cinetube.es/subindices/iseriev.html","list")
+	addfolder("W","http://www.cinetube.es/subindices/iseriew.html","list")
+	addfolder("X","http://www.cinetube.es/subindices/iseriex.html","list")
+	addfolder("Y","http://www.cinetube.es/subindices/iseriey.html","list")
+	addfolder("Z","http://www.cinetube.es/subindices/iseriez.html","list")
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def listalfabeticodocumentales(params, url, category):
+	addfolder("0-9","http://www.cinetube.es/subindices/idocumentalesnumero.html","list")
+	addfolder("A","http://www.cinetube.es/subindices/idocumentalesa.html","list")
+	addfolder("B","http://www.cinetube.es/subindices/idocumentalesb.html","list")
+	addfolder("C","http://www.cinetube.es/subindices/idocumentalesc.html","list")
+	addfolder("D","http://www.cinetube.es/subindices/idocumentalesd.html","list")
+	addfolder("E","http://www.cinetube.es/subindices/idocumentalese.html","list")
+	addfolder("F","http://www.cinetube.es/subindices/idocumentalesf.html","list")
+	addfolder("G","http://www.cinetube.es/subindices/idocumentalesg.html","list")
+	addfolder("H","http://www.cinetube.es/subindices/idocumentalesh.html","list")
+	addfolder("I","http://www.cinetube.es/subindices/idocumentalesi.html","list")
+	addfolder("J","http://www.cinetube.es/subindices/idocumentalesj.html","list")
+	addfolder("K","http://www.cinetube.es/subindices/idocumentalesk.html","list")
+	addfolder("L","http://www.cinetube.es/subindices/idocumentalesl.html","list")
+	addfolder("M","http://www.cinetube.es/subindices/idocumentalesm.html","list")
+	addfolder("N","http://www.cinetube.es/subindices/idocumentalesn.html","list")
+	addfolder("O","http://www.cinetube.es/subindices/idocumentaleso.html","list")
+	addfolder("P","http://www.cinetube.es/subindices/idocumentalesp.html","list")
+	addfolder("Q","http://www.cinetube.es/subindices/idocumentalesq.html","list")
+	addfolder("R","http://www.cinetube.es/subindices/idocumentalesr.html","list")
+	addfolder("S","http://www.cinetube.es/subindices/idocumentaless.html","list")
+	addfolder("T","http://www.cinetube.es/subindices/idocumentalest.html","list")
+	addfolder("U","http://www.cinetube.es/subindices/idocumentalesu.html","list")
+	addfolder("V","http://www.cinetube.es/subindices/idocumentalesv.html","list")
+	addfolder("W","http://www.cinetube.es/subindices/idocumentalesw.html","list")
+	addfolder("X","http://www.cinetube.es/subindices/idocumentalesx.html","list")
+	addfolder("Y","http://www.cinetube.es/subindices/idocumentalesy.html","list")
+	addfolder("Z","http://www.cinetube.es/subindices/idocumentalesz.html","list")
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def list(params,url,category):

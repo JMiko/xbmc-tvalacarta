@@ -67,7 +67,7 @@ def movielist(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = "<h2><a href='([^']+)'>(.*?)</a>"
+	patronvideos  = "<h3>\n<a href='([^']+)'>(.*?)</a>"
 	patronvideos += '.*?<a onblur=.*?src="(.*?)"' # cartel
 #	patronvideos += ".*?SINOPSIS:(.*?)(PUBLICADO POR" # sinopsis
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)

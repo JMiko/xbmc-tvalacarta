@@ -58,6 +58,44 @@ def search(params,url,category):
 			searchUrl = "http://www.cine15.com/?s="+tecleado+"&x=0&y=0"
 			listvideos(params,searchUrl,category)
 
+def performsearch(texto):
+	xbmc.output("[cine15.py] performsearch")
+	url = "http://www.cine15.com/?s="+texto+"&x=0&y=0"
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="videoitem">[^<]+'
+	patronvideos += '<div class="ratings">[^<]+'
+	patronvideos += '<div id="post-ratings[^>]+><img[^>]+><img[^>]+><img[^>]+><img[^>]+><img[^>]+></div>[^<]+'
+	patronvideos += '<div id="post-ratings[^>]+><img[^>]+>&nbsp;Loading ...</div>[^<]+'
+	patronvideos += '</div>[^<]+'
+	patronvideos += '<div class="comments">[^<]+</div>[^<]+'
+	patronvideos += '<div class="thumbnail">[^<]+'
+	patronvideos += '<a href="([^"]+)" title="([^"]+)"><img style="background: url\(([^\)]+)\)" [^>]+></a>[^<]+'
+	patronvideos += '</div>[^<]+'
+	patronvideos += '<h2 class="itemtitle"><a[^>]+>[^<]+</a></h2>[^<]+'
+	patronvideos += '<p class="itemdesc">([^<]+)</p>[^<]+'
+	patronvideos += '<small class="gallerydate">([^<]+)</small>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	resultados = []
+
+	for match in matches:
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = urlparse.urljoin(url,match[2])
+		scrapedplot = match[3]
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
+
 def peliscat(params,url,category):
 	xbmc.output("[cine15.py] peliscat")
 

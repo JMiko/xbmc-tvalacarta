@@ -9,8 +9,8 @@
 __plugin__  = "pelisalacarta"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/"
-__date__    = "23 Enero 2010"
-__version__ = "2.12"
+__date__    = "07 Marzo 2010"
+__version__ = "2.13"
 
 import os
 import sys
@@ -24,6 +24,8 @@ sys.path.append (librerias)
 librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' ) )
 sys.path.append (librerias)
 librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'servers' ) )
+sys.path.append (librerias)
+librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'youtubeAPI' ) )
 sys.path.append (librerias)
 
 # Ejecuta el programa principal

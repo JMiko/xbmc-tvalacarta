@@ -152,7 +152,7 @@ def detail(params,url,category):
 	xbmc.output("[cinegratis24h.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
-	#thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
 
 	# Descarga la página

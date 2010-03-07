@@ -29,7 +29,7 @@ def findvideos(data):
 
 	# Megavideo - Vídeos con título
 	xbmc.output("1) Megavideo con titulo...")
-	patronvideos  = '<div align="center">([^<]+)<.*?<param name="movie" value="http://www.megavideo.com/v/([A-Z0-9]{8})[^"]+"'
+	patronvideos  = '<div align="center">([^<]+)<.*?<param name="movie" value="http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
@@ -46,7 +46,7 @@ def findvideos(data):
 
 	# Megavideo - Vídeos con título
 	xbmc.output("1b) Megavideo con titulo...")
-	patronvideos  = '<a href\="http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})".*?>([^<]+)</a>'
+	patronvideos  = '<a href\="http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})".*?>([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
@@ -63,7 +63,7 @@ def findvideos(data):
 
 	xbmc.output("1c) Megavideo sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
-	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})"'
+	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -81,7 +81,7 @@ def findvideos(data):
 
 	xbmc.output("1d) Megavideo sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
-	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9]{8})'
+	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -121,7 +121,7 @@ def findvideos(data):
 
 	xbmc.output("1d) Megaupload sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
-	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9]{8})'
+	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -139,7 +139,7 @@ def findvideos(data):
 
 	xbmc.output("13) Megaupload sin titulo...")
 	#http://www.megaupload.com/?s=tumejortv&confirmed=1&d=6FQOWHTI
-	patronvideos  = 'http\:\/\/www.megaupload.com/.*?d\=([A-Z0-9]{8})'
+	patronvideos  = 'http\:\/\/www.megaupload.com/.*?d\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -299,7 +299,7 @@ def findvideos(data):
 
 	# Megavideo - Vídeos sin título
 	xbmc.output("10 ) Megavideo sin titulo...")
-	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9]{8})[^"]+"'
+	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
@@ -314,7 +314,7 @@ def findvideos(data):
 
 	# Megavideo - Vídeos sin título
 	xbmc.output("11) Megavideo sin titulo...")
-	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9]{8})[^"]+"'
+	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:

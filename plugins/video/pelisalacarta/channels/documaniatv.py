@@ -93,7 +93,31 @@ def search(params,url,category):
 
 ###############---------------------------------------------------#####################
 
-                          
+def performsearch(texto):
+	xbmc.output("[documaniatv.py] performsearch")
+	url = "http://www.documaniatv.com/search.php?keywords="+texto+"&btn=Buscar"
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		scrapedtitle = acentos(match[2])
+		scrapedurl = match[0]
+		scrapedthumbnail = match[1]
+		scrapedplot = match[3]
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
 
 def searchresults(params,url,category):
 	xbmc.output("[documaniatv.py] searchresults")
