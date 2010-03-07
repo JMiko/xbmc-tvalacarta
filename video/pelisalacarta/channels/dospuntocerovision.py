@@ -30,6 +30,7 @@ except:
 xbmc.output("[dospuntocerovision.py] init")
 
 DEBUG = True
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 
 def mainlist(params,url,category):
 	xbmc.output("[dospuntocerovision.py] mainlist")
@@ -279,7 +280,7 @@ def listarvideos(params,url,category,data):
     if DEBUG and ("+" == plot):
 		
 		detalle = "Esta opcion permite buscar el trailer en youtube para esta pelicula y muestra hasta seis titulos mas aproximados si los hay \n "
-		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category ,"Buscar trailer para : "+scrapedtitle  , titulo , scrapedthumbnail, detalle )
+		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category ,"Buscar trailer para : "+scrapedtitle  , titulo , os.path.join(IMAGES_PATH, 'buscatrailers.png'), detalle )
 #-------------------------------------------------------------------------------    
        
     matchesmegavideo = re.compile(patronmegavideo,re.DOTALL).findall(data) # busca los links de megavideo
