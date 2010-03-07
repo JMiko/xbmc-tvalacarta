@@ -29,6 +29,7 @@ except:
 xbmc.output("[peliculas21.py] init")
 
 DEBUG = True
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 
 def mainlist(params,url,category):
 	xbmc.output("[peliculas21.py] mainlist")
@@ -314,7 +315,7 @@ def listvideos(params,url,category):
 	else:
 		import trailertools
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category , "Buscar trailer para : "+title , url , thumbnail, plot )
+		xbmctools.addnewfolder( "trailertools" , "buscartrailer" , category , "Buscar trailer para : "+title , url , os.path.join(IMAGES_PATH, 'buscatrailers.png'), plot )
 		
 		
 	matchesBK = matches[0]
