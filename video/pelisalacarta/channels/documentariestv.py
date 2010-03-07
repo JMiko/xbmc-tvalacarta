@@ -27,7 +27,7 @@ except:
 xbmc.output("[documentariestv.py] init")
 tecleadoultimo = ""
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'documentariestv' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'documaniatv' ) )
 #############----------------------------------------------------------#############
 
 def mainlist(params,url,category):
