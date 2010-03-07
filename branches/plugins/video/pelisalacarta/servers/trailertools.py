@@ -29,6 +29,7 @@ except:
 	pluginhandle = ""
 
 DEBUG = True
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images'  ) )
 
 def buscartrailer(params,url,category):
 	print "[trailertools.py] Modulo: buscartrailer()"
@@ -49,7 +50,7 @@ def buscartrailer(params,url,category):
 			thumbnail  = video[2]
 			xbmctools.addnewvideo( "trailertools" , "youtubeplay" , category , "Directo" ,  titulo , url , thumbnail , "Ver Video" )
 	
-	xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , "Insatisfecho?, busca otra vez : "+videotitle , url , thumbnail, "" )		
+	xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , "Insatisfecho?, busca otra vez : "+videotitle , url , os.path.join(IMAGES_PATH, 'buscatrailers.png'), "" )		
 	# Propiedades
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
