@@ -11,21 +11,25 @@ import xbmc
 def Tutv(url):
 	xbmc.output("[tutv.py] url="+url)
 
-	patronvideos  = '"http://tu.tv.*?\&xtp\=([^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall('"'+url+'"')
-	i = 0
-
-	if len(matches)==0:
-		patronvideos  = '"http://www.tu.tv.*?\&xtp\=([^"]+)"'
+	if url.startswith("http://"):
+		patronvideos  = '"http://tu.tv.*?\&xtp\=([^"]+)"'
 		matches = re.compile(patronvideos,re.DOTALL).findall('"'+url+'"')
+		i = 0
 
-	i = 0
+		if len(matches)==0:
+			patronvideos  = '"http://www.tu.tv.*?\&xtp\=([^"]+)"'
+			matches = re.compile(patronvideos,re.DOTALL).findall('"'+url+'"')
+
+		i = 0
+		codigo = matches[0]
+	else:
+		codigo = url
 
 	#for match in matches:
 	#    print "%d %s" % (i , match)
 	#    i = i + 1
 
-	url = "http://tu.tv/visualizacionExterna2.php?web=undefined&codVideo="+matches[0]
+	url = "http://tu.tv/visualizacionExterna2.php?web=undefined&codVideo="+codigo
 	#print "-------------------------------------------------------"
 	#print url
 	#print "-------------------------------------------------------"

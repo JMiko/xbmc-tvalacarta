@@ -30,10 +30,22 @@ xbmc.output("[delatv.py] init")
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[delatv.py] mainlist")
+	xbmc.output("[cinegratis.py] mainlist")
 
-	if url=='':
-		url = "http://delatv.com/"
+	# Añade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Novedades" ,"http://delatv.com/","","")
+
+	if xbmcplugin.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+	
+def novedades(params,url,category):
+	xbmc.output("[delatv.py] novedades")
 
 	# ------------------------------------------------------
 	# Descarga la página
@@ -79,16 +91,9 @@ def mainlist(params,url,category):
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
-		xbmctools.addSingleChannelOptions(params,url,category)
-
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
@@ -145,13 +150,9 @@ def listmirrors(params,url,category):
 			# Añade al listado de XBMC
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]" , match , thumbnail , plot )
 
-	# Label (top-right)...
+	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):

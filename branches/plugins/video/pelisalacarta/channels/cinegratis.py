@@ -51,13 +51,9 @@ def mainlist(params,url,category):
 	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
-	# Label (top-right)...
+	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def pelisalfa(params, url, category):

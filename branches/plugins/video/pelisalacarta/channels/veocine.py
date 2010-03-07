@@ -34,7 +34,6 @@ def mainlist(params,url,category):
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas","http://www.veocine.es/peliculas.html","","")
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Series", "http://www.veocine.es/series.html","","")
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Documentales", "http://www.veocine.es/documentales.html","","")
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas infantiles", "http://www.veocine.es/infantil.html","","")
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas VOS", "http://www.veocine.es/peliculavos.html","","")
@@ -157,6 +156,8 @@ def listmirrors(params,url,category):
 	#xbmc.output(data)
 	
 	# Extrae los enlaces a los vídeos (Megavídeo)
+	#reproductor.php?video=53842&media=tutv&titulo=Obsesion Extraterrestre - Mirror 1&titulop=Obsesion Extraterrestre
+	#reproductor.php?video=KXLMR3C2&media=megavideo&titulo=Ciencia al desnudo: Jupiter - Mirror 1&titulop=Ciencia al desnudo: Jupiter&des=http%3A%2F%2Fwww.veodescargas.com%2Fdocumentales%2F13743-ciencia-al-desnudo-jupiter-dvb-s-national-geographic.html%23post30969
 	patron = 'reproductor.php\?video=([^\&]+)\&(?:amp\;)?media=([^\&]+)\&(?:amp\;)?titulo=([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)		
@@ -167,9 +168,16 @@ def listmirrors(params,url,category):
 		except:
 			scrapedtitle = match[2] + " (" + match[0] + ")"
 		scrapedurl = match[0]
+		
+		if match[1]=="megavideo":
+			server="Megavideo"
+		elif match[1]=="tutv":
+			server="tu.tv"
+		else:
+			server="Megavideo"
 
 		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , scrapedtitle , scrapedurl , thumbnail , plot )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle , scrapedurl , thumbnail , plot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

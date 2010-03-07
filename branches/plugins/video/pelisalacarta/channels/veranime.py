@@ -53,7 +53,9 @@ def fulllist(params,url,category):
 	#xbmc.output(data)
 
 	# Patron de las entradas
-	patron = '<li><a title="[^"]+" href="([^"]+)">([^<]+)</a></li>'
+	#<li><a href="http://ver-anime.net/07-ghost/"><span>07 Ghost</span></a></li>
+	#patron = '<li><a title="[^"]+" href="([^"]+)">([^<]+)</a></li>'
+	patron = '<li><a href="(http://ver-anime.net/[^"]+)"><span>([^<]+)</span></a></li>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -82,9 +84,24 @@ def newlist(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patron  = '<td style="width.25."><div class="fondoimg"><div class="background"><a href="([^"]+)" title="([^"]+)">'
-	patron += '<strong><h3>[^<]+</h3></strong></a><br/><div class="borde-interior2"><a href="[^"]+" title="[^"]+">[^<]+'
-	patron += '<img src="([^"]+)" alt="[^"]+"/></a></div></div></div></td>'
+	'''
+	<div class="item"><div class="boxgrid captionfull"><a href="http://ver-anime.net/demonbane/" title="Demonbane"><img src="http://ver-anime.net/images/Demonbane.gif"
+	
+	<div class="item">
+	<div class="boxgrid captionfull"><a href="http://ver-anime.net/suzuka/" title="Suzuka"><img src="http://ver-anime.net/images/Suzuka.gif" alt="Suzuka" width="164" height="250" border="0"/></a>
+	<div class="cover boxcaption"><h1><a href="http://ver-anime.net/suzuka/" title="Suzuka">Suzuka</a></h1></div>
+	</div>
+	</div>
+	'''
+	#patron  = '<td style="width.25."><div class="fondoimg"><div class="background"><a href="([^"]+)" title="([^"]+)">'
+	#patron += '<strong><h3>[^<]+</h3></strong></a><br/><div class="borde-interior2"><a href="[^"]+" title="[^"]+">[^<]+'
+	#patron += '<img src="([^"]+)" alt="[^"]+"/></a></div></div></div></td>'
+
+	patron   = '<div class="item">[^<]*'
+	patron  += '<div class="boxgrid captionfull"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"' # alt="Suzuka" width="164" height="250" border="0"/></a>[^<]+'
+	#patron  += '<div class="cover boxcaption"><h1><a href="http://ver-anime.net/suzuka/" title="Suzuka">Suzuka</a></h1></div>[^<]+'
+	#patron  += '</div>[^<]+'
+	#patron  += '</div>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -115,11 +132,9 @@ def listmirrors(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae la sinopsis
-	patron  = '<td style="width.50..vertical.align.top">[^<]+'
-	patron += '<div class="sinopsis">[^<]+'
-	patron += '<div class="menu3">[^<]+'
-	patron += '<a href="[^"]+" title="[^"]+"><strong>[^<]+</strong></a>[^<]+'
-	patron += '</div>([^<]+)<'
+	patron  = '<div class="contenido">[^<]+'
+	patron += '<div class="caratula"><img src="[^"]+"[^>]+></div>[^<]+'
+	patron += '<p>([^<]+)<'
 
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
@@ -127,13 +142,13 @@ def listmirrors(params,url,category):
 		plot = matches[0].strip()
 		xbmc.output(plot)
 
-	patron = '<div id="listanime"><a title="([^"]+)" href="([^"]+)"><strong>[^<]+</strong></a></div>'
+	patron = '<a title="[^"]+" href="([^"]+)">([^<]+)</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[0]
-		scrapedurl = urlparse.urljoin(url,match[1])
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = thumbnail
 		scrapedplot = plot
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
