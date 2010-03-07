@@ -86,6 +86,7 @@ def listchannels(params,url,category):
 	addfolder("Descargas","descargados","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
 	addfolder("Buscador","buscador","mainlist")
+	addfolder("Buscar Trailer","trailertools","mainlist")
 
 	#addfolder("Kochikame","kochikame","mainlist")
 	#addfolder("Ver telenovelas online","vertelenovelasonline","mainlist")
