@@ -173,7 +173,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		elif server=="Megavideo":
 			if xbmcplugin.getSetting("megavideopremium")=="false":
 				advertencia = xbmcgui.Dialog()
-				resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Para evitar que los vídeos se corten pasado ese tiempo' , 'necesitas una cuenta Premium')			mediaurl = servertools.getmegavideolow(url)
+				resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Para evitar que los vídeos se corten pasado ese tiempo' , 'necesitas una cuenta Premium')			
+				mediaurl = servertools.getmegavideolow(url)
 		else:
 			mediaurl = servertools.findurl(url,server)
 
@@ -238,7 +239,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		return
 
 	elif opciones[seleccion]=="Buscar Trailer":
-		xbmc.executebuiltin("Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server ))
+		xbmc.executebuiltin("Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" ) , server ))
 		return
 
 	# Si no hay mediaurl es porque el vídeo no está :)
