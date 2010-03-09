@@ -174,7 +174,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 			if xbmcplugin.getSetting("megavideopremium")=="false":
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Para evitar que los vídeos se corten pasado ese tiempo' , 'necesitas una cuenta Premium')			
-				mediaurl = servertools.getmegavideolow(url)
+			mediaurl = servertools.getmegavideolow(url)
 		else:
 			mediaurl = servertools.findurl(url,server)
 
