@@ -56,6 +56,14 @@ def run():
 			category = ""
 	xbmc.output("[pelisalacarta.py] category="+category)
 
+	# Extrae la serie
+	if (params.has_key("Serie")):
+		serie = params.get("Serie")
+	else:
+		serie = ""
+	xbmc.output("[pelisalacarta.py] Serie="+serie)
+
+
 	#JUR - Gestión de Errores de Internet (Para que no casque el plugin 
 	#      si no hay internet (que queda feo)
 	try:
