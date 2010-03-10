@@ -68,14 +68,6 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="
 	xbmc.output("[library.py] saveLIBRARY category="+category)
 	xbmc.output("[library.py] saveLIBRARY serie="+Serie)
 	xbmc.output("[library.py] saveLIBRARY accion="+accion)
-
-	#Pedir título y 
-	#Determinar Tipo: Cine, Serie, Documental, Otro
-	#if asktitulo :
-	#	keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(titulo))
-	#	keyboard.doModal()
-	#	if (keyboard.isConfirmed()):
-	#		titulo = keyboard.getText()
 	
 	#Limpiamos el título para usarlo como fichero
 	try:
@@ -86,8 +78,9 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="seriesyonkis",category="
 	if pedirnombre:
 		keyboard = xbmc.Keyboard(filename)
 		keyboard.doModal()
-		if (keyboard.isConfirmed()):
-			filename = keyboard.getText()
+		if not keyboard.isConfirmed():
+			return
+		filename = keyboard.getText()
 	try:
 		filename = string.translate(filename,allchars,deletechars)+".strm" #Volvemos a limpiar por si acaso
 	except:

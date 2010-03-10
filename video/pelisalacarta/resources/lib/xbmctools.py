@@ -40,10 +40,10 @@ def get_system_platform():
 		platform = "osx"
 	return platform
 
-def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie=""):
-	addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie)
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0):
+	addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
 
-def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie=""):
+def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0):
 	#xbmc.output("pluginhandle=%d" % pluginhandle)
 	try:
 		xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
@@ -53,7 +53,10 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie)
 	#xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
-	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+	if totalItems == 0:
+		xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+	else:
+		xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
 
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie=""):
 	try:
@@ -139,7 +142,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	else:
 		opciones.append("Añadir a lista de descargas")
 
-	if canal == "seriesyonkis": #De momento sólo en seriesyonkis
+	if not strmfile: #JUR: Temp-Modo desarrollo. Abierto a todos los canales
 		opciones.append("Añadir a Biblioteca")
 
 	# Busqueda de trailers en youtube	
@@ -210,11 +213,11 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	elif opciones[seleccion]=="Añadir a favoritos":
 		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
 		keyboard.doModal()
-		if (keyboard.isConfirmed()):
+		if keyboard.isConfirmed():
 			title = keyboard.getText()
-		favoritos.savebookmark(title,url,thumbnail,server,plot)
-		advertencia = xbmcgui.Dialog()
-		resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
+			favoritos.savebookmark(title,url,thumbnail,server,plot)
+			advertencia = xbmcgui.Dialog()
+			resultado = advertencia.ok('Nuevo vídeo en favoritos' , title , 'se ha añadido a favoritos')
 		return
 
 	elif opciones[seleccion]=="Quitar de lista de descargas":
@@ -227,11 +230,11 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	elif opciones[seleccion]=="Añadir a lista de descargas":
 		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
 		keyboard.doModal()
-		if (keyboard.isConfirmed()):
+		if keyboard.isConfirmed():
 			title = keyboard.getText()
-		descargadoslist.savebookmark(title,url,thumbnail,server,plot)
-		advertencia = xbmcgui.Dialog()
-		resultado = advertencia.ok('Nuevo vídeo en lista de descargas' , title , 'se ha añadido a la lista de descargas')
+			descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+			advertencia = xbmcgui.Dialog()
+			resultado = advertencia.ok('Nuevo vídeo en lista de descargas' , title , 'se ha añadido a la lista de descargas')
 		return
 
 	elif opciones[seleccion]=="Añadir a Biblioteca":  # Library
