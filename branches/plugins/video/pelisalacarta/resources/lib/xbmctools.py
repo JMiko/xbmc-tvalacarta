@@ -200,7 +200,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		keyboard.doModal()
 		if (keyboard.isConfirmed()):
 			title = keyboard.getText()
-		downloadtools.downloadtitle(mediaurl,title)
+			downloadtools.downloadtitle(mediaurl,title)
 		return
 
 	elif opciones[seleccion]=="Quitar de favoritos":
@@ -251,41 +251,47 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		alertnodisponibleserver(server)
 		return
 
-	# Crea la playlist para pasársela al reproductor
-	playlist = createplaylist(canal,title,mediaurl,thumbnail,plot,category,strmfile)
-
-	# Lanza el reproductor
-	launchplayer(strmfile,playlist)
-
-# Crea una playlist para pasársela al reproductor
-def createplaylist(canal,title,mediaurl,thumbnail,plot,category,strmfile=False):
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Accediendo al video...', title )
-	dialogWait.update(0) #Jur. Para evitar los porcentajes aleatorios
-
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
-
-	# Crea la entrada y la añade al playlist
-	# JUR - Modificación para evitar error "Playback failed" en ficheros strm
-	xbmc.output("[xbmctools.py] JUR-Modif 1 added mediaurl to ListItem ,path=")    # JUR Added
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)    # JUR Modified
+	# Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
+	if strmfile:
+		title,thumbnail,canal,plot = getMediaInfo (title,thumbnail,canal,plot,Serie)
+		
+	# Crea un listitem para pasárselo al reproductor
+	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
 	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
-	if strmfile: #Necesario para Boxee
-		xbmc.output("[xbmctools.py] JUR-Modif 2. Added call to xmbcplugin.setResolvedUrl")    # JUR Added
-		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)    # JUR Added
-	playlist.add( mediaurl, listitem )
+#	listitem.setProperty('isPlayable', 'True')
+	# Lanza el reproductor
+	if strmfile: #Si es un fichero strm no hace falta el play
+		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
+	else:
+		launchplayer(mediaurl, listitem)
 
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
 
-	return playlist
+def getMediaInfo (title,thumbnail,studio,plot,serie):
+	'''Obtiene información de la Biblioteca si existe (ficheros strm) o de los parámetros
+	'''
+	xbmc.output('[xbmctools.py] playlist OBTENCIÓN DE DATOS DE BIBLIOTECA')
+	# Miniatura
+	libthumbnail =xbmc.getInfoImage( "ListItem.Thumb" )
+	if libthumbnail == "":
+		xbmc.output('[xbmctools.py] playlist THUMBNAIL: xbmc.getInfoImage( "ListItem.Thumb" ) vacio')
+	else:
+		thumbnail = libthumbnail
+		xbmc.output('[xbmctools.py] THUMBNAIL xbmc.getInfoImage( "ListItem.Thumb" ) = ' + libthumbnail)
+	if serie == "":
+		studio = studio + ' (streaming)'
+	else:
+		studio = serie
+		
+	return title,thumbnail,studio,plot
 
 # Lanza el reproductor
-def launchplayer(strmfile,playlist):
+def launchplayer(mediaurl, listitem):
+
+	# Añadimos el listitem a una lista de reproducción (playlist)
+	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+	playlist.clear()
+	playlist.add( mediaurl, listitem )
+
 	# Reproduce
 	playersettings = xbmcplugin.getSetting('player_type')
 	xbmc.output("[xbmctools.py] playersettings="+playersettings)
@@ -301,9 +307,6 @@ def launchplayer(strmfile,playlist):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 		xbmc.output("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
 
-	if strmfile: #Si es un fichero strm no hace falta el play
-		xbmc.output("[xbmctools.py] strm file. Avoid .play")
-	else:
 		xbmcPlayer = xbmc.Player( player_type )
 		xbmcPlayer.play(playlist)
 
@@ -346,16 +349,17 @@ def addSingleChannelOptions(params,url,category):
 
 # AÑADIDO POR JUR. SOPORTE DE FICHEROS STRM
 def playstrm(params,url,category):
-	#Igual que play pero para ficheros strm.
-	#Se debe añadir 2 parámetros a xbmctool.playvideo
-	#nostrmfile = 0 porque sí es strm
-
-	xbmc.output("[pelisalacarta.py] strm")
-	xbmc.output("[pelisalacarta.py] strm - url="+url)
+	'''Play para videos en ficheros strm
+	'''
+	xbmc.output("[xbmctools.py] playstrm url="+url)
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
+	if (params.has_key("Serie")):
+		serie = params.get("Serie")
+	else:
+		serie = ""
 	
-	playvideo("STRM Channel",server,url,category,title,thumbnail,plot,1,url)
+	playvideo("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
