@@ -251,14 +251,16 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		alertnodisponibleserver(server)
 		return
 
+	# Crea un listitem para pasárselo al reproductor
+
 	# Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
 	if strmfile:
-		title,thumbnail,canal,plot = getMediaInfo (title,thumbnail,canal,plot,Serie)
+		listitem = getLibraryInfo (mediaurl)
+	else:
+		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
+		listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
+
 		
-	# Crea un listitem para pasárselo al reproductor
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
-	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
-#	listitem.setProperty('isPlayable', 'True')
 	# Lanza el reproductor
 	if strmfile: #Si es un fichero strm no hace falta el play
 		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
@@ -266,23 +268,53 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		launchplayer(mediaurl, listitem)
 
 
-def getMediaInfo (title,thumbnail,studio,plot,serie):
+def getLibraryInfo (mediaurl):
 	'''Obtiene información de la Biblioteca si existe (ficheros strm) o de los parámetros
 	'''
 	xbmc.output('[xbmctools.py] playlist OBTENCIÓN DE DATOS DE BIBLIOTECA')
-	# Miniatura
-	libthumbnail =xbmc.getInfoImage( "ListItem.Thumb" )
-	if libthumbnail == "":
-		xbmc.output('[xbmctools.py] playlist THUMBNAIL: xbmc.getInfoImage( "ListItem.Thumb" ) vacio')
-	else:
-		thumbnail = libthumbnail
-		xbmc.output('[xbmctools.py] THUMBNAIL xbmc.getInfoImage( "ListItem.Thumb" ) = ' + libthumbnail)
-	if serie == "":
-		studio = studio + ' (streaming)'
-	else:
-		studio = serie
+
+	label = xbmc.getInfoLabel( 'listitem.label' )
+	label2 = xbmc.getInfoLabel( 'listitem.label2' )
+	iconImage = xbmc.getInfoImage( 'listitem.icon' )
+	thumbnailImage = xbmc.getInfoImage( 'listitem.Thumb' ) #xbmc.getInfoLabel( 'listitem.thumbnailImage' )
+	if DEBUG:
+		xbmc.output ("[xbmctools.py]getMediaInfo: label = " + label) 
+		xbmc.output ("[xbmctools.py]getMediaInfo: label2 = " + label2) 
+		xbmc.output ("[xbmctools.py]getMediaInfo: iconImage = " + iconImage) 
+		xbmc.output ("[xbmctools.py]getMediaInfo: thumbnailImage = " + thumbnailImage) 
+	
+	listitem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, mediaurl)
+	
+	lista = [
+		## General (Sistema, cine y series)
+		('listitem.rating','f'), ('listitem.ratingandvotes','s'),
+		('listitem.year','i'), ('listitem.genre','s'),('listitem.director','s'),
+		('listitem.Tagline','s'), ('listitem.Plot','s'), ('listitem.originaltitle','s'),
+		## Cine
+		('listitem.duration','i'), ('listitem.mpaa','s') , 
+		## Series
+		('ListItem.TVShowTitle','s') , ('ListItem.Season','i'), ('ListItem.Episode','i')
+		##Formato de Video (supuestamente vacios)
+		#'ListItem.VideoCodec', 'ListItem.VideoResolution', 'ListItem.VideoAspect', 'ListItem.AudioCodec'
+		]
+
+	infodict = dict()
+	for label,tipo in lista:
+		key = label.split('.')[1]
+		value = xbmc.getInfoLabel( label )
+		if value != "":
+			xbmc.output ("[xbmctools.py]getMediaInfo: "+label+" = " + value) #infoimage=infolabel
+			if tipo == 's':
+				infodict[key]=value
+			elif tipo == 'i':
+				infodict[key]=int(value)
+			elif tipo == 'f':
+				infodict[key]=float(value)
+				
+	listitem.setInfo( "video", infodict )
 		
-	return title,thumbnail,studio,plot
+	
+	return listitem
 
 # Lanza el reproductor
 def launchplayer(mediaurl, listitem):
