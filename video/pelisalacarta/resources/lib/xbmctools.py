@@ -294,7 +294,7 @@ def getLibraryInfo (mediaurl):
 		('listitem.duration','i'), ('listitem.mpaa','s') , 
 		## Series
 		('ListItem.TVShowTitle','s') , ('ListItem.Season','i'), ('ListItem.Episode','i')
-		##Formato de Video (supuestamente vacios)
+		##Formato de Video (supuestamente vacios)	
 		#'ListItem.VideoCodec', 'ListItem.VideoResolution', 'ListItem.VideoAspect', 'ListItem.AudioCodec'
 		]
 
