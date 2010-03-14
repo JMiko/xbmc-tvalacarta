@@ -271,8 +271,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 def getLibraryInfo (mediaurl):
 	'''Obtiene información de la Biblioteca si existe (ficheros strm) o de los parámetros
 	'''
-	xbmc.output('[xbmctools.py] playlist OBTENCIÓN DE DATOS DE BIBLIOTECA')
+	if DEBUG:
+		xbmc.output('[xbmctools.py] playlist OBTENCIÓN DE DATOS DE BIBLIOTECA')
 
+	# Información básica
 	label = xbmc.getInfoLabel( 'listitem.label' )
 	label2 = xbmc.getInfoLabel( 'listitem.label2' )
 	iconImage = xbmc.getInfoImage( 'listitem.icon' )
@@ -282,28 +284,54 @@ def getLibraryInfo (mediaurl):
 		xbmc.output ("[xbmctools.py]getMediaInfo: label2 = " + label2) 
 		xbmc.output ("[xbmctools.py]getMediaInfo: iconImage = " + iconImage) 
 		xbmc.output ("[xbmctools.py]getMediaInfo: thumbnailImage = " + thumbnailImage) 
-	
-	listitem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, mediaurl)
-	
-	lista = [
-		## General (Sistema, cine y series)
-		('listitem.rating','f'), ('listitem.ratingandvotes','s'),
-		('listitem.year','i'), ('listitem.genre','s'),('listitem.director','s'),
-		('listitem.Tagline','s'), ('listitem.Plot','s'), ('listitem.originaltitle','s'),
-		## Cine
-		('listitem.duration','i'), ('listitem.mpaa','s') , 
-		## Series
-		('ListItem.TVShowTitle','s') , ('ListItem.Season','i'), ('ListItem.Episode','i')
-		##Formato de Video (supuestamente vacios)	
-		#'ListItem.VideoCodec', 'ListItem.VideoResolution', 'ListItem.VideoAspect', 'ListItem.AudioCodec'
-		]
 
+	# Creación de listitem
+	listitem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, mediaurl)
+
+	# Información adicional	
+	lista = [
+		('listitem.genre', 's'),            #(Comedy)
+		('listitem.year', 'i'),             #(2009)
+		('listitem.episode', 'i'),          #(4)
+		('listitem.season', 'i'),           #(1)
+		('listitem.top250', 'i'),           #(192)
+		('listitem.tracknumber', 'i'),      #(3)
+		('listitem.rating', 'f'),           #(6.4) - range is 0..10
+#		('listitem.watched', 'd'),          # depreciated. use playcount instead
+		('listitem.playcount', 'i'),        #(2) - number of times this item has been played
+#		('listitem.overlay', 'i'),          #(2) - range is 0..8.  See GUIListItem.h for values
+		('listitem.overlay', 's'),          #JUR - listitem devuelve un string, pero addinfo espera un int. Ver traducción más abajo
+		('listitem.cast', 's'),             # (Michal C. Hall) - List concatenated into a string
+		('listitem.castandrole', 's'),      #(Michael C. Hall|Dexter) - List concatenated into a string
+		('listitem.director', 's'),         #(Dagur Kari)
+		('listitem.mpaa', 's'),             #(PG-13)
+		('listitem.plot', 's'),             #(Long Description)
+		('listitem.plotoutline', 's'),      #(Short Description)
+		('listitem.title', 's'),            #(Big Fan)
+		('listitem.duration', 's'),         #(3)
+		('listitem.studio', 's'),           #(Warner Bros.)
+		('listitem.tagline', 's'),          #(An awesome movie) - short description of movie
+		('listitem.writer', 's'),           #(Robert D. Siegel)
+		('listitem.tvshowtitle', 's'),      #(Heroes)
+		('listitem.premiered', 's'),        #(2005-03-04)
+		('listitem.status', 's'),           #(Continuing) - status of a TVshow
+		('listitem.code', 's'),             #(tt0110293) - IMDb code
+		('listitem.aired', 's'),            #(2008-12-07)
+		('listitem.credits', 's'),          #(Andy Kaufman) - writing credits
+		('listitem.lastplayed', 's'),       #(%Y-%m-%d %h
+		('listitem.album', 's'),            #(The Joshua Tree)
+		('listitem.votes', 's'),            #(12345 votes)
+		('listitem.trailer', 's'),          #(/home/user/trailer.avi)
+	]
+	# Obtenemos toda la info disponible y la metemos en un diccionario
+	# para la función setInfo.
 	infodict = dict()
 	for label,tipo in lista:
-		key = label.split('.')[1]
+		key = label.split('.',1)[1]
 		value = xbmc.getInfoLabel( label )
 		if value != "":
-			xbmc.output ("[xbmctools.py]getMediaInfo: "+label+" = " + value) #infoimage=infolabel
+			if DEBUG:
+				xbmc.output ("[xbmctools.py]getMediaInfo: "+key+" = " + value) #infoimage=infolabel
 			if tipo == 's':
 				infodict[key]=value
 			elif tipo == 'i':
@@ -311,8 +339,29 @@ def getLibraryInfo (mediaurl):
 			elif tipo == 'f':
 				infodict[key]=float(value)
 				
-	listitem.setInfo( "video", infodict )
+	#Transforma el valor de overlay de string a int.
+	if infodict.has_key('overlay'):
+		value = infodict['overlay'].lower()
+		if value.find('rar') > -1:
+			infodict['overlay'] = 1
+		elif value.find('zip')> -1:
+			infodict['overlay'] = 2
+		elif value.find('trained')> -1:
+			infodict['overlay'] = 3
+		elif value.find('hastrainer')> -1:
+			infodict['overlay'] = 4
+		elif value.find('locked')> -1:
+			infodict['overlay'] = 5
+		elif value.find('unwatched')> -1:
+			infodict['overlay'] = 6
+		elif value.find('watched')> -1:
+			infodict['overlay'] = 7
+		elif value.find('hd')> -1:
+			infodict['overlay'] = 8
+		else:
+			infodict.pop('overlay')
 		
+	listitem.setInfo( "video", infodict )
 	
 	return listitem
 
