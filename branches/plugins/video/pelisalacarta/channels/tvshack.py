@@ -21,6 +21,9 @@ CHANNELNAME = "tvshack"
 
 IMAGEN_MEGAVIDEO = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' , "megavideosite.png") )
 
+SERVIDORES_PERMITIDOS = ['megavideo']
+
+
 # Esto permite su ejecución en modo emulado
 try:
   pluginhandle = int( sys.argv[ 1 ] )
@@ -265,8 +268,6 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
   
 #Ej. Video por defecto:<li><a href="http://tvshack.net/tv/Lost/season_4/episode_6/"><img src="http://road.../megavideo.gif" />megavideo.com</a> <small>(selected)</small></li>
 #Ej. Alternat:<li><a href="http://tvshack.net/tv/Lost/season_4/episode_6/a:723568/"><img src="http://road.../megavideo.gif" />megavideo.com</a></li>
-
-
   patronvideos = '''(?x)                                #      Activa opción VERBOSE.
     <li><a\ href="                                      #      Basura
     ([^"]+)">                                           # $0 = URL del episodio
@@ -291,26 +292,36 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
     scrapedthumbnail = match[1]
     if scrapedthumbnail.find('megavideo') > -1:
     	scrapedthumbnail = IMAGEN_MEGAVIDEO
-    scrapedserver = match[2]
-    servers.append (scrapedserver.split ('.')[0].lower()) #Convierte 'Megavideo.com' -> 'megavideo'
+    scrapedserver = match[2].split ('.')[0].lower() #Convierte 'Megavideo.com' -> 'megavideo'
+    servers.append (scrapedserver) 
 #    scrapedtitle = title + ' [' + scrapedserver + ']'
     scrapedtitle = str(i) + '. [' + scrapedserver + ']'
     if match[3]=='selected':
       scrapedtitle = scrapedtitle + ' (Por defecto)'
-    
+    if scrapedserver not in SERVIDORES_PERMITIDOS:
+      scrapedtitle = scrapedtitle + ' (NO SOPORTADO)'
+    	
     opciones.append(scrapedtitle)
   if xbmcplugin.getSetting("default_action")=="0":
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Elige un vídeo", opciones)
   else:
-    seleccion = '0'
+    seleccion = 0
+    while seleccion < len (opciones) and servers[seleccion] not in SERVIDORES_PERMITIDOS:
+      seleccion = seleccion +1 
+    if seleccion == len(opciones):
+      dlog ('[tvshack.py] listaVideosEpisodio - No hay videos en los servidores permitidos para este episodio.')
+      advertencia = xbmcgui.Dialog()
+      resultado = advertencia.ok('pelisalacarta - tvshack' , 'No hay videos válidos para este episodio.')
+      return
+  dlog( str(seleccion))
   if seleccion == -1:
     return
   else:
     params['title'] = title + ' [' + servers[seleccion] + ']'
     params['server'] = servers[seleccion]
     playVideo (params,matches[seleccion][0],category,strmfile)
-    
+
 #    xbmctools.addnewvideo( CHANNELNAME , "playVideo" , category , server , 
 #      scrapedtitle , scrapedurl , scrapedthumbnail , '' , Serie=serie)
 
