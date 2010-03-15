@@ -39,6 +39,10 @@ def listchannels(params,url,category):
 	else:
 		xbmc.output("updatecheck2=false")
 
+#Lo pongo arriba para debuguear más facil, @jesus ponlo luego donde veas mejor.
+	addfolder("TVShack.net","tvshack","mainlist") #para 2.14 (JUR)
+#	addfolder("Carnaval de Cadiz 2010","carnaval2010","mainlist") #para 2.14 (JUR)
+
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
 	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
@@ -105,7 +109,7 @@ def listchannels(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-def addfolder(nombre,channelname,accion,category=""):
+def addfolder(nombre,channelname,accion,category="Varios"):
 
 	#Si no se indica categoría poner "Otros" por defecto
 	if category == "":

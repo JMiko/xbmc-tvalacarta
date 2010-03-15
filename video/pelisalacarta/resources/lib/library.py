@@ -159,3 +159,8 @@ def update(total,errores=0):
 
 	if actualizar:
 		xbmc.executebuiltin('UpdateLibrary(video)')
+
+
+def dlog (text):
+	if DEBUG:
+		xbmc.output(text)
