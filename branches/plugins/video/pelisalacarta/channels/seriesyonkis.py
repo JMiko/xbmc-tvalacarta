@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import library
+import DecryptPYTelebision
 
 CHANNELNAME = "seriesyonkis"
 
@@ -558,14 +559,50 @@ def strm_detail (params,url,category):
 	xbmc.output("[seriesyonkis] strm_detail url="+url)
 
 	xbmctools.playvideo("STRM_Channel","Megavideo",url,category,title,thumbnail,plot,1)
-
+#http://www.seriesyonkis.com/player/visor_pymeno2.php?d=1&embed=no&id=%CE%DA%D1%CC%D0%EC%D6%C6&al=%CC%AB%A8%AF%A6%CA%A8%B3
 def scrapvideoURL(urlSY):
 	data = scrapertools.cachePage(urlSY)
-	patronvideos  = 'href="(http://www.seriesyonkis.com/player/visor_pymeno2.php[^"]+)"'
+	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno2.php.*?id=([^&]+)&al=[^"]+'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	if len(matches)==0:
 		return ""
 	else:
-		return scrapertools.cachePage('http://www.atrapavideo.com/es/videomonkey/yonkis/url='+matches[0])
+		id = matches[0]
+		xbmc.output("[seriesyonkis.py]  id="+id)
+		dec = DecryptPYTelebision.DecryptPYTelebision()
+		id = decrypt(dec.unescape(id))
+		#id = unicode( id, "utf-8" )
+		print 'codigo :%s' %id
+		return id
+
+
+def decrypt(id):
+	c=id
+	d=17
+	e=""
+	f=0
+	g=0
+	b=0
+	d+=123
+	longitud = len(c)
+	for i in range(len(c)):
+		f=d^ord(c[i])
+		if longitud ==12 or (i == longitud*31) or (i == longitud*1-1) or (i == longitud *9+3):
+			g=f
+			f+=4
+			g-=1
+			f-=9
+		elif (i>0 and d>1):
+			b=i*3
+			while (b>25):
+				b-=4
+			f=1-b+f-2
+		if d>1:
+			e+=chr(f*1)
+		else:
+			e+=chr(2*f)
+	return e
+			
+			
