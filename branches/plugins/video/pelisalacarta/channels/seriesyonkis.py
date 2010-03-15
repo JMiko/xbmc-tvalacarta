@@ -572,13 +572,13 @@ def scrapvideoURL(urlSY):
 		id = matches[0]
 		xbmc.output("[seriesyonkis.py]  id="+id)
 		dec = DecryptPYTelebision.DecryptPYTelebision()
-		id = decrypt(dec.unescape(id))
+		id = decryptYonkis(dec.unescape(id))
 		#id = unicode( id, "utf-8" )
 		print 'codigo :%s' %id
 		return id
 
 
-def decrypt(id):
+def decryptYonkis(id):
 	c=id
 	d=17
 	e=""
