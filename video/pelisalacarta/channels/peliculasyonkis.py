@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import Yonkis
 
 CHANNELNAME = "peliculasyonkis"
 
@@ -431,11 +432,20 @@ def detail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
-	patronvideos  = 'href="(http://www.peliculasyonkis.com/player/visor_pymeno2.php[^"]+)"'
+	patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_pymeno2.*?id=([^&]+)&al=[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		scrapertools.printMatches(matches)
 	
-	url = scrapertools.cachePage('http://www.atrapavideo.com/es/videomonkey/yonkis/url='+matches[0])
-	xbmc.output("url="+url)
+	
+		id = matches[0]
+		xbmc.output("[seriesyonkis.py]  id="+id)
+		dec = Yonkis.DecryptYonkis()
+		url = dec.decryptID(dec.unescape(id))
+		print 'codigo :%s' %url
+	else:
+		xbmctools.alertnodisponible()
+		return
+	
 	
 	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot)
