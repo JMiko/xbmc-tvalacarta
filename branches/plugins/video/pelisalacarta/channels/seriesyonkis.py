@@ -16,7 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import library
-import DecryptPYTelebision
+import Yonkis
 
 CHANNELNAME = "seriesyonkis"
 
@@ -562,7 +562,7 @@ def strm_detail (params,url,category):
 #http://www.seriesyonkis.com/player/visor_pymeno2.php?d=1&embed=no&id=%CE%DA%D1%CC%D0%EC%D6%C6&al=%CC%AB%A8%AF%A6%CA%A8%B3
 def scrapvideoURL(urlSY):
 	data = scrapertools.cachePage(urlSY)
-	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno2.php.*?id=([^&]+)&al=[^"]+'
+	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno2.php.*?id=([^&]+)&al=[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -571,8 +571,8 @@ def scrapvideoURL(urlSY):
 	else:
 		id = matches[0]
 		xbmc.output("[seriesyonkis.py]  id="+id)
-		dec = DecryptPYTelebision.DecryptPYTelebision()
-		id = decryptYonkis(dec.unescape(id))
+		dec = Yonkis.DecryptYonkis()
+		id = dec.decryptID(dec.unescape(id))
 		#id = unicode( id, "utf-8" )
 		print 'codigo :%s' %id
 		return id

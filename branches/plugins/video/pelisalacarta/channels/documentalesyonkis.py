@@ -15,7 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
-import DecryptPYTelebision
+import Yonkis
 
 CHANNELNAME = "documentalesyonkis"
 
@@ -163,15 +163,15 @@ def detail(params,url,category):
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	patroniframe = '<iframe src="(http:\/\/documentales\.videosyonkis\.com.*id=(.*))" onLoad.*'
+	patroniframe = '<iframe src="(http:\/\/documentales\.videosyonkis\.com.*?id=(.*?))" onLoad.*'
 	matches = re.compile(patroniframe,re.DOTALL).findall(data)
 	#scrapertools.printMatches(matches)
 	
 	if(len(matches)>0):
 		id = matches[0][1]
 		xbmc.output("[documentalesyonkis.py] detail id="+id)
-		dec = DecryptPYTelebision.DecryptPYTelebision()
-		id = dec.decrypt(dec.unescape(id))
+		dec = Yonkis.DecryptYonkis()
+		id = dec.decryptALT(dec.unescape(id))
 		xbmc.output("[documentalesyonkis.py] detail id="+id)
 		url=id
 	else:
