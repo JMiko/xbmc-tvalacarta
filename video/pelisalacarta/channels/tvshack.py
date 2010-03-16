@@ -16,6 +16,8 @@ import servertools
 import xbmctools
 import os
 import library
+import random
+
 
 CHANNELNAME = "tvshack"
 
@@ -23,6 +25,7 @@ IMAGEN_MEGAVIDEO = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 
 
 SERVIDORES_PERMITIDOS = ['megavideo']
 
+FANART_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'fanart' ) )
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -33,6 +36,11 @@ except:
 # Traza el inicio del canal
 xbmc.output("[tvshack.py] init")
 
+
+fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack'+ str (random.randint(1,5))+'.png' ) )
+xbmc.output("[tvshac.py] init fanart: "+fanartfile)
+xbmcplugin.setPluginFanart(pluginhandle, fanartfile)
+
 DEBUG = True
 
 ##############################################################################
@@ -41,6 +49,7 @@ def mainlist(params,url,category):
 
   """
   xbmc.output("[tvshac.py] mainlist")
+
 
   # Lista de Categorías 
   xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Series" , "Series TV (VO)" , "http://tvshack.net/tv" , thumbnail="" , plot="" )
@@ -140,6 +149,13 @@ def addlist2Library(params,url,category):
   
   procesaListaEpisodios (params,url,category,"añadeBiblioteca")
 
+def ActualizaSerie2library (params,url,category):
+  """Actualiza los episodios de una serie
+  """
+  xbmc.output("[tvshack.py] ActualizaSerie2Library")
+  
+  procesaListaEpisodios (params,url,category,"actualizaBiblioteca")
+
 def strm_detail (params,url,category):
   listaVideosEpisodio (params,url,category,strmfile=True)
 
@@ -148,6 +164,7 @@ def procesaListaEpisodios (params,url,category,proceso):
   
   proceso = "creaLista" - Crea la lista de episodios con xbmcplugin.addDirectoryItem
   proceso = "añadeBiblioteca" - Añade todos los episodios a la biblioteca
+  proceso = "actualizaBiblioteca" - Añade los episodios que falten a la biblioteca
   """
   if proceso == "añadeBiblioteca":
     pDialog = xbmcgui.DialogProgress()
@@ -218,7 +235,7 @@ def procesaListaEpisodios (params,url,category,proceso):
 
         if proceso == "creaLista": # Añade al listado de XBMC si el proceso es creaLista
           xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , "Series" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , Serie=serie)
-        elif proceso == "añadeBiblioteca":
+        elif proceso == "añadeBiblioteca" or proceso == "actualizaBiblioteca":
           try:
             library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,"",scrapednote,canal=CHANNELNAME,category="Series",Serie=serie,verbose=False,accion="strm_detail",pedirnombre=False)
             episodios = episodios + 1
@@ -228,7 +245,7 @@ def procesaListaEpisodios (params,url,category,proceso):
           
   if proceso == "creaLista":
     FinalizaPlugin (pluginhandle,category)
-  elif proceso == "añadeBliblioteca":
+  elif proceso == "añadeBiblioteca":
     pDialog.close()
     if errores > 0:
       xbmc.output ("[tvshack.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
