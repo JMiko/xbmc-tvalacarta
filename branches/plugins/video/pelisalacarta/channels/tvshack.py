@@ -234,7 +234,7 @@ def procesaListaEpisodios (params,url,category,proceso):
         scrapedurl = "http://tvshack.net" + match.group(1)
 
         if proceso == "creaLista": # Añade al listado de XBMC si el proceso es creaLista
-          xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , "Series" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , Serie=serie)
+          xbmctools.addnewvideo( CHANNELNAME , "listaVideosEpisodio" , "Series" , "" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , Serie=serie)
         elif proceso == "añadeBiblioteca" or proceso == "actualizaBiblioteca":
           try:
             library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,"",scrapednote,canal=CHANNELNAME,category="Series",Serie=serie,verbose=False,accion="strm_detail",pedirnombre=False)

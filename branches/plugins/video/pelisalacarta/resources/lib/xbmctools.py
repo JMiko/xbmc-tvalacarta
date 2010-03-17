@@ -44,6 +44,7 @@ def addnewfolder( canal , accion , category , title , url , thumbnail , plot , S
 	addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
 
 def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0):
+	contextCommands = []
 	#xbmc.output("pluginhandle=%d" % pluginhandle)
 	try:
 		xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
@@ -52,7 +53,13 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie)
-	#xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
+
+	if Serie != "": #Añadimos opción contextual para Añadir la serie completa a la biblioteca
+		addSerieCommand = "XBMC.RunPlugin(%s?channel=%s&action=addlist2Library&category=%s&title=%s&url=%s&extradata=%s&Serie=%s)" % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( extradata ) , Serie)
+		contextCommands.append(("Añadir Serie a Biblioteca",addSerieCommand))
+		
+	if len (contextCommands) > 0:
+		listitem.addContextMenuItems ( contextCommands, replaceItems=False)
 	if totalItems == 0:
 		xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 	else:
