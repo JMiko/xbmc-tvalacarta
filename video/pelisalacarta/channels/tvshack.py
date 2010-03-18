@@ -140,35 +140,76 @@ def ListaEpisodios(params,url,category):
   """
   xbmc.output("[tvshack.py] ListaEpisodios")
   
-  procesaListaEpisodios (params,url,category,"creaLista")
+  if params.has_key("Serie"):
+    serie = params.get("Serie")
+  else:
+    serie = ""
 
-def addlist2Library(params,url,category):
-  """Muestra los episodios de una serie
+  # Añade "Agregar todos a la librería"
+  xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , "" , "" , serie)
+
+  listaEp = devuelveListaEpisodios (params,url,category)
+
+  for ep in listaEp:
+    xbmctools.addnewvideo( CHANNELNAME , "listaVideosEpisodio" , category , "" , ep['title'] , ep['url'] , ep['thumbnail'] , ep['plot'] , Serie=serie)
+
+  FinalizaPlugin (pluginhandle,category)
+
+def addlist2Library(params,url,category,verbose=True):
+  """Añade todos los episodios de una serie a la biblioteca
   """
   xbmc.output("[tvshack.py] addlist2Library")
-  
-  procesaListaEpisodios (params,url,category,"añadeBiblioteca")
 
-def ActualizaSerie2library (params,url,category):
-  """Actualiza los episodios de una serie
-  """
-  xbmc.output("[tvshack.py] ActualizaSerie2Library")
+  if params.has_key("Serie"):
+    serie = params.get("Serie")
+  else:
+    serie = ""
   
-  procesaListaEpisodios (params,url,category,"actualizaBiblioteca")
-
-def strm_detail (params,url,category):
-  listaVideosEpisodio (params,url,category,strmfile=True)
-
-def procesaListaEpisodios (params,url,category,proceso):
-  """Scrapea la página de episodios y realiza el proceso indicado
-  
-  proceso = "creaLista" - Crea la lista de episodios con xbmcplugin.addDirectoryItem
-  proceso = "añadeBiblioteca" - Añade todos los episodios a la biblioteca
-  proceso = "actualizaBiblioteca" - Añade los episodios que falten a la biblioteca
-  """
-  if proceso == "añadeBiblioteca":
+  if verbose:
     pDialog = xbmcgui.DialogProgress()
-    ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
+    pDialog.create('pelisalacarta', 'Añadiendo episodios...')
+
+  listaEp = devuelveListaEpisodios (params,url,category)
+  episodios = 0
+  errores = 0
+  nuevos = 0
+  for i,ep in enumerate(listaEp):
+    if verbose:
+      pDialog.update(i*100/len(listaEp), 'Añadiendo episodio...',ep['title'])
+      if (pDialog.iscanceled()):
+        return
+    try:
+      nuevos = nuevos + library.savelibrary(ep['title'],ep['url'],ep['thumbnail'],"",ep['plot'],canal=CHANNELNAME,category="Series",Serie=serie,verbose=False,accion="strm_detail",pedirnombre=False)
+      episodios = episodios + 1
+    except IOError:
+      xbmc.output("Error al grabar el archivo "+ep['title'])
+      errores = errores + 1
+
+  if verbose:
+    pDialog.close()
+  if errores > 0:
+    xbmc.output ("[tvshack.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
+
+  if verbose:
+    library.update(episodios,errores,nuevos)
+
+  return nuevos
+  
+def devuelveListaEpisodios (params,url,category):
+  """Scrapea la página de episodios y la devuelve como lista de diccionarios
+  
+  --> Los habituales en los canales de pelisalacarta.
+  <-- [{Episodio}]  Lista de diccionarios con los datos de cada episodio
+      Al añadir los episodios como diccionarios nos permite añadir o borrar claves a voluntad
+      dejando abierto el diseño a poder añadir información en los canales que
+      ésta exista.
+      Las clave básicas en el momento de escribir este canal son:
+      'title' : Título del episodio - Para la biblioteca peferiblemente en formato
+                 NOMBRE_SERIE - TEMPORADAxEPISODIO TÍTULO_EPISODIO LOQUESEA
+      'url'   : URL del episodio
+      'plot'  : Resumen del episodio (o de la serie si éste no existe para este canal)
+      'thumbnail' : Fotograma del episodio o carátula de la serie 
+  """
 
   if params.has_key("Serie"):
     serie = params.get("Serie")
@@ -177,13 +218,6 @@ def procesaListaEpisodios (params,url,category,proceso):
 
   # Descarga la página
   data = scrapertools.cachePage(url)
-
-  scrapedthumbnail,scrapednote = LeeDatosSerie (data)
-
-  # Añade "Agregar todos a la librería" si el proceso es creaLista
-  if proceso == "creaLista":
-    xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , "" , scrapednote , serie)
-
 
   # Primero debemos separar los datos por temporada
   patrontemporadas = '''(?x)                            #      Activa opción VERBOSE. Esto permite
@@ -215,8 +249,13 @@ def procesaListaEpisodios (params,url,category,proceso):
   ''' 
   episodiosREO = re.compile(patronepisodios) ## Objeto de Expresión Regular (REO)
 
-  episodios = 0
-  errores = 0
+  listaEp = [] # Lista de Episodios
+  Ep = {}      # Diccionario con la info de cada episodio
+
+  # Como en éste canal no hay información por episodio, cogemos el argumento
+  # y la carátula de la serie como datos para cada episodio 
+  Ep['thumbnail'],Ep['plot'] = LeeDatosSerie (data)
+
   for parte in splitdata:
     if re.match("[0-9]+", parte): #texto de temporada
       temporada = parte
@@ -225,34 +264,21 @@ def procesaListaEpisodios (params,url,category,proceso):
       # (más elegante y breve en este caso aunque hay que conocer los 
       # Objetos de Expresión Regular (REO) y los matchobjects)
       for match in episodiosREO.finditer (parte): 
-        scrapedtitle = match.expand (serie + ' - ' + temporada + 'x\g<2> - \g<3> (\g<4>)') #con expand los grupos referenciaos empiezan en 1
-        if proceso == "añadeBiblioteca":
-          pDialog.update(100, 'Añadiendo episodio...',scrapedtitle)
-          if (pDialog.iscanceled()):
-            return
+        Ep['title'] = match.expand (serie + ' - ' + temporada + 'x\g<2> - \g<3> (\g<4>)') #con expand los grupos referenciaos empiezan en 1
         #URL del episodio
-        scrapedurl = "http://tvshack.net" + match.group(1)
+        Ep['url'] = "http://tvshack.net" + match.group(1)
+        listaEp.append(Ep.copy()) #Se añade el episodio a la lista (hay que copiarlo)
 
-        if proceso == "creaLista": # Añade al listado de XBMC si el proceso es creaLista
-          xbmctools.addnewvideo( CHANNELNAME , "listaVideosEpisodio" , "Series" , "" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , Serie=serie)
-        elif proceso == "añadeBiblioteca" or proceso == "actualizaBiblioteca":
-          try:
-            library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,"",scrapednote,canal=CHANNELNAME,category="Series",Serie=serie,verbose=False,accion="strm_detail",pedirnombre=False)
-            episodios = episodios + 1
-          except IOError:
-            xbmc.output("Error al grabar el archivo "+scrapedtitle)
-            errores = errores + 1
-          
-  if proceso == "creaLista":
-    FinalizaPlugin (pluginhandle,category)
-  elif proceso == "añadeBiblioteca":
-    pDialog.close()
-    if errores > 0:
-      xbmc.output ("[tvshack.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
-    library.update(episodios,errores)
-  
-# FIN ListaEpisodios
+  return listaEp
+            
+# FIN devuelveListaEpisodios
 ###########################################################################
+
+def strm_detail (params,url,category):
+  '''Reproduce el episodio seleccionado desde un fichero strm
+  '''
+  listaVideosEpisodio (params,url,category,strmfile=True)
+
 def listaVideosEpisodio (params,url,category,strmfile=False):
   '''Extrae y muestra los vídeos disponibles para un episodio
   
@@ -308,16 +334,15 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
     scrapedurl = match[0]
     scrapedthumbnail = match[1]
     if scrapedthumbnail.find('megavideo') > -1:
-    	scrapedthumbnail = IMAGEN_MEGAVIDEO
+      scrapedthumbnail = IMAGEN_MEGAVIDEO
     scrapedserver = match[2].split ('.')[0].lower() #Convierte 'Megavideo.com' -> 'megavideo'
     servers.append (scrapedserver) 
-#    scrapedtitle = title + ' [' + scrapedserver + ']'
     scrapedtitle = str(i) + '. [' + scrapedserver + ']'
     if match[3]=='selected':
       scrapedtitle = scrapedtitle + ' (Por defecto)'
     if scrapedserver not in SERVIDORES_PERMITIDOS:
       scrapedtitle = scrapedtitle + ' (NO SOPORTADO)'
-    	
+      
     opciones.append(scrapedtitle)
   if xbmcplugin.getSetting("default_action")=="0":
     dia = xbmcgui.Dialog()
@@ -506,6 +531,6 @@ def LeeDatosSerie (tdata):
 #id('show-information-column1')/x:div/x:img  
 
 def dlog (text):
-	if DEBUG:
-		xbmc.output(text)
+  if DEBUG:
+    xbmc.output(text)
 
