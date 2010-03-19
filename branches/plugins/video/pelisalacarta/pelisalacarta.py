@@ -83,7 +83,36 @@ def run():
 		else:
 			exec "import "+params.get("channel")+" as plugin"
 			exec "plugin."+action+"(params, url, category)"
-	except urllib2.URLError:
-		xbmc.output("[pelisalacarta.py] Error de conexión a Internet - Interceptado")
+	
+	except urllib2.URLError,e:
 		ventana_error = xbmcgui.Dialog()
-		ok= ventana_error.ok ("Plugin Pelisalacarta", "No se ha podido acceder a internet", "Comprueba la conexión")
+		if hasattr(e, 'reason'):
+			print "Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1])
+			ok= ventana_error.ok ("Plugin Pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la pagina',"o su conexión a internet")
+		elif hasattr(e,'code'):
+			print "codigo de error HTTP : %d" %e.code 
+			ok= ventana_error.ok ("Plugin Pelisalacarta", "Se ha detectado un error", texto_error(e.code),"codigo de error : %d " %e.code)	
+		else:
+			pass	
+
+
+def texto_error(codigo):
+	texto = {"400":"Peticion incorrecta",
+			 "401":"No autorizado",
+			 "402":"Pago Requerido",
+			 "403":"Peticion Prohibida",
+			 "404":"Pagina no encontrada o no disponible",
+			 "405":"Metodo no Permitido",
+			 "406":"Formato de URL no Aceptable",
+			 "407":"Autentificacion de proxy requerida",
+			 "408":"Tiempo de espera de peticion terminada",
+			 "409":"Conflicto de peticion",
+			 "410":"La URL no existe o ha sido removida"
+			 }
+			 
+	if codigo in range(400,410):
+		codtext = texto[str(codigo)]
+		
+	else:
+		codtext = "El Servidor solicitado no púdo realizar la petición"
+	return codtext
