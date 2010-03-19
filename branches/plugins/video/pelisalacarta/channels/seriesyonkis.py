@@ -544,6 +544,9 @@ def addlist2Library(params,url,category):
 		xbmc.output ("[seriesyonkis.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
 	library.update(totalepisodes,errores,nuevos)
 
+	return nuevos
+	
+
 def strm_detail (params,url,category):
 	xbmc.output("[seriesyonkis.py] strm_detail")
 
