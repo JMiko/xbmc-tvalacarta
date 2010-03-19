@@ -23,7 +23,8 @@ CHANNELNAME = "tvshack"
 
 IMAGEN_MEGAVIDEO = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' , "megavideosite.png") )
 
-SERVIDORES_PERMITIDOS = ['megavideo']
+SERVIDORES_PERMITIDOS = ['megavideo','veoh','tudou','movshare']
+#No soportados comprobados por el momento 56.com,zshare
 
 FANART_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'fanart' ) )
 
@@ -38,6 +39,7 @@ xbmc.output("[tvshack.py] init")
 
 
 fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack'+ str (random.randint(1,5))+'.png' ) )
+xbmc.output("[tvshac.py] init pluginhandle: "+str(pluginhandle))
 xbmc.output("[tvshac.py] init fanart: "+fanartfile)
 xbmcplugin.setPluginFanart(pluginhandle, fanartfile)
 
@@ -54,42 +56,54 @@ def mainlist(params,url,category):
   # Lista de Categorías 
   xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Series" , "Series TV (VO)" , "http://tvshack.net/tv" , thumbnail="" , plot="" )
   xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Cine" , "Películas (VO)" , "http://tvshack.net/movies" , thumbnail="" , plot="" )
-  xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Documentales" , "Documentales (VO)" , "http://tvshack.net/movies" , thumbnail="" , plot="" )
-  xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Anime" , "Anime (VO?)" , "http://tvshack.net/documentaries" , thumbnail="" , plot="" )
-  xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Musica" , "Música " , "http://tvshack.net/music" , thumbnail="" , plot="" )
+  xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Documentales" , "Documentales (VO)" , "http://tvshack.net/documentaries" , thumbnail="" , plot="" )
+  xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Anime" , "Anime (VO?)" , "http://tvshack.net/anime" , thumbnail="" , plot="" )
+  xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Musica" , "Música " , "http://tvshack.net/music" , thumbnail="" , plot="" )
 
   # Opciones adicionales si modo canal único
   if xbmcplugin.getSetting ("singlechannel")=="true":
     xbmctools.addSingleChannelOptions (params , url , category)
 
+  xbmc.output("[tvshac.py] mainlist finalizaplugin handle: "+str(pluginhandle))
   FinalizaPlugin (pluginhandle,category)
 
 def ListaSeries(params,url,category):
-  """Crea el listado de series y lo muestra para selección
+  """Crea el listado de series,Anime o música y lo muestra para selección
   """
   xbmc.output("[tvshack.py] ListaSeries")
 
   # Iniciamos un cruadro de diálogo de espera.
   pDialog = xbmcgui.DialogProgress()
-  ret = pDialog.create('pelisalacarta' , 'Leyendo series...')
-  pDialog.update(0, 'Leyendo series...')
+  text1 = 'Leyendo %s...' %(category,)
+  ret = pDialog.create('pelisalacarta' , text1)
+  pDialog.update(0, text1)
 
   # Descargamos la página
   data = scrapertools.cachePage(url)
 
   # Extraemos las series por medio de expresiones regulares (patrón)
+  # Ej. Serie:  <li><a href="/tv/30_Rock/">30 Rock <font class="new-updated">Updated!</font><span style="margin-top:0px;">69 episodes</span></a></li> 
+  # Ej. Anime:  <li><a href="http://tvshack.net/anime/Avatar__The_Abridged_Series/">Avatar: The Abridged Series<span style="margin-top:0px;">5 episodes</span></a></li>
+  # Ej. Música: <li><a href="http://tvshack.net/music/Michael_Jackson/">Michael Jackson<span style="margin-top:0px;">27 songs</span></a></li>
   patronvideos = '''(?x)                                #      Activa opción VERBOSE.
     <li><a\ href="                                      #      Basura
-    ([^"]+)">                                           # $0 = Path (relativo) de la serie Ej. "/tv/The_Wire/"
+    (?:http://tvshack\.net)?([^"]+)">                   # $0 = Path (relativo) de la serie Ej. "/tv/The_Wire/"
     ([^<]+)                                             # $1 = Nombre de la serie Ej. Wire, The
     (?:\ <font\ class="new-new">(New)!</font>)?         # $2 = 'New' si la serie es nueva.
     (?:\ <font\ class="new-updated">(Updated)!</font>)? # $3 = 'Updated' si la serie ha sido actualizada
     <span\ style="margin-top:0px;">                     #      Basura
-    ([0-9]+)\ episodes                                  # $4 = Número de episodios Ej. 59
+    ([0-9]+)                                            # $4 = Número de episodios Ej. 59
+    \ ((?:episodes)|(?:songs))                          # $5 = Indicador de episodios o canciones
                  ''' 
   matches = re.compile(patronvideos).findall(data) # Paso del DOTALL-no hace falta para nada.
 
   totalseries = len(matches)
+  if totalseries == 0:
+    pDialog.close()
+    error = xbmcgui.Dialog()
+    error.ok('pelisalacarta - Canal TVShack','No se encontró nada que listar')
+    FinalizaPlugin_con_error(pluginhandle,category)
+    return
   i = 0
   step = 100 / totalseries
   for match in matches:
@@ -98,7 +112,7 @@ def ListaSeries(params,url,category):
 
     #Actualizados el diálogo de espera. Esto muestra el avance y por cual serie vamos
     i = i + step
-    pDialog.update(i, 'Leyendo series...'+scrapedserie)
+    pDialog.update(i, text1+scrapedserie)
 
     #URL de la serie
     scrapedurl = "http://tvshack.net" + match[0]
@@ -108,14 +122,21 @@ def ListaSeries(params,url,category):
     #   * El número de episodios almacenados.
     #   * Si la serie ha sido añadida recientemente.
     #   * Si se han añadido episodios recientemente.
+    if match[5]=='episodes':
+      tipo_singular = 'episodio'
+      tipo_plural = 'episodios'
+    else: #'songs'
+      tipo_singular = 'canción'
+      tipo_plural = 'canciones'
     if match[4]=='1': #Como soy puntilloso no me gusta cuando pone "1 episodios"
-      scrapedtitle = match[1] + " (1 episodio)"
+      scrapedtitle =  "%s (1 %s)" % (match[1],tipo_singular) # Ej. House (1 episodio)
     else:
-      scrapedtitle = match[1] + " (" + match[4] + " episodios)"
+      scrapedtitle = "%s (%s %s)" % (match[1], match[4], tipo_plural) # Ej. House (69 episodios)
+
     if match[2]: #Serie Nueva
-      scrapedtitle = scrapedtitle + " (Serie Nueva)"
+      scrapedtitle = scrapedtitle + " (Nuevo)"
     if match[3]: #Nuevos episodios
-      scrapedtitle = scrapedtitle + " (Nuevos episodios)"
+      scrapedtitle = scrapedtitle + " (Nuevos contenidos)"
       
     # Ésta web no tiene información de cada serie en la lista de selección.
     #   Esa información está en la página del listado de episodios.
@@ -127,9 +148,9 @@ def ListaSeries(params,url,category):
     scrapednote = ""
     
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "ListaEpisodios" , "Series" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , Serie=scrapedserie , totalItems=totalseries)
+    xbmctools.addnewfolder( CHANNELNAME , "ListaEpisodios" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , Serie=scrapedserie , totalItems=totalseries)
 
-  pDialog.update(totalseries, 'Leyendo series...')
+  pDialog.update(100, text1)
   FinalizaPlugin (pluginhandle,category)
   pDialog.close()
 
@@ -146,7 +167,8 @@ def ListaEpisodios(params,url,category):
     serie = ""
 
   # Añade "Agregar todos a la librería"
-  xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , "" , "" , serie)
+  if category != 'Musica':
+    xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , "" , "" , serie)
 
   listaEp = devuelveListaEpisodios (params,url,category)
 
@@ -237,14 +259,17 @@ def devuelveListaEpisodios (params,url,category):
   #  3. Sección de videos de temporada.
   temporada = '0'
   # Extraemos los episodios por medio de expresiones regulares (patrón)
-  # Ej. <li><a href="/tv/Family_Guy/season_1/episode_1/">ep1. Death Has a Shadow</a><a href=""><span>31/1/1999</span></a></li>
+  # Ej. Serie:  <li><a href="/tv/Family_Guy/season_1/episode_1/">ep1. Death Has a Shadow</a><a href=""><span>31/1/1999</span></a></li>
+  # Ej. Anime:  <li><a href="http://tvshack.net/anime/07_Ghost/season_1/episode_5/">ep5. Episode 5</a><a href=""><span>??/??/????</span></a></li> 
+  # Ej. Musica: <li><a href="http://tvshack.net/music/Michael_Jackson/C85E8225E45E/">Black Or White<span>2,301 views</span></a></li><li><a 
   patronepisodios = '''(?x)                             #      Activa opción VERBOSE. Esto permite
     <li><a\ href="                                      #      Basura
-    ([^"]+)">                                           #\g1 = Path (relativo) del episodio
-    ep([0-9]+)\.\                                       #\g2 = Número de episodio
+    (?:http://tvshack\.net)?([^"]+)">                   #\g1 = Path (relativo) del episodio/video
+    (?:ep([0-9]+)\.\ )?                                 #\g2 = Número de episodio
     ([^<]+)                                             #\g3 = Nombre del episodio
-    <\/a><a\ href=""><span>                             #      Basura
-    ([0-9\?]+\/[0-9\?]+\/[0-9\?]+)                      #\g4 = Fecha de emisión
+    (?:<\/a><a\ href="">)?<span>                        #      Basura
+    ([0-9\?]+\/[0-9\?]+\/[0-9\?]+)?                     #\g4 = Fecha de emisión (sólo series)
+    (?:([0-9,]+)\ views)?                               #\g5 = Veces visto (sólo música)
     <\/span><\/a><\/li>                                 #      Basura
   ''' 
   episodiosREO = re.compile(patronepisodios) ## Objeto de Expresión Regular (REO)
@@ -263,8 +288,11 @@ def devuelveListaEpisodios (params,url,category):
       # Recorremos un iterador por los matches de episodiosREO 
       # (más elegante y breve en este caso aunque hay que conocer los 
       # Objetos de Expresión Regular (REO) y los matchobjects)
-      for match in episodiosREO.finditer (parte): 
-        Ep['title'] = match.expand (serie + ' - ' + temporada + 'x\g<2> - \g<3> (\g<4>)') #con expand los grupos referenciaos empiezan en 1
+      for match in episodiosREO.finditer (parte):
+        if category != 'Musica':
+          Ep['title'] = match.expand (serie + ' - ' + temporada + 'x\g<2> - \g<3> (\g<4>)') #con expand los grupos referenciaos empiezan en 1
+        else:
+          Ep['title'] = match.expand ('\g<3> (visto \g<5> veces)') #con expand los grupos referenciaos empiezan en 1
         #URL del episodio
         Ep['url'] = "http://tvshack.net" + match.group(1)
         listaEp.append(Ep.copy()) #Se añade el episodio a la lista (hay que copiarlo)
@@ -273,7 +301,81 @@ def devuelveListaEpisodios (params,url,category):
             
 # FIN devuelveListaEpisodios
 ###########################################################################
+def ListaDetallada(params,url,category):
+  """Crea el listado de Espectáculos de las secciones de Cine y Docs.
+  """
+  xbmc.output("[tvshack.py] ListaDetallada")
 
+  # Iniciamos un cruadro de diálogo de espera.
+  pDialog = xbmcgui.DialogProgress()
+  texto1 = 'Leyendo %s...' % (category,)
+  ret = pDialog.create('pelisalacarta' , texto1)
+  pDialog.update(0, texto1)
+
+  # Descargamos la página
+  data = scrapertools.cachePage(url)
+
+  # Extraemos los videos por medio de expresiones regulares (patrón)
+  # Ej. Cine: <li><a href="/movies/_Rec__2__2009_/">[Rec] 2<span style="margin-top:0px;">2009</span></a></li> 
+  # Ej. Docu: <li><a href="/movies/Ancient_Aliens__2009_/">Ancient Aliens<span style="margin-top:0px;">2009</span></a></li>
+  patronvideos = '''(?x)                                #      Activa opción VERBOSE.
+    <li><a\ href="                                      #      Basura
+    ([^"]+)">                                           # $0 = Path (relativo) del vídeo Ej. "/movies/Rec__2__2009_/"
+    ([^<]+)                                             # $1 = Nombre del video Ej. [Rec] 2
+    (?:\ <font\ class="new-new">(New)!</font>)?         # $2 = 'New' si el video es nuevo.
+    (?:\ <font\ class="new-updated">(Updated)!</font>)? # $3 = 'Updated' Creo que no se usa. pero no hace daño
+    <span\ style="margin-top:0px;">                     #      Basura
+    ([0-9]+)</span>                                     # $4 = Año de la producción Ej. 2009
+                 ''' 
+  matches = re.compile(patronvideos).findall(data) # Paso del DOTALL-no hace falta para nada.
+
+  totalmatches = len(matches)
+  if totalmatches == 0:
+    pDialog.close()
+    error = xbmcgui.Dialog()
+    error.ok('pelisalacarta - Canal TVShack','No se encontró nada que listar')
+    FinalizaPlugin_con_error(pluginhandle,category)
+    return
+
+  i = 0
+  step = 100 / totalmatches
+  for match in matches:
+    #Serie
+    scrapedserie = match[1]  
+
+    #Actualizados el diálogo de espera. Esto muestra el avance y por cual serie vamos
+    i = i + step
+    pDialog.update(i, texto1+scrapedserie)
+
+    #URL del video
+    scrapedurl = "http://tvshack.net" + match[0]
+
+    # En el título (que se mostrará en la siguiente pantalla) elaboramos 
+    # un poquito más añadiendo información sobre:
+    #   * El año de producción.
+    #   * Si el video ha sido añadido recientemente.
+    scrapedtitle = '%s (%s)' % (match[1],match[4])
+    if match[2]: #Contenido Nuevo
+      scrapedtitle = scrapedtitle + " (Nuevo)"
+      
+    # Ésta web no tiene información de cada video en la lista de selección.
+    #   Esa información está en la página del video.
+    #   Obtenerla en este momento seguramente sería muy costoso (en tiempo),
+    #   Quizá sea interesante para busquedas
+    #   más limitadas... De todas formas lo programo para evaluar
+#    scrapedthumbnail, scrapednote = LeeDatosSerie (scrapedurl)
+    scrapedthumbnail = ""
+    scrapednote = ""
+    
+    # Añade al listado de XBMC
+    xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , totalItems=totalmatches)
+
+  pDialog.update(100, texto1)
+  FinalizaPlugin (pluginhandle,category)
+  pDialog.close()
+
+# FIN ListaDetalle
+###########################################################################
 def strm_detail (params,url,category):
   '''Reproduce el episodio seleccionado desde un fichero strm
   '''
@@ -289,6 +391,9 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
   elegir una al azar o por algún mecanismo mejor. Así se ahorraría un paso
   aunque supongo que habrá riesgo de no elegir una buena opción.
   '''
+  xbmc.output("[tvshack.py] ListaVideosEpisodios")
+
+
   if params.has_key("Serie"):
     serie = params.get("Serie")
   else:
@@ -348,11 +453,15 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Elige un vídeo", opciones)
   else:
-    seleccion = 0
-    while seleccion < len (opciones) and servers[seleccion] not in SERVIDORES_PERMITIDOS:
-      seleccion = seleccion +1 
+    #Si existe, preferimos megavideo.
+    try:
+      seleccion = servers.index('megavideo')
+    except: #Si no hay megavideo buscamos cualquiera que sirva
+      seleccion = 0
+      while seleccion < len (opciones) and servers[seleccion] not in SERVIDORES_PERMITIDOS:
+        seleccion = seleccion +1 
     if seleccion == len(opciones):
-      dlog ('[tvshack.py] listaVideosEpisodio - No hay videos en los servidores permitidos para este episodio.')
+      dlog ('[tvshack.py] listaVideosEpisodio - No hay videos en los servidores soportados para este episodio.')
       advertencia = xbmcgui.Dialog()
       resultado = advertencia.ok('pelisalacarta - tvshack' , 'No hay videos válidos para este episodio.')
       return
@@ -364,13 +473,8 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
     params['server'] = servers[seleccion]
     playVideo (params,matches[seleccion][0],category,strmfile)
 
-#    xbmctools.addnewvideo( CHANNELNAME , "playVideo" , category , server , 
-#      scrapedtitle , scrapedurl , scrapedthumbnail , '' , Serie=serie)
-
-#  FinalizaPlugin (pluginhandle,category)
-
-
-
+# FIN listaVideosEpisodio
+###########################################################################
 def playVideo(params,url,category,strmfile=False):
   '''Reproduce el video seleccionado
   '''
@@ -385,8 +489,11 @@ def playVideo(params,url,category,strmfile=False):
     category = params.get("category")
 
   title = urllib.unquote_plus( params.get("title") )
-  thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-
+  if params.has_key("thumbnail"):
+    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+  else:
+    thumbnail = ''
+    
   if params.has_key("plot"):
     plot = params.get("plot")
   else:
@@ -395,6 +502,7 @@ def playVideo(params,url,category,strmfile=False):
   server = params["server"]
 
   if DEBUG:
+    xbmc.output("[tvshack.py] url="+url)
     xbmc.output("[tvshack.py] title="+title)
     xbmc.output("[tvshack.py] plot="+plot)
     xbmc.output("[tvshack.py] thumbnail="+thumbnail)
@@ -424,7 +532,7 @@ def playVideo(params,url,category,strmfile=False):
 #    for parte in partes:
   elif len(partes) == 1:
     url = 'http://tvshack.net/video_load/'+paths[0] + '/' + partes[0]
-    #Esta URL sigue sin ser un enlace megaupload por lo que seguimos scrapeando
+    #Esta URL sigue sin ser un enlace megaupload u otro servidor válido por lo que seguimos scrapeando
     # para evitar excesivas selecciones por parte del usuario.
 
     # Descarga la página
@@ -454,15 +562,22 @@ def playVideo(params,url,category,strmfile=False):
       dlog ("[tvshack.py]playVideo: Llamando al play. mediaurl= "+mediaurl)
       xbmctools.playvideo(CHANNELNAME,'Megavideo',mediaurl,category,title,'','',Serie=serie,strmfile=strmfile)
     else: # Video de un servidor desconocido.
-      dlog ("[tvshack.py]playVideo: Servidor desconocido: "+server)
+      #Probamos si es flash...
+      #Ej. 
+      flashmatch = re.search('flashvars="file=(.+?)&type=flv',data2)
+      if flashmatch != None:
+        dlog ('[tvshack.py]playVideo: Video flash - url = ' + flashmatch.group(1))
+        xbmctools.playvideo(CHANNELNAME,'Directo',flashmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
+        return
+      othersmatch = re.search('src="([^"]+)">',data2)
+      if othersmatch != None and server in SERVIDORES_PERMITIDOS:
+        xbmctools.playvideo(CHANNELNAME,server,othersmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
+        return
+
+      dlog ("[tvshack.py]playVideo: Servidor no soportado: "+server)
       dialog = xbmcgui.Dialog()
       dialog.ok('pelisalacarta - tvshack - '+server,'El video seleccionado es de '+server,'Ese servidor aún no está soportado en TVShack.')
       return
-          
-#    # Ej. flashvars="file=http://tweetypie.tvshack.net/td/?id=ZjQ4NzljNmMzYjJlMWQyOGJiNmMwYTIyN2Y0NWE4ZmIuVTNKSFlUSTJNREJ3VmtRPQ==&type=flv
-#    urlflv = re.findall ('flashvars="file=(.+?)&type=flv',data2) #URL al fichero flv (baja calidad)
-#    if len(urlflv) == 1:
-#      xbmctools.playvideo(CHANNELNAME,'flv',urlflv[0],category,title,thumbnail,plot,Serie = serie)
 
 def FinalizaPlugin (pluginhandle,category):
   """Tareas comunes al final del plugin. Sin ordenación
@@ -476,6 +591,19 @@ def FinalizaPlugin (pluginhandle,category):
 
   # Finalizar Directorio del Plugin
   xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+  
+def FinalizaPlugin_con_error (pluginhandle,category):
+  """Tareas comunes al final del plugin. Sin ordenación
+  """
+  # Indicar metadatos del plugin para skis (Categoría y contenido)
+  #xbmcplugin.setPluginCategory (pluginhandle , category)
+  #xbmcplugin.setContent (pluginhandle , category) #Estamos usando category como content.
+
+  # Deshabilitar ordenación
+  #xbmcplugin.addSortMethod (handle=pluginhandle , sortMethod=xbmcplugin.SORT_METHOD_NONE)
+
+  # Finalizar Directorio del Plugin
+  xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=False )
   
 def LeeDatosSerie (tdata):
   """Obtiene una miniatura y la sinopsis de una serie
