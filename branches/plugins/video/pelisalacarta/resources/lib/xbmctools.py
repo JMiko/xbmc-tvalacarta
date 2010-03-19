@@ -24,6 +24,13 @@ try:
 except:
 	pluginhandle = ""
 
+LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
+
+#LIBRARY_CATEGORIES = ['Cine','Series'] #Valor developers (descomentar para activar)
+# Para test de programadores. Se pueden añadir aquellos canales de cine que 
+#   queramos que tengan opción de añadir a la biblioteca.
+#   (SÓLO VERSIONES XBMC COMPILADAS CON BUGFIX INCLUIDO)
+
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 DEBUG = True
  
@@ -149,8 +156,9 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	else:
 		opciones.append("Añadir a lista de descargas")
 
-	if not strmfile: #JUR: Temp-Modo desarrollo. Abierto a todos los canales
-		opciones.append("Añadir a Biblioteca")
+	if not strmfile:
+		if category in LIBRARY_CATEGORIES:
+			opciones.append("Añadir a Biblioteca")
 
 	# Busqueda de trailers en youtube	
 	if not canal in ["Trailer","ecarteleratrailers"]:
