@@ -19,6 +19,9 @@ import stagevu
 import vreel
 import movshare
 import veoh
+import metadivx
+import divxden
+import divxlink
 
 xbmc.output("[servertools.py] init")
 
@@ -532,7 +535,7 @@ def findurl(code,server):
 	server = server.lower() #Para hacer el procedimiento case insensitive
 	if server == "megavideo":
 		mediaurl = megavideo.Megavideo(code)
-		
+
 	if server == "megaupload":
 		mediaurl = megaupload.getvideo(code)
 		
@@ -556,6 +559,16 @@ def findurl(code,server):
 	
 	if server == "directo":
 		mediaurl = code
+		
+	if server == "metadivx":
+		mediaurl = metadivx.geturl(code)
+
+	if server == "divxden":
+		mediaurl = divxden.geturl(code)
+
+	if server == "divxlink":
+		mediaurl = divxlink.geturl(code)
+
 	return mediaurl
 
 def getmegavideolow(code):
