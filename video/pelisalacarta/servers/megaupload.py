@@ -15,7 +15,7 @@ import xbmcgui
 import megavideo
 import scrapertools
 
-DEBUG = True
+DEBUG = False
 
 COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
 

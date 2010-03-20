@@ -107,13 +107,16 @@ def playvideo(canal,server,url,category,title,thumbnail,plot,strmfile=False,Seri
 	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,strmfile,Serie)
 
 def playvideo2(canal,server,url,category,title,thumbnail,plot):
-	playvideoEx(canal,server,url,category,title,thumbnail,plot,True,False)
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,True,False,False)
 
 def playvideo3(canal,server,url,category,title,thumbnail,plot):
-	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,True)
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,True,False)
 
-def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,strmfile=False,Serie=""):
-	
+def playvideo4(canal,server,url,category,title,thumbnail,plot):
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,True)
+
+def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile=False,Serie=""):
+
 	xbmc.output("[xbmctools.py] playvideo")
 	xbmc.output("[xbmctools.py] playvideo canal="+canal)
 	xbmc.output("[xbmctools.py] playvideo server="+server)
@@ -155,6 +158,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		opciones.append("Quitar de lista de descargas")
 	else:
 		opciones.append("Añadir a lista de descargas")
+
+	if desderrordescargas:
+		opciones.append("Borrar descarga definitivamente")
+		opciones.append("Pasar de nuevo a lista de descargas")
 
 	if not strmfile:
 		if category in LIBRARY_CATEGORIES:
@@ -223,6 +230,24 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		os.remove(urllib.unquote_plus( category ))
 		advertencia = xbmcgui.Dialog()
 		resultado = advertencia.ok('Vídeo quitado de favoritos' , title , 'Se ha quitado de favoritos')
+		return
+
+	elif opciones[seleccion]=="Borrar descarga definitivamente":
+		# La categoría es el nombre del fichero en favoritos
+		os.remove(urllib.unquote_plus( category ))
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Vídeo quitado de la lista' , title , 'Se ha quitado de la lista')
+		return
+
+	elif opciones[seleccion]=="Pasar de nuevo a lista de descargas":
+		# La categoría es el nombre del fichero en favoritos, así que lee el fichero
+		titulo,thumbnail,plot,server,url = descargadoslist.readbookmarkfile(urllib.unquote_plus( category ),"")
+		# Lo añade a la lista de descargas
+		descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+		# Y lo borra de la lista de errores
+		os.remove(urllib.unquote_plus( category ))
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Vídeo de nuevo para descargar' , title , 'Ha pasado de nuevo a la lista de descargas')
 		return
 
 	elif opciones[seleccion]=="Añadir a favoritos":

@@ -88,7 +88,7 @@ def performsearch(texto):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		resultados.append( [CHANNELNAME , "play" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		resultados.append( [CHANNELNAME , "playfolder" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
 		
 	return resultados
 
@@ -153,11 +153,21 @@ def list(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-	# End of directory...
+def playfolder(params,url,category):
+	xbmc.output("[tutvsite.py] playfolder")
+	
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = urllib.unquote_plus( params.get("plot") )
+	
+	addthumbnailvideo(title,url,thumbnail,plot,category,"tu.tv")
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
