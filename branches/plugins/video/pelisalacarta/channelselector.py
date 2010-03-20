@@ -40,9 +40,6 @@ def listchannels(params,url,category):
 		xbmc.output("updatecheck2=false")
 
 #Lo pongo arriba para debuguear más facil, @jesus ponlo luego donde veas mejor.
-	addfolder("TVShack.net","tvshack","mainlist") #para 2.14 (JUR)
-#	addfolder("Carnaval de Cadiz 2010","carnaval2010","mainlist") #para 2.14 (JUR)
-
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
 	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
@@ -55,6 +52,7 @@ def listchannels(params,url,category):
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
+	addfolder("TVShack.net","tvshack","mainlist") #para 2.14 (JUR)
 	addfolder("DeLaTV","delatv","mainlist")
 	addfolder("Pelis24","pelis24","mainlist")
 	addfolder("Veocine","veocine","mainlist")
@@ -63,6 +61,8 @@ def listchannels(params,url,category):
 	if xbmcplugin.getSetting("enableadultmode") == "true":
 		addfolder("MocosoftX","mocosoftx","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
+	addfolder("Capitan Cinema","capitancinema","mainlist")
+	addfolder("Film Streaming [IT]","filmstreaming","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")
