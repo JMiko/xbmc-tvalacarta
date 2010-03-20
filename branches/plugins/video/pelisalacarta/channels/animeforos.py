@@ -36,21 +36,22 @@ LoadThumbnails = True # indica si cargar los carteles
 def mainlist(params,url,category):
 	xbmc.output("[animeforos.py] mainlist")
 
-	aviso = "Esta carpeta contiene una pequeña selección de las series infantiles (para Todos los Públicos), disponibles en este canal. En cuanto al resto de carpetas, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia, además en el aptdo -Información de la Película- encontrará la información procedente de la propia release, a la que se agrega la de McAnime si ha encontrado. La disponibilidad de la información por género y edades desde el canal irá mejorando."
+	category = "Anime"
+	aviso = "Esta carpeta contiene una pequeña selección de las series infantiles (para Todos los Públicos), disponibles en este canal. En cuanto al resto de carpetas, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia, además, en el aptdo -Información de la Película- encontrará la información procedente de la propia release, a la que se agrega la de McAnime si se ha encontrado. La disponibilidad de la información por género y edades desde el canal irá mejorando."
 
-	xbmctools.addnewfolder( CHANNELNAME , "clasicos" , CHANNELNAME , "Series Clásicas Infantiles TV - [TP] - (***Leer aptdo Información de la película)" , "" , "" , aviso )
-	xbmctools.addnewfolder( CHANNELNAME , "astroteamrg" , CHANNELNAME , "AstroteamRG - Series" , "" , "" , "Fuente: http://www.astroteamrg.org")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Series - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Series - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Series - Actualmente en Emision" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Ovas - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Ovas - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Ovas - Actualmente en Emision" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Peliculas - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Peliculas - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "listseries" , CHANNELNAME , "El Rincón del Manga - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	xbmctools.addnewfolder( CHANNELNAME , "search" , CHANNELNAME , "El Rincón del Manga - Buscar","http://www.elrincondelmanga.com/foro/showthread.php?t=75282","" ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "clasicos" , category , "Series Clásicas Infantiles TV - [TP] - (***Leer aptdo Información de la película)" , "" , "" , aviso )
+	addnewfolder( CHANNELNAME , "astroteamrg" , category , "AstroteamRG - Series" , "" , "" , "Fuente: http://www.astroteamrg.org")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Series - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Series - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Series - Actualmente en Emision" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Ovas - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Ovas - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Ovas - Actualmente en Emision" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Peliculas - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Peliculas - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Español/Dual - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "listseries" , category , "El Rincón del Manga - Listado Completo" , "http://www.elrincondelmanga.com/foro/showthread.php?t=75282" , "" , "Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addnewfolder( CHANNELNAME , "search" , category , "El Rincón del Manga - Buscar","http://www.elrincondelmanga.com/foro/showthread.php?t=75282","" ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -64,15 +65,15 @@ def mainlist(params,url,category):
 def clasicos(params,url,category):
 	xbmc.output("[animeforos.py] clasicos")
 
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Heidi" , "http://www.elrincondelmanga.com/foro/showthread.php?t=1173" , "http://images.mcanime.net/images/anime/433.jpg" , "Fuente: http://www.elrincondelmanga.com")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Marco" , "http://www.elrincondelmanga.com/foro/showthread.php?t=65463#1" , "http://img115.imageshack.us/img115/8325/1612df65c4rs6.jpg" , "Fuente: http://www.elrincondelmanga.com")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "El Patito Alfred" , "http://www.elrincondelmanga.com/foro/showthread.php?t=63927#1" , "http://www.fotodiario.com/fotos/7596/75967b6200db43e76e7d2d87c3e90191_709x963.jpg" , "Fuente: http://www.elrincondelmanga.com")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Ulises 31" , "http://www.elrincondelmanga.com/foro/showthread.php?t=3294" , "http://img208.imageshack.us/img208/4820/ulyssesbox9sh.jpg" , "Fuente: http://www.elrincondelmanga.com")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Kochikame [+7] (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Ponyo en el acantilado (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://www.caratulasdecine.com/Caratulas5/ponyoenelacantilado.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail" , category , "Heidi" , "http://www.elrincondelmanga.com/foro/showthread.php?t=1173" , "http://images.mcanime.net/images/anime/433.jpg" , "Fuente: http://www.elrincondelmanga.com")
+	addnewfolder( CHANNELNAME , "detail" , category , "Marco" , "http://www.elrincondelmanga.com/foro/showthread.php?t=65463#1" , "http://img115.imageshack.us/img115/8325/1612df65c4rs6.jpg" , "Fuente: http://www.elrincondelmanga.com")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail" , category , "El Patito Alfred" , "http://www.elrincondelmanga.com/foro/showthread.php?t=63927#1" , "http://www.fotodiario.com/fotos/7596/75967b6200db43e76e7d2d87c3e90191_709x963.jpg" , "Fuente: http://www.elrincondelmanga.com")
+	addnewfolder( CHANNELNAME , "detail" , category , "Ulises 31" , "http://www.elrincondelmanga.com/foro/showthread.php?t=3294" , "http://img208.imageshack.us/img208/4820/ulyssesbox9sh.jpg" , "Fuente: http://www.elrincondelmanga.com")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail" , category , "Kochikame [+7] (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Ponyo en el acantilado (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://www.caratulasdecine.com/Caratulas5/ponyoenelacantilado.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -86,18 +87,18 @@ def clasicos(params,url,category):
 def astroteamrg(params,url,category):
 	xbmc.output("[animeforos.py] astroteamrg")
 
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Kochikame (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Slam Dunk (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16731" , "http://upload.wikimedia.org/wikipedia/en/b/b3/Slamdunk_cover1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16731 por friki100.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Ponyo en el acantilado (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://www.caratulasdecine.com/Caratulas5/ponyoenelacantilado.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Conan, el niño del futuro (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img220.imageshack.us/img220/425/50332do7.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail2" , CHANNELNAME , "Cowboy Bebop (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://upload.wikimedia.org/wikipedia/en/3/37/CowboyBebopDVDBoxSet.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Sailor Moon (by Tuxedo_Mask)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16406" , "http://upload.wikimedia.org/wikipedia/en/4/40/Sailor_Moon_S.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16406 por Tuxedo_Mask.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Master Keaton VOSE (by Tom_Bombadil)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16761" , "http://upload.wikimedia.org/wikipedia/en/f/f7/Master_Keaton_cover.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16761 por Tom_Bombadil")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Eureka Seven VOSE (by skait)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16784" , "http://upload.wikimedia.org/wikipedia/en/4/45/Eureka_Seven_DVD_1_-_North_America.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16784 por skait.")
-	xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , "Cross Game VOSE (by gatest)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16808" , "http://upload.wikimedia.org/wikipedia/en/c/cf/Cross_Game_DVDv1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16808 por gatest")
+	addnewfolder( CHANNELNAME , "detail" , category , "Kochikame (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1")
+	addnewfolder( CHANNELNAME , "detail" , category , "Slam Dunk (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16731" , "http://upload.wikimedia.org/wikipedia/en/b/b3/Slamdunk_cover1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16731 por friki100.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Ponyo en el acantilado (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://www.caratulasdecine.com/Caratulas5/ponyoenelacantilado.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Conan, el niño del futuro (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img220.imageshack.us/img220/425/50332do7.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail2" , category , "Cowboy Bebop (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://upload.wikimedia.org/wikipedia/en/3/37/CowboyBebopDVDBoxSet.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro.")
+	addnewfolder( CHANNELNAME , "detail" , category , "Sailor Moon (by Tuxedo_Mask)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16406" , "http://upload.wikimedia.org/wikipedia/en/4/40/Sailor_Moon_S.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16406 por Tuxedo_Mask.")
+	addnewfolder( CHANNELNAME , "detail" , category , "Master Keaton VOSE (by Tom_Bombadil)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16761" , "http://upload.wikimedia.org/wikipedia/en/f/f7/Master_Keaton_cover.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16761 por Tom_Bombadil")
+	addnewfolder( CHANNELNAME , "detail" , category , "Eureka Seven VOSE (by skait)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16784" , "http://upload.wikimedia.org/wikipedia/en/4/45/Eureka_Seven_DVD_1_-_North_America.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16784 por skait.")
+	addnewfolder( CHANNELNAME , "detail" , category , "Cross Game VOSE (by gatest)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16808" , "http://upload.wikimedia.org/wikipedia/en/c/cf/Cross_Game_DVDv1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16808 por gatest")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -203,23 +204,23 @@ def detail(params,url,category):
 	if len(listainfo)==1:
 		plot = plot+" "+listainfo[0][5]
 
-		xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , listainfo[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfo[0][5] )
+		addnewfolder( CHANNELNAME , "searchmc" , category , listainfo[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfo[0][5] )
 
-		xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Clasificación: "+listainfo[0][1] , "" , "" , listainfo[0][5] )
+		addnewfolder( CHANNELNAME , "searchmc" , category , "Clasificación: "+listainfo[0][1] , "" , "" , listainfo[0][5] )
 
-		xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Géneros: "+listainfo[0][2] , "" , "" , listainfo[0][5] )
+		addnewfolder( CHANNELNAME , "searchmc" , category , "Géneros: "+listainfo[0][2] , "" , "" , listainfo[0][5] )
 
-		xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Contenido: "+listainfo[0][3] , "" , "" , listainfo[0][5] )
+		addnewfolder( CHANNELNAME , "searchmc" , category , "Contenido: "+listainfo[0][3] , "" , "" , listainfo[0][5] )
 
-		xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Sinopsis: "+listainfo[0][4] , "" , "" , listainfo[0][5] )
+		addnewfolder( CHANNELNAME , "searchmc" , category , "Sinopsis: "+listainfo[0][4] , "" , "" , listainfo[0][5] )
 		
 
 	else:	
-		xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "***Buscar Información en McAnime - Enciclopedia Beta" , "http://www.mcanime.net/enciclopedia/anime" , "" ,"Fuente: http://www.mcanime.net/enciclopedia/anime" )
+		addnewfolder( CHANNELNAME , "searchmc" , category , "***Buscar Información en McAnime - Enciclopedia Beta" , "http://www.mcanime.net/enciclopedia/anime" , "" ,"Fuente: http://www.mcanime.net/enciclopedia/anime" )
 		
 	for video in listavideos:
 
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , apto+title+" - "+video[0]+" - [Megaupload]"+autor , video[1] , thumbnail , plot )
+		addnewvideo( CHANNELNAME , "play" , category , video[2] , apto+title+" - "+video[0]+" - [Megaupload]"+autor , video[1] , thumbnail , plot )
 					
 	# Extrae la fecha de la próxima actualización
 	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
@@ -228,7 +229,7 @@ def detail(params,url,category):
 		titulo = matches.group(2)
 		url = ""
 		# Añade al listado de XBMC 
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megaupload" , titulo , url , "" , plot )
+		addnewvideo( CHANNELNAME , "play" , category , "Megaupload" , titulo , url , "" , plot )
 					
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -431,23 +432,23 @@ def detail2(params,url,category):
 		if len(listainfo)==1:
 			plot = plot+" "+listainfo[0][5]
 
-			xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , listainfo[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfo[0][5] )
+			addnewfolder( CHANNELNAME , "searchmc" , category , listainfo[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfo[0][5] )
 
-			xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Clasificación: "+listainfo[0][1] , "" , "" , listainfo[0][5] )
+			addnewfolder( CHANNELNAME , "searchmc" , category , "Clasificación: "+listainfo[0][1] , "" , "" , listainfo[0][5] )
 
-			xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Géneros: "+listainfo[0][2] , "" , "" , listainfo[0][5] )
+			addnewfolder( CHANNELNAME , "searchmc" , category , "Géneros: "+listainfo[0][2] , "" , "" , listainfo[0][5] )
 
-			xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Contenido: "+listainfo[0][3] , "" , "" , listainfo[0][5] )
+			addnewfolder( CHANNELNAME , "searchmc" , category , "Contenido: "+listainfo[0][3] , "" , "" , listainfo[0][5] )
 
-			xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "Sinopsis: "+listainfo[0][4] , "" , "" , listainfo[0][5] )
+			addnewfolder( CHANNELNAME , "searchmc" , category , "Sinopsis: "+listainfo[0][4] , "" , "" , listainfo[0][5] )
 		
 		else:	
-			xbmctools.addnewfolder( CHANNELNAME , "searchmc" , CHANNELNAME , "***Buscar Información en McAnime - Enciclopedia Beta" , "http://www.mcanime.net/enciclopedia/anime" , "" ,"Fuente: http://www.mcanime.net/enciclopedia/anime" )
+			addnewfolder( CHANNELNAME , "searchmc" , category , "***Buscar Información en McAnime - Enciclopedia Beta" , "http://www.mcanime.net/enciclopedia/anime" , "" ,"Fuente: http://www.mcanime.net/enciclopedia/anime" )
 		
 		for video in listavideos:
 
 			# Añade al listado de XBMC 
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [Megaupload]"+autor , video[1] , thumbnail , plot )
+			addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [Megaupload]"+autor , video[1] , thumbnail , plot )
 	else:
 		return					
 			
@@ -488,14 +489,14 @@ def listseries(params,url,category):
 
 		if tipolist == "Completo":
 			if tipocontenido == "[^<]+":
-				xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+				addnewfolder( CHANNELNAME , "detail" , category , serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 			else:
 				if tipocontenido == "Pelicula":
-					xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , serie[0]+" "+serie[1] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+					addnewfolder( CHANNELNAME , "detail" , category , serie[0]+" "+serie[1] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 				else:
-					xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , serie[0]+" "+serie[1]+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+					addnewfolder( CHANNELNAME , "detail" , category , serie[0]+" "+serie[1]+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 		else:
-			xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , serie[0]+" "+serie[1]+" ["+serie[2]+"]" , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+			addnewfolder( CHANNELNAME , "detail" , category , serie[0]+" "+serie[1]+" ["+serie[2]+"]" , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 
 
 	# Label (top-right)...
@@ -600,14 +601,14 @@ def search(params,url,category):
 				if len(tecleado) == 1:
 					listaseries = findcontenidos(data,"Completo","[^<]+",tecleado,"")
 					for serie in listaseries:
-						xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+						addnewfolder( CHANNELNAME , "detail" , category , serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 				else:
 					listaseries = findcontenidos(data,"Completo","[^<]+","","")				
 					for serie in listaseries:
 						foldertitle = serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3]
 						match = re.search(tecleado,foldertitle,re.IGNORECASE)
 						if (match):
-							xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , foldertitle , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+							addnewfolder( CHANNELNAME , "detail" , category , foldertitle , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 
 	else:
 		# Descarga la página
@@ -618,7 +619,7 @@ def search(params,url,category):
 
 		for serie in listaseries:
 
-			xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
+			addnewfolder( CHANNELNAME , "detail" , category , serie[0]+" "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "Tipo Contenido: "+serie[5] )
 					
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -808,15 +809,15 @@ def findinfo2(params,url,category):
 	listainfomc = findlistinfo("",title,url)	
 
 	# Añade al listado de XBMC
-	xbmctools.addnewvideo( CHANNELNAME , "play" , category , "" , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfomc[0][5] )
+	addnewvideo( CHANNELNAME , "play" , category , "" , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfomc[0][5] )
 
-	xbmctools.addnewvideo( CHANNELNAME , "play" , category , "" , "Clasificación: "+listainfomc[0][1] , "" , "" , listainfomc[0][5] )
+	addnewvideo( CHANNELNAME , "play" , category , "" , "Clasificación: "+listainfomc[0][1] , "" , "" , listainfomc[0][5] )
 
-	xbmctools.addnewvideo( CHANNELNAME , "play" , category , "" , "Géneros: "+listainfomc[0][2] , "" , "" , listainfomc[0][5] )
+	addnewvideo( CHANNELNAME , "play" , category , "" , "Géneros: "+listainfomc[0][2] , "" , "" , listainfomc[0][5] )
 
-	xbmctools.addnewvideo( CHANNELNAME , "play" , category , "" , "Contenido: "+listainfomc[0][3] , "" , "" , listainfomc[0][5] )
+	addnewvideo( CHANNELNAME , "play" , category , "" , "Contenido: "+listainfomc[0][3] , "" , "" , listainfomc[0][5] )
 
-	xbmctools.addnewvideo( CHANNELNAME , "play" , category , "" , "Sinopsis: "+listainfomc[0][4] , "" , "" , listainfomc[0][5] )
+	addnewvideo( CHANNELNAME , "play" , category , "" , "Sinopsis: "+listainfomc[0][4] , "" , "" , listainfomc[0][5] )
 
 		
 	# Label (top-right)...
@@ -850,20 +851,20 @@ def searchmc(params,url,category):
 				if len(tecleado) == 1:
 					listainfo = findinfo("",tecleado,"[^<]+","-1")
 					for info in listainfo:
-						xbmctools.addnewfolder( CHANNELNAME , "findinfo2" , CHANNELNAME , info[0]+" - [McAnime-Enciclopedia]" , info[1] , "" , "" )
+						addnewfolder( CHANNELNAME , "findinfo2" , category , info[0]+" - [McAnime-Enciclopedia]" , info[1] , "" , "" )
 				else:
 					listainfo = findinfo("",tecleado,"[^<]+","-1")				
 					for info in listainfo:
 						match = re.search(tecleado,info[0],re.IGNORECASE)
 						if (match):
-							xbmctools.addnewfolder( CHANNELNAME , "findinfo2" , CHANNELNAME , info[0]+" - [McAnime-Enciclopedia]" , info[1] , "" , "" )
+							addnewfolder( CHANNELNAME , "findinfo2" , category , info[0]+" - [McAnime-Enciclopedia]" , info[1] , "" , "" )
 
 	else:
 
 		listainfo = findinfo("",letras[seleccion-1],"[^<]+","-1")
 
 		for info in listainfo:
-			xbmctools.addnewfolder( CHANNELNAME , "findinfo2" , CHANNELNAME , info[0]+" - [McAnime-Enciclopedia]" , info[1] , "" , "" )
+			addnewfolder( CHANNELNAME , "findinfo2" , category , info[0]+" - [McAnime-Enciclopedia]" , info[1] , "" , "" )
 					
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -877,3 +878,17 @@ def searchmc(params,url,category):
 def alertnoresultados():
 	advertencia = xbmcgui.Dialog()
 	resultado = advertencia.ok('Contenido no disponible' , 'No se han encontrado vídeos.' , '')
+
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot ):
+	xbmc.output("[casttv.py] addnewfolder")
+	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
+	listitem.setInfo( "video", { "Title" : title, "Plot" : plot} )
+	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
+	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
+	xbmc.output('[casttv.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
+	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
+	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
+	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
