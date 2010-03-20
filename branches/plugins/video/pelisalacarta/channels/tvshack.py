@@ -17,14 +17,17 @@ import xbmctools
 import os
 import library
 import random
-
+import string
 
 CHANNELNAME = "tvshack"
 
 IMAGEN_MEGAVIDEO = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' , "megavideosite.png") )
 
-SERVIDORES_PERMITIDOS = ['megavideo','veoh','tudou','movshare']
+SERVIDORES_PERMITIDOS = ['megavideo','veoh','tudou','movshare','stagevu']
 #No soportados comprobados por el momento 56.com,zshare
+
+BUSCADOR_THUMBNAIL = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters','buscador.png' ) )
+
 
 FANART_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'fanart' ) )
 
@@ -57,8 +60,9 @@ def mainlist(params,url,category):
   xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Series" , "Series TV (VO)" , "http://tvshack.net/tv" , thumbnail="" , plot="" )
   xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Cine" , "Películas (VO)" , "http://tvshack.net/movies" , thumbnail="" , plot="" )
   xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Documentales" , "Documentales (VO)" , "http://tvshack.net/documentaries" , thumbnail="" , plot="" )
-  xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Anime" , "Anime (VO?)" , "http://tvshack.net/anime" , thumbnail="" , plot="" )
+  xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Anime" , "Anime (VO)" , "http://tvshack.net/anime" , thumbnail="" , plot="" )
   xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Musica" , "Música " , "http://tvshack.net/music" , thumbnail="" , plot="" )
+  xbmctools.addnewfolder( CHANNELNAME , "Buscar" , "" , "Busqueda Global en TVShack" , "http://tvshack.net/search/" , thumbnail=BUSCADOR_THUMBNAIL , plot="" )
 
   # Opciones adicionales si modo canal único
   if xbmcplugin.getSetting ("singlechannel")=="true":
@@ -67,6 +71,73 @@ def mainlist(params,url,category):
   xbmc.output("[tvshac.py] mainlist finalizaplugin handle: "+str(pluginhandle))
   FinalizaPlugin (pluginhandle,category)
 
+def Buscar (params,url,category):
+  '''Busca en todo el canal y muestra lista de resultados
+  '''
+  xbmc.output("[tvshac.py] Buscar")
+
+  keyboard = xbmc.Keyboard()
+  keyboard.doModal()
+  if not (keyboard.isConfirmed()):
+    return
+  text = keyboard.getText()
+  if len(text) < 3:
+    return
+  
+  #Limpiar entrada
+  text = string.capwords(text).replace(" ", "+")
+  searchUrl = url+text
+  
+  # Descargamos la página
+  data = scrapertools.cachePage(searchUrl)
+  if len(data) == 0:
+    dlog ("[tvshac.py] Buscar - No se encontraron resultados con :"+text)
+    error = xbmcgui.Dialog()
+    error.ok('pelisalacarta - Canal TVShack','No se produjeron resultados de búsqueda')
+    return
+
+
+# Ej. Serie:  <li><a href="http://tvshack.net/tv/The_Big_Bang_Theory/">Television - <strong>The Big Bang Theory</strong></a><a href="http://tvshack.net/tv/The_Big_Bang_Theory/"><span>57 episodes</span></a></li>
+# Ej. Cine:   <li><a href="http://tvshack.net/movies/Bang_Bang_You_re_Dead__2002_/">Movies - <strong>Bang Bang You're Dead</strong></a><a href="http://tvshack.net/movies/Bang_Bang_You_re_Dead__2002_/"><span>2002</span></a></li>
+# Ej. Musica: <li><a href="http://tvshack.net/music/Mr__Big/">Music - <strong>Mr. Big</strong></a><a href="http://tvshack.net/music/Mr__Big/"></a></li>
+  patronvideos = '''(?x)                                #      Activa opción VERBOSE.
+    <li><a\ href="                                      #      Basura
+    (?P<url>[^"]+)">                                    # $0 = url del contenido
+    ([^\ ]+)\ -\                                        # $1 = Tipo de contenido: Television, Movies o Music
+    <strong>                                            #      Basura
+    ([^<]+)                                             # $2 = Nombre del contenido
+    </strong></a>                                       #      Basura
+    (?:<a\ href=")                                      #      Basura
+    (?P=url)">                                          # $0 = url del contenido (REPETICIÓN)
+    (?:<span>)?                                         #      Basura
+    ([0-9]+)?                                           # $3 = Nº Episodios o Año Producción
+    (?:\ episodes)?                                     #      Basura
+    (?:</span>)?</a></li>                               #      Basura
+    ''' 
+  matches = re.findall(patronvideos,data)
+  totalmatches = len(matches)
+  if totalmatches == 0:
+    dlog ("[tvshac.py] Buscar - No se encontraron resulta2 con :"+text)
+    error = xbmcgui.Dialog()
+    error.ok('pelisalacarta - Canal TVShack','No se produjeron resultados de búsqueda')
+    return
+
+  for match in matches:
+    if match[1]== 'Television':
+      # Añade al listado de XBMC
+      scrapedtitle = 'Serie - %s (%s episodios)' % (match[2],match[3])
+      xbmctools.addnewfolder( CHANNELNAME , "ListaEpisodios" , "Series" , scrapedtitle , match[0] , "" , "" , Serie=match[2] , totalItems=totalmatches)
+    elif match[1] == 'Movies':
+      scrapedtitle = 'Cine - %s (%s)' % (match[2],match[3])
+      xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , "Cine" , scrapedtitle , match[0] , "" , "" , totalItems=totalmatches)
+    else: #Musica
+      xbmctools.addnewfolder( CHANNELNAME , "ListaEpisodios" , "Musica" , "Música - "+match[2] , match[0] , "" , "" , totalItems=totalmatches)
+
+  FinalizaPlugin (pluginhandle,category)
+
+
+# FIN Buscar
+###########################################################################
 def ListaSeries(params,url,category):
   """Crea el listado de series,Anime o música y lo muestra para selección
   """
@@ -561,17 +632,18 @@ def playVideo(params,url,category,strmfile=False):
 #      xbmctools.playvideo(CHANNELNAME,server,mediaurl,category,title,thumbnail,plot,Serie=Serie)
       dlog ("[tvshack.py]playVideo: Llamando al play. mediaurl= "+mediaurl)
       xbmctools.playvideo(CHANNELNAME,'Megavideo',mediaurl,category,title,'','',Serie=serie,strmfile=strmfile)
-    else: # Video de un servidor desconocido.
+    else: # Video de otro servidor (no megavideo)
       #Probamos si es flash...
-      #Ej. 
       flashmatch = re.search('flashvars="file=(.+?)&type=flv',data2)
       if flashmatch != None:
         dlog ('[tvshack.py]playVideo: Video flash - url = ' + flashmatch.group(1))
         xbmctools.playvideo(CHANNELNAME,'Directo',flashmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
         return
-      othersmatch = re.search('src="([^"]+)">',data2)
+      #Si no, buscamos otras fuentes de video
+      othersmatch = re.search('src="([^"]+)"',data2)
       if othersmatch != None and server in SERVIDORES_PERMITIDOS:
-        xbmctools.playvideo(CHANNELNAME,server,othersmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
+        url = othersmatch.group(1).replace('&amp;','&')
+        xbmctools.playvideo(CHANNELNAME,server,url,category,title,'','',Serie=serie,strmfile=strmfile)
         return
 
       dlog ("[tvshack.py]playVideo: Servidor no soportado: "+server)
