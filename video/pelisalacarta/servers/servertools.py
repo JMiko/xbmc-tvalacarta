@@ -542,7 +542,7 @@ def findurl(code,server):
 	if server == "vreel":
 		mediaurl = vreel.Vreel(code)
 
-	if server == "ttagevu":
+	if server == "stagevu":
 		mediaurl = stagevu.Stagevu(code)
 	
 	if server == "tu.tv":
