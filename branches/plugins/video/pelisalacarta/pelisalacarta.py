@@ -86,12 +86,14 @@ def run():
 	
 	except urllib2.URLError,e:
 		ventana_error = xbmcgui.Dialog()
+		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):
 			print "Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1])
 			ok= ventana_error.ok ("Plugin Pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la pagina',"o su conexión a internet")
+		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		elif hasattr(e,'code'):
 			print "codigo de error HTTP : %d" %e.code 
-			ok= ventana_error.ok ("Plugin Pelisalacarta", "Se ha detectado un error", texto_error(e.code),"codigo de error : %d " %e.code)	
+			ok= ventana_error.ok ("Plugin Pelisalacarta", "El servidor solicitado no púdo realizar nuestra peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
 		else:
 			pass	
 
@@ -114,5 +116,5 @@ def texto_error(codigo):
 		codtext = texto[str(codigo)]
 		
 	else:
-		codtext = "El Servidor solicitado no púdo realizar la petición"
+		codtext = "Ocurrio un error con la URL"
 	return codtext
