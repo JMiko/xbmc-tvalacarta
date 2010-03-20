@@ -26,9 +26,16 @@ def Stagevu(url):
     #for match in matches:
     #    print "%d %s" % (i , match)
     #    i = i + 1
-
-    return matches[0]
-
+    if len(matches) > 0:
+      return matches[0]
+    else:
+#      patronvideos = 'type="video/divx" src="([^"]+)"'
+      patronvideos = 'src="([^"]+stagevu.com/[^i][^"]+)"' #Forma src="XXXstagevu.com/ y algo distinto de i para evitar images e includes
+      matches = re.findall(patronvideos,data)
+      if len(matches)>0:
+        return matches[0]
+      else:
+        return "ERROR"
 #print "-------------------------------------------------------"
 #url="http://stagevu.com/video/jnukfujabtdl"
 #print Stagevu(url)
