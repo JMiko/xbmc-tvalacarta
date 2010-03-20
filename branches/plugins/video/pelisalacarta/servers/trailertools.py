@@ -16,7 +16,7 @@ import xbmcplugin
 import xbmctools
 import gdata.youtube
 import gdata.youtube.service
-
+import youtube
 
 
 
@@ -350,7 +350,31 @@ def GetVideoFeed(titulo):
 					return (devuelve)
 	print '%s Trailers encontrados en Modulo: GetVideoFeed()' % str(c)
 	return (devuelve)
-
+	
+def youtubeplay(params,url,category):
+	xbmc.output("[trailertools.py] youtubeplay")
+	#http://www.youtube.com/watch?v=byvXidWNf2A&feature=youtube_gdata
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = "Ver Video"
+	server = "Directo"
+	id = youtube.Extract_id(url)
+	# Abre el diálogo de selección
+	opciones = []
+	opciones.append("(FLV) Baja calidad")
+	opciones.append("(MP4) Alta calidad")
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("tiene 2 formatos elige uno", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion==-1:
+		return("")
+	if seleccion == 0:
+		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
+	else:
+		videourl = youtube.geturl(id)
+	xbmc.output("link directo de youtube : "+videourl)
+	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+'''
 def youtubeplay(params,url,category):
         xbmc.output("[trailertools.py] youtubeplay")
 
@@ -390,7 +414,7 @@ def youtubeplay(params,url,category):
                xbmctools.playvideo("Trailer",server,youtubeurl,category,title,thumbnail,plot)
                
 
-'''	
+
   yt_service = gdata.youtube.service.YouTubeService()
   query = gdata.youtube.service.YouTubeVideoQuery()
   query.vq = search_terms
