@@ -23,7 +23,7 @@ CHANNELNAME = "tvshack"
 
 IMAGEN_MEGAVIDEO = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' , "megavideosite.png") )
 
-SERVIDORES_PERMITIDOS = ['megavideo','veoh','tudou','movshare','stagevu']
+SERVIDORES_PERMITIDOS = ['megavideo','veoh','tudou','movshare','stagevu','smotri']
 #No soportados comprobados por el momento 56.com,zshare
 
 BUSCADOR_THUMBNAIL = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters','buscador.png' ) )
