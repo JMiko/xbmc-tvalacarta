@@ -41,7 +41,8 @@ except:
 xbmc.output("[tvshack.py] init")
 
 
-fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack'+ str (random.randint(1,5))+'.png' ) )
+#fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack'+ str (random.randint(1,5))+'.png' ) )
+fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack.jpg' ) )
 xbmc.output("[tvshac.py] init pluginhandle: "+str(pluginhandle))
 xbmc.output("[tvshac.py] init fanart: "+fanartfile)
 xbmcplugin.setPluginFanart(pluginhandle, fanartfile)
