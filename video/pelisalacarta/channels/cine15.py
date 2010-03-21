@@ -185,6 +185,33 @@ def detail(params,url,category):
 	#xbmc.output(data)
 
 	# ------------------------------------------------------------------------------------
+	# Busca los enlaces a videos no megavideo (playlist xml)
+	# ------------------------------------------------------------------------------------
+	patronvideos  = 'flashvars="file=([^\&]+)&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	if len(matches)>0:
+		data2 = scrapertools.cachePage(matches[0])
+		xbmc.output("data2="+data2)
+		patronvideos  = '<track>[^<]+'
+		patronvideos += '<title>([^<]+)</title>[^<]+'
+		patronvideos += '<location>([^<]+)</location>[^<]+'
+		patronvideos += '</track>'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data2)
+		scrapertools.printMatches(matches)
+
+		for match in matches:
+			scrapedtitle = match[0]
+			scrapedurl = match[1].strip()
+			scrapedthumbnail = thumbnail
+			scrapedplot = plot
+			if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+			# Añade al listado de XBMC
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
 	listavideos = servertools.findvideos(data)

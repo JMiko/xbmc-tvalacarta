@@ -354,7 +354,7 @@ def listvideos(params,url,category):
 		for titulo,scrapedurl,servidor in listavideos:
 			if scrapedurl.strip() not in encontrados:
 				encontrados.add(scrapedurl.strip())
-				xbmctools.addnewvideo( CHANNELNAME , "play" , category ,servidor, title+ " - %s"titulo  , scrapedurl , thumbnail, plot )		
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category ,servidor, title+ " - %s" % titulo  , scrapedurl , thumbnail, plot )		
 	# Extrae las entradas (videos) directos
 	patronvideos = 'flashvars="file=([^\&]+)\&amp;controlbar=over'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
