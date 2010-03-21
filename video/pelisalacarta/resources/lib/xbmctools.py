@@ -104,7 +104,7 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def playvideo(canal,server,url,category,title,thumbnail,plot,strmfile=False,Serie=""):
-	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,strmfile,Serie)
+	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,False,strmfile,Serie)
 
 def playvideo2(canal,server,url,category,title,thumbnail,plot):
 	playvideoEx(canal,server,url,category,title,thumbnail,plot,True,False,False)
