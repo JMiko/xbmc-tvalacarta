@@ -52,7 +52,7 @@ def listchannels(params,url,category):
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
-	addfolder("TVShack.net","tvshack","mainlist") #para 2.14 (JUR)
+	addfolder("TVShack.net (VO)","tvshack","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
 	addfolder("Pelis24","pelis24","mainlist")
 	addfolder("Veocine","veocine","mainlist")
@@ -92,6 +92,7 @@ def listchannels(params,url,category):
 	addfolder("Descargas","descargados","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
 	addfolder("Buscador","buscador","mainlist")
+	addfolder("Ayuda","ayuda","mainlist")
 	
 
 	#addfolder("Kochikame","kochikame","mainlist")
