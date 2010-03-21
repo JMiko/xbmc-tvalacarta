@@ -5,7 +5,8 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 # El logo del canal es una foto de flickr
-# http://www.flickr.com/photos/stevendepolo/3015116374/
+# http://www.flickr.com/photos/stevendepolo/3015116374/ para el poster
+# http://www.flickr.com/photos/arcticpuppy/3324587240/ para el banner
 # Con licencia CC
 #------------------------------------------------------------
 
