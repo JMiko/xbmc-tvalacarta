@@ -178,7 +178,7 @@ def detail(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-
+	plot = urllib.unquote_plus( params.get("plot") )
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
@@ -191,9 +191,34 @@ def detail(params,url,category):
 
 	patronvideos  = 'file\=(http\://www.pelis24.com/xml[^\&]+)\&'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	for match in matches:
-		xbmctools.addnewfolder( CHANNELNAME , "detail", category , title + " (partes)",match,"","")
+	if len(matches)>0:
+		if ("xml" in matches[0]):
+			data2 = scrapertools.cachePage(matches[0])
+			xbmc.output("data2="+data2)
+			patronvideos  = '<track>[^<]+'
+			patronvideos += '<creator>([^<]+)</creator>[^<]+'
+			patronvideos += '<location>([^<]+)</location>.*?'
+			patronvideos += '</track>'
+			matches = re.compile(patronvideos,re.DOTALL).findall(data2)
+			scrapertools.printMatches(matches)
 
+			for match in matches:
+				 
+				if "vid" not in match[1]: 
+					scrapedtitle = match[0]
+				else: 
+					scrapedtitle = match[0]+" no funciona en xbmc"
+				scrapedurl = match[1].strip()
+				scrapedthumbnail = thumbnail
+				scrapedplot = plot
+				if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+				# Añade al listado de XBMC
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
+		else:
+			# Añade al listado de XBMC
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]", matches[0] , thumbnail, plot )
+	
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a videos directos
 	# ------------------------------------------------------------------------------------
