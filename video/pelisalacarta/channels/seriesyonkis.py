@@ -594,9 +594,11 @@ def scrapvideoURL(urlSY):
 def choiceOne(matches):
 	opciones = []
 	IDlist = []
-	for match in matches:
-		opciones.append(match[1])
-		IDlist.append(match[0])
+	Nro = 0
+	for codigo,audio in matches:
+		Nro = Nro + 1
+		opciones.append("%d) %s " % (Nro , audio))
+		IDlist.append(codigo)
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Selecciona uno ", opciones)
 	xbmc.output("seleccion=%d" % seleccion)

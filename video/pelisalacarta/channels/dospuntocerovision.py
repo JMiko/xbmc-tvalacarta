@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import string
 import trailertools
+import youtube
 
 CHANNELNAME = "dospuntocerovision"
 
@@ -706,45 +707,31 @@ def detail(params,url,category):
 
 def youtubeplay(params,url,category):
         xbmc.output("[dospuntocerovision.py] youtubeplay")
+	if "www.youtube" not in url:
+		url  = 'http://www.youtube.com'+url
+ 
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-        try:
-	   plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-        except:
-           plot = xbmc.getInfoLabel( "ListItem.Plot" )
-        server = "Directo"
-	if "www.youtube" in url:
-		youtubeurlcatch  = 'http://www.flashvideodownloader.org/download.php?u='+url
+	plot = "Ver Video"
+	server = "Directo"
+	id = youtube.Extract_id(url)
+	# Abre el diálogo de selección
+	opciones = []
+	opciones.append("(FLV) Baja calidad")
+	opciones.append("(MP4) Alta calidad")
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("tiene 2 formatos elige uno", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion==-1:
+		return("")
+	if seleccion == 0:
+		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
 	else:
-		youtubeurlcatch  = 'http://www.flashvideodownloader.org/download.php?u=http://www.youtube.com'+url
-        data2 = scrapertools.cachePage(youtubeurlcatch)
-        patronlinkdirecto = '<div class="mod_download"><a href="([^"]+)"'
-        linkdirectoyoutube = re.compile(patronlinkdirecto,re.DOTALL).findall(data2)
-        if len(linkdirectoyoutube)>0:
-               xbmc.output(" link directos encontrados  "+str(len(linkdirectoyoutube)))
-               if len(linkdirectoyoutube)>1:
-
-                  # Abre el diálogo de selección
-                  opciones = []
-	          opciones.append("FLV")
-	          opciones.append("MP4")
-               
-	          dia = xbmcgui.Dialog()
-	          seleccion = dia.select("tiene 2 formatos elige uno", opciones)
-	          xbmc.output("seleccion=%d" % seleccion)        
-                  if seleccion==-1:
-	             return("")
-	       
-                  youtubeurl = linkdirectoyoutube[seleccion]
-               else:
-                  youtubeurl = linkdirectoyoutube[0]   
-            
-               xbmc.output("link directo de youtube : "+youtubeurl) 
-
-
-               xbmctools.playvideo(CHANNELNAME,server,youtubeurl,category,title,thumbnail,plot)
-
+		videourl = youtube.geturl(id)
+	xbmc.output("link directo de youtube : "+videourl)
+	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+ 
 def acentos(title):
 
         title = title.replace("Ã‚Â", "")

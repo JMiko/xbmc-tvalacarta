@@ -212,18 +212,23 @@ def detail(params,url,category):
             data=response.read()
 	    response.close()
             #xbmc.output("archivo xml :"+data)
-            newpatron = '<location>(.*?)</location>'
+            newpatron = '<title>([^<]+)</title>[^<]+<location>([^<]+)</location>'
             newmatches = re.compile(newpatron,re.DOTALL).findall(data)
-            parte = 0
             for match in newmatches:
-              if len(match)>0:
-                parte = parte + 1
-                xbmc.output(" videos = "+match)
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " parte "+str(parte), match , thumbnail , plot )
+				xbmc.output(" videos = "+match)
+				if match[1].startwith("vid"):
+					subtitle = match[0] + " (rtmpe) no funciona en xbmc"
+				else:
+					subtitle = match[0]             
+                
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, match[1] , thumbnail , plot )
                  
           else:
-                xbmc.output(" matches = "+matches[0])
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " (FLV)", matches[0] , thumbnail , plot )
+			parte = 0
+			for match in matches:
+				xbmc.output(" matches = "+match)
+				parte = parte + 1
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " "+str(parte)+" (FLV)", match , thumbnail , plot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
