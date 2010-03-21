@@ -444,7 +444,9 @@ def alertnodisponible():
 
 def alertnodisponibleserver(server):
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('Vídeo borrado' , 'El vídeo ya no está en '+server , 'Prueba con otro distinto')
+	if server == "Megaupload":
+		server = "Megavideo"
+	resultado = advertencia.ok( 'No se ha podido acceder',' El Vídeo no está disponible en '+server,'o ha sido borrado ' , 'Prueba a reproducir otro distinto')
 
 def alerterrorpagina():
 	advertencia = xbmcgui.Dialog()
