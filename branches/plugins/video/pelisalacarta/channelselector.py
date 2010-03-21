@@ -48,7 +48,7 @@ def listchannels(params,url,category):
 	addfolder("Peliculas21","peliculas21","mainlist")
 	addfolder("Dospuntocerovision","dospuntocerovision","mainlist")
 	addfolder("Cine15","cine15","mainlist")
-	addfolder("SesionVIP","sesionvip","mainlist")
+	#addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
@@ -63,6 +63,7 @@ def listchannels(params,url,category):
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
 	addfolder("Capitan Cinema","capitancinema","mainlist")
 	addfolder("Film Streaming [IT]","filmstreaming","mainlist")
+	addfolder("No Megavideo","nomegavideo","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")

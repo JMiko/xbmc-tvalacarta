@@ -11,6 +11,7 @@ import sys
 import xbmc
 import os
 import scrapertools
+import unpackerjs
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 
@@ -228,49 +229,8 @@ def geturl(urlvideo):
 	# La URL del video es 
 	#http://76.73.45.206:182/d/pfq3vaf2xypwtrv77uw334hb55ctx5qa5wdfa/Capitancinema.com.-El_Concierto__BrSc__Spanish_HOMIEZTEAM__2010_.avi
 	
-	# Extrae el cuerpo de la funcion
-	data = matches[0]
-	patron = "eval\(function\(p\,a\,c\,k\,e\,d\)\{[^\}]+\}(.*?)\.split\('\|'\)\)\)"
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	xbmc.output("[metadivx.py] codigo")
-	scrapertools.printMatches(matches)
-	
-	# Separa el código de la tabla de conversion
-	data = matches[0]
-	patron = "(.*)'([^']+)'"
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-	xbmc.output(matches[0][0])
-	xbmc.output(matches[0][1])
-	cifrado = matches[0][0]
-	xbmc.output("[metadivx.py] cifrado="+cifrado)
-	xbmc.output("[metadivx.py] palabras="+matches[0][1])
-	descifrado = ""
-	
-	# Crea el dicionario con la tabla de conversion
-	claves = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","10","11","12","13","14","15","16","17","18","19","1a","1b","1c","1d","1e","1f","1g","1h","1i","1j","1k","1l","1m","1n","1o","1p","1q","1r","1s","1t","1u","1v","1w","1x","1y","1z"]
-	palabras = matches[0][1].split("|")
-	diccionario = {}
-
-	i=0
-	for palabra in palabras:
-		if palabra!="":
-			diccionario[claves[i]]=palabra
-		else:
-			diccionario[claves[i]]=claves[i]
-		xbmc.output(claves[i]+"="+palabra)
-		i=i+1
-
-	# Sustituye las palabras de la tabla de conversion
-	# Obtenido de http://rc98.net/multiple_replace
-	def lookup(match):
-		return diccionario[match.group(0)]
-
-	lista = map(re.escape, diccionario)
-	lista.reverse()
-	compiled = re.compile('|'.join(lista))
-	descifrado = compiled.sub(lookup, cifrado)
-	
+	# Lo descifra
+	descifrado = unpackerjs.unpackjs(data)
 	xbmc.output("descifrado="+descifrado)
 	
 	# Extrae la URL
@@ -285,15 +245,3 @@ def geturl(urlvideo):
 
 	xbmc.output("[metadivx.py] url="+url)
 	return url
-
-def multiple_replace(dict, text): 
-
-	""" Replace in 'text' all occurences of any key in the given
-	dictionary by its corresponding value.  Returns the new tring.""" 
-
-	# Create a regular expression  from the dictionary keys
-	regex = re.compile("(%s)" % "|".join(map(re.escape, dict.keys())))
-
-	# For each match, look-up corresponding value in dictionary
-	return regex.sub(lambda mo: dict[mo.string[mo.start():mo.end()]], text) 
-

@@ -61,7 +61,7 @@ def mainlist(params,url,category):
 	matches.extend( tumejortv.performsearch(tecleado) )
 	matches.extend( cine15.performsearch(tecleado) )
 	matches.extend( peliculas21.performsearch(tecleado) )
-	matches.extend( sesionvip.performsearch(tecleado) )
+	#matches.extend( sesionvip.performsearch(tecleado) )
 	matches.extend( seriesyonkis.performsearch(tecleado) )
 	matches.extend( stagevusite.performsearch(tecleado) )
 	matches.extend( tutvsite.performsearch(tecleado) )
