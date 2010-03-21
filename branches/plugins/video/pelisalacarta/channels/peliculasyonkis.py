@@ -434,7 +434,7 @@ def detail(params,url,category):
 	
 	
 		id = matches[0]
-		xbmc.output("[seriesyonkis.py]  id="+id)
+		xbmc.output("[peliculasyonkis.py]  id="+id)
 		dec = Yonkis.DecryptYonkis()
 		url = dec.decryptID(dec.unescape(id))
 		print 'codigo :%s' %url

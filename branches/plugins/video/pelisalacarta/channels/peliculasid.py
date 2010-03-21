@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 
+
 CHANNELNAME = "peliculasid"
 
 # Esto permite su ejecución en modo emulado
@@ -90,9 +91,9 @@ def listvideos(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<div class="boxgrid captionfull"><a href="([^"]+)" >'
-	patronvideos += '<img src="([^"]+)" width=.*?'
-	patronvideos += '<div class="cover boxcaption">.*?<h6>([^<]+)</h6>'
+	patronvideos  = '<div class="item">[^<]+<h1>([^<]+)</h1>[^<]+'
+	patronvideos += '<a title="[^"]+" href="([^"]+)"><img src="([^"]+)"'
+	#patronvideos += '<div class="cover boxcaption">.*?<h6>([^<]+)</h6>'
 
 	#patronvideos += "<img src='(.*?)'"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -100,12 +101,12 @@ def listvideos(params,url,category):
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = match[2]
+		scrapedtitle = match[0]
 		# URL
-		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedurl = match[1]
 		# Thumbnail
-		scrapedthumbnail = match[1]
-                scrapedthumbnail = scrapedthumbnail.replace(" ","")
+		scrapedthumbnail = match[2]
+		scrapedthumbnail = scrapedthumbnail.replace(" ","")
 		# Argumento
 		scrapedplot = ""
 
@@ -197,14 +198,17 @@ def detail(params,url,category):
             data=response.read()
 	    response.close()
             #xbmc.output("archivo xml :"+data)
-            newpatron = '<location>(.*?)</location>'
+            newpatron = '<title>([^<]+)</title>[^<]+<location>([^<]+)</location>'
             newmatches = re.compile(newpatron,re.DOTALL).findall(data)
-            parte = 0
+            
             for match in newmatches:
-              if len(match)>0:
-                parte = parte + 1
-                xbmc.output(" videos = "+match)
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " parte "+str(parte), match , thumbnail , plot )
+              xbmc.output(" videos = "+match[1])
+              if match[1].startswith("vid"):
+				subtitle = match[0] + " (rtmpe) no funciona en xbmc"
+              else:
+				subtitle = match[0]
+				
+              xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, match[1] , thumbnail , plot )
                  
           else:
                 xbmc.output(" matches = "+matches[0])
