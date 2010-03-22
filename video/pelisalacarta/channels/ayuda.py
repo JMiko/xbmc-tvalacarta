@@ -50,6 +50,9 @@ def mainlist(params,url,category):
     ([^"]+)"\ class="postlink">                         # $1 = url del contenido (youtube)
     ([^<]+)</a><img\ src="                              # $2 = Nombre del video
     (?:([^"]+)"\ alt="Imagen"\ />)?                     # $3 = Foto de portada
+    (?:<br\ />[^<]*<a\ href="                           #      Basura (opcional)
+    ([^"]+)                                             # $4 = Link Megavideo (opcional)
+    "\ class="postlink">Megavideo</a>)?                 #      Basura (opcional)
     ''' 
   matches = re.findall(patronvideos,data)
   totalmatches = len(matches)
@@ -61,9 +64,13 @@ def mainlist(params,url,category):
 
   for match in matches:
     title = '%s. %s' % (match[0],match[2])
-    url = match[1]
     image = match[3]
-    xbmctools.addnewvideo( "trailertools" , "youtubeplay" , "Ayuda" , "Directo" , title , url , image , plot="")
+    if match[4] == '':
+      url = match[1]
+      xbmctools.addnewvideo( "trailertools" , "youtubeplay" , "Ayuda" , "Directo" , title , url , image , plot="")
+    else: #Megavideo Disponible
+      url = match[4][-8:]
+      xbmctools.addnewvideo( "cinetube" , "play" , "Ayuda", "megavideo" , title , url , image , plot="")
 
   FinalizaPlugin (pluginhandle,category)
 
