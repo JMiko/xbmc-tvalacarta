@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import string
+import youtube
 
 CHANNELNAME = "peliculas21"
 
@@ -347,7 +348,13 @@ def listvideos(params,url,category):
 
 			# Añade al listado de XBMC
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category ,"Megavideo", scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
+	if len(matches)==0:
+		listavideos = servertools.findvideos(data)
+		encontrados = set()
+		for titulo,scrapedurl,servidor in listavideos:
+			if scrapedurl.strip() not in encontrados:
+				encontrados.add(scrapedurl.strip())
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category ,servidor, title+ " - %s" % titulo  , scrapedurl , thumbnail, plot )		
 	# Extrae las entradas (videos) directos
 	patronvideos = 'flashvars="file=([^\&]+)\&amp;controlbar=over'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -404,38 +411,25 @@ def youtubeplay(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-        try:
-	   plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-        except:
-           plot = xbmc.getInfoLabel( "ListItem.Plot" )
-        server = "Directo"
-	youtubeurlcatch  = 'http://www.flashvideodownloader.org/download.php?u='+url
-        data2 = scrapertools.cachePage(youtubeurlcatch)
-        patronlinkdirecto = '<div class="mod_download"><a href="([^"]+)"'
-        linkdirectoyoutube = re.compile(patronlinkdirecto,re.DOTALL).findall(data2)
-        if len(linkdirectoyoutube)>0:
-               xbmc.output(" link directos encontrados  "+str(len(linkdirectoyoutube)))
-               if len(linkdirectoyoutube)>1:
-
-                  # Abre el diálogo de selección
-                  opciones = []
-	          opciones.append("FLV")
-	          opciones.append("MP4")
-               
-	          dia = xbmcgui.Dialog()
-	          seleccion = dia.select("tiene 2 formatos elige uno", opciones)
-	          xbmc.output("seleccion=%d" % seleccion)        
-                  if seleccion==-1:
-	             return("")
-	       
-                  youtubeurl = linkdirectoyoutube[seleccion]
-               else:
-                  youtubeurl = linkdirectoyoutube[0]   
-            
-               xbmc.output("link directo de youtube : "+youtubeurl) 
-
-
-               xbmctools.playvideo(CHANNELNAME,server,youtubeurl,category,title,thumbnail,plot)
+	plot = "Ver Video"
+	server = "Directo"
+	id = youtube.Extract_id(url)
+	# Abre el diálogo de selección
+	opciones = []
+	opciones.append("(FLV) Baja calidad")
+	opciones.append("(MP4) Alta calidad")
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("tiene 2 formatos elige uno", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion==-1:
+		return("")
+	if seleccion == 0:
+		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
+	else:
+		videourl = youtube.geturl(id)
+	xbmc.output("link directo de youtube : "+videourl)
+	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+ 
 
 def listaractores(params,data,category):
 	xbmc.output("[peliculas21.py] listaractores")

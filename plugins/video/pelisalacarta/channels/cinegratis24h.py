@@ -93,30 +93,31 @@ def listvideos(params,url,category):
 
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = "<h1 class='post-title entry-title'>.*?<a href='([^']+)'"                # URL
-	patronvideos += ">(.*?)</a>[^<]+"                                                        # TITULO
-	patronvideos += '</h1>[^<]+</div>.*?<div class=[^>]+>[^<]+'
-	patronvideos += '</div>[^<]+<div class=[^>]+>.*?href="[^"]+"><img '                    
-	patronvideos += 'style=.*?src="([^"]+)".*?alt=.*?bold.*?>(.*?)</div>'                  # IMAGEN , DESCRIPCION
+	patronvideos  = '<a onblur="[^"]+" href="([^"]+)"'                           # URL
+	patronvideos += '><img style="[^"]+" src="([^"]+)".*?border=[^/]+/></a>'       # TUMBNAIL
+	#patronvideos += '</h1>[^<]+</div>.*?<div class=[^>]+>[^<]+'
+	#patronvideos += '</div>[^<]+<div class=[^>]+>.*?href="[^"]+"><img '                    
+	#patronvideos += 'style=.*?src="([^"]+)".*?alt=.*?bold.*?>(.*?)</div>'                  # IMAGEN , DESCRIPCION
 	#patronvideos += '.*?flashvars="file=(.*?flv)\&amp'                                      # VIDEO FLV 
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = match[1]
+		for campo in re.findall("http://[^/]+/[^/]+/[^/]+/([^.]+).html",match[0]):
+			scrapedtitle = campo.replace("-"," ")
 		# URL
 		scrapedurl = match[0]
 		# Thumbnail
-		scrapedthumbnail = match[2]
+		scrapedthumbnail = match[1]
                 #scrapedthumbnail = scrapedthumbnail.replace(" ","")
 		# Argumento
-		scrapedplot = match[3]
-		scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
-		scrapedplot = scrapedplot.replace('&#8220;','"')
-		scrapedplot = scrapedplot.replace('&#8221;','"')
-		scrapedplot = scrapedplot.replace('&#8230;','...')
-		scrapedplot = scrapedplot.replace("&nbsp;","")
+		scrapedplot = ""
+		#scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
+		#scrapedplot = scrapedplot.replace('&#8220;','"')
+		#scrapedplot = scrapedplot.replace('&#8221;','"')
+		#scrapedplot = scrapedplot.replace('&#8230;','...')
+		#scrapedplot = scrapedplot.replace("&nbsp;","")
 
 		# Depuracion
 		if (DEBUG):
@@ -124,20 +125,22 @@ def listvideos(params,url,category):
 			xbmc.output("scrapedurl="+scrapedurl)
 			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
 
-		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		if not "adelante" in scrapedthumbnail:
+			# Añade al listado de XBMC
+			xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Extrae la marca de siguiente página
-	patronvideos  = "<a class='blog-pager-older-link' href='([^']+)' id="
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+	#patronvideos  = "<a class='leermas' href='([^']+)'"
+	#matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	#scrapertools.printMatches(matches)
 
-	if len(matches)>0:
-		scrapedtitle = "Página siguiente"
-		scrapedurl = matches[0]
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+	#if len(matches)>0:
+		else:
+			scrapedtitle = "Página siguiente"
+			scrapedurl = match[0]
+			scrapedthumbnail = ""
+			scrapedplot = ""
+			xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -209,18 +212,23 @@ def detail(params,url,category):
             data=response.read()
 	    response.close()
             #xbmc.output("archivo xml :"+data)
-            newpatron = '<location>(.*?)</location>'
+            newpatron = '<title>([^<]+)</title>[^<]+<location>([^<]+)</location>'
             newmatches = re.compile(newpatron,re.DOTALL).findall(data)
-            parte = 0
             for match in newmatches:
-              if len(match)>0:
-                parte = parte + 1
-                xbmc.output(" videos = "+match)
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " parte "+str(parte), match , thumbnail , plot )
+				xbmc.output(" videos = "+match)
+				if match[1].startwith("vid"):
+					subtitle = match[0] + " (rtmpe) no funciona en xbmc"
+				else:
+					subtitle = match[0]             
+                
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, match[1] , thumbnail , plot )
                  
           else:
-                xbmc.output(" matches = "+matches[0])
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " (FLV)", matches[0] , thumbnail , plot )
+			parte = 0
+			for match in matches:
+				xbmc.output(" matches = "+match)
+				parte = parte + 1
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " "+str(parte)+" (FLV)", match , thumbnail , plot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

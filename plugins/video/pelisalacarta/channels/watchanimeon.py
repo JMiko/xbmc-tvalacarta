@@ -55,7 +55,12 @@ def newlist(params,url,category):
 	data = scrapertools.cachePage(url)
 
 	# Extrae las categorias
-	patron = '<div class="newpostz"><div class="newposts"><img src="([^"]+)"[^>]+><li><a href="([^"]+)">([^<]+)</a></li><span><em>More Episodes.</em> <a href="([^"]+)">([^<]+)</a></span><span><em>Date Published </em>([^<]+)</span></div><div class="clear"></div></div>'
+	#<div class="newpostz"><div class="newposts"><img src="http://www.watchanimeon.com/images/thumbs/75.jpg" alt="series" /><ul><li>
+	#<a href="http://www.watchanimeon.com/naruto-shippuden-episode-126/">Naruto Shippuden Episode 126</a></li></ul>
+	#<span><em>More Episodes:</em> <a href="http://www.watchanimeon.com/anime/naruto-shippuden/">Naruto Shippuden</a></span><span><em>Date Published </em>September 4th, 2009</span></div><div class="clear"></div></div>
+	patron  = '<div class="newpostz"><div class="newposts"><img src="([^"]+)"[^>]+><ul><li>'
+	patron += '<a href="([^"]+)">([^<]+)</a></li></ul>'
+	patron += '<span><em>More Episodes.</em> <a href="([^"]+)">([^<]+)</a></span><span><em>Date Published </em>([^<]+)</span></div><div class="clear"></div></div>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -95,7 +100,52 @@ def catlist(params,url,category):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Asigna el título, desactiva la ordenación, y cierra el directorio
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def catdetail(params,url,category):
+	xbmc.output("[watchanimeon.py] catdetail")
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las series de cada categoria
+	patron  = '<li class="genrez"><div class="andyimg">'
+	patron += "<a href='([^']+)'>"
+	patron += '<img src="([^"]+)"></a></div><div class="genre" style="width: 410px; float: left;"><h4>'
+	patron += "<a href='([^']+)'>([^<]+)<"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	# Las añade a XBMC
+	for match in matches:
+		scrapedtitle = match[3]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = urlparse.urljoin(url,match[1])
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+
+	# Paginación
+	patron  = '<span class="current"><a href="[^"]+" >[^<]+</a></span><span><a href="([^"]+)">[^<]+</a>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		scrapedtitle = "Página siguiente"
+		scrapedurl = urlparse.urljoin(url,matches[0]).replace(" ","+")
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

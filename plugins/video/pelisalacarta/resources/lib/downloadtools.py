@@ -541,7 +541,7 @@ def downloadfile(url,nombrefichero):
 	bloqueleido = connexion.read(blocksize)
 	xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
 
-	maxreintentos = 3
+	maxreintentos = 10
 	
 	while len(bloqueleido)>0:
 		try:
@@ -551,13 +551,20 @@ def downloadfile(url,nombrefichero):
 			percent = int(float(grabado)*100/float(totalfichero))
 			totalmb = float(float(totalfichero)/(1024*1024))
 			descargadosmb = float(float(grabado)/(1024*1024))
-			progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent ) )
 
 			# Lee el siguiente bloque, reintentando para no parar todo al primer timeout
 			reintentos = 0
 			while reintentos <= maxreintentos:
 				try:
+					before = time.time()
 					bloqueleido = connexion.read(blocksize)
+					after = time.time()
+					if (after - before) > 0:
+						velocidad=len(bloqueleido)/((after - before))
+						falta=totalfichero-grabado
+						tiempofalta=falta/velocidad
+						xbmc.log(sec_to_hms(tiempofalta))
+						progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
 					break
 				except:
 					reintentos = reintentos + 1
@@ -595,3 +602,9 @@ def downloadfile(url,nombrefichero):
 	f.close()
 	progreso.close()
 	xbmc.log("Fin descarga del fichero")
+
+def sec_to_hms(seconds):
+	m,s = divmod(int(seconds), 60)
+	h,m = divmod(m, 60)
+	return ("%02d:%02d:%02d" % ( h , m ,s ))
+

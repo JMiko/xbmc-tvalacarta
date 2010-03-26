@@ -26,6 +26,7 @@ import sesionvip
 import documaniatv
 import stagevusite
 import tutvsite
+import tumejortv
 
 CHANNELNAME = "buscador"
 
@@ -57,14 +58,15 @@ def mainlist(params,url,category):
 	# Cinegratis
 	matches = cinegratis.performsearch(tecleado)
 	matches.extend( peliculasyonkis.performsearch(tecleado) )
+	matches.extend( tumejortv.performsearch(tecleado) )
 	matches.extend( cine15.performsearch(tecleado) )
-	matches.extend( seriesyonkis.performsearch(tecleado) )
-	matches.extend( yotix.performsearch(tecleado) )
 	matches.extend( peliculas21.performsearch(tecleado) )
-	matches.extend( sesionvip.performsearch(tecleado) )
-	matches.extend( documaniatv.performsearch(tecleado) )
+	#matches.extend( sesionvip.performsearch(tecleado) )
+	matches.extend( seriesyonkis.performsearch(tecleado) )
 	matches.extend( stagevusite.performsearch(tecleado) )
 	matches.extend( tutvsite.performsearch(tecleado) )
+	matches.extend( documaniatv.performsearch(tecleado) )
+	matches.extend( yotix.performsearch(tecleado) )
 	
 	# Construye los resultados
 	for match in matches:

@@ -48,13 +48,21 @@ def run():
 
 	# Extrae la categoria
 	if (params.has_key("category")):
-		category = params.get("category")
+		category = urllib.unquote_plus( params.get("category") )
 	else:
 		if params.has_key("channel"):
 			category = params.get("channel")
 		else:
 			category = ""
 	xbmc.output("[pelisalacarta.py] category="+category)
+
+	# Extrae la serie
+	if (params.has_key("Serie")):
+		serie = params.get("Serie")
+	else:
+		serie = ""
+	xbmc.output("[pelisalacarta.py] Serie="+serie)
+
 
 	#JUR - Gestión de Errores de Internet (Para que no casque el plugin 
 	#      si no hay internet (que queda feo)
@@ -75,7 +83,38 @@ def run():
 		else:
 			exec "import "+params.get("channel")+" as plugin"
 			exec "plugin."+action+"(params, url, category)"
-	except urllib2.URLError:
-		xbmc.output("[pelisalacarta.py] Error de conexión a Internet - Interceptado")
+	
+	except urllib2.URLError,e:
 		ventana_error = xbmcgui.Dialog()
-		ok= ventana_error.ok ("Plugin Pelisalacarta", "No se ha podido acceder a internet", "Comprueba la conexión")
+		# Agarra los errores surgidos localmente enviados por las librerias internas
+		if hasattr(e, 'reason'):
+			print "Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1])
+			ok= ventana_error.ok ("Plugin Pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la pagina',"o su conexión a internet")
+		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
+		elif hasattr(e,'code'):
+			print "codigo de error HTTP : %d" %e.code 
+			ok= ventana_error.ok ("Plugin Pelisalacarta", "El servidor solicitado no púdo realizar nuestra peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
+		else:
+			pass	
+
+
+def texto_error(codigo):
+	texto = {"400":"Peticion incorrecta",
+			 "401":"No autorizado",
+			 "402":"Pago Requerido",
+			 "403":"Peticion Prohibida",
+			 "404":"Pagina no encontrada o no disponible",
+			 "405":"Metodo no Permitido",
+			 "406":"Formato de URL no Aceptable",
+			 "407":"Autentificacion de proxy requerida",
+			 "408":"Tiempo de espera de peticion terminada",
+			 "409":"Conflicto de peticion",
+			 "410":"La URL no existe o ha sido removida"
+			 }
+			 
+	if codigo in range(400,410):
+		codtext = texto[str(codigo)]
+		
+	else:
+		codtext = "Ocurrio un error con la URL"
+	return codtext

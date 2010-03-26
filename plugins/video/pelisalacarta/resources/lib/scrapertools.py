@@ -112,6 +112,8 @@ def downloadpage(url):
 	inicio = time.clock()
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
+#	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3')
+	req.add_header('X-Requested-With','XMLHttpRequest') #Añadido para TVShack - Vigilar que no joda algún canal.
 	#if referer!="":
 	#	xbmc.output("[scrapertools.py] Referer=" + referer)
 	#	req.add_header('Referer', referer)
