@@ -64,11 +64,23 @@ def list(params,url,category):
 	<div id='news-id-727'><!--TBegin--><a href="http://www.pelis24.com/uploads/posts/2009-12/1261192166_dondevivenlosmonstruoscine-300a.jpg" onclick="return hs.expand(this)" ><img align="left" src="http://www.pelis24.com/uploads/posts/2009-12/thumbs/1261192166_dondevivenlosmonstruoscine-300a.jpg" alt='Donde viven los monstruos Español Online' title='Donde viven los monstruos Español Online'  /></a><!--TEnd-->Max, un niño muy inteligente, incomprendido y rebelde, se escapa de casa tras una fuerte discusión con su madre. Pero no es una huida cualquiera, pues Max se interna en un bosque misterioso creado por su propia imaginación. Su objetivo: llegar a la tierra de unas extraordinarias criaturas, un lugar donde podrá hacer travesuras para siempre.</div><span class="yjnewsflash_date">Hoy, 04:11 | <a href="http://www.pelis24.com/estrenos/">Estrenos</a> | </span></p>
 	<div class="linksw"><br /><a href="http://www.pelis24.com/estrenos/727-donde-viven-los-monstruos-espanol-online.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (4)</a> &nbsp;<a href="http://www.pelis24.com/estrenos/727-donde-viven-los-monstruos-espanol-online.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
 	'''
+	'''
+	<div class="yjnewsflash_title"><a href="http://www.pelis24.com/estrenos/691-agora-espanol-online.html">Agora Español Online</a> </div>
+	<p><br>
+	<br>
+	<div id='news-id-691'><!--TBegin--><a href="http://pelis24.com/uploads/posts/2009-12/1261007067_1257692680_agoracine-300a.jpg" onclick="return hs.expand(this)" ><img align="left" src="http://pelis24.com/uploads/posts/2009-12/thumbs/1261007067_1257692680_agoracine-300a.jpg" alt='Agora Español Online' title='Agora Español Online'  /></a>
+	<!--TEnd-->Siglo IV. Egipto bajo el Imperio Romano. Las violentas revueltas religiosas en las calles de Alejandría alcanzan a su legendaria Biblioteca. Atrapada tras 
+	sus muros, la brillante astrónoma Hipatia lucha por salvar la sabiduría del Mundo Antiguo con la ayuda de sus discípulos. Entre ellos, los dos hombres que se disputan 
+	su corazón: Orestes y el joven esclavo Davo, que se debate entre el amor que le profesa en secreto y la libertad que podría alcanzar uniéndose al 
+	imparable ascenso de los cristianos.<br /><b><!--colorstart:#FF0000--><span style="color:#FF0000"><!--/colorstart-->Mejor Calidad<!--colorend--></span><!--/colorend--></b></div><span class="yjnewsflash_date">10 febrero 2010 | <a href="http://www.pelis24.com/estrenos/">Estrenos</a>, <a href="http://www.pelis24.com/peliculas/">Peliculas</a> | </span></p>
+	<div class="linksw"><br /><a href="http://www.pelis24.com/estrenos/691-agora-espanol-online.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (63)</a> &nbsp;<a href="http://www.pelis24.com/estrenos/691-agora-espanol-online.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
+	'''
+
 	patron  = '<div class="yjnewsflash_title"><a href="([^"]+)">([^<]+)</a> </div>[^<]+'
 	patron += '<p><br>[^<]+'
 	patron += '<br>[^<]+'
 	patron += '<div[^>]+><!--TBegin--><a href="([^"]+)".*?'
-	patron += '<!--TEnd-->([^<]+)</div>' #,*?<a'#.*?<a href="([^"]+)">'
+	patron += '<!--TEnd-->([^<]+)<' #,*?<a'#.*?<a href="([^"]+)">'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -166,7 +178,7 @@ def detail(params,url,category):
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-
+	plot = urllib.unquote_plus( params.get("plot") )
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
@@ -179,9 +191,34 @@ def detail(params,url,category):
 
 	patronvideos  = 'file\=(http\://www.pelis24.com/xml[^\&]+)\&'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	for match in matches:
-		xbmctools.addnewfolder( CHANNELNAME , "detail", category , title + " (partes)",match,"","")
+	if len(matches)>0:
+		if ("xml" in matches[0]):
+			data2 = scrapertools.cachePage(matches[0])
+			xbmc.output("data2="+data2)
+			patronvideos  = '<track>[^<]+'
+			patronvideos += '<creator>([^<]+)</creator>[^<]+'
+			patronvideos += '<location>([^<]+)</location>.*?'
+			patronvideos += '</track>'
+			matches = re.compile(patronvideos,re.DOTALL).findall(data2)
+			scrapertools.printMatches(matches)
 
+			for match in matches:
+				 
+				if "vid" not in match[1]: 
+					scrapedtitle = match[0]
+				else: 
+					scrapedtitle = match[0]+" no funciona en xbmc"
+				scrapedurl = match[1].strip()
+				scrapedthumbnail = thumbnail
+				scrapedplot = plot
+				if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+				# Añade al listado de XBMC
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
+		else:
+			# Añade al listado de XBMC
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]", matches[0] , thumbnail, plot )
+	
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a videos directos
 	# ------------------------------------------------------------------------------------

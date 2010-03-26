@@ -31,24 +31,123 @@ DEBUG = True
 
 def mainlist(params,url,category):
 	xbmc.output("[tumejortv.py] mainlist")
-	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://www.tumejortv.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "newlist"        , CHANNELNAME , "Novedades" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "moviecategorylist" , CHANNELNAME , "Películas - Por categorías" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "moviealphalist" , CHANNELNAME , "Películas - Por orden alfabético" , "http://www.tumejortv.com/" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "serienewlist" , CHANNELNAME , "Series - Novedades" , "http://www.tumejortv.com/" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "seriealllist" , CHANNELNAME , "Series - Todas" , "http://www.tumejortv.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "serienewlist"   , CHANNELNAME , "Series - Novedades" , "http://www.tumejortv.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "seriealllist"   , CHANNELNAME , "Series - Todas" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "seriealphalist" , CHANNELNAME , "Series - Por orden alfabético" , "http://www.tumejortv.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "search"         , CHANNELNAME , "Buscar" , "" , "", "" )
 
 	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def search(params,url,category):
+	xbmc.output("[tumejortv.py] search")
+
+	keyboard = xbmc.Keyboard('')
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		tecleado = keyboard.getText()
+		if len(tecleado)>0:
+			#convert to HTML
+			tecleado = tecleado.replace(" ", "+")
+			searchresults(params,tecleado)
+
+'''
+<h3>Pel&iacute;culas online</h3><ul class='alphaList'><li><div class="movieTitle">Avatar 3D [Spanish Line][2009]   - ...</div><div class="covershot"><a href="http://www.tumejortv.com/peliculas-online-es/accion/avatar-3d-spanish-line2009-dvd-rip-06-03-2010.html" title="Avatar 3D [Spanish Line][2009]   - DVD-RIP"><img src="http://imagenes.tumejortv.com/32888.jpg" alt="Avatar 3D [Spanish Line][2009]   - DVD-RIP"/></a></div></li>
+<li><div class="movieTitle">Avatar [2CDs][Spanish ...</div><div class="covershot"><a href="http://www.tumejortv.com/peliculas-online-es/accion/avatar-2cdsspanish-line2009proper-dvd-rip-07-02-2010.html" title="Avatar [2CDs][Spanish Line][2009][Proper] - DVD-RIP"><img src="http://imagenes.tumejortv.com/29890.jpg" alt="Avatar [2CDs][Spanish Line][2009][Proper] - DVD-RIP"/></a></div></li>
+<li><div class="movieTitle">Avatar [3CDs][Spanish Line][2009]     </div><div class="covershot"><a href="http://www.tumejortv.com/peliculas-online-es/accion/avatar-3cdsspanish-line2009-dvd-rip-05-02-2010.html" title="Avatar [3CDs][Spanish Line][2009]     "><img src="http://imagenes.tumejortv.com/29871.jpg" alt="Avatar [3CDs][Spanish Line][2009]     "/></a></div></li></ul><div class="wp-pagenavi">
+<span class="pages">Página 1 de 1</span><span class="current">1</span></div>
+<br style='clear: both;' /><br style='clear: both;' /><h3>Series online</h3><ul class='alphaList'><li><div class="movieTitle">Avatar La Leyenda de Aang</div><div class="covershot"><a href="http://www.tumejortv.com/series-tv-online/avatar-la-leyenda-de-aang" title="Avatar La Leyenda de Aang"><img src="http://imagenes.tumejortv.com/series/1978.jpg" alt="Avatar La Leyenda de Aang"/></a></div></li></ul><br style='clear: both;' />      </div>
+'''
+
+# Listado de novedades de la pagina principal
+def searchresults(params,tecleado):
+	xbmc.output("[tumejortv.py] searchresults")
+
+	resultados = performsearch(tecleado)
+
+	for match in resultados:
+		targetchannel = match[0]
+		action = match[1]
+		category = match[2]
+		scrapedtitle = match[3]
+		scrapedurl = match[4]
+		scrapedthumbnail = match[5]
+		scrapedplot = match[6]
+		
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def performsearch(texto):
+	xbmc.output("[tumejortv.py] performsearch")
+	url = "http://www.tumejortv.com/buscar/?s="+texto+"&x=0&y=0"
+	
+	# ------------------------------------------------------
+	# Descarga la página
+	# ------------------------------------------------------
+	resultados = []
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# ------------------------------------------------------
+	# Extrae las películas
+	# ------------------------------------------------------
+	patron  = "<h3>Pel.iacute.culas online</h3><ul class='alphaList'>(.*?)</ul>"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+	if len(matches)>0:
+		data2 = matches[0]
+	
+	patron  = '<li><div class="movieTitle">[^<]+</div><div class="covershot"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
+	matches = re.compile(patron,re.DOTALL).findall(data2)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[1]
+		scrapedurl = match[0]
+		scrapedthumbnail = match[2]
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+
+	# ------------------------------------------------------
+	# Extrae las películas
+	# ------------------------------------------------------
+	patron  = "<h3>Series online</h3><ul class='alphaList'>(.*?)</ul>"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+	if len(matches)>0:
+		data2 = matches[0]
+	
+	patron  = '<li><div class="movieTitle">[^<]+</div><div class="covershot"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
+	matches = re.compile(patron,re.DOTALL).findall(data2)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[1]
+		scrapedurl = match[0]
+		scrapedthumbnail = match[2]
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "detailserie" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+
+	return resultados
 
 # Listado de novedades de la pagina principal
 def newlist(params,url,category):
@@ -80,13 +179,7 @@ def newlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -104,23 +197,14 @@ def newlist(params,url,category):
 		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapeddescription = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de películas de una categoria / letra
@@ -148,13 +232,7 @@ def shortlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -172,23 +250,14 @@ def shortlist(params,url,category):
 		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de series de una letra
@@ -215,13 +284,7 @@ def shortlistserie(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detailserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -239,23 +302,14 @@ def shortlistserie(params,url,category):
 		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de categorias de películas, de la caja derecha de la home
@@ -283,24 +337,14 @@ def moviecategorylist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de letras iniciales de película, de la caja derecha de la home
@@ -328,24 +372,14 @@ def moviealphalist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de letras iniciales de series, de la caja derecha de la home
@@ -373,24 +407,14 @@ def seriealphalist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlistserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de series actualizadas, de la caja derecha de la home
@@ -418,24 +442,14 @@ def serienewlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detailserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Listado de todas las series, de la caja derecha de la home
@@ -464,24 +478,14 @@ def seriealllist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detailserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Detalle de un vídeo (peli o capitulo de serie), con los enlaces
@@ -508,11 +512,7 @@ def detail(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 # Detalle de una serie, con sus capítulos
@@ -566,11 +566,7 @@ def detailserie(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 # Reproducir un vídeo

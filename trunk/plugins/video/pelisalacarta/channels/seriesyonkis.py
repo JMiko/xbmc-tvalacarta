@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import library
+import Yonkis
 
 CHANNELNAME = "seriesyonkis"
 
@@ -446,7 +447,7 @@ def detail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	url = scrapvideoURL(url)
 	if url == "":
-		xbmctools.alertnodisponible()
+		
 		return
 	xbmc.output("[seriesyonkis - detail] url="+url)
 
@@ -487,6 +488,7 @@ def addlist2Library(params,url,category):
 	xbmc.output ("[seriesyonkis.py - addlist2Library] Total Episodios:"+str(totalepisodes))
 	i = 0
 	errores = 0
+	nuevos = 0
 	for match in matches:
 		# Titulo
 		scrapedtitle = match[1]
@@ -529,7 +531,7 @@ def addlist2Library(params,url,category):
 		#library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False)
 		#OPCION 2
 		try:
-			library.savelibrary(scrapedtitle,url,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False,accion="strm_detail",pedirnombre=False)
+			nuevos = nuevos + library.savelibrary(scrapedtitle,url,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False,accion="strm_detail",pedirnombre=False)
 		except IOError:
 			xbmc.output("Error al grabar el archivo "+scrapedtitle)
 			errores = errores + 1
@@ -540,7 +542,10 @@ def addlist2Library(params,url,category):
 	#Actualización de la biblioteca
 	if errores > 0:
 		xbmc.output ("[seriesyonkis.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
-	library.update(totalepisodes-errores,errores)
+	library.update(totalepisodes,errores,nuevos)
+
+	return nuevos
+	
 
 def strm_detail (params,url,category):
 	xbmc.output("[seriesyonkis.py] strm_detail")
@@ -553,7 +558,7 @@ def strm_detail (params,url,category):
 	# ------------------------------------------------------------------------------------
 	url = scrapvideoURL(url)
 	if url == "":
-		xbmctools.alertnodisponible()
+		
 		return
 	xbmc.output("[seriesyonkis] strm_detail url="+url)
 
@@ -561,11 +566,43 @@ def strm_detail (params,url,category):
 
 def scrapvideoURL(urlSY):
 	data = scrapertools.cachePage(urlSY)
-	patronvideos  = 'href="(http://www.seriesyonkis.com/player/visor_pymeno2.php[^"]+)"'
+	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno2.php.*?id=([^"]+)".*?alt="([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	if len(matches)==0:
+		xbmctools.alertnodisponible()
 		return ""
+	elif len(matches)==1:
+		cortar = matches[0][0].split("&")
+		id = cortar[0]
+		xbmc.output("[seriesyonkis.py]  id="+id)
+		dec = Yonkis.DecryptYonkis()
+		id = dec.decryptID(dec.unescape(id))
+		print 'codigo :%s' %id
+		return id		
 	else:
-		return scrapertools.cachePage('http://www.atrapavideo.com/es/videomonkey/yonkis/url='+matches[0])
+		id = choiceOne(matches)
+		if len(id)==0:return ""
+		xbmc.output("[seriesyonkis.py]  id="+id)
+		dec = Yonkis.DecryptYonkis()
+		id = dec.decryptID(dec.unescape(id))
+		print 'codigo :%s' %id
+		return id
+		
+		
+def choiceOne(matches):
+	opciones = []
+	IDlist = []
+	Nro = 0
+	for codigo,audio in matches:
+		Nro = Nro + 1
+		opciones.append("%d) %s " % (Nro , audio))
+		IDlist.append(codigo)
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("Selecciona uno ", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion == -1 : return ""
+	cortar = IDlist[seleccion].split("&")
+	id = cortar[0]
+	return id

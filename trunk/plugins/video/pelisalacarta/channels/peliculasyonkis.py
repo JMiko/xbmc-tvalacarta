@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import Yonkis
 
 CHANNELNAME = "peliculasyonkis"
 
@@ -87,11 +88,10 @@ def performsearch(texto):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		resultados.append( [CHANNELNAME , "detailfolder" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
 		
 	return resultados
 
@@ -113,25 +113,11 @@ def searchresults(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-
-		# URL
 		scrapedurl = match[0]
-		
-		# Thumbnail
 		scrapedthumbnail = match[2]
-		
-		# procesa el resto
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-
-		# Añade al listado de XBMC
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Label (top-right)...
@@ -410,11 +396,21 @@ def listvideos(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-	# End of directory...
+def detailfolder(params,url,category):
+	xbmc.output("[peliculasyonkis.py] detail")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+
+	xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , title , url , thumbnail , plot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category):
@@ -431,11 +427,20 @@ def detail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
-	patronvideos  = 'href="(http://www.peliculasyonkis.com/player/visor_pymeno2.php[^"]+)"'
+	patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_pymeno2.*?id=([^&]+)&al=[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		scrapertools.printMatches(matches)
 	
-	url = scrapertools.cachePage('http://www.atrapavideo.com/es/videomonkey/yonkis/url='+matches[0])
-	xbmc.output("url="+url)
+	
+		id = matches[0]
+		xbmc.output("[peliculasyonkis.py]  id="+id)
+		dec = Yonkis.DecryptYonkis()
+		url = dec.decryptID(dec.unescape(id))
+		print 'codigo :%s' %url
+	else:
+		xbmctools.alertnodisponible()
+		return
+	
 	
 	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot)

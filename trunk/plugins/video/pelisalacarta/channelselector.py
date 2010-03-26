@@ -39,6 +39,7 @@ def listchannels(params,url,category):
 	else:
 		xbmc.output("updatecheck2=false")
 
+#Lo pongo arriba para debuguear más facil, @jesus ponlo luego donde veas mejor.
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
 	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
@@ -47,20 +48,29 @@ def listchannels(params,url,category):
 	addfolder("Peliculas21","peliculas21","mainlist")
 	addfolder("Dospuntocerovision","dospuntocerovision","mainlist")
 	addfolder("Cine15","cine15","mainlist")
-	addfolder("SesionVIP","sesionvip","mainlist")
+	#addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
+	addfolder("TVShack.net (VO)","tvshack","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
+	addfolder("Pelis24","pelis24","mainlist")
+	addfolder("Veocine","veocine","mainlist")
+	addfolder("Pintadibujos","pintadibujos","mainlist")
+	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
+	if xbmcplugin.getSetting("enableadultmode") == "true":
+		addfolder("MocosoftX","mocosoftx","mainlist")
+	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
+	addfolder("Capitan Cinema","capitancinema","mainlist")
+	addfolder("Film Streaming [IT]","filmstreaming","mainlist")
+	addfolder("No Megavideo","nomegavideo","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	addfolder("seriesonline.us","seriesonline","mainlist")
 	addfolder("Series21","series21","mainlist")
 	#addfolder("Newcineonline","newcineonline","mainlist")
 	addfolder("CastTV [EN]","casttv","mainlist")
-	addfolder("Pelis24","pelis24","mainlist")
-	addfolder("Veocine","veocine","mainlist")
-	addfolder("Pintadibujos","pintadibujos","mainlist")
+	addfolder("Ver Telenovelas Online","vertelenovelasonline","mainlist")
 	addfolder("Anime Foros","animeforos","mainlist")
 	addfolder("Yotix.tv","yotix","mainlist")
 	addfolder("MCAnime","mcanime","mainlist")
@@ -69,15 +79,11 @@ def listchannels(params,url,category):
 	addfolder("Watchanimeon [EN]","watchanimeon","mainlist")
 	addfolder("Animeid","animeid","mainlist")
 	addfolder("Ovasid","ovasid","mainlist")
-	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
-	if xbmcplugin.getSetting("enableadultmode") == "true":
-		addfolder("MocosoftX","mocosoftx","mainlist")
-	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
 	addfolder("DocumaniaTV","documaniatv","mainlist")
 	addfolder("DocumentariesTV [EN]","documentariestv","mainlist")
 	addfolder("Documentalesyonkis","documentalesyonkis","mainlist")
 	addfolder("Documentalesatonline","documentalesatonline","mainlist")
-	addfolder("Buscador de Trailer (Youtube)","trailertools","mainlist")
+	addfolder("Buscador de Trailers (Youtube)","trailertools","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")
 	addfolder("tu.tv","tutvsite","mainlist")
@@ -87,10 +93,10 @@ def listchannels(params,url,category):
 	addfolder("Descargas","descargados","mainlist")
 	addfolder("Favoritos","favoritos","mainlist")
 	addfolder("Buscador","buscador","mainlist")
+	addfolder("Ayuda","ayuda","mainlist")
 	
 
 	#addfolder("Kochikame","kochikame","mainlist")
-	#addfolder("Ver telenovelas online","vertelenovelasonline","mainlist")
 	#addfolder("PeliculasHD","peliculashd","mainlist")
 	#addfolder("Pelis-Sevillista56","sevillista","mainlist")
 	#addfolder("Wuapi","wuapisite","mainlist")
@@ -105,7 +111,7 @@ def listchannels(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-def addfolder(nombre,channelname,accion,category=""):
+def addfolder(nombre,channelname,accion,category="Varios"):
 
 	#Si no se indica categoría poner "Otros" por defecto
 	if category == "":

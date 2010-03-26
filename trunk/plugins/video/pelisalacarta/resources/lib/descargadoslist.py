@@ -69,11 +69,7 @@ def mainlist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def errorlist(params,url,category):
@@ -90,26 +86,26 @@ def errorlist(params,url,category):
 		pass
 
 	# Crea un listado con las entradas de favoritos
+	xbmc.output("[downloadall.py] ERROR_PATH="+ERROR_PATH)
 	ficheros = os.listdir(ERROR_PATH)
 	for fichero in ficheros:
-
+		xbmc.output("[downloadall.py] fichero="+fichero)
 		try:
 			# Lee el bookmark
-			titulo,thumbnail,plot,server,url = readbookmark(fichero)
+			titulo,thumbnail,plot,server,url = readbookmarkfile(fichero,ERROR_PATH)
 
 			# Crea la entrada
 			# En la categoría va el nombre del fichero para poder borrarlo
-			xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( DOWNLOAD_PATH, fichero ) , server , titulo , url , thumbnail, plot )
+			xbmctools.addnewvideo( CHANNELNAME , "playerror" , os.path.join( ERROR_PATH, fichero ) , server , titulo , url , thumbnail, plot )
 		except:
 			pass
+			xbmc.output("[downloadall.py] error al leer bookmark")
+			for line in sys.exc_info():
+				xbmc.output( "%s" % line , xbmc.LOGERROR )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def downloadall(params,url,category):
@@ -215,11 +211,7 @@ def downloadall(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	
 def play(params,url,category):
@@ -232,10 +224,23 @@ def play(params,url,category):
 	
 	xbmctools.playvideo3(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
+def playerror(params,url,category):
+	xbmc.output("[descargadoslist.py] play")
+
+	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
+	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = params["server"]
+	
+	xbmctools.playvideo4(CHANNELNAME,server,url,category,title,thumbnail,plot)
+
 def readbookmark(filename):
 	xbmc.output("[descargadoslist.py] readbookmark")
+	return readbookmarkfile(filename,DOWNLOAD_PATH)
 
-	filepath = os.path.join( DOWNLOAD_PATH , filename )
+def readbookmarkfile(filename,path):
+
+	filepath = os.path.join( path , filename )
 
 	# Lee el fichero de configuracion
 	xbmc.output("[descargadoslist.py] filepath="+filepath)

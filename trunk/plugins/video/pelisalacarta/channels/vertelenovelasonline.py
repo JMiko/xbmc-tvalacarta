@@ -52,12 +52,18 @@ def newlist(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patron  = '<a onblur="[^"]+" href="([^"]+)"><img style="cursor:pointer; cursor:hand;width: 186px; height: 320px;" src="([^"]+)" border="0" alt=""id="BLOGGER_PHOTO[^>]+></a>'
+	#<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.vertelenovelasonline.com/2009/11/amor-palos.html">
+	#<img style="cursor:pointer; cursor:hand;width: 186px; height: 320px;" src="http://1.bp.blogspot.com/__kdloiikFIQ/SwSWTExa3NI/AAAAAAAAl9Q/JmBSh1D40kE/s320/amor+a+palos.jpg" border="0" alt=""id="BLOGGER_PHOTO_ID_5405610707194141906" /></a><a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.vertelenovelasonline.com/2009/11/alcanzar-una-estrella-ii.
+	#<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.vertelenovelasonline.com/2009/10/catalina-y-sebastian.html">
+	#<img style="cursor: pointer; width: 186px; height: 320px;" src="http://4.bp.blogspot.com/__kdloiikFIQ/SuH75qhmrfI/AAAAAAAAk8A/aLUZX2HAmUY/s320/catalina+y+sebastian.jpg" alt="" id="BLOGGER_PHOTO_ID_5395870796652916210" border="0" /></a><a onblur="
+	patron  = '<a onblur="[^"]+" href="([^"]+)">'
+	patron += '<img style="[^"]+" src="([^"]+)"[^>]+></a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[1][44:-5]
+		# http://www.vertelenovelasonline.com/2009/10/dona-barbara.html
+		scrapedtitle = match[0][44:-5]
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
@@ -83,23 +89,22 @@ def listmirrors(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae la sinopsis
-	patron  = "<div class='post-body entry-content'>.*?</div>"
-
-	if len(matches)>0:
-
+	patron  = '<span style="font-weight: bold;">(.*?)<'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
 		plot = matches[0].strip()
 		xbmc.output(plot)
 
-	patron = '<div id="listanime"><a title="([^"]+)" href="([^"]+)"><strong>[^<]+</strong></a></div>'
+	#<a style="color: rgb(51, 51, 255);" href="http://www.vertelenovelasonline.com/2009/10/dona-barbara-1-50.html" target="_blank"> capitulo 1-50.</a><br /><br /><a style="color: rgb(51, 51, 255);" href="http://www.vertelenovelasonline.com/
+	#<a style="color: rgb(51, 51, 255);" href="http://www.vertelenovelasonline.com/2009/10/amor-real-1.html"> capitulo 1.</a>
+	patron = '<a style="color. rgb\([^\,]+, [^\,]+, [^\)]+\)." href="(http://www.vertelenovelasonline.com/[^"]+)"[^>]*>([^<]+)</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[0]
-		scrapedurl = urlparse.urljoin(url,match[1])
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = thumbnail
 		scrapedplot = plot
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -122,14 +127,6 @@ def detail(params,url,category):
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
-
-	patron  = '<div id="listacapdd"><div class="listddserie">[^<]+'
-	patron += '<a title="[^"]+" href="([^"]+)"><strong>[^<]+</strong></a>[^<]+'
-	patron += '</div>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if len(matches)>0:
-		url = matches[0]
-		data = scrapertools.cachePage(url)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos

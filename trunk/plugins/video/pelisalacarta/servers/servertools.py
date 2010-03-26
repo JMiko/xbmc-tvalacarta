@@ -19,6 +19,9 @@ import stagevu
 import vreel
 import movshare
 import veoh
+import metadivx
+import divxden
+import divxlink
 
 xbmc.output("[servertools.py] init")
 
@@ -529,19 +532,20 @@ def findvideos(data):
 
 def findurl(code,server):
 	mediaurl = "ERROR"
-	if server == "Megavideo":
+	server = server.lower() #Para hacer el procedimiento case insensitive
+	if server == "megavideo":
 		mediaurl = megavideo.Megavideo(code)
-		
-	if server == "Megaupload":
+
+	if server == "megaupload":
 		mediaurl = megaupload.getvideo(code)
 		
-	if server == "Wuapi":
+	if server == "wuapi":
 		mediaurl = wuapi.Wuapi(code)
 		
-	if server == "Vreel":
+	if server == "vreel":
 		mediaurl = vreel.Vreel(code)
 
-	if server == "Stagevu":
+	if server == "stagevu":
 		mediaurl = stagevu.Stagevu(code)
 	
 	if server == "tu.tv":
@@ -553,8 +557,18 @@ def findurl(code,server):
 	if server == "veoh":
 		mediaurl = veoh.getvideo(code)
 	
-	if server == "Directo":
+	if server == "directo":
 		mediaurl = code
+		
+	if server == "metadivx":
+		mediaurl = metadivx.geturl(code)
+
+	if server == "divxden":
+		mediaurl = divxden.geturl(code)
+
+	if server == "divxlink":
+		mediaurl = divxlink.geturl(code)
+
 	return mediaurl
 
 def getmegavideolow(code):
