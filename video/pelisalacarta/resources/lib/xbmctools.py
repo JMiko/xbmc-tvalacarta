@@ -415,15 +415,17 @@ def getLibraryInfo (mediaurl):
 def launchplayer(mediaurl, listitem):
 
 	# Añadimos el listitem a una lista de reproducción (playlist)
-	xbmc.output("[xbmctools.py] 4")
+	xbmc.output("[xbmctools.py] 5")
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
 	playlist.clear()
 	playlist.add( mediaurl, listitem )
 
 	# Reproduce
+	xbmc.output("[xbmctools.py] 6")
 	playersettings = xbmcplugin.getSetting('player_type')
 	xbmc.output("[xbmctools.py] playersettings="+playersettings)
 
+	xbmc.output("[xbmctools.py] 7")
 	player_type = xbmc.PLAYER_CORE_AUTO
 	if playersettings == "0":
 		player_type = xbmc.PLAYER_CORE_AUTO
@@ -434,6 +436,7 @@ def launchplayer(mediaurl, listitem):
 	elif playersettings == "2":
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 		xbmc.output("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
+	xbmc.output("[xbmctools.py] 8")
 
 	xbmcPlayer = xbmc.Player( player_type )
 	xbmcPlayer.play(playlist)
