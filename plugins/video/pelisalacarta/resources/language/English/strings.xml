@@ -15,7 +15,12 @@
     <string id="30009">Watch</string>
     <string id="30010">Watch in high quality</string>
 
-    <string id="30100">Megavideo premium mode:</string>
+
+	<string id="30012">Channel logos:</string>
+	<string id="30013">Poster (vertical)</string>
+	<string id="30014">Banner (horizontal)</string>
+
+	<string id="30100">Megavideo premium mode:</string>
     <string id="30101">Megavideo user:</string>
     <string id="30102">Megavideo password:</string>
     <string id="30103">Megavideo cookie:</string>

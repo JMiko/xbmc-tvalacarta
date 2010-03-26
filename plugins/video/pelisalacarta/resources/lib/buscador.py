@@ -56,17 +56,48 @@ def mainlist(params,url,category):
 	# Lanza las búsquedas
 	
 	# Cinegratis
-	matches = cinegratis.performsearch(tecleado)
-	matches.extend( peliculasyonkis.performsearch(tecleado) )
-	matches.extend( tumejortv.performsearch(tecleado) )
-	matches.extend( cine15.performsearch(tecleado) )
-	matches.extend( peliculas21.performsearch(tecleado) )
+	matches = []
+	try:
+		matches.extend( cinegratis.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( peliculasyonkis.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( tumejortv.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( cine15.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( peliculas21.performsearch(tecleado) )
+	except:
+		pass
 	#matches.extend( sesionvip.performsearch(tecleado) )
-	matches.extend( seriesyonkis.performsearch(tecleado) )
-	matches.extend( stagevusite.performsearch(tecleado) )
-	matches.extend( tutvsite.performsearch(tecleado) )
-	matches.extend( documaniatv.performsearch(tecleado) )
-	matches.extend( yotix.performsearch(tecleado) )
+	try:
+		matches.extend( seriesyonkis.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( stagevusite.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( tutvsite.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( documaniatv.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( yotix.performsearch(tecleado) )
+	except:
+		pass
 	
 	# Construye los resultados
 	for match in matches:
