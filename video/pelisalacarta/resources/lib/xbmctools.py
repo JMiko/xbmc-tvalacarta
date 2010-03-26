@@ -32,7 +32,7 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 #   (SÓLO VERSIONES XBMC COMPILADAS CON BUGFIX INCLUIDO)
 
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
-DEBUG = False
+DEBUG = True
  
 def get_system_platform():
 	""" fonction: pour recuperer la platform que xbmc tourne """
@@ -297,16 +297,20 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 
 	# Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
 	if strmfile:
-		listitem = getLibraryInfo (mediaurl)
+		xbmc.output("[xbmctools.py] 1")
+		listitem = getLibraryInfo(mediaurl)
 	else:
+		xbmc.output("[xbmctools.py] 2")
 		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
 		listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
 
 		
 	# Lanza el reproductor
 	if strmfile: #Si es un fichero strm no hace falta el play
+		xbmc.output("[xbmctools.py] 3")
 		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
 	else:
+		xbmc.output("[xbmctools.py] 4")
 		launchplayer(mediaurl, listitem)
 
 
@@ -411,6 +415,7 @@ def getLibraryInfo (mediaurl):
 def launchplayer(mediaurl, listitem):
 
 	# Añadimos el listitem a una lista de reproducción (playlist)
+	xbmc.output("[xbmctools.py] 4")
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
 	playlist.clear()
 	playlist.add( mediaurl, listitem )
@@ -430,8 +435,8 @@ def launchplayer(mediaurl, listitem):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 		xbmc.output("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
 
-		xbmcPlayer = xbmc.Player( player_type )
-		xbmcPlayer.play(playlist)
+	xbmcPlayer = xbmc.Player( player_type )
+	xbmcPlayer.play(playlist)
 
 def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
 	if (DEBUG):
