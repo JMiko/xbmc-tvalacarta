@@ -566,7 +566,7 @@ def strm_detail (params,url,category):
 
 def scrapvideoURL(urlSY):
 	data = scrapertools.cachePage(urlSY)
-	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno2.php.*?id=([^"]+)".*?alt="([^"]+)"'
+	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno4.php.*?id=([^"]+)".*?alt="([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -578,7 +578,7 @@ def scrapvideoURL(urlSY):
 		id = cortar[0]
 		xbmc.output("[seriesyonkis.py]  id="+id)
 		dec = Yonkis.DecryptYonkis()
-		id = dec.decryptID(dec.unescape(id))
+		id = dec.decryptID_series(dec.unescape(id))
 		print 'codigo :%s' %id
 		return id		
 	else:
@@ -586,7 +586,7 @@ def scrapvideoURL(urlSY):
 		if len(id)==0:return ""
 		xbmc.output("[seriesyonkis.py]  id="+id)
 		dec = Yonkis.DecryptYonkis()
-		id = dec.decryptID(dec.unescape(id))
+		id = dec.decryptID_series(dec.unescape(id))
 		print 'codigo :%s' %id
 		return id
 		
