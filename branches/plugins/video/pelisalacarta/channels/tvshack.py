@@ -587,10 +587,16 @@ def playVideo(params,url,category,strmfile=False):
   partes = re.findall('<a href="javascript:changevid\(([0-9]+)\);"',data)
 
   # Y el path relativo de los vídeos  
+#JUR CAMBIO EN WEB 01/04/2010
+#  patronpath = '''(?x)                  #      Activa opción VERBOSE.
+#    http://tvshack\.net/report_video/   #      Basura
+#    ([^/]+/[^/]+)                       # $0 = Path relativo Ej. 'tv/716063'
+#    /","report"                         #      Basura
+#  '''
   patronpath = '''(?x)                  #      Activa opción VERBOSE.
-    http://tvshack\.net/report_video/   #      Basura
+    http://tvshack\.net/video_load/     #      Basura
     ([^/]+/[^/]+)                       # $0 = Path relativo Ej. 'tv/716063'
-    /","report"                         #      Basura
+    /'\+part                            #      Basura
   '''
   paths=re.findall(patronpath,data)
 
