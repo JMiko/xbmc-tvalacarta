@@ -40,7 +40,7 @@ def mainlist(params,url,category):
 	addfolder("Dibujos", "http://www.newcineonline.com/index.php?do=cat&category=dibujos" ,"list")
 	addfolder("Series", "http://www.newcineonline.com/index.php?do=cat&category=series" ,"list")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if xbmctools.getPluginSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

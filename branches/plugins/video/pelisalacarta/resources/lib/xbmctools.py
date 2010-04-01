@@ -17,6 +17,7 @@ import os
 import favoritos
 import library
 import descargadoslist
+import re
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -26,10 +27,15 @@ except:
 
 LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 
-#LIBRARY_CATEGORIES = ['Cine','Series'] #Valor developers (descomentar para activar)
+LIBRARY_CATEGORIES.append ('Cine') #Valor developers (descomentar para activar)
 # Para test de programadores. Se pueden añadir aquellos canales de cine que 
 #   queramos que tengan opción de añadir a la biblioteca.
 #   (SÓLO VERSIONES XBMC COMPILADAS CON BUGFIX INCLUIDO)
+
+
+rev_re = re.compile(' r(\d+)') 
+VERSION_XBMC = int (rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
+
 
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 DEBUG = True
@@ -131,22 +137,22 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 
 	# Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
 	# Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
-	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
+	if (server=="Megavideo" or server=="Megaupload") and getPluginSetting("megavideopremium")=="true":
 		opciones.append("Ver en calidad alta ["+server+"]")
 		# Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
-		if xbmcplugin.getSetting("default_action")=="2":
+		if getPluginSetting("default_action")=="2":
 			seleccion = len(opciones)-1
 
 	# Los vídeos de Megavídeo o Megaupload se pueden ver en calidad baja sin cuenta premium, aunque con el límite
 	if (server=="Megavideo" or server=="Megaupload"):
 		opciones.append("Ver en calidad baja [Megavideo]")
 		# Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
-		if xbmcplugin.getSetting("default_action")=="1":
+		if getPluginSetting("default_action")=="1":
 			seleccion = len(opciones)-1
 	else:
 		opciones.append("Ver ["+server+"]")
 		# Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
-		if xbmcplugin.getSetting("default_action")=="1":
+		if getPluginSetting("default_action")=="1":
 			seleccion = len(opciones)-1
 
 	opciones.append("Descargar")
@@ -166,15 +172,15 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		opciones.append("Pasar de nuevo a lista de descargas")
 
 	if not strmfile:
-		if category in LIBRARY_CATEGORIES:
-			opciones.append("Añadir a Biblioteca")
+#		if category in LIBRARY_CATEGORIES:
+		opciones.append("Añadir a Biblioteca")
 
 	# Busqueda de trailers en youtube	
 	if not canal in ["Trailer","ecarteleratrailers"]:
 		opciones.append("Buscar Trailer")
 
 	# Si la accion por defecto es "Preguntar", pregunta
-	if xbmcplugin.getSetting("default_action")=="0":
+	if getPluginSetting("default_action")=="0":
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
 		#dia.close()
@@ -198,7 +204,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		if server=="Megaupload":
 			mediaurl = servertools.getmegauploadlow(url)
 		elif server=="Megavideo":
-			if xbmcplugin.getSetting("megavideopremium")=="false":
+			if getPluginSetting("megavideopremium")=="false":
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Para evitar que los vídeos se corten pasado ese tiempo' , 'necesitas una cuenta Premium')			
 			mediaurl = servertools.getmegavideolow(url)
@@ -208,12 +214,12 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	# Descargar
 	elif opciones[seleccion]=="Descargar":
 		if server=="Megaupload":
-			if xbmcplugin.getSetting("megavideopremium")=="false":
+			if getPluginSetting("megavideopremium")=="false":
 				mediaurl = servertools.getmegauploadlow(url)
 			else:
 				mediaurl = servertools.getmegauploadhigh(url)
 		elif server=="Megavideo":
-			if xbmcplugin.getSetting("megavideopremium")=="false":
+			if getPluginSetting("megavideopremium")=="false":
 				mediaurl = servertools.getmegavideolow(url)
 			else:
 				mediaurl = servertools.getmegavideohigh(url)
@@ -406,8 +412,8 @@ def getLibraryInfo (mediaurl):
 			infodict['overlay'] = 8
 		else:
 			infodict.pop('overlay')
-		
-	listitem.setInfo( "video", infodict )
+	if len (infodict) > 0:
+		listitem.setInfo( "video", infodict )
 	
 	return listitem
 
@@ -422,7 +428,7 @@ def launchplayer(mediaurl, listitem):
 
 	# Reproduce
 	xbmc.output("[xbmctools.py] 6")
-	playersettings = xbmcplugin.getSetting('player_type')
+	playersettings = getPluginSetting('player_type')
 	xbmc.output("[xbmctools.py] playersettings="+playersettings)
 
 	xbmc.output("[xbmctools.py] 7")
@@ -496,3 +502,26 @@ def playstrm(params,url,category):
 		serie = ""
 	
 	playvideo("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
+
+# Añadido por compatibilidad pre/post XBMC 10.5 
+def getPluginSetting(key):
+	'''Devuelve un valor de configuración del plugin
+	
+	   Se evita así el problema del cambio de la función xbmcpluin.getSettings
+	   en la versión PRE10.5 (en algún momento después de r28276)
+	'''
+
+	dlog ('[xbmctools] getSettings Version XBMC=%d' % (VERSION_XBMC,))
+	if VERSION_XBMC <= 28276:
+		value = xbmcplugin.getSetting(key)
+	else:
+		value = xbmcplugin.getSetting(pluginhandle, key)
+
+	dlog ('[xbmctools] getSettings %s=%s' % (key,value))
+
+	return value
+	
+
+def dlog (text):
+	if DEBUG:
+		xbmc.output(text)

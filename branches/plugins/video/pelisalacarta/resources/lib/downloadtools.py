@@ -19,6 +19,16 @@ import binascii
 import md5
 import xbmctools
 import httplib
+import re
+
+# Esto permite su ejecución en modo emulado
+try:
+	pluginhandle = int( sys.argv[ 1 ] )
+except:
+	pluginhandle = ""
+rev_re = re.compile(' r(\d+)') 
+VERSION_XBMC = int (rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
+xbmc.output ("[downloadtools] init Versión XBMC: %d" % (VERSION_XBMC,))
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -324,7 +334,7 @@ entitydefs3 = {
 def getDownloadPath():
 	
 	# La ruta de descarga es un parámetro
-	downloadpath = xbmcplugin.getSetting("downloadpath")
+	downloadpath = xbmctools.getPluginSetting("downloadpath")
 	
 	# No está fijada, intenta forzarla
 	try:
@@ -362,7 +372,11 @@ def getDownloadPath():
 def getDownloadListPath():
 	
 	# La ruta de la lista de descargas es un parámetro
-	downloadpath = xbmcplugin.getSetting("downloadlistpath")
+#	downloadpath = xbmcplugin.getSetting( int( sys.argv[ 1 ] ), "downloadlistpath")
+	if VERSION_XBMC <= 28276:
+		downloadpath = xbmcplugin.getSetting("downloadlistpath")
+	else:
+		downloadpath = xbmcplugin.getSetting(pluginhandle, "downloadlistpath")
 	
 	# No está fijada, intenta forzarla
 	try:
