@@ -37,10 +37,10 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "listalfa" , category , "Lista Alfabética","http://www.filmesonlinebr.com/","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series","http://www.filmesonlinebr.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://www.filmesonlinebr.com/","","")
-	if xbmcplugin.getSetting("enableadultmode") == "true":
+	if xbmctools.getPluginSetting("enableadultmode") == "true":
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Adulto (+18)","http://www.filmesonlinebr.com/search/label/Filmes%20Adulto%20%28%2B18%29","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if xbmctools.getPluginSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -124,7 +124,7 @@ def listalfa(params,url,category):
 	
 def listvideos(params,url,category):
 	xbmc.output("[filmesonlinebr.py] listvideos")
-	adulto = xbmcplugin.getSetting("enableadultmode")
+	adulto = xbmctools.getPluginSetting("enableadultmode")
 	if url=="":
 		url = "http://www.peliculasid.com/"
                 

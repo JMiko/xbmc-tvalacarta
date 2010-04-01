@@ -33,7 +33,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	addfolder("Buscar","http://stagevu.com","search")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if xbmctools.getPluginSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

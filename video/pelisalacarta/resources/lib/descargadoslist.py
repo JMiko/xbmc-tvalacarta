@@ -130,7 +130,7 @@ def downloadall(params,url,category):
 				xbmc.output("[downloadall.py] url="+url)
 
 				# Averigua la URL del vídeo
-				if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
+				if (server=="Megavideo" or server=="Megaupload") and xbmctools.getPluginSetting("megavideopremium")=="true":
 					if server=="Megaupload":
 						mediaurl = servertools.getmegauploadhigh(url)
 					else:
