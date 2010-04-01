@@ -79,19 +79,24 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 	else:
 		xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie=""):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="", totalItems=0):
 	if DEBUG:
 		try:
-			xbmc.output('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
+			xbmc.output('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'" , "'+Serie+'"')
 		except:
 			xbmc.output('[xbmctools.py] addnewvideo(<unicode>)')
+	if thumbnail == "":
+		thumbnail = "DefaultVideo.png"
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	#listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)
 	#xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
-	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
-
+	if totalItems == 0:
+		xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=True) ##JUR TEST
+	else:
+		xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=True, totalItems=totalItems) ##JUR TEST
+		
 def addthumbnailfolder( canal , scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
 	xbmc.output('[xbmctools.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
@@ -109,7 +114,7 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
 	itemurl = '%s?channel=%s&action=play&category=%s&url=%s&server=%s&title=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , category , urllib.quote_plus(url) , server , urllib.quote_plus( nombre ) , Serie)
-	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
+	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=True) ##JUR TEST
 
 def playvideo(canal,server,url,category,title,thumbnail,plot,strmfile=False,Serie=""):
 	playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,False,strmfile,Serie)
@@ -511,7 +516,7 @@ def getPluginSetting(key):
 	   en la versión PRE10.5 (en algún momento después de r28276)
 	'''
 
-	dlog ('[xbmctools] getSettings Version XBMC=%d' % (VERSION_XBMC,))
+#	dlog ('[xbmctools] getSettings Version XBMC=%d' % (VERSION_XBMC,))
 	if VERSION_XBMC <= 28276:
 		value = xbmcplugin.getSetting(key)
 	else:

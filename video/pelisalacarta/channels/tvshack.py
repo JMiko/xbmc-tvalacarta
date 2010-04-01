@@ -440,7 +440,8 @@ def ListaDetallada(params,url,category):
     scrapednote = ""
     
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , totalItems=totalmatches)
+    xbmctools.addnewvideo( CHANNELNAME , "listaVideosEpisodio" , category , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapednote , totalItems=totalmatches)
+#    xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , totalItems=totalmatches)
 
   pDialog.update(100, texto1)
   FinalizaPlugin (pluginhandle,category)
