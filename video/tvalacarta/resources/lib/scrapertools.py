@@ -291,3 +291,34 @@ def getLocationHeaderFromResponse(url):
 		print "Encontrado header location"
 	
 	return location
+
+def htmlclean(cadena):
+	cadena = cadena.replace("<center>","")
+	cadena = cadena.replace("</center>","")
+	cadena = cadena.replace("<em>","")
+	cadena = cadena.replace("</em>","")
+	cadena = cadena.replace("<b>","")
+	cadena = cadena.replace("</b>","")
+	cadena = cadena.replace("<p>","")
+	cadena = cadena.replace("</p>","")
+	cadena = cadena.replace("</span>","")
+	cadena = cadena.replace("</a>","")
+	cadena = cadena.replace("<strong>","")
+	cadena = cadena.replace("</strong>","")
+	cadena = cadena.replace("</ul>","")
+	cadena = cadena.replace("<li>","")
+	cadena = cadena.replace("</li>","")
+	cadena = cadena.replace("</dd>","")
+	cadena = cadena.replace("</div>","")
+
+	cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<a[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<ul[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("\t","")
+	cadena = entityunescape(cadena)
+	return cadena
