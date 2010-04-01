@@ -240,7 +240,7 @@ def play(params,url,category):
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	try:
-		url = matches[0]
+		url = urlparse.urljoin("http://www.eitb.com",matches[0])
 	except:
 		url = ""
 	xbmc.output("[eitb.py] url="+url)
