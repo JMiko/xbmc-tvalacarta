@@ -14,6 +14,7 @@ import xbmcplugin
 import xbmcgui
 import megavideo
 import scrapertools
+import xbmctools
 
 DEBUG = False
 
