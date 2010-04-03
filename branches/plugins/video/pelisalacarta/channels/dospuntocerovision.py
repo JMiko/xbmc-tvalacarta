@@ -31,7 +31,7 @@ except:
 xbmc.output("[dospuntocerovision.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
 	xbmc.output("[dospuntocerovision.py] mainlist")
@@ -716,22 +716,14 @@ def youtubeplay(params,url,category):
 	plot = "Ver Video"
 	server = "Directo"
 	id = youtube.Extract_id(url)
-	# Abre el diálogo de selección
-	opciones = []
-	opciones.append("(FLV) Baja calidad")
-	opciones.append("(MP4) Alta calidad")
-	dia = xbmcgui.Dialog()
-	seleccion = dia.select("tiene 2 formatos elige uno", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
-	if seleccion==-1:
-		return("")
-	if seleccion == 0:
-		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
-	else:
-		videourl = youtube.geturl(id)
-	xbmc.output("link directo de youtube : "+videourl)
-	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
- 
+	videourl = youtube.geturl(id)
+	
+	if len(videourl)>0:
+		xbmc.output("link directo de youtube : "+videourl)
+		xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+	
+	return
+	
 def acentos(title):
 
         title = title.replace("Ã‚Â", "")
@@ -787,3 +779,7 @@ def buscartrailer(params,url,category):
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+	
+def alertaerror():
+	ventana = xbmcgui.Dialog()
+	ok= ventana.ok ("Plugin Pelisalacarta", "Uuppss...El video no esta disponible en youtube",'o la resolucion es muy baja',"elijá otra resolucion distinta y vuelva a probar")
