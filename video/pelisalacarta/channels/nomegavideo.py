@@ -45,7 +45,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( "delatv"        , "novedades"  , category , "Novedades [ES] [DelaTV]"                         ,"http://delatv.com/","","")
 	xbmctools.addnewfolder( "cinegratis"    , "listvideos" , category , "Películas - Alojadas en Veoh [ES] [Cinegratis]"  ,"http://www.cinegratis.net/index.php?module=servers&varserver=veoh","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

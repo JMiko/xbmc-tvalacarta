@@ -38,13 +38,13 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[documentalesyonkis.py] mainlist")
 
-	if xbmctools.getPluginSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	xbmctools.addnewfolder( CHANNELNAME , "lastvideolist" , category , "Últimos documentales","http://documentales.videosyonkis.com/ultimos-videos.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "allvideolist"  , category , "Listado completo","http://documentales.videosyonkis.com/lista-videos.php","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -58,7 +58,7 @@ def mainlist(params,url,category):
 
 def lastvideolist(params,url,category):
 	xbmc.output("[documentalesyonkis.py] lastvideolist")
-	if xbmctools.getPluginSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -106,7 +106,7 @@ def lastvideolist(params,url,category):
 
 def allvideolist(params,url,category):
 	xbmc.output("[documentalesyonkis.py] allvideolist")
-	if xbmctools.getPluginSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página

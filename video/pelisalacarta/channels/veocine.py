@@ -39,7 +39,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas VOS", "http://www.veocine.es/peliculavos.html","","")
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Anime", "http://www.veocine.es/anime.html","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

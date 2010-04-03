@@ -14,7 +14,6 @@ import xbmcplugin
 import xbmcgui
 import megavideo
 import scrapertools
-import xbmctools
 
 DEBUG = False
 
@@ -201,10 +200,10 @@ def getvideo(code):
 	return megavideo.Megavideo(convertcode(code))
 
 def gethighurl(code):
-	megavideologin = xbmctools.getPluginSetting("megavideouser")
+	megavideologin = xbmcplugin.getSetting("megavideouser")
 	if DEBUG:
 		xbmc.output("[megaupload.py] megavideouser=#"+megavideologin+"#")
-	megavideopassword = xbmctools.getPluginSetting("megavideopassword")
+	megavideopassword = xbmcplugin.getSetting("megavideopassword")
 	if DEBUG:
 		xbmc.output("[megaupload.py] megavideopassword=#"+megavideopassword+"#")
 	cookie = getmegauploaduser(megavideologin,megavideopassword)

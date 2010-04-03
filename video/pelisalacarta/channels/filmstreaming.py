@@ -42,7 +42,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Telefilm" , "http://www.streaming-ital.com/telefilm/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Anime"    , "http://www.streaming-ital.com/anime/","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

@@ -40,7 +40,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Películas - Novedades"            ,"http://www.capitancinema.com/peliculas-online-novedades.htm","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

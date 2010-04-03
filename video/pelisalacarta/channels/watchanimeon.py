@@ -40,7 +40,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "allmovieslist"   , category , "Todas las películas"         ,"http://www.watchanimeon.com/anime/anime-movies/","","")
 
 	# Si es un canal independiente, añade "Configuracion", "Descargas" y "Favoritos"
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Asigna el título, desactiva la ordenación, y cierra el directorio

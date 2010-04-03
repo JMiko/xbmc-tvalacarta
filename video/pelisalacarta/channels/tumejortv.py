@@ -39,7 +39,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "seriealphalist" , CHANNELNAME , "Series - Por orden alfabético" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , CHANNELNAME , "Buscar" , "" , "", "" )
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

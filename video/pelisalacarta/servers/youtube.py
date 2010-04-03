@@ -6,8 +6,6 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re,httplib
 import xbmc,xbmcplugin,xbmcgui
-import xbmctools
-
 _VALID_URL = r'^((?:http://)?(?:\w+\.)?youtube\.com/(?:(?:v/)|(?:(?:watch(?:\.php)?)?\?(?:.+&)?v=)))?([0-9A-Za-z_-]+)(?(1).+)?$'
 AVAILABLE_FORMATS  = ['13','17','34','5','18','35','22','37']
 AVAILABLE_FORMATS2 = {'13':'Baja','17':'Media (3gp)','34':'High (FLV)','5':'360p','18':'480p','35':'1227KBS (FLV)','22':'720p','37':'1080p'}
@@ -51,7 +49,7 @@ def geturls(id,data):
 	
 def geturl( id ):
 	print '[pelisalacarta] youtube.py Modulo: geturl(%s)' %id
-	quality = int(xbmctools.getPluginSetting("quality_youtube"))
+	quality = int(xbmcplugin.getSetting("quality_youtube"))
 	if id != "":
 		url = "http://www.youtube.com/watch?v=%s" % id
 		print 'esta es la url: %s'%url

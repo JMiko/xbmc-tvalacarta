@@ -34,7 +34,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "novedadeslist"      , "" , "Novedades","http://www.seriesonline.us/","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio
@@ -76,7 +76,7 @@ def novedadeslist(params,url,category):
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "list" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
