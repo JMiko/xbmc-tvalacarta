@@ -16,7 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import library
-import Yonkis
+import DecryptYonkis as Yonkis
 
 CHANNELNAME = "seriesyonkis"
 
@@ -563,10 +563,15 @@ def strm_detail (params,url,category):
 	xbmc.output("[seriesyonkis] strm_detail url="+url)
 
 	xbmctools.playvideo("STRM_Channel","Megavideo",url,category,title,thumbnail,plot,1)
+#<td><div align="center"><span style="font-size: 10px"><em><img src="http://simages.peliculasyonkis.com/images/tmegavideo.png" alt="Megavideo" style="vertical-align: middle;" /><img src='http://images.peliculasyonkis.com/images/tdescargar2.png' title='Tiene descarga directa' alt='Tiene descarga directa' style='vertical-align: middle;' /><a onmouseover="window.status=''; return true;" onmouseout="window.status=''; return true;" title="Seleccionar esta visualizacion" href="http://www.seriesyonkis.com/player/visor_pymeno4.php?d=1&embed=no&id=%CB%D8%DC%DD%C0%D3%E2%FC&al=%A6%B2%AC%B8%AC%A4%BD%A4" target="peli">SELECCIONAR ESTA</a> (flash desde megavideo)</em>		  </span></div></td>		  <td><div align="center"><img height="30" src="http://simages.seriesyonkis.com/images/f/spanish.png" alt="Audio Español" title="Audio Español" style="vertical-align: middle;" /></div></td>
+#		  <td><div align="center"><span style="font-size: 10px">Español (Spanish)</span></div></td>		  <td><div align="center"><span style="font-size: 10px">no</span></div></td>		  <td><div align="center"><span style="font-size: 10px">Formato AVI 270mb</span></div></td>		  <td><div align="center"><span style="font-size: 10px">MasGlo<br />masglo</span></div></td>		</tr><tr>
+ 
 
 def scrapvideoURL(urlSY):
 	data = scrapertools.cachePage(urlSY)
-	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno4.php.*?id=([^"]+)".*?alt="([^"]+)"'
+	patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_pymeno4.php.*?id=([^"]+)".*?alt="([^"]+)".*?'
+	patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
+	patronvideos += '<td><div[^>]+><[^>]+>(.*?)</span></div></td>.*?</tr>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -595,9 +600,12 @@ def choiceOne(matches):
 	opciones = []
 	IDlist = []
 	Nro = 0
-	for codigo,audio in matches:
+	for codigo,audio,fmt in matches:
 		Nro = Nro + 1
-		opciones.append("%d) %s " % (Nro , audio))
+		fmt = fmt.replace("FORMATO","")
+		fmt = fmt.replace("Formato","")
+		#audio = audio.replace("Subt\xc3\xadtulos","VOS Subt.") 
+		opciones.append("%d) [%s] %s " % (Nro , audio,fmt))
 		IDlist.append(codigo)
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Selecciona uno ", opciones)
