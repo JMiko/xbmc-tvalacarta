@@ -15,7 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
-import Yonkis
+import DecryptYonkis as Yonkis
 
 CHANNELNAME = "peliculasyonkis"
 
