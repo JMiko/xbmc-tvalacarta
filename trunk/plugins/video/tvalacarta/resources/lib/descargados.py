@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import downloadtools
 
 CHANNELNAME = "descargados"
 
@@ -32,8 +33,8 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[descargados.py] mainlist")
 
-	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.output("[descargados.py] downloadpath="+downloadpath)
+	# Verifica ruta de descargas
+	downloadpath = downloadtools.getDownloadPath()
 
 	xbmctools.addnewfolder( "descargadoslist" , "mainlist"  , category , "Descargas pendientes","","","")
 	xbmctools.addnewfolder( "descargadoslist" , "errorlist"  , category , "Descargas con error","","","")
@@ -42,7 +43,7 @@ def mainlist(params,url,category):
 	try:
 		ficheros = os.listdir(downloadpath)
 		for fichero in ficheros:
-			if fichero!="lista" and fichero!="error":
+			if fichero!="lista" and fichero!="error" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn"):
 				url = os.path.join( downloadpath , fichero )
 				listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
 				xbmcplugin.addDirectoryItem( handle = pluginhandle, url = url, listitem=listitem, isFolder=False)
