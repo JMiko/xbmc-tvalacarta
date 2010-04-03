@@ -38,7 +38,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELCODE , "lasenora"   , CHANNELNAME        , "La señora"             , "" , "" , "" )
 	xbmctools.addnewfolder( CHANNELCODE , "generico"   , "allowblanktitles" , "Guante blanco"         , "http://www.rtve.es/television/guanteblanco/capitulos-guante-blanco/" , "" , "" )
 	#xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "Azahar"                , "http://www.rtve.es/television/azahar/" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "50 años de..."         , "http://www.rtve.es/television/50-de-tve/temporada1/" , "" , "" )
+	#xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "50 años de..."         , "http://www.rtve.es/television/50-de-tve/temporada1/" , "" , "" )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -290,10 +290,6 @@ def play(params,url,category):
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = "Directo"
-
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Descargando datos del vídeo...', title )
 
 	# --------------------------------------------------------
 	# Descarga pagina detalle

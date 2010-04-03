@@ -26,7 +26,7 @@ CHANNELNAME = "Boing"
 CHANNELCODE = "boing"
 
 def mainlist(params,url,category):
-	xbmc.output("[rtve.py] mainlist")
+	xbmc.output("[boing.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELCODE , "novedades" , CHANNELNAME , "Novedades" , "http://www.boing.es/videos/videos.xml"  , "" , "" )

@@ -14,6 +14,7 @@ import xbmcplugin
 import scrapertools
 import binascii
 import xbmctools
+import rtve
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
@@ -30,24 +31,21 @@ def mainlist(params,url,category):
 	xbmc.output("[rtvemediateca.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Noticias" , "http://www.rtve.es/mediateca/video/noticias/medialist.inc"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Deportes" , "http://www.rtve.es/mediateca/video/deportes/medialist.inc"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Programas", "http://www.rtve.es/mediateca/video/programas/medialist.inc" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Archivo"  , "http://www.rtve.es/mediateca/video/archivo/medialist.inc"   , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "folderlist" , "noticias"  , "Noticias" , "" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "folderlist" , "deportes"  , "Deportes" , "" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "folderlist" , "programas" , "Programas", "" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "folderlist" , "archivo"   , "Archivo"  , "" , "" , "" )
 
-	# Label (top-right)...
+	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def videolist(params,url,category):
-	xbmc.output("[rtvemediateca.py] videolist")
+def folderlist(params,url,category):
+	xbmc.output("[rtvemediateca.py] folderlist")
 
 	title = urllib.unquote_plus( params.get("title") )
+	url = "http://www.rtve.es/mediateca/video/"+category+"/medialist.inc"
 
 	# --------------------------------------------------------
 	# Descarga la página
@@ -56,42 +54,110 @@ def videolist(params,url,category):
 	#xbmc.output(data)
 
 	# --------------------------------------------------------
-	# Extrae las categorias (carpetas)
+	# Extrae las carpetas (nivel 1)
 	# --------------------------------------------------------
-	patron = '<a rel="nofollow" href="javascript\://" onclick="loadVideos\(\'([^\']+)\'\);" class="inf">([^<]+)</a>'
+	#primer nivel
+	#<li id="la-2-noticias" class="node-end"><a rel="nofollow" href="javascript://" onclick="loadVideos('noticias/la-2-noticias');" class="sup">La 2 Noticias</a></li>
+	#<li id="informativos-territoriales" class="expandable"><span onclick="loadVideos('noticias/informativos-territoriales');" class="closed">Informativos territoriales</span><ul>
+	#segundo nivel
+	#<li id="informatiu-balear"><a rel="nofollow" href="javascript://" onclick="loadVideos('noticias/informativos-territoriales/informatiu-balear');" class="inf">Informatiu Balear</a></li>
+	patron = '<li id="([^"]+)" class="([^"]+)"><.*?onclick="([^"]+)"[^>]*>([^<]+)<'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	scrapertools.printMatches(matches)
 
 	for match in matches:
 		try:
-			scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
+			scrapedtitle = unicode( match[3], "utf-8" ).encode("iso-8859-1")
 		except:
-			scrapedtitle = match[1]
+			scrapedtitle = match[3]
 		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-		
-		scrapedurl = "http://www.rtve.es/mediateca/video/"+match[0]+"/pagines_ajax/pagina1.html"
+
+		urlrelativa = match[2][12:-3]
+
+		#scrapedurl = "http://www.rtve.es/mediateca/video/"+urlrelativa+"/pagines_ajax/pagina1.html"
+		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		if match[1]=="node-end":
+			xbmctools.addnewfolder( CHANNELCODE , "videolist" , urlrelativa , scrapedtitle , "" , scrapedthumbnail, scrapedplot )
+		elif match[1]=="expandable":
+			xbmctools.addnewfolder( CHANNELCODE , "subfolderlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def subfolderlist(params,url,category):
+	xbmc.output("[rtvemediateca.py] subfolderlist")
+
+	title = urllib.unquote_plus( params.get("title") )
 
 	# --------------------------------------------------------
-	# Extrae los videos de la página actual
+	# Descarga la página
+	# --------------------------------------------------------
+	data = scrapertools.cachePage("http://www.rtve.es/mediateca/video/"+category+"/medialist.inc")
+	#xbmc.output(data)
+
+	# Localiza la categoria
+	patron = '<li id="'+url+'" class="expandable"><span onclick="[^"]+" class="closed">[^<]+</span><ul>(.*?)</ul>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	data = matches[0]
+
+	# --------------------------------------------------------
+	# Extrae las categorias (carpetas)
+	# --------------------------------------------------------
+	#primer nivel
+	#<li id="la-2-noticias" class="node-end"><a rel="nofollow" href="javascript://" onclick="loadVideos('noticias/la-2-noticias');" class="sup">La 2 Noticias</a></li>
+	#<li id="informativos-territoriales" class="expandable"><span onclick="loadVideos('noticias/informativos-territoriales');" class="closed">Informativos territoriales</span><ul>
+	#segundo nivel
+	#<li id="informatiu-balear"><a rel="nofollow" href="javascript://" onclick="loadVideos('noticias/informativos-territoriales/informatiu-balear');" class="inf">Informatiu Balear</a></li>
+	patron = '<li id="([^"]+)"><.*?onclick="([^"]+)"[^>]+>([^<]+)<'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		try:
+			scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
+		except:
+			scrapedtitle = match[2]
+		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+		
+		scrapedurl = match[0]
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		urlrelativa = match[1][12:-3]
+
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		#addvideo( scrapedtitle , scrapedurl , category )
+		xbmctools.addnewfolder( CHANNELCODE , "videolist" , urlrelativa , scrapedtitle , "" , scrapedthumbnail, scrapedplot )
+
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def videolist(params,url,category):
+	xbmc.output("[rtvemediateca.py] videolist")
+
+	# --------------------------------------------------------
+	# Descarga la página
+	# --------------------------------------------------------
+	if url=="":
+		url = "http://www.rtve.es/mediateca/video/"+category+"/pagines_ajax/pagina1.html"
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# --------------------------------------------------------
+	# Extrae los videos
 	# --------------------------------------------------------
 	patron  = '<div class="vthumb">.*?<a.*?href="([^"]+)"><img src="[^>]+><img src="([^"]+)[^>]+>.*?<a.*?href=[^>]+>([^<]+)</a></h2><span class="hour">([^<]+)</span>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
 		try:
@@ -109,50 +175,32 @@ def videolist(params,url,category):
 		scrapedplot = scrapertools.entityunescape(scrapedplot)
 
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# --------------------------------------------------------
-	# Extrae los videos de la página actual
+	# Extrae los videos
 	# --------------------------------------------------------
-	if url.endswith("pagina1.html"):
-		xbmc.output("Añade nueva página")
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Página 2" , url.replace("pagina1","pagina2") , "", "" )
+	patron  = '<a onclick="([^"]+)" href="javascript\:\/\/" rel="nofollow">Siguiente<'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+	if len(matches)>0:
+		#pagina('content_videos','2', '/mediateca/video/programas/series/aguila-roja')
+		#http://www.rtve.es/mediateca/video/programas/series/aguila-roja/pagines_ajax/pagina1.html
+		#http://www.rtve.es/mediateca/video/programas/series/aguila-roja/pagines_ajax/pagina2.html
+		scrapedtitle = "Página siguiente"
+		scrapedurl = "http://www.rtve.es"+matches[0][30:-2]+"/pagines_ajax/pagina"+matches[0][25:26]+".html"
+		scrapedplot = ""
+		scrapedthumbnail = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	if url.endswith("pagina2.html"):
-		xbmc.output("Añade nueva página")
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Página 3" , url.replace("pagina2","pagina3") , "", "" )
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELCODE , "videolist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-	if url.endswith("pagina3.html"):
-		xbmc.output("Añade nueva página")
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Página 4" , url.replace("pagina3","pagina4") , "", "" )
-
-	if url.endswith("pagina4.html"):
-		xbmc.output("Añade nueva página")
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Página 5" , url.replace("pagina4","pagina5") , "", "" )
-
-	if url.endswith("pagina5.html"):
-		xbmc.output("Añade nueva página")
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Página 6" , url.replace("pagina5","pagina6") , "", "" )
-
-	if url.endswith("pagina6.html"):
-		xbmc.output("Añade nueva página")
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Página 7" , url.replace("pagina6","pagina7") , "", "" )
-
-	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
@@ -163,10 +211,6 @@ def play(params,url,category):
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = "Directo"
 
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Descargando datos del vídeo...', title )
-
 	# --------------------------------------------------------
 	# Descarga XML con el descriptor del vídeo
 	# --------------------------------------------------------
@@ -176,21 +220,6 @@ def play(params,url,category):
 	data = url
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	codigo = matches[0]
-	
-	# Compone la URL
-	url = 'http://www.rtve.es/swf/data/es/videos/video/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
-	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
-	
-	data = scrapertools.cachePage(url)
-	patron = '<file>(.*?)</file>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-	url = matches[0]
-	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
 
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
-	
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	url = "http://www.rtve.es/alacarta/player/"+matches[0]+".xml"
+	rtve.play(params,url,category)
