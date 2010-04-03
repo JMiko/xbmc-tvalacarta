@@ -51,7 +51,7 @@ def cachePage(url):
 
 def cachePage2(url,headers):
 
-	xbmc.output("Descargando " + url)
+	xbmc.output("[scrapertools.py] cachePage2 - " + url)
 	inicio = time.clock()
 	req = urllib2.Request(url)
 	for header in headers:
@@ -82,7 +82,7 @@ def cachePage2(url,headers):
 
 def cachePagePost(url,data):
 
-	xbmc.output("Descargando " + url)
+	xbmc.output("[scrapertools.py] cachePagePost - " + url)
 	inicio = time.clock()
 	req = urllib2.Request(url,data)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -107,8 +107,99 @@ def cachePagePost(url,data):
 	'''
 	return data
 
+def cachePagePostCookies(url,data):
+	xbmc.output("[scrapertools.py] cachePagePostCookies - " + url)
+	xbmc.output("[scrapertools.py] cachePagePostCookies - data="+data)
+	inicio = time.clock()
+	#  Inicializa la librería de las cookies
+	ficherocookies = os.path.join( os.getcwd(), 'cookies.lwp' )
+	xbmc.output("[scrapertools.py] cachePagePostCookies - Cookiefile="+ficherocookies)
+
+	cj = None
+	ClientCookie = None
+	cookielib = None
+
+	# Let's see if cookielib is available
+	try:
+		import cookielib
+	except ImportError:
+		# If importing cookielib fails
+		# let's try ClientCookie
+		try:
+			import ClientCookie
+		except ImportError:
+			# ClientCookie isn't available either
+			urlopen = urllib2.urlopen
+			Request = urllib2.Request
+		else:
+			# imported ClientCookie
+			urlopen = ClientCookie.urlopen
+			Request = ClientCookie.Request
+			cj = ClientCookie.LWPCookieJar()
+
+	else:
+		# importing cookielib worked
+		urlopen = urllib2.urlopen
+		Request = urllib2.Request
+		cj = cookielib.LWPCookieJar()
+		# This is a subclass of FileCookieJar
+		# that has useful load and save methods
+
+	# ---------------------------------
+	# Instala las cookies
+	# ---------------------------------
+
+	if cj is not None:
+	# we successfully imported
+	# one of the two cookie handling modules
+
+		if os.path.isfile(ficherocookies):
+			# if we have a cookie file already saved
+			# then load the cookies into the Cookie Jar
+			cj.load(ficherocookies)
+
+		# Now we need to get our Cookie Jar
+		# installed in the opener;
+		# for fetching URLs
+		if cookielib is not None:
+			# if we use cookielib
+			# then we get the HTTPCookieProcessor
+			# and install the opener in urllib2
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+			urllib2.install_opener(opener)
+
+		else:
+			# if we use ClientCookie
+			# then we get the HTTPCookieProcessor
+			# and install the opener in ClientCookie
+			opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(cj))
+			ClientCookie.install_opener(opener)
+
+	#print "-------------------------------------------------------"
+	theurl = url
+	# an example url that sets a cookie,
+	# try different urls here and see the cookie collection you can make !
+
+	#txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
+	#			  'Referer':'http://www.megavideo.com/?s=signup'}
+	txheaders =  {	'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'}
+
+	# fake a user agent, some websites (like google) don't like automated exploration
+
+	req = Request(theurl, data, txheaders)
+	handle = urlopen(req)
+	cj.save(ficherocookies) # save the cookies again
+
+	data=handle.read()
+	handle.close()
+	fin = time.clock()
+	xbmc.output("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
+
+	return data
+
 def downloadpage(url):
-	xbmc.output("[scrapertools.py] Descargando " + url)
+	xbmc.output("[scrapertools.py] downloadpage - " + url)
+	
 	inicio = time.clock()
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
@@ -129,9 +220,11 @@ def downloadpage(url):
 	return data
 
 def downloadpagewithcookies(url):
+	xbmc.output("[scrapertools.py] downloadpagewithcookies - " + url)
+	inicio = time.clock()
 	#  Inicializa la librería de las cookies
 	ficherocookies = os.path.join( os.getcwd(), 'cookies.lwp' )
-	print "Cookiefile="+ficherocookies
+	xbmc.output("[scrapertools.py] cachePagePostCookies - Cookiefile="+ficherocookies)
 
 	cj = None
 	ClientCookie = None
@@ -203,7 +296,7 @@ def downloadpagewithcookies(url):
 	txheaders =  {
 	'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
 	'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-	'Host':'www.meristation.com',
+	#'Host':'www.meristation.com',
 	'Accept-Language':'es-es,es;q=0.8,en-us;q=0.5,en;q=0.3',
 	'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
 	'Keep-Alive':'300',
@@ -217,6 +310,8 @@ def downloadpagewithcookies(url):
 
 	data=handle.read()
 	handle.close()
+	fin = time.clock()
+	xbmc.output("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
 
 	return data
 
@@ -228,6 +323,7 @@ def printMatches(matches):
 
 def entityunescape(cadena):
 	cadena = cadena.replace('&amp;','&')
+	cadena = cadena.replace('&Agrave;','À')
 	cadena = cadena.replace('&Aacute;','Á')
 	cadena = cadena.replace('&Eacute;','É')
 	cadena = cadena.replace('&Iacute;','Í')
@@ -235,6 +331,7 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&Uacute;','Ú')
 	cadena = cadena.replace('&ntilde;','ñ')
 	cadena = cadena.replace('&Ntilde;','Ñ')
+	cadena = cadena.replace('&agrave;','à')
 	cadena = cadena.replace('&aacute;','á')
 	cadena = cadena.replace('&eacute;','é')
 	cadena = cadena.replace('&iacute;','í')
@@ -246,6 +343,8 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&quot;','"')
 	cadena = cadena.replace('&hellip;','...')
 	cadena = cadena.replace('&#39;','\'')
+	cadena = cadena.replace('&Ccedil;','Ç')
+	cadena = cadena.replace('&ccedil;','ç')
 	return cadena
 
 def getRandom(str):
@@ -291,3 +390,34 @@ def getLocationHeaderFromResponse(url):
 		print "Encontrado header location"
 	
 	return location
+
+def htmlclean(cadena):
+	cadena = cadena.replace("<center>","")
+	cadena = cadena.replace("</center>","")
+	cadena = cadena.replace("<em>","")
+	cadena = cadena.replace("</em>","")
+	cadena = cadena.replace("<b>","")
+	cadena = cadena.replace("</b>","")
+	cadena = cadena.replace("<p>","")
+	cadena = cadena.replace("</p>","")
+	cadena = cadena.replace("</span>","")
+	cadena = cadena.replace("</a>","")
+	cadena = cadena.replace("<strong>","")
+	cadena = cadena.replace("</strong>","")
+	cadena = cadena.replace("</ul>","")
+	cadena = cadena.replace("<li>","")
+	cadena = cadena.replace("</li>","")
+	cadena = cadena.replace("</dd>","")
+	cadena = cadena.replace("</div>","")
+
+	cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<a[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<ul[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("\t","")
+	cadena = entityunescape(cadena)
+	return cadena

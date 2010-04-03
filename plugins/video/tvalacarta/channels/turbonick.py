@@ -50,16 +50,14 @@ def mainlist(params,url,category):
 		scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/getIntlGatewayByID.jhtml?id='+match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		if scrapedtitle=="EPISODIOS":
+			xbmctools.addnewfolder( CHANNELCODE , "series" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		else:
+			xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -68,6 +66,98 @@ def mainlist(params,url,category):
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
 	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def series(params,url,category):
+	xbmc.output("[turbonick.py] series")
+
+	# --------------------------------------------------------
+	# Descarga la página
+	# --------------------------------------------------------
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# --------------------------------------------------------
+	# Extrae los vídeos
+	# --------------------------------------------------------
+	patron  = '<content\s+cmsid="([^"]+)"\s+type="content"\s+contenttype="video"[^>]+>[^<]+<meta(.*?)</meta'
+	bloques = re.compile(patron,re.DOTALL).findall(data)
+	#if DEBUG: scrapertools.printMatches(bloques)
+	
+	dictionaryseries = {}
+	
+	for bloque in bloques:
+		data = bloque[1]
+		patron  = '<title>([^<]+)</title>[^<]+'
+		patron += '<shorttitle>([^<]+)</shorttitle>[^<]+'
+		patron += '<description>([^<]+)</description>.*?'
+		patron += '<iconurl>([^<]+)</iconurl>[^<]+'
+		patron += '<iconurljpg>([^<]+)</iconurljpg>.*?'
+		patron += '<date>([^<]+)</date>.*?'
+		patron += '<showname>([^<]+)</showname>[^<]+'
+		patron += '<shortshowname>([^<]+)</shortshowname>[^<]+'
+		patron += '<showid>([^<]+)</showid>[^<]+'
+		matches = re.compile(patron,re.DOTALL).findall(data)
+		#if DEBUG: scrapertools.printMatches(matches)
+		idserie = matches[0][6]
+		#xbmc.output("[turbonick.py] idserie="+idserie)
+
+		if not dictionaryseries.has_key(idserie):
+			xbmc.output("Nueva serie %s" % idserie)
+			xbmctools.addnewfolder( CHANNELCODE , "episodios" , idserie , idserie , url , "" , "" )
+			dictionaryseries[idserie] = True
+
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def episodios(params,url,category):
+	xbmc.output("[turbonick.py] episodios")
+
+	# --------------------------------------------------------
+	# Descarga la página
+	# --------------------------------------------------------
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# --------------------------------------------------------
+	# Extrae los vídeos
+	# --------------------------------------------------------
+	patron  = '<content\s+cmsid="([^"]+)"\s+type="content"\s+contenttype="video"[^>]+>[^<]+<meta(.*?)</meta'
+	bloques = re.compile(patron,re.DOTALL).findall(data)
+	#if DEBUG: scrapertools.printMatches(bloques)
+	
+	for bloque in bloques:
+		data = bloque[1]
+		patron  = '<title>([^<]+)</title>[^<]+'
+		patron += '<shorttitle>([^<]+)</shorttitle>[^<]+'
+		patron += '<description>([^<]+)</description>.*?'
+		patron += '<iconurl>([^<]+)</iconurl>[^<]+'
+		patron += '<iconurljpg>([^<]+)</iconurljpg>.*?'
+		patron += '<date>([^<]+)</date>.*?'
+		patron += '<showname>([^<]+)</showname>[^<]+'
+		patron += '<shortshowname>([^<]+)</shortshowname>[^<]+'
+		patron += '<showid>([^<]+)</showid>[^<]+'
+		matches = re.compile(patron,re.DOTALL).findall(data)
+		#if DEBUG: scrapertools.printMatches(matches)
+		match = matches[0]
+		
+		idserie = match[6]
+		if match[1] != "false":
+			scrapedtitle = match[1]+" - "+match[2]
+		else:
+			scrapedtitle = idserie+" - "+match[2]
+		scrapedthumbnail = match[3]
+		scrapedplot = match[5]
+		scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/flvgenPT.jhtml?vid='+bloque[0]+'&hiLoPref=hi'
+		
+		#xbmc.output("[turbonick.py] idserie="+idserie)
+
+		if idserie==category:
+			xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def videolist(params,url,category):
@@ -104,27 +194,18 @@ def videolist(params,url,category):
 		if scrapedthumbnail == "":
 			scrapedthumbnail = match[4]
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		if dictionaryurl.has_key(scrapedurl):
 			xbmc.output("repetido")
 		else:
-			xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+			xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 			dictionaryurl[scrapedurl] = True
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):

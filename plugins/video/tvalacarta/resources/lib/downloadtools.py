@@ -322,16 +322,36 @@ entitydefs3 = {
 }
 
 def getDownloadPath():
+	
+	# La ruta de descarga es un parámetro
 	downloadpath = xbmcplugin.getSetting("downloadpath")
-	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	
+	# No está fijada, intenta forzarla
 	try:
-		if downloadpath=="":
-			downloadpath = xbmc.translatePath( "special://home/downloads")
-			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-			xbmcplugin.setSetting("downloadpath",downloadpath)
+		if downloadpath == "":
+			xbmc.output("[downloadtools.py] downloadpath está vacio")
+			
+			# Busca un setting del skin (Telebision)
+			downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
+			xbmc.output("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+			
+			# No es Telebision, fuerza el directorio home de XBMC
+			if downloadpath == "":
+				downloadpath = xbmc.translatePath( "special://home/downloads")
+				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+				xbmcplugin.setSetting("downloadpath",downloadpath)
+			
+			# Es Telebision, lo pone en el skin
+			else:
+				# guardar setting del skin en setting del plugin
+				downloadpath = xbmc.translatePath( downloadpath )
+				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
+				xbmcplugin.setSetting("downloadpath", downloadpath)
 	except:
 		pass
-
+	
+	xbmc.output("[downloadtools.py] downloadpath="+downloadpath)
+	
 	try:
 		os.mkdir(downloadpath)
 	except:
@@ -340,16 +360,37 @@ def getDownloadPath():
 	return downloadpath
 
 def getDownloadListPath():
+	
+	# La ruta de la lista de descargas es un parámetro
 	downloadpath = xbmcplugin.getSetting("downloadlistpath")
-	xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+	
+	# No está fijada, intenta forzarla
 	try:
-		if downloadpath=="":
-			downloadpath = xbmc.translatePath( "special://home/downloads/list")
-			xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-			xbmcplugin.setSetting("downloadlistpath",downloadpath)
+		if downloadpath == "":
+			xbmc.output("[downloadtools.py] downloadpath está vacio")
+			
+			# Busca un setting del skin (Telebision)
+			downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
+			xbmc.output("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+			
+			# No es Telebision, fuerza el directorio home de XBMC
+			if downloadpath == "":
+				downloadpath = xbmc.translatePath( "special://home/downloads/list")
+				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+				xbmcplugin.setSetting("downloadlistpath",downloadpath)
+			
+			# Es Telebision, lo pone en el skin
+			else:
+				# guardar setting del skin en setting del plugin
+				downloadpath = os.path.join( downloadpath , "list" )
+				downloadpath = xbmc.translatePath( downloadpath )
+				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
+				xbmcplugin.setSetting("downloadlistpath", downloadpath)
 	except:
 		pass
-
+	
+	xbmc.output("[downloadtools.py] downloadlistpath="+downloadpath)
+	
 	try:
 		os.mkdir(downloadpath)
 	except:
@@ -429,12 +470,6 @@ def limpia_nombre_excepto_2(s):
     stripped = ''.join(c for c in s if c in validchars)
     return stripped;
 
-#-----------------------------------------------------------------------
-# Diálogo de progreso
-#-----------------------------------------------------------------------
-
-progreso = xbmcgui.DialogProgress()
-
 def getfilefromtitle(url,title):
 	# Imprime en el log lo que va a descartar
 	xbmc.output("[downloadtools.py] getfilefromtitle: url="+url )
@@ -443,8 +478,12 @@ def getfilefromtitle(url,title):
 	xbmc.output("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
 	
 	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
-	nombrefichero = title + url[-4:]
-	
+	if plataforma=="xbox":
+		nombrefichero = title[:38] + url[-4:]
+		nombrefichero = limpia_nombre_excepto_1(nombrefichero)
+	else:
+		nombrefichero = title + url[-4:]
+
 	xbmc.log("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 	fullpath = os.path.join( getDownloadPath() , nombrefichero )
 	xbmc.log("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
@@ -476,6 +515,8 @@ def downloadfile(url,nombrefichero):
 		f = open(nombrefichero, 'wb')
 		grabado = 0
 
+	# Crea el diálogo de progreso
+	progreso = xbmcgui.DialogProgress()
 	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
@@ -498,26 +539,53 @@ def downloadfile(url,nombrefichero):
 	blocksize = 100*1024
 
 	bloqueleido = connexion.read(blocksize)
-	xbmc.log("bloqueleido=%s" % len(bloqueleido))
+	xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
+
+	maxreintentos = 3
 	
 	while len(bloqueleido)>0:
 		try:
+			# Escribe el bloque leido
 			f.write(bloqueleido)
 			grabado = grabado + len(bloqueleido)
 			percent = int(float(grabado)*100/float(totalfichero))
 			totalmb = float(float(totalfichero)/(1024*1024))
 			descargadosmb = float(float(grabado)/(1024*1024))
 			progreso.update( percent , "Descargados %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent ) )
-			bloqueleido = connexion.read(blocksize)
-			#xbmc.log("bloqueleido=%s" % len(bloqueleido))
+
+			# Lee el siguiente bloque, reintentando para no parar todo al primer timeout
+			reintentos = 0
+			while reintentos <= maxreintentos:
+				try:
+					bloqueleido = connexion.read(blocksize)
+					break
+				except:
+					reintentos = reintentos + 1
+					xbmc.log("ERROR en la descarga del bloque, reintento %d" % reintentos)
+					for line in sys.exc_info():
+						xbmc.output( "%s" % line , xbmc.LOGERROR )
 			
+			# El usuario cancelo la descarga
 			if progreso.iscanceled():
+				xbmc.log("Descarga del fichero cancelada")
 				f.close()
+				progreso.close()
 				return -1
+
+			# Ha habido un error en la descarga
+			if reintentos > maxreintentos:
+				xbmc.log("ERROR en la descarga del fichero")
+				f.close()
+				progreso.close()
+
+				return -2
+
 		except:
+			xbmc.log("ERROR en la descarga del fichero")
 			for line in sys.exc_info():
 				xbmc.output( "%s" % line , xbmc.LOGERROR )
 			f.close()
+			progreso.close()
 			
 			#advertencia = xbmcgui.Dialog()
 			#resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
@@ -525,3 +593,5 @@ def downloadfile(url,nombrefichero):
 			return -2
 
 	f.close()
+	progreso.close()
+	xbmc.log("Fin descarga del fichero")

@@ -38,7 +38,7 @@ def run():
 
 	# Extrae la categoria
 	if (params.has_key("category")):
-		category = params.get("category")
+		category = urllib.unquote_plus( params.get("category") )
 	else:
 		if params.has_key("channel"):
 			category = params.get("channel")
