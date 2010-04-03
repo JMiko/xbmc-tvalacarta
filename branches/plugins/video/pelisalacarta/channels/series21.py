@@ -44,7 +44,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor"      , category , "Actores - Busqueda Alfabética"  ,"http://www.series21.com/actores/","","")	
 	xbmctools.addnewfolder( CHANNELNAME , "search"                  , category , "Series - Buscar"                           ,"","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

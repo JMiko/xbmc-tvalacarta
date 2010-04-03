@@ -48,7 +48,7 @@ def mainlist(params,url,category):
 	#xbmctools.addnewfolder( CHANNELNAME , "deportes"   , category , "Deportes"                         ,"","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

@@ -37,7 +37,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "list", category , "Series","http://pelis24.com/series/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "list", category , "Novedades","http://pelis24.com/","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

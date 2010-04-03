@@ -37,7 +37,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "peliscat"   , category , "Películas - Lista por categorías" ,"http://www.cine15.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Propiedades

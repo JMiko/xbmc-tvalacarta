@@ -37,7 +37,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://www.animetakus.com/" , "", "" )
 
 	# Si es un canal independiente, añade "Configuracion", "Descargas" y "Favoritos"
-	if xbmctools.getPluginSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
