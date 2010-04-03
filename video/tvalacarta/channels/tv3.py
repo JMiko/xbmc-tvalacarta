@@ -43,11 +43,7 @@ def mainlist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def videolist1(params,url,category):
@@ -129,11 +125,7 @@ def videolist1(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def videolist(params,url,category):
@@ -207,11 +199,7 @@ def videolist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def hdvideolist(params,url,category):
@@ -268,11 +256,7 @@ def hdvideolist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
@@ -292,11 +276,85 @@ def play(params,url,category):
 	codigo = matches[0]
 
 	# Prueba con el modo 1
-	url = geturl1(codigo)
+	url = geturl3(codigo)
+	if url=="":
+		url = geturl1(codigo)
 	if url=="":
 		url = geturl2(codigo)
+	if url=="":
+		url = geturl4(codigo)
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	if url.startswith("http"):
+		xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	else:
+		# Playlist vacia
+		playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+		playlist.clear()
+		'''
+		C:\util\flvstreamer>flvstreamer -r "rtmp://mp4-500-str.tv3.cat/ondemand/mp4:g/tvcatalunya/3/1/1269579524113.mp4" -o out.mp4
+		FLVStreamer v1.7
+		(c) 2009 Andrej Stepanchuk, license: GPL
+
+		DEBUG: Parsing...
+		DEBUG: Parsed protocol: 0
+		DEBUG: Parsed host    : mp4-500-str.tv3.cat
+		DEBUG: Parsed app     : ondemand
+		DEBUG: Parsed playpath: mp4:g/tvcatalunya/3/1/1269579524113.mp4
+		DEBUG: Setting buffer time to: 36000000ms
+		Connecting ...
+		DEBUG: Protocol : RTMP
+		DEBUG: Hostname : mp4-500-str.tv3.cat
+		DEBUG: Port     : 1935
+		DEBUG: Playpath : mp4:g/tvcatalunya/3/1/1269579524113.mp4
+		DEBUG: tcUrl    : rtmp://mp4-500-str.tv3.cat:1935/ondemand
+		DEBUG: app      : ondemand
+		DEBUG: flashVer : LNX 9,0,124,0
+		DEBUG: live     : no
+		DEBUG: timeout  : 300 sec
+		DEBUG: Connect, ... connected, handshaking
+		DEBUG: HandShake: Type Answer   : 03
+		DEBUG: HandShake: Server Uptime : 1411286161
+		DEBUG: HandShake: FMS Version   : 3.5.2.1
+		DEBUG: Connect, handshaked
+		Connected...
+		'''
+		#url = "rtmp://mp4-500-str.tv3.cat/ondemand/mp4:g/tvcatalunya/3/1/1269579524113.mp4"
+		patron = "rtmp\:\/\/([^\/]+)\/ondemand\/(mp4\:g\/.*?mp4)"
+		matches = re.compile(patron,re.DOTALL).findall(url)
+		scrapertools.printMatches(matches)
+		match = matches[0]
+
+		hostname = match[0]
+		xbmc.output("[tv3.py] hostname="+hostname)
+
+		portnumber = "1935"
+		xbmc.output("[tv3.py] portnumber="+portnumber)
+		
+		tcurl = "rtmp://"+hostname+"/ondemand"
+		xbmc.output("[tv3.py] tcurl="+tcurl)
+		
+		playpath = match[1]
+		xbmc.output("[tv3.py] playpath="+playpath)
+		
+		app = "ondemand"
+		xbmc.output("[tv3.py] app="+app)
+		
+		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
+		#listitem.setProperty("SWFPlayer", "http://www.plus.es/plustv/carcasa.swf")
+		listitem.setProperty("Hostname",hostname)
+		listitem.setProperty("Port",portnumber)
+		listitem.setProperty("tcUrl",tcurl)
+		listitem.setProperty("Playpath",playpath)
+		listitem.setProperty("app",app)
+		listitem.setProperty("flashVer","LNX 9,0,124,0")
+		listitem.setProperty("pageUrl","LNX 9,0,124,0")
+
+		listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
+		playlist.add( url, listitem )
+
+		# Reproduce
+		xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
+		xbmcPlayer.play(playlist)   
 
 def geturl1(codigo):
 	#http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID=1594629&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474
@@ -337,6 +395,46 @@ def geturl2(codigo):
 	if len(matches)>0:
 		url = matches[0]
 		url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
+	xbmc.output("url="+url)
+	return url
+
+def geturl3(codigo):
+	dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=MP4"
+	xbmc.output("[tv3.py] geturl2 dataurl="+dataurl)
+
+	req = urllib2.Request(dataurl)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(req)
+	data=response.read()
+	response.close()
+	xbmc.output("data="+data)
+
+	patron = "(rtmp://[^\?]+)\?"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	url = ""
+	if len(matches)>0:
+		url = matches[0]
+		#url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
+	xbmc.output("url="+url)
+	return url
+
+def geturl4(codigo):
+	dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=MP4GES&RP=www.tv3.cat"
+	xbmc.output("[tv3.py] geturl2 dataurl="+dataurl)
+	
+	req = urllib2.Request(dataurl)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(req)
+	data=response.read()
+	response.close()
+	xbmc.output("data="+data)
+
+	patron = "(rtmp://[^\?]+)\?"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	url = ""
+	if len(matches)>0:
+		url = matches[0]
+		#url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
 	xbmc.output("url="+url)
 	return url
 
