@@ -19,6 +19,7 @@ import library
 import descargadoslist
 import re
 
+xbmc.output ("[xbmctools] INIT")
 # Esto permite su ejecución en modo emulado
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
@@ -34,14 +35,29 @@ LIBRARY_CATEGORIES.append ('Cine') #Valor developers (descomentar para activar)
 
 try:
 	buildVersion = xbmc.getInfoLabel("System.BuildVersion")
-	xbmc.log ("[xbmctools] BuildVersion: " + buildVersion)
-	rev_re = re.compile(' r(\d+)')
-	VERSION_XBMC = int (rev_re.search(buildVersion).group(1))
+	if buildVersion.startswith('PRE-10.') or buildVersion.startswith('10.') or buildVersion.startswith('UNKNOWN'):
+		# Probablemente se trate de xbmc - buscamos la revisión en la forma rXXXXX
+		xbmc.output ("[xbmctools] XBMC BuildVersion: " + buildVersion)
+		rev_re = re.compile(' r(\d+)')
+		VERSION_XBMC = int (rev_re.search(buildVersion).group(1))
+	elif buildVersion.startswith('0.9.'):
+		# Probablemente se trata de la betaX de Boxee
+		xbmc.output ("[xbmctools] BOXEE BuildVersion: " + buildVersion)
+		rev_re = re.compile('0\.9\.\d+\.(\d+)')
+		VERSION_BOXEE = int (rev_re.search(buildVersion).group(1))
+		VERSION_XBMC = 0
+		xbmc.output ("[xbmctools] init Versión BOXEE: %d" % (VERSION_BOXEE,))
+	else: #Falta código para Plex... Cuando tenga acceso
+		VERSION_XBMC = 0
 except:
+	xbmc.output ("[xbmctools] init except: %s" % (sys.exc_info()[0],))
 	VERSION_XBMC = 0
+xbmc.output ("[xbmctools] init Versión XBMC: %d" % (VERSION_XBMC,))
 
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 DEBUG = True
+
+
  
 def get_system_platform():
 	""" fonction: pour recuperer la platform que xbmc tourne """
