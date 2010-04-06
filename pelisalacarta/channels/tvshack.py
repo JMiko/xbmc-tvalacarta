@@ -66,7 +66,7 @@ def mainlist(params,url,category):
   xbmctools.addnewfolder( CHANNELNAME , "Buscar" , "" , "Busqueda Global en TVShack" , "http://tvshack.net/search/" , thumbnail=BUSCADOR_THUMBNAIL , plot="" )
 
   # Opciones adicionales si modo canal único
-  if xbmcplugin.getSetting ("singlechannel")=="true":
+  if xbmctools.getPluginSetting ("singlechannel")=="true":
     xbmctools.addSingleChannelOptions (params , url , category)
 
   xbmc.output("[tvshac.py] mainlist finalizaplugin handle: "+str(pluginhandle))
@@ -440,7 +440,8 @@ def ListaDetallada(params,url,category):
     scrapednote = ""
     
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , totalItems=totalmatches)
+    xbmctools.addnewvideo( CHANNELNAME , "listaVideosEpisodio" , category , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapednote , totalItems=totalmatches)
+#    xbmctools.addnewfolder( CHANNELNAME , "listaVideosEpisodio" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapednote , totalItems=totalmatches)
 
   pDialog.update(100, texto1)
   FinalizaPlugin (pluginhandle,category)
@@ -521,7 +522,7 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
       scrapedtitle = scrapedtitle + ' (NO SOPORTADO)'
       
     opciones.append(scrapedtitle)
-  if xbmcplugin.getSetting("default_action")=="0":
+  if xbmctools.getPluginSetting("default_action")=="0":
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Elige un vídeo", opciones)
   else:
@@ -663,7 +664,7 @@ def FinalizaPlugin (pluginhandle,category):
   """
   # Indicar metadatos del plugin para skis (Categoría y contenido)
   xbmcplugin.setPluginCategory (pluginhandle , category)
-  xbmcplugin.setContent (pluginhandle , category) #Estamos usando category como content.
+  xbmcplugin.setContent (pluginhandle , "Videos") #Estamos usando category como content.
 
   # Deshabilitar ordenación
   xbmcplugin.addSortMethod (handle=pluginhandle , sortMethod=xbmcplugin.SORT_METHOD_NONE)

@@ -40,7 +40,7 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[seriesyonkis.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	xbmctools.addnewfolder( CHANNELNAME , "lastepisodeslist" , category , "Últimos capítulos","http://www.seriesyonkis.com/ultimos-capitulos.php","","")
@@ -51,7 +51,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "allminilist"      , category , "Listado completo de miniseries","http://www.seriesyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"           , category , "Buscar","","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if xbmctools.getPluginSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -107,7 +107,7 @@ def performsearch(texto):
 def searchresults(params,url,category):
 	xbmc.output("[seriesyonkis.py] searchresults")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -153,7 +153,7 @@ def searchresults(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listalfabetico(params, url, category):
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
 	
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "0-9","http://www.seriesyonkis.com/lista-series/listaSeriesNumeric.php","","")
@@ -195,7 +195,7 @@ def listalfabetico(params, url, category):
 
 def listseriesthumbnails(params,url,category):
 	xbmc.output("[seriesyonkis.py] listseriesthumbnails")
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -244,7 +244,7 @@ def listseriesthumbnails(params,url,category):
 
 def lastepisodeslist(params,url,category):
 	xbmc.output("[seriesyonkis.py] lastepisodeslist")
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -314,7 +314,7 @@ def allminilist(params,url,category):
 
 def allserieslist(params,url,category,clave):
 	xbmc.output("[seriesyonkis.py] allserieslist")
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
 
 	# Descarga la página
@@ -366,7 +366,7 @@ def allserieslist(params,url,category,clave):
 
 def list(params,url,category):
 	xbmc.output("[seriesyonkis.py] list")
-	if xbmcplugin.getSetting("forceview")=="true":
+	if xbmctools.getPluginSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
 
 	# Descarga la página

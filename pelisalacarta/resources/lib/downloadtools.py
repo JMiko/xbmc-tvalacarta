@@ -19,6 +19,34 @@ import binascii
 import md5
 import xbmctools
 import httplib
+import re
+
+# Esto permite su ejecución en modo emulado
+try:
+	pluginhandle = int( sys.argv[ 1 ] )
+except:
+	pluginhandle = ""
+
+try:
+	buildVersion = xbmc.getInfoLabel("System.BuildVersion")
+	if buildVersion.startswith('PRE-10.') or buildVersion.startswith('10.') or buildVersion.startswith('UNKNOWN'):
+		# Probablemente se trate de xbmc - buscamos la revisión en la forma rXXXXX
+		xbmc.output ("[downloadtools] XBMC BuildVersion: " + buildVersion)
+		rev_re = re.compile(' r(\d+)')
+		VERSION_XBMC = int (rev_re.search(buildVersion).group(1))
+	elif buildVersion.startswith('0.9.'):
+		# Probablemente se trata de la betaX de Boxee
+		xbmc.output ("[downloadtools] BOXEE BuildVersion: " + buildVersion)
+		rev_re = re.compile('0\.9\.\d+\.(\d+)')
+		VERSION_BOXEE = int (rev_re.search(buildVersion).group(1))
+		VERSION_XBMC = 0
+		xbmc.output ("[downloadtools] init Versión BOXEE: %d" % (VERSION_BOXEE,))
+	else: #Falta código para Plex... Cuando tenga acceso
+		VERSION_XBMC = 0
+except:
+	xbmc.output ("[downloadtools] init except: %s" % (sys.exc_info()[0],))
+	VERSION_XBMC = 0
+xbmc.output ("[downloadtools] init Versión XBMC: %d" % (VERSION_XBMC,))
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -324,7 +352,7 @@ entitydefs3 = {
 def getDownloadPath():
 	
 	# La ruta de descarga es un parámetro
-	downloadpath = xbmcplugin.getSetting("downloadpath")
+	downloadpath = xbmctools.getPluginSetting("downloadpath")
 	
 	# No está fijada, intenta forzarla
 	try:
@@ -362,7 +390,11 @@ def getDownloadPath():
 def getDownloadListPath():
 	
 	# La ruta de la lista de descargas es un parámetro
-	downloadpath = xbmcplugin.getSetting("downloadlistpath")
+#	downloadpath = xbmcplugin.getSetting( int( sys.argv[ 1 ] ), "downloadlistpath")
+	if VERSION_XBMC <= 28276:
+		downloadpath = xbmcplugin.getSetting("downloadlistpath")
+	else:
+		downloadpath = xbmcplugin.getSetting(pluginhandle, "downloadlistpath")
 	
 	# No está fijada, intenta forzarla
 	try:

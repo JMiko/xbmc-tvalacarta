@@ -7,11 +7,12 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 import scrapertools
+import xbmctools
 
 xbmc.output("[channelselector.py] init")
 
 DEBUG = True
-if xbmcplugin.getSetting("thumbnail_type")=="0":
+if xbmctools.getPluginSetting("thumbnail_type")=="0":
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
 else:
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
@@ -32,7 +33,7 @@ def listchannels(params,url,category):
 	xbmc.output("[channelselector.py] listchannels")
 
 	# Verifica actualizaciones solo en el primer nivel
-	if xbmcplugin.getSetting("updatecheck2") == "true":
+	if xbmctools.getPluginSetting("updatecheck2") == "true":
 		xbmc.output("updatecheck2=true")
 		import updater
 		updater.checkforupdates()
@@ -58,7 +59,7 @@ def listchannels(params,url,category):
 	addfolder("Veocine","veocine","mainlist")
 	addfolder("Pintadibujos","pintadibujos","mainlist")
 	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
-	if xbmcplugin.getSetting("enableadultmode") == "true":
+	if xbmctools.getPluginSetting("enableadultmode") == "true":
 		addfolder("MocosoftX","mocosoftx","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
 	addfolder("Capitan Cinema","capitancinema","mainlist")
