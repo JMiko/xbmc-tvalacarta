@@ -14,6 +14,7 @@ import sys
 import xbmc
 import xbmcplugin
 import xbmcgui
+import xbmctools
 
 # Esto funciona en todos, excepto plex y linux
 #COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
@@ -211,7 +212,7 @@ def Megavideo(mega):
 	mega = getcode(mega)
 
 	xbmc.output("[megavideo.py] Megavideo")
-	modoPremium = xbmcplugin.getSetting("megavideopremium")
+	modoPremium = xbmctools.getPluginSetting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	
 	if modoPremium == "false":
@@ -229,7 +230,7 @@ def getlowurl(code):
 	
 	code=getcode(code)
 
-	modoPremium = xbmcplugin.getSetting("megavideopremium")
+	modoPremium = xbmctools.getPluginSetting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	if modoPremium == "false":
 		xbmc.output("[megavideo.py] usando modo normal para baja calidad")
@@ -248,14 +249,14 @@ def getlowurl(code):
 			#addLink(name, movielink+'?.flv','')
 	else:
 		xbmc.output("[megavideo.py] usando modo premium para baja calidad")
-		megavideocookie = xbmcplugin.getSetting("megavideocookie")
+		megavideocookie = xbmctools.getPluginSetting("megavideocookie")
 		if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 
 		xbmc.output("[megavideo.py] Averiguando cookie...")
-		megavideologin = xbmcplugin.getSetting("megavideouser")
+		megavideologin = xbmctools.getPluginSetting("megavideouser")
 		if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
 
-		megavideopassword = xbmcplugin.getSetting("megavideopassword")
+		megavideopassword = xbmctools.getPluginSetting("megavideopassword")
 		if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 
 		megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
@@ -287,14 +288,14 @@ def gethighurl(code):
 	
 	code = getcode(code)
 
-	megavideocookie = xbmcplugin.getSetting("megavideocookie")
+	megavideocookie = xbmctools.getPluginSetting("megavideocookie")
 	if DEBUG:
 		xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 	#if megavideocookie=="":
 	xbmc.output("[megavideo.py] Averiguando cookie...")
-	megavideologin = xbmcplugin.getSetting("megavideouser")
+	megavideologin = xbmctools.getPluginSetting("megavideouser")
 	if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
-	megavideopassword = xbmcplugin.getSetting("megavideopassword")
+	megavideopassword = xbmctools.getPluginSetting("megavideopassword")
 	if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 	megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
 	if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")

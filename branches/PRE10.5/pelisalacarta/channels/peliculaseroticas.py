@@ -99,7 +99,7 @@ def mainlist(params,url,category):
 		scrapedplot = ""
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )        
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if xbmctools.getPluginSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
