@@ -41,7 +41,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "DocuARCHIVO", category , "Documentales - Archivo" ,"http://discoverymx.wordpress.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if xbmctools.getPluginSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Propiedades
