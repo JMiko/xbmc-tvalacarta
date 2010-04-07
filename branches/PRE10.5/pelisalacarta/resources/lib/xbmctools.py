@@ -540,7 +540,7 @@ def getPluginSetting(key):
 	'''
 
 #	dlog ('[xbmctools] getSettings Version XBMC=%d' % (VERSION_XBMC,))
-	if VERSION_XBMC <= 28276:
+	if VERSION_XBMC <= 28764:
 		value = xbmcplugin.getSetting(key)
 	else:
 		value = xbmcplugin.getSetting(pluginhandle, key)
@@ -549,6 +549,18 @@ def getPluginSetting(key):
 
 	return value
 	
+
+def openPluginSettings():
+	'''Abre la pantalla de configuración del Plugin
+	
+	Adaptado a los cambios en los plugins a partir de PRE10.5
+	'''
+	dlog ('[xbmctools] openPluginSettings')
+
+	if VERSION_XBMC <= 28764:
+		xbmcplugin.openSettings( sys.argv[ 0 ] )
+	else:
+		sys.modules["__main__"].__settings__.openSettings()
 
 def dlog (text):
 	if DEBUG:
