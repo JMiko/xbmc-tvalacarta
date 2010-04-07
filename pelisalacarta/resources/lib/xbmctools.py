@@ -158,25 +158,25 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	
 	# Abre el diálogo de selección
 	opciones = []
-
+	default_action = getPluginSetting("default_action")
 	# Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
 	# Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
 	if (server=="Megavideo" or server=="Megaupload") and getPluginSetting("megavideopremium")=="true":
 		opciones.append("Ver en calidad alta ["+server+"]")
 		# Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
-		if getPluginSetting("default_action")=="2":
+		if default_action=="2":
 			seleccion = len(opciones)-1
 
 	# Los vídeos de Megavídeo o Megaupload se pueden ver en calidad baja sin cuenta premium, aunque con el límite
 	if (server=="Megavideo" or server=="Megaupload"):
 		opciones.append("Ver en calidad baja [Megavideo]")
 		# Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
-		if getPluginSetting("default_action")=="1":
+		if default_action=="1":
 			seleccion = len(opciones)-1
 	else:
 		opciones.append("Ver ["+server+"]")
 		# Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
-		if getPluginSetting("default_action")=="1":
+		if default_action<>"0":  #Si hay alguna calidad elegida (alta o baja) seleccionarmos esta para los no megavideo
 			seleccion = len(opciones)-1
 
 	opciones.append("Descargar")
@@ -204,7 +204,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		opciones.append("Buscar Trailer")
 
 	# Si la accion por defecto es "Preguntar", pregunta
-	if getPluginSetting("default_action")=="0":
+	if default_action=="0":
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
 		#dia.close()
