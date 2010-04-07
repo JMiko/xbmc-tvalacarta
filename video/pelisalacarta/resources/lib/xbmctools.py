@@ -184,7 +184,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	# No ha elegido nada, lo más probable porque haya dado al ESC 
 	if seleccion==-1:
 		if strmfile:  #Para evitar el error "Uno o más elementos fallaron" al cancelar la selección desde fichero strm
-			listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path="")    # JUR Modified
+			listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
 			xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,listitem)    # JUR Added
 		return
 	# Ver en calidad alta
@@ -304,7 +304,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		listitem = getLibraryInfo(mediaurl)
 	else:
 		xbmc.output("[xbmctools.py] 2")
-		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
+		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
 		listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
 
 		
