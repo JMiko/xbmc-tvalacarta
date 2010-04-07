@@ -391,7 +391,7 @@ def getDownloadListPath():
 	
 	# La ruta de la lista de descargas es un parámetro
 #	downloadpath = xbmcplugin.getSetting( int( sys.argv[ 1 ] ), "downloadlistpath")
-	if VERSION_XBMC <= 28276:
+	if VERSION_XBMC <= 28764:
 		downloadpath = xbmcplugin.getSetting("downloadlistpath")
 	else:
 		downloadpath = xbmcplugin.getSetting(pluginhandle, "downloadlistpath")
