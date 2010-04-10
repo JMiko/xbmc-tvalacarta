@@ -139,7 +139,7 @@ def play(params,url,category):
 
 	postdata = url
 	data = postespecial("http://styleguide.thetriplets.com/bessones/cinema/cine.php",postdata)
-	xbmc.output("[tresmellizas.py] data="+data)
+	#xbmc.output("[tresmellizas.py] data="+data)
 	
 	patron = "'movie','([^']+)'"
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -155,7 +155,7 @@ def play(params,url,category):
 def postespecial(url,data):
 
 	xbmc.output("[scrapertools.py] postespecial - " + url)
-	xbmc.output("[scrapertools.py] postespecial - data=" + data)
+	#xbmc.output("[scrapertools.py] postespecial - data=" + data)
 	inicio = time.clock()
 	req = urllib2.Request(url,data)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
