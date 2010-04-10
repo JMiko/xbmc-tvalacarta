@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addoninfo>
+  <id>info.mimediacenter.tvalacarta</id>
+  <type>plugin</type>
+  <supportedcontent>
+    <content>video</content>
+  </supportedcontent>
+  <title>tvalacarta</title>
+  <library>default.py</library>
+  <version>2.3.1</version>
+  <platforms>
+    <platform>all</platform>
+  </platforms>
+  <minversion>
+    <xbmc>25000</xbmc>
+  </minversion>
+  <summary>Televisión a la carta</summary>
+  <description>Watch on demand videos from Spanish TV sites</description>
+  <author>jesus</author>
+</addoninfo>

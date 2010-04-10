@@ -45,7 +45,7 @@ def mainlist(params,url,category):
 
 	for match in matches:
 		scrapedtitle = match[1]
-		scrapedurl = "http://www.barcelonatv.cat/alacarta/cerca.php?cercaProgrames=%s&txt_fInici=01/01/2008&txt_fFin=31/12/2009&Cercar_x=17&Cercar_y=18" % match[0]
+		scrapedurl = "http://www.barcelonatv.cat/alacarta/cerca.php?cercaProgrames=%s&txt_fInici=01/01/2008&txt_fFin=31/12/2010&Cercar_x=17&Cercar_y=18" % match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
@@ -170,8 +170,9 @@ def play(params,url,category):
 	patron = 'href="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
+	
 	try:
-		url = matches[0]
+		url = matches[len(matches)-1]
 	except:
 		url = ""
 	

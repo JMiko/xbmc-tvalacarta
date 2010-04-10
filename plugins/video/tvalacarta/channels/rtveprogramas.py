@@ -72,7 +72,7 @@ def espanoles(params,url,category):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELCODE , "espanolesdetail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# --------------------------------------------------------
 	# Descarga la página
@@ -105,63 +105,7 @@ def espanoles(params,url,category):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELCODE , "espanolesdetail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def espanolesdetail(params,url,category):
-	xbmc.output("[rtveprogramas.py] generico")
-
-	# --------------------------------------------------------
-	# Localiza el capítulo completo
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
-	'''
-	<div class="mark">
-	<div class="news bg01   comp">
-	<span class="imgT"><a href="/mediateca/videos/20100119/espanoles-mundo--guatemala/672608.shtml" title="Próximo destino... Guatemala"><img src="/imagenes/proximo-destino-guatemala/1263834343130.jpg" alt="Próximo destino... Guatemala" title="Próximo destino... Guatemala"/></a></span>
-	<h3 class="L ">
-	<a href="/mediateca/videos/20100119/espanoles-mundo--guatemala/672608.shtml" title="Españoles en... Guatemala">Españoles en... Guatemala</a>
-	</h3>
-	<div class="chapeaux">Recorremos el corazón del mundo maya de la mano de seis españoles. Tierra de volcanes que aún siguen rugiendo y de algunos de los lagos más bellos del planeta. Aunque es uno de los paises más pobres de Latinoamérica -donde la mitad de los niños sufre malnutrición- , es un tesoro natural por la riqueza de sus paisajes y su naturaleza virgen.<br/></div>
-	</div>
-	</div>
-	'''
-	patron  = '<div class="mark">[^<]+'
-	patron += '<div class="news bg01   comp">[^<]+'
-	patron += '<span class="[^"]+"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)" alt="[^"]+" title="[^"]+"/></a></span>[^<]+'
-	patron += '<h3 class="L ">[^<]+'
-	patron += '<a href="[^"]+" title="[^"]+">[^<]+</a>[^<]+'
-	patron += '</h3>[^<]+'
-	patron += '<div class="chapeaux">([^<]+)<'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
-
-	for match in matches:
-		# Datos
-		scrapedtitle = match[1]
-		scrapedurl = urlparse.urljoin(url, match[0])
-		scrapedthumbnail = urlparse.urljoin(url, match[2])
-		scrapedplot = match[3]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELCODE , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-	#Protagonistas
-	'''
-	<div class="mark">
-	<div class="news bg02   comp">
-	<span class="imgL"><a href="/mediateca/videos/20100120/espanoles-guatemala--pedro/672840.shtml" title="Pedro"><img src="/imagenes/pedro/1263984452587.jpg" alt="Pedro" title="Pedro"/></a></span>
-	<h3 class="M ">
-	<a href="/mediateca/videos/20100120/espanoles-guatemala--pedro/672840.shtml" title="Pedro">Pedro</a>
-	</h3>
-	<div class="chapeaux">Nuestro primer guía está casado con una mujer guatemalteca y es padre de una niña. Él descubrirá que la capital, a pesar de sus peligros, también tiene muchos rincones con encanto.</div>
-	'''
+		xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -276,30 +220,9 @@ def generico(params,url,category):
 
 		# Añade al listado de XBMC
 		if scrapedtitle<>"" and scrapedurl<>"":
-			xbmctools.addnewvideo( CHANNELCODE , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+			xbmctools.addnewvideo( "rtve" , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def play(params,url,category):
-	xbmc.output("[rtveprogramas.py] play")
-
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = "Directo"
-
-	# --------------------------------------------------------
-	# Descarga pagina detalle
-	# --------------------------------------------------------
-	patron = 'http://.*?/([0-9]+).shtml'
-	matches = re.compile(patron,re.DOTALL).findall(url)
-	if DEBUG: scrapertools.printMatches(matches)
-	
-	if len(matches)<=0:
-		return
-	
-	url = "http://www.rtve.es/alacarta/player/"+matches[0]+".xml"
-	rtve.play(params,url,category)
