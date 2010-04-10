@@ -178,7 +178,7 @@ def videolist(params,url,category):
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		xbmctools.addnewvideo( "rtve" , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# --------------------------------------------------------
 	# Extrae los videos
@@ -202,24 +202,3 @@ def videolist(params,url,category):
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def play(params,url,category):
-	xbmc.output("[rtvemediateca.py] play")
-
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = "Directo"
-
-	# --------------------------------------------------------
-	# Descarga XML con el descriptor del vídeo
-	# --------------------------------------------------------
-	# Extrae el código
-	xbmc.output("[rtvemediateca.py] url=#"+url+"#")
-	patron = 'http://.*?/([0-9]+).shtml'
-	data = url
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	url = "http://www.rtve.es/alacarta/player/"+matches[0]+".xml"
-	rtve.play(params,url,category)
