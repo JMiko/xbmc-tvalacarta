@@ -16,7 +16,6 @@ import megaupload
 import servertools
 import binascii
 import xbmctools
-import downloadtools
 
 CHANNELNAME = "casttv"
 
@@ -85,7 +84,9 @@ def listado(params,url,category):
 def search(params,url,category):
 	xbmc.output("[casttv.py] search")
 
+	tecleado = ""
 	letras = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	rtdos = 0
         
 	opciones = []
 	opciones.append("Teclado (Busca en Título y Status)")
@@ -106,16 +107,11 @@ def search(params,url,category):
 
 				if len(tecleado) == 1:
 					listaseries = findseries(data,"",tecleado)
-					for serie in listaseries:
-						addsimplefolder( CHANNELNAME , "listados" , category , serie[0]+serie[1] , serie[2] , "" )
-
 				else:
-					listaseries = findseries(data,"","")				
-					for serie in listaseries:
-						foldertitle = serie[0]+serie[1]
-						match = re.search(tecleado,foldertitle,re.IGNORECASE)
-						if (match):
-							addsimplefolder( CHANNELNAME , "listados" , category , foldertitle , serie[2] , "" )
+					listaseries = findseries(data,"","")
+
+		if keyboard.isConfirmed() is None or len(tecleado)==0:
+			return				
 
 	else:
 		# Descarga la página
@@ -123,8 +119,23 @@ def search(params,url,category):
 
 		listaseries = findseries(data,"",letras[seleccion-1])
 
-		for serie in listaseries:
-			addsimplefolder( CHANNELNAME , "listados" , category , serie[0]+serie[1] , serie[2] , "" )
+	if len(listaseries)==0:
+		alertnoresultadosearch()
+		return
+
+	for serie in listaseries:
+		foldertitle = serie[0]+serie[1]
+		if len(tecleado) > 1:
+			match = re.search(tecleado,foldertitle,re.IGNORECASE)
+			if (match):
+				addsimplefolder( CHANNELNAME , "listados" , category , foldertitle , serie[2] , "" )
+				rtdos = rtdos+1
+		else:
+			addsimplefolder( CHANNELNAME , "listados" , category , foldertitle , serie[2] , "" )
+	
+	if len(tecleado) > 1 and rtdos==0:
+		alertnoresultadosearch()
+		return	
 					
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -276,7 +287,7 @@ def listados(params,url,category):
 	else:
 		for episodio in listaepisodios:
 			if episodio[3] == "0":
-				addnewfolder( CHANNELNAME , "detaildos" , category , episodio[0] , episodio[1] , thumbnail , plot , episodio[2] , episodio[4] , episodio[5] , episodio[6] , miserievo )
+				addnewfolder( CHANNELNAME , "detaildos" , category , episodio[0] , episodio[1] , thumbnail , plot , episodio[2] , episodio[4] , episodio[5] , episodio[6] , miserievo , episodio[8] )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -310,6 +321,7 @@ def findepisodios(data,miserievo):
 		seasontvsneak = "0"
 		seasontv = ""
 		episodiotv = 0
+		tvsneak = "0"
 
 		# + Temporada y Capítulo
 		match0 = re.search('\n\s+\n\s+(\w+)\n\s+',match[0],re.IGNORECASE)
@@ -343,7 +355,7 @@ def findepisodios(data,miserievo):
 			pago = "-1"		
 			
 		# Añade al listado los episodios
-		episodioslist.append( [ titulo , url , date , pago , titletvsneak , seasontvsneak , seasontv , episodiotv ] )
+		episodioslist.append( [ titulo , url , date , pago , titletvsneak , seasontvsneak , seasontv , episodiotv , tvsneak ] )
 		if seasontv <> "":
 			episodioscasttv.append(seasontv)		
 		if seasontvsneak <> "0" and seasontvsneak not in encontrados:
@@ -360,24 +372,26 @@ def findepisodios(data,miserievo):
 					n = episodioslist.index(episodio)
 					if episodio[3]=="-1":
 						episodio[3] = "0"
+					if episodio[8]=="0":
+						episodio[8] = "-1"
 					if episodio[7] > 1:
 						lastseasontv = episodioscasttv[-1]
 						if episodio[6] == lastseasontv:
 							if n < len(episodioslist)-1 and episodioslist[n+1][6] <> episodio[6] :						
 								seasontvlast = lastseasontv[0:4]+"01"
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , "-1" ])
 							elif n == len(episodioslist)-1:
 								seasontvlast = lastseasontv[0:4]+"01"
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , "-1" ])
 						capitvnew = episodio[7]-1
 						seasontvnew = episodio[6][0:4]+str(capitvnew)
 						if len(seasontvnew) == 5:
 							seasontvnew = seasontvnew.replace('E' , 'E0')
 						
 						if episodioslist[n+1][5] == season and episodioslist[n+1][6] <> episodio[6] and episodioslist[n+1][7] <> capitvnew:
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , "-1" ])
 						if episodioslist[n+1][5] == str(int(season)-1) and episodioslist[n+1][5] <> "0":
-							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew ])
+							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , "-1" ])
 
 	return episodioslist
 
@@ -399,7 +413,7 @@ def listatres(params,url,category):
 		url = match[0]		
 		
 		# Añade al listado
-		addnewfolder( CHANNELNAME , "detaildos" , category , titulo , url , "http://tvsneak.com/wp-content/themes/fresh_trailers/images/logo.png" , "" , "" , "" , "0" , "" , "" )
+		addnewfolder( CHANNELNAME , "detaildos" , category , titulo , url , "http://tvsneak.com/wp-content/themes/fresh_trailers/images/logo.png" , "" , "" , "" , "0" , "" , "" , "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -422,82 +436,81 @@ def detaildos(params,url,category):
 	titletvsneak = urllib.unquote_plus( params.get("titletvsneak") )
 	seasontvsneak = urllib.unquote_plus( params.get("seasontvsneak") )
 	seasontv = urllib.unquote_plus( params.get("seasontv") )
+	tvsneak = urllib.unquote_plus( params.get("tvsneak") )
 	xbmc.output("[casttv.py] title="+title)
 	xbmc.output("[casttv.py] thumbnail="+thumbnail)
 	xbmc.output("[casttv.py] plot="+plot)
-
+	titleshort = re.sub('\s\-\s'+date+'$','',title)
 	urltvsneak0 = titletvsneak+"-season-"+seasontvsneak
 	
-	listavideos = []
-	listamirrors = []
+	listacasttv = []
+	listactmirrors = []
 	listaTVSneak = []
 
-	# tipo 1: Megavideo es el tipo de reproducción
+	# CastTV
 	if url <> "":
+		# tipo 1: Megavideo es el tipo de reproducción
 		data0 = scrapertools.cachePage(url)
-		listavideos = servertools.findvideos(data0)
-		
-	# tipo 2: Megavideo no es el tipo de reproducción
-	
-	if len(listavideos)==0:
-		if url <> "":
+		listacasttv = servertools.findvideos(data0)		
+		# tipo 2: Megavideo no es el tipo de reproducción
+		if len(listacasttv)==0:
 			# obtiene la url de la página para reproducir con Megavideo si existe	
 			match = re.search('<a class="source_row" href="(.*?)"> <img alt="MegaVideo"',data0,re.IGNORECASE)
 
 			# Descarga la página para reproducir con Megavideo si existe
 			if (match):
 				data = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match.group(1)))
-				listavideos = servertools.findvideos(data)
-			
-				# obtiene la url de la página para reproducir con Megavideo del mirror si existe	
-				match1 = re.search('<a class="source_copies" href="(.*?)">COPY 2',data,re.IGNORECASE)
+				listacasttv = servertools.findvideos(data)				
+				data0 = data
 
-				# Descarga la página para reproducir con Megavideo del mirror si existe
-				if (match1):
-					data1 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
-					listamirrors = servertools.findvideos(data1)
+		if len(listacasttv)>0:	
+			# obtiene la url de la página para reproducir con Megavideo del mirror si existe	
+			match1 = re.search('<a class="source_copies" href="(.*?)">COPY 2',data0,re.IGNORECASE)
+
+			# Descarga la página para reproducir con Megavideo del mirror si existe
+			if (match1):
+				data1 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
+				listactmirrors = servertools.findvideos(data1)
 		
-		if len(listavideos)==0:
-			# Busca episodios en TVSneak
-			if seasontvsneak <> "0":
-				datatvsneak0 = scrapertools.cachePage("http://tvsneak.com")
-				matchtvsneak0 = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak0+')',datatvsneak0,re.IGNORECASE)
-				if (matchtvsneak0):
-					datatvsneak = scrapertools.cachePage(matchtvsneak0.group(1))
-					urltvsneak = re.sub('category/','',matchtvsneak0.group(1))
-					urltvsneak2 = "http://tvsneak.com/new"
-					matchtvsneak1 = re.search('<a  href="((?:'+urltvsneak+'|'+urltvsneak2+')/[^"]+)" rel="bookmark">[^<]+(?<='+seasontv+')[^<]*</a>',datatvsneak,re.IGNORECASE)
-					if (matchtvsneak1):
-						datatvsneak2 = scrapertools.cachePage(matchtvsneak1.group(1))
-						listaTVSneak = servertools.findvideos(datatvsneak2)						
-
-			if len(listavideos)==0 and len(listaTVSneak)==0:
-				alertnomegavideo()
-				return
-	else:
-		# obtiene la url de la página para reproducir con Megavideo del mirror si existe	
-		match1 = re.search('<a class="source_copies" href="(.*?)">COPY 2',data0,re.IGNORECASE)
-
-		# Descarga la página para reproducir con Megavideo del mirror si existe
-		if (match1):
-			data1 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
-			#xbmc.output(data1)
-			listamirrors = servertools.findvideos(data1)
-	
+	# TVSneak: se busca aunque se haya encontrado enlace por la posibilidad de Divxden
+	if tvsneak == "-1":
+		datatvsneak0 = scrapertools.cachePage("http://tvsneak.com")
+		matchtvsneak0 = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak0+')',datatvsneak0,re.IGNORECASE)
+		if (matchtvsneak0):
+			datatvsneak = scrapertools.cachePage(matchtvsneak0.group(1))
+			urltvsneak = re.sub('category/','',matchtvsneak0.group(1))
+			urltvsneak2 = "http://tvsneak.com/new"
+			matchtvsneak1 = re.search('<a  href="((?:'+urltvsneak+'|'+urltvsneak2+')/[^"]+)" rel="bookmark">[^<]+(?<='+seasontv+')[^<]*</a>',datatvsneak,re.IGNORECASE)
+			if (matchtvsneak1):
+				datatvsneak2 = scrapertools.cachePage(matchtvsneak1.group(1))
+				listaTVSneak = servertools.findvideos(datatvsneak2)
+				# Eliminar cuando haya un patrón para Divxden en servertools
+				patronvideos = '(http\:\/\/www\.divxden\.com/.*?\.html)'
+				matches = re.compile(patronvideos).findall(datatvsneak2)
+				for match in matches:
+					n = matches.index(match)
+					if n==0:
+						titulo = "[Divxden]"
+					else:
+						titulo = "[Divxden] - Mirror"
+					url = match
+					# Por si fue agregado por servertools.findvideos
+					if listaTVSneak.count( [ titulo , url , 'Divxden' ] )==0:
+						listaTVSneak.append( [ titulo , url , 'Divxden' ] )
+													
+	if len(listacasttv)==0 and len(listaTVSneak)==0:
+		alertnovideo()
+		return	
 			
 	# ------------------------------------------------------------------------------------
 	# Añade los enlaces a los videos
 	# ------------------------------------------------------------------------------------
-	for video in listavideos:
-			addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0] , video[1] , thumbnail , plot )
-	for video in listamirrors:
-			addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - Mirror - "+video[0] , video[1] , thumbnail , plot )
+	for video in listacasttv:
+		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
+	for video in listactmirrors:
+		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
 	for video in listaTVSneak:
-			addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - [TVSneak] - "+video[0] , video[1] , thumbnail , plot )
-	
-	# Prueba: Añade enlace para búsqueda de subtítulos
-	# addnewfolder( CHANNELNAME , "listasubs" , category , "Buscar Archivo de Subtítulos de la Temporada "+seasontvsneak , "http://www.tvsubtitles.net/tvshows.html" , "" , "" , date , titletvsneak , seasontvsneak , "" , miserievo )
-
+		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
 
 	# Label (top-right)...
@@ -509,148 +522,6 @@ def detaildos(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def listasubs(params,url,category):
-	xbmc.output("[casttv.py] listasubs")
-
-	title = urllib.unquote_plus( params.get("title") )
-	date = urllib.unquote_plus( params.get("date") )
-	miserievo = urllib.unquote_plus( params.get("miserievo") )
-	titletvsneak = urllib.unquote_plus( params.get("titletvsneak") )
-	seasontvsneak = urllib.unquote_plus( params.get("seasontvsneak") )
-
-	listasubtitulos = findsubs("",title,miserievo,seasontvsneak)
-
-	if len(listasubtitulos)==1:
-
-		for subtitulo in listasubtitulos:
-		
-			data = scrapertools.cachePage(subtitulo[1])
-			patronvideos = '<a href="'+seriesub[2]+'(\w+)\.html">'
-			matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-			for match in matches:
-
-				# url
-				url0 = re,sub('subtitle','download',subtitulo[2])
-				url = "http://www.tvsubtitles.net/"+url0+match[0]+".html"
-			
-				# Idioma
-				idioma = match[0]
-			
-				# Titulo
-				titulo = title+" ["+idioma+"] - Temporada:"+seasontvsneak+"[Subtítulos]"
-		
-				# Añade al listado de XBMC los subtítulos
-		
-				addnewvideo( CHANNELNAME , "descarga" , category , "Directo" , titulo , url , "" , "" )
-
-	if len(listasubtitulos)<>1:
-
-		tecleado = searchsubs("")
-
-		if len(tecleado) == 1:
-			for subtitulo in listasubtitulos:
-				match0 = re.match(tecleado,subtitulo[0],re.IGNORECASE)
-				if (match0):
-					addnewfolder( CHANNELNAME , "listasubs" , category , subtitulo[0] , subtitulo[1] , "" , "" , "" , titletvsneak , seasontvsneak , "" , miserievo )
-		else:
-			for subtitulo in listasubtitulos:
-				match1 = re.search(tecleado,subtitulo[0],re.IGNORECASE)
-				if (match1):
-					addnewfolder( CHANNELNAME , "listasubs" , category , subtitulo[0] , subtitulo[1] , "" , "" , "" , titletvsneak , seasontvsneak , "" , miserievo )
-
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Sorting by date...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def findsubs(data,title,miserievo,seasontvsneak):
-	xbmc.output("[casttv.py] findsubs")
-
-	seriesubs = []
-	seriesubslist = []
-
-	misub = "http://es.tvsubtitles.net/tvshows.html"
-	data = scrapertools.cachePage(misub)
-
-	patronvideos = '<a href="tvshow-(\d+)-(\d+).html"><b>([^<]+)</b></a></td>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-	for match in matches:
-		
-		# Titulo
-		titulo = match[2]
-		if titulo == "Law and Order UK":
-			titulo = "Law & Order: UK"		
-		
-		# Código serie
-		codserie = match[0]
-
-		url=""
-		urlL = "http://www.tvsubtitles.net/subtitle-"+codserie+"-"+seasontvsneak+".html"
-		urlc = "subtitle-"+codserie+"-"+seasontvsneak+"-"
-		# url
-		if miserievo.lower() == titulo.lower():
-			
-			url = "http://www.tvsubtitles.net/subtitle-"+codserie+"-"+seasontvsneak+".html"
-
-		else:
-			match2 = re.match('(.*?) \(20\d\d\)$',miserievo,re.IGNORECASE)
-			if (match2):
-				if match2.group(1).lower() == titulo.lower():
-					url = "http://www.tvsubtitles.net/subtitle-"+codserie+"-"+seasontvsneak+".html"
-			match1 = re.search('\:',miserievo,re.IGNORECASE)
-			if (match1):
-				if miserievo.replace(':' , '').lower() == titulo.lower():
-					url = "http://www.tvsubtitles.net/subtitle-"+codserie+"-"+seasontvsneak+".html"
-			match3 = re.search('\s\&\s',miserievo,re.IGNORECASE)
-			if (match3):
-				if miserievo.replace('&' , 'and').lower() == titulo.lower():
-					url = "http://www.tvsubtitles.net/subtitle-"+codserie+"-"+seasontvsneak+".html"
-			match4 = re.search('\sand\s',miserievo,re.IGNORECASE)
-			if (match4):
-				if miserievo.replace('and' , '&').lower() == titulo.lower():
-					url = "http://www.tvsubtitles.net/subtitle-"+codserie+"-"+seasontvsneak+".html"
-		
-		if url <> "":
-			seriesubs.append( [ titulo , url , urlc ] )
-
-		seriesubslist.append( [ titulo , urlL , urlc ] )			
-
-	if len(seriesubs)==1:
-
-		return seriesubs
-	else:
-
-		return seriesubslist
-
-def searchsubs(data):
-	xbmc.output("[casttv.py] searchsubs")
-
-	letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		        
-	opciones = []
-	opciones.append("Teclado (Busca en Título y datos anexos)")
-	for letra in letras:
-		opciones.append(letra)
-	searchtype = xbmcgui.Dialog()
-	seleccion = searchtype.select("Búsqueda por Teclado o por Inicial del Título:", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
-	if seleccion == -1 :return
-	if seleccion == 0:
-		keyboard = xbmc.Keyboard('')
-		keyboard.doModal()
-		if (keyboard.isConfirmed()):
-			tecleado = keyboard.getText()
-			if len(tecleado)>0:					
-				return tecleado
-	else:
-		return letras[seleccion-1]
 
 def play(params,url,category):
 	xbmc.output("[casttv.py] play")
@@ -664,13 +535,17 @@ def play(params,url,category):
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
-def alertnomegavideo():
+def alertnovideo():
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('Vídeo no disponible' , 'No se ha añadido aún a la web un enlace' , 'a Megavideo de este capítulo')
+	resultado = advertencia.ok('Vídeo no disponible' , 'No se ha añadido aún a la web un enlace' , 'compatible.')
 
 def alertnoepisodios():
 	advertencia = xbmcgui.Dialog()
 	resultado = advertencia.ok('Episodios no disponibles' , 'No se han encontrado episodios gratuitos.' , '')
+
+def alertnoresultadosearch():
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('Msj. Informativo:' , 'La Búsqueda no ha obtenido Resultados.' , '')
 
 def addsimplefolder( canal , accion , category , title , url , thumbnail ):
 	xbmc.output("[casttv.py] addsimplefolder")
@@ -678,11 +553,11 @@ def addsimplefolder( canal , accion , category , title , url , thumbnail ):
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
-def addnewfolder( canal , accion , category , title , url , thumbnail , plot , date , titletvsneak , seasontvsneak , seasontv , miserievo ):
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot , date , titletvsneak , seasontvsneak , seasontv , miserievo , tvsneak ):
 	xbmc.output("[casttv.py] addnewfolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot} )
-	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&date=%s&titletvsneak=%s&seasontvsneak=%s&seasontv=%s&miserievo=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( date ) , urllib.quote_plus( titletvsneak ) , urllib.quote_plus( seasontvsneak ) , urllib.quote_plus( seasontv ) , urllib.quote_plus( miserievo ) )
+	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&date=%s&titletvsneak=%s&seasontvsneak=%s&seasontv=%s&miserievo=%s&tvsneak=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( date ) , urllib.quote_plus( titletvsneak ) , urllib.quote_plus( seasontvsneak ) , urllib.quote_plus( seasontv ) , urllib.quote_plus( miserievo ) , urllib.quote_plus( tvsneak ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
@@ -711,41 +586,3 @@ def ftitletvsneak(miserievo,datatvsneak):
 			titletvsneak = matchtvs.group(1)
 	
 	return titletvsneak
-
-def descarga(params,url,category):
-	xbmc.output("[casttv.py] descarga")
-
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = params["server"]	
-	xbmc.output("[casttv.py] thumbnail="+thumbnail)
-	xbmc.output("[casttv.py] server="+server)
-
-	descargasub(CHANNELNAME,server,url,category,title,thumbnail,plot)
-
-def descargasub(canal,server,url,category,title,thumbnail,plot):
-	
-	xbmc.output("[casttv.py] playvideo")
-	xbmc.output("[casttv.py] playvideo canal="+canal)
-	xbmc.output("[casttv.py] playvideo server="+server)
-	xbmc.output("[casttv.py] playvideo url="+url)
-	xbmc.output("[casttv.py] playvideo category="+category)
-
-	# Abre el diálogo de selección
-	opciones = []
-	opciones.append("Descargar")
-	
-	dia = xbmcgui.Dialog()
-	seleccion = dia.select("Elige una opción", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
-		
-	if seleccion==-1:
-		return
-	if seleccion==0:
-		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
-		keyboard.doModal()
-		if (keyboard.isConfirmed()):
-			title = keyboard.getText()
-		downloadtools.downloadtitle(url,title)
-		return
