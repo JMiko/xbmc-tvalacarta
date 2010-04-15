@@ -529,7 +529,22 @@ def downloadfile(url,nombrefichero):
 
 	opener = urllib2.build_opener(h)
 	urllib2.install_opener(opener)
-	connexion = opener.open(request)
+	try:
+		connexion = opener.open(request)
+	except urllib2.HTTPError,e:
+		xbmc.output("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+		#print e.code
+		#print e.msg
+		#print e.hdrs
+		#print e.fp
+		f.close()
+		progreso.close()
+		# El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
+		if e.code==416:
+			return 0
+		else:
+			return -2
+
 	totalfichero = int(connexion.headers["Content-Length"])
 	if existSize > 0:
 		totalfichero = totalfichero + existSize
