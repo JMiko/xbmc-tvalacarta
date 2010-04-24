@@ -25,6 +25,8 @@ librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' ) )
 sys.path.append (librerias)
 librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'servers' ) )
 sys.path.append (librerias)
+librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'youtubeAPI' ) )
+sys.path.append (librerias)
 
 # Ejecuta el programa principal
 import tvalacarta
