@@ -6,7 +6,7 @@
 #------------------------------------------------------------
 
 # Constantes
-__plugin__  = "Goear"
+__plugin__  = "goear"
 __author__  = "tvalacarta & emilio"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/goear/"
 __date__    = "04 Abril 2010"

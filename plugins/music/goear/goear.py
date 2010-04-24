@@ -306,6 +306,7 @@ def getmediaurl(audio_url):
 	# de la forma http://www.goear.com/hellocalsec.php?f=xxyyzzz
 
 	url_xml = "http://www.goear.com/localtrackhost.php?f=" + audio_id
+	xbmc.output("[goear.py] url_xml="+url_xml)
 	data = None
 
 	xmldoc = urllib2.urlopen(url_xml,data)
