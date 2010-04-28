@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <string id="30000">Nombre:</string>
     <string id="30001">Version:</string>
@@ -28,4 +28,5 @@
     <string id="30201">Directorio de descargas:</string>
     <string id="30203">Directorio de lista descargas:</string>
     <string id="30204">Activar modo adultos:</string>
+    <string id="30205">Elegir Calidad mas alta (Youtube)</string>
 </strings>
