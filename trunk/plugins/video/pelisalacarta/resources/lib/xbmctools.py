@@ -197,6 +197,9 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	elif opciones[seleccion].startswith("Ver"):
 		if server=="Megaupload":
 			mediaurl = servertools.getmegauploadlow(url)
+			if mediaurl == "":
+				alertanomegauploadlow(server)
+				return
 		elif server=="Megavideo":
 			if xbmcplugin.getSetting("megavideopremium")=="false":
 				advertencia = xbmcgui.Dialog()
@@ -454,14 +457,15 @@ def alertnodisponible():
 
 def alertnodisponibleserver(server):
 	advertencia = xbmcgui.Dialog()
-	if server == "Megaupload":
-		server = "Megavideo"
 	resultado = advertencia.ok( 'No se ha podido acceder',' El Vídeo no está disponible en '+server,'o ha sido borrado ' , 'Prueba a reproducir otro distinto')
 
 def alerterrorpagina():
 	advertencia = xbmcgui.Dialog()
 	resultado = advertencia.ok('Error en la página' , 'No se puede acceder' , 'por un error en la página')
 
+def alertanomegauploadlow(server):
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok( 'Video no disponible' ,'La calidad elegida no esta disponible', 'o el video a sido borrado','Prueba a reproducir en otra calidad')
 def unseo(cadena):
 	if cadena.upper().startswith("VER GRATIS LA PELICULA "):
 		cadena = cadena[23:]

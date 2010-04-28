@@ -30,7 +30,7 @@ except:
 xbmc.output("[peliculas21.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
 	xbmc.output("[peliculas21.py] mainlist")
@@ -414,19 +414,8 @@ def youtubeplay(params,url,category):
 	plot = "Ver Video"
 	server = "Directo"
 	id = youtube.Extract_id(url)
-	# Abre el diálogo de selección
-	opciones = []
-	opciones.append("(FLV) Baja calidad")
-	opciones.append("(MP4) Alta calidad")
-	dia = xbmcgui.Dialog()
-	seleccion = dia.select("tiene 2 formatos elige uno", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
-	if seleccion==-1:
-		return("")
-	if seleccion == 0:
-		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
-	else:
-		videourl = youtube.geturl(id)
+	videourl = youtube.geturl(id)
+	if videourl == "":return
 	xbmc.output("link directo de youtube : "+videourl)
 	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
  

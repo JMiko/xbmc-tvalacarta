@@ -15,7 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
-import Yonkis
+import DecryptYonkis as Yonkis
 
 CHANNELNAME = "documentalesyonkis"
 
@@ -170,6 +170,9 @@ def detail(params,url,category):
 	if(len(matches)>0):
 		id = matches[0][1]
 		xbmc.output("[documentalesyonkis.py] detail id="+id)
+		if "&" in id:
+			ids = id.split("&")
+			id = ids[0]
 		dec = Yonkis.DecryptYonkis()
 		id = dec.decryptALT(dec.unescape(id))
 		xbmc.output("[documentalesyonkis.py] detail id="+id)

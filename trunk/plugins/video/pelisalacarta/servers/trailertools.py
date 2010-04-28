@@ -359,6 +359,20 @@ def youtubeplay(params,url,category):
 	plot = "Ver Video"
 	server = "Directo"
 	id = youtube.Extract_id(url)
+	videourl = youtube.geturl(id)
+	if len(videourl)>0:
+		xbmc.output("link directo de youtube : "+videourl)
+		xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+	elif videourl is None:
+		alertaerror()
+		return
+	else:
+		return ""
+	
+def alertaerror():
+	ventana = xbmcgui.Dialog()
+	ok= ventana.ok ("Plugin Pelisalacarta", "Uuppss...la calidad elegida en configuracion",'no esta disponible o es muy baja',"elijá otra calidad distinta y vuelva a probar")
+'''
 	# Abre el diálogo de selección
 	opciones = []
 	opciones.append("(FLV) Baja calidad")
@@ -371,10 +385,9 @@ def youtubeplay(params,url,category):
 	if seleccion == 0:
 		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
 	else:
-		videourl = youtube.geturl(id)
-	xbmc.output("link directo de youtube : "+videourl)
-	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
-'''
+
+
+
 def youtubeplay(params,url,category):
         xbmc.output("[trailertools.py] youtubeplay")
 

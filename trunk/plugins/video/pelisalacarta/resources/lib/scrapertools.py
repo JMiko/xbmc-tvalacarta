@@ -230,6 +230,7 @@ def printMatches(matches):
 
 def entityunescape(cadena):
 	cadena = cadena.replace('&amp;','&')
+	cadena = cadena.replace('&Agrave;','À')
 	cadena = cadena.replace('&Aacute;','Á')
 	cadena = cadena.replace('&Eacute;','É')
 	cadena = cadena.replace('&Iacute;','Í')
@@ -237,6 +238,7 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&Uacute;','Ú')
 	cadena = cadena.replace('&ntilde;','ñ')
 	cadena = cadena.replace('&Ntilde;','Ñ')
+	cadena = cadena.replace('&agrave;','à')
 	cadena = cadena.replace('&aacute;','á')
 	cadena = cadena.replace('&eacute;','é')
 	cadena = cadena.replace('&iacute;','í')
@@ -248,33 +250,51 @@ def entityunescape(cadena):
 	cadena = cadena.replace('&quot;','"')
 	cadena = cadena.replace('&hellip;','...')
 	cadena = cadena.replace('&#39;','\'')
+	cadena = cadena.replace('&Ccedil;','Ç')
+	cadena = cadena.replace('&ccedil;','ç')
 	return cadena
 
 
 def htmlclean(cadena):
 	cadena = cadena.replace("<center>","")
 	cadena = cadena.replace("</center>","")
+	cadena = cadena.replace("<em>","")
+	cadena = cadena.replace("</em>","")
 	cadena = cadena.replace("<b>","")
 	cadena = cadena.replace("</b>","")
 	cadena = cadena.replace("<p>","")
 	cadena = cadena.replace("</p>","")
-	cadena = cadena.replace("</span>","")
-	cadena = cadena.replace("</a>","")
 	cadena = cadena.replace("<strong>","")
 	cadena = cadena.replace("</strong>","")
-	cadena = cadena.replace("</ul>","")
 	cadena = cadena.replace("<li>","")
 	cadena = cadena.replace("</li>","")
-	cadena = cadena.replace("</dd>","")
-	cadena = cadena.replace("</div>","")
+	cadena = cadena.replace("<![CDATA[","")
 
 	cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</div>","")
+	
 	cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</dd>","")
+
 	cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</font>","")
+	
 	cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</span>","")
+
 	cadena = re.compile("<a[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</a>","")
+	
 	cadena = re.compile("<ul[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</ul>","")
+	
+	cadena = re.compile("<h1[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</h1>","")
+	
+	cadena = re.compile("<h2[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</h2>","")
+	
+	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = cadena.replace("\t","")
 	cadena = entityunescape(cadena)

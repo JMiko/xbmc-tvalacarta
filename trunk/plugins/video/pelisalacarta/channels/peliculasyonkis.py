@@ -15,7 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
-import Yonkis
+import DecryptYonkis as Yonkis
 
 CHANNELNAME = "peliculasyonkis"
 
@@ -437,6 +437,10 @@ def detail(params,url,category):
 		xbmc.output("[peliculasyonkis.py]  id="+id)
 		dec = Yonkis.DecryptYonkis()
 		url = dec.decryptID(dec.unescape(id))
+		if ":" in url:
+			match = url.split(":")
+			url = choiceOne(match)
+			if url == "": return
 		print 'codigo :%s' %url
 	else:
 		xbmctools.alertnodisponible()
@@ -444,3 +448,18 @@ def detail(params,url,category):
 	
 	
 	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot)
+
+def choiceOne(matches):
+	opciones = []
+	IDlist = []
+	Nro = 0
+	for codigo in matches:
+		Nro = Nro + 1
+		opciones.append("Parte %s " % Nro)
+		
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select("Selecciona uno ", opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion == -1 : return ""
+	id = matches[seleccion]
+	return id
