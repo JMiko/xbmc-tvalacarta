@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addoninfo>
+  <id>info.mimediacenter.mywebtv</id>
+  <type>plugin</type>
+  <supportedcontent>
+    <content>video</content>
+  </supportedcontent>
+  <title>mywebtv</title>
+  <library>default.py</library>
+  <version>0.5</version>
+  <platforms>
+    <platform>all</platform>
+  </platforms>
+  <minversion>
+    <xbmc>25000</xbmc>
+  </minversion>
+  <summary>Ver la TV por streaming</summary>
+  <description>Acceso a páginas que recopilan emisoras de TV en vivo por Internet</description>
+  <author>jesus</author>
+</addoninfo>
