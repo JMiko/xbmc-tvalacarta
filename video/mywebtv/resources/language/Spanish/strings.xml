@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Nombre:</string>
+    <string id="30001">Version:</string>
+    <string id="30002">Autor:</string>
+    <string id="30003">Web:</string>
+    <string id="30200">Comprobar actualizaciones:</string>
+    <string id="30201">Directorio de descargas:</string>
+    <string id="30203">Directorio de lista descargas:</string>
+</strings>
