@@ -1,0 +1,63 @@
+# -*- coding: iso-8859-1 -*-
+#------------------------------------------------------------
+# mywebtv - XBMC Plugin
+# Main
+# http://blog.tvalacarta.info/plugin-xbmc/mywebtv/
+#------------------------------------------------------------
+
+import urllib
+import os
+import sys
+import xbmc
+
+def run():
+	xbmc.output("[mywebtv.py] run")
+	
+	# Imprime en el log los parámetros de entrada
+	xbmc.output("[mywebtv.py] sys.argv=%s" % str(sys.argv))
+	
+	# Crea el diccionario de parametros
+	params = dict()
+	if len(sys.argv)>=2 and len(sys.argv[2])>0:
+		params = dict(part.split('=') for part in sys.argv[ 2 ][ 1: ].split('&'))
+	xbmc.output("[mywebtv.py] params=%s" % str(params))
+	
+	# Extrae la url de la página
+	if (params.has_key("url")):
+		url = urllib.unquote_plus( params.get("url") )
+	else:
+		url=''
+	xbmc.output("[mywebtv.py] url="+url)
+
+	# Extrae la accion
+	if (params.has_key("action")):
+		action = params.get("action")
+	else:
+		action = "selectchannel"
+	xbmc.output("[mywebtv.py] action="+action)
+
+	# Extrae la categoria
+	if (params.has_key("category")):
+		category = urllib.unquote_plus( params.get("category") )
+	else:
+		if params.has_key("channel"):
+			category = params.get("channel")
+		else:
+			category = ""
+	xbmc.output("[mywebtv.py] category="+category)
+
+
+	# Accion por defecto - elegir canal
+	if ( action=="selectchannel" ):
+		import channelselector as plugin
+		plugin.listchannels(params, url, category)
+	# Actualizar version
+	elif ( action=="update" ):
+		import updater
+		updater.update(params)
+		import channelselector as plugin
+		plugin.listchannels(params, url, category)
+	# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
+	else:
+		exec "import "+params.get("channel")+" as plugin"
+		exec "plugin."+action+"(params, url, category)"
