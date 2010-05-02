@@ -39,7 +39,6 @@ def listchannels(params,url,category):
 	else:
 		xbmc.output("updatecheck2=false")
 
-#Lo pongo arriba para debuguear más facil, @jesus ponlo luego donde veas mejor.
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
 	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
