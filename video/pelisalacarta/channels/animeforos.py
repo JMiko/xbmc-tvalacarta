@@ -441,6 +441,7 @@ def detail2(params,url,category):
 			# Añade al listado de XBMC 
 			addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [Megaupload]"+autor , video[1] , thumbnail , plot )
 	else:
+		alertnoresultados()
 		return					
 			
 	# Label (top-right)...
@@ -638,6 +639,7 @@ def search(params,url,category):
 		keyboard.doModal()
 		if (keyboard.isConfirmed()):
 			tecleado = keyboard.getText()
+			tecleado = re.sub('[\\\\]?(?P<signo>[^#\w\s\\\\])','\\\\\g<signo>',tecleado)
 			if len(tecleado)>0:
 				selecciontc = searchmctc()
 				if selecciontc <> "":
@@ -1046,6 +1048,7 @@ def searchmc(params,url,category):
 		keyboard.doModal()
 		if (keyboard.isConfirmed()):
 			tecleado = keyboard.getText()
+			tecleado = re.sub('[\\\\]?(?P<signo>[^#\w\s\\\\])','\\\\\g<signo>',tecleado)
 			if len(tecleado)>0:
 				selecciontc = searchmctc()
 				if selecciontc <> "":
@@ -1191,7 +1194,7 @@ def findseriesmc(url):
 			update = match[1]
 		
 		# Status-Actualización
-		status = "  -  ["+match[0]+"("+update+")]"
+		status = "  -  ["+match[0]+" ("+update+")]"
 		
 		# URL
 		url = urlparse.urljoin("http://www.mcanime.net",match[2])
