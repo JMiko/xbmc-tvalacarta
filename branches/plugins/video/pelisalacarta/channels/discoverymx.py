@@ -236,15 +236,17 @@ def DocuCat(params,url,category):
 
 def listvideos(params,url,category):
 	xbmc.output("[discoverymx.py] listvideos")
-
+	
+	scrapedthumbnail = ""
+	scrapedplot = ""
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<h3 class="entry-title"><a href="([^"]+)"[^>]+>([^<]+)</a></h3>.*?'
-	patronvideos += '<div class="entry-content">.*?<img.*?src="([^"]+)"[^>]+>'
-	patronvideos += '(.*?)(?:(</span></span>|</span></a>))'
+	patronvideos += '<div class="entry-content">(.*?)</div> <!-- #post-ID -->'
+	
 	
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
@@ -256,12 +258,23 @@ def listvideos(params,url,category):
 		scrapedtitle = scrapedtitle.replace("&nbsp;"," ")
 		scrapedtitle = scrapedtitle.replace("&amp;;","&")
 		scrapedurl = match[0]
-		scrapedthumbnail = match[2]
-		scrapedplot = match[3]
+		regexp = re.compile(r'src="([^"]+)"')
+		matchthumb = regexp.search(match[2])
+		if matchthumb is not None:
+			scrapedthumbnail = matchthumb.group(1)
+		scrapedplot = match[2]
 		scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
 		scrapedplot = scrapedplot.replace("&#215;","*")
 		scrapedplot = scrapedplot.replace("&amp;","&")
 		scrapedplot = scrapedplot.replace("&#8211;","-")
+		scrapedplot = scrapedplot.replace("\n","")
+		scrapedplot = scrapedplot.replace("\t","")
+		scrapedplot = scrapedplot.replace("\:\:","")
+		scrapedplot = scrapedplot.replace("â€¦","")
+		scrapedplot = scrapedplot.replace("Uploading","")
+		scrapedplot = scrapedplot.replace("DepositFiles","")
+		scrapedplot = scrapedplot.replace("HotFile","")
+		#scrapedplot = scrapedplot.replace("â€¦","")
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
@@ -329,12 +342,14 @@ def detail(params,url,category):
 	else:
 		patronyoutube = "<param name='movie' value='(http://www.youtube.com/v/[^']+)'"
 		matchyoutube  = re.compile(patronyoutube,re.DOTALL).findall(data)
+		parte = 0
 		for match in matchyoutube:
+			parte = parte + 1
 			scrapedurl   = match
 			scrapedtitle = title
 			scrapedthumbnail = thumbnail
-			if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-			xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" , scrapedtitle +" - "+"(youtube) ", scrapedurl , scrapedthumbnail , plot )
+			re.compile(patronyoutube,re.DOTALL).findall(data)
+			xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" , scrapedtitle +" - "+str(parte)+" (youtube) ", scrapedurl , scrapedthumbnail , plot )
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
@@ -346,7 +361,14 @@ def detail(params,url,category):
 		server = video[2]
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
-
+	patronvideos = '(http://www.zshare.net/download/[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	for match in matches:
+		import zshare
+		scrapedurl = zshare.geturl(match)
+		scrapedtitle = title
+		re.compile(patronyoutube,re.DOTALL).findall(data)
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle +" - "+"(Zshare) ", scrapedurl , thumbnail , plot )
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		

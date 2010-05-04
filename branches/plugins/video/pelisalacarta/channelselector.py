@@ -39,6 +39,7 @@ def listchannels(params,url,category):
 	else:
 		xbmc.output("updatecheck2=false")
 
+#Lo pongo arriba para debuguear más facil, @jesus ponlo luego donde veas mejor.
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
 	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
@@ -50,6 +51,8 @@ def listchannels(params,url,category):
 	#addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
+	addfolder("Cine-Adicto","cineadicto","mainlist")
+	addfolder("NewDivx","newdivx","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
 	addfolder("TVShack.net (VO)","tvshack","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
