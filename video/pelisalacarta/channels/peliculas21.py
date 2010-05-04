@@ -42,7 +42,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "peliscat"   , category , "Películas - Lista por categorías" ,"http://www.peliculas21.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"  , category , "Peliculas - Lista alfabética"     ,"","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listaActoresMasBuscados" , category , "Actores - Lista Los Más Buscados"     ,"http://www.peliculas21.com/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor" , category , "Actores - Busqueda Alfabética"  ,"http://www.peliculas21.com/?actdos=Smart","","")	
+	xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor" , category , "Actores - Busqueda Alfabética"  ,"http://www.peliculas21.com/actores/","","")	
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Películas - Buscar"                           ,"","","")
 
 	if xbmcplugin.getSetting("singlechannel")=="true":
@@ -59,33 +59,33 @@ def mainlist(params,url,category):
 
 def pelisalfa(params, url, category):
 
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "0-9","http://www.peliculas21.com/0-9/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "A","http://www.peliculas21.com/a/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "B","http://www.peliculas21.com/b/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "C","http://www.peliculas21.com/c/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "D","http://www.peliculas21.com/d/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "E","http://www.peliculas21.com/e/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "F","http://www.peliculas21.com/f/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "G","http://www.peliculas21.com/g/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "H","http://www.peliculas21.com/h/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "I","http://www.peliculas21.com/i/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "J","http://www.peliculas21.com/j/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "K","http://www.peliculas21.com/k/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "L","http://www.peliculas21.com/l/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "M","http://www.peliculas21.com/m/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "N","http://www.peliculas21.com/n/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "O","http://www.peliculas21.com/o/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "P","http://www.peliculas21.com/p/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Q","http://www.peliculas21.com/q/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "R","http://www.peliculas21.com/r/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "S","http://www.peliculas21.com/s/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "T","http://www.peliculas21.com/t/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "U","http://www.peliculas21.com/u/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "V","http://www.peliculas21.com/v/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "W","http://www.peliculas21.com/w/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "X","http://www.peliculas21.com/x/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Y","http://www.peliculas21.com/y/","","")
-	xbmctools.addnewfolder( CHANNELNAME ,"listsimple", category , "Z","http://www.peliculas21.com/z/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "0-9","http://www.peliculas21.com/0-9/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "A","http://www.peliculas21.com/a/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "B","http://www.peliculas21.com/b/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "C","http://www.peliculas21.com/c/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "D","http://www.peliculas21.com/d/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "E","http://www.peliculas21.com/e/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "F","http://www.peliculas21.com/f/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "G","http://www.peliculas21.com/g/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "H","http://www.peliculas21.com/h/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "I","http://www.peliculas21.com/i/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "J","http://www.peliculas21.com/j/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "K","http://www.peliculas21.com/k/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "L","http://www.peliculas21.com/l/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "M","http://www.peliculas21.com/m/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "N","http://www.peliculas21.com/n/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "O","http://www.peliculas21.com/o/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "P","http://www.peliculas21.com/p/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "Q","http://www.peliculas21.com/q/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "R","http://www.peliculas21.com/r/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "S","http://www.peliculas21.com/s/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "T","http://www.peliculas21.com/t/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "U","http://www.peliculas21.com/u/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "V","http://www.peliculas21.com/v/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "W","http://www.peliculas21.com/w/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "X","http://www.peliculas21.com/x/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "Y","http://www.peliculas21.com/y/","","")
+	xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "Z","http://www.peliculas21.com/z/","","")
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -120,25 +120,25 @@ def performsearch(texto):
 	data = scrapertools.cachePage(url)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<div class="fichafilm"><a href="([^"]+)"  target="_blank" ' # url
-	patronvideos += 'class="titulo"><img src="([^"]+)"  '                        # Imagen
-	patronvideos += 'width=[^>]+>([^<]+)</a>.*?<[^/]+/>.*?<div.*?>.*?'           # Titulo 
-	patronvideos += '(<b>Doblaje:</b>[^<]+|<b>PROXIMAMENTE</b></span>-->)</div>' # Doblaje para Peliculas | Proximamente para trailers
-	patronvideos += '(.*?)<b>(G&eacute;nero:</b>'                                # Duracion si hay
-	patronvideos += '.*?)<div style=[^>]+>'                                      # Genero
-	patronvideos += '<b>(Sinopsis:</b>.*?)<.*?'                                  # Sinopsis
+	patronvideos  = '<div class="filmgal"[^>]+><a href="([^"]+)"[^>]+' # url
+	patronvideos += '><img alt="([^"]+)" '                             # Titulo
+	patronvideos += 'src="([^"]+)"'                                    # Imagen
+	patronvideos += '.*?(Genero: </strong>.*?)</div>'                  # Genero
+	patronvideos += '.*?(Duracion: </strong>[^<]+)</div>'              # Duracion si hay
+	patronvideos += '.*?(<b>Doblaje:</b>[^<]+)</div>'                  # Doblaje para Peliculas
+	patronvideos += '.*?(Sinopsis:</strong>.*?)</div>'                 # Sinopsis
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	
+		
 	resultados = []
 
 	for match in matches:
 		# Atributos
-		scrapedtitle = match[2]
+		scrapedtitle = match[1]
 		#scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
 		#scrapedtitle = scrapedtitle.replace("</span>","")
 		scrapedurl = urlparse.urljoin(url1,match[0])
-		scrapedthumbnail = urlparse.urljoin(url1,match[1])
+		scrapedthumbnail = urlparse.urljoin(url1,match[2])
 		scrapedthumbnail = scrapedthumbnail.replace(" ","")
 		scrapedplot  = match[3].replace("\n"," ")+"\n"
 		
@@ -148,8 +148,11 @@ def performsearch(texto):
 		scrapedplot += match[5].replace("\n"," ")+"\n"
 		scrapedplot += match[6]
 		scrapedplot  = re.sub("<[^>]+>","",scrapedplot)
+		scrapedplot  = scrapedplot.replace("&aacute;","á")
+		scrapedplot  = scrapedplot.replace("&iacute;","í")
 		scrapedplot  = scrapedplot.replace("&eacute;","é")
 		scrapedplot  = scrapedplot.replace("&oacute;","ó")
+		scrapedplot  = scrapedplot.replace("&uacute;","ú")
 		scrapedplot  = scrapedplot.replace("&ntilde;","ñ")
 
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -166,7 +169,7 @@ def peliscat(params,url,category):
 	data = scrapertools.cachePage(url)
 	
 	# Extrae los Géneros de las Peliculas
-	patronvideos = '<div class="generos">(.*?)<br style="clear:both" />'
+	patronvideos = '<div class="generos">(.*?)<br class="corte" />'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	patronvideos = '<a href="([^"]+)">([^<]+)</a>'
 	matches1 = re.compile(patronvideos,re.DOTALL).findall(matches[0])
@@ -193,36 +196,45 @@ def listsimple(params,url,category):
 	data = scrapertools.cachePage(url)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<div class="fichafilm"><a href="([^"]+)"  target="_blank" ' # url
-	patronvideos += 'class="titulo"><img src="([^"]+)"  '                        # Imagen
-	patronvideos += 'width=[^>]+>([^<]+)</a>.*?<[^/]+/>.*?<div.*?>.*?'           # Titulo 
-	patronvideos += '(<b>Doblaje:</b>[^<]+|<b>PROXIMAMENTE</b></span>-->)</div>' # Doblaje para Peliculas | Proximamente para trailers
-	patronvideos += '(.*?)<b>(G&eacute;nero:</b>'                                # Duracion si hay
-	patronvideos += '.*?)<div style=[^>]+>'                                      # Genero
-	patronvideos += '<b>(Sinopsis:</b>.*?)<.*?'                                  # Sinopsis
+	patronvideos  = '<div class="filmgal"[^>]+><a href="([^"]+)"[^>]+' # url
+	patronvideos += '><img alt="([^"]+)" '                                       # Titulo
+	patronvideos += 'src="([^"]+)"'                                            # Imagen
+	patronvideos += '.*?(Genero: </strong>.*?)</div>'                           # Genero
+	patronvideos += '.*?(Duracion: </strong>[^<]+)</div>'                       # Duracion si hay
+	patronvideos += '.*?(Doblaje:</b>[^<]+)</div>'                             # Doblaje para Peliculas
+	patronvideos += '.*?(Sinopsis:</strong>.*?)</div>'                             # Sinopsis	
 	#xbmc.output("[ listsimple  patronvideos")
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	#xbmc.output("[ listsimple  matches")
 	for match in matches:
 		# Atributos
-		scrapedtitle = match[2]
+		scrapedplot = ""
+		scrapedthumbnail = ""
+		scrapedtitle = match[1]
 		#scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
 		#scrapedtitle = scrapedtitle.replace("</span>","")
 		scrapedurl = urlparse.urljoin(url1,match[0])
-		scrapedthumbnail = urlparse.urljoin(url1,match[1])
+		
+		scrapedthumbnail = urlparse.urljoin(url1,match[2])
 		scrapedthumbnail = scrapedthumbnail.replace(" ","")
-		scrapedplot  = match[3].replace("\n"," ")+"\n"
+		
+		scrapedplot  = match[3].replace("\n"," ").replace("\t","")+"\n"
 		
 		
-		scrapedplot += match[4][4:].replace("\n","")+"\n"	
+		scrapedplot += match[4].replace("\n","")+"\n"	
 		
 		scrapedplot += match[5].replace("\n"," ")+"\n"
+		
 		scrapedplot += match[6]
 		scrapedplot  = re.sub("<[^>]+>","",scrapedplot)
+		scrapedplot  = scrapedplot.replace("&aacute;","á")
+		scrapedplot  = scrapedplot.replace("&iacute;","í")
 		scrapedplot  = scrapedplot.replace("&eacute;","é")
 		scrapedplot  = scrapedplot.replace("&oacute;","ó")
+		scrapedplot  = scrapedplot.replace("&uacute;","ú")
 		scrapedplot  = scrapedplot.replace("&ntilde;","ñ")
+		
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
@@ -230,9 +242,9 @@ def listsimple(params,url,category):
 		#<div class="pagination" align="center" ><p><span  class='current'>1</span><a  href='/estrenos/2/'>2</a><a  href='/estrenos/2/'>Siguiente &raquo;</a><a  href='/estrenos/2/'></a>
 	# Extrae la marca de siguiente página
 	if url == "http://www.peliculas21.com" or "http://www.peliculas21.com/nuevo" in url:
-		patronvideos = '<div class="pagination" align="center" >.*?<div.*?<a href="([^"]+)">Más peliculas</a></div>'
+		patronvideos = '</span><a href="(nuevo-[^\.]+\.html)"'
 	else:
-		patronvideos  = '<div class="pagination" align="center" >.*?<a  href=\'([^\']+)\'>Siguiente.*?<a  href=\'[^\']+\'>'
+		patronvideos  = "</span><a  href='(/proximamente/[^\/]+\/)'>"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -251,6 +263,79 @@ def listsimple(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
+def listsimpleMirror(params,url,category):
+	xbmc.output("[peliculas21.py] listsimple")
+	url1 = "http://www.peliculas21.com"
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<div class="fichafilm"[^>]+><a href="([^"]+)"[^>]+'     # url
+	patronvideos += '><img alt="([^"]+)" '                                       # Titulo
+	patronvideos += 'src="([^"]+)"'                                            # Imagen
+	patronvideos += '.*?(Duraci&oacute;n:</b>[^<]+)<br />'                       # Duracion si hay
+	patronvideos += '.*?(G&eacute;nero:</b>.*?)</div>'                           # Genero
+	patronvideos += '.*?(Doblaje:</b>[^<]+)</div>'                             # Doblaje para Peliculas
+	patronvideos += '.*?(Sinopsis:</b>[^<]+)</div>'                             # Sinopsis	
+	#xbmc.output("[ listsimple  patronvideos")
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	#xbmc.output("[ listsimple  matches")
+	for match in matches:
+		# Atributos
+		scrapedplot = ""
+		scrapedthumbnail = ""
+		scrapedtitle = match[1]
+		#scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
+		#scrapedtitle = scrapedtitle.replace("</span>","")
+		scrapedurl = urlparse.urljoin(url1,match[0])
+		
+		scrapedthumbnail = urlparse.urljoin(url1,match[2])
+		scrapedthumbnail = scrapedthumbnail.replace(" ","")
+		
+		scrapedplot  = match[3].replace("\n"," ")+"\n"
+		
+		
+		scrapedplot += (match[4].replace("\n","")).replace(" \t","")+"\n"
+		
+		scrapedplot += match[5].replace("\n"," ")+"\n"
+		
+		scrapedplot += match[6]
+		scrapedplot  = re.sub("<[^>]+>","",scrapedplot)
+		scrapedplot  = scrapedplot.replace("&aacute;","á")
+		scrapedplot  = scrapedplot.replace("&iacute;","í")
+		scrapedplot  = scrapedplot.replace("&eacute;","é")
+		scrapedplot  = scrapedplot.replace("&oacute;","ó")
+		scrapedplot  = scrapedplot.replace("&uacute;","ú")
+		scrapedplot  = scrapedplot.replace("&ntilde;","ñ")
+		
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		#<div class="pagination" align="center" ><p><span  class='current'>1</span><a  href='/estrenos/2/'>2</a><a  href='/estrenos/2/'>Siguiente &raquo;</a><a  href='/estrenos/2/'></a>
+	# Extrae la marca de siguiente página
+	
+	patronvideos  = "</span><a  href='(/[^\/]+/[^\/]+\/)'>"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	if len(matches)>0:
+		scrapedtitle = "Página siguiente"
+		scrapedurl = urlparse.urljoin(url1,matches[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+
 def listvideos(params,url,category):
 	xbmc.output("[peliculas21.py] listvideos")
 
@@ -265,11 +350,11 @@ def listvideos(params,url,category):
 	#plot = urllib.unquote_plus(params.get("plot"))
 	
 	# Busca el area donde estan los videos y la descripcion
-	patronvideos = '<!--<br/>(.*?)<!-- FIN #content-->'
+	patronvideos = '<div  class="peliculadoblaje">(.*?)<!-- FIN #content-->'
 	matches      = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	# busca el titulo y el thumbnail
-	patronvideos = '<img src="([^"]+)".*?>.*?<.*?>(.*?)</div>'
+	patronvideos = '<img src="([^"]+)"[^>]+>[^<]+<[^>]+>([^<]+)</div>'
 	matches2 =  re.compile(patronvideos,re.DOTALL).findall(matches[0])
 	for match in matches2:
 		title = match[1]
@@ -464,7 +549,7 @@ def listarelacionados(params,data,category):
 	return
 	
 def buscarelacionados(data):
-	patronvideos = '<div><a href="([^"]+)">([^<]+)</a><br'
+	patronvideos = '<div class="film"><a href="([^"]+)"><[^>]+><br />([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	return (matches)
 	
@@ -536,7 +621,7 @@ def listaActoresMasBuscados(params,url,category):
 	url1 = "http://www.peliculas21.com"
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	patronvideos = 'Los m&aacute;s buscados:    <br />(.*?)<!--<div'
+	patronvideos = 'Los m&aacute;s buscados:(.*?)M&aacute;s actores</a></div>'
 	matches1 = re.compile(patronvideos,re.DOTALL).findall(data)
 	patronvideos = '<a href="([^"]+)">([^<]+)</a>'
 	matches =  re.compile(patronvideos,re.DOTALL).findall(matches1[0])

@@ -92,7 +92,7 @@ def listvideos(params,url,category):
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<div class="item">[^<]+<h1>([^<]+)</h1>[^<]+'
-	patronvideos += '<a title="[^"]+" href="([^"]+)"><img src="([^"]+)"'
+	patronvideos += '<a href="([^"]+)"><img src="([^"]+)"'
 	#patronvideos += '<div class="cover boxcaption">.*?<h6>([^<]+)</h6>'
 
 	#patronvideos += "<img src='(.*?)'"
@@ -120,7 +120,7 @@ def listvideos(params,url,category):
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Extrae la marca de siguiente página
-	patronvideos  = '<div id="paginador">.*?<a href="([^"]+)"><b>Siguiente</b></a></div>'
+	patronvideos  = '</span><a href="(http://peliculasid.com/paginas/[^\.]+\.html)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -150,7 +150,7 @@ def detail(params,url,category):
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
-        patrondescrip = '<li class="description">(.*?)</li>'
+        patrondescrip = '<strong>Sinopsis:</strong><br />(.*?)</p>'
         matches = re.compile(patrondescrip,re.DOTALL).findall(data)
         if DEBUG:
           if len(matches)>0:
@@ -158,6 +158,7 @@ def detail(params,url,category):
                 descripcion = descripcion.replace('&#8220;','"')
                 descripcion = descripcion.replace('&#8221;','"')
                 descripcion = descripcion.replace('&#8230;','...')
+                descripcion = descripcion.replace('&#8217;',"'")
                 descripcion = descripcion.replace("&nbsp;","")
 		descripcion = descripcion.replace("<br/>","")
 		descripcion = descripcion.replace("\r","")

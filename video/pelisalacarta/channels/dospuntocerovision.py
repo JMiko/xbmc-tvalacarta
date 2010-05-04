@@ -337,6 +337,7 @@ def listarvideos(params,url,category,data):
             scrapedurl = match
             # Añade al listado de XBMC
             xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle +" - "+"parte "+str(c)+" (FLV)", scrapedurl , scrapedthumbnail , scrapedplot )
+
     matchesmovshare = re.compile(patronmovshare,re.DOTALL).findall(data)
     if len(matchesmovshare)>0:
        #import movshare
@@ -346,10 +347,15 @@ def listarvideos(params,url,category,data):
 		xbmc.output("movshare link : "+match[0])
 		
 		import movshare
-		scrapedurl = movshare.getvideo(match[0])
+		if "#" in match[0]:
+			urlsplited = match[0].split("#")
+			scrapedurl = urlsplited[0]
+		else:
+			scrapedurl = match[0]
+		
 		if len(scrapedurl)>0:
 			
-			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle +" - "+match[1]+" (Movshare)", scrapedurl , scrapedthumbnail , scrapedplot )     
+			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Movshare" , scrapedtitle +" - "+match[1]+" (Movshare)", scrapedurl , scrapedthumbnail , scrapedplot )     
 
 #-------------------------------------------------------------------------------
    
@@ -409,6 +415,14 @@ def listarvideos(params,url,category,data):
     matchestv  = re.compile(patronvideotv,re.DOTALL).findall(data)
     for match in matchestv:
 		xbmctools.addnewfolder( CHANNELNAME , "listvideosTVmirror" , category , match[2] , match[0] , match[1], scrapedplot ) 
+	
+	# Busca las URLs de los videos alojados en videoweed
+    patronvideos = 'href="(http://www.videoweed.com/file/[^"]+)" target="_blank">(.*?)</a>'
+    matchesweed  = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matchesweed)>0:
+		for match in matchesweed:
+			scrapedurl = match[0]
+			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "videoweed" , scrapedtitle +" - "+match[1]+" (Videoweed)", scrapedurl , scrapedthumbnail , scrapedplot )
 	
 	
 def listcategorias(params,url,category):

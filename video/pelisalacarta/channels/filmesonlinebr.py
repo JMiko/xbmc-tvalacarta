@@ -173,7 +173,7 @@ def listvideos(params,url,category):
 			if j in scrapedtitle:
 				matchmega = []
 		if adulto == "false":
-			for i in ["xxx","Porno","XXX"]:
+			for i in ["xxx","Porno","XXX","+18"]:
 				if  i  in scrapedtitle:
 					matchmega = []
 		

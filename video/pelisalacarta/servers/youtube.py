@@ -89,8 +89,7 @@ def geturl( id ):
 		else:
 			alertaNone()
 		
-	else:
-		alertaIDerror(id)
+	
 	return ""
 
 def GetYoutubeVideoInfo(videoID,eurl=None):
@@ -126,9 +125,8 @@ def Extract_id(url):
 	mobj = re.match(_VALID_URL, url)
 	if mobj is None:
 		print 'ERROR: URL invalida: %s' % url
-		#ventana = xbmcgui.Dialog()
-		#ok= ventana.ok ("Plugin Pelisalacarta", "Lo sentimos, no se pudo extraer la ID",'del video: %s' %url,"La URL es invalida ")
-		#return ""
+		alertaIDerror(url)
+		return ""
 	id = mobj.group(2)
 	return id
 
@@ -150,6 +148,6 @@ def alertaNone():
 	ventana = xbmcgui.Dialog()
 	ok= ventana.ok ("Conector de Youtube", "!Aviso¡","El video no se encuentra disponible",'es posible que haya sido removido')
 	
-def alertaIDerror():
-	ventana = xbmcgui.Dialog(id)
-	ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID: %s" %id,'del video, la URL es invalida ')
+def alertaIDerror(url):
+	ventana = xbmcgui.Dialog()
+	ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID de la URL"," %s" %url,'la URL es invalida ')

@@ -22,6 +22,8 @@ import veoh
 import metadivx
 import divxden
 import divxlink
+import videoweed
+
 
 xbmc.output("[servertools.py] init")
 
@@ -528,6 +530,21 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("0) Videoweed...")
+	patronvideos  = '(http://www.videoweed.com/file/*?\.flv)'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Videoweed]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'videoweed' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	return devuelve
 
 def findurl(code,server):
@@ -569,6 +586,10 @@ def findurl(code,server):
 	if server == "divxlink":
 		mediaurl = divxlink.geturl(code)
 
+	if server == "videoweed":
+		mediaurl = videoweed.geturl(code)
+	
+		
 	return mediaurl
 
 def getmegavideolow(code):
