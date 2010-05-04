@@ -430,11 +430,14 @@ def play2(params,url,category):
 		urlsplited = url.split("|")
 		url1 = urlsplited[0]
 		urlsubtit = urlsplited[1]
-		subt_ok = downloadstr(urlsubtit)
-		print "subtitulo subt_ok = %s" % str(subt_ok)
-		if subt_ok is None: # si es None la descarga del subtitulo esta ok
-			xbmcplugin.setSetting("subtitulo", "true")
-	play(params,url,category)
+		subt_ok = "0"
+		while subt_ok == "0":		
+			subt_ok = downloadstr(urlsubtit)
+			print "subtitulo subt_ok = %s" % str(subt_ok)
+			if subt_ok is None: # si es None la descarga del subtitulo esta ok
+				xbmcplugin.setSetting("subtitulo", "true")
+				break
+	play(params,url1,category)
 		
 def acentos(title):
 
