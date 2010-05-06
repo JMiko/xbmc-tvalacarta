@@ -33,7 +33,7 @@ def mainlist(params,url,category):
 	xbmc.output("[cinegratis24h.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimas Películas Subidas"    ,"http://www.cinegratis24h.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimas Películas Subidas"    ,"http://www.cinegratis24h.com/search?max-results=50","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Estrenos","http://www.cinegratis24h.net/index.php?module=estrenos","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series","http://www.cinegratis24h.net/index.php?module=series","","")
 	xbmctools.addnewfolder( CHANNELNAME , "ListadoTotal" , category , "Listado Completo"        ,"http://www.cinegratis24h.com/","","")
@@ -93,31 +93,33 @@ def listvideos(params,url,category):
 
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<a onblur="[^"]+" href="([^"]+)"'                           # URL
-	patronvideos += '><img style="[^"]+" src="([^"]+)".*?border=[^/]+/></a>'       # TUMBNAIL
+	patronvideos  = "<h1 class='post-title entry-title'>[^<]+<a href='([^']+)'"  # URL
+	patronvideos += ">([^<]+)</a>.*?"                                            # Titulo   
+	patronvideos += '<a onblur="[^"]+" href="[^"]+".*?src="([^"]+).*?'           # TUMBNAIL               
+	patronvideos += 'border=[^>]+>.*?<span[^>]+>(.*?)</span></div>'        # Argumento	
 	#patronvideos += '</h1>[^<]+</div>.*?<div class=[^>]+>[^<]+'
 	#patronvideos += '</div>[^<]+<div class=[^>]+>.*?href="[^"]+"><img '                    
 	#patronvideos += 'style=.*?src="([^"]+)".*?alt=.*?bold.*?>(.*?)</div>'                  # IMAGEN , DESCRIPCION
 	#patronvideos += '.*?flashvars="file=(.*?flv)\&amp'                                      # VIDEO FLV 
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-
+	scrapedtitle = ""
 	for match in matches:
 		# Titulo
-		for campo in re.findall("http://[^/]+/[^/]+/[^/]+/([^.]+).html",match[0]):
-			scrapedtitle = campo.replace("-"," ")
+		
+		scrapedtitle = match[1]
 		# URL
 		scrapedurl = match[0]
 		# Thumbnail
-		scrapedthumbnail = match[1]
-                #scrapedthumbnail = scrapedthumbnail.replace(" ","")
+		scrapedthumbnail = match[2]
+         
 		# Argumento
-		scrapedplot = ""
-		#scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
-		#scrapedplot = scrapedplot.replace('&#8220;','"')
-		#scrapedplot = scrapedplot.replace('&#8221;','"')
-		#scrapedplot = scrapedplot.replace('&#8230;','...')
-		#scrapedplot = scrapedplot.replace("&nbsp;","")
+		scrapedplot = match[3]
+		scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
+		scrapedplot = scrapedplot.replace('&#8220;','"')
+		scrapedplot = scrapedplot.replace('&#8221;','"')
+		scrapedplot = scrapedplot.replace('&#8230;','...')
+		scrapedplot = scrapedplot.replace("&nbsp;","")
 
 		# Depuracion
 		if (DEBUG):
