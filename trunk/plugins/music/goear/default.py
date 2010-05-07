@@ -9,8 +9,8 @@
 __plugin__  = "goear"
 __author__  = "tvalacarta & emilio"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/goear/"
-__date__    = "04 Abril 2010"
-__version__ = "1.0"
+__date__    = "07 Mayo 2010"
+__version__ = "1.1"
 
 import urllib
 import os

@@ -156,7 +156,9 @@ def categoryresults(params,url,category):
 	if len(matches) > 0:
 		scrapedtitle = "Pagina siguiente"
 		scrapedurl = urlparse.urljoin(url,matches[0])
+		
 		addnewfolder( "categoryresults" ,scrapedtitle,scrapedurl)
+		
 	
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -171,15 +173,8 @@ def listgrupos(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	'''
-	<div class="separador">
-	<div class="b1"> <a href="search.php?q=o bahia" class="b1">o bahia</a></div>
-	<div class="b2"></div>
-	</div>
-	'''
-	
 	patronvideos  = '<div class="separador">[^<]+'
-	patronvideos += '<div class="b1"> <a href="([^"]+)" class="b1">([^<]+)</a></div>[^<]+'
+	patronvideos += '<div class="b1"> <a href="([^"]+)" class="b1">([^<]+)</a></div>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -227,17 +222,20 @@ def searchresults(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	#<div style="padding-left:13px;"><a title="Escuchar Estopa de estopa" href="listen/77198b5/estopa-estopa" class="b1">Estopa</a></div><div style="color:#978080;font-size:11px;padding-left:13px;">Cancion de estopa, estopa dios</div><div>&nbsp;</div><div style="padding-left:13px;"><a title="Escuchar Estopa de estopa" href="listen/c3950a5/estopa-estopa" class="b1">Estopa</a></div>
-	#<div style="padding-left:13px;"><a title="Escuchar Fado Da Adica de amalia rodrigues" href="listen/880e504/fado-da-adica-amalia-rodrigues" class="b1">Fado Da Adica</a></div><div style="float:right"><a target="_blank" onclick="window.open('http://www.goear.com/listenwin.php?v=880e504','Escuchar Fado Da Adica','width=500,height=350,resizable=yes')"><img src="http://www.goear.com/img2/newwin.gif"></a></div><div style="color:#978080;font-size:11px;padding-left:13px;">amalia rodrigues, fado da adica </div><div>&nbsp;</div>
-	
-	patronvideos  = '<div style="padding-left.13px.">'
-	patronvideos += '<a title="([^"]+)" href="([^"]+)" class="b1">([^<]+)</a>'
+	#<div style="padding-left:1px;"><a title="Escuchar Leaves de b*witched" href="listen/ad20ab3/leaves-b*witched" class="b1">Leaves</a></div><div style="float:right"><a target="_blank" onclick="window.open('http://www.goear.com/listenwin.php?v=ad20ab3','Escuchar Leaves','width=500,height=350,resizable=yes')"><img src="http://www.goear.com/img2/newwin.gif"></a></div><div style="color:#978080;font-size:11px;padding-left:13px;">b*witched, b*witched - leaves </div><div>&nbsp;</div>
+	patronvideos  = '<div style="padding-left:1px;">'
+	patronvideos += '<a title="[^"]+" href="([^"]+)" class="b1">([^<]+)</a>'
+	patronvideos += '</div>'
+	patronvideos += '<div style="[^"]+"><a target="_blank" onclick="[^"]+"><img src="[^"]+"></a></div><div style="[^"]+">([^<]+)</div>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		scrapedtitle = match[2]+" - "+match[0]
-		scrapedurl = urlparse.urljoin(url,match[1])
+		scrapedtitle = match[1]+" - "+match[2]
+		scrapedtitle = scrapedtitle.strip()
+		scrapedtitle = scrapedtitle.replace("\n"," ")
+		scrapedtitle = scrapedtitle.replace("\r"," ")
+		scrapedurl = urlparse.urljoin(url,match[0])
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"]")
 
 		# Añade al listado de XBMC
@@ -305,8 +303,7 @@ def getmediaurl(audio_url):
 	# Abrir el archivo xml que contiene la información 
 	# de la forma http://www.goear.com/hellocalsec.php?f=xxyyzzz
 
-	url_xml = "http://www.goear.com/localtrackhost.php?f=" + audio_id
-	xbmc.output("[goear.py] url_xml="+url_xml)
+	url_xml = "http://www.goear.com/tracker758.php?f=" + audio_id
 	data = None
 
 	xmldoc = urllib2.urlopen(url_xml,data)
