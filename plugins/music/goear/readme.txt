@@ -107,8 +107,5 @@ http://www.mimediacenter.info
 
 Plugin code and structure is based on my plugin pelisalacarta.
 
-All credit for the MP3 resolution go for emilio. Thanks man!
-
 Main channel icon has been found in Google Images and edited using Gimp.
-
 The other icons for settings, etc. are from Crystal Clear Collection
