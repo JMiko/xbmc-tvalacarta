@@ -1,7 +1,7 @@
 <app>
   <id>info.mimediacenter.goear</id>
   <name>goear</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <description>Escuchar música de goear.com</description>
   <thumb>http://www.mimediacenter.info/boxee/goear.png</thumb>
   <repositoryid>info.mimediacenter</repositoryid>
