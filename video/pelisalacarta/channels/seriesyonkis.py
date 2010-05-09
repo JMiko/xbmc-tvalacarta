@@ -19,7 +19,7 @@ import library
 import DecryptYonkis as Yonkis
 
 CHANNELNAME = "seriesyonkis"
-SERVER = {'pymeno4':'','svueno':'(Stagevu)'}
+SERVER = {'pymeno2':'','pymeno3':'','pymeno4':'','pymeno5':'','pymeno6':'','svueno':'(Stagevu)'}
 
 #xbmc.executebuiltin("Container.SetViewMode(57)")  #57=DVD Thumbs
 #xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
@@ -610,7 +610,7 @@ def scrapvideoURL(urlSY):
 			dec = Yonkis.DecryptYonkis()
 			id = dec.decryptALT(dec.charting(dec.unescape(id)))
 			id = "http://stagevu.com/video/" + id
-		elif matches[0][0] == "pymeno4":
+		elif matches[0][0] in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
 			cortar = matches[0][1].split("&")
 			id = cortar[0]
 			xbmc.output("[seriesyonkis.py]  id="+id)
@@ -654,7 +654,7 @@ def choiceOne(matches):
 	seleccion = dia.select("Nº)[AUDIO]-(CALIDAD)-DURACION", opciones)
 	xbmc.output("seleccion=%d" % seleccion)
 	if seleccion == -1 : return ""
-	if servlist[seleccion] == "pymeno4":
+	if servlist[seleccion]  in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
 		cortar = IDlist[seleccion].split("&")
 		id = cortar[0]
 		xbmc.output("[seriesyonkis.py]  id="+id)
