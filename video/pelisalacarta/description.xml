@@ -7,7 +7,7 @@
   </supportedcontent>
   <title>pelisalacarta</title>
   <library>default.py</library>
-  <version>2.14.2</version>
+  <version>2.15</version>
   <platforms>
     <platform>all</platform>
   </platforms>
@@ -15,6 +15,6 @@
     <xbmc>25000</xbmc>
   </minversion>
   <summary>Películas y series a la carta</summary>
-  <description>Reproduce todas las series y películas disponibles online en los más de 20 canales incluidos</description>
+  <description>Reproduce todas las series y películas disponibles online en los más de 50 canales incluidos</description>
   <author>jesus</author>
 </addoninfo>
