@@ -128,7 +128,7 @@ def GetFromYoutubePlaylist(titulovideo):
 
 		thumbnail=""
 		patronyoutube  = '<span><a class="hLink" title="(.*?)" href="(.*?)">.*?'
-		patronyoutube += '<span class="playlist-video-duration">(.*?)</span>'
+		#patronyoutube += '<span class="playlist-video-duration">(.*?)</span>'
 		matches  = re.compile(patronyoutube,re.DOTALL).findall(data)
 		if len(matches)>0:
 			for match in matches:
@@ -147,7 +147,7 @@ def GetFromYoutubePlaylist(titulovideo):
 						thumbnail = matches2[0]
 					c = c + 1
 					xbmc.output("Trailer elegido :  "+match[1])
-					devuelve.append( [scrapedurl, match[0]+" "+match[2] , thumbnail] )
+					devuelve.append( [scrapedurl, match[0] , thumbnail] )
 					#scrapedthumbnail = thumbnail
 					#scrapedtitle     = match[0]
 					#scrapedurl       = match[1]

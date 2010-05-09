@@ -374,12 +374,12 @@ def listarvideos(params,url,category,data):
       for match in matchyoutube:
         listyoutubeurl = 'http://www.youtube.com/view_play_list?p='+match
         data1 = scrapertools.cachePage(listyoutubeurl)
-        newpatronyoutube = '<a class="video-thumb-120" href="(.*?)"   ><img title="(.*?)"    src="(.*?)"'
+        newpatronyoutube = '<a href="(.*?)".*?<img src="(.*?)".*?alt="([^"]+)"'
         matchnewyoutube  = re.compile(newpatronyoutube,re.DOTALL).findall(data1)
         if len(matchnewyoutube)>0:
            for match2 in matchnewyoutube:
-               scrapedthumbnail = match2[2]
-               scrapedtitle     = match2[1]
+               scrapedthumbnail = match2[1]
+               scrapedtitle     = match2[2]
                scrapedurl       = match2[0]
      
                xbmc.output(" lista de links encontrados U "+str(len(matchnewyoutube)))
