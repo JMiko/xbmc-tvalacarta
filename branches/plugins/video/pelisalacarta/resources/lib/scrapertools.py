@@ -296,6 +296,12 @@ def htmlclean(cadena):
 	
 	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
 	cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = re.compile("<object[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</object>","")
+	cadena = re.compile("<param[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</param>","")
+	cadena = re.compile("<embed[^>]*>",re.DOTALL).sub("",cadena)
+	cadena = cadena.replace("</embed>","")
 	cadena = cadena.replace("\t","")
 	cadena = entityunescape(cadena)
 	return cadena

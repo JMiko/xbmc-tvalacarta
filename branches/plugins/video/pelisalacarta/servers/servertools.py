@@ -23,6 +23,7 @@ import metadivx
 import divxden
 import divxlink
 import videoweed
+import youtube
 
 
 xbmc.output("[servertools.py] init")
@@ -410,6 +411,20 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("0) Stagevu...")
+	patronvideos  = "'http://stagevu.com.*?uid\=([^']+)'"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Stagevu]"
+		url = "http://stagevu.com/video/"+match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'Stagevu' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	xbmc.output("0) Megavideo... formato d=XXXXXXX")
 	patronvideos  = '"http://www.megavideo.com/.*?\&d\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -454,6 +469,20 @@ def findvideos(data):
 
 	xbmc.output("0) Movshare...")
 	patronvideos  = '"(http://www.movshare.net/video/[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	for match in matches:
+		titulo = "[Movshare]"
+		url = match
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'movshare' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
+	xbmc.output("0) Movshare...")
+	patronvideos  = "'(http://www.movshare.net/embed/[^']+)'"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
@@ -545,6 +574,21 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	xbmc.output("0) YouTube...")
+	patronvideos  = '"http://www.youtube.com/v/([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[YouTube]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'youtube' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	return devuelve
 
 def findurl(code,server):
@@ -588,6 +632,9 @@ def findurl(code,server):
 
 	if server == "videoweed":
 		mediaurl = videoweed.geturl(code)
+	
+	if server == "youtube":
+		mediaurl = youtube.geturl(code)
 	
 		
 	return mediaurl
