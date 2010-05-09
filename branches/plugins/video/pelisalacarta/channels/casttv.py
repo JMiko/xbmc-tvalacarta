@@ -1758,7 +1758,7 @@ def writesub(titulosub,sublist):
 	subfile.close()
 	
 	if os.path.exists(fullfilename): # Añadido por bandavi 
-		from shutil import copy2	 # copia los subt descargados a los subt temporales para poder cargarlos con el setting del plugin
+		from shutil import copy2	 # copia los subt descargados a los subt temporales para poder activarlos con el setting del plugin
 		copy2(fullfilename,xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' )))
 		
 	return filename

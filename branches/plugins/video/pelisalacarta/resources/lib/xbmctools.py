@@ -289,6 +289,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		return
 
 	elif opciones[seleccion]=="Buscar Trailer":
+		xbmcplugin.setSetting("subtitulo", "false")
 		xbmc.executebuiltin("Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" ) , server ))
 		return
 
@@ -318,7 +319,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		xbmc.output("[xbmctools.py] 4")
 		launchplayer(mediaurl, listitem)
 		
-	if xbmcplugin.getSetting("subtitulo") == "true":
+	if (xbmcplugin.getSetting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
 		xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' ) ) )
 		xbmcplugin.setSetting("subtitulo", "false")
 
