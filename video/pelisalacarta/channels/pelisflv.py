@@ -256,6 +256,8 @@ def detail(params,url,category):
 		for match in matches:
 			scrapedurl = match.replace("&amp;","&")
 			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Movshare" , title+" - [Movshare]", scrapedurl , thumbnail , plot )
+
+
 		
 	# ------------------------------------------------------------------------------------
         #--- Busca los videos Directos
@@ -263,8 +265,8 @@ def detail(params,url,category):
 	patronvideos = 'file=(http\:\/\/[^\&]+)\&'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	print matches
-	
+	print "link directos encontrados :%s" %matches
+	print data
 	if len(matches)>0:
 		for match in matches:
 			subtitle = "[FLV-Directo]"
@@ -288,7 +290,7 @@ def detail(params,url,category):
 						
 					if ".mp4" in match2[1]:
 						subtitle = "[MP4-Directo]"
-					scrapedtitle = '%s  - %s  %s' %(title,match2[0],subtitle)
+					scrapedtitle = '%s  - (%s)  %s' %(title,match2[0],subtitle)
 					
 					scrapedurl = match2[1].strip()
 					scrapedthumbnail = thumbnail
@@ -339,7 +341,7 @@ def detail(params,url,category):
 					
 				if  match2[1].endswith(".mp4"):
 					subtitle = "[MP4-Directo]"
-				scrapedtitle = '%s  - %s  %s' %(title,match2[0],subtitle)
+				scrapedtitle = '%s  - (%s)  %s' %(title,match2[0],subtitle)
 				
 				scrapedurl = match2[1].strip()
 				scrapedthumbnail = thumbnail
@@ -353,6 +355,17 @@ def detail(params,url,category):
 						
 				# Añade al listado de XBMC
 				xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )					
+
+	# Busca enlaces en el servidor Videoweed - "el modulo servertools.findvideos() no los encuentra"
+	patronvideos = '(http\:\/\/[^\.]+\.videoweed.com\/[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		xbmc.output(" Servidor Videoweed")
+		for match in matches:
+			scrapedurl = match.replace("&amp;","&")
+			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Videoweed" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )		
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		
@@ -372,9 +385,6 @@ def play(params,url,category):
 	server = params["server"]
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-	if xbmcplugin.getSetting("subtitulo") == "true":
-		xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' ) ) )
-		xbmcplugin.setSetting("subtitulo", "false")
 
 def play2(params,url,category):
 	xbmc.output("[pelisflv.py] play2")

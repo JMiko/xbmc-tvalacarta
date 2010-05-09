@@ -161,15 +161,15 @@ def gettrailer(titulovideo,category):
 	print "[trailertools.py] Modulo: gettrailer(titulo = %s , category = %s)"  % (titulovideo,category)
 	titulo = re.sub('\([^\)]+\)','',titulovideo)
 	titulo = title = re.sub('\[[^\]]+\]','',titulo)
-	titulo = titulo.replace("Mirror 1","").strip()
-	titulo = titulo.replace("parte 1","").strip()
+
 	sopa_palabras_invalidas = ("dvdrip" ,  "dvdscreener2" ,"tsscreener" , "latino" ,     # Esto es para peliculasyonkis o parecidos
 							   "dvdrip1",  "dvdscreener"  ,"tsscreener1", "latino1",
 							   "latino2",  "dvdscreener1" ,"screener"    ,
-							   "mirror" ,  "megavideo"    ,"vose"    	
+							   "mirror" ,  "megavideo"    ,"vose"    	, "subtitulada"
 							   )
 							   
 	titulo = LimpiarTitulo(titulo)
+	print "el tituloooo es :%s" %titulo
 	trozeado = titulo.split()
 	for trozo in trozeado:
 		if trozo in sopa_palabras_invalidas:
@@ -177,7 +177,10 @@ def gettrailer(titulovideo,category):
 	titulo = re.sub(' $','',titulo)
 	titulo = titulo.replace("ver pelicula online vos","")
 	titulo = titulo.replace("ver pelicula online","").strip()
-		
+	titulo = titulo.replace("mirror 1","").strip()
+	titulo = titulo.replace("parte 1","").strip()
+	titulo = titulo.replace("part 1","").strip()
+	titulo = titulo.replace("pt 1","").strip()		
 	encontrados = []
 	if len(titulo)==0:
 		titulo = "El_video_no_tiene_titulo"

@@ -419,9 +419,6 @@ def play(params,url,category):
 	server = params["server"]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-	if xbmcplugin.getSetting("subtitulo") == "true":
-		xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' ) ) )
-		xbmcplugin.setSetting("subtitulo", "false")
 
 def play2(params,url,category):
 	xbmc.output("[newdivx.py] play")

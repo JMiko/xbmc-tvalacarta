@@ -315,6 +315,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	else:
 		xbmc.output("[xbmctools.py] 4")
 		launchplayer(mediaurl, listitem)
+		
+	if xbmcplugin.getSetting("subtitulo") == "true":
+		xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' ) ) )
+		xbmcplugin.setSetting("subtitulo", "false")
 
 
 def getLibraryInfo (mediaurl):
