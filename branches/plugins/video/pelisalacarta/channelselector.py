@@ -76,7 +76,7 @@ def listchannels(params,url,category):
 	addfolder("No Megavideo","nomegavideo","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
-	addfolder("seriesonline.us","seriesonline","mainlist")
+	#addfolder("seriesonline.us","seriesonline","mainlist")
 	addfolder("Series21","series21","mainlist")
 	#addfolder("Newcineonline","newcineonline","mainlist")
 	addfolder("CastTV [EN]","casttv","mainlist")

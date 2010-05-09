@@ -17,6 +17,7 @@ import os
 import favoritos
 import library
 import descargadoslist
+import scrapertools
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -160,7 +161,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		opciones.append("Quitar de lista de descargas")
 	else:
 		opciones.append("Añadir a lista de descargas")
-
+	opciones.append("Enviar a JDownloader")
 	if desderrordescargas:
 		opciones.append("Borrar descarga definitivamente")
 		opciones.append("Pasar de nuevo a lista de descargas")
@@ -189,6 +190,17 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		if xbmcplugin.getSetting("subtitulo") == "true":
 			xbmcplugin.setSetting("subtitulo", "false")
 		return
+
+	if opciones[seleccion].startswith("Enviar a JDownloader"):
+		if server=="Megaupload":
+			d = {"web": "http://www.megaupload.com/?d=" + url}
+		else:
+			d = {"web": "http://www.megavideo.com/?v=" + url}
+			
+		data = scrapertools.cachePage(xbmcplugin.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+urllib.urlencode(d)+ " " +thumbnail)
+		data = scrapertools.cachePage(xbmcplugin.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+thumbnail)
+		return
+
 	# Ver en calidad alta
 	if opciones[seleccion].startswith("Ver en calidad alta"):
 		if server=="Megaupload":
