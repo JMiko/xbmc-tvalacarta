@@ -11,11 +11,16 @@ import scrapertools
 xbmc.output("[channelselector.py] init")
 
 DEBUG = True
+'''
 if xbmcplugin.getSetting("thumbnail_type")=="0":
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
 else:
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
-
+'''
+if xbmcplugin.getSetting("thumbnail_type")=="0":
+	IMAGES_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
+else:
+	IMAGES_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
 
 #57=DVD Thumbs
 #xbmc.executebuiltin("Container.SetViewMode(57)")
@@ -33,7 +38,7 @@ def listchannels(params,url,category):
 
 	# Verifica actualizaciones solo en el primer nivel
 	if xbmcplugin.getSetting("updatecheck2") == "true":
-		xbmc.output("updatecheck2=true")
+		xbmc.output("[channelselector.py] Verificar actualizaciones activado")
 		import updater
 		updater.checkforupdates()
 	else:
@@ -48,12 +53,14 @@ def listchannels(params,url,category):
 	addfolder("Peliculas21","peliculas21","mainlist")
 	addfolder("Dospuntocerovision","dospuntocerovision","mainlist")
 	addfolder("Cine15","cine15","mainlist")
+	#addfolder("Eduman Movies","edumanmovies","mainlist")
 	#addfolder("SesionVIP","sesionvip","mainlist")
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("Cine-Adicto","cineadicto","mainlist")
 	addfolder("PelisFlv","pelisflv","mainlist")
 	addfolder("NewDivx","newdivx","mainlist")
+	addfolder("Pelis-Sevillista56","sevillista","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
 	addfolder("TVShack.net (VO)","tvshack","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
@@ -82,6 +89,7 @@ def listchannels(params,url,category):
 	addfolder("Watchanimeon [EN]","watchanimeon","mainlist")
 	addfolder("Animeid","animeid","mainlist")
 	addfolder("Ovasid","ovasid","mainlist")
+	addfolder("dibujosanimadosgratis.net","dibujosanimadosgratis","mainlist")
 	addfolder("DocumaniaTV","documaniatv","mainlist")
 	addfolder("DocumentariesTV [EN]","documentariestv","mainlist")
 	addfolder("Documentalesyonkis","documentalesyonkis","mainlist")
@@ -102,7 +110,6 @@ def listchannels(params,url,category):
 
 	#addfolder("Kochikame","kochikame","mainlist")
 	#addfolder("PeliculasHD","peliculashd","mainlist")
-	#addfolder("Pelis-Sevillista56","sevillista","mainlist")
 	#addfolder("Wuapi","wuapisite","mainlist")
 	#addfolder("Frozen Layer","frozenlayer","mainlist")
 
@@ -122,10 +129,6 @@ def addfolder(nombre,channelname,accion,category="Varios"):
 		category = "Otros"
 	
 	#Preferir cartel en jpg a png (para ir sustituyendo)
-	thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".jpg")
-	if not os.path.exists(thumbnail):
-		thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png")
-	
-	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
+	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=IMAGES_PATH+channelname+".png")
 	itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(category) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)

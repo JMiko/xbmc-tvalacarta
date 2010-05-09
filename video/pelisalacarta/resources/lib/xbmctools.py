@@ -484,6 +484,8 @@ def unseo(cadena):
 		cadena = cadena[11:]
 	elif cadena.upper().startswith("VER ONLINE "):
 		cadena = cadena[11:]
+	elif cadena.upper().startswith("DESCARGA DIRECTA "):
+		cadena = cadena[17:]
 	return cadena
 
 def addSingleChannelOptions(params,url,category):

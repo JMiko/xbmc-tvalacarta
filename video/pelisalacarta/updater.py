@@ -33,27 +33,27 @@ def checkforupdates():
 	xbmc.output("[updater.py] checkforupdates")
 	try:
 		# Descarga el fichero con la versión en la web
-		xbmc.output("Verificando actualizaciones...")
-		xbmc.output("Version remota: "+REMOTE_VERSION_FILE)
+		xbmc.output("[updater.py] Verificando actualizaciones...")
+		xbmc.output("[updater.py] Version remota: "+REMOTE_VERSION_FILE)
 		data = scrapertools.cachePage( REMOTE_VERSION_FILE )
-		xbmc.output("xml descargado="+data)
+		#xbmc.output("xml descargado="+data)
 		patronvideos  = '<tag>([^<]+)</tag>'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
-		scrapertools.printMatches(matches)
+		#scrapertools.printMatches(matches)
 		versiondescargada = matches[0]
-		xbmc.output("version descargada="+versiondescargada)
+		xbmc.output("[updater.py] version descargada="+versiondescargada)
 		
 		# Lee el fichero con la versión instalada
 		localFileName = LOCAL_VERSION_FILE
-		xbmc.output("Version local: "+localFileName)
+		xbmc.output("[updater.py] Version local: "+localFileName)
 		infile = open( localFileName )
 		data = infile.read()
 		infile.close();
-		xbmc.output("xml local="+data)
+		#xbmc.output("xml local="+data)
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
-		scrapertools.printMatches(matches)
+		#scrapertools.printMatches(matches)
 		versionlocal = matches[0]
-		xbmc.output("version local="+versionlocal)
+		xbmc.output("[updater.py] version local="+versionlocal)
 
 		arraydescargada = versiondescargada.split(".")
 		arraylocal = versionlocal.split(".")
@@ -62,35 +62,35 @@ def checkforupdates():
 		# local 2.9.0 - descargada 2.8.0 -> no descargar
 		# local 2.8.0 - descargada 2.9.0 -> descargar
 		if len(arraylocal) == len(arraydescargada):
-			xbmc.output("caso 1")
+			#xbmc.output("caso 1")
 			hayqueactualizar = False
 			for i in range(0, len(arraylocal)):
-				print arraylocal[i], arraydescargada[i], int(arraydescargada[i]) > int(arraylocal[i])
+				#print arraylocal[i], arraydescargada[i], int(arraydescargada[i]) > int(arraylocal[i])
 				if int(arraydescargada[i]) > int(arraylocal[i]):
 					hayqueactualizar = True
 		# local 2.8.0 - descargada 2.8 -> no descargar
 		# local 2.9.0 - descargada 2.8 -> no descargar
 		# local 2.8.0 - descargada 2.9 -> descargar
 		if len(arraylocal) > len(arraydescargada):
-			xbmc.output("caso 2")
+			#xbmc.output("caso 2")
 			hayqueactualizar = False
 			for i in range(0, len(arraydescargada)):
-				print arraylocal[i], arraydescargada[i], int(arraydescargada[i]) > int(arraylocal[i])
+				#print arraylocal[i], arraydescargada[i], int(arraydescargada[i]) > int(arraylocal[i])
 				if int(arraydescargada[i]) > int(arraylocal[i]):
 					hayqueactualizar = True
 		# local 2.8 - descargada 2.8.8 -> descargar
 		# local 2.9 - descargada 2.8.8 -> no descargar
 		# local 2.10 - descargada 2.9.9 -> no descargar
 		if len(arraylocal) < len(arraydescargada):
-			xbmc.output("caso 3")
+			#xbmc.output("caso 3")
 			hayqueactualizar = True
 			for i in range(0, len(arraylocal)):
-				print arraylocal[i], arraydescargada[i], int(arraylocal[i])>int(arraydescargada[i])
+				#print arraylocal[i], arraydescargada[i], int(arraylocal[i])>int(arraydescargada[i])
 				if int(arraylocal[i]) > int(arraydescargada[i]):
 					hayqueactualizar = False
 
 		if (hayqueactualizar):
-			xbmc.output("actualizacion disponible")
+			xbmc.output("[updater.py] actualizacion disponible")
 			
 			# Añade al listado de XBMC
 			listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
