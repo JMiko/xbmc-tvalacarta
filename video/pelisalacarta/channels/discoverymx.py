@@ -361,6 +361,7 @@ def detail(params,url,category):
 		server = video[2]
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
+	'''
 	patronvideos = '(http://www.zshare.net/download/[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	for match in matches:
@@ -369,6 +370,7 @@ def detail(params,url,category):
 		scrapedtitle = title
 		re.compile(patronyoutube,re.DOTALL).findall(data)
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle +" - "+"(Zshare) ", scrapedurl , thumbnail , plot )
+	'''
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		
