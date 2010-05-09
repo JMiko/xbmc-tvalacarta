@@ -186,6 +186,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		if strmfile:  #Para evitar el error "Uno o más elementos fallaron" al cancelar la selección desde fichero strm
 			listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
 			xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,listitem)    # JUR Added
+		if xbmcplugin.getSetting("subtitulo") == "true":
+			xbmcplugin.setSetting("subtitulo", "false")
 		return
 	# Ver en calidad alta
 	if opciones[seleccion].startswith("Ver en calidad alta"):
