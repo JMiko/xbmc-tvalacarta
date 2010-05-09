@@ -634,22 +634,25 @@ def choiceOne(matches):
 	fmt=duracion=id=""
 	
 	for server,codigo,audio,data in matches:
-		servidor = SERVER[server]
-		Nro = Nro + 1
-		regexp = re.compile(r"title='([^']+)'")
-		match = regexp.search(data)
-		if match is not None:
-			fmt = match.group(1)
-			fmt = fmt.replace("Calidad","").strip()
-		regexp = re.compile(r"Duraci\xc3\xb3n:([^<]+)<")
-		match = regexp.search(data)
-		if match is not None:
-			duracion = match.group(1).replace(".",":")		
-		audio = audio.replace("Subt\xc3\xadtulos en Espa\xc3\xb1ol","Subtitulado") 
-		audio = audio.replace("Audio","").strip()
-		opciones.append("%02d) [%s] - (%s) - %s %s " % (Nro , audio,fmt,duracion,servidor))
-		IDlist.append(codigo)
-		servlist.append(server)
+		try:
+			servidor = SERVER[server]
+			Nro = Nro + 1
+			regexp = re.compile(r"title='([^']+)'")
+			match = regexp.search(data)
+			if match is not None:
+				fmt = match.group(1)
+				fmt = fmt.replace("Calidad","").strip()
+			regexp = re.compile(r"Duraci\xc3\xb3n:([^<]+)<")
+			match = regexp.search(data)
+			if match is not None:
+				duracion = match.group(1).replace(".",":")		
+			audio = audio.replace("Subt\xc3\xadtulos en Espa\xc3\xb1ol","Subtitulado") 
+			audio = audio.replace("Audio","").strip()
+			opciones.append("%02d) [%s] - (%s) - %s %s " % (Nro , audio,fmt,duracion,servidor))
+			IDlist.append(codigo)
+			servlist.append(server)
+		except:
+			xbmc.output("[seriesyonkis.py] error (%s)" % server)
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Nº)[AUDIO]-(CALIDAD)-DURACION", opciones)
 	xbmc.output("seleccion=%d" % seleccion)
