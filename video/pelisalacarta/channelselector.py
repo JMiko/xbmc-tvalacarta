@@ -11,16 +11,16 @@ import scrapertools
 xbmc.output("[channelselector.py] init")
 
 DEBUG = True
-'''
+
 if xbmcplugin.getSetting("thumbnail_type")=="0":
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
 else:
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
-'''
+
 if xbmcplugin.getSetting("thumbnail_type")=="0":
-	IMAGES_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
+	WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
 else:
-	IMAGES_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
+	WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
 
 #57=DVD Thumbs
 #xbmc.executebuiltin("Container.SetViewMode(57)")
@@ -128,7 +128,15 @@ def addfolder(nombre,channelname,accion,category="Varios"):
 	if category == "":
 		category = "Otros"
 	
-	#Preferir cartel en jpg a png (para ir sustituyendo)
-	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=IMAGES_PATH+channelname+".png")
+	# Preferencia: primero JPG
+	thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".jpg")
+	# Preferencia: segundo PNG
+	if not os.path.exists(thumbnail):
+		thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png")
+	# Preferencia: tercero WEB
+	if not os.path.exists(thumbnail):
+		thumbnail = thumbnailImage=WEB_PATH+channelname+".png"
+
+	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
 	itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(category) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
