@@ -56,7 +56,7 @@ def mainlist(params,url,category):
 	addsimplefolder( CHANNELNAME , "search" , "Series VO - Buscar" , "Series VO - Buscar","http://www.casttv.com/shows/",BUSCADOR_THUMB )
 	addsimplefolder( CHANNELNAME , "searchsub" , "Subtítulos.es" , "Subtítulos.es" , "" , "http://www.subtitulos.es/images/subslogo.png" )
 	addsimplefolder( CHANNELNAME , "ayuda" , "Series VO - Ayuda" , "Ayuda" , "" , HELP_THUMB )
-	addsimplefolder( CHANNELNAME , "descarga" , "Prueba de descarga" , "descargar" , "http://www.subtitulos.es/original/9485/0" , "" )
+	#addsimplefolder( CHANNELNAME , "descarga" , "Prueba de descarga" , "descargar" , "http://www.subtitulos.es/original/9485/0" , "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
