@@ -24,7 +24,7 @@ import divxden
 import divxlink
 import videoweed
 import youtube
-
+import cinshare
 
 xbmc.output("[servertools.py] init")
 
@@ -636,6 +636,8 @@ def findurl(code,server):
 	if server == "youtube":
 		mediaurl = youtube.geturl(code)
 	
+	if server == "cinshare":
+		mediaurl = cinshare.geturl(code)
 		
 	return mediaurl
 

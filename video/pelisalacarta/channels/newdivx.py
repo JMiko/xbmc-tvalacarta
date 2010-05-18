@@ -299,23 +299,25 @@ def detail(params,url,category):
    ## --------------------------------------------------------------------------------------##
    #  				 Busca enlaces en el servidor Cinshare  de momento no funciona           #
    ## --------------------------------------------------------------------------------------##
-	'''
+	
 	patronvideos = '<iframe src="(http://www.cinshare.com/[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		####
+		'''
 		data2 = scrapertools.cachePage(matches[0])
 		#print data2
 		
 		patron = '<param name="src" value="([^"]+)"'
 		matches2 = re.compile(patron,re.DOTALL).findall(data2)
 		if len(matches2)>0:
+		'''
 		####
 		import cinshare
-		videourl = cinshare.geturl(matches[0])
+		videourl = matches[0]
 		subtitle = "[divx-Directo-Cinshare]"
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category ,"Directo", title + " - "+subtitle, videourl , thumbnail , plot )
-	'''		
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category ,"Cinshare", title + " - "+subtitle, videourl , thumbnail , plot )
+			
 	## --------------------------------------------------------------------------------------##
 	#               Busca enlaces a videos .flv o (.mp4 dentro de un xml)                     #
 	## --------------------------------------------------------------------------------------##

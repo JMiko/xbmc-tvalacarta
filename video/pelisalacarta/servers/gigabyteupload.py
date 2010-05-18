@@ -102,13 +102,16 @@ def geturl(urlvideo):
 
 	txheaders =  {'User-Agent':'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)'}
 	# fake a user agent, some websites (like google) don't like automated exploration
+	try:
+		req = Request(theurl, txdata, txheaders)
+		handle = urlopen(req)
+		cj.save(ficherocookies)                     # save the cookies again    
 
-	req = Request(theurl, txdata, txheaders)
-	handle = urlopen(req)
-	cj.save(ficherocookies)                     # save the cookies again    
-
-	data=handle.read()
-	handle.close()
+		data=handle.read()
+		handle.close()
+	except:
+		data = ""
+		pass
 	#print data
 
 	# Lo pide una segunda vez, como si hubieras hecho click en el banner
@@ -137,14 +140,17 @@ def geturl(urlvideo):
 		
 	txdata = "op=download&usr_login=&id="+id+"&SECID="+cecid+"&submit="+submit+"&aff=&came_from=referer=&method_free=Free+Stream"
 	xbmc.output(txdata)
-	
-	req = Request(url2, txdata, txheaders)
-	handle = urlopen(req)
-	cj.save(ficherocookies)                     # save the cookies again    
+	try:
+		req = Request(url2, txdata, txheaders)
+		handle = urlopen(req)
+		cj.save(ficherocookies)                     # save the cookies again    
 
-	data=handle.read()
-	handle.close()
-	#print data
+		data=handle.read()
+		handle.close()
+		#print data
+	except:
+		data = ""
+		pass
 	'''
 	# Extrae el trozo cifrado
 	#patron = '<div align="center" id="divxshowboxt">(.*?)</div>'
