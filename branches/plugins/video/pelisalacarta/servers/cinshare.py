@@ -12,6 +12,7 @@ import xbmc
 import os
 import scrapertools
 import unpackerjs
+import socket
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 
@@ -243,18 +244,29 @@ def geturl(urlvideo):
 	
 	if len(matches)>0:
 		url = matches[0]
-
+	else:return ""
 	xbmc.output("[cinshare.py] url="+url)
+	
+	# Timeout del socket a 60 segundos
+	socket.setdefaulttimeout(10)
+
+	h=urllib2.HTTPHandler(debuglevel=0)
+	request = urllib2.Request(url)
+
+	opener = urllib2.build_opener(h)
+	urllib2.install_opener(opener)
+	try:
+		connexion = opener.open(request)
+		url = connexion.geturl()
+	except urllib2.HTTPError,e:
+		xbmc.output("[cinshare.py]  error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+		
+		print e.read()
+		
+
+	#print connexion.info()
+	
+	
+	
 	return url
 
-def geturl(url):
-	
-	try:
-		#req = urllib2.Request(url)
-		truelink = urllib.urlopen(url).geturl()
-		#trulink = response.geturl()
-		print truelink
-		return truelink
-	except:
-		print "error no se pudo localizar la URL real"
-		return ""
