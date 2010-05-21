@@ -31,9 +31,9 @@ DEBUG = True
 
 def mainlist(params,url,category):
 	xbmc.output("[animeid.py] mainlist")
-	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://animeid.com/" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://animeid.com/" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "catlist" , CHANNELNAME , "Listado por categorias" , "http://animeid.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "newlist"  , CHANNELNAME , "Novedades"              , "http://animeid.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo"       , "http://animeid.com/" , "", "" )
+	xbmctools.addnewfolder( CHANNELNAME , "catlist"  , CHANNELNAME , "Listado por categorias" , "http://animeid.com/" , "", "" )
 
 	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
@@ -55,31 +55,18 @@ def catlist(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
 		scrapedthumbnail = ""
-		# Argumento
 		scrapeddescription = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "newlist" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def fulllist(params,url,category):
@@ -94,31 +81,18 @@ def fulllist(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
 		scrapedthumbnail = ""
-		# Argumento
 		scrapeddescription = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def newlist(params,url,category):
@@ -133,31 +107,18 @@ def newlist(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[2]
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
-		# Argumento
 		scrapeddescription = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
@@ -179,28 +140,50 @@ def detail(params,url,category):
 		plot=matches[0]
 
 	# Extrae las entradas (capítulos)
-	patronvideos = '<a href="([^"]+)".*?target="_blank">([^<]+)</a>'
+	patronvideos  = '<div class="contenido-titulo">[^<]+'
+	patronvideos += '<h2>Lista de Capitulos de [^<]+</h2>[^<]+'
+	patronvideos += '</div>[^<]+'
+	patronvideos += '<div class="contenido">(.*?)</div>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		data = matches[0]
+
+	patronvideos = '<a href="([^"]+)" target="_blank">([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
 		scrapedthumbnail = thumbnail
-		# Argumento
 		scrapedplot = plot
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	patronvideos = "<a href='([^']+)' target='_blank'>([^<]+)</a>"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[1]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = thumbnail
+		scrapedplot = plot
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Extrae las entradas (capítulos)
+	patronvideos = '<param name="flashvars" value="file=([^\&]+)&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		scrapedurl = matches[0]
+		xbmctools.addnewvideo( CHANNELNAME , "playdirecto" , category , "Directo" , title , scrapedurl , thumbnail, plot )
 
 	# Extrae las entradas (capítulos)
 	'''
@@ -230,11 +213,7 @@ def detail(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
@@ -249,14 +228,17 @@ def play(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
 
-	# Extrae las entradas (capítulos)
+	# Extrae las entradas (capítulos
 	#patronvideos  = 'SWFObject\(\'http\:\/\/www\.SeriesID\.com\/player\.swf\'.*?\&file\=([^\&]+)&'
 	patronvideos  = "so.addParam\('flashvars','\&file=([^\&]+)\&"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	for match in matches:
-		scrapedurl = match
+	if len(matches)>0:
+		scrapedurl = matches[0]
+	else:
+		patronvideos  = '<param name="flashvars" value="file=([^\&]+)&'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)
+		if len(matches)>0:
+			scrapedurl = matches[0]
 
 	xbmctools.playvideo(CHANNELNAME,server,scrapedurl,category,title,thumbnail,plot)
 

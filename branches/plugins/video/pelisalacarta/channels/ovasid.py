@@ -49,18 +49,11 @@ def mainlist(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[2]
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
-		# Argumento
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -70,11 +63,7 @@ def mainlist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
@@ -93,18 +82,12 @@ def detail(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# URL
-		scrapedurl = match
-		
-		# Titulo
+		scrapedurl = urlparse.urljoin(url,match)
 		if scrapedurl.endswith(".xml"):
 			scrapedtitle = title
 		else:
 			scrapedtitle = title + " - [Directo]"
-
-		# Thumbnail
 		scrapedthumbnail = thumbnail
-		# Argumento
 		scrapedplot = ""
 
 		# Depuracion
@@ -119,11 +102,7 @@ def detail(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def playlist(params,url,category):

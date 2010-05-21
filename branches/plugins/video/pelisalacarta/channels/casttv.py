@@ -17,6 +17,7 @@ import servertools
 import binascii
 import xbmctools
 import downloadtools
+import tvshack
 
 CHANNELNAME = "casttv"
 
@@ -39,24 +40,25 @@ STARORANGE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 
 STARBLUE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','starbluesmall.png' ) )
 STARGREEN_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall.png' ) )
 STARGREEN2_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall2.png' ) )
+STARGREY_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreysmall.png' ) )
+HD_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','harddisk.png' ) )
 STARGB_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreenblue.png' ) )
 FOLDERBLUE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','foldericonblue.png' ) )
-BUSCADOR_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters','buscador.png' ) )
 HELP_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','help.png' ) )
-
+DESCARGAS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','descargados.png' ) )
 
 def mainlist(params,url,category):
 	xbmc.output("[casttv.py] mainlist")
 
-	category = "CastTV - TVSneak - Series VO"
+	category = "CastTV - TVShack - TVSneak - Series VO"
 
 	addsimplefolder( CHANNELNAME , "listado" , "Series VO - Actualizadas" , "Series VO - Últimas Actualizaciones" , "http://www.casttv.com/shows/" , "http://www.casttv.com/misc/webapp/tn_shows/tn_casttv.jpg" )
 	addsimplefolder( CHANNELNAME , "listado" , category , "Series VO - Listado Completo" , "http://www.casttv.com/shows/" , "http://www.casttv.com/misc/webapp/tn_shows/tn_casttv.jpg" )
 	addsimplefolder( CHANNELNAME , "listado" , "Mis Favoritas" , "Series VO - Mis Favoritas","http://www.casttv.com/shows/",STARORANGE_THUMB )
-	addsimplefolder( CHANNELNAME , "search" , "Series VO - Buscar" , "Series VO - Buscar","http://www.casttv.com/shows/",BUSCADOR_THUMB )
+	addsimplefolder( CHANNELNAME , "search" , "Series VO - Buscar" , "Series VO - Buscar" , "http://www.casttv.com/shows/","http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png" )
 	addsimplefolder( CHANNELNAME , "searchsub" , "Subtítulos.es" , "Subtítulos.es" , "" , "http://www.subtitulos.es/images/subslogo.png" )
 	addsimplefolder( CHANNELNAME , "ayuda" , "Series VO - Ayuda" , "Ayuda" , "" , HELP_THUMB )
-	#addsimplefolder( CHANNELNAME , "descarga" , "Prueba de descarga" , "descargar" , "http://www.subtitulos.es/original/9485/0" , "" )
+	#addsimplefolder( CHANNELNAME , "listtvshack" , "TVShack" , "TVShack" , "" , "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -101,11 +103,11 @@ def listadoupdate(tipolist,category,listupdate):
 	listafav = readfav("","")
 
 	if tipolist <> "Favoritas":
-		listaseries = findseries(data,tipolist,"")
+		listaseries = findseries(data,tipolist,"","","0",0)
 	else:	
 		if len(listafav)>0:
 			listaseries=findstatus(listafav)
-			listaupdated = findseries(data,"Actualizaciones","")
+			listaupdated = findseries(data,"Actualizaciones","","","0",0)
 				
 		elif listupdate==False:
 			Dialogespera.close()
@@ -124,26 +126,31 @@ def listadoupdate(tipolist,category,listupdate):
 						thumbnail=STARORANGE_THUMB
 						if serie[3]=="-1" and tipolist <> "Actualizaciones":
 							thumbnail=STARBLUE_THUMB
+						if fav[3]=="1":
+							thumbnail=STARGREY_THUMB
 						break
 		if tipolist == "Favoritas":
-			encontrado="0"
-			thumbnail=STARORANGE_THUMB
-			listanuevos = []
-			listanuevos=findnuevos(serie[0],serie[2],"0")
-			for update in listaupdated:			
-				if serie[0]==update[0]:
-					encontrado="-1"
-					thumbnail=STARBLUE_THUMB
-					if len(listanuevos)>0:
-						thumbnail=STARGB_THUMB
-					break
-			if len(listanuevos)>0:
-				if encontrado=="0":
-					thumbnail=STARGREEN_THUMB
-				if serie[3]=="-1":
-					nuevos.extend(listanuevos)
+			if serie[3]=="1":
+				thumbnail=STARGREY_THUMB
+			else:
+				encontrado="0"
+				thumbnail=STARORANGE_THUMB
+				listanuevos = []
+				listanuevos=findnuevos(serie[0],serie[2],"0")
+				for update in listaupdated:			
+					if serie[0]==update[0]:
+						encontrado="-1"
+						thumbnail=STARBLUE_THUMB
+						if len(listanuevos)>0:
+							thumbnail=STARGB_THUMB
+						break
+				if len(listanuevos)>0:
+					if encontrado=="0":
+						thumbnail=STARGREEN_THUMB
+					if serie[3]=="-1":
+						nuevos.extend(listanuevos)
 
-		series.append( [ tipolist , serie[0]+serie[1] , serie[2] , thumbnail ] )
+		series.append( [ tipolist , serie[0]+"  -  "+serie[1] , serie[2] , thumbnail ] )
 
 	if len(nuevos)>0:
 		addsimplefolder( CHANNELNAME , "listatres" , "Mis Favoritas - Nuevos Episodios" , "***Nuevos Episodios (Posteriores a [LW])***" , url , STARGREEN2_THUMB )
@@ -174,15 +181,21 @@ def findnuevos(serie,url,todos):
 	listavistos = readvisto(serie,"LW")
 	if len(listavistos)==1 and int(listavistos[0][4])>0:
 		data = scrapertools.cachePage(url)
-		listaepisodios=findepisodios(data,serie)
+		listaepisodios=findepisodios(data,serie,"","0",0)
 		for episodio in listaepisodios:
-			if episodio[3] == "0":
+			if episodio[3] == "0" and episodio[5]<>"0":
 				if int(episodio[5])>int(listavistos[0][3]):
 					listanuevos.append(episodio)								
 				if episodio[5]==listavistos[0][3] and episodio[7]>int(listavistos[0][4]):
 					listanuevos.append(episodio)
 				if todos=="0" and len(listanuevos)>0:
 					break
+				#Teniendo en cuenta el orden de los episodios se puede para así:
+				if episodio[5]==listavistos[0][3] and episodio[7]<=int(listavistos[0][4]):
+					break
+				if int(episodio[5])<int(listavistos[0][3]):
+					break
+
 	return listanuevos				
 
 def search(params,url,category):
@@ -226,7 +239,7 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 		if len(seriesvistas)==0:
 			alertnoresultadosearch()
 			return			
-		listadoseries = findseries(data,"","")
+		listadoseries = findseries(data,"","","","0",0)
 		for visto in seriesvistas:
 			for serie in listadoseries:
 				if visto==serie[0]:
@@ -245,13 +258,13 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 				return
 		data = scrapertools.cachePage(url)				
 		if len(tecleado) == 1:
-			listaseries = findseries(data,"",tecleado)
+			listaseries = findseries(data,"",tecleado,"","0",0)
 		else:
-			listaseries = findseries(data,"","")
+			listaseries = findseries(data,"","","","0",0)
 
 	else:
 		data = scrapertools.cachePage(url)
-		listaseries = findseries(data,"",letras[seleccion-2])
+		listaseries = findseries(data,"",letras[seleccion-2],"","0",0)
 
 	if len(listaseries)==0:
 		alertnoresultadosearch()
@@ -271,7 +284,7 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 						thumbnail=STARBLUE_THUMB
 					break
 
-		foldertitle = serie[0]+serie[1]
+		foldertitle = serie[0]+"  -  "+serie[1]
 		if len(tecleado) > 1:
 			match = re.search(tecleado,foldertitle,re.IGNORECASE)
 			if (match):
@@ -294,9 +307,12 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
 
-def findseries(data,tipolist,search):
+def findseries(data,tipolist,search,titlesubsearch,season,episodio):
 	xbmc.output("[casttv.py] findseries")
+
 	serieslist = []
+	listepisodios = []
+	miseriectv = ""
 	
 	if tipolist == "Actualizaciones":
 		tipolists = '\n\s+&nbsp;<span class="label_updated">Updated!</span>\n\s+</div>'
@@ -316,6 +332,7 @@ def findseries(data,tipolist,search):
 		titulo = titulo.replace('&amp;' , '&')
 		titulo = titulo.replace('&quot;' , '"')
 		titulo = re.sub('\s+$','',titulo)
+		titlectvsearch = ftitlectvsearch(titulo)
 
 		# URL
 		url = urlparse.urljoin("http://www.casttv.com",match[0])
@@ -333,15 +350,25 @@ def findseries(data,tipolist,search):
 		status0 = ""
 		match2 = re.search('icon_current',match[3],re.IGNORECASE)
 		if (match2):
-			status0 = "  -  [Current tv show]"
+			status0 = "[Current tv show]"
 		else:
-			status0 = "  -  [Ended]"
+			status0 = "[Ended]"
+		
+		serieslist.append( [ titulo , status0 , url , updated , titlectvsearch ] )
 
-		serieslist.append( [ titulo , status0 , url , updated ] )
+	if tipolist<>"listforsubs":
+		serieslist=findstatus(serieslist)	
+		return serieslist
+	else:
+		if len(serieslist)>0:
+			itemencontrado = searchgate(serieslist,titlesubsearch)
+			if len(itemencontrado)==1:
+				miseriectv = itemencontrado[0][0]
+				urlctv = itemencontrado[0][2]
+				data = scrapertools.cachePage(urlctv)
+				listepisodios = findepisodios(data,miseriectv,tipolist,season,episodio)
+		return miseriectv,listepisodios
 
-	serieslist=findstatus(serieslist)
-	
-	return serieslist
 
 def findstatus(serieslist):
 	xbmc.output("[casttv.py] findstatus")
@@ -386,22 +413,22 @@ def findstatus(serieslist):
 		for serie in serieslist:
 			
 			if serie[0].lower() == titulo2.lower():
-				serie[1] = "  -  ["+status+"]"
+				serie[1] = "["+status+"]"
 			else:
 				match2 = re.match('(.*?) \(20\d\d\)$',serie[0],re.IGNORECASE)
 				if (match2):
 					if match2.group(1).lower() == titulo2.lower():
-						serie[1] = "  -  ["+status+"]"
+						serie[1] = "["+status+"]"
 					
 				match3 = re.search('\s\&\s',serie[0],re.IGNORECASE)
 				if (match3):
 					if serie[0].replace('&' , 'and').lower() == titulo2.lower():
-						serie[1] = "  -  ["+status+"]"
+						serie[1] = "["+status+"]"
 				
 				match4 = re.search('\'s',serie[0],re.IGNORECASE)
 				if (match4):
 					if serie[0].replace('\'s' , 's').lower() == titulo2.lower():
-						serie[1] = "  -  ["+status+"]"
+						serie[1] = "["+status+"]"
 										
 	return serieslist
 
@@ -411,7 +438,7 @@ def listados(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 	miserievo = title
 	status = ""
-	match = re.match('^(.*?)(\s+\-\s+\[.*?\])$',title)
+	match = re.match('^(.*?)\s+\-\s+(\[.*?\])$',title)
 	if (match):
 		miserievo = match.group(1)
 		status = match.group(2)
@@ -420,7 +447,7 @@ def listados(params,url,category):
 	
 	respuesta = serieupdate(miserievo,status,url)
 
-	if respuesta<>1 and respuesta<>2:
+	if respuesta<>1 and respuesta<>2 and respuesta<>3:
 		category = "Series VO - "+miserievo
 		listadosupdate(miserievo,url,category,False)
 
@@ -430,7 +457,7 @@ def listadossearch(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 	miserievo = title
 	status = ""
-	match = re.match('^(.*?)(\s+\-\s+\[.*?\])$',title)
+	match = re.match('^(.*?)\s+\-\s+(\[.*?\])$',title)
 	if (match):
 		miserievo = match.group(1)
 		status = match.group(2)
@@ -440,7 +467,7 @@ def listadossearch(params,url,category):
 
 	respuesta = serieupdate(miserievo,status,url)
 
-	if respuesta==1 or respuesta==2:
+	if respuesta==1 or respuesta==2 or respuesta==3:
 		category = "Series VO - Buscar"
 		searchupdate(seleccion,tecleado,category,True)
 	else:
@@ -455,7 +482,7 @@ def listadosupdate(miserievo,url,category,listupdate):
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
 
-	listaepisodios = findepisodios(data,miserievo)
+	listaepisodios = findepisodios(data,miserievo,"","0",0)
 
 	if len(listaepisodios) == 0:
 		alertnoepisodios(1)
@@ -514,17 +541,22 @@ def listadosupdate(miserievo,url,category,listupdate):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
 
-def findepisodios(data,miserievo):
+def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 	xbmc.output("[casttv.py] findepisodios")
 	episodioslist = []
+	listepisodio = []
 	seasonlist = []
 	episodioscasttv = []
+	episodiosctvtvs = []
 	encontrados = set()
 	depago = "0"
 	datatvsneak = scrapertools.cachePage("http://tvsneak.com")
 
-	# Arregla el titulo de la serie para TVSneak
+	# Revisar: Arregla el titulo de la serie para la url de TVSneak
 	titletvsneak = ftitletvsneak(miserievo,datatvsneak)
+
+	# Arregla el titulo para búsquedas: se podría pasar entre listados (ant. y post.) pero habría que guardarlo en favoritas... 
+	titlectvsearch = ftitlectvsearch(miserievo)
 
 	# ------------------------------------------------------
 	# Extrae la carátula
@@ -604,47 +636,82 @@ def findepisodios(data,miserievo):
 			seasonlist.append(seasontvsneak)
 			encontrados.add(seasontvsneak)
 
-	# Si una temporada está en TVSneak se agregan todos los episodios (los de pago y los que faltan en CastTV)
+	# Si una temporada está en TVShack o TVSneak se agregan todos los episodios (los de pago y los que faltan en CastTV)
+	miserietvsh,listseasontvsh = findtvshack(miserievo,"S",titlectvsearch,"0",0)
 	for season in seasonlist:
+		OKtvsh="0"
+		OKtvsn="0"
+		#TVShack
+		for seasontvsh in listseasontvsh:
+			if season==seasontvsh[0]:
+				OKtvsh="-1"
+				break
+		#TVSneak (comprueba en los dos sitios si es lento quitar...)
 		urltvsneak = titletvsneak+"-season-"+season
 		matchtvsneak = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak+')',datatvsneak,re.IGNORECASE)
 		if (matchtvsneak):
+			OKtvsn="-1"
+
+		if OKtvsh=="-1" or OKtvsn=="-1":
 			for episodio in episodioslist:
 				if episodio[5]==season:
 					n = episodioslist.index(episodio)
 					if episodio[3]=="-1":
 						episodio[3] = "0"
-					if episodio[8]=="0":
+					if episodio[8]=="0" and OKtvsn=="-1":
 						episodio[8] = "-1"
 					if episodio[7] > 1:
 						lastseasontv = episodioscasttv[-1]
 						if episodio[6] == lastseasontv:
 							if n < len(episodioslist)-1 and episodioslist[n+1][6] <> episodio[6] :						
 								seasontvlast = lastseasontv[0:4]+"01"
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , "-1" , episodio[9] , episodio[10] ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , OKtvsn , episodio[9] , episodio[10] ])
 							elif n == len(episodioslist)-1:
 								seasontvlast = lastseasontv[0:4]+"01"
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , "-1" , episodio[9] , episodio[10] ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , OKtvsn , episodio[9] , episodio[10] ])
 						capitvnew = episodio[7]-1
 						seasontvnew = episodio[6][0:4]+str(capitvnew)
 						if len(seasontvnew) == 5:
 							seasontvnew = seasontvnew.replace('E' , 'E0')
 						
 						if episodioslist[n+1][5] == season and episodioslist[n+1][6] <> episodio[6] and episodioslist[n+1][7] <> capitvnew:
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , "-1" , episodio[9] , episodio[10] ])
+							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , OKtvsn , episodio[9] , episodio[10] ])
 						if episodioslist[n+1][5] == str(int(season)-1) and episodioslist[n+1][5] <> "0":
-							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , "-1" , episodio[9] , episodio[10] ])
+							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , OKtvsn , episodio[9] , episodio[10] ])
 
-	return episodioslist
+	# Se agregan completas las temporadas de TVShack que faltan en CastTV
+	n = len(listseasontvsh)
+	for seasontvsh in listseasontvsh:
+		#se comprueba que la temporada es menor o igual al nº total porque he encontrado errores tipográficos.. 
+		if seasonlist.count(seasontvsh[0])==0 and int(seasontvsh[0])<=n:
+			n=int(seasontvsh[1])
+			if len(seasontvsh[0])==1:
+				seasonT = "S0"+seasontvsh[0]
+			else:
+				seasonT = "S"+seasontvsh[0]
+			while n>0:
+				if n<10:
+					epT = "E0"+str(n)
+				else:
+					epT = "E"+str(n)
+				episodioslist.append([ miserievo+" - "+seasonT+epT , "" , "" , "0" , "" , seasontvsh[0] , seasonT+epT , n , "0" , thumbnail , plot ])
+				n=n-1
+
+	if tipolist<>"listforsubs":
+		return episodioslist
+	else:
+		for episodio in episodioslist:
+			if episodio[5]==seasonsearch and episodio[7]==int(episodiosearch):
+				listepisodio.append(episodio)
+				break
+		return listepisodio
 
 def findsubseries(title,todos,titlectvsearch,season,episodio):
 	xbmc.output("[casttv.py] findsubseries")
 
 	subserieslist=[]
+	seriesubencontrada=[]
 	listsubs = []
-	seriesubencontrada = []
-	seriesubencontrada2 = []
-	tituloencontrado = "0"
 	miep = ""
 
 	url = "http://www.subtitulos.es/series"
@@ -656,6 +723,11 @@ def findsubseries(title,todos,titlectvsearch,season,episodio):
 		search = title
 		if search=="#":
 			search = "[^a-zA-Z]"
+	if todos=="V":
+		matcht = re.match('^(?:The\s+)?(\w)',title,re.IGNORECASE)
+		if (matcht):
+			search = "(?:The\s+)?"+matcht.group(1)
+		todos = "0"
 	
 	# ------------------------------------------------------
 	# Extrae las Series
@@ -686,44 +758,96 @@ def findsubseries(title,todos,titlectvsearch,season,episodio):
 				
 		return subserieslist
 
-	if todos=="0":
+	elif todos=="0":
 
 		if len(subserieslist) > 0:
-			subserieslist.sort(key=lambda subserie: subserie[2])
-			for subserie in subserieslist:
-				if tituloencontrado == "-1" or len(seriesubencontrada2)==2:
-					break
-				titlesubsearch = subserie[2]			
-				forsub = re.match(titlectvsearch+'$',titlesubsearch,re.IGNORECASE)
-				if (forsub):
-					seriesubencontrada.append(subserie)
-					tituloencontrado = "-1"
-				else:
-					# Si se obtuvieran 2 o más coincidencias no serviría
-					forsub1 = re.match('^'+titlectvsearch+'.+$',titlesubsearch,re.IGNORECASE)
-					if (forsub1):
-						seriesubencontrada2.append(subserie)
-
-			if len(seriesubencontrada)==0 and len(seriesubencontrada2)==0:
-				subserieslist.reverse()
-				for subserie in subserieslist:
-					if len(subserie[0])>1:
-						titlesubsearch = subserie[2]								
-						forctv = re.match('^'+titlesubsearch+'.+$',titlectvsearch,re.IGNORECASE)
-						if (forctv):
-							seriesubencontrada2.append(subserie)
-							break											
-			
-			if len(seriesubencontrada)==0:
-				seriesubencontrada = seriesubencontrada2
-			
-			if len(seriesubencontrada)==1:
-				titulosubserie2 = seriesubencontrada[0][0]
-				urlsubserie2 = seriesubencontrada[0][1]
-
+			itemencontrado = searchgate(subserieslist,titlectvsearch)
+			if len(itemencontrado)==1:
+				titulosubserie2 = itemencontrado[0][0]
+				urlsubserie2 = itemencontrado[0][1]
 				miep,listsubs = findsubsep(urlsubserie2,"0",season,episodio)
 
 		return miep,listsubs
+
+def findtvshack(title,todos,titlectvsearch,season,episodio):
+	xbmc.output("[casttv.py] findtvshack")
+
+	listseries = []
+	listepisodios = []
+	miserietvsh = ""
+
+	data = scrapertools.cachePage("http://tvshack.net/tv")
+
+	search = ""
+	if title<>"":
+		#la finalidad es obtener un listado los más corto posible usando el primer carácter
+		matcht = re.match('^(?:The\s+)?(\w)',title,re.IGNORECASE)
+		if (matcht):
+			search = matcht.group(1)
+
+	patronvideos = '<li><a\ href="(?:http://tvshack\.net)?([^"]+)">('+search+'[^<]+)'
+	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
+
+	for match in matches:
+		#Serie
+		titulotvs = match[1]
+
+		# Titulo para búsquedas
+		titletvshsearch = ftitletvshsearch(titulotvs)
+  
+		#Url
+		url = "http://tvshack.net" + match[0]
+
+    		listseries.append([ titulotvs , url , titletvshsearch ])
+
+	if todos=="-1":
+		return listseries
+	else:
+		if len(listseries)>0:
+			itemencontrado = searchgate(listseries,titlectvsearch)
+			if len(itemencontrado)==1:
+				miserietvsh = itemencontrado[0][0]
+				urltvsh = itemencontrado[0][1]
+				params = {'Serie': miserietvsh}
+				listepisodios = findtvshackep(params,urltvsh,"",todos,season,episodio)
+				
+		return miserietvsh,listepisodios
+
+def searchgate(listforsearchin,titletosearch):
+	xbmc.output("[casttv.py] searchgate")
+
+	itemencontrado = []
+	itemencontrado2 = []
+	# listforsearchin tiene que tener en la última columna [-1] el campo para búsquedas
+		
+	listforsearchin.sort(key=lambda listfor: listfor[-1])
+	for listfor in listforsearchin:
+		if len(itemencontrado2)==2:
+			break
+		titletosearchin = listfor[-1]			
+		forin = re.match(titletosearch+'$',titletosearchin,re.IGNORECASE)
+		if (forin):
+			itemencontrado.append(listfor)
+			break
+		else:
+			# Si se obtuvieran 2 o más coincidencias no serviría
+			forin1 = re.match('^'+titletosearch+'.+$',titletosearchin,re.IGNORECASE)
+			if (forin1):
+				itemencontrado2.append(listfor)
+
+	if len(itemencontrado)==0 and len(itemencontrado2)==0:
+		listforsearchin.reverse()
+		for listfor in listforsearchin:
+			if len(listfor[-1])>1:
+				titletosearchin = listfor[-1]								
+				forback = re.match('^'+titletosearchin+'.+$',titletosearch,re.IGNORECASE)
+				if (forback):
+					itemencontrado2.append(listfor)
+					break											
+	if len(itemencontrado)==0:
+		itemencontrado = itemencontrado2
+	
+	return itemencontrado
 
 def listasubep(params,url,category):
 	xbmc.output("[casttv.py] listasubep")
@@ -738,7 +862,7 @@ def listasubep(params,url,category):
 		return
 
 	for subep in listasubep:
-		addsimplefolder( CHANNELNAME , "listasubs" , "Subtitulos - "+miserie , subep[0]+"  -  [Subtítulos]" , subep[1] , "" )
+		addsimplefolder( CHANNELNAME , "listasubs" , category , subep[0]+"  -  [Subtítulos]" , subep[1] , "" )
 
 
 	# Label (top-right)...
@@ -755,6 +879,23 @@ def listasubs(params,url,category):
 
 	miep = urllib.unquote_plus( params.get("title") )
 	miep = re.sub('\s+\-\s+\[Subtítulos\]','',miep)
+	#Buscando subs desde vídeos no se muestra el listado de vídeos
+	videos="-1"
+	match0 = re.match('Series VO',category)
+	if (match0):
+		videos="0"
+	match = re.match('([^;]+);([^;]+)$',category)
+	if (match):
+		category = match.group(1)
+		miep = match.group(2)
+	#Serie, Season y episodio
+	seasonep = "0"
+	match1=re.match('^(.*?)0*(\d+)x0*(\d+)',miep,re.IGNORECASE)
+	if (match1):
+		serie = match1.group(1)
+		seasonep = match1.group(2)
+		episodioep = int(match1.group(3))
+		titlesubsearch = ftitlesubsearch(serie)
 	idioma = ""
 	version = ""
 	
@@ -766,11 +907,53 @@ def listasubs(params,url,category):
 	
 	#Encabezados
 	additem( CHANNELNAME , category , "SUBTITULOS - [Descargar] :" , "" , "" , "" )
-	additem( CHANNELNAME , category , miep , "" , "None" , "" )
+	additem( CHANNELNAME , category , miep , "" , "" , "" )
 
 	for subs in listasubtitulos:
-		addsimplefolder( CHANNELNAME , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , "defaultnetwork.png" )
+		addsimplefolder( CHANNELNAME , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , DESCARGAS_THUMB )
 
+	if seasonep<>"0" and videos=="-1":
+		listacasttv = []
+		listaTVSneak = []
+		listatvshack = []
+		thumbnail=""
+		plot=""
+		
+
+		url = "http://www.casttv.com/shows/"
+		data = scrapertools.cachePage(url)
+		miserievo,listaepisodios = findseries(data,"listforsubs","",titlesubsearch,seasonep,episodioep)
+
+		if len(listaepisodios)==0:
+			#Si la serie no está en CastTV se busca en TVShack
+			miserietvsh,listatvshack = findtvshack(serie,"0",titlesubsearch,seasonep,episodioep)
+
+		elif len(listaepisodios)==1:
+			title=listaepisodios[0][0]
+			thumbnail=listaepisodios[0][9]
+			plot=listaepisodios[0][10]
+			params = {'miserievo': miserievo, 'title': listaepisodios[0][0], 'date': listaepisodios[0][2], 'titletvsneak': listaepisodios[0][4], 'seasontvsneak': listaepisodios[0][5], 'seasontv': listaepisodios[0][6], 'episodiotv': str(listaepisodios[0][7]), 'tvsneak': listaepisodios[0][8], 'thumbnail': listaepisodios[0][9], 'plot': listaepisodios[0][10] }
+			miserietvsh,listacasttv,listactmirrors,listaTVSneak,listatvshack = detaildos(params,listaepisodios[0][1],"listforsubs")
+
+		if len(listacasttv)>0 or len(listaTVSneak)>0 or len(listatvshack)>0:
+
+			additem( CHANNELNAME , category , "VIDEOS :" , "" , "" , "" )
+
+		if len(listacasttv)>0 or len(listaTVSneak)>0:
+			for video in listacasttv:
+				addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
+			for video in listactmirrors:
+				addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
+			for video in listaTVSneak:
+				addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
+		if len(listatvshack)>0:
+			for ep in listatvshack:
+				#se deja la fecha porque no se muestra previamente el ltdo de episodios...
+				titletvsh = re.sub('\s+\(',' - (',ep['title'])
+				if thumbnail=="":
+					thumbnail=ep['thumbnail']
+					plot=ep['plot']
+				xbmctools.addnewvideo( CHANNELNAME , "tvshack.listaVideosEpisodio" , category , "" , titletvsh+" - [TVShack]" , ep['url'] , thumbnail , plot , Serie=miserietvsh )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -844,12 +1027,12 @@ def findsubsep(url,todos,seasonsearch0,episodiosearch):
 			match1=re.search('0*(\d+)x0*(\d+)',tituloep,re.IGNORECASE)
 			if (match1):
 				seasonep = match1.group(1)
-				episodioep = match1.group(2)
+				episodioep = int(match1.group(2))
 
 			# URL
 			url = match[0]
 		
-			if todos=="0" and episodioep==episodiosearch:
+			if todos=="0" and episodioep==int(episodiosearch):
 				listepisodios.append([ tituloep , url , seasonep , episodioep ])
 				break
 			if todos=="-1":
@@ -867,6 +1050,41 @@ def findsubsep(url,todos,seasonsearch0,episodiosearch):
 		miep = listepisodios[0][0]
 		listsubtitulos = findsubs(miep,url)
 		return miep,listsubtitulos
+
+def findsubupdates():
+	xbmc.output("[casttv.py] findsubupdates")
+
+	listsubupdates = []
+
+	url = "http://www.subtitulos.es"
+
+	data = scrapertools.cachePage(url)
+
+	# ------------------------------------------------------
+	# Extrae los Episodios
+	# ------------------------------------------------------
+	patronvideos  = '<a href="([^"]+)">([^<]+)</a></li><li>([^<]+)<span[^>]+>([^<]+)'
+	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
+	
+	for match in matches:
+		# Titulo
+		titulo = match[1]
+		titulo = titulo.replace('\n' , '')
+		# Idioma
+		try:
+			idioma = unicode( match[2], "utf-8" ).encode("iso-8859-1")
+		except:
+			idioma = match[2]
+		# Tiempo
+		tiempo = formatostring(match[3])
+		# Tituloupdate
+		tituloupdate = titulo+" - "+idioma+" "+tiempo
+		# URL
+		url = urlparse.urljoin("http://www.subtitulos.es",match[0])
+
+		listsubupdates.append([ titulo , url , tituloupdate ])
+
+	return listsubupdates
 
 def findsubs(miep,url):
 	xbmc.output("[casttv.py] findsubs")
@@ -900,7 +1118,7 @@ def findsubs(miep,url):
 		# Extrae los Subtítulos
 		# ------------------------------------------------------
 		patronvideos  = '<td width="21%" class="language">\n([^<]+)</td>\n\s+<td width="19%"><strong>\n([^<]*Completado)\s+</strong>'
-		patronvideos += '.*?&middot\s+(\d+)\s+descargas.*?<a href="([^"]+)">ver y editar</a>'
+		patronvideos += '.*?<a href="([^"]+)"[^>]+>(?:descargar|<b>m&aacute;s actualizado</b>)</a>.*?&middot\s+(\d+)\s+descargas'
 		subs = re.compile(patronvideos,re.DOTALL).findall(data1)
 
 		for sub in subs:
@@ -921,18 +1139,18 @@ def findsubs(miep,url):
 					idiomaf2 = re.sub('(?i)La','Lat',idiomaf2)
 					idiomaf = idiomaf+idiomaf2
 			n=38-len(idiomaf)-len(versionf)
-			miep = miep[0:n]
+			if n<len(miep):
+				miep = miep[0:n]
 
 			# Status
 			status = sub[1]
 			status = re.sub('\s+$','',status)
 
 			# NºDescargas
-			descargas = sub[2]
+			descargas = sub[3]
 
 			# URL
-			url = sub[3]+"&start="
-			url = re.sub("list","ajax_list",url)		
+			url = sub[2]
 		
 			listsubtitulos.append([ idioma , status, version , url , miep+";"+idiomaf+versionf , descargas ])
 
@@ -940,67 +1158,6 @@ def findsubs(miep,url):
 		listsubtitulos.sort(key=lambda subs: int(subs[5]))
 		listsubtitulos.reverse()
 	return listsubtitulos
-
-def subtitulo(params,url,category):
-	xbmc.output("[casttv.py] subtitulo")
-
-	misub = urllib.unquote_plus( params.get("title") )
-	match1 = re.search('\(([^\)]+)Completado\)',misub)
-	if (match1):
-		respuesta = alertnocompletado(match1.group(1))
-		if respuesta:
-			pass 
-		else:
-			return
-
-	listainicios=[]
-	sublist = []
-
-	# ------------------------------------------------------
-	# Descarga la página
-	# ------------------------------------------------------
-	data = scrapertools.cachePage(url+"0")
-	
-	# ------------------------------------------------------
-	# Encuentra los inicios de los listados
-	# ------------------------------------------------------
-	patronvideos = 'href=\"javascript\:list(?:\n\(|\()\'(\d+)\','
-	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
-
-	n=0
-	for match in matches:
-		listainicios.append(str(n))
-		n=n+20
-	listainicios.append(str(n))
-
-	for inicio in listainicios:
-		urlL = url+inicio
-		dataL = scrapertools.cachePage(urlL)
-
-		patronvideos  = '<tr[^>]+><td><div[^>]+>(\d+)</div>'
-		patronvideos += '</td><td><div[^>]+>\d+</div></td><td><div[^>]+><img src="images/table_(?:save.png|row_insert.png)"[^>]*></div></td><td><div[^>]+><a href="[^"]+">[^<]+</a></div></td>'
-		patronvideos += '<td[^>]*>(\d+:\d+:\d+,\d+\s-->\s\d+:\d+:\d+,\d+)</td>'
-		patronvideos += '<td[^>]*>(.*?)</td></tr>'
-		matches = re.compile(patronvideos,re.DOTALL).findall(dataL)
-
-		for match in matches:
-			# Secuencia
-			secuencia = match[0]
-			# Tiempos
-			tiempos = match[1]
-			# Texto
-			text=re.sub('<br />','',match[2])
-
-			sublist.append([ secuencia , tiempos , text ])
-
-	titulosub = category
-
-	titulosub = re.sub('(?:\\\\|\/|\:|\*|\?|\"|\<|\>|\|)','',titulosub)
-		
-	archivo = writesub(titulosub,sublist)
-	
-
-	alertsubtitulo(archivo)
 
 def searchsub(params,url,category):
 	xbmc.output("[casttv.py] searchsub")
@@ -1012,16 +1169,19 @@ def searchsub(params,url,category):
 	opciones = []
 	letras = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	
-	opciones.append("Mostrar Todos")
+	opciones.append("Mostrar Todo")
+	opciones.append("Mostrar Últimas Actualizaciones")
 	opciones.append("Teclado")
 	for letra in letras:
 		opciones.append(letra)
 	searchtype = xbmcgui.Dialog()
-	seleccion = searchtype.select("Búsqueda por Título o Inicial en Subtitulos.es:", opciones)
+	seleccion = searchtype.select("Búsqueda por Listados, Título o Inicial en Subtitulos.es:", opciones)
 	if seleccion == -1 :return
 	if seleccion == 0:
 		listasubseries = findsubseries("","-1","","0",0)
 	elif seleccion == 1:
+		listasubupdates = findsubupdates()
+	elif seleccion == 2:
 		keyboard = xbmc.Keyboard('')
 		keyboard.doModal()
 		if (keyboard.isConfirmed()):
@@ -1032,19 +1192,26 @@ def searchsub(params,url,category):
 		if keyboard.isConfirmed() is None or len(tecleado)==0:
 			return
 	else:
-		listasubseries = findsubseries(letras[seleccion-2],"-1","","0",0)
+		listasubseries = findsubseries(letras[seleccion-3],"-1","","0",0)
 
-	if len(listasubseries)==0:
+	if len(listasubseries)==0 and len(listasubupdates)==0:
 		alertnoresultadosearch()
 		return
 
-	if seleccion <> 0:
-		category = category0 = "Subtítulos.es - Buscar"
-		if seleccion > 1:
-			category = category+" - "+letras[seleccion-2] 
-
-	for subserie in listasubseries:
-		addsimplefolder( CHANNELNAME , "listasubep" , category0+" - "+subserie[0] , subserie[0]+"  -  [Subtítulos]" , subserie[1] , "" )
+	if seleccion>1:
+		category = category+" - Buscar"
+		category0 = category
+		if seleccion > 2:
+			category = category+" - "+letras[seleccion-3]
+ 
+	if len(listasubseries)>0:
+		for subserie in listasubseries:
+			addsimplefolder( CHANNELNAME , "listasubep" , category0+" - "+subserie[0] , subserie[0]+"  -  [Subtítulos]" , subserie[1] , "" )
+	else:
+		category=category+" - Últimas Actualizaciones"
+		listasubupdates.sort()
+		for subupdate in listasubupdates:
+			addsimplefolder( CHANNELNAME , "listasubs" , category+";"+subupdate[0], subupdate[2] , subupdate[1] , "" )
 
 					
 	# Label (top-right)...
@@ -1074,7 +1241,7 @@ def listatresupdate(url,category,listupdate):
 	listafav = readfav("","-1")
 	nuevos = []
 
-	listaupdated = findseries(data,"Actualizaciones","")
+	listaupdated = findseries(data,"Actualizaciones","","","0",0)
 			
 	for serie in listafav:
 		listanuevos=findnuevos(serie[0],serie[2],"-1")
@@ -1091,7 +1258,7 @@ def listatresupdate(url,category,listupdate):
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
 	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE)
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
@@ -1109,15 +1276,25 @@ def detaildos(params,url,category):
 	seasontv = urllib.unquote_plus( params.get("seasontv") )
 	tvsneak = urllib.unquote_plus( params.get("tvsneak") )
 	episodiotv = params.get("episodiotv")
+	episodiotv = int(episodiotv)
+
 	titleshort = title
 	if date<>"":
 		titleshort = re.sub('\s\-\s'+date,'',titleshort)
+	titleshort = re.sub('\s+\-\s+',' - ',titleshort)
+	visto = ""
+	matchv = re.search('\[(?:LW|W|UW)\]',titleshort)
+	if (matchv):
+		visto = " - "+matchv.group(0)
+	
 	urltvsneak0 = titletvsneak+"-season-"+seasontvsneak
 	
 	listacasttv = []
 	listactmirrors = []
 	listaTVSneak = []
 	listasubtitulos = []
+	listatvshack = []
+	miserietvsh = ""
 
 	# CastTV
 	if url <> "":
@@ -1144,7 +1321,7 @@ def detaildos(params,url,category):
 				data1 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
 				listactmirrors = servertools.findvideos(data1)
 		
-	# TVSneak: se busca aunque se haya encontrado enlace por la posibilidad de Divxden
+	# TVSneak
 	if tvsneak == "-1":
 		datatvsneak0 = scrapertools.cachePage("http://tvsneak.com")
 		matchtvsneak0 = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak0+')',datatvsneak0,re.IGNORECASE)
@@ -1169,14 +1346,23 @@ def detaildos(params,url,category):
 					# Por si fue agregado por servertools.findvideos
 					if listaTVSneak.count( [ titulo , url , 'Divxden' ] )==0:
 						listaTVSneak.append( [ titulo , url , 'Divxden' ] )
-													
-	if len(listacasttv)==0 and len(listaTVSneak)==0:
-		alertnovideo()
-		return
 
+	if category=="listforsubs":
+		titlectvsearch = ftitlectvsearch(miserievo)
+		miserietvsh,listatvshack = findtvshack(miserievo,"0",titlectvsearch,seasontvsneak,episodiotv)
+
+		return miserietvsh,listacasttv,listactmirrors,listaTVSneak,listatvshack
+													
+
+	# Si el episodio tiene dato de temporada se busca en Subtítulos.es y en TVShack
 	if seasontvsneak<>"0":
 		titlectvsearch = ftitlectvsearch(miserievo)
-		miep,listasubtitulos = findsubseries("","0",titlectvsearch,seasontvsneak,episodiotv)
+		miep,listasubtitulos = findsubseries(miserievo,"V",titlectvsearch,seasontvsneak,episodiotv)	
+		miserietvsh,listatvshack = findtvshack(miserievo,"0",titlectvsearch,seasontvsneak,episodiotv)
+	
+	if len(listacasttv)==0 and len(listaTVSneak)==0 and len(listatvshack)==0:
+		alertnovideo()
+		return
 			
 	# ------------------------------------------------------------------------------------
 	# Añade los enlaces a los videos
@@ -1187,16 +1373,20 @@ def detaildos(params,url,category):
 		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
 	for video in listaTVSneak:
 		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
+	for ep in listatvshack:
+		#quita la fecha (como arriba, para acortar)
+		titletvsh = re.sub('\s+\([^\)]+\)$','',ep['title'])
+		#se usa el thumbnail y el plot de CastTV, porque hay carátulas equivocadas (mirar)
+		xbmctools.addnewvideo( CHANNELNAME , "tvshack.listaVideosEpisodio" , category , "" , titletvsh+visto+" - [TVShack]" , ep['url'] , thumbnail , plot , Serie=miserietvsh )
 	# ------------------------------------------------------------------------------------
 	# Añade los enlaces a los Subtítulos
 	# ------------------------------------------------------------------------------------
 
 	if len(listasubtitulos)>0:
-		#additem( CHANNELNAME , category , "" , "" , "None" , "" )
-		addsimplefolder( CHANNELNAME , "searchsub" , "Subtítulos.es" , "SUBTITULOS - [Descargar] :" , "" , "" )
-		additem( CHANNELNAME , category , miep , "" , "None" , "" )
+		addsimplefolder( CHANNELNAME , "searchsub" , "Series VO - Subtítulos.es" , "SUBTITULOS - [Descargar] :" , "" , "" )
+		additem( CHANNELNAME , category , miep , "" , "" , "" )
 		for subs in listasubtitulos:
-			addsimplefolder( CHANNELNAME , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , "defaultnetwork.png" )
+			addsimplefolder( CHANNELNAME , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , DESCARGAS_THUMB )
 	else:
 		addsimplefolder( CHANNELNAME , "searchsub" , "Subtítulos.es" , "Buscar Subtitulos" , "" , "" )
 	# ------------------------------------------------------------------------------------
@@ -1266,7 +1456,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
 
 def additem( canal , category , title , url , thumbnail, plot ):
 	xbmc.output('[casttv.py] additem')
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultHardDisk.png", thumbnailImage=thumbnail )
+	listitem = xbmcgui.ListItem( title, iconImage=HD_THUMB, thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
@@ -1280,12 +1470,13 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "[UW]: Episodio No Visto (UnWatched)" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Actualizadas [excepto Aptdo Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Favoritas" , "" , STARORANGE_THUMB , "" )
+	additem( CHANNELNAME , category , "Series Favoritas Desactivadas", "" , STARGREY_THUMB , "" )
 	additem( CHANNELNAME , category , "(1) Favoritas Actualizadas [excepto Aptdo Actualizaciones]" , "" , STARBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "(2) Favoritas con Nuevos Episodios [Aptdo Mis Favoritas]" , "" , STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "(1) y (2) - [Aptdo Mis Favoritas]" , "" , STARGB_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritas]" , "" , STARGREEN2_THUMB , "" )
-	additem( CHANNELNAME , category , "Subtítulo - [Descargar]" , "" , "defaultnetwork.png" , "" )
-	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , "DefaultHardDisk.png" , "" )
+	additem( CHANNELNAME , category , "Subtítulo - [Descargar]" , "" , DESCARGAS_THUMB , "" )
+	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -1317,8 +1508,10 @@ def ftitletvsneak(miserievo,datatvsneak):
 	
 	return titletvsneak
 
-def ftitlectvsearch(title):	
+def ftitlectvsearch(title):
+	title = re.sub('Doctor Who','Doctor Who 2005',title)	
 	title = re.sub('Life on Mars','Life on Mars (USA)',title)
+	title = re.sub('All In','(Korean) All In',title)
 	title = title.lower()
 	title = re.sub('^the[^\w]+','',title)
 	title = re.sub('[^\w]+and[^\w]+','',title)
@@ -1326,13 +1519,26 @@ def ftitlectvsearch(title):
 	return title
 
 def ftitlesubsearch(title):
-	title = re.sub('Doctor Who 2005','Doctor Who',title)
 	title = re.sub('House MD','House',title)
 	title = re.sub('Krod Mandoon','Kröd Mändoon',title)
 	title = re.sub('Shippuden','Shippuuden',title)
 	title = re.sub('Roomates','Roommates',title)
 	title = re.sub('The Prisoner (1967)','The Prisoner',title)
 	title = title.lower()
+	title = re.sub('^the[^\w]+','',title)
+	title = re.sub('[^\w]+and[^\w]+','',title)
+	title = re.sub('[^\w]+','',title)
+	return title
+
+def ftitletvshsearch(title):
+	title = re.sub('CSI: Crime Scene Investigation','CSI',title)
+	title = re.sub('Law & Order: Special Victims Unit','Law & Order: SVU',title)
+	title = re.sub('Pokémon','Pokemon',title)
+	title = re.sub('City (2008)','City',title)
+	title = re.sub('Knight Rider (2008)','Knight Rider',title)
+	title = re.sub("Hell\'s Kitchen (US)","Hell's Kitchen",title)
+	title = title.lower()
+	title = re.sub('[^\w]+the$','',title)
 	title = re.sub('^the[^\w]+','',title)
 	title = re.sub('[^\w]+and[^\w]+','',title)
 	title = re.sub('[^\w]+','',title)
@@ -1350,9 +1556,17 @@ def serieupdate(miserievo,status,url):
 		if listfav[0][3]=="-1":
 			respuesta = seriemenu("-1","-1")
 			if respuesta==2:
+				upgradefav(miserievo,status,url,"1","1")
+			elif respuesta==3:
 				upgradefav(miserievo,status,url,"0","1")
 		elif listfav[0][3]=="0":
 			respuesta = seriemenu("-1","0")
+			if respuesta==2:
+				upgradefav(miserievo,status,url,"1","1")
+			elif respuesta==3:
+				upgradefav(miserievo,status,url,"-1","1")
+		elif listfav[0][3]=="1":
+			respuesta = seriemenu("-1","1")
 			if respuesta==2:
 				upgradefav(miserievo,status,url,"-1","1")
 		if respuesta==1:
@@ -1369,10 +1583,14 @@ def seriemenu(tipofav,tiponuevos):
 		opciones.append('Añadir a "Mis Favoritas"')
 	elif tipofav=="-1":
 		opciones.append('Eliminar de "Mis Favoritas"')
-		if tiponuevos=="0":
-			opciones.append('Activar Seguimiento en "Nuevos Episodios"')
-		elif tiponuevos=="-1":
-			opciones.append('Desactivar Seguimiento en "Nuevos Episodios"')
+		if tiponuevos=="1":
+			opciones.append('Activar en "Mis Favoritas"')
+		else:
+			opciones.append('Desactivar en "Mis Favoritas"')
+			if tiponuevos=="0":
+				opciones.append('Activar Seguimiento en "Nuevos Episodios"')
+			elif tiponuevos=="-1":
+				opciones.append('Desactivar Seguimiento en "Nuevos Episodios"')
 	searchtype = xbmcgui.Dialog()
 	seleccion = searchtype.select("Seleccione una opción:", opciones)
 
@@ -1702,6 +1920,15 @@ def alertnocompletado(porcentaje):
 	resultado = advertencia.yesno('pelisalacarta' , linea1 , linea2 , linea3 )
 	return resultado
 
+def alertdescarga(filename):
+	advertencia = xbmcgui.Dialog()
+	linea0='Descargando Subtítulo en:'
+	linea1='(Ruta Directorio de Descargas)/Subtitulos/'
+	linea2=filename
+	linea3='¿Desea Continuar?'
+	resultado = advertencia.yesno(linea0 , linea1 , linea2 , linea3 )
+	return resultado
+
 def alerttituloarchivo(archivo):
 	advertencia = xbmcgui.Dialog()
 	linea1 = archivo
@@ -1710,13 +1937,22 @@ def alerttituloarchivo(archivo):
 	resultado = advertencia.yesno('Ya existe un archivo con ese nombre:' , linea1 , linea2 , linea3 )
 	return resultado
 
-def alertsubtitulo(archivo):
-	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('pelisalacarta' , 'Se ha guardado el Subtítulo con éxito en:' , '(Ruta Directorio de Descargas)/Subtitulos/' , archivo )
+def subtitulo(params,url,category):
+	xbmc.output("[casttv.py] subtitulo")
 
-def writesub(titulosub,sublist):
-	xbmc.output("[casttv.py] writesub")
+	misub = urllib.unquote_plus( params.get("title") )
+	matchC = re.search('\(([^\)]+)Completado\)',misub)
+	if (matchC):
+		respuesta = alertnocompletado(matchC.group(1))
+		if respuesta:
+			pass 
+		else:
+			return
 
+	titulosub = category
+
+	titulosub = re.sub('(?:\\\\|\/|\:|\*|\?|\"|\<|\>|\|)','',titulosub)
+		
 	downloadpath = downloadtools.getDownloadPath()
 
 	SUB_PATH = xbmc.translatePath( os.path.join( downloadpath , 'Subtitulos' ) )
@@ -1742,8 +1978,13 @@ def writesub(titulosub,sublist):
 			n=2
 			OK="0"
 			while OK=="0":
-				ancho=len(titulo1)-len(str(n))-2
-				titulo1_2 = titulo1[0:ancho]
+				l = len(titulo1+titulo2)
+				lright = 38-len(str(n))-2
+				lrightd = 0
+				if l>lright:
+					lrightd = l-lright
+				lright1=len(titulo1)-lrightd
+				titulo1_2 = titulo1[0:lright1]
 				titulo2_2 = titulo2+"("+str(n)+")"
 				filename = titulo1_2+titulo2_2+'.srt'
 				fullfilename = os.path.join(SUB_PATH,filename)
@@ -1752,16 +1993,100 @@ def writesub(titulosub,sublist):
 				else:
 					n=n+1
 
-	subfile = open(fullfilename,"w")
-	for sub in sublist:
-		subfile.write(sub[0]+'\n'+sub[1]+'\n'+sub[2]+'\n\n')
-	subfile.close()
-	
-	if os.path.exists(fullfilename): # Añadido por bandavi 
+	# mensaje de confirmación para mostrar la ruta (un msj OK después de la descarga la mayoría de las veces bloquea la Xbox)
+	respuesta = alertdescarga(filename)
+	if respuesta:
+		pass 
+	else:
+		return
+
+	downloadtools.downloadfileGzipped(url,fullfilename)
+
+	#Este cuadro es para evitar que la pantalla se quede medio congelada en la Xbox... (lo puse fuera de la condición harta de bloqueos :-))
+	Dialogfin = xbmcgui.DialogProgress()
+	resultado = Dialogfin.create('pelisalacarta' , 'Copiando en archivo de Subtítulo temporal...' , '(activable en la configuración del plugin)' )
+
+	if os.path.exists(fullfilename): # Añadido por bandavi
 		from shutil import copy2	 # copia los subt descargados a los subt temporales para poder activarlos con el setting del plugin
 		copy2(fullfilename,xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' )))
-		
-	return filename
+
+	Dialogfin.close()
+
+def listtvshack(params,url,category):
+	xbmc.output("[casttv.py] listtvshack")
+
+	listseries = findtvshack("","-1","","0",0)
+
+	for serie in listseries:
+		#addsimplefolder( CHANNELNAME , "listtvshackep" , category , serie[0] , serie[1] , "" )
+    		xbmctools.addnewfolder( CHANNELNAME , "listtvshackep" , category , serie[0] , serie[1] , "" , "" , Serie=serie[0] , totalItems=len(listseries))
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , cacheToDisc=False )
+
+def findtvshackep(params,url,category,todos,season,episodio):
+	xbmc.output("[casttv.py] findtvshackep")
+
+	listepisodios = []
+	listepisodio = []
+	listseason = []
+	
+	listepisodios = tvshack.devuelveListaEpisodios(params,url,category)
+	
+	if todos=="-1":
+		return listepisodios
+	elif todos=="0":
+		for ep in listepisodios:
+			match1=re.search('0*(\d+)x0*(\d+)',ep['title'],re.IGNORECASE)
+			if (match1):
+				seasonep = match1.group(1)
+				episodioep = int(match1.group(2))
+				if seasonep==season and episodioep==int(episodio):
+					listepisodio.append(ep)
+					break
+
+		return listepisodio
+	elif todos=="S":
+		listepisodios.reverse()
+		for ep in listepisodios:
+			match1=re.search('0*(\d+)x0*(\d+)',ep['title'],re.IGNORECASE)
+			if (match1):
+				seasonep = match1.group(1)
+				episodioep = int(match1.group(2))
+				if listseason.count(seasonep)==0:
+					listepisodio.append([ seasonep , episodioep ])
+					listseason.append(seasonep)
+				else:
+					n = listseason.index(seasonep)
+					if episodioep>listepisodio[n][1]:
+						listepisodio[n][1]=episodioep
+
+		return listepisodio
+
+def listtvshackep(params,url,category):
+	xbmc.output("[casttv.py] listtvshackep")
+
+	serie = urllib.unquote_plus( params.get("title") )
+
+	listepisodios = findtvshackep(params,url,category,"-1","0",0)
+
+	for ep in listepisodios:
+		xbmctools.addnewvideo( CHANNELNAME , "tvshack.listaVideosEpisodio" , category , "" , ep['title'] , ep['url'] , ep['thumbnail'] , ep['plot'] , Serie=serie)
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def formatostring(cadena):
 	#cadena = cadena.replace('\n' , '')

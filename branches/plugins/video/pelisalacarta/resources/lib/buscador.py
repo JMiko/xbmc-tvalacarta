@@ -24,6 +24,7 @@ import yotix
 import peliculas21
 import sesionvip
 import documaniatv
+import discoverymx
 import stagevusite
 import tutvsite
 import tumejortv
@@ -83,19 +84,23 @@ def mainlist(params,url,category):
 	except:
 		pass
 	try:
+		matches.extend( documaniatv.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( discoverymx.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( yotix.performsearch(tecleado) )
+	except:
+		pass
+	try:
 		matches.extend( stagevusite.performsearch(tecleado) )
 	except:
 		pass
 	try:
 		matches.extend( tutvsite.performsearch(tecleado) )
-	except:
-		pass
-	try:
-		matches.extend( documaniatv.performsearch(tecleado) )
-	except:
-		pass
-	try:
-		matches.extend( yotix.performsearch(tecleado) )
 	except:
 		pass
 	

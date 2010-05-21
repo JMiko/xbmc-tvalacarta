@@ -559,7 +559,7 @@ def findcontenidos(data,tipolist,tipocontenido,search,idioma):
 	else:
 		tipolist = "<td class=\w+>"
 	if search == "#":
-		search = "[^\w]+"
+		search = "[^a-zA-Z]"
 	
 	patronvideos  = '<a href=([^\s]+)\sclass=\w+>('+search+'[^<]+)<span class=mt>([^<]+)</span>'
 	patronvideos += '</a></td><td>('+tipocontenido+')</td><td>([^<]+)</td>('+tipolist+')</td>'
