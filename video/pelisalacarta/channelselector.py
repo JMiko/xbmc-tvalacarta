@@ -60,7 +60,7 @@ def listchannels(params,url,category):
 	addfolder("Cine-Adicto","cineadicto","mainlist")
 	addfolder("PelisFlv","pelisflv","mainlist")
 	addfolder("NewDivx","newdivx","mainlist")
-	addfolder("Pelis-Sevillista56","sevillista","mainlist")
+	#addfolder("Pelis-Sevillista56","sevillista","mainlist")
 	addfolder("FilmesOnlineBr [Portugues]","filmesonlinebr","mainlist")
 	addfolder("TVShack.net (VO)","tvshack","mainlist")
 	addfolder("DeLaTV","delatv","mainlist")
@@ -136,6 +136,8 @@ def addfolder(nombre,channelname,accion,category="Varios"):
 	# Preferencia: tercero WEB
 	if not os.path.exists(thumbnail):
 		thumbnail = thumbnailImage=WEB_PATH+channelname+".png"
+
+	xbmc.output("thumbnail="+thumbnail)
 
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
 	itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(category) )
