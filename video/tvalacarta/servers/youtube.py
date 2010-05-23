@@ -24,9 +24,11 @@ std_headers = {
 }
 
 def getuploads(user,startindex,maxresults):
+	xbmc.output("[youtube.py] getuploads")
 
 	# Obtiene el feed según el API de YouTube
 	url = "http://gdata.youtube.com/feeds/api/users/%s/uploads?orderby=updated&start-index=%d&max-results=%d" % (user,startindex,maxresults)
+	xbmc.output("[youtube.py] url="+url)
 	yt_service = gdata.youtube.service.YouTubeService()
 	feed = yt_service.GetYouTubeVideoFeed(url)
 	
@@ -63,23 +65,23 @@ def getuploads(user,startindex,maxresults):
 	return itemlist
 
 def getplaylists(user,startindex,maxresults):
+	xbmc.output("[youtube.py] getplaylists")
+
 	# Obtiene el feed segun el API de YouTube
 	url = "http://gdata.youtube.com/feeds/api/users/%s/playlists?start-index=%d&max-results=%d" % (user,startindex,maxresults)
+	xbmc.output("[youtube.py] url="+url)
 	yt_service = gdata.youtube.service.YouTubeService()
 	playlist_feed = yt_service.GetYouTubePlaylistFeed(uri=url)
 
 	itemlist = []
 	for entry in playlist_feed.entry:
-		print entry.ToString()
-		print entry.title.text
-		print entry.id.text
-		print entry.content.text
-		item = Item(title=entry.title.text, url=entry.id.text, thumbnail = "" , plot = entry.content.text )
+		item = Item(title=entry.title.text, url=entry.id.text, thumbnail = "" , plot = "" )
 		itemlist.append( item )
 
 	return itemlist
 
 def getplaylistvideos(url,startindex,maxresults):
+	xbmc.output("[youtube.py] getplaylistvideos")
 	# Extrae el ID de la playlist
 	patron = 'http://.*?/([^/]+)/$'
 	matches = re.compile(patron,re.DOTALL).findall(url+"/")
@@ -88,7 +90,7 @@ def getplaylistvideos(url,startindex,maxresults):
 	
 	# Obtiene el feed segun el API de YouTube
 	url = "http://gdata.youtube.com/feeds/api/playlists/%s?start-index=%d&max-results=%d" % (idplaylist,startindex,maxresults)
-	print url
+	xbmc.output("[youtube.py] url="+url)
 	yt_service = gdata.youtube.service.YouTubeService()
 	playlist_video_feed = yt_service.GetYouTubePlaylistVideoFeed(uri=url)
 

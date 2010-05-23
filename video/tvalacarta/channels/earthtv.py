@@ -32,8 +32,9 @@ def mainlist(params,url,category):
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELCODE , "novedades" , CHANNELNAME , "Novedades" , "" , "" , "" )
-	
-	itemlist = youtube.getplaylists("earthTV",1,10)
+
+	# Playlists
+	itemlist = youtube.getplaylists("earthTV",1,13)
 	for item in itemlist:
 		xbmctools.addnewfolder( CHANNELCODE , "playlist" , CHANNELNAME , item.title , item.url , item.thumbnail , item.plot )
 
@@ -83,3 +84,16 @@ def play(params,url,category):
 	server = "Directo"
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+
+
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot , startindex, maxresults ):
+	#xbmc.output("pluginhandle=%d" % pluginhandle)
+	try:
+		xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	except:
+		xbmc.output('[xbmctools.py] addnewfolder(<unicode>)')
+	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
+	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
+	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&startindex=%d&maxresults=%d' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , startindex , maxresults )
+	xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
+	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
