@@ -51,6 +51,7 @@ def listchannels(params,url,category):
 	addfolder("TV Azteca","tva","mainlist")
 	addfolder("Berria TB","berriatb","mainlist")
 	addfolder("Earth TV","earthtv","mainlist")
+	addfolder("Euronews","euronews","mainlist")
 	addfolder("Comunidad Valenciana","rtvv","mainlist")
 	#addfolder("Terra TV","terratv","mainlist")
 	addfolder("Turbonick","turbonick","mainlist")
