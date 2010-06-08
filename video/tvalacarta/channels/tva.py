@@ -187,19 +187,78 @@ def videolist2(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )	
 
 def play(params,url,category):
-	xbmc.output("[a3.py] play")
+	xbmc.output("[tva.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = "Directo"
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	if url.startswith("rtmp"):
+		# Playlist vacia
+		playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+		playlist.clear()
+
+		'''
+		C:\util\rtmpdump-2.1d-windows>rtmpdump -V -r "rtmp://aztecaodfs.fplive.net/aztecaod/servicios/videos/am/ent/n/am_100515_07_ent_n_dis_2_1.flv"
+		RTMPDump v2.1d
+		(c) 2010 Andrej Stepanchuk, Howard Chu, The Flvstreamer Team; license: GPL
+		DEBUG: Parsing...
+		DEBUG: Parsed protocol: 0
+		DEBUG: Parsed host    : aztecaodfs.fplive.net
+		DEBUG: Parsed app     : aztecaod/servicios
+		DEBUG: Protocol : RTMP
+		DEBUG: Hostname : aztecaodfs.fplive.net
+		DEBUG: Port     : 1935
+		DEBUG: Playpath : videos/am/ent/n/am_100515_07_ent_n_dis_2_1
+		DEBUG: tcUrl    : rtmp://aztecaodfs.fplive.net:1935/aztecaod/servicios
+		DEBUG: swfUrl   : <NULL>
+		DEBUG: pageUrl  : <NULL>
+		DEBUG: app      : aztecaod/servicios
+		DEBUG: auth     : <NULL>
+		DEBUG: subscribepath : <NULL>
+		DEBUG: flashVer : WIN 10,0,22,87
+		DEBUG: live     : no
+		DEBUG: timeout  : 120 sec
+		DEBUG: Setting buffer time to: 36000000ms
+		'''
+		#url=rtmp://aztecaodfs.fplive.net/aztecaod/servicios/videos/am/ent/n/am_100515_07_ent_n_dis_2_1.flv&duration=176.7766
+		xbmc.output("[tva.py] url="+url)
+		patron='(\&[^\&]+\&)'
+		url = re.compile(patron,re.DOTALL).sub("",url+"&")
+		#url=rtmp://aztecaodfs.fplive.net/aztecaod/servicios/videos/am/ent/n/am_100515_07_ent_n_dis_2_1.flv
+		xbmc.output("[tva.py] url="+url)
+		hostname = "aztecaodfs.fplive.net"
+		xbmc.output("[tva.py] hostname="+hostname)
+		portnumber = "1935"
+		xbmc.output("[tva.py] portnumber="+portnumber)
+		tcurl = "rtmp://aztecaodfs.fplive.net/aztecaod/servicios"
+		xbmc.output("[tva.py] tcurl="+tcurl)
+		#playpath = "alacarta/flv/5/3/1270074791935"
+		playpath = url[48:-4]
+		xbmc.output("[tva.py] playpath="+playpath)
+		app = "aztecaod/servicios"
+		xbmc.output("[tva.py] app="+app)
+		
+		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
+		#listitem.setProperty("SWFPlayer", "http://www.plus.es/plustv/carcasa.swf")
+		listitem.setProperty("Hostname",hostname)
+		listitem.setProperty("Port",portnumber)
+		listitem.setProperty("tcUrl",tcurl)
+		listitem.setProperty("Playpath",playpath)
+		listitem.setProperty("app",app)
+		listitem.setProperty("flashVer","WIN 10,0,22,87")
+		#listitem.setProperty("pageUrl","")
+
+		listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
+		playlist.add( url, listitem )
+
+		# Reproduce
+		xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
+		xbmcPlayer.play(playlist)   
+	elif url.startswith("http"):
+		xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
