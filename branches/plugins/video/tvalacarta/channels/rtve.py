@@ -213,6 +213,7 @@ def play(params,url,category):
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	codigo = matches[0]
+	xbmc.output("idvideo="+codigo)
 
 	try:
 		# Compone la URL

@@ -48,7 +48,7 @@ def listchannels(params,url,category):
 	addfolder("TVE","rtve","mainlist")
 	addfolder("TVE Programas","rtveprogramas","mainlist")
 	addfolder("TVE Mediateca","rtvemediateca","mainlist")
-	addfolder("TV Azteca","tva","mainlist")
+	#addfolder("TV Azteca","tva","mainlist")
 	addfolder("Berria TB","berriatb","mainlist")
 	addfolder("Earth TV","earthtv","mainlist")
 	addfolder("Euronews","euronews","mainlist")
