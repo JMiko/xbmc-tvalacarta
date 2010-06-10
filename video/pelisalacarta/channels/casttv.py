@@ -50,7 +50,7 @@ DESCARGAS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , '
 def mainlist(params,url,category):
 	xbmc.output("[casttv.py] mainlist")
 
-	category = "CastTV - TVShack - TVSneak - Series VO"
+	category = "CastTV - TVShack - Series VO"
 
 	addsimplefolder( CHANNELNAME , "listado" , "Series VO - Actualizadas" , "Series VO - Últimas Actualizaciones" , "http://www.casttv.com/shows/" , "http://www.casttv.com/misc/webapp/tn_shows/tn_casttv.jpg" )
 	addsimplefolder( CHANNELNAME , "listado" , category , "Series VO - Listado Completo" , "http://www.casttv.com/shows/" , "http://www.casttv.com/misc/webapp/tn_shows/tn_casttv.jpg" )
@@ -81,38 +81,46 @@ def listado(params,url,category):
 def listadoupdate(tipolist,category,listupdate):
 	xbmc.output("[casttv.py] listadoupdate")
 
-	url = "http://www.casttv.com/shows/"
-	thumbnail=""
-	nuevos = []
-	series = []
-
-	#Se cambia el diálogo sólo al entrar a "Mis Favoritas"
-	if tipolist=="Favoritas" and listupdate==False:
+	if tipolist=="Favoritas":
 		Dialogespera = xbmcgui.DialogProgress()
 		line1 = 'Buscando información de "Mis Favoritas"...'
 		line2 = ''
   		resultado = Dialogespera.create('pelisalacarta' , line1 , line2 )
 
+	url = "http://www.casttv.com/shows/"
+	thumbnail=""
+	search = ""
+	listaseries = []
+	nuevos = []
+	series = []
+
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
-	data = scrapertools.cachePage(url)
+	try:
+		data = scrapertools.cachePage(url)
+	except:
+		alertsinconexion()
+		return
 
-	listaseries = []
-
-	listafav = readfav("","")
+	listafav = readfav("","","",CHANNELNAME)
 
 	if tipolist <> "Favoritas":
 		listaseries = findseries(data,tipolist,"","","0",0)
 	else:	
-		if len(listafav)>0:
-			listaseries=findstatus(listafav)
-			listaupdated = findseries(data,"Actualizaciones","","","0",0)
-				
-		elif listupdate==False:
-			Dialogespera.close()
+		if len(listafav)==0:
 			alertnofav()
 			return
+		else:
+			listaseries=listafav
+			for fav in listafav:
+				titulo=re.sub('[\\\\]?(?P<signo>[^\w\s\\\\])','\\\\\g<signo>',fav[0])
+				if search=="":
+					search=titulo
+				else:
+					search=search+"|"+titulo
+			search="(?:"+search+")"
+			listactv = findseries(data,"Completo",search,"","0",0)
 	
 	for serie in listaseries:
 		if tipolist <> "Favoritas":
@@ -129,28 +137,48 @@ def listadoupdate(tipolist,category,listupdate):
 						if fav[3]=="1":
 							thumbnail=STARGREY_THUMB
 						break
+
 		if tipolist == "Favoritas":
+			encontrado = "0"
 			if serie[3]=="1":
 				thumbnail=STARGREY_THUMB
+				for ctv in listactv:			
+					if serie[0]==ctv[0]:
+						encontrado = "-1"
+						# se actualizan los datos de status y url
+						serie[1] = ctv[1]
+						serie[2] = ctv[2]
+						break
 			else:
-				encontrado="0"
+				updated="0"
 				thumbnail=STARORANGE_THUMB
 				listanuevos = []
 				listanuevos=findnuevos(serie[0],serie[2],"0")
-				for update in listaupdated:			
-					if serie[0]==update[0]:
-						encontrado="-1"
-						thumbnail=STARBLUE_THUMB
-						if len(listanuevos)>0:
-							thumbnail=STARGB_THUMB
-						break
+				for ctv in listactv:			
+					if serie[0]==ctv[0]:
+						encontrado = "-1"
+						serie[1] = ctv[1]
+						serie[2] = ctv[2]
+						if ctv[3]=="-1":
+							updated="-1"
+							thumbnail=STARBLUE_THUMB
+							if len(listanuevos)>0:
+								thumbnail=STARGB_THUMB
+							break
 				if len(listanuevos)>0:
-					if encontrado=="0":
+					if updated=="0":
 						thumbnail=STARGREEN_THUMB
 					if serie[3]=="-1":
 						nuevos.extend(listanuevos)
 
-		series.append( [ tipolist , serie[0]+"  -  "+serie[1] , serie[2] , thumbnail ] )
+			# evita el status desactualizado de fav caso extremo de no encontrarse ya en CastTV
+			if encontrado=="0":
+				serie[1]=""
+		status=""
+		if serie[1]<>"":
+			status="  -  "+serie[1]
+
+		series.append( [ tipolist , serie[0]+status , serie[2] , thumbnail ] )
 
 	if len(nuevos)>0:
 		addsimplefolder( CHANNELNAME , "listatres" , "Mis Favoritas - Nuevos Episodios" , "***Nuevos Episodios (Posteriores a [LW])***" , url , STARGREEN2_THUMB )
@@ -167,35 +195,53 @@ def listadoupdate(tipolist,category,listupdate):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate , cacheToDisc=False )
 
-	if tipolist=="Favoritas":
-		if len(listaseries)==0:		
-			alertnofav()
-		elif listupdate==False:
-			Dialogespera.close()
-
 def findnuevos(serie,url,todos):
 	xbmc.output("[casttv.py] findnuevos")
 	
 	listanuevos = []
 
-	listavistos = readvisto(serie,"LW")
-	if len(listavistos)==1 and int(listavistos[0][4])>0:
-		data = scrapertools.cachePage(url)
-		listaepisodios=findepisodios(data,serie,"","0",0)
-		for episodio in listaepisodios:
-			if episodio[3] == "0" and episodio[5]<>"0":
-				if int(episodio[5])>int(listavistos[0][3]):
-					listanuevos.append(episodio)								
-				if episodio[5]==listavistos[0][3] and episodio[7]>int(listavistos[0][4]):
-					listanuevos.append(episodio)
-				if todos=="0" and len(listanuevos)>0:
-					break
-				#Teniendo en cuenta el orden de los episodios se puede para así:
-				if episodio[5]==listavistos[0][3] and episodio[7]<=int(listavistos[0][4]):
-					break
-				if int(episodio[5])<int(listavistos[0][3]):
-					break
+	listavistos = readvisto(serie,"LW",CHANNELNAME)
+	if len(listavistos)==0:
+		return listanuevos
+	else:
+		listavistos.sort(key=lambda visto: visto[5])
+		if listavistos[0][5]=="4":
+			return listanuevos
 
+	try:
+		data = scrapertools.cachePage(url)
+	except:
+		return listanuevos
+
+	listaepisodios=findepisodios(data,serie,"","0",0)
+	#el listado está ordenado por fecha lo que simplifica la búsqueda
+	stop="0"
+	for episodio in listaepisodios:
+		if episodio[3]<>"0":
+			continue
+		OK="-1"
+		for visto in listavistos:
+			if episodio[0]==visto[1] and episodio[5]==visto[3] and episodio[7]==int(visto[4]):
+				if visto[5]=="1" or visto[5]=="2":		
+					stop="-1"
+				elif visto[5]=="4":
+					OK="0"
+				break
+			#por si el LW es un episodio automático y falla la web por la que se añadió
+			elif episodio[5]<>"0" and episodio[7]<>0 and visto[3]<>"0" and visto[4]<>"0":
+				if visto[5]=="1" or visto[5]=="2":
+					if int(episodio[5])<int(visto[3]):		
+						stop="-1"
+						break
+					if int(episodio[5])==int(visto[3]) and episodio[7]<int(visto[4]):
+						stop="-1"
+						break
+		if stop=="-1":
+			break
+		if OK=="-1":
+			listanuevos.append(episodio)
+			if todos=="0":
+				break
 	return listanuevos				
 
 def search(params,url,category):
@@ -224,11 +270,11 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 		data = scrapertools.cachePage(url)
 		listaseries = []
 		seriesvistas = []
-		listavistos = readvisto("","")
+		listavistos = readvisto("","",CHANNELNAME)
 		if len(listavistos)==0:
 			alertnoresultadosearch()
 			return
-		listafav = readfav("","")
+		listafav = readfav("","","",CHANNELNAME)
 		for visto in listavistos:
 			encontrado="0"
 			for fav in listafav:
@@ -270,7 +316,7 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 		alertnoresultadosearch()
 		return
 
-	listafav = readfav("","")
+	listafav = readfav("","","",CHANNELNAME)
 
 	for serie in listaseries:
 		thumbnail=""
@@ -279,6 +325,9 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 		if len(listafav)>0:
 			for fav in listafav:
 				if serie[0]==fav[0]:
+					if fav[3]=="1":
+						thumbnail=STARGREY_THUMB
+						break
 					thumbnail=STARORANGE_THUMB
 					if serie[3]=="-1":
 						thumbnail=STARBLUE_THUMB
@@ -288,11 +337,13 @@ def searchupdate(seleccion,tecleado,category,listupdate):
 		if len(tecleado) > 1:
 			match = re.search(tecleado,foldertitle,re.IGNORECASE)
 			if (match):
-				addsimplefolder( CHANNELNAME , "listadossearch" , str(seleccion)+";"+tecleado , foldertitle , serie[2] , thumbnail )
 				rtdos = rtdos+1
-		else:
-			addsimplefolder( CHANNELNAME , "listadossearch" , str(seleccion)+";"+tecleado , foldertitle , serie[2] , thumbnail )
-	
+			else:
+				continue
+
+		addsimplefolder( CHANNELNAME , "listadossearch" , str(seleccion)+";"+tecleado , foldertitle , serie[2] , thumbnail )
+
+
 	if len(tecleado) > 1 and rtdos==0:
 		alertnoresultadosearch()
 		return
@@ -322,7 +373,7 @@ def findseries(data,tipolist,search,titlesubsearch,season,episodio):
 	if search == "#":
 		search = "[^a-zA-Z]"
 
-	patronvideos  = '<div class="gallery_listing_text">\n\s+<a href="(.*?)">('+search+'[^<]+)'
+	patronvideos  = '<div class="gallery_listing_text">\n\s+<a href="(.*?)">('+search+'[^<]*)'
 	patronvideos += '</a>('+tipolists+')(\n\s+<div class="icon_current"></div>\n</li>|\n\s+\n</li>)'
 	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
 
@@ -374,7 +425,10 @@ def findstatus(serieslist):
 	xbmc.output("[casttv.py] findstatus")
 	
 	mistatus = "http://eztv.it/showlist/"
-	data2 = scrapertools.cachePage(mistatus)
+	try:
+		data2 = scrapertools.cachePage(mistatus)
+	except:
+		return serieslist
 
 	patronvideos  = '<a href="[^"]+" class="thread_link">([^<]+)</a></td>\n\s+'
 	patronvideos += '<td class="forum_thread_post"><font class="[^"]+">(.*?)</font>'
@@ -445,7 +499,7 @@ def listados(params,url,category):
 	tipolist = category
 	category = "Series VO"
 	
-	respuesta = serieupdate(miserievo,status,url)
+	respuesta = serieupdate(miserievo,status,url,"",CHANNELNAME)
 
 	if respuesta<>1 and respuesta<>2 and respuesta<>3:
 		category = "Series VO - "+miserievo
@@ -465,7 +519,7 @@ def listadossearch(params,url,category):
 	seleccion = int(match1.group(1))
 	tecleado = match1.group(2)
 
-	respuesta = serieupdate(miserievo,status,url)
+	respuesta = serieupdate(miserievo,status,url,"",CHANNELNAME)
 
 	if respuesta==1 or respuesta==2 or respuesta==3:
 		category = "Series VO - Buscar"
@@ -487,8 +541,8 @@ def listadosupdate(miserievo,url,category,listupdate):
 	if len(listaepisodios) == 0:
 		alertnoepisodios(1)
 		return
-	
-	listavistos = readvisto(miserievo,"")
+
+	listavistos = readvisto(miserievo,"",CHANNELNAME)
 	vistoid2 = ""
 	vistotipo2 = "0"
 
@@ -518,25 +572,33 @@ def listadosupdate(miserievo,url,category,listupdate):
 							if vistoid2<>"":
 								tipovisto="31"
 						elif visto[5]=="4":
+							vistoid = "[NW]"
+							if vistoid2<>"":
+								tipovisto="41"
+						elif visto[5]=="5":
 							vistoid = "[UW]"
+							if vistoid2<>"":
+								tipovisto="51"
 						elif visto[5]=="0":
 							vistoid = ""
 							if vistoid2<>"":
 								tipovisto="01"
 						break
 				if vistoid<>"":
-					formato="  -  "							
-				addnewfolder( CHANNELNAME , "episodiomenu" , category , episodio[0]+formato+vistoid , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , miserievo , episodio[8] , episodio[7] , url , tipovisto )
-
+					formato="  -  "
+				titulo = episodio[0]+formato+vistoid							
 			else:
 				tipovisto = "N"
-				addnewfolder( CHANNELNAME , "episodiomenu" , category , episodio[0] , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , miserievo , episodio[8] , episodio[7] , url , tipovisto )
+				titulo = episodio[0]
+
+			addnewfolder( CHANNELNAME , "episodiomenu" , category , titulo , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , miserievo , episodio[8] , episodio[7] , url , tipovisto )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
-	# Sorting by date...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE)
+	# Sorting by date útil para invertir el listado (ep 1 1º...) por el momento descartado porque a igualdad de fecha(automáticos) no respeta el orden inicial...
+	# Revisar: probar a crear un índice o agregar fecha a los episodios añadidos "automáticamente"
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
@@ -550,10 +612,11 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 	episodiosctvtvs = []
 	encontrados = set()
 	depago = "0"
-	datatvsneak = scrapertools.cachePage("http://tvsneak.com")
+	# datatvsneak = scrapertools.cachePage("http://tvsneak.com")
 
 	# Revisar: Arregla el titulo de la serie para la url de TVSneak
-	titletvsneak = ftitletvsneak(miserievo,datatvsneak)
+	# titletvsneak = ftitletvsneak(miserievo,datatvsneak)
+	titletvsneak = ""
 
 	# Arregla el titulo para búsquedas: se podría pasar entre listados (ant. y post.) pero habría que guardarlo en favoritas... 
 	titlectvsearch = ftitlectvsearch(miserievo)
@@ -594,10 +657,11 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 		# Titulo		
 		seasontvsneak = "0"
 		seasontv = ""
+		# dejé episodiotv como vble numérica por probar, y lo he dejado así, pero no vale la pena :-)
 		episodiotv = 0
 		tvsneak = "0"
 
-		# + Temporada y Capítulo
+		# + Temporada y Capítulo (si no tiene cap no se guarda la temporada porque no vale para buscar en otras webs...)
 		match0 = re.search('\n\s+\n\s+(\w+)\n\s+',match[0],re.IGNORECASE)
 		if (match0):
 			titulo = miserievo+" - "+match0.group(1)+" - "+match[2]
@@ -611,11 +675,30 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 			titulo = miserievo+" - "+match[2]
 
 		# + Fecha de emisión
-		date = ""		
+		date = ""
+		year = 0
+		month = 0
+		day = 0		
 		match4 = re.search('(\d{2}).(\d{2}).(\d{2})',match[4],re.IGNORECASE)
 		if (match4):
 			titulo = titulo+" - "+match4.group(2)+"/"+match4.group(1)+"/"+match4.group(3)
-			date = match4.group(2)+"/"+match4.group(1)+"/"+match4.group(3)
+			# cambiar en el 2060 :-)
+			if int(match4.group(3)[0:1])<6:
+				year = "20"+match4.group(3)
+			else:
+				year = "19"+match4.group(3)
+			# formato dd.mm.yyyy para que se pueda ordenar la salida del directorio por fecha
+			date = match4.group(2)+"."+match4.group(1)+"."+year
+			# hay que ordenar el listado por fecha para resolver excepciones y simplificar la búsqueda de nuevos episodios
+			# no se como definir una vble tipo fecha y he tenido que resolverlo así:
+			year = int(year)
+			month = int(match4.group(1))
+			day = int(match4.group(2))
+		elif len(episodioslist)>0:
+			date = episodioslist[-1][2]
+			year = episodioslist[-1][13]
+			month = episodioslist[-1][12]
+			day = episodioslist[-1][11]			
 
 		titulo = titulo.replace('&amp;' , '&')
 		titulo = titulo.replace('&quot;' , '"')	
@@ -629,7 +712,7 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 			pago = "-1"		
 			
 		# Añade al listado los episodios
-		episodioslist.append( [ titulo , url , date , pago , titletvsneak , seasontvsneak , seasontv , episodiotv , tvsneak , thumbnail , plot ] )
+		episodioslist.append( [ titulo , url , date , pago , titletvsneak , seasontvsneak , seasontv , episodiotv , tvsneak , thumbnail , plot , day , month , year ] )
 		if seasontv <> "":
 			episodioscasttv.append(seasontv)		
 		if seasontvsneak <> "0" and seasontvsneak not in encontrados:
@@ -647,10 +730,10 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 				OKtvsh="-1"
 				break
 		#TVSneak (comprueba en los dos sitios si es lento quitar...)
-		urltvsneak = titletvsneak+"-season-"+season
-		matchtvsneak = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak+')',datatvsneak,re.IGNORECASE)
-		if (matchtvsneak):
-			OKtvsn="-1"
+		#urltvsneak = titletvsneak+"-season-"+season
+		#matchtvsneak = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak+')',datatvsneak,re.IGNORECASE)
+		#if (matchtvsneak):
+			#OKtvsn="-1"
 
 		if OKtvsh=="-1" or OKtvsn=="-1":
 			for episodio in episodioslist:
@@ -658,26 +741,26 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 					n = episodioslist.index(episodio)
 					if episodio[3]=="-1":
 						episodio[3] = "0"
-					if episodio[8]=="0" and OKtvsn=="-1":
-						episodio[8] = "-1"
+					#if episodio[8]=="0" and OKtvsn=="-1":
+						#episodio[8] = "-1"
 					if episodio[7] > 1:
 						lastseasontv = episodioscasttv[-1]
 						if episodio[6] == lastseasontv:
 							if n < len(episodioslist)-1 and episodioslist[n+1][6] <> episodio[6] :						
 								seasontvlast = lastseasontv[0:4]+"01"
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , OKtvsn , episodio[9] , episodio[10] ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , episodio[2] , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , OKtvsn , episodio[9] , episodio[10], episodio[11] , episodio[12] , episodio[13] ])
 							elif n == len(episodioslist)-1:
 								seasontvlast = lastseasontv[0:4]+"01"
-								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , OKtvsn , episodio[9] , episodio[10] ])
+								episodioslist.insert(n+1,[ miserievo+" - "+seasontvlast , "" , episodio[2] , episodio[3] , episodio[4] , episodio[5] , seasontvlast , 1 , OKtvsn , episodio[9] , episodio[10], episodio[11] , episodio[12] , episodio[13] ])
 						capitvnew = episodio[7]-1
 						seasontvnew = episodio[6][0:4]+str(capitvnew)
 						if len(seasontvnew) == 5:
 							seasontvnew = seasontvnew.replace('E' , 'E0')
 						
 						if episodioslist[n+1][5] == season and episodioslist[n+1][6] <> episodio[6] and episodioslist[n+1][7] <> capitvnew:
-							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , OKtvsn , episodio[9] , episodio[10] ])
+							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , episodio[2] , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , OKtvsn , episodio[9] , episodio[10], episodio[11] , episodio[12] , episodio[13] ])
 						if episodioslist[n+1][5] == str(int(season)-1) and episodioslist[n+1][5] <> "0":
-							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , "" , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , OKtvsn , episodio[9] , episodio[10] ])
+							episodioslist.insert(n+1,[ miserievo+" - "+seasontvnew , "" , episodio[2] , episodio[3] , episodio[4] , episodio[5] , seasontvnew , capitvnew , OKtvsn , episodio[9] , episodio[10], episodio[11] , episodio[12] , episodio[13] ])
 
 	# Se agregan completas las temporadas de TVShack que faltan en CastTV
 	n = len(listseasontvsh)
@@ -689,15 +772,22 @@ def findepisodios(data,miserievo,tipolist,seasonsearch,episodiosearch):
 				seasonT = "S0"+seasontvsh[0]
 			else:
 				seasonT = "S"+seasontvsh[0]
+			date=str(seasontvsh[2])+"."+str(seasontvsh[3])+"."+str(seasontvsh[4])
 			while n>0:
 				if n<10:
 					epT = "E0"+str(n)
 				else:
 					epT = "E"+str(n)
-				episodioslist.append([ miserievo+" - "+seasonT+epT , "" , "" , "0" , "" , seasontvsh[0] , seasonT+epT , n , "0" , thumbnail , plot ])
+				episodioslist.append([ miserievo+" - "+seasonT+epT , "" , date , "0" , "" , seasontvsh[0] , seasonT+epT , n , "0" , thumbnail , plot , seasontvsh[2] , seasontvsh[3] , seasontvsh[4]  ])
 				n=n-1
 
 	if tipolist<>"listforsubs":
+		episodioslist.sort(key=lambda episodio: episodio[5])
+		episodioslist.sort(key=lambda episodio: episodio[7])
+		episodioslist.sort(key=lambda episodio: episodio[11])
+		episodioslist.sort(key=lambda episodio: episodio[12])
+		episodioslist.sort(key=lambda episodio: episodio[13])
+		episodioslist.reverse()
 		return episodioslist
 	else:
 		for episodio in episodioslist:
@@ -815,10 +905,9 @@ def findtvshack(title,todos,titlectvsearch,season,episodio):
 
 def searchgate(listforsearchin,titletosearch):
 	xbmc.output("[casttv.py] searchgate")
-
+	# listforsearchin tiene que tener en la última columna [-1] el campo para búsquedas
 	itemencontrado = []
 	itemencontrado2 = []
-	# listforsearchin tiene que tener en la última columna [-1] el campo para búsquedas
 		
 	listforsearchin.sort(key=lambda listfor: listfor[-1])
 	for listfor in listforsearchin:
@@ -917,8 +1006,7 @@ def listasubs(params,url,category):
 		listaTVSneak = []
 		listatvshack = []
 		thumbnail=""
-		plot=""
-		
+		plot=""		
 
 		url = "http://www.casttv.com/shows/"
 		data = scrapertools.cachePage(url)
@@ -944,8 +1032,8 @@ def listasubs(params,url,category):
 				addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
 			for video in listactmirrors:
 				addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
-			for video in listaTVSneak:
-				addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
+			#for video in listaTVSneak:
+				#addnewvideo( CHANNELNAME , "play" , category , video[2] , title+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
 		if len(listatvshack)>0:
 			for ep in listatvshack:
 				#se deja la fecha porque no se muestra previamente el ltdo de episodios...
@@ -1238,7 +1326,7 @@ def listatresupdate(url,category,listupdate):
 	data = scrapertools.cachePage(url)
 
 	listafav = []
-	listafav = readfav("","-1")
+	listafav = readfav("","","-1",CHANNELNAME)
 	nuevos = []
 
 	listaupdated = findseries(data,"Actualizaciones","","","0",0)
@@ -1280,14 +1368,14 @@ def detaildos(params,url,category):
 
 	titleshort = title
 	if date<>"":
-		titleshort = re.sub('\s\-\s'+date,'',titleshort)
+		titleshort = re.sub('\s\-\s\d+\/\d+\/\d+','',titleshort)
 	titleshort = re.sub('\s+\-\s+',' - ',titleshort)
 	visto = ""
-	matchv = re.search('\[(?:LW|W|UW)\]',titleshort)
+	matchv = re.search('\[(?:LW|NW|UW|W)\]',titleshort)
 	if (matchv):
 		visto = " - "+matchv.group(0)
 	
-	urltvsneak0 = titletvsneak+"-season-"+seasontvsneak
+	#urltvsneak0 = titletvsneak+"-season-"+seasontvsneak
 	
 	listacasttv = []
 	listactmirrors = []
@@ -1321,31 +1409,31 @@ def detaildos(params,url,category):
 				data1 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
 				listactmirrors = servertools.findvideos(data1)
 		
-	# TVSneak
-	if tvsneak == "-1":
-		datatvsneak0 = scrapertools.cachePage("http://tvsneak.com")
-		matchtvsneak0 = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak0+')',datatvsneak0,re.IGNORECASE)
-		if (matchtvsneak0):
-			datatvsneak = scrapertools.cachePage(matchtvsneak0.group(1))
-			urltvsneak = re.sub('category/','',matchtvsneak0.group(1))
-			urltvsneak2 = "http://tvsneak.com/new"
-			matchtvsneak1 = re.search('<a  href="((?:'+urltvsneak+'|'+urltvsneak2+')/[^"]+)" rel="bookmark">[^<]+(?<='+seasontv+')[^<]*</a>',datatvsneak,re.IGNORECASE)
-			if (matchtvsneak1):
-				datatvsneak2 = scrapertools.cachePage(matchtvsneak1.group(1))
-				listaTVSneak = servertools.findvideos(datatvsneak2)
-				# Eliminar cuando haya un patrón para Divxden en servertools
-				patronvideos = '(http\:\/\/www\.divxden\.com/.*?\.html)'
-				matches = re.compile(patronvideos).findall(datatvsneak2)
-				for match in matches:
-					n = matches.index(match)
-					if n==0:
-						titulo = "[Divxden]"
-					else:
-						titulo = "[Divxden] - Mirror"
-					url = match
-					# Por si fue agregado por servertools.findvideos
-					if listaTVSneak.count( [ titulo , url , 'Divxden' ] )==0:
-						listaTVSneak.append( [ titulo , url , 'Divxden' ] )
+	#TVSneak
+	#if tvsneak == "-1":
+	#	datatvsneak0 = scrapertools.cachePage("http://tvsneak.com")
+	#	matchtvsneak0 = re.search('(http://tvsneak.com/category/.*?)(?<='+urltvsneak0+')',datatvsneak0,re.IGNORECASE)
+	#	if (matchtvsneak0):
+	#		datatvsneak = scrapertools.cachePage(matchtvsneak0.group(1))
+	#		urltvsneak = re.sub('category/','',matchtvsneak0.group(1))
+	#		urltvsneak2 = "http://tvsneak.com/new"
+	#		matchtvsneak1 = re.search('<a  href="((?:'+urltvsneak+'|'+urltvsneak2+')/[^"]+)" rel="bookmark">[^<]+(?<='+seasontv+')[^<]*</a>',datatvsneak,re.IGNORECASE)
+	#		if (matchtvsneak1):
+	#			datatvsneak2 = scrapertools.cachePage(matchtvsneak1.group(1))
+	#			listaTVSneak = servertools.findvideos(datatvsneak2)
+	#			# Eliminar cuando haya un patrón para Divxden en servertools
+	#			patronvideos = '(http\:\/\/www\.divxden\.com/.*?\.html)'
+	#			matches = re.compile(patronvideos).findall(datatvsneak2)
+	#			for match in matches:
+	#				n = matches.index(match)
+	#				if n==0:
+	#					titulo = "[Divxden]"
+	#				else:
+	#					titulo = "[Divxden] - Mirror"
+	#				url = match
+	#				# Por si fue agregado por servertools.findvideos
+	#				if listaTVSneak.count( [ titulo , url , 'Divxden' ] )==0:
+	#					listaTVSneak.append( [ titulo , url , 'Divxden' ] )
 
 	if category=="listforsubs":
 		titlectvsearch = ftitlectvsearch(miserievo)
@@ -1371,8 +1459,8 @@ def detaildos(params,url,category):
 		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
 	for video in listactmirrors:
 		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
-	for video in listaTVSneak:
-		addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
+	#for video in listaTVSneak:
+		#addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [TVSneak]" , video[1] , thumbnail , plot )
 	for ep in listatvshack:
 		#quita la fecha (como arriba, para acortar)
 		titletvsh = re.sub('\s+\([^\)]+\)$','',ep['title'])
@@ -1426,13 +1514,17 @@ def alertnoepisodios(tipo):
 	elif tipo==3:
 		resultado = advertencia.ok('Msj. Informativo:' , 'No se han encontrado Subtítulos.' , '')
 
+def alertsinconexion():
+	advertencia = xbmcgui.Dialog()
+	resultado = advertencia.ok('Msj. Informativo:' , 'Servidor o Contenido no disponible' , 'en este momento.' )
+
 def alertnoresultadosearch():
 	advertencia = xbmcgui.Dialog()
 	resultado = advertencia.ok('Msj. Informativo:' , 'La Búsqueda no ha obtenido Resultados.' , '')
 
 def alertnofav():
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('Msj. Informativo:' , 'No se han añadido Series a Favoritas.' , '')
+	resultado = advertencia.ok('Msj. Informativo:' , 'No se han añadido Series a "Mis Favoritas".' , '')
 
 def addsimplefolder( canal , accion , category , title , url , thumbnail ):
 	xbmc.output("[casttv.py] addsimplefolder")
@@ -1464,10 +1556,11 @@ def additem( canal , category , title , url , thumbnail, plot ):
 def ayuda(params,url,category):
 	xbmc.output("[casttv.py] ayuda")
 
-	additem( CHANNELNAME , category , "***+++++++++++++++ Leyenda +++++++++++++++***" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[LW]: Último Episodio Visto (Last Watched)" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[W]: Episodio Visto (Watched)" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[UW]: Episodio No Visto (UnWatched)" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------------ Leyenda ------------------------------------------" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios) " , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Actualizadas [excepto Aptdo Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Favoritas" , "" , STARORANGE_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Favoritas Desactivadas", "" , STARGREY_THUMB , "" )
@@ -1544,49 +1637,61 @@ def ftitletvshsearch(title):
 	title = re.sub('[^\w]+','',title)
 	return title
 
-def serieupdate(miserievo,status,url):
+def serieupdate(miserievo,status,url,tipocontenido,channel):
 	xbmc.output("[casttv.py] serieupdate")
 
-	listfav=readfav(miserievo,"")
+	urlsearch0 = ""
+	if channel=="animeforos":
+		urlsearch0=url
+
+	listfav=readfav(miserievo,urlsearch0,"",channel)
 	if len(listfav)==0:
-		respuesta = seriemenu("0","0")
+		respuesta = seriemenu("0","0",tipocontenido,channel)
 		if respuesta==1:
-			upgradefav(miserievo,status,url,"-1","1")
+			upgradefav(miserievo,status,url,"-1","1",channel)
 	else:
 		if listfav[0][3]=="-1":
-			respuesta = seriemenu("-1","-1")
+			respuesta = seriemenu("-1","-1",tipocontenido,channel)
 			if respuesta==2:
-				upgradefav(miserievo,status,url,"1","1")
+				upgradefav(miserievo,status,url,"1","1",channel)
 			elif respuesta==3:
-				upgradefav(miserievo,status,url,"0","1")
+				upgradefav(miserievo,status,url,"0","1",channel)
 		elif listfav[0][3]=="0":
-			respuesta = seriemenu("-1","0")
+			respuesta = seriemenu("-1","0",tipocontenido,channel)
 			if respuesta==2:
-				upgradefav(miserievo,status,url,"1","1")
+				upgradefav(miserievo,status,url,"1","1",channel)
 			elif respuesta==3:
-				upgradefav(miserievo,status,url,"-1","1")
+				upgradefav(miserievo,status,url,"-1","1",channel)
 		elif listfav[0][3]=="1":
-			respuesta = seriemenu("-1","1")
+			respuesta = seriemenu("-1","1",tipocontenido,channel)
 			if respuesta==2:
-				upgradefav(miserievo,status,url,"-1","1")
+				upgradefav(miserievo,status,url,"-1","1",channel)
 		if respuesta==1:
-				upgradefav(miserievo,status,url,"-1","0")
+				upgradefav(miserievo,status,url,"-1","0",channel)
 	return respuesta
 
-def seriemenu(tipofav,tiponuevos):
+def seriemenu(tipofav,tiponuevos,tipocontenido,channel):
 	xbmc.output("[casttv.py] seriemenu")
+
+	misfavtext="Mis Favoritas"
+	if channel=="animeforos":
+		misfavtext="Mis Favoritos"
+
+	tipocontext=" Listado de Episodios "
+	if tipocontenido<>"" and tipocontenido.lower()<>"serie":
+		tipocontext=""
 
 	seleccion = ""
 	opciones = []
-	opciones.append("Abrir Listado de Episodios  (opción por defecto)")
+	opciones.append("Abrir"+tipocontext+" (opción por defecto)")
 	if tipofav=="0":
-		opciones.append('Añadir a "Mis Favoritas"')
+		opciones.append('Añadir a "'+misfavtext+'"')
 	elif tipofav=="-1":
-		opciones.append('Eliminar de "Mis Favoritas"')
+		opciones.append('Eliminar de "'+misfavtext+'"')
 		if tiponuevos=="1":
-			opciones.append('Activar en "Mis Favoritas"')
+			opciones.append('Activar en "'+misfavtext+'"')
 		else:
-			opciones.append('Desactivar en "Mis Favoritas"')
+			opciones.append('Desactivar en "'+misfavtext+'"')
 			if tiponuevos=="0":
 				opciones.append('Activar Seguimiento en "Nuevos Episodios"')
 			elif tiponuevos=="-1":
@@ -1600,21 +1705,31 @@ def episodiomenu(params,url,category):
 	xbmc.output("[casttv.py] episodiomenu")
 
 	title = urllib.unquote_plus( params.get("title") )
-	title0 = re.sub('\s+\-\s+\[U?L?W\]$','',title)
 	tipovisto = urllib.unquote_plus( params.get("tipovisto") )
 	miserievo = urllib.unquote_plus( params.get("miserievo") )
 	urlback = urllib.unquote_plus( params.get("urlback") )
 	season = urllib.unquote_plus( params.get("seasontvsneak") )
 	episodio = params.get("episodiotv")
 
+	episodiomenugnral(params,title,url,category,miserievo,urlback,season,episodio,tipovisto,CHANNELNAME,"-1")
+
+def episodiomenugnral(params,title,url,category,miserie,urlback,season,episodio,tipovisto,channel,urlOK):
+	xbmc.output("[casttv.py] episodiomenugnral")
+
+	title0 = re.sub('\s+\-\s+\[U?L?N?W\]$','',title)
+
 	if tipovisto=="1": textipo="Último Visto y anteriores [LW]/[W]"
 	elif tipovisto=="2": textipo="Último Visto [LW]"
 	elif tipovisto=="3" or tipovisto=="1A" or tipovisto=="31": textipo="Visto [W]"
-	elif tipovisto=="4": textipo="No Visto [UW]"
+	elif tipovisto=="4" or tipovisto=="41": textipo="No para Ver [NW]"
+	elif tipovisto=="5" or tipovisto=="51": textipo="No Visto [UW]"
 	elif tipovisto=="New": textipo="Nuevo Episodio"
 
 	opciones = []
-	opciones.append("Abrir Listado de Vídeos (opción por defecto)")
+	if channel=="casttv":
+		opciones.append("Abrir Listado de Vídeos (opción por defecto)")
+	elif channel=="animeforos":
+		opciones.append("Continuar (opción por defecto)")
 
 	if tipovisto<>"1":
 		opciones.append('Marcar: Último Visto y anteriores [LW]/[W]')
@@ -1622,9 +1737,11 @@ def episodiomenu(params,url,category):
 		opciones.append('Marcar: Último Visto [LW]')
 	if tipovisto<>"3" and tipovisto<>"31" and  tipovisto<>"1A" and  tipovisto<>"New":
 		opciones.append('Marcar: Visto [W]')
+	if tipovisto<>"4" and  tipovisto<>"41":
+		opciones.append('Marcar: No para Ver [NW]')
 	if tipovisto<>"" and tipovisto<>"N" and tipovisto<>"0" and tipovisto<>"01" and tipovisto<>"New":
 		opciones.append('Desmarcar: '+textipo)
-	if tipovisto=="31" or  tipovisto=="1A" or tipovisto=="01":
+	if tipovisto=="31" or  tipovisto=="1A" or tipovisto=="01" or tipovisto=="41":
 		opciones.append('Marcar: No Visto [UW]')
 	if tipovisto<>"N" and  tipovisto<>"New":
 		opciones.append('Desmarcar: Todo (Serie Completa)')
@@ -1633,11 +1750,17 @@ def episodiomenu(params,url,category):
 	seleccion = searchtype.select("Seleccione una opción:", opciones)
 
 	if seleccion==-1 or seleccion==0:
-		detaildos(params,url,category)
-		return
+		if channel=="casttv":
+			detaildos(params,url,category)
+			return
 	else:
 		if tipovisto=="" or tipovisto=="N" or tipovisto=="0" or tipovisto=="New":
-			if seleccion==4:
+			if seleccion==3:
+				if tipovisto=="New":
+					accion = "4"
+				else:
+					accion = "3"
+			elif seleccion==5:
 				accion = "T"
 			else:
 				accion = str(seleccion)
@@ -1646,45 +1769,93 @@ def episodiomenu(params,url,category):
 				if tipovisto=="01":
 					accion = "31"
 				elif tipovisto=="31" or  tipovisto=="1A":
+					accion = "4"
+			elif seleccion==4:
+				if tipovisto=="01":
+					accion = "4"
+				elif tipovisto=="31" or  tipovisto=="1A":
 					accion = "0"
-			elif seleccion==5:
+			elif seleccion==6:
 				accion = "T"
 			else:
 				accion = str(seleccion)
-		elif tipovisto == "1" or tipovisto == "2":
+		elif tipovisto == "1" or tipovisto == "2" or tipovisto == "3":
 			if seleccion==1:
 				if tipovisto == "1":
 					accion = "2"
 				else:
 					accion = "1"
 			elif seleccion==2:
-				accion = "3"
+				if tipovisto == "3":
+					accion = "2"
+				else:
+					accion = "3"
 			elif seleccion==3:
-				accion = "0"
+				accion = "4"
 			elif seleccion==4:
-				accion = "T"
-		elif tipovisto == "3" or tipovisto == "4":
-			if seleccion==int(tipovisto):
 				accion = "0"
-			elif seleccion==int(tipovisto)+1:
+			elif seleccion==5:
+				accion = "5"
+			elif seleccion==6:
+				accion = "T"
+		elif tipovisto == "4" or tipovisto == "41":
+			if seleccion==3:
+				if tipovisto == "41":
+					accion = "31"
+				else:
+					accion = "3"
+			elif seleccion==4:
+				if tipovisto == "41":
+					accion = "041"
+				else:
+					accion = "0"
+			elif seleccion==5:
+				if tipovisto == "41":
+					accion = "5"
+				else:
+					accion = "T"
+			elif seleccion==6:
 				accion = "T"
 			else:
 				accion = str(seleccion)
-	
-	upgradevisto(miserievo,title0,url,season,episodio,accion)
-	
+		elif tipovisto == "5" or tipovisto == "51":
+			if seleccion==3:
+				if tipovisto == "51":
+					accion = "31"
+				else:
+					accion = "3"
+			elif seleccion==5:
+				if tipovisto == "51":
+					accion = "051"
+				else:
+					accion = "0"
+			elif seleccion==6:
+				accion = "T"
+			else:
+				accion = str(seleccion)
+
+		upgradevisto(miserie,title0,url,season,episodio,accion,channel,urlOK)
+
+	if channel=="animeforos":
+		return seleccion
+
 	if tipovisto=="New":
 		listatresupdate(urlback,category,True)
 	else:
-		listadosupdate(miserievo,urlback,category,True)
+		listadosupdate(miserie,urlback,category,True)
 
-def readfav(serievo,tiponuevos):
+def readfav(seriesearch0,urlsearch0,tiponuevos,channel):
 	xbmc.output("[casttv.py] readfav")
 
-	if serievo<>"":	
-		seriesearch = re.sub('(?P<signo>\(|\)|\'|\"|\[|\]|\.|\?|\+)','\\\\\g<signo>',serievo)
+	if seriesearch0<>"":	
+		seriesearch = re.sub('(?P<signo>\(|\)|\'|\"|\[|\]|\.|\?|\+)','\\\\\g<signo>',seriesearch0)
 	else:
 		seriesearch = "[^;]+"
+
+	if urlsearch0<>"":	
+		urlsearch = re.sub('(?P<signo>\(|\)|\'|\"|\[|\]|\.|\?|\+|\#)','\\\\\g<signo>',urlsearch0)
+	else:
+		urlsearch = "[^;]+"
 
 	if tiponuevos=="":
 		tiponuevos = "[^;]+"
@@ -1698,7 +1869,7 @@ def readfav(serievo,tiponuevos):
 		pass
 
 	favlist = []
-	filename = 'casttvfav.txt'
+	filename = channel+'fav.txt'
 	fullfilename = os.path.join(VISTO_PATH,filename)
 	if not os.path.exists(fullfilename):
 		favfile = open(fullfilename,"w")
@@ -1706,39 +1877,43 @@ def readfav(serievo,tiponuevos):
 	else:
 		favfile = open(fullfilename)
 		for line in favfile:
-			match = re.match('('+seriesearch+');([^;]+);([^;]+);('+tiponuevos+');\n',line)
+			match = re.match('('+seriesearch+');([^;]*);('+urlsearch+');('+tiponuevos+');\n',line)
 			if (match):
 				serie = match.group(1)
 				status = match.group(2)
 				url = match.group(3)
 				seguirnuevos = match.group(4)
 				favlist.append([ serie , status , url , seguirnuevos ])
-				if serievo<>"":
+				if seriesearch0<>"":
 					break
 		favfile.close()
 
 	return favlist
 
-def upgradefav(serie,status,url,seguirnuevos,tipo):
+def upgradefav(serie,status,url,seguirnuevos,tipo,channel):
 	xbmc.output("[casttv.py] upgradefav")
+
+	#el status se podría quitar, se guarda sólo por mantener el formato...
 
 	VISTO_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks/vistos' ) )
 	favlist = []
 	encontrado = "0"
 	detener = "0"
 	OK = "0"
-	filename = 'casttvfav.txt'
+	filename = channel+'fav.txt'
 	fullfilename = os.path.join(VISTO_PATH,filename)
 
 	favfile = open(fullfilename)
 	for line in favfile:
-		match = re.match('([^;]+);([^;]+);([^;]+);([^;]+);\n',line)
+		match = re.match('([^;]+);([^;]*);([^;]+);([^;]+);\n',line)
 		if (match):
 			serief = match.group(1)
 			statusf = match.group(2)
 			urlf = match.group(3)
 			seguirnuevosf = match.group(4)
 			if serief<>serie:
+				favlist.append([ serief , statusf , urlf , seguirnuevosf ])
+			if channel=="animeforos" and serief==serie and urlf<>url:
 				favlist.append([ serief , statusf , urlf , seguirnuevosf ])
 
 	favfile.close()
@@ -1753,7 +1928,7 @@ def upgradefav(serie,status,url,seguirnuevos,tipo):
 		favfile.write(fav[0]+';'+fav[1]+';'+fav[2]+';'+fav[3]+';\n')
 	favfile.close()
 
-def readvisto(serie,tipo):
+def readvisto(serie,tipo,channel):
 	xbmc.output("[casttv.py] readvisto")
 
 	if serie<>"":	
@@ -1762,7 +1937,7 @@ def readvisto(serie,tipo):
 		seriesearch="[^;]+"
 
 	if tipo=="LW":
-		tipos="(?:1|2)"
+		tipos="(?:1|2|4)"
 	else:
 		tipos="[^;]+"
 
@@ -1776,7 +1951,7 @@ def readvisto(serie,tipo):
 	
 	encontrado = "0"
 	vistolist = []
-	filename = 'casttv.txt'
+	filename = channel+'.txt'
 	fullfilename = os.path.join(VISTO_PATH,filename)
 	if not os.path.exists(fullfilename):
 		vistofile = open(fullfilename,"w")
@@ -1784,7 +1959,7 @@ def readvisto(serie,tipo):
 	else:
 		vistofile = open(fullfilename)
 		for line in vistofile:
-			match = re.match('('+seriesearch+');([^;]+);([^;]+);([^;]+);([^;]+);('+tipos+');\n',line)
+			match = re.match('('+seriesearch+');([^;]+);([^;]*);([^;]+);([^;]+);('+tipos+');\n',line)
 			if (match):
 				seriev = match.group(1)
 				titulo = match.group(2)
@@ -1800,21 +1975,26 @@ def readvisto(serie,tipo):
 
 	return vistolist
 
-def upgradevisto(serie,titulo,url,season,episodio,tipo):
+def upgradevisto(serie,titulo,url,season,episodio,tipo,channel,urlOK):
 	xbmc.output("[casttv.py] upgradevisto")
+
+	#urlOK añadido para Mcanime en Anime(Foros) por los enlaces que genéricos sin títulos...  
+	#urlOK indica si se usa la url ("0") o no ("-1") para identificar los episodios vistos 
 
 	VISTO_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks/vistos' ) )
 	vistolist = []
 	encontrado = "0"
 	detener = "0"
 	OK = "0"
-	filename = 'casttv.txt'
+	filename = channel+'.txt'
 	fullfilename = os.path.join(VISTO_PATH,filename)
 
 	vistofile = open(fullfilename)
+
 	for line in vistofile:
-		match = re.match('([^;]+);([^;]+);([^;]+);([^;]+);([^;]+);([^;]+);\n',line)
+		match = re.match('([^;]+);([^;]+);([^;]*);([^;]+);([^;]+);([^;]+);\n',line)
 		if (match):
+			Addlist="0"
 			serief = match.group(1)
 			titulof = match.group(2)
 			urlf = match.group(3)
@@ -1822,59 +2002,95 @@ def upgradevisto(serie,titulo,url,season,episodio,tipo):
 			episodiof = match.group(5)
 			tipof = match.group(6)
 			if serief<>serie:
-				vistolist.append([ serief , titulof , urlf , seasonf, episodiof , tipof ])
-			if serief==serie and tipo=="T" and OK=="0":
-				respuesta = alertcontinuarT()
-				if respuesta:
-					OK= "-1"
+				vistolist.append([ serief , titulof , urlf , seasonf , episodiof , tipof ])
+				continue
+			elif serief==serie and tipo=="T":
+				if OK=="-1":
+					continue
+				elif OK=="0":
+					respuesta = alertcontinuarT()
+					if respuesta:
+						OK= "-1"
+						continue
+					else:
+						detener="-1"
+						break
+			elif serief==serie and tipo<>"T":
+				if urlOK=="-1":
+					if titulof==titulo:
+						diferenteOK = "0"
+					else:
+						diferenteOK = "-1"
+				else: 
+					if titulof==titulo and urlf==url:
+						diferenteOK = "0"
+					else:
+						diferenteOK = "-1"
+				if diferenteOK=="0":
+					if tipo[0:1]=="0":
+						if tipo=="041" and tipof=="4":
+							continue
+						elif tipo=="051" and tipof=="5":
+							continue
+						else:
+							encontrado = "-1"
+							continue
+					elif tipo=="31" and tipof=="4":
+						continue
+					elif tipo=="31" and tipof=="5":
+						continue
 				else:
-					detener="-1"
-					break
-			if serief==serie and tipo<>"T":
-				if tipo=="0" and titulof==titulo and urlf==url:
-					encontrado = "-1"
-				if titulof<>titulo or urlf<>url:
 					if tipo=="1" or tipo=="2":
 						if tipo=="2" and tipof=="3":
 							if int(seasonf)<int(season):
-								vistolist.append([ serief , titulof , urlf , seasonf, episodiof , tipof ])
+								Addlist="-1"
 							elif int(seasonf)==int(season) and int(episodiof)<int(episodio):
-								vistolist.append([ serief , titulof , urlf , seasonf, episodiof , tipof ])
-						if tipof=="4":
-							vistolist.append([ serief , titulof , urlf , seasonf, episodiof , tipof ])
+								Addlist="-1"
+						if tipof=="4" or tipof=="5":
+							Addlist="-1"
 						if tipof=="1" or tipof=="2":
 							respuesta = alertcontinuar(tipo,tipof)
 							if respuesta:
 								if tipo=="2" and tipof=="2":
 									if int(seasonf)<int(season):
-										vistolist.append([ serief , titulof , urlf , seasonf, episodiof , "3" ])
+										Addlist="-1"
+										tipof="3"
 									elif int(seasonf)==int(season) and int(episodiof)<int(episodio):
-										vistolist.append([ serief , titulof , urlf , seasonf, episodiof , "3" ])
+										Addlist="-1"
+										tipof="3"
 							else:
 								detener="-1"
 								break
-					if tipo=="3":
+					elif tipo=="3":
+						#if tipof=="1":
+							#alertnoanterior()
+							#detener="-1"
+							#break
 						if tipof=="1" or tipof=="2":
 							if int(seasonf)>int(season):
-								vistolist.append([ serief , titulof , urlf , seasonf, episodiof , tipof ])
+								Addlist="-1"
 							elif int(seasonf)==int(season) and int(episodiof)>int(episodio):
-								vistolist.append([ serief , titulof , urlf , seasonf, episodiof , tipof ])
+								Addlist="-1"
 							else:
 								alertnoanterior()
 								detener="-1"
 								break
 						else:
-							vistolist.append([ serief , titulof , urlf, seasonf, episodiof , tipof ])
+							Addlist="-1"
 							
-					if tipo=="0" or tipo=="4" or tipo=="31":
-						vistolist.append([ serief , titulof , urlf, seasonf, episodiof , tipof ])
+					elif tipo[0:1]=="0" or tipo=="4" or tipo=="31" or tipo=="5":
+						Addlist="-1"
+
+			if Addlist=="-1":
+				vistolist.append([ serief , titulof , urlf, seasonf, episodiof , tipof ])
+			
+
 	vistofile.close()
 	if detener=="-1": return
 
-
-	if tipo=="0" and encontrado=="0":
-		vistolist.append([ serie , titulo , url , season, episodio , tipo ])
-	if tipo<>"0" and tipo<>"31" and tipo<>"T":
+	if tipo[0:1]=="0" and encontrado=="0":
+		vistolist.append([ serie , titulo , url , season, episodio , "0" ])
+	if tipo[0:1]<>"0" and tipo<>"31" and tipo<>"T":
 		vistolist.append([ serie , titulo , url , season, episodio , tipo ])
 
 	vistolist.sort()
@@ -1888,7 +2104,7 @@ def upgradevisto(serie,titulo,url,season,episodio,tipo):
 def alertcontinuar(tipo,tipof):
 	advertencia = xbmcgui.Dialog()
 	linea1 = "Se desmarcará el episodio [LW] actual y Vistos [W]."
-	linea2 = "Los No Vistos [UW] no se desmarcan." 
+	linea2 = "Los No Vistos [UW] y [NW] no se desmarcan." 
 	linea3 = "¿Desea continuar?"
 	if tipof=="2" and tipo=="2":
 		linea1 = "Se marcará como Visto [W] el episodio [LW] actual,"
@@ -2059,13 +2275,25 @@ def findtvshackep(params,url,category,todos,season,episodio):
 			if (match1):
 				seasonep = match1.group(1)
 				episodioep = int(match1.group(2))
+				match2=re.search('\((\d+)\/(\d+)\/(\d+)\)$',ep['title'],re.IGNORECASE)
+				if (match2):
+					day = int(match2.group(1))
+					month = int(match2.group(2))
+					year = int(match2.group(3))
+				else:
+					day = 0
+					month = 0
+					year = 0
 				if listseason.count(seasonep)==0:
-					listepisodio.append([ seasonep , episodioep ])
+					listepisodio.append([ seasonep , episodioep , day , month , year ])
 					listseason.append(seasonep)
 				else:
 					n = listseason.index(seasonep)
 					if episodioep>listepisodio[n][1]:
 						listepisodio[n][1]=episodioep
+						listepisodio[n][2]=day
+						listepisodio[n][3]=month
+						listepisodio[n][4]=year
 
 		return listepisodio
 
