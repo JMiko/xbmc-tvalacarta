@@ -95,6 +95,7 @@ def listchannels(params,url,category):
 	addfolder("Documentalesyonkis","documentalesyonkis","mainlist")
 	addfolder("Documentalesatonline","documentalesatonline","mainlist")
 	addfolder("Discoverymx.Wordpress","discoverymx","mainlist")
+	addfolder("Gratisdocumentales","gratisdocumentales","mainlist")
 	addfolder("Buscador de Trailers (Youtube)","trailertools","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")
