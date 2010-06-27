@@ -297,7 +297,7 @@ def detail(params,url,category):
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
 			
    ## --------------------------------------------------------------------------------------##
-   #  				 Busca enlaces en el servidor Cinshare  de momento no funciona           #
+   #  				 Busca enlaces en el servidor Cinshare                                  #
    ## --------------------------------------------------------------------------------------##
 	
 	patronvideos = '<iframe src="(http://www.cinshare.com/[^"]+)"'
@@ -402,6 +402,33 @@ def detail(params,url,category):
 		if len(videourl)>0:
 			subtitle = "[Divx-Directo-Gigabyteupload]"
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+	## --------------------------------------------------------------------------------------##
+	#            Busca enlaces de videos para el servidor vk.com                             #
+	## --------------------------------------------------------------------------------------##
+	'''
+	var video_host = 'http://cs12644.vk.com/';
+	var video_uid = '87155741';
+	var video_vtag = 'fc697084d3';
+	var video_no_flv = 1;
+	var video_max_hd = '1'
+	'''
+	patronvideos = '<iframe src="(http://vk.com/video_ext.php[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		print " encontroooo VK.COM :%s" %matches[0]
+ 		
+		data2 = scrapertools.cachePage(matches[0])
+		print data2
+		patron  = "var video_host = '([^']+)'.*?"
+		patron += "var video_uid = '([^']+)'.*?"
+		patron += "var video_vtag = '([^']+)'"
+		matches2 = re.compile(patron,re.DOTALL).findall(data2)
+		if len(matches2)>0:    #http://cs12387.vk.com/u87155741/video/fe5ee11ddb.360.mp4
+			for match in matches2:
+				videourl = "%s/u%s/video/%s.360.mp4" % (match[0],match[1],match[2])
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
+		
+		
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		

@@ -220,9 +220,11 @@ def detail(params,url,category):
 	plot = urllib.unquote_plus( params.get("plot") )
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	datafull = scrapertools.cachePage(url)
 	#xbmc.output(data)
- 
+	patron = "<!-- google_ad_section_start -->.*?<!-- google_ad_section_end -->"
+	matches = re.compile(patron,re.DOTALL).findall(datafull)
+	data = matches[0]
                    
           
 	# ------------------------------------------------------------------------------------
@@ -365,7 +367,16 @@ def detail(params,url,category):
 		for match in matches:
 			scrapedurl = match.replace("&amp;","&")
 			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Videoweed" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )		
-
+	
+	# Busca enlaces en el servidor Gigabyteupload # http://cdn-2.gigabyteupload.com/files/207bb7b658d5068650ebabaca8ffc52d/vFuriadeTitanes_newg.es.avi
+	patronvideos = '(http\:\/\/[^\.]+\.gigabyteupload.com\/[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if len(matches)>0:
+		xbmc.output(" Servidor Gigabyteupload")
+		for match in matches:
+			
+			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Gigabyteupload" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		

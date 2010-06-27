@@ -11,7 +11,7 @@ import sys
 import xbmc
 import os
 import scrapertools
-import unpackerjs
+import unpackerjs2
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 
@@ -118,8 +118,8 @@ def geturl(urlvideo):
 	patron = 'http\:\/\/www\.gigabyteupload\.com/download\-([^\-]+)\-.*?'
 	matches = re.compile(patron,re.DOTALL).findall(url)
 	id = matches[0]
-	patron  = '<form method="post" action="([^"]+)" name="[^"]+"><input type="hidden" name="SECID" value="([^"]+)" \/>'
-	patron += '<p><input type="submit" name="submit" value="([^"]+)" class="cbutton" \/>'
+	patron  = '<form method="post" action="([^"]+)">[^<]+<input type="hidden" name="security_key" value="([^"]+)" \/>'
+	#patron += '<p><input type="submit" name="submit" value="([^"]+)" class="cbutton" \/>'
 	
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	xbmc.output("[gigabyupload.py] fragmentos de la URL : " + str(len(matches)))
@@ -131,14 +131,14 @@ def geturl(urlvideo):
 	
 	url2      = theurl
 	if len(matches)>0:
-		url2 = "http://www.gigabyteupload.com"+matches[0][0]
+		url2 = matches[0][0]
 		#id = matches[0][5]
 		cecid  = matches[0][1]
-		submit = matches[0][2]
+		submit = "Watch Online"
 		#aff = matches[0][3]
 		#came_from = matches[0][4]
 		
-	txdata = "op=download&usr_login=&id="+id+"&SECID="+cecid+"&submit="+submit+"&aff=&came_from=referer=&method_free=Free+Stream"
+	txdata = "op=download&usr_login=&id="+id+"&security_key="+cecid+"&submit="+submit+"&aff=&came_from=referer=&method_free=Free+Stream"
 	xbmc.output(txdata)
 	try:
 		req = Request(url2, txdata, txheaders)
@@ -151,26 +151,27 @@ def geturl(urlvideo):
 	except:
 		data = ""
 		pass
-	'''
+	
 	# Extrae el trozo cifrado
-	#patron = '<div align="center" id="divxshowboxt">(.*?)</div>'
-	#matches = re.compile(patron,re.DOTALL).findall(data)
-	#scrapertools.printMatches(matches)
+	patron = '<div id="player">[^<]+<script type="text/javascript">(eval.*?)</script>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
 	data = ""
 	if len(matches)>0:
 		data = matches[0]
-		xbmc.output("[divxden.py] bloque packed="+data)
+		xbmc.output("[Gigabyteupload.py] bloque packed="+data)
 	else:
 		return ""
 	
 	# Lo descifra
-	descifrado = unpackerjs.unpackjs(data)
-	'''
+	descifrado = unpackerjs2.unpackjs(data)
+
+	
 	# Extrae la URL del vídeo
-	#xbmc.output("descifrado="+descifrado)
+	xbmc.output("descifrado="+descifrado)
 	# Extrae la URL
-	patron = "onclick=\"window.location.href='([^']+)'"
-	matches = re.compile(patron,re.DOTALL).findall(data)
+	patron = '<param name="src" value="([^"]+)"'
+	matches = re.compile(patron,re.DOTALL).findall(descifrado)
 	scrapertools.printMatches(matches)
 	
 	url = ""

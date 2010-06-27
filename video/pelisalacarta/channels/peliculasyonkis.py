@@ -18,6 +18,15 @@ import xbmctools
 import DecryptYonkis as Yonkis
 
 CHANNELNAME = "peliculasyonkis"
+SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
+		  'svueno'    :'Stagevu'   ,
+		  'manueno'   :'Movshare'  ,
+		  'videoweed' :'Videoweed' ,
+		  'veoh2'     :'Veoh'      ,
+		  'megaupload':'Megaupload',
+		  'pfflano'   :'Directo'   ,
+		  }
+CALIDAD = {'f-1':u'\u2776','f-2':u'\u2777','f-3':u'\u2778','f-4':u'\u0002\u2779\u0002','f-5':u'\u277A'}
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -272,11 +281,11 @@ def listcategorias(params,url,category):
 
 def buscaporanyo(params,url,category):
 	xbmc.output("[peliculasyonkis.py] buscaporanyo")
-
-	anyoactual = 2010
-	anyoinic   = 1977
+	anho=2010
+	anyoactual = anho
+	anyoinic   = 1920
 	opciones = []
-	for i in range(34):
+	for i in range(anyoactual-anyoinic+1):
 		opciones.append(str(anyoactual))
 		anyoactual = anyoactual - 1           
 	dia = xbmcgui.Dialog()
@@ -287,10 +296,14 @@ def buscaporanyo(params,url,category):
 		url = "http://www.peliculasyonkis.com/estreno/"+opciones[seleccion]+"/"+opciones[seleccion]+"/0/"
 		listvideos(params,url,category)
 		return
-
-	anyoactual = 2010
+	if seleccion>30:
+		anyoactual = anho + 30 - seleccion
+		rangonuevo = 31
+	else:
+		anyoactual = anho
+		rangonuevo = seleccion + 1
 	desde      = opciones[seleccion]
-	rangonuevo = seleccion + 1
+	
 	opciones2 = []
 	for j in range(rangonuevo):
 		opciones2.append(str(anyoactual))
@@ -384,7 +397,8 @@ def listvideos(params,url,category):
 		scrapedplot = patronhtml.sub( "\n\n", scrapedplot )
 		
 		scrapedplot = scrapedplot.replace("|b>Servidor:</b|","")
-
+		scrapedplot = re.sub('<[^>]+>',"",scrapedplot)
+		scrapedplot = scrapedplot.replace("b>","\n")
 		# Depuracion
 		if (DEBUG):
 			xbmc.output("scrapedtitle="+scrapedtitle)
@@ -427,29 +441,31 @@ def detail(params,url,category):
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
 	# ------------------------------------------------------------------------------------
-	patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_pymeno2.*?id=([^&]+)&al=[^"]+"'
+	patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_([^\.]+).php.*?'
+	patronvideos += 'id=([^"]+)".*?'
+	patronvideos += 'alt="([^"]+)"'
+	patronvideos += '(.*?)</tr>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	
 	if len(matches)>0:
 		scrapertools.printMatches(matches)
-	
-	
-		id = matches[0]
+		id,serv = ChoiceOneVideo(matches,title)
 		xbmc.output("[peliculasyonkis.py]  id="+id)
-		dec = Yonkis.DecryptYonkis()
-		url = dec.decryptID(dec.unescape(id))
-		if ":" in url:
+		url = Decrypt_Server(id,serv)
+		if (serv in ["pymeno2","pymeno3"]) and (":" in url):
 			match = url.split(":")
-			url = choiceOne(match)
+			url = choiceOnePart(match)
 			if url == "": return
 		print 'codigo :%s' %url
 	else:
 		xbmctools.alertnodisponible()
-		return
+		return ""
 	
-	
-	xbmctools.playvideo(CHANNELNAME,"Megavideo",url,category,title,thumbnail,plot)
+	if url == "":return
+	xbmctools.playvideo(CHANNELNAME,SERVER[serv],url,category,title,thumbnail,plot)
 
-def choiceOne(matches):
+def choiceOnePart(matches):
 	opciones = []
 	IDlist = []
 	Nro = 0
@@ -463,3 +479,115 @@ def choiceOne(matches):
 	if seleccion == -1 : return ""
 	id = matches[seleccion]
 	return id
+	
+def ChoiceOneVideo(matches,title):
+	xbmc.output("[peliculasyonkis.py] ChoiceOneVideo")
+	
+	opciones = []
+	IDlist = []
+	servlist = []
+	Nro = 0
+	fmt=duracion=id=""
+	
+	for server,codigo,audio,data in matches:
+		try:
+			ql= ""
+			servidor = SERVER[server]
+			Nro = Nro + 1
+			regexp = re.compile(r"title='([^']+)'")
+			match = regexp.search(data)
+			if match is not None:
+				fmt = match.group(1)
+				fmt = fmt.replace("Calidad","").strip()
+			regexp = re.compile(r"Duraci\xc3\xb3n:([^<]+)<")
+			match = regexp.search(data)
+			if match is not None:
+				duracion = match.group(1).replace(".",":")
+				if len(duracion.strip())>0:
+					duracion = duracion + " minutos"
+			audio = audio.replace("Subt\xc3\xadtulos en Espa\xc3\xb1ol","Subtitulado") 
+			audio = audio.replace("Audio","").strip()
+			data2 =  re.sub("<[^>]+>",">",data)
+			data2 = data2.replace(">>>","").replace(">>","<")
+			data2 = re.sub("[0-9:.]+","",data2)
+			print data2
+			Video_info = ""
+			regexp = re.compile(r"<(.+?)<")
+			match = regexp.search(data2)
+			if match is not None:
+				
+				Video_info = match.group(1)
+				print Video_info 
+				Video_info = "-%s" %Video_info.replace("Duraci\xc3\xb3n","").strip()
+			else:
+				regexp = re.compile(r">(.+?)<")
+				match = regexp.search(data2)
+				if match is not None:
+				
+					Video_info = match.group(1)
+					print Video_info 
+					Video_info = "-%s" %Video_info.replace("Duraci\xc3\xb3n","").strip()				
+			opciones.append("%02d) [%s] - [%s] %s (%s%s)" % (Nro , audio,servidor,duracion,fmt,Video_info))
+			if '&al=' in codigo:
+				Nro += 1
+				codigos = codigo.split('&al=')
+				IDlist.append(codigos[0])
+				servlist.append(server)
+				opciones.append("%02d) [%s] - [%s] %s (%s-%s)" % (Nro , audio,"Megaupload",duracion,fmt,Video_info))
+				IDlist.append(codigos[1])
+				servlist.append("megaupload")
+			else:
+				IDlist.append(codigo)
+				servlist.append(server)
+		except urllib2.URLError,e:
+			xbmc.output("[peliculasyonkis.py] error:%s (%s)" % (e.code,server))
+	dia = xbmcgui.Dialog()
+	seleccion = dia.select(title, opciones)
+	xbmc.output("seleccion=%d" % seleccion)
+	if seleccion == -1 : return "",""
+	id = IDlist[seleccion]
+	serv = servlist[seleccion]
+	print "ID :%s  Servidor :%s" %(id,serv)
+	return id,serv
+	
+	
+def Decrypt_Server(id_encoded,servidor):
+	id = id_encoded
+	DEC       = Yonkis.DecryptYonkis()
+	
+	if   'pymeno2'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
+	elif 'pymeno3'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
+	elif 'pymeno4'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
+	elif 'pymeno5'   == servidor: idd=DEC.decryptID_series(DEC.unescape(id))          
+	elif 'pymeno6'   == servidor: idd=DEC.decryptID_series(DEC.unescape(id))      
+	elif 'svueno'    == servidor:
+		idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
+		if ":" in idd:
+			ids = idd.split(":")
+			idd = "http://stagevu.com/video/%s" %choiceOnePart(ids).strip()
+		
+	elif 'manueno'   == servidor:
+		idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
+		if len(idd)>50:
+			ids = idd.split()
+			idd = choiceOnePart(ids).strip()
+		
+	elif 'videoweed' == servidor:
+		idd= DEC.decryptID(DEC.charting(DEC.unescape(id))) 
+		if ":" in idd:
+			ids = idd.split(":")
+			idd = "http://www.videoweed.com/file/%s" %choiceOnePart(ids).strip()		
+		
+	elif 'veoh2'     == servidor: idd=DEC.decryptALT(DEC.charting(DEC.unescape(id))) 
+	elif 'megaupload'== servidor: idd=DEC.ccM(DEC.unescape(id))
+	elif 'pfflano'   == servidor: 
+		idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
+		print idd
+		ids = idd.split()
+		idd = choiceOnePart(ids).strip()
+		return idd
+		
+	else:
+		return ""
+	
+	return idd

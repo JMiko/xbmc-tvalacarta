@@ -155,7 +155,7 @@ def searchresults(params,url,category):
 def listalfabetico(params, url, category):
 	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)")  #50=full list
-	
+
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "0-9","http://www.seriesyonkis.com/lista-series/listaSeriesNumeric.php","","")
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "A","http://www.seriesyonkis.com/lista-series/listaSeriesA.php","","")
 	xbmctools.addnewfolder(CHANNELNAME , "listseriesthumbnails" , category , "B","http://www.seriesyonkis.com/lista-series/listaSeriesB.php","","")
@@ -204,17 +204,23 @@ def listseriesthumbnails(params,url,category):
 
 	# Extrae las entradas (carpetas)
 	#<td><center><a href='http://www.seriesyonkis.com/serie/a-camara-super-lenta/' title='A cámara súper lenta'><img src='http://images.seriesyonkis.com/images/a-camara-super-lenta.jpg' alt='A cámara súper lenta'/><br />A cámara súper lenta</a></center></td>
-	
-	patronvideos  = "<td><center><a title='([^']+)' href='([^']+)'><img src='([^']+)'.*?</td>"
+	if 'Numeric' in url:
+		patronvideos  = "<td><center><a href='([^']+)' title='([^']+)'><img src='([^']+)'.*?</td>"
+		t=1
+		h=0
+	else:
+		patronvideos  = "<td><center><a title='([^']+)' href='([^']+)'><img src='([^']+)'.*?</td>"
+		t=0
+		h=1
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = match[0]
+		scrapedtitle = match[t]
 
 		# URL
-		scrapedurl = match[1]
+		scrapedurl = match[h]
 		
 		# Thumbnail
 		scrapedthumbnail = match[2]
