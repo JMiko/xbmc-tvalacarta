@@ -426,7 +426,7 @@ def findvideos(data):
 			xbmc.output("  url duplicada="+url)
 
 	xbmc.output("0) Megavideo... formato d=XXXXXXX")
-	patronvideos  = '"http://www.megavideo.com/.*?\&d\=([^"]+)"'
+	patronvideos  = 'http://www.megavideo.com/.*?\&d\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
@@ -454,7 +454,7 @@ def findvideos(data):
 			xbmc.output("  url duplicada="+url)
 
 	xbmc.output("0) Megaupload... formato megavideo con d=XXXXXXX")
-	patronvideos  = '"http://www.megavideo.com/\?d\=([^"]+)"'
+	patronvideos  = 'http://www.megavideo.com/\?d\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:

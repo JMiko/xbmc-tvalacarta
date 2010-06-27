@@ -728,7 +728,7 @@ def downloadfileGzipped(url,pathfichero):
 	compressedstream = StringIO.StringIO(bloqueleido)
 	gzipper = gzip.GzipFile(fileobj=compressedstream)
 	bloquedata = gzipper.read()
-	
+	gzipper.close()
 	xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
 
 	maxreintentos = 10
@@ -752,7 +752,7 @@ def downloadfileGzipped(url,pathfichero):
 					compressedstream = StringIO.StringIO(bloqueleido)
 					gzipper = gzip.GzipFile(fileobj=compressedstream)
 					bloquedata = gzipper.read()
-						
+					gzipper.close()	
 					after = time.time()
 					if (after - before) > 0:
 						velocidad=len(bloqueleido)/((after - before))

@@ -104,6 +104,18 @@ def searchresults(params,url,category):
 
 def ListaCat(params,url,category):
 	xbmc.output("[cineadicto.py] ListaCat")
+	import downloadtools
+	nombrefichero = ""
+	fullpath = os.path.join( downloadtools.getDownloadPath(),"subtitulos" , nombrefichero )
+	urlfile = "http://www.subtitulos.es/updated/5/10855/0"
+	fullnombrefichero = downloadtools.downloadfileGzipped(urlfile,fullpath)
+	print fullnombrefichero
+	fichero = os.path.basename(fullnombrefichero).encode('utf-8')
+	print fichero
+	fichero = u'%s' %fichero
+	print fichero
+	
+	
 	
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Acción","http://www.cine-adicto.com/category/categorias/accion/","","")
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Animado","http://www.cine-adicto.com/category/categorias/animado/","","")
@@ -128,7 +140,7 @@ def ListaCat(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Terror","http://www.cine-adicto.com/category/categorias/terror/","","")
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Thriller","http://www.cine-adicto.com/category/categorias/thriller/","","")
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Western","http://www.cine-adicto.com/category/categorias/western/","","")
-
+	
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -319,10 +331,12 @@ def detail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	playWithSubt = "play"
+	c = 0
 	if len(matches)>0:
 		for match in matches:
 			subtitle = "[FLV-Directo]"
-			if ("xml" in match):
+			c += 1
+			if ("playlist" in match):
 				data2 = scrapertools.cachePage(match)
 				xbmc.output("data2="+data2)
 				patronvideos  = '<track>.*?'

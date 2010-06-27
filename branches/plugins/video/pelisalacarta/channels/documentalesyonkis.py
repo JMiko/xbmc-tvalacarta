@@ -174,7 +174,7 @@ def detail(params,url,category):
 			ids = id.split("&")
 			id = ids[0]
 		dec = Yonkis.DecryptYonkis()
-		id = dec.decryptALT(dec.unescape(id))
+		id = dec.decryptALT(dec.charting(dec.unescape(id)))
 		xbmc.output("[documentalesyonkis.py] detail id="+id)
 		url=id
 	else:

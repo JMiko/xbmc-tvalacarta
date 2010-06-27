@@ -662,7 +662,7 @@ def detail(params,url,category):
 	thumnbail = thumbnail
 	xbmc.output("[prueba.py] title="+title)
 	xbmc.output("[prueba.py] thumbnail="+thumbnail)
-        patrondescrip = '<h3>Descripcion</h3>(.*?)<br><br><script'
+        patrondescrip = '<h3>Descripci[^<]+</h3>(.*?)<br><br>'
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	descripcion = ""
