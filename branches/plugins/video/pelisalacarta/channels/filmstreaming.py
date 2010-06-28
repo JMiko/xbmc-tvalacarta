@@ -20,6 +20,7 @@ import xbmctools
 import scrapertools
 import servertools
 import linkbucks
+import config
 
 CHANNELNAME = "filmstreaming"
 
@@ -42,7 +43,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Telefilm" , "http://www.streaming-ital.com/telefilm/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Anime"    , "http://www.streaming-ital.com/anime/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

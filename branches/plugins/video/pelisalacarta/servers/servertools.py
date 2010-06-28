@@ -25,6 +25,7 @@ import divxlink
 import videoweed
 import youtube
 import cinshare
+import config
 
 xbmc.output("[servertools.py] init")
 

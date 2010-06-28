@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "cinetube"
 
@@ -36,7 +37,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula"   , category , "Películas - Novedades (con carátula)"  ,"http://www.cinetube.es/peliculas/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listpelisincaratula"   , category , "Películas - Todas (sin carátula)"      ,"http://www.cinetube.es/peliculas-todas/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico"        , category , "Películas - Alfabético (con carátula)" ,"","","")
-
+	
 	#xbmctools.addnewfolder( CHANNELNAME , "listtemporadacaratula" , category , "Series - Novedades (con carátula)"     ,"http://www.cinetube.es/series/","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listseriesincaratula"  , category , "Series - Todas (sin carátula)"         ,"http://www.cinetube.es/series-todas/","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listalfabeticoseries"  , category , "Series - Alfabético (con carátula)"    ,"","","")
@@ -49,7 +50,7 @@ def mainlist(params,url,category):
 	addfolder("Anime - Peliculas","http://www.cinetube.es/subindices/ianimepeliculas.html","list")
 	'''
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -64,45 +65,37 @@ def listpeliconcaratula(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	xbmc.output(data)
+	#xbmc.output(data)
 
 	# ------------------------------------------------------
 	# Extrae las entradas
 	# ------------------------------------------------------
+	# seccion novedades
 	'''
 	<!--PELICULA-->
-	<div class="peli_item textcenter" style="cursor:pointer;" onclick="location.href='/peliculas/intriga/ver-pelicula-a-espaldas-de-la-ley.html'">
-	<div class="pelicula_img">
-	<img src="http://caratulas.cinetube.es/pelis/251.jpg" alt="A espaldas de la ley" />
+	<div class="peli_item textcenter">
+	<div class="pelicula_img"><a href='/peliculas/thriller/ver-pelicula-un-segundo-despues-2.html' >
+	<img src="http://caratulas.cinetube.es/pelis/7058.jpg" alt="Un segundo despu&eacute;s 2" /></a>
+	</div><a href="/peliculas/thriller/ver-pelicula-un-segundo-despues-2.html" ><div class="dvdrip"></div></a><a href='/peliculas/thriller/ver-pelicula-un-segundo-despues-2.html' ><p class="white">Un segundo despu&eacute;s 2</p></a><p><span class="rosa">DVD-RIP</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>
 	</div>
-	<p class="white">A espaldas de la ley</p>
-	<p><span class="rosa">DVD-RIP</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>                                    </div>
-	'''
-	'''
-	DOCUMENTAL
-	<!--PELICULA-->
-	<div class="peli_item textcenter" style="cursor:pointer;" onclick="location.href='/documentales/serie-documental/ver-documental-planeta-azul.html'">
-	<div class="pelicula_img">
-	<img src="http://caratulas.cinetube.es/docus/366.jpg" alt="Planeta Azul" />
-	</div>
-	<p class="white">Planeta Azul</p>
-	<p><span class="rosa"></span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>                                    </div>
-	'''
-	'''
-	<!--PELICULA--> 
-	<div class="peli_item textcenter"> 
-	<div class="pelicula_img"><a href='/peliculas/western/ver-pelicula-filon-de-plata.html'> 
-	<img src="http://caratulas.cinetube.es/pelis/6681.jpg" alt="Fil&oacute;n de plata" /></a> 
-	</div><a href='/peliculas/western/ver-pelicula-filon-de-plata.html'><p class="white">Fil&oacute;n de plata</p></a><p><span class="rosa">DVD-RIP</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div> 
-	</div> 
 	<!--FIN PELICULA-->
 	'''
-	patronvideos  = '<!--PELICULA-->.*?'
-	patronvideos += '<div class="peli_item textcenter">.*?'
-	patronvideos += '<div class="pelicula_img"><a href=[\'|"]/([^\']+?)[\'|"]>.+?'
-	patronvideos += '<img src="([^"]+?)" alt="[^"]+?" /></a>.*?'
-	patronvideos += '</div>.*?<a href=[\'|"]/([^\']+?)[\'|"]>.*?<p class="white">(.+?)</p></a>.*?<p><span class="rosa">(.+?)</span>.*?'
-	patronvideos += '<!--FIN PELICULA-->'
+	# listado alfabetico
+	'''
+	<!--PELICULA-->
+	<div class="peli_item textcenter">
+	<div class="pelicula_img"><a href="/peliculas/musical/ver-pelicula-a-chorus-line.html">
+	<img src="http://caratulas.cinetube.es/pelis/246.jpg" alt="A Chorus Line" /></a>
+	</div>
+	<a href="/peliculas/musical/ver-pelicula-a-chorus-line.html"><p class="white">A Chorus Line</p></a>
+	<p><span class="rosa">DVD-RIP</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>                                    </div>
+	<!--FIN PELICULA-->
+	'''
+	patronvideos  = '<!--PELICULA-->[^<]+'
+	patronvideos += '<div class="peli_item textcenter">[^<]+'
+	patronvideos += '<div class="pelicula_img"><a[^<]+'
+	patronvideos += '<img src="([^"]+)"[^<]+</a>[^<]+'
+	patronvideos += '</div[^<]+<a href="([^"]+)".*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
 
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if DEBUG:
@@ -110,7 +103,7 @@ def listpeliconcaratula(params,url,category):
 
 	for match in matches:
 		# Titulo
-		scrapedtitle = match[3] + " [" + match[4] + "]"
+		scrapedtitle = match[2] + " [" + match[3] + "]"
 		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[4])
 		conectores = ""
 		for matchconector in matchesconectores:
@@ -131,8 +124,8 @@ def listpeliconcaratula(params,url,category):
 		# procesa el resto
 		scrapedplot = ""
 
-		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[0])
-		scrapedthumbnail = match[1]
+		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[1])
+		scrapedthumbnail = match[0]
 		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
@@ -236,7 +229,7 @@ def listpelisincaratula(params,url,category):
 
 def listalfabetico(params, url, category):
 	xbmc.output("[cinetube.py] listalfabetico")
-
+	
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula" , category , "0-9"  ,"http://www.cinetube.es/peliculas/0-9/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula" , category , "A"  ,"http://www.cinetube.es/peliculas/A/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula" , category , "B"  ,"http://www.cinetube.es/peliculas/B/","","")
@@ -360,6 +353,7 @@ def listtemporadacaratula(params,url,category):
 			pass
 		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
 
+
 		# procesa el resto
 		scrapedplot = ""
 
@@ -439,6 +433,7 @@ def listserieconcaratula(params,url,category):
 		except:
 			pass
 		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+
 
 		# procesa el resto
 		scrapedplot = ""
@@ -580,7 +575,7 @@ def listalfabeticodocumentales(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[cinetube.py] detail")
+	xbmc.output("[cinetube.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -592,7 +587,7 @@ def listmirrors(params,url,category):
 	# ------------------------------------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
-
+	
 	# ------------------------------------------------------------------------------------
 	# Busca el argumento
 	# ------------------------------------------------------------------------------------
@@ -600,7 +595,10 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		plot = scrapertools.htmlclean(matches[0])
-
+		xbmc.output("plot actualizado en detalle");
+	else:
+		xbmc.output("plot no actualizado en detalle");
+	
 	# ------------------------------------------------------------------------------------
 	# Busca el thumbnail
 	# ------------------------------------------------------------------------------------
@@ -609,14 +607,19 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		thumbnail = matches[0]
+		xbmc.output("thumb actualizado en detalle");
+	else:
+		xbmc.output("thumb no actualizado en detalle");
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los mirrors, o a los capítulos de las series...
 	# ------------------------------------------------------------------------------------
 	#	url = "http://www.cinetube.es/inc/mostrar_contenido.php?sec=pelis_ficha&zona=online&id=video-4637"
-	patronvideos  = 'opstions_pelicula_list.+?<a href="([^"]+)"'
+	#patronvideos  = '<div class="ver_des_peli iframe2">[^<]+'
 	#patronvideos += '<ul class="tabs-nav" id="([^"]+)">'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	#matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	#data = scrapertools.cachePage("http://www.cinetube.es/inc/mostrar_contenido.php?sec=pelis_ficha&zona=online&id="+matches[0])
+	
 	'''
 	<div id="ficha_ver_peli">
 	<div class="v_online">
@@ -636,32 +639,49 @@ def listmirrors(params,url,category):
 	</div>
 	</div> 
 	'''
-	if DEBUG:
-		xbmc.output("blabla")
-		scrapertools.printMatches(matches)
-	data = scrapertools.cachePage("http://www.cinetube.es"+matches[0])
-	#patronvideos  = '<div class="tit_opts" style="cursor:pointer;" onclick="location.href=\'([^\']+)\'">[^<]+'
-	#patronvideos += '<p>([^<]+)</p>[^<]+'
-	#patronvideos += '<p><span>([^<]+)</span>'
-	#matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	xbmc.output("Encontrado iframe mirrors "+data)
-	#for match in matches:
-	#	xbmc.output("Encontrado iframe mirrors "+match[0])
+	'''
+	<div class="v_online">
+	<h2>Ver online <span>Cantajuego 6</span></h2>
+	<div class="opstions_pelicula_list"><div class="tit_opts"><a href="/peliculas/animacion-e-infantil/cantajuego-6_espanol-dvd-rip-megavideo-73371.html">
+	<p>Mirror 1: Megavideo</p>
+	<p><span>CALIDAD: DVD-RIP | IDIOMA: ESPA&Ntilde;OL</span></p>
+	<p class="v_ico"><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="Megavideo" /></p>
+	</a></div>				</div>
+	</div>
+	</div><br/><div id="ficha_desc_peli">
+	<div class="v_online">
+	<h2 class="ico_fuego">Descargar <span>Cantajuego 6</span></h2>
+	<div class="opstions_pelicula_list"><div class="tit_opts"><a href="/peliculas/animacion-e-infantil/descargar-cantajuego-6_espanol-dvd-rip-megaupload-73372.html" target="_blank">
+	<p>Mirror 1: Megaupload </p>
+	<p><span>CALIDAD: DVD-RIP | IDIOMA: ESPA&Ntilde;OL </span></p>
+	<p class="v_ico"><img src="http://caratulas.cinetube.es/img/cont/megaupload.png" alt="Megaupload" /></p>
+	</a></div>
+	</div>
+	</div>
+	</div>
+	'''
+	patronvideos  = '<div class="tit_opts"><a href="([^"]+)">[^<]+'
+	patronvideos += '<p>([^<]+)</p>[^<]+'
+	patronvideos += '<p><span>([^<]+)</span>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	for match in matches:
+		xbmc.output("Encontrado iframe mirrors "+match[0])
 		# Lee el iframe
-	#	mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
-	#	req = urllib2.Request(mirror)
-	#	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	#	response = urllib2.urlopen(req)
-	#	data=response.read()
-	#	response.close()
-
-	listavideos = servertools.findvideos(data)
-
-	for video in listavideos:
-		videotitle = video[0]
-		scrapedurl = video[1]
-		server = video[2]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip()+" "+" "+videotitle , scrapedurl , thumbnail , plot )
+		mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
+		req = urllib2.Request(mirror)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+		response = urllib2.urlopen(req)
+		data=response.read()
+		response.close()
+		
+		listavideos = servertools.findvideos(data)
+		
+		for video in listavideos:
+			videotitle = video[0]
+			scrapedurl = video[1]
+			server = video[2]
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip()+" "+match[1]+" "+match[2]+" "+videotitle , scrapedurl , thumbnail , plot )
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -671,7 +691,7 @@ def listmirrors(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
+		
 	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
@@ -706,4 +726,3 @@ def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
 	itemurl = '%s?channel=cinetube&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
-

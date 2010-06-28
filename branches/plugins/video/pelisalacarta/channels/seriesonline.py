@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "seriesonline"
 
@@ -34,7 +35,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "novedadeslist"      , "" , "Novedades","http://www.seriesonline.us/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio
@@ -76,7 +77,7 @@ def novedadeslist(params,url,category):
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "list" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

@@ -7,17 +7,18 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 import scrapertools
+import config
 
 xbmc.output("[channelselector.py] init")
 
 DEBUG = True
 
-if xbmcplugin.getSetting("thumbnail_type")=="0":
+if config.getSetting("thumbnail_type")=="0":
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
 else:
 	IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
 
-if xbmcplugin.getSetting("thumbnail_type")=="0":
+if config.getSetting("thumbnail_type")=="0":
 	WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
 else:
 	WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
@@ -37,7 +38,7 @@ def listchannels(params,url,category):
 	xbmc.output("[channelselector.py] listchannels")
 
 	# Verifica actualizaciones solo en el primer nivel
-	if xbmcplugin.getSetting("updatecheck2") == "true":
+	if config.getSetting("updatecheck2") == "true":
 		xbmc.output("[channelselector.py] Verificar actualizaciones activado")
 		import updater
 		updater.checkforupdates()
@@ -69,7 +70,7 @@ def listchannels(params,url,category):
 	addfolder("Veocine","veocine","mainlist")
 	addfolder("Pintadibujos","pintadibujos","mainlist")
 	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
-	if xbmcplugin.getSetting("enableadultmode") == "true":
+	if config.getSetting("enableadultmode") == "true":
 		addfolder("MocosoftX","mocosoftx","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
 	addfolder("Capitan Cinema","capitancinema","mainlist")
@@ -97,6 +98,7 @@ def listchannels(params,url,category):
 	addfolder("Documentalesatonline","documentalesatonline","mainlist")
 	addfolder("Discoverymx.Wordpress","discoverymx","mainlist")
 	addfolder("Gratisdocumentales","gratisdocumentales","mainlist")
+	addfolder("Redes.tv","redestv","mainlist")
 	addfolder("Buscador de Trailers (Youtube)","trailertools","mainlist")
 	addfolder("ecartelera (Trailers)","ecarteleratrailers","mainlist")
 	addfolder("Stagevu","stagevusite","mainlist")

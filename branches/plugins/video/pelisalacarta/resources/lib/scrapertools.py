@@ -10,6 +10,7 @@ import binascii
 import md5
 import os
 import xbmc
+import config
 
 cacheactiva = False
 

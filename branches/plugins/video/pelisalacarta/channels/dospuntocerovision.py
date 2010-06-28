@@ -18,6 +18,7 @@ import xbmctools
 import string
 import trailertools
 import youtube
+import config
 
 CHANNELNAME = "dospuntocerovision"
 
@@ -36,7 +37,7 @@ IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'imag
 def mainlist(params,url,category):
 	xbmc.output("[dospuntocerovision.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 	   xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Añade al listado de XBMC
@@ -73,7 +74,7 @@ def search(params,url,category):
 def searchresults(params,url,category):
 	xbmc.output("[dospuntocerovision.py] searchresults")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	patronvideos = 'post-title entry-title(.*?)post-footer'
@@ -111,7 +112,7 @@ def searchresults(params,url,category):
 
 def listalfabetica(params, url, category):
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	patronvideos = "<div class='post-header-line-1(.*?)post-footer"
@@ -136,7 +137,7 @@ def listalfabetica(params, url, category):
 def listnovedades(params,url,category):
 	xbmc.output("[dospuntocerovision.py] listnovedades : " +url)
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
         if url=="http://www.dospuntocerovision.com/":
            opciones = []
@@ -428,7 +429,7 @@ def listarvideos(params,url,category,data):
 def listcategorias(params,url,category):
 	xbmc.output("[dospuntocerovision.py] listcategorias")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	patronvideos = '<a onblur=.*?href="(.*?)"><img.*?src="(.*?)" alt='  
@@ -615,7 +616,7 @@ def buscaporletra(params,url,category,data):
 def videosprogtv(params,url,category):
 	xbmc.output("[dospuntocerovision.py] videosprogtv")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 	   xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	patronvideos = '<a onblur=.*?href="(.*?)"><img.*?src="(.*?)".*?alt='  

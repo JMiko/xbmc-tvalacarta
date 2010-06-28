@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "cinegratis"
 
@@ -48,7 +49,7 @@ def mainlist(params,url,category):
 	#xbmctools.addnewfolder( CHANNELNAME , "deportes"   , category , "Deportes"                         ,"","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

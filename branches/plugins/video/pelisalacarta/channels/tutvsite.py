@@ -14,6 +14,7 @@ import scrapertools
 import tutv
 import servertools
 import xbmctools
+import config
 
 CHANNELNAME = "tutvsite"
 
@@ -33,7 +34,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	addfolder("Buscar","http://www.tu.tv/","search")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

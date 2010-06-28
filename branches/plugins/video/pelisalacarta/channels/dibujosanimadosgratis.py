@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "dibujosanimadosgratis"
 
@@ -34,7 +35,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , CHANNELNAME , "Novedades" , "http://dibujosanimadosgratis.net/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "categorias" , CHANNELNAME , "Por categorías" , "http://dibujosanimadosgratis.net/" , "", "" )
 	
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

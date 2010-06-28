@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "mocosoftx"
 BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails","videos" )
@@ -38,7 +39,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "FullList"   , category , "Listado Completo" ,"http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Propiedades
@@ -136,7 +137,7 @@ def FullList(params,url,category):
 
    
 
-   if xbmcplugin.getSetting("singlechannel")=="true":
+   if config.getSetting("singlechannel")=="true":
       xbmctools.addSingleChannelOptions(params,url,category)
 
    # Label (top-right)...

@@ -12,6 +12,7 @@ import sys
 import xbmc
 import os
 import scrapertools
+import config
 
 def unpackjs(texto):
 	xbmc.output("unpackjs")

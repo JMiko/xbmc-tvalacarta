@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import youtube
+import config
 
 CHANNELNAME = "discoverymx"
 
@@ -41,7 +42,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "DocuARCHIVO", category , "Documentales - Archivo" ,"http://discoverymx.wordpress.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Propiedades

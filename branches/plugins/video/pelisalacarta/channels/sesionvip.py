@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "sesionvip"
 
@@ -35,7 +36,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , "Novedades","http://www.sesionvip.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"  , category , "Buscar","","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

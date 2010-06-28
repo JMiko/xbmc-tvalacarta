@@ -9,6 +9,7 @@ import urlparse,urllib2,urllib,re
 import os.path
 import sys
 import xbmc
+import config
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 

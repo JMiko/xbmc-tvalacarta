@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "tumejortv"
 
@@ -39,7 +40,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "seriealphalist" , CHANNELNAME , "Series - Por orden alfabético" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , CHANNELNAME , "Buscar" , "" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -359,6 +360,7 @@ def moviealphalist(params,url,category):
 	#xbmc.output(data)
 
 	# ------------------------------------------------------
+
 	# Extrae las películas
 	# ------------------------------------------------------
 	#<a href="http://www.tumejortv.com/peliculas-es-con-letra-a" title="Pel&iacute;culas - Es con la letra a" class="listados_letras">a</a> - 

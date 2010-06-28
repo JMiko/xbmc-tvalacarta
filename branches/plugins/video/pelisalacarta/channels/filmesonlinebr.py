@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import string
+import config
 
 CHANNELNAME = "filmesonlinebr"
 
@@ -38,10 +39,10 @@ def mainlist(params,url,category):
 	#xbmctools.addnewfolder( CHANNELNAME , "listalfa" , category , "Lista Alfabética","http://www.filmesonlinebr.com/","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series","http://www.filmesonlinebr.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://www.filmesonlinebr.com/","","")
-	if xbmcplugin.getSetting("enableadultmode") == "true":
+	if config.getSetting("enableadultmode") == "true":
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Adulto (+18)","http://www.filmesonlinebr.com/category/filmes-porno-xxx/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -125,7 +126,7 @@ def listalfa(params,url,category):
 	
 def listvideos(params,url,category):
 	xbmc.output("[filmesonlinebr.py] listvideos")
-	adulto = xbmcplugin.getSetting("enableadultmode")
+	adulto = config.getSetting("enableadultmode")
 	if url=="":
 		url = "http://www.filmesonlinebr.com/"
                 
@@ -181,7 +182,7 @@ def listvideos(params,url,category):
 	
 def detail(params,url,category):
 	xbmc.output("[filmesonlinebr.py] detail")
-	adulto = xbmcplugin.getSetting("enableadultmode")
+	adulto = config.getSetting("enableadultmode")
 	title = xbmc.getInfoLabel( "ListItem.Title" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )

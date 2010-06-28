@@ -18,6 +18,7 @@ import binascii
 import xbmctools
 import downloadtools
 import tvshack
+import config
 
 CHANNELNAME = "casttv"
 
@@ -1753,6 +1754,7 @@ def episodiomenugnral(params,title,url,category,miserie,urlback,season,episodio,
 		if channel=="casttv":
 			detaildos(params,url,category)
 			return
+
 	else:
 		if tipovisto=="" or tipovisto=="N" or tipovisto=="0" or tipovisto=="New":
 			if seleccion==3:

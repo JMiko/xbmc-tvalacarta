@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import downloadtools
 import shutil
+import config
 
 CHANNELNAME = "descargadoslist"
 
@@ -130,7 +131,7 @@ def downloadall(params,url,category):
 				xbmc.output("[downloadall.py] url="+url)
 
 				# Averigua la URL del vídeo
-				if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
+				if (server=="Megavideo" or server=="Megaupload") and config.getSetting("megavideopremium")=="true":
 					if server=="Megaupload":
 						mediaurl = servertools.getmegauploadhigh(url)
 					else:
