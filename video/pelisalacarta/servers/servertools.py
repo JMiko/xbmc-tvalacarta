@@ -590,6 +590,22 @@ def findvideos(data):
 		else:
 			xbmc.output("  url duplicada="+url)
 
+	#http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
+	xbmc.output("0) Facebook...")
+	patronvideos  = '(http://video.ak.facebook.com/.*?\.mp4)'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Facebook]"
+		url = match
+
+		if url not in encontrados:
+			xbmc.output("  url="+url)
+			devuelve.append( [ titulo , url , 'facebook' ] )
+			encontrados.add(url)
+		else:
+			xbmc.output("  url duplicada="+url)
+
 	return devuelve
 
 def findurl(code,server):
@@ -639,6 +655,9 @@ def findurl(code,server):
 	
 	if server == "cinshare":
 		mediaurl = cinshare.geturl(code)
+		
+	if server == "facebook":
+		mediaurl = code
 		
 	return mediaurl
 

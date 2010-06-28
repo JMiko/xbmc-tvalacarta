@@ -29,6 +29,7 @@ import stagevusite
 import tutvsite
 import tumejortv
 import config
+import cinetube
 
 CHANNELNAME = "buscador"
 
@@ -59,6 +60,10 @@ def mainlist(params,url,category):
 	
 	# Cinegratis
 	matches = []
+	try:
+		matches.extend( cinetube.performsearch(tecleado) )
+	except:
+		pass
 	try:
 		matches.extend( cinegratis.performsearch(tecleado) )
 	except:

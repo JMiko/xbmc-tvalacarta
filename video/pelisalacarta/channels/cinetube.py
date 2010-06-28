@@ -37,6 +37,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula"   , category , "Películas - Novedades (con carátula)"  ,"http://www.cinetube.es/peliculas/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listpelisincaratula"   , category , "Películas - Todas (sin carátula)"      ,"http://www.cinetube.es/peliculas-todas/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico"        , category , "Películas - Alfabético (con carátula)" ,"","","")
+	xbmctools.addnewfolder( CHANNELNAME , "search"                , category , "Buscar","","","")
 	
 	#xbmctools.addnewfolder( CHANNELNAME , "listtemporadacaratula" , category , "Series - Novedades (con carátula)"     ,"http://www.cinetube.es/series/","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listseriesincaratula"  , category , "Series - Todas (sin carátula)"         ,"http://www.cinetube.es/series-todas/","","")
@@ -57,6 +58,121 @@ def mainlist(params,url,category):
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def search(params,url,category):
+	xbmc.output("[cinetube.py] search")
+
+	keyboard = xbmc.Keyboard('')
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		tecleado = keyboard.getText()
+		if len(tecleado)>0:
+			#convert to HTML
+			tecleado = tecleado.replace(" ", "+")
+			searchUrl = "http://www.cinetube.es/buscar/peliculas/?palabra="+tecleado+"&categoria=&valoracion="
+			searchresults(params,searchUrl,category)
+
+def searchresults(params,url,category):
+	xbmc.output("[cinetube.py] searchresults")
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#xbmc.output(data)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<!--PELICULA-->[^<]+'
+	patronvideos += '<div class="peli_item textcenter">[^<]+'
+	patronvideos += '<div class="pelicula_img"><a[^<]+'
+	patronvideos += '<img src="([^"]+)"[^<]+</a>[^<]+'
+	patronvideos += '</div[^<]+<a href="([^"]+)".*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		# Titulo
+		scrapedtitle = match[2] + " [" + match[3] + "]"
+		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[4])
+		conectores = ""
+		for matchconector in matchesconectores:
+			xbmc.output("matchconector="+matchconector)
+			if matchconector=="":
+				matchconector = "megavideo"
+			conectores = conectores + matchconector + "/"
+		if len(matchesconectores)>0:
+
+			scrapedtitle = scrapedtitle + " (" + conectores[:-1] + ")"
+
+		# Convierte desde UTF-8 y quita entidades HTML
+		try:
+			scrapedtitle = unicode( scrapedtitle, "utf-8" ).encode("iso-8859-1")
+		except:
+			pass
+		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+
+		# procesa el resto
+		scrapedplot = ""
+
+		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[1])
+		scrapedthumbnail = match[0]
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def performsearch(texto):
+	xbmc.output("[cinetube.py] performsearch")
+	url = "http://www.cinetube.es/buscar/peliculas/?palabra="+texto+"&categoria=&valoracion="
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = '<!--PELICULA-->[^<]+'
+	patronvideos += '<div class="peli_item textcenter">[^<]+'
+	patronvideos += '<div class="pelicula_img"><a[^<]+'
+	patronvideos += '<img src="([^"]+)"[^<]+</a>[^<]+'
+	patronvideos += '</div[^<]+<a href="([^"]+)".*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+	
+	resultados = []
+
+	for match in matches:
+		# Titulo
+		scrapedtitle = match[2] + " [" + match[3] + "]"
+		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[4])
+		conectores = ""
+		for matchconector in matchesconectores:
+			xbmc.output("matchconector="+matchconector)
+			if matchconector=="":
+				matchconector = "megavideo"
+			conectores = conectores + matchconector + "/"
+		if len(matchesconectores)>0:
+			scrapedtitle = scrapedtitle + " (" + conectores[:-1] + ")"
+
+		# Convierte desde UTF-8 y quita entidades HTML
+		try:
+			scrapedtitle = unicode( scrapedtitle, "utf-8" ).encode("iso-8859-1")
+		except:
+			pass
+		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+
+		# procesa el resto
+		scrapedplot = ""
+
+		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[1])
+		scrapedthumbnail = match[0]
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		resultados.append( [CHANNELNAME , "listmirrors" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+		
+	return resultados
 
 def listpeliconcaratula(params,url,category):
 	xbmc.output("[cinetube.py] listpeliconcaratula")
@@ -98,8 +214,7 @@ def listpeliconcaratula(params,url,category):
 	patronvideos += '</div[^<]+<a href="([^"]+)".*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
 
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
 		# Titulo

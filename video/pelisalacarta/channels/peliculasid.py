@@ -172,17 +172,7 @@ def detail(params,url,category):
                     plot = unicode( descripcion, "utf-8" ).encode("iso-8859-1")
                 except:
                     plot = descripcion
-	# ------------------------------------------------------------------------------------
-	# Busca los enlaces a los videos
-	# ------------------------------------------------------------------------------------
-	#listavideos = servertools.findvideos(data)
 
-	#for video in listavideos:
-	#	videotitle = video[0]
-	#	url = video[1]
-	#	server = video[2]
-	#	xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
-	# ------------------------------------------------------------------------------------
         #--- Busca los videos Directos
         patronvideos = 'flashvars" value="file=([^\&]+)\&amp'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -215,13 +205,21 @@ def detail(params,url,category):
                 xbmc.output(" matches = "+matches[0])
                 xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, matches[0] , thumbnail , plot )
 
+
+	# Ahora usa servertools
+	listavideos = servertools.findvideos(data)
+
+	j=1
+	for video in listavideos:
+		videotitle = video[0]
+		url = video[1]
+		server = video[2]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , (title.strip() + " (%d) " + videotitle) % j , url , thumbnail , plot )
+		j=j+1
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
