@@ -496,7 +496,7 @@ def findvideos(data):
 			xbmc.output("  url duplicada="+url)
 
 	xbmc.output("0) Veoh...")
-	patronvideos  = '"http://www.veoh.com/veohplayer.swf.*?permalinkId=([^"]+)"'
+	patronvideos  = '"http://www.veoh.com/.*?permalinkId=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
