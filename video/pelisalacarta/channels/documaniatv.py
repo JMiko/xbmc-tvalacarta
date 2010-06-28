@@ -101,7 +101,10 @@ def performsearch(texto):
 	data = scrapertools.cachePage(url)
 
 	# Extrae las entradas (carpetas)
-	patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)">'
+	patronvideos += '[^<]+<img src="([^"]+)"  '
+	patronvideos += 'alt="([^"]+)"[^>]+><div class="tag".*?</div>.*?'
+	patronvideos += '<span class="artist_name">([^<]+)</span>'	
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	
@@ -127,7 +130,10 @@ def searchresults(params,url,category):
 	#xbmc.output(data)
 
 	# Extrae las entradas (carpetas)
-	patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)">'
+	patronvideos += '[^<]+<img src="([^"]+)"  '
+	patronvideos += 'alt="([^"]+)"[^>]+><div class="tag".*?</div>.*?'
+	patronvideos += '<span class="artist_name">([^<]+)</span>'
 	
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
@@ -216,9 +222,9 @@ def listarpor(params,url,category):
             opciones = []
 	    opciones.append("Fecha")
 	    opciones.append("Vistas")
-            opciones.append("Rating")
+            opciones.append("Votos")
 	    dia = xbmcgui.Dialog()
-	    seleccion = dia.select("Listar "+title+"  por: ", opciones)
+	    seleccion = dia.select("Ordenar '"+title+"' por: ", opciones)
 	    xbmc.output("seleccion=%d" % seleccion)        
             if seleccion==-1:
 	       return("")
@@ -292,7 +298,8 @@ def listatipodocumental(params,url,category):
 	        patronvideos = '<li class="item">[^<]+<a href="([^"]+)"><img src="([^"]+)" alt="([^"]+)" class="imag".*?/></a>'
                 cat = "viendose"
         else:  
-	        patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	        patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
+	        patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
                 cat = "tipo"
 			
 			
@@ -441,7 +448,7 @@ def documentaldeldia(params,url,category):
 	data = scrapertools.cachePage(url)
 	#xbmc.output(data)
         
-        patronvideos = 'Documental del dia:<br> <a href="([^"]+)">([^<]+)</a>'
+        patronvideos = 'Documental del dia:<[^>]+>.*?<a href="([^"]+)">([^<]+)</a>'
         matches =  re.compile(patronvideos,re.DOTALL).findall(data)
         scrapertools.printMatches(matches)
         for match in matches:
@@ -488,7 +495,9 @@ def tagdocumentaleslist(params,url,category):
 
 
 	# Extrae el listado de documentales del tag
-	patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	#patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
+	patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -600,12 +609,12 @@ def toplist(params,url,category):
         xbmc.output("[documaniatv.py] toplist "+url) 
         if url== "http://www.documaniatv.com/topvideos.html?do=recent":
                 
-                patronvideos = '<tr>[^>]+>([^<]+)</td>'
+                patronvideos = '<tr>[^<]+<td[^>]+>([^<]+)</td>[^<]+<td'
                 patronvideos += '[^>]+><a href="([^"]+)">'
-                patronvideos += '<img src="([^"]+)" alt="" class[^>]+>'
-                patronvideos += '</a></td>[^>]+>([^<]+)</td>[^>]+>'
+                patronvideos += '<img src="([^"]+)" alt=[^>]+>'
+                patronvideos += '</a></td>[^<]+<td[^>]+>([^<]+)</td>[^<]+<td[^>]+>'
                 patronvideos += '<a href="[^"]+">([^<]+)</a>'
-                patronvideos += '</td>[^>]+>([^<]+)</td>'
+                patronvideos += '</td>[^<]+<td[^>]+>([^<]+)</td>'
 
         else:
 	        
@@ -691,14 +700,14 @@ def detail(params,url,category):
 
 	for video in listavideos:
                 videotitle = video[0]
-                url = video[1]
+                url1 = video[1]
                 xbmc.output("url   ="+url)
                 if  url.endswith(".jpg"):break
 		server = video[2]
 		if server=="Megavideo" or "Veoh":
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace("(Megavideo)","").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace("(Megavideo)","").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
 		else:
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
 
 
                 
@@ -728,17 +737,28 @@ def detail(params,url,category):
        #  --- Extrae los videos de google  ----
         patronvideos = '<embed id="VideoPlayback" src="http://video.google.com/googleplayer.swf.*?docid=(.*?)&hl=en&'
         servidor = "Google"
-        extraevideos(patronvideos,data,category,title+" - Video en google",thumbnail,plot,servidor)
+        extraevideos(patronvideos,data,category,title+" - [Video en google]",thumbnail,plot,servidor)
        # --------------------------------------- 
 
        #  --- Extrae los videos de http://n59.stagevu.com  ----
-        patronvideos = '"http://n59.stagevu.com/v/.*?/(.*?).avi"'
+        patronvideos = '"http://.*?.stagevu.com/v/.*?/(.*?).avi"'
         servidor = "Stagevu"
         extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor)
 
        # --Muestra Una opcion mas para videos documentales relacionados con el tema--
-
-        xbmctools.addnewfolder( CHANNELNAME , "verRelacionados" , category , "Ver Videos Relacionados" , data , thumbnail , "Lísta algunos Documentales relacionados con el mismo tema" )
+        print "esta es la url :%s" %url
+        try:
+			patron = "http://www.documaniatv.com.*?\_(.*?)\.html"
+			matches = re.compile(patron,re.DOTALL).findall(url)
+			url = "http://www.documaniatv.com/ajax.php?p=detail&do=show_more_best&vid="+matches[0]
+			titulo = "Ver Mas Videos Relacionados - MEJOR EN LA CATEGORIA"
+			xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos Documentales relacionados con el mismo tema" )
+		
+			titulo = "Ver Mas Videos Relacionados - MISMO TEMA"
+			url = "http://www.documaniatv.com/ajax.php?p=detail&do=show_more_artist&vid="+matches[0]
+			xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos Documentales relacionados con el mismo tema" )
+        except:
+			pass
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -783,7 +803,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
                    url = "http://www.flashvideodownloader.org/download.php?u=http://video.google.com/videoplay?docid="+matches[0]
                    xbmc.output(" Url = "+url)
                    data = scrapertools.cachePage(url)
-                   newpatron = '</script><div.*?<a href="(.*?)" title="Click to Download">'
+                   newpatron = '</script>.*?<a href="(.*?)" title="Click to Download">'
                    newmatches = re.compile(newpatron,re.DOTALL).findall(data)
                    if len(newmatches)>0:
                       xbmc.output(" newmatches = "+newmatches[0])
@@ -939,4 +959,9 @@ def verRelacionados(params,data,category):
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-  
+ 
+def Relacionados(params,url,category): 
+	
+	data = scrapertools.cachePage(url)
+	print data
+	verRelacionados(params,data,category)
