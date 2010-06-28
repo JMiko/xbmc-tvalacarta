@@ -5,13 +5,12 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
-import urllib
+import urllib,urllib2
 import os
 import sys
 import xbmc
 import xbmctools
 import xbmcgui
-import urllib,urllib2
 
 def run():
 	xbmc.output("[pelisalacarta.py] run")
@@ -63,7 +62,6 @@ def run():
 		serie = ""
 	xbmc.output("[pelisalacarta.py] Serie="+serie)
 
-
 	#JUR - Gestión de Errores de Internet (Para que no casque el plugin 
 	#      si no hay internet (que queda feo)
 	try:
@@ -89,11 +87,11 @@ def run():
 		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):
 			print "Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1])
-			ok= ventana_error.ok ("Plugin Pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la pagina',"o su conexión a internet")
+			ok= ventana_error.ok ("pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la página',"o su conexión a internet")
 		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		elif hasattr(e,'code'):
 			print "codigo de error HTTP : %d" %e.code 
-			ok= ventana_error.ok ("Plugin Pelisalacarta", "El servidor solicitado no púdo realizar nuestra peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
+			ok= ventana_error.ok ("pelisalacarta", "El servidor solicitado no pudo realizar la peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
 		else:
 			pass	
 

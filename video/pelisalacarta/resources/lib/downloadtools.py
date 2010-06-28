@@ -1,5 +1,4 @@
 # -*- coding: iso-8859-1 -*-
-# -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Download Tools
@@ -21,7 +20,7 @@ import md5
 import xbmctools
 import httplib
 import gzip,StringIO
-
+import config
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -327,7 +326,7 @@ entitydefs3 = {
 def getDownloadPath():
 	
 	# La ruta de descarga es un parámetro
-	downloadpath = xbmcplugin.getSetting("downloadpath")
+	downloadpath = config.getSetting("downloadpath")
 	
 	# No está fijada, intenta forzarla
 	try:
@@ -342,14 +341,14 @@ def getDownloadPath():
 			if downloadpath == "":
 				downloadpath = xbmc.translatePath( "special://home/downloads")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-				xbmcplugin.setSetting("downloadpath",downloadpath)
+				config.setSetting("downloadpath",downloadpath)
 			
 			# Es Telebision, lo pone en el skin
 			else:
 				# guardar setting del skin en setting del plugin
 				downloadpath = xbmc.translatePath( downloadpath )
 				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
-				xbmcplugin.setSetting("downloadpath", downloadpath)
+				config.setSetting("downloadpath", downloadpath)
 	except:
 		pass
 	
@@ -365,7 +364,7 @@ def getDownloadPath():
 def getDownloadListPath():
 	
 	# La ruta de la lista de descargas es un parámetro
-	downloadpath = xbmcplugin.getSetting("downloadlistpath")
+	downloadpath = config.getSetting("downloadlistpath")
 	
 	# No está fijada, intenta forzarla
 	try:
@@ -380,7 +379,7 @@ def getDownloadListPath():
 			if downloadpath == "":
 				downloadpath = xbmc.translatePath( "special://home/downloads/list")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-				xbmcplugin.setSetting("downloadlistpath",downloadpath)
+				config.setSetting("downloadlistpath",downloadpath)
 			
 			# Es Telebision, lo pone en el skin
 			else:
@@ -388,7 +387,7 @@ def getDownloadListPath():
 				downloadpath = os.path.join( downloadpath , "list" )
 				downloadpath = xbmc.translatePath( downloadpath )
 				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
-				xbmcplugin.setSetting("downloadlistpath", downloadpath)
+				config.setSetting("downloadlistpath", downloadpath)
 	except:
 		pass
 	
@@ -741,6 +740,7 @@ def downloadfileGzipped(url,pathfichero):
 			percent = int(float(grabado)*100/float(totalfichero))
 			totalmb = float(float(totalfichero)/(1024*1024))
 			descargadosmb = float(float(grabado)/(1024*1024))
+
 
 			# Lee el siguiente bloque, reintentando para no parar todo al primer timeout
 			reintentos = 0

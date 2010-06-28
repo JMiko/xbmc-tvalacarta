@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import string
 import youtube
+import config
 
 CHANNELNAME = "peliculas21"
 
@@ -45,7 +46,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor" , category , "Actores - Busqueda Alfabética"  ,"http://www.peliculas21.com/actores/","","")	
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Películas - Buscar"                           ,"","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

@@ -10,6 +10,7 @@ import os.path
 import sys
 import xbmc
 import scrapertools
+import config
 
 def getvideo(code):
 	xbmc.output("[veoh.py] code="+code)

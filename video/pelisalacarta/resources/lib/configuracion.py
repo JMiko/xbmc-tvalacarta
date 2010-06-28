@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import downloadtools
+import config
 
 CHANNELNAME = "configuracion"
 

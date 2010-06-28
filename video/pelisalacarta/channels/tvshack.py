@@ -16,6 +16,7 @@ import xbmctools
 import os
 import library
 import string
+import config
 
 CHANNELNAME = "tvshack"
 
@@ -64,7 +65,7 @@ def mainlist(params,url,category):
     xbmctools.addnewfolder( CHANNELNAME , "Buscar" , "" , "Busqueda Global en TVShack" , "http://tvshack.net/search/" , thumbnail=BUSCADOR_THUMBNAIL , plot="" )
 
     # Opciones adicionales si modo canal único
-    if xbmcplugin.getSetting ("singlechannel")=="true":
+    if config.getSetting ("singlechannel")=="true":
         xbmctools.addSingleChannelOptions (params , url , category)
 
     xbmc.output("[tvshac.py] mainlist finalizaplugin handle: "+str(pluginhandle))
@@ -541,7 +542,7 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
       scrapedtitle = scrapedtitle + ' (NO SOPORTADO)'
       
     opciones.append(scrapedtitle)
-  if xbmcplugin.getSetting("default_action")=="0":
+  if config.getSetting("default_action")=="0":
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Elige un vídeo", opciones)
   else:

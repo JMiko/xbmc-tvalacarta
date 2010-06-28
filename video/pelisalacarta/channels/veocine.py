@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "veocine"
 
@@ -39,7 +40,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas VOS", "http://www.veocine.es/peliculavos.html","","")
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Anime", "http://www.veocine.es/anime.html","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

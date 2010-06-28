@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import anotador
+import config
 
 CHANNELNAME = "divxonline"
 
@@ -42,7 +43,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "pelisporletra" , CHANNELNAME , "Películas de la A a la Z" , "" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "pelisporanio" , CHANNELNAME , "Películas por año de estreno" , "" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

@@ -20,7 +20,7 @@ import xbmcgui
 import downloadtools
 import string
 import xml.parsers.expat
-
+import config
 
 CHANNELNAME = "library"
 allchars = string.maketrans('', '')
@@ -207,4 +207,5 @@ def MonitorSerie ( canal, accion, server, url, serie):
 	
 def dlog (text):
 	if DEBUG:
+
 		xbmc.output(text)

@@ -5,7 +5,7 @@
 peliscalacarta is an XBMC plugin created with spanish "on demand" movie 
 websites on mind, showing them as channels.
 
-Using it you can see videos published on these sites:
+Using it you can see videos published on sites like:
 
     * Cinetube
     * SeriesYonkis
@@ -32,17 +32,28 @@ Using it you can see videos published on these sites:
 	* DocumentalesYonkis (thanks to messi86)
 	* Documentalesatonline
 	* e-cartelera trailers
+	...
 
 This sites usually publish movies and tv shows by uploading videos to an 
 external server, so the plugin locate this videos inside the html pages
 and let you see them. It recognizes videos from:
 
-- Megavideo
+- Megavideo / Megaupload
 - StageVU
 - Tu.tv
 - Vreel
 - Movshare
 - Veoh
+- cinshare
+- divxden
+- divxlink
+- gigabyteupload
+- linkbucks
+- metadivx
+- tutv
+- videoweed
+- youtube
+- zshare
 
 -----------------------------------------
 -- What is XBMC?                       --
@@ -161,19 +172,25 @@ It is placed in his tutorial for plugin development for XBMC.
 Thanks man, your plugins are a source of inspiration.
 (http://code.google.com/p/voinage-xbmc-plugins/)
 
-Shaddow solved the decryption of the Yonkis pages.
-(http://www.shaddow.es/)
+Special thanks go to the development team, their work is awesome.
 
 ErManitu added the channels "Divxonline" and "Descarga Cine Clásico"
-
-Bandavi added the channels "PeliculasEroticas" and "DocumaniaTV"
-
+Bandavi added the trailers, and many channels, including "PeliculasEroticas", "DocumaniaTV", "Peliculas21", ...
+Lily added the great anime channel for "Animeforos" and "CastTV", and the subtitles
 Messi86 from the telebision.com forum made the DocumentalesYonkis plugin, which i converted to a pelisalacarta channel.
+Jurrabi added the library feature, many little improvements and the great "tvshack" channel
+Blablableble added two new channels "gratisdocumentales" and "redestv", and little improvements in core and channels
+Wolfk added the banner logos for the channels, and refresh some of the poster ones
+xezpeleta added the JDownloader feature
+And finally thanks to Shaddow for giving us the first decryption routines of the Yonkis pages (http://www.shaddow.es/)
+
+(if i forgot someone please email me)
 
 Icons come from varios sources:
 
-- Some channel icons are mine, captured and edited using Gimp.
+- Some channel icons are mine, captured and edited using Gimp, of made by channel authors.
 - Some other channel icons are from narfss
 - Some icons are from Crystal Clear Collection
 
 And finally thanks to all my blog readers, who give me lot of ideas and support.
+

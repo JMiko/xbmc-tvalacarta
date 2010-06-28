@@ -14,6 +14,7 @@ import scrapertools
 import megavideo
 import servertools
 import xbmctools
+import config
 
 CHANNELNAME = "megauploadsite"
 
@@ -33,7 +34,7 @@ def mainlist(params,url,category):
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "search" , CHANNELNAME , "Introduce el código del fichero de vídeo" , "" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio

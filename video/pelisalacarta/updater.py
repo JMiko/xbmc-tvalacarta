@@ -29,6 +29,7 @@ try:
 except:
 	DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
+
 def checkforupdates():
 	xbmc.output("[updater.py] checkforupdates")
 	try:

@@ -16,6 +16,8 @@ import servertools
 import binascii
 import xbmctools
 import string
+import config
+
 CHANNELNAME = "pintadibujos"
 
 # Esto permite su ejecución en modo emulado
@@ -32,7 +34,7 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[pintadibujos.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Ultimas novedades" , "http://www.pintadibujos.com/novedadesf.html" , "", "" )
@@ -42,7 +44,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas series TV" , "http://www.pintadibujos.com/seriesf.html" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Peliculas Anime" , "http://www.pintadibujos.com/animef.html" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -57,7 +59,7 @@ def mainlist(params,url,category):
 def movielist(params,url,category):
 	xbmc.output("[pintadibujos.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -111,7 +113,7 @@ def movielist(params,url,category):
 def detail(params,url,category):
 	xbmc.output("[pintadibujos.py] detail")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	title = urllib.unquote_plus( params.get("title") )

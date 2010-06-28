@@ -17,6 +17,7 @@ import megaupload
 import binascii
 import xbmctools
 import casttv
+import config
 
 CHANNELNAME = "animeforos"
 
@@ -467,10 +468,14 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 	for video in listavideos2:
 		addvideofolder( CHANNELNAME , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
 
-	# Extrae la fecha de la próxima actualización
-	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
-	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
+	# Extrae la fecha de la próxima actualización
+
+	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
+
+	matches = re.compile(patronvideos,re.DOTALL).search(data)
+
+	if (matches):
+
 		titulo = matches.group(2)
 		# Añade al listado de XBMC 
 		additem( CHANNELNAME , category , titulo , "" , "" , plot )
@@ -519,7 +524,8 @@ def astrodata(title,url):
 	# ------------------------------------------------------
 	patronvideos = inicios+'(.*?)'+fins
 	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
+	if (matches):
+
 		data = matches.group(1)
 
 	return data
@@ -544,7 +550,8 @@ def erdmdata(url):
 		post = matchR0.group(1)	
 		patronvideos = 'name="'+post+'">#</a>(.*?)<!-- / message -->'
 		matches = re.compile(patronvideos,re.DOTALL).search(data)
-		if (matches):
+		if (matches):
+
 			data = matches.group(1)
 		
 	# ------------------------------------------------------
@@ -576,16 +583,21 @@ def findvideos(data,title):
 	encontrados = set()
 	devuelve = []
 
-	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título - Skait
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título - Skait
+
 	patronvideos  = '(<br /><b>|<br />)\s([^<]+)<br />\s'
 	patronvideos += '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)" target="_blank">'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-	for match in matches:
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+
+
+	for match in matches:
+
 		titulo = match[1]
 		titulo = titulo.replace(' -  ' , '')
 		titulo = titulo.replace(' - Ovas ' , ' Ovas')
-
+
+
 		url = match[2]
 
 		if url not in encontrados:
@@ -593,10 +605,14 @@ def findvideos(data,title):
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 
-	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
-	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
+
+	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
+
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+
+
 	for match in matches:
 
 		# Titulo quita código html
@@ -612,7 +628,8 @@ def findvideos(data,title):
 		foro = ""
 		if title == "Sailor Moon":
 			match0 = re.match('(\d\d\.\-\s)<a',match[0])
-			if (match0):
+			if (match0):
+
 				titulo = match0.group(1)+titulo
 				foro = "AT"
 			if titulo == "01.- La niña llorona se convierte en guerrero":
@@ -624,8 +641,10 @@ def findvideos(data,title):
 		# Cross Game
 		if title == "Cross Game":
 			match1 = re.match('\[Rakuen~SnF\] Cross Game HDTV (\d{2,4})$',titulo,re.IGNORECASE)
-			if (match1):
-				titulo = match1.group(1)+ " - HDTV [Rakuen~SnF]"
+			if (match1):
+
+				titulo = match1.group(1)+ " - HDTV [Rakuen~SnF]"
+
 
 		# Kochikame
 		if title == "Kochikame":
@@ -988,6 +1007,7 @@ def listatresupdate(category,listupdate):
 		if (matchurl):
 			matchtitle=re.match('^([^\(]+)\s\(.*?\)$',serie[0])
 			if (matchtitle):
+
 				title = matchtitle.group(1)
 			web = "mc-anime"
 			urlOK="0"

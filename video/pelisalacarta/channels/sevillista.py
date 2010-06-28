@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "sevillista"
 
@@ -35,7 +36,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "categorias" , CHANNELNAME , "Películas - Por categoría" , "http://pelis-sevillista56.blogspot.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , CHANNELNAME , "Series - Novedades" , "http://pelis-sevillista56.blogspot.com/search/label/Series" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...

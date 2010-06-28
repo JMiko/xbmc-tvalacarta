@@ -12,6 +12,7 @@ import xbmcplugin
 import xbmcgui
 import scrapertools
 import xbmctools
+import config
 
 CHANNELNAME = "ayuda"
 

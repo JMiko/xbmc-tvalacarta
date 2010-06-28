@@ -28,6 +28,7 @@ import discoverymx
 import stagevusite
 import tutvsite
 import tumejortv
+import config
 
 CHANNELNAME = "buscador"
 

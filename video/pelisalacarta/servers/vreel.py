@@ -10,6 +10,7 @@ import os.path
 import sys
 import xbmc
 import os
+import config
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 

@@ -18,6 +18,7 @@ import favoritos
 import library
 import descargadoslist
 import scrapertools
+import config
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -129,10 +130,10 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	
 	# Abre el diálogo de selección
 	opciones = []
-	default_action = xbmcplugin.getSetting("default_action")
+	default_action = config.getSetting("default_action")
 	# Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
 	# Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
-	if (server=="Megavideo" or server=="Megaupload") and xbmcplugin.getSetting("megavideopremium")=="true":
+	if (server=="Megavideo" or server=="Megaupload") and config.getSetting("megavideopremium")=="true":
 		opciones.append("Ver en calidad alta ["+server+"]")
 		# Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
 		if default_action=="2":
@@ -187,8 +188,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		if strmfile:  #Para evitar el error "Uno o más elementos fallaron" al cancelar la selección desde fichero strm
 			listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
 			xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,listitem)    # JUR Added
-		if xbmcplugin.getSetting("subtitulo") == "true":
-			xbmcplugin.setSetting("subtitulo", "false")
+		if config.getSetting("subtitulo") == "true":
+			config.setSetting("subtitulo", "false")
 		return
 
 	if opciones[seleccion].startswith("Enviar a JDownloader"):
@@ -197,8 +198,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		else:
 			d = {"web": "http://www.megavideo.com/?v=" + url}
 			
-		data = scrapertools.cachePage(xbmcplugin.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+urllib.urlencode(d)+ " " +thumbnail)
-		data = scrapertools.cachePage(xbmcplugin.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+thumbnail)
+		data = scrapertools.cachePage(config.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+urllib.urlencode(d)+ " " +thumbnail)
+		data = scrapertools.cachePage(config.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+thumbnail)
 		return
 
 	# Ver en calidad alta
@@ -215,7 +216,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 				alertanomegauploadlow(server)
 				return
 		elif server=="Megavideo":
-			if xbmcplugin.getSetting("megavideopremium")=="false":
+			if config.getSetting("megavideopremium")=="false":
 				advertencia = xbmcgui.Dialog()
 				resultado = advertencia.ok('Megavideo tiene un límite de reproducción de 72 minutos' , 'Para evitar que los vídeos se corten pasado ese tiempo' , 'necesitas una cuenta Premium')			
 			mediaurl = servertools.getmegavideolow(url)
@@ -225,12 +226,12 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	# Descargar
 	elif opciones[seleccion]=="Descargar":
 		if server=="Megaupload":
-			if xbmcplugin.getSetting("megavideopremium")=="false":
+			if config.getSetting("megavideopremium")=="false":
 				mediaurl = servertools.getmegauploadlow(url)
 			else:
 				mediaurl = servertools.getmegauploadhigh(url)
 		elif server=="Megavideo":
-			if xbmcplugin.getSetting("megavideopremium")=="false":
+			if config.getSetting("megavideopremium")=="false":
 				mediaurl = servertools.getmegavideolow(url)
 			else:
 				mediaurl = servertools.getmegavideohigh(url)
@@ -301,7 +302,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		return
 
 	elif opciones[seleccion]=="Buscar Trailer":
-		xbmcplugin.setSetting("subtitulo", "false")
+		config.setSetting("subtitulo", "false")
 		xbmc.executebuiltin("Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" ) , server ))
 		return
 
@@ -331,9 +332,9 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		xbmc.output("[xbmctools.py] 4")
 		launchplayer(mediaurl, listitem)
 		
-	if (xbmcplugin.getSetting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
+	if (config.getSetting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
 		xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' ) ) )
-		xbmcplugin.setSetting("subtitulo", "false")
+		config.setSetting("subtitulo", "false")
 
 
 def getLibraryInfo (mediaurl):
@@ -444,7 +445,7 @@ def launchplayer(mediaurl, listitem):
 
 	# Reproduce
 	xbmc.output("[xbmctools.py] 6")
-	playersettings = xbmcplugin.getSetting('player_type')
+	playersettings = config.getSetting('player_type')
 	xbmc.output("[xbmctools.py] playersettings="+playersettings)
 
 	xbmc.output("[xbmctools.py] 7")

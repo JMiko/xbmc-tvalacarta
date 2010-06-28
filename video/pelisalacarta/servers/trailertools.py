@@ -17,9 +17,7 @@ import xbmctools
 import gdata.youtube
 import gdata.youtube.service
 import youtube
-
-
-
+import config
 
 CHANNELNAME = "trailertools"
 # Esto permite su ejecución en modo emulado

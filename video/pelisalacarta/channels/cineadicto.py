@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
 
 CHANNELNAME = "cineadicto"
 
@@ -41,7 +42,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "ListvideosMirror" , category , "Peliculas en HD","http://www.cine-adicto.com/category/categorias/peliculas-hd-categorias","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search" , category , "Buscar","http://www.cine-adicto.com/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -414,7 +415,7 @@ def play2(params,url,category):
 			subt_ok = downloadstr(urlsubtit)
 			print "subtitulo subt_ok = %s" % str(subt_ok)
 			if subt_ok is None: # si es None la descarga del subtitulo esta ok
-				xbmcplugin.setSetting("subtitulo", "true")
+				config.setSetting("subtitulo", "true")
 				break
 	play(params,url1,category)
 

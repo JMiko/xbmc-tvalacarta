@@ -13,6 +13,7 @@ import os
 import scrapertools
 import unpackerjs
 import socket
+import config
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 

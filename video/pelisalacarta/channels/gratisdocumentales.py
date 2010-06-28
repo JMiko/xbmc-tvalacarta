@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
  
 CHANNELNAME = "gratisdocumentales"
  
@@ -38,7 +39,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "buscatags" , category, "Tags" , "http://www.gratisdocumentales.com/" , "" , "")
 	xbmctools.addnewfolder( CHANNELNAME , "search" , category, "Búsqueda" , "" , "" , "")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
