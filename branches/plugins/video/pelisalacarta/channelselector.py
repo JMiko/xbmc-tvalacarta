@@ -48,7 +48,7 @@ def listchannels(params,url,category):
 #Lo pongo arriba para debuguear más facil, @jesus ponlo luego donde veas mejor.
 	addfolder("Cinetube","cinetube","mainlist")
 	addfolder("Peliculasyonkis","peliculasyonkis","mainlist")
-	addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
+	#addfolder("Divx Online","divxonline","mainlist") # added by ermanitu
 	addfolder("Cinegratis","cinegratis","mainlist")
 	addfolder("tumejortv.com","tumejortv","mainlist")
 	addfolder("Peliculas21","peliculas21","mainlist")

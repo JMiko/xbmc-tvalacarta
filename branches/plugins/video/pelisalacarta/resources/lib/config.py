@@ -40,7 +40,7 @@ def setSetting(name,value):
 		__settings__.setSetting( name,value ) # this will return "foo" setting value
 	# Antiguo XBMC
 	except:
-		config.setSetting("name",value)
+		xbmcplugin.setSetting("name",value)
 
 def getLocalizedString(code):
 	# Nuevo XBMC

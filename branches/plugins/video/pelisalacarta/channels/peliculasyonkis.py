@@ -542,6 +542,8 @@ def ChoiceOneVideo(matches,title):
 				servlist.append(server)
 		except urllib2.URLError,e:
 			xbmc.output("[peliculasyonkis.py] error:%s (%s)" % (e.code,server))
+		except:
+			pass
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select(title, opciones)
 	xbmc.output("seleccion=%d" % seleccion)

@@ -183,26 +183,15 @@ def listvideos(params,url,category):
 
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<title></title>.*?<div class="news"><[^>]+>[^<]+<a href="([^"]+)"'     # URL
-	patronvideos += '></span><img src="([^"]+)" '                                           # TUMBNAIL
-	patronvideos += 'style=.*?title="([^"]+)"><span'                                         # TITULO 
-	#patronvideos += '</div>[^<]+<div class=[^>]+>.*?href="[^"]+"><img '                    
-	#patronvideos += 'style=.*?src="([^"]+)".*?alt=.*?bold.*?>(.*?)</div>'                  # IMAGEN , DESCRIPCION
-	#patronvideos += '.*?flashvars="file=(.*?flv)\&amp'                                      # VIDEO FLV 
+	patronvideos  = '<div class="news"[^>]+><span class="title">[^<]+<a href="([^"]+)"></span><img src="([^"]+)".*?alt="([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
-		
 		scrapedtitle = match[2]
-		# URL
 		scrapedurl = match[0]
-		# Thumbnail
 		scrapedthumbnail = match[1]
-		# Argumento
 		scrapedplot = ""
-		
 
 		# Depuracion
 		if (DEBUG):

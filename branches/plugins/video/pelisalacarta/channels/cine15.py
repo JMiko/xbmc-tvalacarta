@@ -133,35 +133,24 @@ def listvideos(params,url,category):
 
 	# Extrae las entradas (carpetas)
 	'''
-	<div class="home-post-wrap">
-	<div class="home-post-wrap-top">
-	<div class="comment-buble">
-	<a href="http://www.cine15.com/pelicula/wyvern-2/#respond" title="Comentarios en Wyvern">0</a>                </div>
-	<div class="date">
-	<div id="post-ratings-12514" class="post-ratings"><img id="rating_12514_1" src="http://www.cine15.com/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.gif" alt="1 Star" title="1 Star" onmouseover="current_rating(12514, 1, '1 Star');" onmouseout="ratings_off(0, 0);" onclick="rate_post();" onkeypress="rate_post();" style="cursor: pointer; border: 0px;" /><img id="rating_12514_2" src="http://www.cine15.com/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.gif" alt="2 Stars" title="2 Stars" onmouseover="current_rating(12514, 2, '2 Stars');" onmouseout="ratings_off(0, 0);" onclick="rate_post();" onkeypress="rate_post();" style="cursor: pointer; border: 0px;" /><img id="rating_12514_3" src="http://www.cine15.com/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.gif" alt="3 Stars" title="3 Stars" onmouseover="current_rating(12514, 3, '3 Stars');" onmouseout="ratings_off(0, 0);" onclick="rate_post();" onkeypress="rate_post();" style="cursor: pointer; border: 0px;" /><img id="rating_12514_4" src="http://www.cine15.com/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.gif" alt="4 Stars" title="4 Stars" onmouseover="current_rating(12514, 4, '4 Stars');" onmouseout="ratings_off(0, 0);" onclick="rate_post();" onkeypress="rate_post();" style="cursor: pointer; border: 0px;" /><img id="rating_12514_5" src="http://www.cine15.com/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.gif" alt="5 Stars" title="5 Stars" onmouseover="current_rating(12514, 5, '5 Stars');" onmouseout="ratings_off(0, 0);" onclick="rate_post();" onkeypress="rate_post();" style="cursor: pointer; border: 0px;" /></div>
-	<div id="post-ratings-12514-loading"  class="post-ratings-loading"><img src="http://www.cine15.com/wp-content/plugins/wp-postratings/images/loading.gif" width="16" height="16" alt="Loading ..." title="Loading ..." class="post-ratings-image" />&nbsp;Loading ...</div>
-	</div>
-	</div>
 	<div class="thumbnail-div">
-	<a href="http://www.cine15.com/pelicula/wyvern-2/" title="Wyvern">  <img src="http://www.cine15.com/wp-content/themes/cine2.0/timthumb.php?src=http://www.cine15.com/wp-content/uploads/2010/05/ipoc37.jpg&amp;h=225&amp;w=141&amp;q=80&amp;zc=1" alt=""  style="border: none;" />   </a>
+	<a href="http://www.cine15.com/peliculas/accion/zombieland/" title="Zombieland">  <img src="http://www.cine15.com/wp-content/themes/cine2.00/timthumb.php?src=http://www.cine15.com/wp-content/uploads/2010/05/x14z.jpg&amp;h=225&amp;w=141&amp;q=80&amp;zc=1" alt=""  style="border: none;" />   </a>
 	<div  id="play">
 	<ul class="playimg">
-	<li><a href="http://www.cine15.com/pelicula/wyvern-2/" class="boton"  ></a></li>
+	<li><a href="http://www.cine15.com/peliculas/accion/zombieland/" class="boton"  ></a></li>
 	</ul></div>
 	<div class="post-info2">
-	<h2><a href="http://www.cine15.com/pelicula/wyvern-2/" class="post-info-title" title="Permanent Link to Wyvern">
-	Wyvern...                        </a></h2>
-	<p class="itemdesc">Release Group: DOMiNO
-	Release Name: Wyvern 2009 DVDRip  ...</p>
-	<small class="gallerydate">Mayo 9, 2010</small>
-	</div>
-	</div>
-	<img  class="footh" style="margin: 0px 0px 0px 0px; float: left;" /> </div>
+	<h2><a href="http://www.cine15.com/peliculas/accion/zombieland/" class="post-info-title" title="Permanent Link to Zombieland">
+	Zombieland...                        </a></h2>
+	<p class="itemdesc">TÍTULO ORIGINAL:  Zombieland
+	AÑO: 2009 	Ver trailer externo
+	DURACIÓN: ...</p>
 	'''
-	patronvideos  = '<div class="home-post-wrap">.*?<div class="thumbnail-div">[^<]+'
-	patronvideos += '<a href="([^"]+)" title="([^"]+)">[^<]+<img src="http://www.cine15.com/wp-content/themes/cine2.0/timthumb.php.src=([^\&]+)\&amp'
-
+	patronvideos  = '<div class="thumbnail-div">[^<]+'
+	patronvideos += '<a href="([^"]+)" title="([^"]+)">  <img src="([^"]+)"'
+	
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
 	scrapertools.printMatches(matches)
 
 	for match in matches:
