@@ -28,7 +28,7 @@ xbmc.output("[documaniatv.py] init")
 tecleadoultimo = ""
 DEBUG = True
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'documaniatv' ) )
-#############----------------------------------------------------------#############
+
 
 def mainlist(params,url,category):
 	xbmc.output("[documaniatv.py] mainlist")
@@ -53,39 +53,24 @@ def mainlist(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-################-----------------------------------------------------##############
-
-#def volvermenu(params,url,category):
-        #xbmcplugin.openSettings(url=sys.argv[1])
-        #xbmc.executebuiltin("Container.Refresh")
-        #mainlist(params,url,category)
-        # Label (top-right)...
-	#xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-		
-	# Disable sorting...
-	#xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	#xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-        
+      
 ##############------------------------------------------------------#################        
 
 def search(params,url,category):
 	xbmc.output("[documaniatv.py] search")
 
-        ultimo = params.get("url")
-	keyboard = xbmc.Keyboard(ultimo)
+        
+	keyboard = xbmc.Keyboard()
         keyboard.doModal()
         
 	if (keyboard.isConfirmed()):
 		tecleado = keyboard.getText()
 		if len(tecleado)>0:
-                        tecleadoultimo = tecleado
+                        
 			#convert to HTML
 			tecleado = tecleado.replace(" ", "+")
-                        #keyboard.setHeading(tecleadoultimo)
-                        xbmc.output("tecleadoultimo = "+tecleadoultimo)
+                        
+                        
 			searchUrl = "http://www.documaniatv.com/search.php?keywords="+tecleado+"&btn=Buscar"
 			searchresults(params,searchUrl,category)
 
@@ -495,7 +480,7 @@ def tagdocumentaleslist(params,url,category):
 
 
 	# Extrae el listado de documentales del tag
-	#patronvideos = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"[^"]+"([^"]+)"  alt="([^"]+)"[^/]+/><div class="tag".*?</div>[^<]+<span class="artist_name">([^<]+)</span>'
+	
 	patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
 	patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -669,8 +654,8 @@ def detail(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	thumnbail = thumbnail
-	xbmc.output("[prueba.py] title="+title)
-	xbmc.output("[prueba.py] thumbnail="+thumbnail)
+	#xbmc.output("[prueba.py] title="+title)
+	#xbmc.output("[prueba.py] thumbnail="+thumbnail)
         patrondescrip = '<h3>Descripci[^<]+</h3>(.*?)<br><br>'
 	# Descarga la página
 	data = scrapertools.cachePage(url)
