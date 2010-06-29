@@ -120,7 +120,8 @@ def listvideos(params,url,category):
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Extrae la marca de siguiente página
-	patronvideos  = '</span><a href="(http://peliculasid.com/paginas/[^\.]+\.html)"'
+	
+	patronvideos  = '<a href="([^"]+)" class="nextpostslink">'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
