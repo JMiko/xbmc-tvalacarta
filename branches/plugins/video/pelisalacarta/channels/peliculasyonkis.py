@@ -16,7 +16,6 @@ import servertools
 import binascii
 import xbmctools
 import DecryptYonkis as Yonkis
-import config
 
 CHANNELNAME = "peliculasyonkis"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -43,7 +42,7 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[peliculasyonkis.py] mainlist")
 
-	if config.getSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Añade al listado de XBMC
@@ -53,7 +52,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , category , "Buscar","","","")
 
-	if config.getSetting("singlechannel")=="true":
+	if xbmcplugin.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -108,7 +107,7 @@ def performsearch(texto):
 def searchresults(params,url,category):
 	xbmc.output("[peliculasyonkis.py] searchresults")
 
-	if config.getSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -141,7 +140,7 @@ def searchresults(params,url,category):
 
 def listalfabetico(params, url, category):
 
-	if config.getSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "0-9","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasNumeric.php","","")
@@ -184,7 +183,7 @@ def listalfabetico(params, url, category):
 def listnovedades(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listnovedades")
 
-	if config.getSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -234,7 +233,7 @@ def listnovedades(params,url,category):
 def listcategorias(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listcategorias")
 
-	if config.getSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Descarga la página
@@ -322,7 +321,7 @@ def buscaporanyo(params,url,category):
 def listvideos(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listvideos")
 
-	if config.getSetting("forceview")=="true":
+	if xbmcplugin.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -542,8 +541,6 @@ def ChoiceOneVideo(matches,title):
 				servlist.append(server)
 		except urllib2.URLError,e:
 			xbmc.output("[peliculasyonkis.py] error:%s (%s)" % (e.code,server))
-		except:
-			pass
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select(title, opciones)
 	xbmc.output("seleccion=%d" % seleccion)
@@ -568,7 +565,8 @@ def Decrypt_Server(id_encoded,servidor):
 		if ":" in idd:
 			ids = idd.split(":")
 			idd = "http://stagevu.com/video/%s" %choiceOnePart(ids).strip()
-		
+		else:
+			idd = "http://stagevu.com/video/%s" %idd
 	elif 'manueno'   == servidor:
 		idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
 		if len(idd)>50:
@@ -580,7 +578,8 @@ def Decrypt_Server(id_encoded,servidor):
 		if ":" in idd:
 			ids = idd.split(":")
 			idd = "http://www.videoweed.com/file/%s" %choiceOnePart(ids).strip()		
-		
+		else:
+			idd = "http://www.videoweed.com/file/%s" %idd
 	elif 'veoh2'     == servidor: idd=DEC.decryptALT(DEC.charting(DEC.unescape(id))) 
 	elif 'megaupload'== servidor: idd=DEC.ccM(DEC.unescape(id))
 	elif 'pfflano'   == servidor: 
