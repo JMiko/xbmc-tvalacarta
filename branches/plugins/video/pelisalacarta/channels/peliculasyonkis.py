@@ -581,7 +581,11 @@ def Decrypt_Server(id_encoded,servidor):
 		else:
 			idd = "http://www.videoweed.com/file/%s" %idd
 	elif 'veoh2'     == servidor: idd=DEC.decryptALT(DEC.charting(DEC.unescape(id))) 
-	elif 'megaupload'== servidor: idd=DEC.ccM(DEC.unescape(id))
+	elif 'megaupload'== servidor: 
+		idd=DEC.ccM(DEC.unescape(id))
+		if ":" in idd:
+			idd = choiceOnePart(idd.split(":"))
+		
 	elif 'pfflano'   == servidor: 
 		idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
 		print idd
