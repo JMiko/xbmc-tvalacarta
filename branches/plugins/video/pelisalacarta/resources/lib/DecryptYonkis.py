@@ -115,3 +115,24 @@ class DecryptYonkis:
 
         return id
 
+	def ccM(self,str):
+	
+		d=str
+		e=900+101+43-27-1000
+		f=""
+		g=0
+		h=0
+		b=0
+		e+=23+100+114
+		for i in range(len(d)):
+			g=e^ord(d[i])
+			if(e>1):
+			
+				f+=chr(g*1)
+		
+			else:
+			
+				f+=chr(2*g)
+		
+	
+		return f
