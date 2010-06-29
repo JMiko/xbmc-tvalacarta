@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import DecryptYonkis as Yonkis
+import config
 
 CHANNELNAME = "peliculasyonkis"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -42,7 +43,7 @@ DEBUG = True
 def mainlist(params,url,category):
 	xbmc.output("[peliculasyonkis.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Añade al listado de XBMC
@@ -52,7 +53,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , category , "Buscar","","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -107,7 +108,7 @@ def performsearch(texto):
 def searchresults(params,url,category):
 	xbmc.output("[peliculasyonkis.py] searchresults")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -140,7 +141,7 @@ def searchresults(params,url,category):
 
 def listalfabetico(params, url, category):
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "0-9","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasNumeric.php","","")
@@ -183,7 +184,7 @@ def listalfabetico(params, url, category):
 def listnovedades(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listnovedades")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
@@ -233,7 +234,7 @@ def listnovedades(params,url,category):
 def listcategorias(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listcategorias")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Descarga la página
@@ -321,7 +322,7 @@ def buscaporanyo(params,url,category):
 def listvideos(params,url,category):
 	xbmc.output("[peliculasyonkis.py] listvideos")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
