@@ -37,5 +37,5 @@ def mainlist(params,url,category):
 	# Verifica ruta de descargas
 	downloadpath = downloadtools.getDownloadPath()
 	downloadlistpath = downloadtools.getDownloadListPath()
-	
-	xbmcplugin.openSettings( sys.argv[ 0 ] )
+
+	config.openSettings( )

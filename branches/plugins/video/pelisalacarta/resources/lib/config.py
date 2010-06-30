@@ -9,7 +9,7 @@ import xbmc
 import xbmcplugin
 import sys
 
-def openSettings(name):
+def openSettings():
 	
 	# Nuevo XBMC
 	try:
