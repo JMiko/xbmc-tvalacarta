@@ -81,7 +81,7 @@ def listchannels(params,url,category):
 	#addfolder("seriesonline.us","seriesonline","mainlist")
 	addfolder("Series21","series21","mainlist")
 	#addfolder("Newcineonline","newcineonline","mainlist")
-	addfolder("CastTV [EN]","casttv","mainlist")
+	addfolder("CastTV","casttv","mainlist")
 	addfolder("Ver Telenovelas Online","vertelenovelasonline","mainlist")
 	addfolder("Anime Foros","animeforos","mainlist")
 	addfolder("Yotix.tv","yotix","mainlist")

@@ -485,7 +485,7 @@ def alerterrorpagina():
 
 def alertanomegauploadlow(server):
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok( 'Video no disponible' ,'La calidad elegida no esta disponible', 'o el video a sido borrado','Prueba a reproducir en otra calidad')
+	resultado = advertencia.ok( 'Video no disponible' ,'La calidad elegida no esta disponible', 'o el video ha sido borrado','Prueba a reproducir en otra calidad')
 def unseo(cadena):
 	if cadena.upper().startswith("VER GRATIS LA PELICULA "):
 		cadena = cadena[23:]
