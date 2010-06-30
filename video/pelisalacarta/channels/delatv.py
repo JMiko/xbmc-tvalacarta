@@ -117,51 +117,43 @@ def listmirrors(params,url,category):
 		plot = matches[0]
 
 	# Extrae los enlaces a los vídeos (Megavídeo)
-	#patronvideos  = '<tr>[^<]+'
-	#patronvideos += '<td[^>]+><h2>([^<]+)</h2></td>[^<]+'
-	#patronvideos += '<td[^>]+><a href="([^"]+)"><span class="flash"></span>'
-	patron = '<a href="(http://delatv.com/flash/[^"]+)">(.*?)</a>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)		
+	'''
+	<div class="div-servidores">
+	<div class="servidores-titulo">Lista de servidores</div>
+	<div class="servidores-fondo">
+	<div class="boton-ver-pelicula">         <a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMjU4LzI3Ny8xMDU1NTcwMzk0OTYwNjdfMjA5NzY=" target="_blank" class="boton-azul">Audio Latino - Parte 1</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMjM2LzY4NS8xMDU1NTcxNDYxNjI3MjNfMzQ5ODk=" target="_blank" class="boton-azul">Audio Latino - Parte 2</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMTU2LzcwLzEwNTU1NzE5NjE2MjcxOF8yOTA3MQ==" target="_blank" class="boton-azul">Audio Latino - Parte 3</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMTE4LzcxNi8xMDU1NTcyMzI4MjkzODFfMjI0OTM=" target="_blank" class="boton-azul">Audio Latino - Parte 4</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMzA4Lzk2Ni8xMDU1NTcyOTYxNjI3MDhfMzU3ODg=" target="_blank" class="boton-azul">Audio Latino - Parte 5</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMjE2LzE3NS8xMDU1Njg0NTk0OTQ5MjVfNDE5NDE=" target="_blank" class="boton-azul">Audio Latino - Parte 6</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMzA2LzgwNi8xMDU1NTc0OTYxNjI2ODhfNDcxNjc=" target="_blank" class="boton-azul">Audio Latino - Parte 7</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMzI4Lzc2MS8xNTE5MzAzMTAyNjkzXzk2NDA=" target="_blank" class="boton-rojo">Subtitulado - Parte 1</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMzI4LzY0MS8xNTE5MzAzMjIyNjk2XzQ4NzQw" target="_blank" class="boton-rojo">Subtitulado - Parte 2</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMzI4LzgyNC8xNTE5MzAzNDIyNzAxXzI1MjQ0" target="_blank" class="boton-rojo">Subtitulado - Parte 3</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1zbmM0LzMzMzI4Lzk4Ni8xNTE5MzAzNTAyNzAzXzUyMjQx" target="_blank" class="boton-rojo">Subtitulado - Parte 4</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMzI4LzEwLzE1MTkzMDM3NDI3MDlfNjI5MjU=" target="_blank" class="boton-rojo">Subtitulado - Parte 5</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMzI4LzQ3Ni8xNTE5MzA1MzQyNzQ5XzM2OQ==" target="_blank" class="boton-rojo">Subtitulado - Parte 6</a>
+	<a href="http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMzI4LzUyLzE1MTkzMDU1MDI3NTNfNTAzNDk=" target="_blank" class="boton-rojo">Subtitulado - Parte 7</a>
+	</div>
+	'''
 
-	for match in matches:
-		etiquetaservidor = match[1].replace('<font color="white">','')
-		etiquetaservidor = etiquetaservidor.replace('</font>','')
-		etiquetaservidor = etiquetaservidor.replace('&Ntilde;','Ñ')
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title + " (" + etiquetaservidor + ")" , match[0] , thumbnail , plot )
-
-	# Extrae los enlaces a los vídeos (Directo)
-	patron = '<a href="http://delatv.com/playlist/([^\/]+)/'
-	#patron = '<a href="(http://delatv.com/playlist[^"]+)"><font color="white">([^<]+)</font></a>'
-	#patronvideos  = '<tr>[^<]+'
-	#patronvideos += '<td[^>]+><h2>([^<]+)</h2></td>[^<]+'
-	#patronvideos += '<td[^>]+><a href="([^"]+)"><span class="flashflv"></span>'
+	patron = '<div class="servidores-titulo">Lista de servidores</div>(.*?)</div>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	
 	if len(matches)>0:
-		url = "http://www.delatv.com/xml/"+matches[0]+".xml"
-		data = scrapertools.cachePage(url)
-		#xbmc.output(data)
-		#patron = '<media\:content url="([^"]+)"'
-		patron  = '<track>[^<]+<creator>([^<]+)</creator>[^<]+<location>([^<]+)</location>'
-		patron += '[^<]+(<meta rel="streamer">.*?</meta>.*?|)</track>'
+		data = matches[0]
+		patron  = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
 		matches = re.compile(patron,re.DOTALL).findall(data)
 		scrapertools.printMatches(matches)
 		
 		for match in matches:
-			titulo = title + " - " + match[0]
-			if match[2] == "":
-				url = match[1]
-			else:
-				url   = re.sub("<[^>]+>","",match[2])
-				url   = url+"/"+match[1]
-				url   = url.replace("\n","").replace(" ","")
-				titulo = titulo + " [RTMPE]"
-			print ' esta es la url: %s' %url
-			# Añade al listado de XBMC
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , titulo + " [Directo]" , url , thumbnail , plot )
+			scrapedtitle = title + " - " + match[1]
+			scrapedurl = match[0]
+			scrapedthumbnail = thumbnail
+			scrapedplot = plot
+			xbmctools.addnewfolder( CHANNELNAME , "play" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -174,39 +166,28 @@ def play(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = params["server"]
+	server = "Directo"
 
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
 	dialogWait.create( 'Accediendo al video...', title , plot )
 
 	# Descarga la página del reproductor
-	xbmc.output("server="+server)
-	if server=="Megavideo":
-		# http://delatv.com/flash/UPY6KEB4/cleaner.html
-		url = url.replace(" ","%20")
-		xbmc.output("url="+url)
-		data = scrapertools.cachePage(url)
-		patron = '<iframe src="([^"]+)"'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		if len(matches)>0:
-			url = matches[0]
-
-		# Descarga el iframe con el embed
-		# http://174.132.114.52/megaembed/UPY6KEB4/cleaner.html
-		url = url.replace(" ","%20")
-		xbmc.output("url="+url)
-		data = scrapertools.cachePage(url)
-		xbmc.output("data="+data)
-		patron = '<embed src="http\:\/\/wwwstatic.megavideo.com/mv_player.swf\?v\=([^\&]+)&'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		if len(matches)>0:
-			url = matches[0]
-
-	xbmc.output("url="+url)
-
+	# http://delatv.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMjM2LzY4NS8xMDU1NTcxNDYxNjI3MjNfMzQ5ODk=
+	# http://delatv.com/modulos/embed/playerembed.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMjM2LzY4NS8xMDU1NTcxNDYxNjI3MjNfMzQ5ODk=
+	url = url.split("?")[1]
+	url = "http://delatv.com/modulos/embed/playerembed.php?"+url
+	xbmc.output("[delatv.py] url="+url)
+	data = scrapertools.cachePage(url)
+	patron = 'player.swf\?file=([^\&]+)&'
+	matches = re.compile(patron,re.DOTALL).findall(data)
 	# Cierra dialogo
 	dialogWait.close()
 	del dialogWait
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	if len(matches)>0:
+		url = matches[0]
+		xbmc.output("url="+url)
+		xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	else:
+		xbmctools.alertnodisponible()
