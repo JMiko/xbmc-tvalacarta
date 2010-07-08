@@ -1,8 +1,9 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para "Anime (foros)"
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+# Canal "Anime (foros)" by Lily
+# http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
+# Last Updated: 02/07/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -468,14 +469,10 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 	for video in listavideos2:
 		addvideofolder( CHANNELNAME , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
 
-	# Extrae la fecha de la próxima actualización
-
-	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
-
-	matches = re.compile(patronvideos,re.DOTALL).search(data)
-
-	if (matches):
-
+	# Extrae la fecha de la próxima actualización
+	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
+	matches = re.compile(patronvideos,re.DOTALL).search(data)
+	if (matches):
 		titulo = matches.group(2)
 		# Añade al listado de XBMC 
 		additem( CHANNELNAME , category , titulo , "" , "" , plot )
@@ -524,8 +521,7 @@ def astrodata(title,url):
 	# ------------------------------------------------------
 	patronvideos = inicios+'(.*?)'+fins
 	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
-
+	if (matches):
 		data = matches.group(1)
 
 	return data
@@ -550,8 +546,7 @@ def erdmdata(url):
 		post = matchR0.group(1)	
 		patronvideos = 'name="'+post+'">#</a>(.*?)<!-- / message -->'
 		matches = re.compile(patronvideos,re.DOTALL).search(data)
-		if (matches):
-
+		if (matches):
 			data = matches.group(1)
 		
 	# ------------------------------------------------------
@@ -583,21 +578,16 @@ def findvideos(data,title):
 	encontrados = set()
 	devuelve = []
 
-	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título - Skait
-
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título - Skait
 	patronvideos  = '(<br /><b>|<br />)\s([^<]+)<br />\s'
 	patronvideos += '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)" target="_blank">'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-
-
-	for match in matches:
-
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
 		titulo = match[1]
 		titulo = titulo.replace(' -  ' , '')
 		titulo = titulo.replace(' - Ovas ' , ' Ovas')
-
-
+
 		url = match[2]
 
 		if url not in encontrados:
@@ -605,14 +595,10 @@ def findvideos(data,title):
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 
-	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
-
-	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
-
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-
-
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
+	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
 	for match in matches:
 
 		# Titulo quita código html
@@ -628,8 +614,7 @@ def findvideos(data,title):
 		foro = ""
 		if title == "Sailor Moon":
 			match0 = re.match('(\d\d\.\-\s)<a',match[0])
-			if (match0):
-
+			if (match0):
 				titulo = match0.group(1)+titulo
 				foro = "AT"
 			if titulo == "01.- La niña llorona se convierte en guerrero":
@@ -641,10 +626,8 @@ def findvideos(data,title):
 		# Cross Game
 		if title == "Cross Game":
 			match1 = re.match('\[Rakuen~SnF\] Cross Game HDTV (\d{2,4})$',titulo,re.IGNORECASE)
-			if (match1):
-
-				titulo = match1.group(1)+ " - HDTV [Rakuen~SnF]"
-
+			if (match1):
+				titulo = match1.group(1)+ " - HDTV [Rakuen~SnF]"
 
 		# Kochikame
 		if title == "Kochikame":
@@ -1007,7 +990,6 @@ def listatresupdate(category,listupdate):
 		if (matchurl):
 			matchtitle=re.match('^([^\(]+)\s\(.*?\)$',serie[0])
 			if (matchtitle):
-
 				title = matchtitle.group(1)
 			web = "mc-anime"
 			urlOK="0"
@@ -1129,54 +1111,13 @@ def findinfo(data,title,tcsearch,todos,genre,titleerdm):
 
 	if todos=="0":
 		if len(animemclist) > 0:
-			itemencontrado = searchgate(animemclist,titleerdm,"findinfo")
+			itemencontrado = casttv.searchgate(animemclist,titleerdm,"findinfo")
 			if len(itemencontrado)==1:
 				titulomc2 = itemencontrado[0][0]
 				urlmc2 = itemencontrado[0][1]
 				listinfomc = findlistinfo("",titulomc2,urlmc2)
 				
 		return listinfomc
-
-def searchgate(listforsearchin,titletosearch,tipo):
-	xbmc.output("[animeforos.py] searchgate")
-	# listforsearchin tiene que tener en la última columna [-1] el campo para búsquedas
-
-	itemencontrado = []
-	itemencontrado2 = []
-	titletosearch2 = titletosearch
-	if tipo=="findinfo":
-		titletosearch2 = re.sub('(?<=[a-z])\d+(?=[a-z])','\d*',titletosearch)
-		
-	listforsearchin.sort(key=lambda listfor: listfor[-1])
-	for listfor in listforsearchin:
-		if len(itemencontrado2)==2:
-			break
-		titletosearchin = listfor[-1]			
-		forin = re.match(titletosearch2+'$',titletosearchin,re.IGNORECASE)
-		if (forin):
-			itemencontrado.append(listfor)
-			break
-		else:
-			# Si se obtuvieran 2 o más coincidencias no serviría
-			forin1 = re.match('^'+titletosearch2+'.+$',titletosearchin,re.IGNORECASE)
-			if (forin1):
-				itemencontrado2.append(listfor)
-
-	if len(itemencontrado)==0 and len(itemencontrado2)==0:
-		listforsearchin.reverse()
-		for listfor in listforsearchin:
-			if len(listfor[-1])>1:
-				titletosearchin = listfor[-1]
-				if tipo=="findinfo":
-					titletosearchin = re.sub('(?<=[a-z])\d+(?=[a-z])','\d*',titletosearchin)								
-				forback = re.match('^'+titletosearchin+'.+$',titletosearch,re.IGNORECASE)
-				if (forback):
-					itemencontrado2.append(listfor)
-					break											
-	if len(itemencontrado)==0:
-		itemencontrado = itemencontrado2
-	
-	return itemencontrado
 
 def findlistinfo(data,title,url):
 	xbmc.output("[animeforos.py] findlistinfo")
@@ -1621,7 +1562,7 @@ def episodiomenu(params,url,category):
 	autor = match.group(12)
 	urlOK = match.group(13)
 
-	seleccion = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","0","0",tipovisto,CHANNELNAME,urlOK)
+	seleccion = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,CHANNELNAME,urlOK)
 
 	if seleccion>0:
 		if tipovisto<>"New":
@@ -1808,7 +1749,7 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
-	additem( CHANNELNAME , category , "------------------------------------------- Info --------------------------------------------" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "--------------------------------------------- Info ----------------------------------------------" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "Mis Favoritos: Si cambia el status (info anexa al título) de releases de McAnime no se actualizará" , "" , HD_THUMB , "" )
 
 	# Label (top-right)...
