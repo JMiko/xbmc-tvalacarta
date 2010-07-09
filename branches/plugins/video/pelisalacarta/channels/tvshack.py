@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #----------------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# tvshack.net - Películas, series, Anime, Documentales y Música en VO
+# tvshack.cc - Películas, series, Anime, Documentales y Música en VO
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # contribución de jurrabi
 #----------------------------------------------------------------------
@@ -57,12 +57,12 @@ def mainlist(params,url,category):
 
 
     # Lista de Categorías 
-    xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Series" , "Series TV (VO)" , "http://tvshack.net/tv" , thumbnail="" , plot="" )
-    xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Cine" , "Películas (VO)" , "http://tvshack.net/movies" , thumbnail="" , plot="" )
-    xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Documentales" , "Documentales (VO)" , "http://tvshack.net/documentaries" , thumbnail="" , plot="" )
-    xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Anime" , "Anime (VO)" , "http://tvshack.net/anime" , thumbnail="" , plot="" )
-    xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Musica" , "Música " , "http://tvshack.net/music" , thumbnail="" , plot="" )
-    xbmctools.addnewfolder( CHANNELNAME , "Buscar" , "" , "Busqueda Global en TVShack" , "http://tvshack.net/search/" , thumbnail=BUSCADOR_THUMBNAIL , plot="" )
+    xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Series" , "Series TV (VO)" , "http://tvshack.cc/tv" , thumbnail="" , plot="" )
+    xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Cine" , "Películas (VO)" , "http://tvshack.cc/movies" , thumbnail="" , plot="" )
+    xbmctools.addnewfolder( CHANNELNAME , "ListaDetallada" , "Documentales" , "Documentales (VO)" , "http://tvshack.cc/documentaries" , thumbnail="" , plot="" )
+    xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Anime" , "Anime (VO)" , "http://tvshack.cc/anime" , thumbnail="" , plot="" )
+    xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Musica" , "Música " , "http://tvshack.cc/music" , thumbnail="" , plot="" )
+    xbmctools.addnewfolder( CHANNELNAME , "Buscar" , "" , "Busqueda Global en TVShack" , "http://tvshack.cc/search/" , thumbnail=BUSCADOR_THUMBNAIL , plot="" )
 
     # Opciones adicionales si modo canal único
     if config.getSetting ("singlechannel")=="true":
@@ -115,9 +115,9 @@ def Buscar (params,url,category):
         return
 
 
-# Ej. Serie:  <li><a href="http://tvshack.net/tv/The_Big_Bang_Theory/">Television - <strong>The Big Bang Theory</strong></a><a href="http://tvshack.net/tv/The_Big_Bang_Theory/"><span>57 episodes</span></a></li>
-# Ej. Cine:   <li><a href="http://tvshack.net/movies/Bang_Bang_You_re_Dead__2002_/">Movies - <strong>Bang Bang You're Dead</strong></a><a href="http://tvshack.net/movies/Bang_Bang_You_re_Dead__2002_/"><span>2002</span></a></li>
-# Ej. Musica: <li><a href="http://tvshack.net/music/Mr__Big/">Music - <strong>Mr. Big</strong></a><a href="http://tvshack.net/music/Mr__Big/"></a></li>
+# Ej. Serie:  <li><a href="http://tvshack.cc/tv/The_Big_Bang_Theory/">Television - <strong>The Big Bang Theory</strong></a><a href="http://tvshack.cc/tv/The_Big_Bang_Theory/"><span>57 episodes</span></a></li>
+# Ej. Cine:   <li><a href="http://tvshack.cc/movies/Bang_Bang_You_re_Dead__2002_/">Movies - <strong>Bang Bang You're Dead</strong></a><a href="http://tvshack.cc/movies/Bang_Bang_You_re_Dead__2002_/"><span>2002</span></a></li>
+# Ej. Musica: <li><a href="http://tvshack.cc/music/Mr__Big/">Music - <strong>Mr. Big</strong></a><a href="http://tvshack.cc/music/Mr__Big/"></a></li>
     patronvideos = '''(?x)                                  #      Activa opción VERBOSE.
         <li><a\ href="                                      #      Basura
         (?P<url>[^"]+)">                                    # $0 = url del contenido
@@ -176,11 +176,11 @@ def ListaSeries(params,url,category):
 
   # Extraemos las series por medio de expresiones regulares (patrón)
   # Ej. Serie:  <li><a href="/tv/30_Rock/">30 Rock <font class="new-updated">Updated!</font><span style="margin-top:0px;">69 episodes</span></a></li> 
-  # Ej. Anime:  <li><a href="http://tvshack.net/anime/Avatar__The_Abridged_Series/">Avatar: The Abridged Series<span style="margin-top:0px;">5 episodes</span></a></li>
-  # Ej. Música: <li><a href="http://tvshack.net/music/Michael_Jackson/">Michael Jackson<span style="margin-top:0px;">27 songs</span></a></li>
+  # Ej. Anime:  <li><a href="http://tvshack.cc/anime/Avatar__The_Abridged_Series/">Avatar: The Abridged Series<span style="margin-top:0px;">5 episodes</span></a></li>
+  # Ej. Música: <li><a href="http://tvshack.cc/music/Michael_Jackson/">Michael Jackson<span style="margin-top:0px;">27 songs</span></a></li>
   patronvideos = '''(?x)                                #      Activa opción VERBOSE.
     <li><a\ href="                                      #      Basura
-    (?:http://tvshack\.net)?([^"]+)">                   # $0 = Path (relativo) de la serie Ej. "/tv/The_Wire/"
+    (?:http://tvshack\.cc)?([^"]+)">                   # $0 = Path (relativo) de la serie Ej. "/tv/The_Wire/"
     ([^<]+)                                             # $1 = Nombre de la serie Ej. Wire, The
     (?:\ <font\ class="new-new">(New)!</font>)?         # $2 = 'New' si la serie es nueva.
     (?:\ <font\ class="new-updated">(Updated)!</font>)? # $3 = 'Updated' si la serie ha sido actualizada
@@ -208,7 +208,7 @@ def ListaSeries(params,url,category):
     pDialog.update(i, text1+scrapedserie)
 
     #URL de la serie
-    scrapedurl = "http://tvshack.net" + match[0]
+    scrapedurl = "http://tvshack.cc" + match[0]
 
     # En el título (que se mostrará en la siguiente pantalla) elaboramos 
     # un poquito más añadiendo información sobre:
@@ -353,11 +353,11 @@ def devuelveListaEpisodios (params,url,category):
   temporada = '0'
   # Extraemos los episodios por medio de expresiones regulares (patrón)
   # Ej. Serie:  <li><a href="/tv/Family_Guy/season_1/episode_1/">ep1. Death Has a Shadow</a><a href=""><span>31/1/1999</span></a></li>
-  # Ej. Anime:  <li><a href="http://tvshack.net/anime/07_Ghost/season_1/episode_5/">ep5. Episode 5</a><a href=""><span>??/??/????</span></a></li> 
-  # Ej. Musica: <li><a href="http://tvshack.net/music/Michael_Jackson/C85E8225E45E/">Black Or White<span>2,301 views</span></a></li><li><a 
+  # Ej. Anime:  <li><a href="http://tvshack.cc/anime/07_Ghost/season_1/episode_5/">ep5. Episode 5</a><a href=""><span>??/??/????</span></a></li> 
+  # Ej. Musica: <li><a href="http://tvshack.cc/music/Michael_Jackson/C85E8225E45E/">Black Or White<span>2,301 views</span></a></li><li><a 
   patronepisodios = '''(?x)                             #      Activa opción VERBOSE. Esto permite
     <li><a\ href="                                      #      Basura
-    (?:http://tvshack\.net)?([^"]+)">                   #\g1 = Path (relativo) del episodio/video
+    (?:http://tvshack\.cc)?([^"]+)">                   #\g1 = Path (relativo) del episodio/video
     (?:ep([0-9]+)\.\ )?                                 #\g2 = Número de episodio
     ([^<]+)                                             #\g3 = Nombre del episodio
     (?:<\/a><a\ href="">)?<span>                        #      Basura
@@ -387,7 +387,7 @@ def devuelveListaEpisodios (params,url,category):
         else:
           Ep['title'] = match.expand ('\g<3> (visto \g<5> veces)') #con expand los grupos referenciaos empiezan en 1
         #URL del episodio
-        Ep['url'] = "http://tvshack.net" + match.group(1)
+        Ep['url'] = "http://tvshack.cc" + match.group(1)
         listaEp.append(Ep.copy()) #Se añade el episodio a la lista (hay que copiarlo)
 
   return listaEp
@@ -441,7 +441,7 @@ def ListaDetallada(params,url,category):
     pDialog.update(i, texto1+scrapedserie)
 
     #URL del video
-    scrapedurl = "http://tvshack.net" + match[0]
+    scrapedurl = "http://tvshack.cc" + match[0]
 
     # En el título (que se mostrará en la siguiente pantalla) elaboramos 
     # un poquito más añadiendo información sobre:
@@ -507,8 +507,8 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
     return
   data = match.expand('\g<1>')
   
-#Ej. Video por defecto:<li><a href="http://tvshack.net/tv/Lost/season_4/episode_6/"><img src="http://road.../megavideo.gif" />megavideo.com</a> <small>(selected)</small></li>
-#Ej. Alternat:<li><a href="http://tvshack.net/tv/Lost/season_4/episode_6/a:723568/"><img src="http://road.../megavideo.gif" />megavideo.com</a></li>
+#Ej. Video por defecto:<li><a href="http://tvshack.cc/tv/Lost/season_4/episode_6/"><img src="http://road.../megavideo.gif" />megavideo.com</a> <small>(selected)</small></li>
+#Ej. Alternat:<li><a href="http://tvshack.cc/tv/Lost/season_4/episode_6/a:723568/"><img src="http://road.../megavideo.gif" />megavideo.com</a></li>
   patronvideos = '''(?x)                                #      Activa opción VERBOSE.
     <li><a\ href="                                      #      Basura
     ([^"]+)">                                           # $0 = URL del episodio
@@ -610,12 +610,12 @@ def playVideo(params,url,category,strmfile=False):
   # Y el path relativo de los vídeos  
 #JUR CAMBIO EN WEB 01/04/2010
 #  patronpath = '''(?x)                  #      Activa opción VERBOSE.
-#    http://tvshack\.net/report_video/   #      Basura
+#    http://tvshack\.cc/report_video/   #      Basura
 #    ([^/]+/[^/]+)                       # $0 = Path relativo Ej. 'tv/716063'
 #    /","report"                         #      Basura
 #  '''
   patronpath = '''(?x)                  #      Activa opción VERBOSE.
-    http://tvshack\.net/video_load/     #      Basura
+    http://tvshack\.cc/video_load/     #      Basura
     ([^/]+/[^/]+)                       # $0 = Path relativo Ej. 'tv/716063'
     /'\+part                            #      Basura
   '''
@@ -630,7 +630,7 @@ def playVideo(params,url,category,strmfile=False):
     dialog.ok('pelisalacarta - tvshack','Este video tiene varias partes.','En esta versión de pelisalacarta no están soportados.','Eliga otro video con una sóla parte.')
 #    for parte in partes:
   elif len(partes) == 1:
-    url = 'http://tvshack.net/video_load/'+paths[0] + '/' + partes[0]
+    url = 'http://tvshack.cc/video_load/'+paths[0] + '/' + partes[0]
     #Esta URL sigue sin ser un enlace megaupload u otro servidor válido por lo que seguimos scrapeando
     # para evitar excesivas selecciones por parte del usuario.
 
@@ -719,7 +719,7 @@ def LeeDatosSerie (tdata):
                                                         #      También permite comentarios como éste.
                                                         # ---  COMIENZO DEL PATRON REAL  ---
     <img\ src="                                         #      Basura  
-    ([^"]+)                                             # $0 = Poster Ej. http://roadrunner.tvshack.net/tv-posters/16.jpg
+    ([^"]+)                                             # $0 = Poster Ej. http://roadrunner.tvshack.cc/tv-posters/16.jpg
     "\ alt="Poster"\ \/>                                #      Basura
   '''
   posterREO = re.compile(patronposter) # Objeto de Expresión Regular (REO)
