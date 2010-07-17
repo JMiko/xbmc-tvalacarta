@@ -69,7 +69,7 @@ There is also a bootable Live CD version referred to as "XBMC Live"
 XBMC supports most common audio, video, and image formats, playlists, audio 
 visalizations, slideshows, weather reporting, and third-party plugins. 
 
-It is network-capable (internet and LAN shares).
+It is network-capable (internet and LAN shares). 
 
 Through its plugin system which is based on Python, XBMC is expandable via 
 add-ons that include features such as television program guides, YouTube, 
