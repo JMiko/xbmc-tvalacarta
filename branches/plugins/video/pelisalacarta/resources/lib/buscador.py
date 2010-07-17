@@ -31,6 +31,8 @@ import tumejortv
 import config
 import cinetube
 
+from item import Item
+
 CHANNELNAME = "buscador"
 
 # Esto permite su ejecución en modo emulado
@@ -60,8 +62,9 @@ def mainlist(params,url,category):
 	
 	# Cinegratis
 	matches = []
+	itemlist = []
 	try:
-		matches.extend( cinetube.performsearch(tecleado) )
+		itemlist.extend( cinetube.getsearchresults(params,tecleado,category) )
 	except:
 		pass
 	try:
@@ -109,6 +112,17 @@ def mainlist(params,url,category):
 		matches.extend( tutvsite.performsearch(tecleado) )
 	except:
 		pass
+	
+	for item in itemlist:
+		targetchannel = item.channel
+		action = item.action
+		category = category
+		scrapedtitle = item.title+" ["+item.channel+"]"
+		scrapedurl = item.url
+		scrapedthumbnail = item.thumbnail
+		scrapedplot = item.plot
+		
+		xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 	
 	# Construye los resultados
 	for match in matches:
