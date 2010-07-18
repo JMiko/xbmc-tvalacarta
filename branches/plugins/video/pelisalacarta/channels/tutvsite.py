@@ -107,7 +107,7 @@ def list(params,url,category):
 
 	for match in matches:
 		scrapedtitle = "#Siguiente"
-		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedurl = urlparse.urljoin(url,match)
 		scrapedthumbnail = ""
 		
 		# Depuracion
