@@ -205,6 +205,74 @@ def MonitorSerie ( canal, accion, server, url, serie):
 	parser = xml.parsers.expat.ParserCreate()
 	
 	
+def fixStrmLibrary(path = LIBRARY_PATH):
+    '''Revisa todos los ficheros strm de la librería y repara la url del plugin
+    
+    Este cambio es necesario con el paso a XBMC Dharma (10.5) donde las url de
+    plugin cambiaron de:
+      plugin://video/pelisalacarta/
+    a: 
+      plugin://plugin.video.pelisalacarta/
+    dado que esto podría volver a pasar (en ciertos momentos se ha estado
+    experimentando con urls del tipo addon://... hemos decidido crear esta función
+    para arreglar los strm en cualquier momento.
+    '''
+    xbmc.output("[library.py] fixStrm")
+    xbmc.output("[library.py] fixStrm path="+path)
+    # Comprobamos la validez del parámetro
+    if not os.path.exists(path):
+        xbmc.output("[library.py] fixStrm ERROR: PATH NO EXISTE")
+        return 0
+    if not os.path.isdir(path):
+        xbmc.output("[library.py] fixStrm ERROR: PATH NO ES DIRECTORIO")
+        return 0
+    else:
+        xbmc.output("[library.py] fixStrm El path es un directorio")
+    total,errores = 0,0 
+    for dirpath, dirnames, filenames in os.walk(path):
+        for file in filenames:
+            if file[-5:] == '.strm':
+                if fixStrm (os.path.join(dirpath,file)):
+                	total = total + 1
+                else:
+                    xbmc.output("[library.py] fixStrm ERROR al fixear "+file)
+                    errores = errores + 1
+        #Excluye las carpetas de Subversión de la búsqueda
+        if ".svn" in dirnames:
+            dirnames.remove (".svn")
+    return total,errores
+   
+def fixStrm (file):
+    xbmc.output("[library.py] fixStrm file: "+file)
+    url = LeeStrm (file)
+    if len(url)==0:
+    	return False
+    args = url.split('?',1)
+    url2 = '%s?%s' % (sys.argv[ 0 ],args [1])
+    xbmc.output ("[library.py] fixStrm new url: "+url2)
+    return SaveStrm (file,url2)
+    
+def LeeStrm(file):
+    try:
+        fp = open(file,'r')
+        data = fp.read()
+        fp.close()
+    except:
+        data = ""
+    return data
+
+def SaveStrm (file, data):
+    try:
+        LIBRARYfile = open(file,"w")
+        LIBRARYfile.write(data)
+        LIBRARYfile.flush()
+        LIBRARYfile.close()
+    except IOError:
+        xbmc.output("Error al grabar el archivo "+file)
+        return False
+    return True
+
+
 def dlog (text):
 	if DEBUG:
 
