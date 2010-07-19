@@ -29,6 +29,13 @@ DEBUG = True
 
 SOURCE_URL = 'http://www.mimediacenter.info/foro/viewtopic.php?f=6&t=402'
 
+def fixSTRMLibrary(params,url,category):
+    import library
+    total,errores = library.fixStrmLibrary()
+    dlg = xbmcgui.Dialog()
+    dlg.ok('pelisalacarta - Fix STRM','Se convirtió la biblioteca.','%s actualizados, %s errores' % (total,errores))
+    return
+    
 ##############################################################################
 def mainlist(params,url,category):
   """Obtiene los videos de ayuda del foro y los lista para su visionado
@@ -36,6 +43,10 @@ def mainlist(params,url,category):
   """
   xbmc.output("[ayuda.py] mainlist")
 
+  #Arreglador de biblioteca
+  xbmctools.addnewfolder( CHANNELNAME , "fixSTRMLibrary" , "Other" , "Convertir Biblioteca strm" , "http://null" , thumbnail="" , plot="Convierte los archivos strm existentes en la biblioteca actual para que funcionen tras un upgrade a XBMC Dharma (v10.5). Tambien se puede ejecutar para adaptar archivos de un XBMC mas moderno a otro anterior. Básicamente deja los ficheros strm de la forma correcta para que funcionen en la versión actualmente instalada." )
+
+  
   data = scrapertools.cachePage(SOURCE_URL)
   if len(data) == 0:
     dlog ("[ayuda.py] No se pudo descargar la página de ayuda :" + SOURCE_URL)
