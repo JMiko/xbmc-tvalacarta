@@ -17,6 +17,8 @@ import servertools
 import binascii
 import xbmctools
 import anotador
+import config
+import logger
 
 CHANNELNAME = "descargacineclasico"
 
@@ -27,14 +29,14 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[descargacineclasico.py] init")
+logger.info("[descargacineclasico.py] init")
 
 DEBUG = True
 Generate = False # poner a true para generar listas de peliculas
 LoadThumbnails = True # indica si cargar los carteles
 
 def mainlist(params,url,category):
-	xbmc.output("[descargacineclasico.py] mainlist")
+	logger.info("[descargacineclasico.py] mainlist")
 
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Aventuras" , "http://descargacineclasico.blogspot.com/search/label/Aventuras?updated-max=&max-results=1000" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Ciencia Ficción" , "http://descargacineclasico.blogspot.com/search/label/Ciencia%20Ficcion?updated-max=&max-results=1000" , "", "" )
@@ -47,7 +49,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Novedades" , "http://descargacineclasico.blogspot.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Todas" , "http://descargacineclasico.blogspot.com/search?updated-max=&max-results=1000" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -60,11 +62,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def movielist(params,url,category):
-	xbmc.output("[descargacineclasico.py] mainlist")
+	logger.info("[descargacineclasico.py] mainlist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = "<h3>\n<a href='([^']+)'>(.*?)</a>"
@@ -81,7 +83,7 @@ def movielist(params,url,category):
 		scrapedtitle = match[1]
 		scrapedtitle = scrapedtitle.replace('&#161;','') # ¡
 		scrapedtitle = scrapedtitle.replace('&#191;','') # ¿
-		xbmc.output(scrapedtitle)
+		logger.info(scrapedtitle)
 	#	if (not Generate):
 	#		score = anotador.getscore(match[1])
 	#		if (score != ""):
@@ -102,9 +104,9 @@ def movielist(params,url,category):
 	
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 	
 		if (Generate):
 			sanio = re.search('(.*?)\((.*?)\)',scrapedtitle)
@@ -130,16 +132,16 @@ def movielist(params,url,category):
 		f.close()
 
 def detail(params,url,category):
-	xbmc.output("[descargacineclasico.py] detail")
+	logger.info("[descargacineclasico.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	xbmc.output("[descargacineclasico.py] title="+title)
-	xbmc.output("[descargacineclasico.py] thumbnail="+thumbnail)
+	logger.info("[descargacineclasico.py] title="+title)
+	logger.info("[descargacineclasico.py] thumbnail="+thumbnail)
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -160,14 +162,14 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[descargacineclasico.py] play")
+	logger.info("[descargacineclasico.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[descargacineclasico.py] thumbnail="+thumbnail)
-	xbmc.output("[descargacineclasico.py] server="+server)
+	logger.info("[descargacineclasico.py] thumbnail="+thumbnail)
+	logger.info("[descargacineclasico.py] server="+server)
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

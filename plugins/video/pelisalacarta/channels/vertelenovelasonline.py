@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "vertelenovelasonline"
 
@@ -25,18 +27,18 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[vertelenovelasonline.py] init")
+logger.info("[vertelenovelasonline.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[vertelenovelasonline.py] mainlist")
+	logger.info("[vertelenovelasonline.py] mainlist")
 
 	# Menu principal
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://www.vertelenovelasonline.com/" , "", "" )
 	
 	# Si es un canal independiente, añade "Configuracion", "Descargas" y "Favoritos"
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -45,11 +47,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def newlist(params,url,category):
-	xbmc.output("[vertelenovelasonline.py] listmirrors")
+	logger.info("[vertelenovelasonline.py] listmirrors")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	#<a onblur="try {parent.deselectBloggerImageGracefully();} catch(e) {}" href="http://www.vertelenovelasonline.com/2009/11/amor-palos.html">
@@ -67,7 +69,7 @@ def newlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -78,7 +80,7 @@ def newlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[vertelenovelasonline.py] listmirrors")
+	logger.info("[vertelenovelasonline.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -86,7 +88,7 @@ def listmirrors(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae la sinopsis
 	patron  = '<span style="font-weight: bold;">(.*?)<'
@@ -94,7 +96,7 @@ def listmirrors(params,url,category):
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
 		plot = matches[0].strip()
-		xbmc.output(plot)
+		logger.info(plot)
 
 	#<a style="color: rgb(51, 51, 255);" href="http://www.vertelenovelasonline.com/2009/10/dona-barbara-1-50.html" target="_blank"> capitulo 1-50.</a><br /><br /><a style="color: rgb(51, 51, 255);" href="http://www.vertelenovelasonline.com/
 	#<a style="color: rgb(51, 51, 255);" href="http://www.vertelenovelasonline.com/2009/10/amor-real-1.html"> capitulo 1.</a>
@@ -107,7 +109,7 @@ def listmirrors(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = thumbnail
 		scrapedplot = plot
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -118,7 +120,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[vertelenovelasonline.py] detail")
+	logger.info("[vertelenovelasonline.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -126,7 +128,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -146,7 +148,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[vertelenovelasonline.py] play")
+	logger.info("[vertelenovelasonline.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

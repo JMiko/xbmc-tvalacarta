@@ -20,6 +20,8 @@ import xbmctools
 import scrapertools
 import servertools
 import linkbucks
+import config
+import logger
 
 CHANNELNAME = "filmstreaming"
 
@@ -30,19 +32,19 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[filmstreaming.py] init")
+logger.info("[filmstreaming.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[filmstreaming.py] mainlist")
+	logger.info("[filmstreaming.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film"     , "http://www.streaming-ital.com/film/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Telefilm" , "http://www.streaming-ital.com/telefilm/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Anime"    , "http://www.streaming-ital.com/anime/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio
@@ -51,7 +53,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def peliculas(params,url,category):
-	xbmc.output("[filmstreaming.py] peliculas")
+	logger.info("[filmstreaming.py] peliculas")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -73,7 +75,7 @@ def peliculas(params,url,category):
 		scrapedthumbnail = urlparse.urljoin(url,match[0])
 		scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detalle" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -90,7 +92,7 @@ def peliculas(params,url,category):
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -101,7 +103,7 @@ def peliculas(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detalle(params,url,category):
-	xbmc.output("[filmstreaming.py] detalle")
+	logger.info("[filmstreaming.py] detalle")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -128,7 +130,7 @@ def detalle(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[filmstreaming.py] play")
+	logger.info("[filmstreaming.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

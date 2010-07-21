@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "tumejortv"
 
@@ -25,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[tumejortv.py] init")
+logger.info("[tumejortv.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[tumejortv.py] mainlist")
+	logger.info("[tumejortv.py] mainlist")
 	xbmctools.addnewfolder( CHANNELNAME , "newlist"        , CHANNELNAME , "Novedades" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "moviecategorylist" , CHANNELNAME , "Películas - Por categorías" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "moviealphalist" , CHANNELNAME , "Películas - Por orden alfabético" , "http://www.tumejortv.com/" , "", "" )
@@ -39,7 +41,7 @@ def mainlist(params,url,category):
 	xbmctools.addnewfolder( CHANNELNAME , "seriealphalist" , CHANNELNAME , "Series - Por orden alfabético" , "http://www.tumejortv.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "search"         , CHANNELNAME , "Buscar" , "" , "", "" )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -48,7 +50,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[tumejortv.py] search")
+	logger.info("[tumejortv.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -69,7 +71,7 @@ def search(params,url,category):
 
 # Listado de novedades de la pagina principal
 def searchresults(params,tecleado):
-	xbmc.output("[tumejortv.py] searchresults")
+	logger.info("[tumejortv.py] searchresults")
 
 	resultados = performsearch(tecleado)
 
@@ -91,7 +93,7 @@ def searchresults(params,tecleado):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def performsearch(texto):
-	xbmc.output("[tumejortv.py] performsearch")
+	logger.info("[tumejortv.py] performsearch")
 	url = "http://www.tumejortv.com/buscar/?s="+texto+"&x=0&y=0"
 	
 	# ------------------------------------------------------
@@ -99,7 +101,7 @@ def performsearch(texto):
 	# ------------------------------------------------------
 	resultados = []
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -119,7 +121,7 @@ def performsearch(texto):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -142,7 +144,7 @@ def performsearch(texto):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "detailserie" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -151,13 +153,13 @@ def performsearch(texto):
 
 # Listado de novedades de la pagina principal
 def newlist(params,url,category):
-	xbmc.output("[tumejortv.py] movielist")
+	logger.info("[tumejortv.py] movielist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -179,7 +181,7 @@ def newlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -197,7 +199,7 @@ def newlist(params,url,category):
 		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapeddescription = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -209,13 +211,13 @@ def newlist(params,url,category):
 
 # Listado de películas de una categoria / letra
 def shortlist(params,url,category):
-	xbmc.output("[tumejortv.py] shortlist")
+	logger.info("[tumejortv.py] shortlist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -232,7 +234,7 @@ def shortlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -250,7 +252,7 @@ def shortlist(params,url,category):
 		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -262,13 +264,13 @@ def shortlist(params,url,category):
 
 # Listado de series de una letra
 def shortlistserie(params,url,category):
-	xbmc.output("[tumejortv.py] shortlistserie")
+	logger.info("[tumejortv.py] shortlistserie")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -284,7 +286,7 @@ def shortlistserie(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detailserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -302,7 +304,7 @@ def shortlistserie(params,url,category):
 		scrapedurl = matches[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -315,13 +317,13 @@ def shortlistserie(params,url,category):
 # Listado de categorias de películas, de la caja derecha de la home
 def moviecategorylist(params,url,category):
 	
-	xbmc.output("[tumejortv.py] moviecategorylist")
+	logger.info("[tumejortv.py] moviecategorylist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -337,7 +339,7 @@ def moviecategorylist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -350,15 +352,16 @@ def moviecategorylist(params,url,category):
 # Listado de letras iniciales de película, de la caja derecha de la home
 def moviealphalist(params,url,category):
 	
-	xbmc.output("[tumejortv.py] moviealphalist")
+	logger.info("[tumejortv.py] moviealphalist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
+
 	# Extrae las películas
 	# ------------------------------------------------------
 	#<a href="http://www.tumejortv.com/peliculas-es-con-letra-a" title="Pel&iacute;culas - Es con la letra a" class="listados_letras">a</a> - 
@@ -372,7 +375,7 @@ def moviealphalist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -385,13 +388,13 @@ def moviealphalist(params,url,category):
 # Listado de letras iniciales de series, de la caja derecha de la home
 def seriealphalist(params,url,category):
 	
-	xbmc.output("[tumejortv.py] seriealphalist")
+	logger.info("[tumejortv.py] seriealphalist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -407,7 +410,7 @@ def seriealphalist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "shortlistserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -420,13 +423,13 @@ def seriealphalist(params,url,category):
 # Listado de series actualizadas, de la caja derecha de la home
 def serienewlist(params,url,category):
 	
-	xbmc.output("[tumejortv.py] serienewlist")
+	logger.info("[tumejortv.py] serienewlist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -442,7 +445,7 @@ def serienewlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detailserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -455,13 +458,13 @@ def serienewlist(params,url,category):
 # Listado de todas las series, de la caja derecha de la home
 def seriealllist(params,url,category):
 	
-	xbmc.output("[tumejortv.py] seriealllist")
+	logger.info("[tumejortv.py] seriealllist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -478,7 +481,7 @@ def seriealllist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detailserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -490,7 +493,7 @@ def seriealllist(params,url,category):
 
 # Detalle de un vídeo (peli o capitulo de serie), con los enlaces
 def detail(params,url,category):
-	xbmc.output("[tumejortv.py] detail")
+	logger.info("[tumejortv.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -498,7 +501,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	patron = '<div id="blogitem">[^<]+<p>([^<]+)</p>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -517,7 +520,7 @@ def detail(params,url,category):
 
 # Detalle de una serie, con sus capítulos
 def detailserie(params,url,category):
-	xbmc.output("[tumejortv.py] detailserie")
+	logger.info("[tumejortv.py] detailserie")
 
 	title = urllib.unquote_plus( params.get("title") )
 
@@ -525,7 +528,7 @@ def detailserie(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	#<ul class="linksListados">
@@ -556,10 +559,10 @@ def detailserie(params,url,category):
 
 			# Depuracion
 			if DEBUG:
-				xbmc.output("scrapedtitle="+scrapedtitle)
-				xbmc.output("scrapedurl="+scrapedurl)
-				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-				xbmc.output("scrapedplot="+scrapedplot)
+				logger.info("scrapedtitle="+scrapedtitle)
+				logger.info("scrapedurl="+scrapedurl)
+				logger.info("scrapedthumbnail="+scrapedthumbnail)
+				logger.info("scrapedplot="+scrapedplot)
 
 			# Añade al listado de XBMC
 			xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -571,7 +574,7 @@ def detailserie(params,url,category):
 
 # Reproducir un vídeo
 def play(params,url,category):
-	xbmc.output("[tumejortv.py] play")
+	logger.info("[tumejortv.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

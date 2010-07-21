@@ -6,6 +6,7 @@
 #------------------------------------------------------------
 import base64, re, urllib, string, sys, zipfile, os, os.path
 import xbmc
+import config
 
 class ziptools:
 

@@ -17,6 +17,8 @@ import binascii
 import xbmctools
 import string
 import youtube
+import config
+import logger
 
 CHANNELNAME = "series21"
 
@@ -27,24 +29,24 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[series21.py] init")
+logger.info("[series21.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[series21.py] mainlist")
+	logger.info("[series21.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , "Series - Novedades"            ,"http://www.series21.com","","","novedades")
 	xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , "Series - Estrenos"             ,"http://www.series21.com","","","estrenos")
-	xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , "Spoilers ","http://www.series21.com/spoilers/","","","spoilers")
+	#xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , "Spoilers ","http://www.series21.com/","","","spoilers")
 	xbmctools.addnewfolder( CHANNELNAME , "seriesalfa"  , category , "Series - Lista alfabética (Con Sinopsis y Poster)"     ,"","","")
-	xbmctools.addnewfolder( CHANNELNAME , "SeriesBuscaAlfa"   , category , "Series - Busqueda Alfabética (toda la base de datos)" ,"http://www.series21.com/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listaActoresMasBuscados" , category , "Actores - Lista Los Más Buscados"     ,"http://www.series21.com/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor"      , category , "Actores - Busqueda Alfabética"  ,"http://www.series21.com/actores/","","")	
+	xbmctools.addnewfolder( CHANNELNAME , "SeriesBuscaAlfa"   , category , "Series - Busqueda Alfabética (toda la base de datos)" ,"http://www.series21.com/listado-series/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listaActoresMasBuscados" , category , "Actores - Lista Los Más Buscados"     ,"http://www.series21.com/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor"      , category , "Actores - Busqueda Alfabética"  ,"http://www.series21.com/actores/","","")	
 	xbmctools.addnewfolder( CHANNELNAME , "search"                  , category , "Series - Buscar"                           ,"","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -98,7 +100,7 @@ def seriesalfa(params, url, category):
 
 
 def search(params,url,category):
-	xbmc.output("[series21.py] search")
+	logger.info("[series21.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -112,13 +114,13 @@ def search(params,url,category):
 			listsimple(params,searchUrl,category)
 
 def SeriesBuscaAlfa(params,url,category):
-	xbmc.output("[series21.py] peliscat")
+	logger.info("[series21.py] peliscat")
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	
 	# Extrae los Géneros de las Peliculas
-	patronvideos = '<div class="series">(.*?)<br style="clear:both" />'
+	patronvideos = '<div class="serieslist">(.*?)</div><!--list-->'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	patronvideos = '<a href="([^"]+)">([^<]+)</a>'
 	matches1 = re.compile(patronvideos,re.DOTALL).findall(matches[0])
@@ -132,7 +134,7 @@ def SeriesBuscaAlfa(params,url,category):
 		opciones.append(letra)
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("busqueda rapida, elige uno : ", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1 :return
 	if seleccion == 0:
 		keyboard = xbmc.Keyboard('')
@@ -140,7 +142,7 @@ def SeriesBuscaAlfa(params,url,category):
 		if (keyboard.isConfirmed()):
 			tecleado = keyboard.getText()
 			if len(tecleado)>0:
-				xbmc.output("Nuevo string tecleado   "+tecleado)
+				logger.info("Nuevo string tecleado   "+tecleado)
 				for match in matches1:
 					if (string.lower(tecleado)) in (string.lower(match[1])):
 						scrapedurl   = "http://www.series21.com"+match[0]
@@ -148,9 +150,9 @@ def SeriesBuscaAlfa(params,url,category):
 						scrapedthumbnail = ""
 						scrapedplot = " "
 						if (DEBUG):
-							xbmc.output("scrapedtitle="+scrapedtitle)
-							xbmc.output("scrapedurl="+scrapedurl)
-							xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+							logger.info("scrapedtitle="+scrapedtitle)
+							logger.info("scrapedurl="+scrapedurl)
+							logger.info("scrapedthumbnail="+scrapedthumbnail)
 							#  Añade al listado de XBMC
 							xbmctools.addnewfolder( CHANNELNAME , "listarTemporada" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 	elif seleccion == 1:
@@ -161,15 +163,17 @@ def SeriesBuscaAlfa(params,url,category):
 			xbmctools.addnewfolder( CHANNELNAME , "listarTemporada" , category , genero ,url,"","")
 	elif seleccion == 2:
 		for match in matches1:
+
+
 			if match[1][0:1] in ("0123456789"):
 				scrapedurl   = match[0]
 				scrapedtitle = match[1]
 				scrapedthumbnail = ""
 				scrapedplot = " "
 				if (DEBUG):
-					xbmc.output("scrapedtitle="+scrapedtitle)
-					xbmc.output("scrapedurl="+scrapedurl)
-					xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+					logger.info("scrapedtitle="+scrapedtitle)
+					logger.info("scrapedurl="+scrapedurl)
+					logger.info("scrapedthumbnail="+scrapedthumbnail)
 					
 					# Añade al listado de XBMC
 					xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -183,9 +187,9 @@ def SeriesBuscaAlfa(params,url,category):
 				scrapedthumbnail = ""
 				scrapedplot = " "
 				if (DEBUG):
-					xbmc.output("scrapedtitle="+scrapedtitle)
-					xbmc.output("scrapedurl="+scrapedurl)
-					xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+					logger.info("scrapedtitle="+scrapedtitle)
+					logger.info("scrapedurl="+scrapedurl)
+					logger.info("scrapedthumbnail="+scrapedthumbnail)
 					#  Añade al listado de XBMC
 					xbmctools.addnewfolder( CHANNELNAME , "listarTemporada" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )	
 	
@@ -202,66 +206,81 @@ def SeriesBuscaAlfa(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listsimple(params,url,category):
-	xbmc.output("[series21.py] listsimple")
+	logger.info("[series21.py] listsimple")
 	url1 = "http://www.series21.com"
 	extra= urllib.unquote_plus(params.get("extradata"))
 	title = urllib.unquote_plus(params.get("title"))
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	xbmc.output("esta es la url: "+url)
+	logger.info("esta es la url: "+url)
 	# Extrae las entradas (carpetas)
+	scrapedplot = ""
 	patronvideos = ""
-	if title in ("Series - Novedades","Spoilers ") or  url1+"/nuevo" in url:
-		patronvideos  = '<div class="serietemporadas">.*?<a href="([^"]+)"  target="_blank" ' # url
-		patronvideos += 'class="titulo"><img src="([^"]+)"  '                              # Imagen
-		patronvideos += 'width=[^>]+>([^<]+)</a>.*?<[^/]+/>.*?'                            # Titulo 
-		patronvideos += '<b>(Serie:</b>[^<]+)<.*?<a href="([^"]+)">.*?</a>--><br/>'        # Nombre de la Serie 
-		patronvideos += '.*?<b>(Temporada:</b>.*?)<.*?</a>--><br/>'                        
+	if (title == "Series - Estrenos") or  url1+"/nuevo" in url:
+		patronvideos  = '<div class="film2"[^>]+><a href="[^"]+">' 
+		patronvideos += '<img src="([^"]+)".*?</a>[^<]+'                             # Imagen
+		patronvideos += '<a href="([^"]+)".*?'                                  # Url
+		patronvideos += '<b>([^<]+)</b></div>[^<]+?'                            # Nombre de la serie 
+		patronvideos += '<div style[^>]+>([^<]+)</div></a></div>'                     # Titulo del capitulo 
+		#patronvideos += '.*?<b>(Temporada:</b>.*?)<.*?</a>--><br/>'                        
 		#patronvideos += '.*?<div style=[^>]+>'                                            # Genero
-		patronvideos += '.*?<b>(Doblaje:</b>.*?)<.*?-->'                                   # Idioma
+		#patronvideos += '.*?<b>(Doblaje:</b>.*?)<.*?-->'                                   # Idioma
 		
 	elif title in "0-9ABCDEFGHIJKLMNOPQRSTUVWXYZ" or extra=="actor":
-		patronvideos  = '<div class="serietemporadas">.*?<a href="([^"]+)"  target="_blank" ' # url
-		patronvideos += 'class="titulo">.*?<img src="([^"]+)"  '                              # Imagen
-		patronvideos += 'width=[^>]+>([^<]+)</a>.*?<[^/]+/>.*?'                               # Titulo
-		patronvideos += '<b>(Sinopsis:</b>.*?)<br /><br />.*?--></div>'	                      # Sinopsis
+		patronvideos  = '<a href="([^"]+)"[^>]+'                                # url
+		patronvideos += '>.*?<img src="([^"]+)"'                              # Imagen
+		patronvideos += '[^>]+>([^<]+)</a>.*?'                               # Titulo
+		patronvideos += '<b>(Sinopsis: </b>.*?)<br /><br />'	                      # Sinopsis
 		
-	elif title == "Series - Estrenos":
-		patronvideos  = '<div class="film"  ><a href="([^"]+)" >'
-		patronvideos += '<img src="([^"]+)" style.*?/>'
-		patronvideos += '<br /><b>(.*?)</b><br />(.*?)</a></div>'
-	xbmc.output("[ listsimple  patronvideos: "+patronvideos)
+	elif title == "Series - Novedades":
+		patronvideos  = '<li style=.*?margin-left[^>]+><a style="[^"]+" href="([^"]+)"'
+		patronvideos += '>([^<]+)</a></li>'
+		#patronvideos += '<br /><b>(.*?)</b><br />(.*?)</a></div>'
+	logger.info("[ listsimple  patronvideos: "+patronvideos)
+	#<li style="margin:0px; padding:0px;  height:18px; margin-left:5px;"><a style="text-decoration:none;" href="/bella-calamidades/1x124-capitulo-124/">Bella calamidades 1x124 - Capitulo - 124</a></li>
 	
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	solo_capitulo = False
-	#xbmc.output("[ listsimple  matches")
+	#logger.info("[ listsimple  matches")
 	for match in matches:
 		# Atributos
-		scrapedtitle = match[2]
+		#scrapedtitle = match[2]
 		#scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
 		#scrapedtitle = scrapedtitle.replace("</span>","")
-		scrapedurl = urlparse.urljoin(url1,match[0])
-		scrapedthumbnail = urlparse.urljoin(url1,match[1])
+		scrapedurl = urlparse.urljoin(url1,match[1])
+		scrapedthumbnail = urlparse.urljoin(url1,match[0])
 		scrapedthumbnail = scrapedthumbnail.replace(" ","")
 		if title in "0-9ABCDEFGHIJKLMNOPQRSTUVWXYZ" or extra=="actor":
+			scrapedtitle = match[2]
 			scrapedplot  = match[3].replace("\n"," ")+"\n"
-		if title == "Series - Estrenos":
+			scrapedurl = urlparse.urljoin(url1,match[0])
+			scrapedthumbnail = urlparse.urljoin(url1,match[1])
+			scrapedthumbnail = scrapedthumbnail.replace(" ","")			
+		if title == "Series - Novedades":
+			scrapedurl = urlparse.urljoin(url1,match[0])
+			scrapedthumbnail = ""
+			#scrapedthumbnail = scrapedthumbnail.replace(" ","")
 			solo_capitulo = True
-			scrapedplot  = "Serie:    "+match[2]+"\n"
-			scrapedplot += "Capitulo: "+match[3]
-			scrapedtitle += " - "+match[3]
-		if title in ("Series - Novedades","Spoilers ")   or  url1+"/nuevo" in url:
+			#scrapedplot  = "Serie:    "+match[2]+"\n"
+			#scrapedplot += "Capitulo: "+match[3]
+			scrapedtitle = match[1]
+		if (title == "Series - Estrenos")   or  url1+"/nuevo" in url:
+			scrapedtitle = match[2]
+			scrapedurl = urlparse.urljoin(url1,match[1])
+			scrapedthumbnail = urlparse.urljoin(url1,match[0])
+			scrapedthumbnail = scrapedthumbnail.replace(" ","")
 			solo_capitulo = True
-			scrapedplot = match[3].replace("\n","")+"\n"	
-			scrapedplot  = scrapedplot.replace(":",":          ")
-			scrapedplot += match[5].replace("\n"," ")+"\n"
-			scrapedplot += match[6].replace(":",":      ")
+			scrapedtitle = scrapedtitle + " - " + match[3]
+			#scrapedplot = match[3].replace("\n","")+"\n"	
+			#scrapedplot  = scrapedplot.replace(":",":          ")
+			#scrapedplot += match[5].replace("\n"," ")+"\n"
+			#scrapedplot += match[6].replace(":",":      ")
 		scrapedplot  = re.sub("<[^>]+>"," ",scrapedplot)
 		scrapedplot  = scrapedplot.replace("&eacute;","é")
 		scrapedplot  = scrapedplot.replace("&oacute;","ó")
 		scrapedplot  = scrapedplot.replace("&ntilde;","ñ")
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 
 		# Añade al listado de XBMC
@@ -294,14 +313,14 @@ def listsimple(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listarTemporada(params,url,category):
-	xbmc.output("[series21.py] listvideos")
+	logger.info("[series21.py] listvideos")
 	url1 = "http://www.series21.com"
 	if url=="":
 		url = "http://www.series21.com"
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	titulo_serie  = urllib.unquote_plus(params.get("title"))
 	if titulo_serie == "Cambiar a otras temporadas":
 		titulo_serie = urllib.unquote_plus(params.get("extradata"))
@@ -323,8 +342,10 @@ def listarTemporada(params,url,category):
 	# Busca los actores
 	patronactor    = '<div id="actores">(.*?)cursor:pointer'
 	matchesactor   = re.compile(patronactor,re.DOTALL).findall(data)
-	matchesactores = buscactores(matchesactor[0]) 
-	print ' actores: %s' %str(len(matchesactores))
+	matchesactores = ""
+	if len(matchesactor)>0:
+		matchesactores = buscactores(matchesactor[0]) 
+		print ' actores: %s' %str(len(matchesactores))
 	if len(matchesactores)>0:
 		actor =  "Actores:   "
 		c = 0
@@ -350,7 +371,7 @@ def listarTemporada(params,url,category):
 			opciones.append(temporada)
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige un tipo de Listado", opciones)
-		xbmc.output("seleccion=%d" % seleccion)
+		logger.info("seleccion=%d" % seleccion)
 	else:
 		seleccion = 0
 	if seleccion == -1:
@@ -372,7 +393,7 @@ def listarTemporada(params,url,category):
 	else:
 		thumbnail = urlparse.urljoin(url1,matches[seleccion-1][1])
 		temporada = re.sub("<[^>]+>"," ",matches[seleccion-1][0]).replace("-","").replace(">","")
-		xbmc.output("matcheswwwwww "+matches[seleccion-1][2])
+		logger.info("matcheswwwwww "+matches[seleccion-1][2])
 		matchescapit = re.compile(patroncapit,re.DOTALL).findall(matches[seleccion-1][2])
 		plot   += temporada + "\n"
 		plot   += actor+"\n"+"Sinopsis : " + str(sinopsis[0])
@@ -405,7 +426,7 @@ def ListarVideos(params,url,category):
 	plot = urllib.unquote_plus(params.get("plot"))			
 	data = scrapertools.cachePage(url1)
 	# Busca el area donde estan los videos y la descripcion
-	patronvideos = '<!--     <br />(.*?)<!-- FIN #content-->'
+	patronvideos = '<div id="content">(.*?)<!-- FIN #content-->'
 	matches      = re.compile(patronvideos,re.DOTALL).findall(data)
 	matchesBK = matches[0]
 
@@ -444,9 +465,9 @@ def ListarVideos(params,url,category):
 			
 			# Depuracion
 			if (DEBUG):
-				xbmc.output("scrapedtitle="+scrapedtitle)
-				xbmc.output("scrapedurl="+scrapedurl)
-				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+				logger.info("scrapedtitle="+scrapedtitle)
+				logger.info("scrapedurl="+scrapedurl)
+				logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 			# Añade al listado de XBMC
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -464,7 +485,7 @@ def ListarVideos(params,url,category):
 	if len(matches)>0:
 		
 		data1 = scrapertools.cachePage(matches[0])
-		#xbmc.output(data)
+		#logger.info(data)
 		patron = 'author">(.*?)</media:credit>.*?<media\:content url="([^"]+)"'
 		matches = re.compile(patron,re.DOTALL).findall(data1)
 		scrapertools.printMatches(matches)
@@ -520,7 +541,7 @@ def ListarVideos(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[series21.py] play")
+	logger.info("[series21.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -530,7 +551,7 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
-        xbmc.output("[series21.py] youtubeplay")
+        logger.info("[series21.py] youtubeplay")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -543,19 +564,19 @@ def youtubeplay(params,url,category):
 	opciones.append("(MP4) Alta calidad")
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("tiene 2 formatos elige uno", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion==-1:
 		return("")
 	if seleccion == 0:
 		videourl,videoinfo = youtube.GetYoutubeVideoInfo(id)
 	else:
 		videourl = youtube.geturl(id)
-	xbmc.output("link directo de youtube : "+videourl)
+	logger.info("link directo de youtube : "+videourl)
 	xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
  
 
 def listaractores(params,url,category):
-	xbmc.output("[series21.py] listaractores")
+	logger.info("[series21.py] listaractores")
 	extra= urllib.unquote_plus(params.get("extradata"))
 	url1 = "http://www.series21.com"
 	actores = buscactores(extra)
@@ -566,7 +587,7 @@ def listaractores(params,url,category):
 		actorURL.append(urlparse.urljoin(url1,i[0]))           
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Selecciona uno ", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1:return
 	else:
 		params["title"]="Z"
@@ -576,15 +597,19 @@ def listaractores(params,url,category):
 def buscactores(data):
 	patronvideos = '<a href="([^"]+)">(.*?)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	return(matches)
+	if len(matches)>0:
+		return matches
+	else:
+		return ""
 	
 def listarelacionados(params,url,category):
-	xbmc.output("[series21.py] listaractores")
+	logger.info("[series21.py] listaractores")
 	
 	url1 = "http://www.series21.com"
 	#patronvideos = '<div><a href="([^"]+)">([^<]+)</a><br'
 	data = urllib.unquote_plus(params.get("extradata"))
-	matches = buscarelacionados(data) 
+	matches = buscarelacionados(data)
+	plot = "" 
 	patronvideos = '<b>Serie:</b>(.*?)<.*?<b>Temporada:</b>(.*?)<a'
 	serie = re.compile(patronvideos,re.DOTALL).findall(data)
 	for match in serie:
@@ -601,7 +626,7 @@ def listarelacionados(params,url,category):
 		
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Selecciona uno ", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1 :return
 	elif "(Viendo ahora)" in opciones[seleccion]:return
 	else:
@@ -616,7 +641,7 @@ def buscarelacionados(data):
 	return (matches)
 	
 def buscaporletraActor(params,url,category):
-	xbmc.output("[series21.py] buscaporletra")
+	logger.info("[series21.py] buscaporletra")
 	data = scrapertools.cachePage(url)
 	patron  = '<div class="title">Listado de Actores</div><br/>(.*?)<ul class="menustyle">'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -632,7 +657,7 @@ def buscaporletraActor(params,url,category):
 		opciones.append(letra)
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("busqueda rapida, elige uno : ", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1 :return
 	if seleccion == 0:
 		keyboard = xbmc.Keyboard('')
@@ -640,7 +665,7 @@ def buscaporletraActor(params,url,category):
 		if (keyboard.isConfirmed()):
 			tecleado = keyboard.getText()
 			if len(tecleado)>0:
-				xbmc.output("Nuevo string tecleado   "+tecleado)
+				logger.info("Nuevo string tecleado   "+tecleado)
 				for match in matches:
 					if (string.lower(tecleado)) in (string.lower(match[1])):
 						scrapedurl   = "http://www.series21.com"+match[0]
@@ -648,9 +673,9 @@ def buscaporletraActor(params,url,category):
 						scrapedthumbnail = ""
 						scrapedplot = " "
 						if (DEBUG):
-							xbmc.output("scrapedtitle="+scrapedtitle)
-							xbmc.output("scrapedurl="+scrapedurl)
-							xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+							logger.info("scrapedtitle="+scrapedtitle)
+							logger.info("scrapedurl="+scrapedurl)
+							logger.info("scrapedthumbnail="+scrapedthumbnail)
 							#  Añade al listado de XBMC
 							xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot,"actor" )
 								
@@ -662,9 +687,9 @@ def buscaporletraActor(params,url,category):
 				scrapedthumbnail = ""
 				scrapedplot = " "
 				if (DEBUG):
-					xbmc.output("scrapedtitle="+scrapedtitle)
-					xbmc.output("scrapedurl="+scrapedurl)
-					xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+					logger.info("scrapedtitle="+scrapedtitle)
+					logger.info("scrapedurl="+scrapedurl)
+					logger.info("scrapedthumbnail="+scrapedthumbnail)
 					#  Añade al listado de XBMC
 					xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot,"actor" )
 				
@@ -678,7 +703,7 @@ def buscaporletraActor(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listaActoresMasBuscados(params,url,category):
-	xbmc.output("[series21.py] listaActoresMasBuscados")
+	logger.info("[series21.py] listaActoresMasBuscados")
 	extra="actor"
 	url1 = "http://www.series21.com"
 	# Descarga la página
@@ -701,9 +726,9 @@ def listaActoresMasBuscados(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot,extra )

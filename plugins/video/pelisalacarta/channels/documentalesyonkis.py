@@ -16,6 +16,8 @@ import servertools
 import binascii
 import xbmctools
 import DecryptYonkis as Yonkis
+import config
+import logger
 
 CHANNELNAME = "documentalesyonkis"
 
@@ -31,20 +33,20 @@ try:
 except:
 	pluginhandle = ""
 
-xbmc.output("[documentalesyonkis.py] init")
+logger.info("[documentalesyonkis.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[documentalesyonkis.py] mainlist")
+	logger.info("[documentalesyonkis.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	xbmctools.addnewfolder( CHANNELNAME , "lastvideolist" , category , "Últimos documentales","http://documentales.videosyonkis.com/ultimos-videos.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "allvideolist"  , category , "Listado completo","http://documentales.videosyonkis.com/lista-videos.php","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -57,13 +59,13 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def lastvideolist(params,url,category):
-	xbmc.output("[documentalesyonkis.py] lastvideolist")
-	if xbmcplugin.getSetting("forceview")=="true":
+	logger.info("[documentalesyonkis.py] lastvideolist")
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<td><a href="([^"]+)" title="([^"]+)"><img.*?src=\'([^\']+)\'[^>]+>.*?</td>'
@@ -88,9 +90,9 @@ def lastvideolist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -105,13 +107,13 @@ def lastvideolist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def allvideolist(params,url,category):
-	xbmc.output("[documentalesyonkis.py] allvideolist")
-	if xbmcplugin.getSetting("forceview")=="true":
+	logger.info("[documentalesyonkis.py] allvideolist")
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<li> <a href="([^"]+)" title="([^"]+)"><img.*?src=\"([^\"]+)\"[^>]+\/>'
@@ -136,9 +138,9 @@ def allvideolist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -153,7 +155,7 @@ def allvideolist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[documentalesyonkis.py] detail")
+	logger.info("[documentalesyonkis.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -169,13 +171,13 @@ def detail(params,url,category):
 	
 	if(len(matches)>0):
 		id = matches[0][1]
-		xbmc.output("[documentalesyonkis.py] detail id="+id)
+		logger.info("[documentalesyonkis.py] detail id="+id)
 		if "&" in id:
 			ids = id.split("&")
 			id = ids[0]
 		dec = Yonkis.DecryptYonkis()
-		id = dec.decryptALT(dec.unescape(id))
-		xbmc.output("[documentalesyonkis.py] detail id="+id)
+		id = dec.decryptALT(dec.charting(dec.unescape(id)))
+		logger.info("[documentalesyonkis.py] detail id="+id)
 		url=id
 	else:
 		xbmctools.alertnodisponible()

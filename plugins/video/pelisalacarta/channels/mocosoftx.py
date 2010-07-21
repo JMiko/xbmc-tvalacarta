@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "mocosoftx"
 BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails","videos" )
@@ -28,17 +30,17 @@ except:
    pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[mocosoftx.py] init")
+logger.info("[mocosoftx.py] init")
 
 DEBUG = True
 def mainlist(params,url,category):
-	xbmc.output("[mocosoftx.py] mainlist")
+	logger.info("[mocosoftx.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php","","")
 	xbmctools.addnewfolder( CHANNELNAME , "FullList"   , category , "Listado Completo" ,"http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Propiedades
@@ -47,11 +49,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	
 def Novedades(params,url,category):
-	xbmc.output("[mocosoftx.py] Novedades")
+	logger.info("[mocosoftx.py] Novedades")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	
 	# Extrae las entradas (carpetas)
 	patron  = '<td class="sp_middle sp_regular_padding sp_fullwidth">'
@@ -66,7 +68,7 @@ def Novedades(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -90,7 +92,7 @@ def Novedades(params,url,category):
 	
 	
 def FullList(params,url,category):
-   xbmc.output("[mocosoftx.py] FullList")
+   logger.info("[mocosoftx.py] FullList")
    
 
    if url=="":
@@ -98,7 +100,7 @@ def FullList(params,url,category):
 
    # Descarga la página
    data = scrapertools.cachePage(url)
-   #xbmc.output(data)
+   #logger.info(data)
 
    # Extrae las entradas (carpetas)
    patron      = '<item>(.*?)</item>'
@@ -127,16 +129,16 @@ def FullList(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
 
    
 
-   if xbmcplugin.getSetting("singlechannel")=="true":
+   if config.getSetting("singlechannel")=="true":
       xbmctools.addSingleChannelOptions(params,url,category)
 
    # Label (top-right)...
@@ -149,7 +151,7 @@ def FullList(params,url,category):
    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-   xbmc.output("[mocosoftx.py] detail")
+   logger.info("[mocosoftx.py] detail")
    	
    title = urllib.unquote_plus( params.get("title") )
    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -165,7 +167,7 @@ def detail(params,url,category):
     patronthumb = '<img src="([^"]+)" alt="" border="0" />[</a>|<br />]+'
     matches = re.compile(patronthumb,re.DOTALL).findall(data)
     scrapertools.printMatches(matches) 
-   #xbmc.output(data)
+   #logger.info(data)
 #addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
    # ------------------------------------------------------------------------------------
    # Busca los enlaces a los videos
@@ -191,7 +193,7 @@ def detail(params,url,category):
    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-   xbmc.output("[mocosoftx.py] play")
+   logger.info("[mocosoftx.py] play")
 
    title = ""#unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
    thumbnail = ""#urllib.unquote_plus( params.get("thumbnail") )

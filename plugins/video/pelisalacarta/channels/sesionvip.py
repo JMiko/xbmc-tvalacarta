@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "sesionvip"
 
@@ -25,17 +27,17 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[sesionvip.py] init")
+logger.info("[sesionvip.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[sesionvip.py] mainlist")
+	logger.info("[sesionvip.py] mainlist")
 
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , "Novedades","http://www.sesionvip.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"  , category , "Buscar","","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -48,11 +50,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def newlist(params,url,category):
-	xbmc.output("[sesionvip.py] newlist")
+	logger.info("[sesionvip.py] newlist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	'''
 	<div class="entry"><!-- Entry -->
@@ -73,10 +75,10 @@ def newlist(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	for match in matches:
-		xbmc.output("match="+match)
+		logger.info("match="+match)
 		nuevopatron = '<a href="([^"]+)" rel="bookmark">([^<]+)</a>'#<img.*?src="([^"]+)"'
 		nuevomatches = re.compile(nuevopatron,re.DOTALL).findall(match)
-		xbmc.output("len(nuevomatches)=%d" % len(nuevomatches))
+		logger.info("len(nuevomatches)=%d" % len(nuevomatches))
 		scrapertools.printMatches(nuevomatches)
 
 		# Titulo
@@ -93,9 +95,9 @@ def newlist(params,url,category):
 
 			# Depuracion
 			if (DEBUG):
-				xbmc.output("scrapedtitle="+scrapedtitle)
-				xbmc.output("scrapedurl="+scrapedurl)
-				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+				logger.info("scrapedtitle="+scrapedtitle)
+				logger.info("scrapedurl="+scrapedurl)
+				logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 			# Añade al listado de XBMC
 			xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listmirrors" )
@@ -117,9 +119,9 @@ def newlist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "newlist" )
@@ -134,12 +136,12 @@ def newlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[sesionvip.py] detail")
+	logger.info("[sesionvip.py] detail")
 
 	title = params.get("title")
 	thumbnail = params.get("thumbnail")
-	xbmc.output("[sesionvip.py] title="+title)
-	xbmc.output("[sesionvip.py] thumbnail="+thumbnail)
+	logger.info("[sesionvip.py] title="+title)
+	logger.info("[sesionvip.py] thumbnail="+thumbnail)
 
 	'''
 	# Descarga la página y extrae el enlace a la siguiente pagina
@@ -147,7 +149,7 @@ def listmirrors(params,url,category):
 	patronvideos  = '<p style="text-align: center;">.*?<a href\="(http\://www.sesionvip.com/[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	if len(matches)==0:
 		xbmctools.alertnodisponible()
@@ -177,7 +179,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[sesionvip.py] search")
+	logger.info("[sesionvip.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -190,7 +192,7 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def performsearch(texto):
-	xbmc.output("[sesionvip.py] performsearch")
+	logger.info("[sesionvip.py] performsearch")
 	url = "http://www.sesionvip.com/?s="+texto
 
 	# Descarga la página
@@ -213,15 +215,17 @@ def performsearch(texto):
 			scrapedthumbnail = ""
 			scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "listmirrors" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
 		
+
+
 	return resultados
 
 def searchresults(params,url,category):
-	xbmc.output("[sesionvip.py] searchresults")
+	logger.info("[sesionvip.py] searchresults")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -245,9 +249,9 @@ def searchresults(params,url,category):
 
 			# Depuracion
 			if (DEBUG):
-				xbmc.output("scrapedtitle="+scrapedtitle)
-				xbmc.output("scrapedurl="+scrapedurl)
-				xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+				logger.info("scrapedtitle="+scrapedtitle)
+				logger.info("scrapedurl="+scrapedurl)
+				logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 			# Añade al listado de XBMC
 			xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listmirrors" )
@@ -263,13 +267,13 @@ def searchresults(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[sesionvip.py] play")
+	logger.info("[sesionvip.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[sesionvip.py] thumbnail="+thumbnail)
-	xbmc.output("[sesionvip.py] server="+server)
+	logger.info("[sesionvip.py] thumbnail="+thumbnail)
+	logger.info("[sesionvip.py] server="+server)
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)

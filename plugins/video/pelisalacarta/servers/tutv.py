@@ -7,6 +7,7 @@
 
 import urlparse,urllib2,urllib,re
 import xbmc
+import config
 
 def Tutv(url):
 	xbmc.output("[tutv.py] url="+url)

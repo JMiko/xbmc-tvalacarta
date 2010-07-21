@@ -22,16 +22,21 @@ import veoh
 import metadivx
 import divxden
 import divxlink
+import videoweed
+import youtube
+import cinshare
+import config
+import logger
 
-xbmc.output("[servertools.py] init")
+logger.info("[servertools.py] init")
 
 def findvideos(data):
-	xbmc.output("[servertools.py] findvideos")
+	logger.info("[servertools.py] findvideos")
 	encontrados = set()
 	devuelve = []
 
 	# Megavideo - Vídeos con título
-	xbmc.output("1) Megavideo con titulo...")
+	logger.info("1) Megavideo con titulo...")
 	patronvideos  = '<div align="center">([^<]+)<.*?<param name="movie" value="http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -41,14 +46,14 @@ def findvideos(data):
 			titulo = "[Megavideo]"
 		url = match[1]
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Megavideo - Vídeos con título
-	xbmc.output("1b) Megavideo con titulo...")
+	logger.info("1b) Megavideo con titulo...")
 	patronvideos  = '<a href\="http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})".*?>([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -58,13 +63,13 @@ def findvideos(data):
 			titulo = "[Megavideo]"
 		url = match[0]
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("1c) Megavideo sin titulo...")
+	logger.info("1c) Megavideo sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
 	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -76,13 +81,13 @@ def findvideos(data):
 			titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("1d) Megavideo sin titulo...")
+	logger.info("1d) Megavideo sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
 	patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -94,14 +99,14 @@ def findvideos(data):
 			titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# KOCHIKAME - Megaupload - Vídeos con título
-	xbmc.output("1k) Megaupload con titulo...")
+	logger.info("1k) Megaupload con titulo...")
 	patronvideos  = '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)".*?>([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	for match in matches:
@@ -116,13 +121,13 @@ def findvideos(data):
 			titulo = titulo.replace('&#33;' , '!') 
 
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("1d) Megaupload sin titulo...")
+	logger.info("1d) Megaupload sin titulo...")
 	#http://www.megavideo.com/?v=OYGXMZBM
 	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -134,13 +139,13 @@ def findvideos(data):
 			titulo = "[Megaupload]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("13) Megaupload sin titulo...")
+	logger.info("13) Megaupload sin titulo...")
 	#http://www.megaupload.com/?s=tumejortv&confirmed=1&d=6FQOWHTI
 	patronvideos  = 'http\:\/\/www.megaupload.com/.*?d\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -152,14 +157,14 @@ def findvideos(data):
 			titulo = "[Megaupload]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Megavideo - Vídeos sin título
-	xbmc.output("2) Megavideo sin titulo...")
+	logger.info("2) Megavideo sin titulo...")
 	patronvideos  = '<param name="movie" value="http://wwwstatic.megavideo.com/mv_player.swf\?v=([^"]+)">'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -167,14 +172,14 @@ def findvideos(data):
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Vreel - Vídeos con título
-	xbmc.output( "3) Vreel con título...")
+	logger.info( "3) Vreel con título...")
 	patronvideos  = '<div align="center"><b>([^<]+)</b>.*?<a href\="(http://beta.vreel.net[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -184,14 +189,14 @@ def findvideos(data):
 			titulo = "[Vreel]"
 		url = match[1]
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Vreel' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Vreel - Vídeos con título
-	xbmc.output("4) Vreel con titulo...")
+	logger.info("4) Vreel con titulo...")
 	patronvideos  = '<div align="center">([^<]+)<.*?<a href\="(http://beta.vreel.net[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -201,15 +206,15 @@ def findvideos(data):
 			titulo = "[Vreel]"
 		url = match[1]
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Vreel' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	'''
 	# WUAPI
-	xbmc.output("5) wuapi sin título")
+	logger.info("5) wuapi sin título")
 	patronvideos  = '<a href\="(http://wuapi.com[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -217,14 +222,14 @@ def findvideos(data):
 		titulo = "Sin título ("+match[23:]+")"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Wuapi' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# WUAPI
-	xbmc.output("6) wuapi sin título...")
+	logger.info("6) wuapi sin título...")
 	patronvideos  = '(http://wuapi.com[^<]+)<'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -232,15 +237,15 @@ def findvideos(data):
 		titulo = "Sin título ("+match[23:]+")"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Wuapi' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 	'''
 	
 	# STAGEVU
-	xbmc.output("7) Stagevu sin título...")
+	logger.info("7) Stagevu sin título...")
 	patronvideos  = '"(http://stagevu.com[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -248,14 +253,14 @@ def findvideos(data):
 		titulo = "[Stagevu]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Stagevu' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# TU.TV
-	xbmc.output("8) Tu.tv sin título...")
+	logger.info("8) Tu.tv sin título...")
 	patronvideos  = '<param name="movie" value="(http://tu.tv[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -263,14 +268,14 @@ def findvideos(data):
 		titulo = "[tu.tv]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'tu.tv' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# TU.TV
-	xbmc.output("9) Tu.tv sin título...")
+	logger.info("9) Tu.tv sin título...")
 	#<param name="movie" value="http://www.tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aWRlb3Njb2RpL24vYS9uYXppcy11bi1hdmlzby1kZS1sYS1oaXN0b3JpYS0xLTYtbGEtbC5mbHY=&xtp=669149_VIDEO"
 	patronvideos  = '<param name="movie" value="(http://www.tu.tv[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -279,13 +284,13 @@ def findvideos(data):
 		titulo = "[tu.tv]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'tu.tv' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("9b) Tu.tv sin título...")
+	logger.info("9b) Tu.tv sin título...")
 	#<embed src="http://tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aW
 	patronvideos  = '<embed src="(http://tu.tv/[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -294,14 +299,15 @@ def findvideos(data):
 		titulo = "[tu.tv]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'tu.tv' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Megavideo - Vídeos sin título
-	xbmc.output("10 ) Megavideo sin titulo...")
+	logger.info("10 ) Megavideo sin titulo...")
+
 	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -309,14 +315,14 @@ def findvideos(data):
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Megavideo - Vídeos sin título
-	xbmc.output("11) Megavideo sin titulo...")
+	logger.info("11) Megavideo sin titulo...")
 	patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -324,15 +330,15 @@ def findvideos(data):
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# STAGEVU
 	'''
-	xbmc.output("12) Stagevu...")
+	logger.info("12) Stagevu...")
 	patronvideos  = '(http://stagevu.com[^<]+)<'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -340,15 +346,15 @@ def findvideos(data):
 		titulo = "Ver el vídeo en Stagevu"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Stagevu' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 	'''
 		
 	# Vreel - Vídeos sin título
-	xbmc.output("13) Vreel sin titulo...")
+	logger.info("13) Vreel sin titulo...")
 	patronvideos  = '(http://beta.vreel.net[^<]+)<'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -356,14 +362,14 @@ def findvideos(data):
 		titulo = "[Vreel]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Vreel' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Megavideo - Vídeos con título
-	xbmc.output("14) Megavideo con titulo...")
+	logger.info("14) Megavideo con titulo...")
 	patronvideos  = '<a href="http://www.megavideo.com/\?v\=([^"]+)".*?>(.*?)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
@@ -373,14 +379,14 @@ def findvideos(data):
 			titulo = "[Megavideo]"
 		url = match[0]
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
 	# Megavideo - Vídeos con título
-	xbmc.output("14b) Megavideo con titulo...")
+	logger.info("14b) Megavideo con titulo...")
 	patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9]{8})" />'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
@@ -388,13 +394,13 @@ def findvideos(data):
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Stagevu...")
+	logger.info("0) Stagevu...")
 	patronvideos  = '"http://stagevu.com.*?uid\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
@@ -402,27 +408,41 @@ def findvideos(data):
 		titulo = "[Stagevu]"
 		url = "http://stagevu.com/video/"+match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Stagevu' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Megavideo... formato d=XXXXXXX")
-	patronvideos  = '"http://www.megavideo.com/.*?\&d\=([^"]+)"'
+	logger.info("0) Stagevu...")
+	patronvideos  = "'http://stagevu.com.*?uid\=([^']+)'"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Stagevu]"
+		url = "http://stagevu.com/video/"+match
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'Stagevu' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	logger.info("0) Megavideo... formato d=XXXXXXX")
+	patronvideos  = 'http://www.megavideo.com/.*?\&d\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Megavideo... formato watchanimeon")
+	logger.info("0) Megavideo... formato watchanimeon")
 	patronvideos  = 'src="http://wwwstatic.megavideo.com/mv_player.swf.*?\&v\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
@@ -430,27 +450,27 @@ def findvideos(data):
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megavideo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Megaupload... formato megavideo con d=XXXXXXX")
-	patronvideos  = '"http://www.megavideo.com/\?d\=([^"]+)"'
+	logger.info("0) Megaupload... formato megavideo con d=XXXXXXX")
+	patronvideos  = 'http://www.megavideo.com/\?d\=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
 		titulo = "[Megavideo]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Movshare...")
+	logger.info("0) Movshare...")
 	patronvideos  = '"(http://www.movshare.net/video/[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
@@ -458,14 +478,28 @@ def findvideos(data):
 		titulo = "[Movshare]"
 		url = match
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'movshare' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Veoh...")
-	patronvideos  = '"http://www.veoh.com/veohplayer.swf.*?permalinkId=([^"]+)"'
+	logger.info("0) Movshare...")
+	patronvideos  = "'(http://www.movshare.net/embed/[^']+)'"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	for match in matches:
+		titulo = "[Movshare]"
+		url = match
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'movshare' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	logger.info("0) Veoh...")
+	patronvideos  = '"http://www.veoh.com/.*?permalinkId=([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
@@ -477,13 +511,13 @@ def findvideos(data):
 			url = match
 
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'veoh' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Directo - myspace")
+	logger.info("0) Directo - myspace")
 	patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -492,13 +526,13 @@ def findvideos(data):
 		url = match
 
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Directo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Directo - myspace")
+	logger.info("0) Directo - myspace")
 	patronvideos  = '(http://[^\.]+\.myspacecdn.*?\.flv)'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -507,13 +541,13 @@ def findvideos(data):
 		url = match
 
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Directo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
 
-	xbmc.output("0) Directo - ning")
+	logger.info("0) Directo - ning")
 	patronvideos  = '(http://api.ning.com.*?\.flv)'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -522,11 +556,57 @@ def findvideos(data):
 		url = match
 
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Directo' ] )
 			encontrados.add(url)
 		else:
-			xbmc.output("  url duplicada="+url)
+			logger.info("  url duplicada="+url)
+
+	logger.info("0) Videoweed...")
+	patronvideos  = '(http://www.videoweed.com/file/*?\.flv)'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Videoweed]"
+		url = match
+
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'videoweed' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	logger.info("0) YouTube...")
+	patronvideos  = '"http://www.youtube.com/v/([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[YouTube]"
+		url = match
+
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'youtube' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	#http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
+	logger.info("0) Facebook...")
+	patronvideos  = '(http://video.ak.facebook.com/.*?\.mp4)'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Facebook]"
+		url = match
+
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'facebook' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
 
 	return devuelve
 
@@ -569,6 +649,18 @@ def findurl(code,server):
 	if server == "divxlink":
 		mediaurl = divxlink.geturl(code)
 
+	if server == "videoweed":
+		mediaurl = videoweed.geturl(code)
+	
+	if server == "youtube":
+		mediaurl = youtube.geturl(code)
+	
+	if server == "cinshare":
+		mediaurl = cinshare.geturl(code)
+		
+	if server == "facebook":
+		mediaurl = code
+		
 	return mediaurl
 
 def getmegavideolow(code):
