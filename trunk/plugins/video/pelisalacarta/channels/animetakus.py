@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "animetakus"
 
@@ -25,19 +27,19 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[animetakus.py] init")
+logger.info("[animetakus.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[animetakus.py] mainlist")
+	logger.info("[animetakus.py] mainlist")
 
 	# Menu principal
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://www.animetakus.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://www.animetakus.com/" , "", "" )
 
 	# Si es un canal independiente, añade "Configuracion", "Descargas" y "Favoritos"
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -46,11 +48,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def fulllist(params,url,category):
-	xbmc.output("[animetakus.py] fulllist")
+	logger.info("[animetakus.py] fulllist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Patron de las entradas
 	patron = "<a dir='ltr' href='(http.//www.animetakus.com/search/label/[^']+)'>([^<]+)</a>"
@@ -64,7 +66,7 @@ def fulllist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -75,11 +77,11 @@ def fulllist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def newlist(params,url,category):
-	xbmc.output("[animetakus.py] listmirrors")
+	logger.info("[animetakus.py] listmirrors")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patron  = '<a onblur="[^"]+" href="([^"]+)"><img style="cursor: pointer; width: 135px; height: 190px;" src="([^"]+)" alt="" id="BLOGGER_PHOTO[^>]+></a>'
@@ -91,7 +93,7 @@ def newlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -106,7 +108,7 @@ def newlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match)
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -118,7 +120,7 @@ def newlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[animetakus.py] listmirrors")
+	logger.info("[animetakus.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -126,7 +128,7 @@ def listmirrors(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	patron = '<a style="[^"]+" href="(http.//www.megavideoflv.com[^"]+)" target="_blank">([^<]+)</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -137,7 +139,7 @@ def listmirrors(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -148,7 +150,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[animetakus.py] detail")
+	logger.info("[animetakus.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -156,7 +158,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -176,7 +178,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[animetakus.py] play")
+	logger.info("[animetakus.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

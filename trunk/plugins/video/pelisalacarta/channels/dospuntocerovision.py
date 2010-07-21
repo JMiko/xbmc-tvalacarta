@@ -18,6 +18,8 @@ import xbmctools
 import string
 import trailertools
 import youtube
+import config
+import logger
 
 CHANNELNAME = "dospuntocerovision"
 
@@ -28,15 +30,15 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[dospuntocerovision.py] init")
+logger.info("[dospuntocerovision.py] init")
 
 DEBUG = True
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
-	xbmc.output("[dospuntocerovision.py] mainlist")
+	logger.info("[dospuntocerovision.py] mainlist")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 	   xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Añade al listado de XBMC
@@ -57,7 +59,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[dospuntocerovision.py] search")
+	logger.info("[dospuntocerovision.py] search")
 
 	keyboard = xbmc.Keyboard('default')
 	#keyboard.setDefault('')
@@ -71,20 +73,20 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def searchresults(params,url,category):
-	xbmc.output("[dospuntocerovision.py] searchresults")
+	logger.info("[dospuntocerovision.py] searchresults")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	patronvideos = 'post-title entry-title(.*?)post-footer'
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)       
         if DEBUG:
             for match in matches:
-                #xbmc.output("videos Match " +match)
+                #logger.info("videos Match " +match)
 	        listarvideos(params,url,category,match)
 	    # Extrae la marca de siguiente página
             #data = scrapertools.cachePage(url)
@@ -111,18 +113,18 @@ def searchresults(params,url,category):
 
 def listalfabetica(params, url, category):
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	patronvideos = "<div class='post-header-line-1(.*?)post-footer"
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)       
         if DEBUG:
             for match in matches:
-                #xbmc.output("videos Match " +match)
+                #logger.info("videos Match " +match)
 	        buscaporletra(params,url,category,match)
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -134,9 +136,9 @@ def listalfabetica(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listnovedades(params,url,category):
-	xbmc.output("[dospuntocerovision.py] listnovedades : " +url)
+	logger.info("[dospuntocerovision.py] listnovedades : " +url)
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
         if url=="http://www.dospuntocerovision.com/":
            opciones = []
@@ -144,7 +146,7 @@ def listnovedades(params,url,category):
 	   opciones.append("Listado Largo (60) vista rapida")
 	   dia = xbmcgui.Dialog()
 	   seleccion = dia.select("Elige uno", opciones)
-	   xbmc.output("seleccion=%d" % seleccion) 
+	   logger.info("seleccion=%d" % seleccion) 
         elif not url=="http://www.dospuntocerovision.com/2008/03/ultimas-peliculas-aadidas.html":
            seleccion = 0  
         if seleccion==-1:
@@ -153,12 +155,12 @@ def listnovedades(params,url,category):
 	       patronvideos = 'post-title entry-title(.*?)post-footer'
 	       # Descarga la página
 	       data = scrapertools.cachePage(url)
-	       #xbmc.output(data)
+	       #logger.info(data)
                matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	       scrapertools.printMatches(matches)
                if DEBUG:
                   for match in matches:
-                      #xbmc.output("videos Match " +match)
+                      #logger.info("videos Match " +match)
 	              listarvideos(params,url,category,match)
 	        # Extrae la marca de siguiente página
                #data = scrapertools.cachePage(url)
@@ -178,7 +180,7 @@ def listnovedades(params,url,category):
 	       patronvideos = '<a onblur=.*?href="(.*?)"><img.*?src="(.*?)" alt='  
 	       # Descarga la página
 	       data = scrapertools.cachePage(url)
-	       #xbmc.output(data)
+	       #logger.info(data)
 
 	       # Extrae las entradas (carpetas)
 	      
@@ -212,9 +214,9 @@ def listnovedades(params,url,category):
 				scrapedplot = " "
 			# Depuracion
 			if (DEBUG):
-			      xbmc.output("scrapedtitle="+scrapedtitle)
-			      xbmc.output("scrapedurl="+scrapedurl)
-			      xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			      logger.info("scrapedtitle="+scrapedtitle)
+			      logger.info("scrapedurl="+scrapedurl)
+			      logger.info("scrapedthumbnail="+scrapedthumbnail)
 			      xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	
@@ -228,22 +230,22 @@ def listnovedades(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listvideos(params,url,category):
-    xbmc.output("[dospuntocerovision.py] listvideos " +url)
+    logger.info("[dospuntocerovision.py] listvideos " +url)
     if "terrorygore" in url:
             patronvideos = "<h3 class='title'>(.*?)<div class='post-footer'>"
     elif "suricato" in url:
             patronvideos = "<h1 class='post-title entry-title'>(.*?)<div class='post-footer'>"
     else:   
             patronvideos = "<h3 class='post-title entry-title'>(.*?)<div class='post-footer'>"
-    #xbmc.output("patron "+patronvideos)
+    #logger.info("patron "+patronvideos)
     # Descarga la página
     data = scrapertools.cachePage(url)
-    #xbmc.output(data)
+    #logger.info(data)
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if DEBUG:
        for match in matches:
-           xbmc.output("videos Match " +match)
+           logger.info("videos Match " +match)
            listarvideos(params,url,category,match)
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -256,7 +258,7 @@ def listvideos(params,url,category):
   
 def listarvideos(params,url,category,data):
     titulo = params.get("title")
-    xbmc.output("[dospuntocerovision.py] listarvideos ")
+    logger.info("[dospuntocerovision.py] listarvideos ")
     plot = params.get("plot")
     patronmovshare   = 'href="(http://www.movshare.net/.*?)"[^>]+>(.*?)<'         
     patronmegavideoflv= 'href="(http://www.megavideoflv.com/.*?)"'
@@ -286,7 +288,7 @@ def listarvideos(params,url,category,data):
        
     matchesmegavideo = re.compile(patronmegavideo,re.DOTALL).findall(data) # busca los links de megavideo
 #http://www.megavideo.com/?s=dospuntocerovision&amp;v=R30GGEMG&amp;confirmed=1
-    #xbmc.output("videos Match " +matchesmegavideo[0])
+    #logger.info("videos Match " +matchesmegavideo[0])
     for match in matchesmegavideo:
 	scrapedurl = match[0]
 	# Añade al listado de XBMC
@@ -314,7 +316,7 @@ def listarvideos(params,url,category,data):
 	
     matchescinegratis= re.compile(patroncinegratis,re.DOTALL).findall(data) # busca los links de la pagina de cinegratis24h.com
     if len(matchescinegratis)>0:
-        #xbmc.output("videos Match " +matchescinegratis[0])
+        #logger.info("videos Match " +matchescinegratis[0])
         data1 = scrapertools.cachePage(matchescinegratis[0])
         matchesflv   = re.compile(patronflv,re.DOTALL).findall(data1)
         c = 0
@@ -328,7 +330,7 @@ def listarvideos(params,url,category,data):
     
     matchesmegavideoflv = re.compile(patronmegavideoflv,re.DOTALL).findall(data)  # Busca los link de megavideoflv.com
     if len(matchesmegavideoflv)>0:
-        #xbmc.output("videos Match " +matchesmegavideoflv[0])
+        #logger.info("videos Match " +matchesmegavideoflv[0])
         data1 = scrapertools.cachePage(matchesmegavideoflv[0])
         matchesflv   = re.compile(patronflv,re.DOTALL).findall(data1)
         c = 0
@@ -337,19 +339,25 @@ def listarvideos(params,url,category,data):
             scrapedurl = match
             # Añade al listado de XBMC
             xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle +" - "+"parte "+str(c)+" (FLV)", scrapedurl , scrapedthumbnail , scrapedplot )
+
     matchesmovshare = re.compile(patronmovshare,re.DOTALL).findall(data)
     if len(matchesmovshare)>0:
        #import movshare
         
        total = len(matchesmovshare)
        for match in matchesmovshare:
-		xbmc.output("movshare link : "+match[0])
+		logger.info("movshare link : "+match[0])
 		
 		import movshare
-		scrapedurl = movshare.getvideo(match[0])
+		if "#" in match[0]:
+			urlsplited = match[0].split("#")
+			scrapedurl = urlsplited[0]
+		else:
+			scrapedurl = match[0]
+		
 		if len(scrapedurl)>0:
 			
-			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , scrapedtitle +" - "+match[1]+" (Movshare)", scrapedurl , scrapedthumbnail , scrapedplot )     
+			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Movshare" , scrapedtitle +" - "+match[1]+" (Movshare)", scrapedurl , scrapedthumbnail , scrapedplot )     
 
 #-------------------------------------------------------------------------------
    
@@ -368,15 +376,15 @@ def listarvideos(params,url,category,data):
       for match in matchyoutube:
         listyoutubeurl = 'http://www.youtube.com/view_play_list?p='+match
         data1 = scrapertools.cachePage(listyoutubeurl)
-        newpatronyoutube = '<a class="video-thumb-120" href="(.*?)"   ><img title="(.*?)"    src="(.*?)"'
+        newpatronyoutube = '<a href="(.*?)".*?<img src="(.*?)".*?alt="([^"]+)"'
         matchnewyoutube  = re.compile(newpatronyoutube,re.DOTALL).findall(data1)
         if len(matchnewyoutube)>0:
            for match2 in matchnewyoutube:
-               scrapedthumbnail = match2[2]
-               scrapedtitle     = match2[1]
+               scrapedthumbnail = match2[1]
+               scrapedtitle     = match2[2]
                scrapedurl       = match2[0]
      
-               xbmc.output(" lista de links encontrados U "+str(len(matchnewyoutube)))
+               logger.info(" lista de links encontrados U "+str(len(matchnewyoutube)))
             
                xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" , scrapedtitle +" - "+"(youtube) ", scrapedurl , scrapedthumbnail , scrapedplot )
             
@@ -395,7 +403,7 @@ def listarvideos(params,url,category,data):
     matchesgoogle = re.compile(patrongoogle,re.DOTALL).findall(data)
     for match in matchesgoogle:
         urllink = "http://www.flashvideodownloader.org/download.php?u="+match
-        xbmc.output(" Url = "+urllink[0])
+        logger.info(" Url = "+urllink[0])
         data1 = scrapertools.cachePage(urllink)
         newpatron = '</script><div.*?<a href="(.*?)" title="Click to Download">'
         newmatches = re.compile(newpatron,re.DOTALL).findall(data1)
@@ -405,22 +413,30 @@ def listarvideos(params,url,category,data):
           
     # busca las url de los videos alojados en tu.tv
     patronvideotv = '(http://www.tu.tv/videos/.*?)"><img src="(.*?)" alt="(.*?)".*?'
-    #xbmc.output("dataa "+data)
+    #logger.info("dataa "+data)
     matchestv  = re.compile(patronvideotv,re.DOTALL).findall(data)
     for match in matchestv:
 		xbmctools.addnewfolder( CHANNELNAME , "listvideosTVmirror" , category , match[2] , match[0] , match[1], scrapedplot ) 
 	
+	# Busca las URLs de los videos alojados en videoweed
+    patronvideos = 'href="(http://www.videoweed.com/file/[^"]+)" target="_blank">(.*?)</a>'
+    matchesweed  = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matchesweed)>0:
+		for match in matchesweed:
+			scrapedurl = match[0]
+			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "videoweed" , scrapedtitle +" - "+match[1]+" (Videoweed)", scrapedurl , scrapedthumbnail , scrapedplot )
+	
 	
 def listcategorias(params,url,category):
-	xbmc.output("[dospuntocerovision.py] listcategorias")
+	logger.info("[dospuntocerovision.py] listcategorias")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	patronvideos = '<a onblur=.*?href="(.*?)"><img.*?src="(.*?)" alt='  
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	      
@@ -448,9 +464,9 @@ def listcategorias(params,url,category):
 
             # Depuracion
             if (DEBUG):
-	       xbmc.output("scrapedtitle="+scrapedtitle)
-	       xbmc.output("scrapedurl="+scrapedurl)
-	       xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+	       logger.info("scrapedtitle="+scrapedtitle)
+	       logger.info("scrapedurl="+scrapedurl)
+	       logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 	       # Añade al listado de XBMC
 		
@@ -466,11 +482,11 @@ def listcategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listcategoriasvideos(params,url,category):
-         xbmc.output("[dospuntocerovision.py] listcategoriasvideos")
+         logger.info("[dospuntocerovision.py] listcategoriasvideos")
          patronvideos = '<a onblur=.*?href="(.*?)"><img.*?src="(.*?)".*?alt='  
       # Descarga la página
 	 data = scrapertools.cachePage(url)
-	 #xbmc.output(data)
+	 #logger.info(data)
 
        # Extrae las entradas (carpetas)
 	      
@@ -498,9 +514,9 @@ def listcategoriasvideos(params,url,category):
 
 		   # Depuracion
 		       if (DEBUG):
-			      xbmc.output("scrapedtitle="+scrapedtitle)
-			      xbmc.output("scrapedurl="+scrapedurl)
-			      xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			      logger.info("scrapedtitle="+scrapedtitle)
+			      logger.info("scrapedurl="+scrapedurl)
+			      logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		              # Añade al listado de XBMC
 		    
@@ -518,7 +534,7 @@ def listcategoriasvideos(params,url,category):
 
 
 def buscaporletra(params,url,category,data):
-        xbmc.output("[dospuntocerovision.py] buscaporletra")
+        logger.info("[dospuntocerovision.py] buscaporletra")
 
         patron  = 'href="(.*?)">(.*?)</a>'
         matches = re.compile(patron,re.DOTALL).findall(data)
@@ -533,7 +549,7 @@ def buscaporletra(params,url,category,data):
                           
         dia = xbmcgui.Dialog()
 	seleccion = dia.select("busqueda rapida, elige uno : ", opciones)
-        xbmc.output("seleccion=%d" % seleccion)
+        logger.info("seleccion=%d" % seleccion)
         if seleccion == -1 :return
         if seleccion == 0:
             keyboard = xbmc.Keyboard('')
@@ -542,7 +558,7 @@ def buscaporletra(params,url,category,data):
 	       tecleado = keyboard.getText()
 	       if len(tecleado)>0:
                                
-                  xbmc.output("Nuevo string tecleado   "+tecleado)
+                  logger.info("Nuevo string tecleado   "+tecleado)
                   for match in matches:
                       
                       if (string.lower(tecleado)) in (string.lower(match[1])):
@@ -551,9 +567,9 @@ def buscaporletra(params,url,category,data):
                          scrapedthumbnail = ""
                          scrapedplot = " "
                          if (DEBUG):
-		            xbmc.output("scrapedtitle="+scrapedtitle)
-		            xbmc.output("scrapedurl="+scrapedurl)
-		            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		            logger.info("scrapedtitle="+scrapedtitle)
+		            logger.info("scrapedurl="+scrapedurl)
+		            logger.info("scrapedthumbnail="+scrapedthumbnail)
 
                          #  Añade al listado de XBMC
 		    
@@ -568,9 +584,9 @@ def buscaporletra(params,url,category,data):
                 scrapedthumbnail = ""
                 scrapedplot = " "
                 if (DEBUG):
-		     xbmc.output("scrapedtitle="+scrapedtitle)
-		     xbmc.output("scrapedurl="+scrapedurl)
-		     xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		     logger.info("scrapedtitle="+scrapedtitle)
+		     logger.info("scrapedurl="+scrapedurl)
+		     logger.info("scrapedthumbnail="+scrapedthumbnail)
 
                      # Añade al listado de XBMC
 		    
@@ -578,7 +594,7 @@ def buscaporletra(params,url,category,data):
 
         else:
             #patron = 'http://.*?/.*?/.*?/'+letras[seleccion-2]+'.*?html'
-            #xbmc.output("patroooooooooooooooooooo  "+patron)
+            #logger.info("patroooooooooooooooooooo  "+patron)
             for match in matches:   
                if match[1][0:1] == letras[seleccion-2]:
                   
@@ -587,9 +603,9 @@ def buscaporletra(params,url,category,data):
                    scrapedthumbnail = ""
                    scrapedplot = " " 	
                    if (DEBUG):  
-		     xbmc.output("scrapedtitle="+scrapedtitle)
-		     xbmc.output("scrapedurl="+scrapedurl)
-		     xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		     logger.info("scrapedtitle="+scrapedtitle)
+		     logger.info("scrapedurl="+scrapedurl)
+		     logger.info("scrapedthumbnail="+scrapedthumbnail)
 
                      # Añade al listado de XBMC
 		    
@@ -599,15 +615,15 @@ def buscaporletra(params,url,category,data):
        
 
 def videosprogtv(params,url,category):
-	xbmc.output("[dospuntocerovision.py] videosprogtv")
+	logger.info("[dospuntocerovision.py] videosprogtv")
 
-	if xbmcplugin.getSetting("forceview")=="true":
+	if config.getSetting("forceview")=="true":
 	   xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	patronvideos = '<a onblur=.*?href="(.*?)"><img.*?src="(.*?)".*?alt='  
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	      
@@ -629,7 +645,7 @@ def videosprogtv(params,url,category):
                       scrapedtitle = scrapedtitle.replace("-"," ")
               else:  #http://3.bp.blogspot.com/__kdloiikFIQ/Sbvq6Xis_GI/AAAAAAAAYBw/CrgJne1OfXs/s320/hora+de+jose+mota.JPG
                   
-                  #xbmc.output("titulo "+match[0])   
+                  #logger.info("titulo "+match[0])   
                   for campo in re.findall("http://.*?/.*?/.*?/.*?/.*?/.*?/(.*?).JPG",match[1]):
 		      scrapedtitle = campo
 		      scrapedtitle = scrapedtitle.replace("+"," ")
@@ -641,9 +657,9 @@ def videosprogtv(params,url,category):
 
 	    # Depuracion
 	      if (DEBUG):
-		 xbmc.output("scrapedtitle="+scrapedtitle)
-		 xbmc.output("scrapedurl="+scrapedurl)
-	         xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		 logger.info("scrapedtitle="+scrapedtitle)
+		 logger.info("scrapedurl="+scrapedurl)
+	         logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 	    # Añade al listado de XBMC
 		    
@@ -660,7 +676,7 @@ def videosprogtv(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listvideosTVmirror(params,url,category):
-	xbmc.output("[dospuntocerovision.py] listvideosTVmirror")
+	logger.info("[dospuntocerovision.py] listvideosTVmirror")
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 
@@ -672,7 +688,7 @@ def listvideosTVmirror(params,url,category):
 	listavideos = servertools.findvideos(data)
 	
 	for video in listavideos:
-		#xbmc.output("")
+		#logger.info("")
 		if video[2] == "tu.tv":
 			url = urllib.unquote_plus(servertools.findurl(video[1],video[2]))
 			xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , title +" - "+video[0], url, thumbnail , "" )
@@ -692,7 +708,7 @@ def listvideosTVmirror(params,url,category):
 	
 	
 def detail(params,url,category):
-	xbmc.output("[dospuntocerovision.py] detail")
+	logger.info("[dospuntocerovision.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -706,7 +722,7 @@ def detail(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
-        xbmc.output("[dospuntocerovision.py] youtubeplay")
+        logger.info("[dospuntocerovision.py] youtubeplay")
 	if "www.youtube" not in url:
 		url  = 'http://www.youtube.com'+url
  
@@ -719,7 +735,7 @@ def youtubeplay(params,url,category):
 	videourl = youtube.geturl(id)
 	
 	if len(videourl)>0:
-		xbmc.output("link directo de youtube : "+videourl)
+		logger.info("link directo de youtube : "+videourl)
 		xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
 	
 	return
@@ -746,7 +762,7 @@ def acentos(title):
         return(title)
         
 def buscartrailer(params,url,category):
-	xbmc.output("[dospuntocerovision.py] buscartrailer")
+	logger.info("[dospuntocerovision.py] buscartrailer")
 	titulo = url
 	#thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )

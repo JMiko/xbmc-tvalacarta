@@ -5,6 +5,7 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
+import config
 
 def Wuapi(urloriginal):
 	# La URL del vídeo está en un XML

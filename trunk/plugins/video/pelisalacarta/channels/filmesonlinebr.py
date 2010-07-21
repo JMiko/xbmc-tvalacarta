@@ -15,6 +15,9 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import string
+import config
+import logger
 
 CHANNELNAME = "filmesonlinebr"
 
@@ -25,22 +28,22 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[filmesonlinebr.py] init")
+logger.info("[filmesonlinebr.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[filmesonlinebr.py] mainlist")
+	logger.info("[filmesonlinebr.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimos Filmes Subidos"    ,"http://www.filmesonlinebr.com/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listalfa" , category , "Lista Alfabética","http://www.filmesonlinebr.com/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listalfa" , category , "Lista Alfabética","http://www.filmesonlinebr.com/","","")
 	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series","http://www.filmesonlinebr.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://www.filmesonlinebr.com/","","")
-	if xbmcplugin.getSetting("enableadultmode") == "true":
-		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Adulto (+18)","http://www.filmesonlinebr.com/search/label/Filmes%20Adulto%20%28%2B18%29","","")
+	if config.getSetting("enableadultmode") == "true":
+		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Adulto (+18)","http://www.filmesonlinebr.com/category/filmes-porno-xxx/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -53,24 +56,25 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listcategorias(params,url,category):
-	xbmc.output("[filmeonlinebr.py] listcategorias")
+	logger.info("[filmeonlinebr.py] listcategorias")
 
 
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ação"    ,"http://www.filmesonlinebr.com/search/label/A%C3%A7%C3%A3o","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Aventura"    ,"http://www.filmesonlinebr.com/search/label/Aventura","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comédia Romântica"    ,"http://www.filmesonlinebr.com/search/label/Com%C3%A9dia%20Rom%C3%A2ntica","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comédia"    ,"http://www.filmesonlinebr.com/search/label/Com%C3%A9dia","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentário"    ,"http://www.filmesonlinebr.com/search/label/Document%C3%A1rio","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Drama"    ,"http://www.filmesonlinebr.com/search/label/Drama","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ficção Científica"    ,"http://www.filmesonlinebr.com/search/label/Fic%C3%A7%C3%A3o%20Cient%C3%ADfica","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Guerra"    ,"http://www.filmesonlinebr.com/search/label/Guerra","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Lançamentos 2010"    ,"http://www.filmesonlinebr.com/search/label/Lan%C3%A7amentos%202010","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Musical e Shows"    ,"http://www.filmesonlinebr.com/search/label/Musical","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Brasileiros"    ,"http://www.filmesonlinebr.com/search/label/Nacional","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Policial"    ,"http://www.filmesonlinebr.com/search/label/Policial","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Romance"    ,"http://www.filmesonlinebr.com/search/label/Romance","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Suspense"    ,"http://www.filmesonlinebr.com/search/label/Suspense","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Terror"    ,"http://www.filmesonlinebr.com/search/label/Terror","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Animações e Animes"    ,"http://www.filmesonlinebr.com/category/filmes-animacoes-e-animes/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Aventura"    ,"http://www.filmesonlinebr.com/category/filmes-aventura/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comédia Romântica"    ,"http://www.filmesonlinebr.com/category/filmes-comedia-romantica/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comédia"    ,"http://www.filmesonlinebr.com/category/filmes-comedia/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentário"    ,"http://www.filmesonlinebr.com/category/filmes-documentarios/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Fantasia"    ,"http://www.filmesonlinebr.com/category/filmes-fantasia/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ficção Científica*"    ,"http://www.filmesonlinebr.com/search/label/Fic%C3%A7%C3%A3o%20Cient%C3%ADfica","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Guerra"    ,"http://www.filmesonlinebr.com/category/filmes-guerra/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Lançamentos 2010"    ,"http://www.filmesonlinebr.com/category/filmes-lancamentos-2010","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Musical e Shows*"    ,"http://www.filmesonlinebr.com/search/label/Musical","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Brasileiros"    ,"http://www.filmesonlinebr.com/category/filmes-nacional/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Policial*"    ,"http://www.filmesonlinebr.com/search/label/Policial","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Romance"    ,"http://www.filmesonlinebr.com/category/filmes-romance/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Suspense"    ,"http://www.filmesonlinebr.com/category/filmes-suspense/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Terror"    ,"http://www.filmesonlinebr.com/category/filmes-terror/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series"    ,"http://www.filmesonlinebr.com/category/series-online/","","")
 	
     # Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -82,7 +86,7 @@ def listcategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
         
 def listalfa(params,url,category):
-	xbmc.output("[filmesonlinebr.py] listalfa")
+	logger.info("[filmesonlinebr.py] listalfa")
 	
 	xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "0-9","http://www.filmesonlinebr.com/search/label/0-9/","","","")
 	xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "A","http://www.filmesonlinebr.com/search/label/a/","","","")
@@ -121,109 +125,43 @@ def listalfa(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	
-	
 def listvideos(params,url,category):
-	xbmc.output("[filmesonlinebr.py] listvideos")
-	adulto = xbmcplugin.getSetting("enableadultmode")
+	logger.info("[filmesonlinebr.py] listvideos")
+	adulto = config.getSetting("enableadultmode")
 	if url=="":
-		url = "http://www.peliculasid.com/"
+		url = "http://www.filmesonlinebr.com/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	# Extrae la parte localizada del filme
-	patronfilme  ='(<a onblur="try.*?[</embed></object>|Temporada]+.*?</h3>)'
-	matchesfilme = re.compile(patronfilme,re.DOTALL).findall(data)
-	
-	
-	# Extrae las entradas (videos) #
-	
-	# patron para: thumbnail , idioma , sinopsis y titulo
-	patronthumb    = 'src="([^"]+)".*?alt='
-	patronIdioma   = '>(Audio:|Idioma:)</span>([^<]+)<br />'
-	patronSinopsis = '(<div><b>.*?|Sinopse.*?)<param name=.*?'
-	patrontitle   = "<a href='[^']+'>([^<]+)</a>"
-	
-	# patron para los video de megavideo
-	patronmega = 'http\:\/\/www.megavideo.com\/([\?v=|v/|\?d=]+)([A-Z0-9]{8}).*?'
-	
-	
-	
-	
-	
+	patronfilme  ='<div class="item">.*?<div class="thumbnail" style="background: url\(([^\)]+\)) top left no-repeat;">.*?'
+	patronfilme  +='<h2><a href="([^"]+)">([^<]+)</a></h2>'
+	matchesfilme = re.compile(patronfilme,re.DOTALL).findall(data)	
+
 	for match in matchesfilme:
-		data1 = match.replace("\n","").replace("\r","")
-		matchthumb = re.compile(patronthumb,re.DOTALL).findall(data1)
-		matchIdioma = re.compile(patronIdioma,re.DOTALL).findall(data1)
-		matchSinopsis = re.compile(patronSinopsis,re.DOTALL).findall(data1)
-		matchtitle      = re.compile(patrontitle,re.DOTALL).findall(data1) # thumbnail , Idioma , Sinopsis y Titulo
-		print 'video encontrado : %s' % matchtitle
-		#print 'onblur %s' % match
-		scrapertools.printMatches(matchthumb)
-		scrapertools.printMatches(matchIdioma)
-		scrapertools.printMatches(matchSinopsis)
-		scrapertools.printMatches(matchtitle)
-		matchmega    = re.compile(patronmega,re.DOTALL).findall(data1)   # Video en Megavideo
-		print 'megavideo encontradoooo : %s' % str(len(matchmega))
-		
 		# Titulo
-		for match1 in matchtitle:
-			scrapedtitle = match1
-			scrapedtitle = scrapedtitle.replace("&#8211;","-")
-		for j in ["S\xc3\xa9ries","Serie","Anime"]:
-			if j in scrapedtitle:
-				matchmega = []
-		if adulto == "false":
-			for i in ["xxx","Porno","XXX"]:
-				if  i  in scrapedtitle:
-					matchmega = []
 		
-		
+		scrapedtitle = match[2]
 		# URL
-		#scrapedurl = urlparse.urljoin(url,match1[0])
+		scrapedurl = match[1]
 		# Thumbnail
-		for match1 in matchthumb:
-			scrapedthumbnail = match1
-		#scrapedthumbnail = scrapedthumbnail.replace(" ","")
+		scrapedthumbnail = match[0]
 		# Argumento
 		scrapedplot = ""
-		for matchId in matchIdioma:
-			scrapedplot = "Idioma : " + matchId[1] + "\n"
-		for matchS in matchSinopsis:
-			scrapedplot += matchS.replace("&#8211;","-")
-			
-		scrapedplot  = re.sub("<[^>]+>"," ",scrapedplot)
-		if len(matchmega)>0:
-			encontrados = set()
-			c = 0
-			title = scrapedtitle
-			for match2 in matchmega:
-				if match2[1] not in encontrados:
-					c = c + 1
-					encontrados.add(match2[1])
-					for i in ["xxx","Porno","XXX"]:
-						if  i  in scrapedtitle:
-							scrapedtitle = title + " cd" + str(c)
-					if "Desenhos" in scrapedtitle:
-						scrapedtitle = title + " - Ep " + str(c)
-						
-					# Link
-					scrapedurl = match2[1]
-					if  "v" in match2[0]:
-						server = "Megavideo"
-					else:
-						server = "Megaupload"
-					# Depuracion
-					if (DEBUG):
-						xbmc.output("scrapedtitle="+scrapedtitle)
-						xbmc.output("scrapedurl="+scrapedurl)
-						xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		
 
-					# Añade al listado de XBMC
-					xbmctools.addnewvideo( CHANNELNAME , "play" , category , server, scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-			
-				
+		# Depuracion
+		if (DEBUG):
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
+
+		
+			# Añade al listado de XBMC
+			xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
 	# Extrae la marca de siguiente página
-	patronvideos  = "<a class='blog-pager-older-link' href='([^']+)'"
+	patronvideos  = "<li><a class='next page-numbers' href='([^']+)'>"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -242,10 +180,54 @@ def listvideos(params,url,category):
 
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	
+def detail(params,url,category):
+	logger.info("[filmesonlinebr.py] detail")
+	adulto = config.getSetting("enableadultmode")
+	title = xbmc.getInfoLabel( "ListItem.Title" )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	if url=="":
+		url = "http://www.filmesonlinebr.com/"
+                
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+
+
+	# Extrae las entradas (videos) #
+	patron = '<div id="article">[^<]+<h2>(.*?)<h2>Comments:</h2>'
+	matchtype = re.compile(patron,re.DOTALL).findall(data)
+	print "matchtype :%s" %matchtype[0]
+	if ("porno"or"pornÃ´"or"xxx") in string.lower(matchtype[0]):
+		if adulto == "false":
+			advertencia()
+			return
+		matches = megasearch(matchtype,data)
+		listar(title,thumbnail,plot,matches,category)
+	else:
+		patron = "<h2>(.*?)</h2>"
+		matchtemp = re.compile(patron,re.DOTALL).findall(data)
+		if len(matchtemp)>0:
+			if "Temporada " in matchtemp[0]:
+				for match in matchtemp:
+					patron = "<h2><strong>%s</strong></h2>(.*?)<h2>" %match[0]
+					matchesdata = re.compile(patron,re.DOTALL).findall(data)
+					matches = megasearch(matchtype,matchesdata[0])
+					titulo = re.sub("<[^>]+>"," ",match)
+					listar(titulo,thumbnail,plot,matches,category)
+			
+		matches = megasearch(matchtype,data)
+		listar(title,thumbnail,plot,matches,category)
+		
+		
+	# patron para: thumbnail , idioma , sinopsis y titulo
+
+	#patronIdioma   = '<p>(.*?)Sinopse:'
+	#patronSinopsis = "(Sinopse:.*?)</p>"
 
 
 def play(params,url,category):
-	xbmc.output("[filmesonlinebr.py] play")
+	logger.info("[filmesonlinebr.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -254,6 +236,37 @@ def play(params,url,category):
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
+def listar(title,thumbnail,plot,matches,category):
+	
+	for match in matches:
+		# Titulo
+		
+		scrapedtitle = title + match[0]
+		# URL
+		scrapedurl = match[1]
+		# Thumbnail
+		scrapedthumbnail = thumbnail
+		# Argumento
+		scrapedplot = plot
+		
+
+		# Depuracion
+		if (DEBUG):
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
+
+		
+			# Añade al listado de XBMC
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , match[2], scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+
+	# Disable sorting...
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+	# End of directory...
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 def acentos(title):
 
         title = title.replace("Ã‚Â", "")
@@ -274,3 +287,35 @@ def acentos(title):
         title = title.replace("Ã±","ñ")
         title = title.replace("Ãƒâ€œ","Ó")
         return(title)
+def megasearch(matchtype,data):
+	
+	patron = 'http\:\/\/www.megavideo.com\/([\?v=|v/|\?d=]+)([A-Z0-9]{8}).*?'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	devuelve = []
+	if len(matches)>0:
+		if len(matches)>1:
+			if ("s\xc3\xa9ries"or"serie"or"anime"or"desenhos"or"episÃ³dio") in string.lower(matchtype[0]):
+				cd = " - Episódio "
+			else:
+				cd = " - Parte "
+		else:
+			cd = ""
+		c = 0
+   
+		for match in matches:
+			c +=1
+			if "v" in match[0]:
+				server = "Megavideo"
+			elif "d" in match[0]:
+				server = "Megaupload"
+			if cd == "":
+				titulo = ""
+			else:
+				titulo = "%s %d" %(cd,c) 
+			devuelve.append( [ titulo , match[1] , server ] )
+	return devuelve
+
+def advertencia():
+	dialog = xbmcgui.Dialog()
+	dialog.ok('!Advertencia!','pelisalacarta - Modo Adulto','El video seleccionado es solo para mayores 18 años')
+	return

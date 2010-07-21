@@ -5,46 +5,46 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
-import urllib
+import urllib,urllib2
 import os
 import sys
 import xbmc
 import xbmctools
 import xbmcgui
-import urllib,urllib2
+import logger
 
 def run():
-	xbmc.output("[pelisalacarta.py] run")
+	logger.info("[pelisalacarta.py] run")
 	
 	# Imprime en el log los parámetros de entrada
-	xbmc.output("[pelisalacarta.py] sys.argv=%s" % str(sys.argv))
+	logger.info("[pelisalacarta.py] sys.argv=%s" % str(sys.argv))
 	
 	# Crea el diccionario de parametros
 	params = dict()
 	if len(sys.argv)>=2 and len(sys.argv[2])>0:
 		params = dict(part.split('=') for part in sys.argv[ 2 ][ 1: ].split('&'))
-	xbmc.output("[pelisalacarta.py] params=%s" % str(params))
+	logger.info("[pelisalacarta.py] params=%s" % str(params))
 	
 	# Extrae la url de la página
 	if (params.has_key("url")):
 		url = urllib.unquote_plus( params.get("url") )
 	else:
 		url=''
-	xbmc.output("[pelisalacarta.py] url="+url)
+	logger.info("[pelisalacarta.py] url="+url)
 
 	# Extrae la accion
 	if (params.has_key("action")):
 		action = params.get("action")
 	else:
 		action = "selectchannel"
-	xbmc.output("[pelisalacarta.py] action="+action)
+	logger.info("[pelisalacarta.py] action="+action)
 
 	# Extrae el server
 	if (params.has_key("server")):
 		server = params.get("server")
 	else:
 		server = ""
-	xbmc.output("[pelisalacarta.py] server="+server)
+	logger.info("[pelisalacarta.py] server="+server)
 
 	# Extrae la categoria
 	if (params.has_key("category")):
@@ -54,15 +54,14 @@ def run():
 			category = params.get("channel")
 		else:
 			category = ""
-	xbmc.output("[pelisalacarta.py] category="+category)
+	logger.info("[pelisalacarta.py] category="+category)
 
 	# Extrae la serie
 	if (params.has_key("Serie")):
 		serie = params.get("Serie")
 	else:
 		serie = ""
-	xbmc.output("[pelisalacarta.py] Serie="+serie)
-
+	logger.info("[pelisalacarta.py] Serie="+serie)
 
 	#JUR - Gestión de Errores de Internet (Para que no casque el plugin 
 	#      si no hay internet (que queda feo)
@@ -89,11 +88,11 @@ def run():
 		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):
 			print "Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1])
-			ok= ventana_error.ok ("Plugin Pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la pagina',"o su conexión a internet")
+			ok= ventana_error.ok ("pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la página',"o su conexión a internet")
 		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		elif hasattr(e,'code'):
 			print "codigo de error HTTP : %d" %e.code 
-			ok= ventana_error.ok ("Plugin Pelisalacarta", "El servidor solicitado no púdo realizar nuestra peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
+			ok= ventana_error.ok ("pelisalacarta", "El servidor solicitado no pudo realizar la peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
 		else:
 			pass	
 

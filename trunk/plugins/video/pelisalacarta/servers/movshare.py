@@ -9,6 +9,7 @@ import urlparse,urllib2,urllib,re
 import os.path
 import sys
 import xbmc
+import config
 
 COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 
@@ -121,4 +122,7 @@ def getvideo(urlpagina):
     patronvideos  = '<embed type="video/divx" src="([^"]+)"'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)== 0:
+		patronvideos  = '"file","([^"]+)"'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)	
     return matches[0]

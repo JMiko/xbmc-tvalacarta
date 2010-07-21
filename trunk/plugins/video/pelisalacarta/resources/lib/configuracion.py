@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import downloadtools
+import config
 
 CHANNELNAME = "configuracion"
 
@@ -36,5 +37,5 @@ def mainlist(params,url,category):
 	# Verifica ruta de descargas
 	downloadpath = downloadtools.getDownloadPath()
 	downloadlistpath = downloadtools.getDownloadListPath()
-	
-	xbmcplugin.openSettings( sys.argv[ 0 ] )
+
+	config.openSettings( )

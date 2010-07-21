@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "cinegratis"
 
@@ -25,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[cinegratis.py] init")
+logger.info("[cinegratis.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[cinegratis.py] mainlist")
+	logger.info("[cinegratis.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Novedades"            ,"http://www.cinegratis.net/index.php?module=peliculas","","")
@@ -48,7 +50,7 @@ def mainlist(params,url,category):
 	#xbmctools.addnewfolder( CHANNELNAME , "deportes"   , category , "Deportes"                         ,"","","")
 	xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio
@@ -104,7 +106,7 @@ def deportes(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[cinegratis.py] search")
+	logger.info("[cinegratis.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -117,7 +119,7 @@ def search(params,url,category):
 			listsimple(params,searchUrl,category)
 
 def performsearch(texto):
-	xbmc.output("[cinegratis.py] performsearch")
+	logger.info("[cinegratis.py] performsearch")
 	url = "http://www.cinegratis.net/index.php?module=search&title="+texto
 
 	# Descarga la página
@@ -139,7 +141,7 @@ def performsearch(texto):
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -147,7 +149,7 @@ def performsearch(texto):
 	return resultados
 
 def peliscat(params,url,category):
-	xbmc.output("[cinegratis.py] peliscat")
+	logger.info("[cinegratis.py] peliscat")
 
 	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Versión original"     ,"http://www.cinegratis.net/index.php?module=search&title=subtitulado","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , "Versión latina"       ,"http://www.cinegratis.net/index.php?module=search&title=latino","","")
@@ -171,22 +173,18 @@ def peliscat(params,url,category):
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listsimple(params,url,category):
-	xbmc.output("[cinegratis.py] listsimple")
+	logger.info("[cinegratis.py] listsimple")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -205,29 +203,25 @@ def listsimple(params,url,category):
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listvideos(params,url,category):
-	xbmc.output("[cinegratis.py] listvideos")
+	logger.info("[cinegratis.py] listvideos")
 
 	if url=="":
 		url = "http://www.cinegratis.net/index.php?module=peliculas"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = "<table.*?<td.*?>([^<]+)<span class='style1'>\(Visto.*?"
@@ -251,9 +245,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -272,22 +266,18 @@ def listvideos(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listseries(params,url,category):
-	xbmc.output("[cinegratis.py] listvideos")
+	logger.info("[cinegratis.py] listvideos")
 
 	if url=="":
 		url = "http://www.cinegratis.net/index.php?module=peliculas"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = "<table width='785'[^>]+><tr><td[^>]+>([^<]+)<.*?"
@@ -309,9 +299,9 @@ def listseries(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -330,15 +320,11 @@ def listseries(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[cinegratis.py] detail")
+	logger.info("[cinegratis.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -346,7 +332,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -366,7 +352,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[cinegratis.py] play")
+	logger.info("[cinegratis.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

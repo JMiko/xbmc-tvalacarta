@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "delatv"
 
@@ -25,17 +27,17 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[delatv.py] init")
+logger.info("[delatv.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[cinegratis.py] mainlist")
+	logger.info("[cinegratis.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Novedades" ,"http://delatv.com/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Cierra el directorio
@@ -45,13 +47,13 @@ def mainlist(params,url,category):
 
 	
 def novedades(params,url,category):
-	xbmc.output("[delatv.py] novedades")
+	logger.info("[delatv.py] novedades")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -68,10 +70,10 @@ def novedades(params,url,category):
 		scrapedurl = match[1]
 		scrapedthumbnail = match[2].replace(" ","%20")
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		xbmctools.addnewfolder( CHANNELNAME , "servidores" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# ------------------------------------------------------
 	# Extrae la página siguiente
@@ -87,7 +89,7 @@ def novedades(params,url,category):
 		scrapedurl = match
 		scrapedthumbnail = ""
 		scrapeddescription = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "novedades" )
@@ -97,8 +99,8 @@ def novedades(params,url,category):
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def listmirrors(params,url,category):
-	xbmc.output("[delatv.py] listmirrors")
+def servidores(params,url,category):
+	logger.info("[delatv.py] servidores")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -107,7 +109,7 @@ def listmirrors(params,url,category):
 	# Descarga la página de detalle
 	# http://delatv.com/sorority-row/
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	
 	# Extrae el argumento
 	patron = '<div class="sinopsis">.*?<li>(.*?)</li>'
@@ -116,51 +118,53 @@ def listmirrors(params,url,category):
 		plot = matches[0]
 
 	# Extrae los enlaces a los vídeos (Megavídeo)
-	#patronvideos  = '<tr>[^<]+'
-	#patronvideos += '<td[^>]+><h2>([^<]+)</h2></td>[^<]+'
-	#patronvideos += '<td[^>]+><a href="([^"]+)"><span class="flash"></span>'
-	patron = '<a href="(http://delatv.com/flash/[^"]+)">(.*?)</a>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)		
-
-	for match in matches:
-		etiquetaservidor = match[1].replace('<font color="white">','')
-		etiquetaservidor = etiquetaservidor.replace('</font>','')
-		etiquetaservidor = etiquetaservidor.replace('&Ntilde;','Ñ')
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title + " (" + etiquetaservidor + ")" , match[0] , thumbnail , plot )
-
-	# Extrae los enlaces a los vídeos (Directo)
-	patron = '<a href="http://delatv.com/playlist/([^\/]+)/'
-	#patron = '<a href="(http://delatv.com/playlist[^"]+)"><font color="white">([^<]+)</font></a>'
-	#patronvideos  = '<tr>[^<]+'
-	#patronvideos += '<td[^>]+><h2>([^<]+)</h2></td>[^<]+'
-	#patronvideos += '<td[^>]+><a href="([^"]+)"><span class="flashflv"></span>'
+	patron = '<div class="servidores-titulo">Lista de servidores</div>(.*?)</div>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	
 	if len(matches)>0:
-		url = "http://www.delatv.com/xml/"+matches[0]+".xml"
-		data = scrapertools.cachePage(url)
-		#xbmc.output(data)
-		#patron = '<media\:content url="([^"]+)"'
-		patron  = '<track>[^<]+<creator>([^<]+)</creator>[^<]+<location>([^<]+)</location>'
-		patron += '[^<]+(<meta rel="streamer">.*?</meta>.*?|)</track>'
+		data = matches[0]
+		patron  = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
 		matches = re.compile(patron,re.DOTALL).findall(data)
 		scrapertools.printMatches(matches)
 		
 		for match in matches:
-			titulo = title + " - " + match[0]
-			if match[2] == "":
-				url = match[1]
-			else:
-				url   = re.sub("<[^>]+>","",match[2])
-				url   = url+"/"+match[1]
-				url   = url.replace("\n","").replace(" ","")
-				titulo = titulo + " [RTMPE]"
-			print ' esta es la url: %s' %url
-			# Añade al listado de XBMC
-			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , titulo + " [Directo]" , url , thumbnail , plot )
+			scrapedtitle = "[SERVIDOR] " + title + " - " + match[1]
+			scrapedurl = match[0]
+			scrapedthumbnail = thumbnail
+			scrapedplot = plot
+			xbmctools.addnewfolder( CHANNELNAME , "videos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def videos(params,url,category):
+	logger.info("[delatv.py] videos")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+
+	data = scrapertools.cachePage(url)
+	patron = '<div class="reproductor-contenido">(.*?)</div>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	
+	if len(matches)>0:
+		data = matches[0]
+		patron  = '<iframe src="([^"]+)"'
+		matches = re.compile(patron,re.DOTALL).findall(data)
+		scrapertools.printMatches(matches)
+
+		for match in matches:
+			scrapedtitle = "[VIDEO] "+title
+			scrapedurl = match
+			scrapedthumbnail = thumbnail
+			scrapedplot = plot
+			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "", scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -168,44 +172,30 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[delatv.py] play")
+	logger.info("[delatv.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = params["server"]
+	server = ""
 
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
 	dialogWait.create( 'Accediendo al video...', title , plot )
 
-	# Descarga la página del reproductor
-	xbmc.output("server="+server)
-	if server=="Megavideo":
-		# http://delatv.com/flash/UPY6KEB4/cleaner.html
-		url = url.replace(" ","%20")
-		xbmc.output("url="+url)
-		data = scrapertools.cachePage(url)
-		patron = '<iframe src="([^"]+)"'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		if len(matches)>0:
-			url = matches[0]
-
-		# Descarga el iframe con el embed
-		# http://174.132.114.52/megaembed/UPY6KEB4/cleaner.html
-		url = url.replace(" ","%20")
-		xbmc.output("url="+url)
-		data = scrapertools.cachePage(url)
-		xbmc.output("data="+data)
-		patron = '<embed src="http\:\/\/wwwstatic.megavideo.com/mv_player.swf\?v\=([^\&]+)&'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		if len(matches)>0:
-			url = matches[0]
-
-	xbmc.output("url="+url)
+	# Busca los enlaces a los videos
+	data = scrapertools.cachePage(url)
+	listavideos = servertools.findvideos(data)
 
 	# Cierra dialogo
 	dialogWait.close()
 	del dialogWait
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	if len(listavideos)>0:
+		url = listavideos[0][1]
+		server = listavideos[0][2]
+		logger.info("url="+url)
+		xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	else:
+		xbmctools.alertnodisponible()
+

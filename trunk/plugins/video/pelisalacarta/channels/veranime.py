@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "veranime"
 
@@ -25,19 +27,19 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[veranime.py] init")
+logger.info("[veranime.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[veranime.py] mainlist")
+	logger.info("[veranime.py] mainlist")
 
 	# Menu principal
 	xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://ver-anime.net/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://ver-anime.net/" , "", "" )
 
 	# Si es un canal independiente, añade "Configuracion", "Descargas" y "Favoritos"
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -46,11 +48,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def fulllist(params,url,category):
-	xbmc.output("[veranime.py] fulllist")
+	logger.info("[veranime.py] fulllist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Patron de las entradas
 	#<li><a href="http://ver-anime.net/07-ghost/"><span>07 Ghost</span></a></li>
@@ -66,7 +68,7 @@ def fulllist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -77,11 +79,11 @@ def fulllist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def newlist(params,url,category):
-	xbmc.output("[veranime.py] listmirrors")
+	logger.info("[veranime.py] listmirrors")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	'''
@@ -110,7 +112,7 @@ def newlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[2]).replace(" ","%20")
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -121,7 +123,7 @@ def newlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[veranime.py] listmirrors")
+	logger.info("[veranime.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -129,7 +131,7 @@ def listmirrors(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae la sinopsis
 	patron  = '<div class="contenido">[^<]+'
@@ -140,7 +142,7 @@ def listmirrors(params,url,category):
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
 		plot = matches[0].strip()
-		xbmc.output(plot)
+		logger.info(plot)
 
 	patron = '<a title="[^"]+" href="([^"]+)">([^<]+)</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -151,7 +153,7 @@ def listmirrors(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = thumbnail
 		scrapedplot = plot
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -162,7 +164,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[veranime.py] detail")
+	logger.info("[veranime.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -170,7 +172,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	patron  = '<div id="listacapdd"><div class="listddserie">[^<]+'
 	patron += '<a title="[^"]+" href="([^"]+)"><strong>[^<]+</strong></a>[^<]+'
@@ -198,7 +200,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[veranime.py] play")
+	logger.info("[veranime.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

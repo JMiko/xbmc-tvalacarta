@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "documentalesatonline"
 
@@ -25,44 +27,78 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[documentalesatonline.py] init")
+logger.info("[documentalesatonline.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[documentalesatonline.py] mainlist")
+	logger.info("[documentalesatonline.py] mainlist")
+	
+	xbmctools.addnewfolder( CHANNELNAME , "novedades"  , category , "Novedades"     ,"http://documentalesatonline.blogspot.com/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "categorias" , category , "Por categorias","http://documentalesatonline.blogspot.com/","","")
 
-	if url=="":
-		url = "http://documentalesatonline.blogspot.com/"
+	if config.getSetting("singlechannel")=="true":
+		xbmctools.addSingleChannelOptions(params,url,category)
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def categorias(params,url,category):
+	logger.info("[documentalesatonline.py] novedades")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
+
+	# Extrae las entradas (carpetas)
+	patronvideos  = "<a dir='ltr' href='([^']+)'>([^<]+)</a>[^<]+<span dir='ltr'>([^<]+)</span>"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[1]+" "+match[2]
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+
+def novedades(params,url,category):
+	logger.info("[documentalesatonline.py] novedades")
+
+	# Descarga la página
+	data = scrapertools.cachePage(url)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = "<div class='post hentry'>.*?"
 	patronvideos += "<h3 class='post-title entry-title'>[^<]+"
 	patronvideos += "<a href='([^']+)'>([^<]+)</a>.*?"
-	patronvideos += '<img.*?src="([^"]+)"'
+	patronvideos += '<img.*?src="([^"]+)"[^>]+>(.*?)<div'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-		# URL
 		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
 		scrapedthumbnail = match[2]
-		
-		# Argumento
-		scrapedplot = ""
+		scrapedplot = scrapertools.htmlclean(match[3])
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
@@ -73,39 +109,30 @@ def mainlist(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = "Página siguiente"
-		# URL
 		scrapedurl = urlparse.urljoin(url,match)
-		# Thumbnail
 		scrapedthumbnail = ""
-		
-		# Argumento
 		scrapedplot = ""
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
+		xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[documentalesatonline.py] detail")
+	logger.info("[documentalesatonline.py] detail")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -113,7 +140,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -134,7 +161,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[documentalesatonline.py] play")
+	logger.info("[documentalesatonline.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = "" #urllib.unquote_plus( params.get("thumbnail") )

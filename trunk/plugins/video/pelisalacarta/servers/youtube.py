@@ -6,6 +6,8 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re,httplib
 import xbmc,xbmcplugin,xbmcgui
+import config
+
 _VALID_URL = r'^((?:http://)?(?:\w+\.)?youtube\.com/(?:(?:v/)|(?:(?:watch(?:\.php)?)?\?(?:.+&)?v=)))?([0-9A-Za-z_-]+)(?(1).+)?$'
 AVAILABLE_FORMATS  = ['13','17','34','5','18','35','22','37']
 AVAILABLE_FORMATS2 = {'13':'Baja','17':'Media (3gp)','34':'High (FLV)','5':'360p','18':'480p','35':'1227KBS (FLV)','22':'720p','37':'1080p'}
@@ -51,7 +53,7 @@ def geturls(id,data):
 	
 def geturl( id ):
 	print '[pelisalacarta] youtube.py Modulo: geturl(%s)' %id
-	quality = int(xbmcplugin.getSetting("quality_youtube"))
+	quality = int(config.getSetting("quality_youtube"))
 	if id != "":
 		url = "http://www.youtube.com/watch?v=%s&fmt=18" % id
 		print 'esta es la url: %s'%url
@@ -89,8 +91,7 @@ def geturl( id ):
 		else:
 			alertaNone()
 		
-	else:
-		alertaIDerror(id)
+	
 	return ""
 
 def GetYoutubeVideoInfo(videoID,eurl=None):
@@ -126,9 +127,8 @@ def Extract_id(url):
 	mobj = re.match(_VALID_URL, url)
 	if mobj is None:
 		print 'ERROR: URL invalida: %s' % url
-		#ventana = xbmcgui.Dialog()
-		#ok= ventana.ok ("Plugin Pelisalacarta", "Lo sentimos, no se pudo extraer la ID",'del video: %s' %url,"La URL es invalida ")
-		#return ""
+		alertaIDerror(url)
+		return ""
 	id = mobj.group(2)
 	return id
 
@@ -150,6 +150,6 @@ def alertaNone():
 	ventana = xbmcgui.Dialog()
 	ok= ventana.ok ("Conector de Youtube", "!Aviso¡","El video no se encuentra disponible",'es posible que haya sido removido')
 	
-def alertaIDerror():
-	ventana = xbmcgui.Dialog(id)
-	ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID: %s" %id,'del video, la URL es invalida ')
+def alertaIDerror(url):
+	ventana = xbmcgui.Dialog()
+	ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID de la URL"," %s" %url,'la URL es invalida ')

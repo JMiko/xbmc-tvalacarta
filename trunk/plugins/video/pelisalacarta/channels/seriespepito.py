@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "seriespepito"
 
@@ -24,19 +26,19 @@ try:
 except:
 	pluginhandle = ""
 
-xbmc.output("[seriespepito.py] init")
+logger.info("[seriespepito.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[seriespepito.py] mainlist")
+	logger.info("[seriespepito.py] mainlist")
 
 	xbmctools.addnewfolder( CHANNELNAME , "updatedserieslist", category , "Series actualizadas","http://www.seriespepito.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "lastepisodelist"  , category , "Nuevos capítulos","http://www.seriespepito.com/nuevos-capitulos/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico"   , category , "Listado alfabético","","","")
 	xbmctools.addnewfolder( CHANNELNAME , "allserieslist"    , category , "Listado completo","http://www.seriespepito.com/","","")
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -49,11 +51,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def updatedserieslist(params,url,category):
-	xbmc.output("[seriespepito.py] lastepisodeslist")
+	logger.info("[seriespepito.py] lastepisodeslist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patron  = '<td valign="top" align="center" width="20%">[^<]+'
@@ -77,7 +79,7 @@ def updatedserieslist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "episodelist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -92,11 +94,11 @@ def updatedserieslist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def alphaserieslist(params,url,category):
-	xbmc.output("[seriespepito.py] alphaserieslist")
+	logger.info("[seriespepito.py] alphaserieslist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	
@@ -121,7 +123,7 @@ def alphaserieslist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "episodelist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -136,11 +138,11 @@ def alphaserieslist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def lastepisodelist(params,url,category):
-	xbmc.output("[seriespepito.py] lastepisodeslist")
+	logger.info("[seriespepito.py] lastepisodeslist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patron  = '<td valign="top" align="center" width="33%">[^<]+'
@@ -169,7 +171,7 @@ def lastepisodelist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mirrorlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -184,11 +186,11 @@ def lastepisodelist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def allserieslist(params,url,category):
-	xbmc.output("[seriespepito.py] lastepisodeslist")
+	logger.info("[seriespepito.py] lastepisodeslist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patron  = '<b><a class="azulverde" href="([^"]+)">([^<]+)</a></b><br />'
@@ -210,7 +212,7 @@ def allserieslist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "episodelist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -264,11 +266,11 @@ def listalfabetico(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def episodelist(params,url,category):
-	xbmc.output("[seriespepito.py] list")
+	logger.info("[seriespepito.py] list")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patron = "<li class='li_capitulo'><a class='capitulo1' href='([^']+)' title='[^']+'>([^<]+)</a>&nbsp;<img src='([^']+)'[^>]+></li>"
@@ -292,7 +294,7 @@ def episodelist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mirrorlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -307,7 +309,7 @@ def episodelist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def mirrorlist(params,url,category):
-	xbmc.output("[seriespepito.py] mirrorlist")
+	logger.info("[seriespepito.py] mirrorlist")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -315,7 +317,7 @@ def mirrorlist(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -339,7 +341,7 @@ def mirrorlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[seriespepito.py] play")
+	logger.info("[seriespepito.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

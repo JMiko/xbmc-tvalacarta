@@ -24,9 +24,14 @@ import yotix
 import peliculas21
 import sesionvip
 import documaniatv
+import discoverymx
 import stagevusite
 import tutvsite
 import tumejortv
+import config
+import cinetube
+
+from item import Item
 
 CHANNELNAME = "buscador"
 
@@ -57,6 +62,11 @@ def mainlist(params,url,category):
 	
 	# Cinegratis
 	matches = []
+	itemlist = []
+	try:
+		itemlist.extend( cinetube.getsearchresults(params,tecleado,category) )
+	except:
+		pass
 	try:
 		matches.extend( cinegratis.performsearch(tecleado) )
 	except:
@@ -83,6 +93,18 @@ def mainlist(params,url,category):
 	except:
 		pass
 	try:
+		matches.extend( documaniatv.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( discoverymx.performsearch(tecleado) )
+	except:
+		pass
+	try:
+		matches.extend( yotix.performsearch(tecleado) )
+	except:
+		pass
+	try:
 		matches.extend( stagevusite.performsearch(tecleado) )
 	except:
 		pass
@@ -90,14 +112,17 @@ def mainlist(params,url,category):
 		matches.extend( tutvsite.performsearch(tecleado) )
 	except:
 		pass
-	try:
-		matches.extend( documaniatv.performsearch(tecleado) )
-	except:
-		pass
-	try:
-		matches.extend( yotix.performsearch(tecleado) )
-	except:
-		pass
+	
+	for item in itemlist:
+		targetchannel = item.channel
+		action = item.action
+		category = category
+		scrapedtitle = item.title+" ["+item.channel+"]"
+		scrapedurl = item.url
+		scrapedthumbnail = item.thumbnail
+		scrapedplot = item.plot
+		
+		xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 	
 	# Construye los resultados
 	for match in matches:

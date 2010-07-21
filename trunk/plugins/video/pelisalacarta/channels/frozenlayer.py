@@ -15,6 +15,8 @@ import megavideo
 import servertools
 import binascii
 import xbmctools
+import config
+import logger
 
 CHANNELNAME = "frozenlayer"
 
@@ -25,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[frozenlayer.py] init")
+logger.info("[frozenlayer.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[frozenlayer.py] mainlist")
+	logger.info("[frozenlayer.py] mainlist")
 
 	#53=wall
 	#xbmc.executebuiltin("Container.SetViewMode(53)")
@@ -42,7 +44,7 @@ def mainlist(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Series de la página
@@ -72,10 +74,10 @@ def mainlist(params,url,category):
 
 		# Depuracion
 		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedplot="+scrapedplot)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -93,12 +95,12 @@ def mainlist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match)
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
-	if xbmcplugin.getSetting("singlechannel")=="true":
+	if config.getSetting("singlechannel")=="true":
 		xbmctools.addSingleChannelOptions(params,url,category)
 
 	# Label (top-right)...
@@ -107,7 +109,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listvideos(params,url,category):
-	xbmc.output("[frozenlayer.py] listvideos")
+	logger.info("[frozenlayer.py] listvideos")
 
 	#50=full list
 	#xbmc.executebuiltin("Container.SetViewMode(50)")
@@ -124,7 +126,7 @@ def listvideos(params,url,category):
 	#http://www.frozen-layer.com/anime/1991/descargas/streaming#t
 	url = 'http://www.frozen-layer.com/anime/'+codigo+'/descargas/streaming'
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	
 	# ------------------------------------------------------
 	# Extrae el argumento
@@ -133,7 +135,7 @@ def listvideos(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		plot = matches[0].strip()
-	xbmc.output("[frozenlayer.py] plot=%s" % plot)
+	logger.info("[frozenlayer.py] plot=%s" % plot)
 	
 	# ------------------------------------------------------
 	# Enlaces a los vídeos
@@ -159,10 +161,10 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedplot="+scrapedplot)
 
 		# Añade al listado de XBMC
 		server = ""
@@ -192,7 +194,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[frozenlayer.py] play")
+	logger.info("[frozenlayer.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
