@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import anotador
 import config
+import logger
 
 CHANNELNAME = "divxonline"
 
@@ -27,7 +28,7 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[divxonline.py] init")
+logger.info("[divxonline.py] init")
 
 DEBUG = True
 Generate = False # poner a true para generar listas de peliculas
@@ -35,7 +36,7 @@ Notas = False # indica si hay que añadir la nota a las películas
 LoadThumbs = True # indica si deben cargarse los carteles de las películas; en MacOSX cuelga a veces el XBMC
 
 def mainlist(params,url,category):
-	xbmc.output("[divxonline.py] mainlist")
+	logger.info("[divxonline.py] mainlist")
 
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , CHANNELNAME , "Novedades" , "http://www.divxonline.info/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "megavideo" , CHANNELNAME , "Películas en Megavideo" , "" , "", "" )
@@ -53,11 +54,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def novedades(params,url,category):
-	xbmc.output("[divxonline.py] novedades")
+	logger.info("[divxonline.py] novedades")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas
 	'''
@@ -84,7 +85,7 @@ def novedades(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = "" # = match[1]
 		scrapedplot = match[3]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -107,7 +108,7 @@ def novedades(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def megavideo(params,url,category):
-	xbmc.output("[divxonline.py] megavideo")
+	logger.info("[divxonline.py] megavideo")
 
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Acción" , "http://www.divxonline.info/peliculas/50/accion-megavideo/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Animación" , "http://www.divxonline.info/peliculas/53/animacion-megavideo/" , "", "" )
@@ -137,7 +138,7 @@ def megavideo(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def veoh(params,url,category):
-	xbmc.output("[divxonline.py] veoh")
+	logger.info("[divxonline.py] veoh")
 
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Acción" , "http://www.divxonline.info/peliculas/30/accion-veoh/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Animación" , "http://www.divxonline.info/peliculas/33/animacion-veoh/" , "", "" )
@@ -167,7 +168,7 @@ def stepinto (url, data, pattern): # expand a page adding "next page" links give
 	# Obtiene el trozo donde están los links a todas las páginas de la categoría
 	match = re.search(pattern,data)
 	trozo = match.group(1)
-	#xbmc.output(trozo)
+	#logger.info(trozo)
 
 	# carga todas las paginas juntas para luego extraer las urls
 	patronpaginas = '<a href="([^"]+)"'
@@ -176,8 +177,8 @@ def stepinto (url, data, pattern): # expand a page adding "next page" links give
 	res = ''
 	for match in matches:
 		urlpage = urlparse.urljoin(url,match)
-		#xbmc.output(match)
-		#xbmc.output(urlpage)
+		#logger.info(match)
+		#logger.info(urlpage)
 		res += scrapertools.cachePage(urlpage)
 	return res
 
@@ -192,7 +193,7 @@ def removeacutes (s):
 		
 
 def pelisporletra(params,url,category):
-	xbmc.output("[divxonline.py] pelisporletra")
+	logger.info("[divxonline.py] pelisporletra")
 
 	letras = "9ABCDEFGHIJKLMNÑOPQRSTUVWXYZ" # el 9 antes era 1, que curiosamente está mal en la web divxonline (no funciona en el navegador)
 	for letra in letras:
@@ -207,7 +208,7 @@ def pelisporletra(params,url,category):
 
 
 def pelisporanio(params,url,category):
-	xbmc.output("[divxonline.py] pelisporanio")
+	logger.info("[divxonline.py] pelisporanio")
 
 	for anio in range(2009,1915,-1):
 		xbmctools.addnewfolder( CHANNELNAME , "pelisconficha" , CHANNELNAME , str(anio) , "http://www.divxonline.info/peliculas-anho/"+str(anio)+"/1.html" , "", "" )
@@ -221,10 +222,10 @@ def pelisporanio(params,url,category):
 
 	
 def pelisconficha(params,url,category): # fichas en listados por año y en estrenos
-	xbmc.output("[divxonline.py] pelisconficha")
+	logger.info("[divxonline.py] pelisconficha")
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas
 	patronvideos  = '<td class="contenido"><a href="(.*?)">' # link
@@ -257,9 +258,9 @@ def pelisconficha(params,url,category): # fichas en listados por año y en estren
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listmirrors" )
@@ -267,10 +268,10 @@ def pelisconficha(params,url,category): # fichas en listados por año y en estren
 
 	# añade siguiente página
 	match = re.search('(.*?)(\d+?)(\.html)',url)
-	xbmc.output("url="+url)
+	logger.info("url="+url)
 	pag = match.group(2)
 	newpag = match.group(1) + str(int(pag)+1) + match.group(3)
-	xbmc.output("newpag="+newpag)
+	logger.info("newpag="+newpag)
 	xbmctools.addnewfolder( CHANNELNAME , "pelisconficha" , CHANNELNAME , "Siguiente" , newpag , "", "" )
 	
 	# Label (top-right)...
@@ -283,17 +284,17 @@ def pelisconficha(params,url,category): # fichas en listados por año y en estren
 
 import time
 def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabéticas
-	xbmc.output("[divxonline.py] pelisconfichaB")
+	logger.info("[divxonline.py] pelisconfichaB")
 	t0 = time.time()
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# carga N páginas
 	N = 10
 	match = re.search('(.*?)(\d+?)(\.html)',url)
 	pag = int(match.group(2))
-	#xbmc.output("pag="+match.group(2))
+	#logger.info("pag="+match.group(2))
 	
 	for i in range(pag+1,pag+N):
 		newurl = match.group(1) + str(i) + match.group(3)
@@ -332,9 +333,9 @@ def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabé
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listmirrors" )
@@ -349,14 +350,14 @@ def pelisconfichaB(params,url,category): # fichas con formato en entradas alfabé
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 	
 	if DEBUG:
-		xbmc.output("Tiempo de ejecución = "+str(time.time()-t0))
+		logger.info("Tiempo de ejecución = "+str(time.time()-t0))
 
 def movielist(params,url,category): # pelis sin ficha (en listados por género)
-	xbmc.output("[divxonline.py] movielist")
+	logger.info("[divxonline.py] movielist")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	data = stepinto(url,data,'Ver página:(.*?)</p>')
 
@@ -389,9 +390,9 @@ def movielist(params,url,category): # pelis sin ficha (en listados por género)
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		if (Generate):
 			sanio = re.search('(.*?)\((.*?)\)',scrapedtitle)
@@ -413,7 +414,7 @@ def movielist(params,url,category): # pelis sin ficha (en listados por género)
 
 
 def listmirrors(params,url,category):
-	xbmc.output("[divxonline.py] listmirrors")
+	logger.info("[divxonline.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -431,7 +432,7 @@ def listmirrors(params,url,category):
 
 	for match in matches:
 		scrapedurl = urlparse.urljoin(url,match)
-		if (DEBUG): xbmc.output("url=["+scrapedurl+"]")
+		if (DEBUG): logger.info("url=["+scrapedurl+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , title + " [online]" , scrapedurl , thumbnail, plot )
@@ -445,7 +446,7 @@ def listmirrors(params,url,category):
 
 	for match in matches:
 		scrapedurl = urlparse.urljoin(url,match)
-		if (DEBUG): xbmc.output("url=["+scrapedurl+"]")
+		if (DEBUG): logger.info("url=["+scrapedurl+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , title + " [descarga]" , scrapedurl , thumbnail, plot )
@@ -456,7 +457,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[divxonline.py] detail")
+	logger.info("[divxonline.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -464,7 +465,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -484,14 +485,14 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[divxonline.py] play")
+	logger.info("[divxonline.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[divxonline.py] thumbnail="+thumbnail)
-	xbmc.output("[divxonline.py] server="+server)
+	logger.info("[divxonline.py] thumbnail="+thumbnail)
+	logger.info("[divxonline.py] server="+server)
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

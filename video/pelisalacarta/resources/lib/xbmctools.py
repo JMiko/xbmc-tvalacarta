@@ -19,6 +19,7 @@ import library
 import descargadoslist
 import scrapertools
 import config
+import logger
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -54,12 +55,12 @@ def addnewfolder( canal , accion , category , title , url , thumbnail , plot , S
 
 def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0):
 	contextCommands = []
-	#xbmc.output("pluginhandle=%d" % pluginhandle)
+	#logger.info("pluginhandle=%d" % pluginhandle)
 	if DEBUG:
 		try:
-			xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
+			logger.info('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
 		except:
-			xbmc.output('[xbmctools.py] addnewfolder(<unicode>)')
+			logger.info('[xbmctools.py] addnewfolder(<unicode>)')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie)
@@ -78,30 +79,30 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie=""):
 	if DEBUG:
 		try:
-			xbmc.output('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
+			logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
 		except:
-			xbmc.output('[xbmctools.py] addnewvideo(<unicode>)')
+			logger.info('[xbmctools.py] addnewvideo(<unicode>)')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	#listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)
-	#xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
+	#logger.info("[xbmctools.py] itemurl=%s" % itemurl)
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def addthumbnailfolder( canal , scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-	xbmc.output('[xbmctools.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
+	logger.info('[xbmctools.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
 	itemurl = '%s?channel=%s&action=%s&category=%s&url=%s&title=%s&thumbnail=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedthumbnail ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addfolder( canal , nombre , url , accion ):
-	xbmc.output('[xbmctools.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
+	logger.info('[xbmctools.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
 	itemurl = '%s?channel=%s&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addvideo( canal , nombre , url , category , server , Serie=""):
-	xbmc.output('[xbmctools.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+ '" , "'+Serie+'")"')
+	logger.info('[xbmctools.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+ '" , "'+Serie+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
 	itemurl = '%s?channel=%s&action=play&category=%s&url=%s&server=%s&title=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , category , urllib.quote_plus(url) , server , urllib.quote_plus( nombre ) , Serie)
@@ -121,12 +122,12 @@ def playvideo4(canal,server,url,category,title,thumbnail,plot):
 
 def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile=False,Serie=""):
 
-	xbmc.output("[xbmctools.py] playvideo")
-	xbmc.output("[xbmctools.py] playvideo canal="+canal)
-	xbmc.output("[xbmctools.py] playvideo server="+server)
-	xbmc.output("[xbmctools.py] playvideo url="+url)
-	xbmc.output("[xbmctools.py] playvideo category="+category)
-	xbmc.output("[xbmctools.py] playvideo serie="+Serie)
+	logger.info("[xbmctools.py] playvideo")
+	logger.info("[xbmctools.py] playvideo canal="+canal)
+	logger.info("[xbmctools.py] playvideo server="+server)
+	logger.info("[xbmctools.py] playvideo url="+url)
+	logger.info("[xbmctools.py] playvideo category="+category)
+	logger.info("[xbmctools.py] playvideo serie="+Serie)
 	
 	# Abre el diálogo de selección
 	opciones = []
@@ -180,8 +181,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una opción", opciones)
 		#dia.close()
-	xbmc.output("seleccion=%d" % seleccion)
-	xbmc.output("seleccion=%s" % opciones[seleccion])
+	logger.info("seleccion=%d" % seleccion)
+	logger.info("seleccion=%s" % opciones[seleccion])
 
 	# No ha elegido nada, lo más probable porque haya dado al ESC 
 	if seleccion==-1:
@@ -307,7 +308,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		return
 
 	# Si no hay mediaurl es porque el vídeo no está :)
-	xbmc.output("[xbmctools.py] mediaurl="+mediaurl)
+	logger.info("[xbmctools.py] mediaurl="+mediaurl)
 	if mediaurl=="":
 		alertnodisponibleserver(server)
 		return
@@ -316,20 +317,20 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 
 	# Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
 	if strmfile:
-		xbmc.output("[xbmctools.py] 1")
+		logger.info("[xbmctools.py] 1")
 		listitem = getLibraryInfo(mediaurl)
 	else:
-		xbmc.output("[xbmctools.py] 2")
+		logger.info("[xbmctools.py] 2")
 		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
 		listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : canal , "Genre" : category } )
 
 		
 	# Lanza el reproductor
 	if strmfile: #Si es un fichero strm no hace falta el play
-		xbmc.output("[xbmctools.py] 3")
+		logger.info("[xbmctools.py] 3")
 		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
 	else:
-		xbmc.output("[xbmctools.py] 4")
+		logger.info("[xbmctools.py] 4")
 		launchplayer(mediaurl, listitem)
 		
 	if (config.getSetting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
@@ -341,7 +342,7 @@ def getLibraryInfo (mediaurl):
 	'''Obtiene información de la Biblioteca si existe (ficheros strm) o de los parámetros
 	'''
 	if DEBUG:
-		xbmc.output('[xbmctools.py] playlist OBTENCIÓN DE DATOS DE BIBLIOTECA')
+		logger.info('[xbmctools.py] playlist OBTENCIÓN DE DATOS DE BIBLIOTECA')
 
 	# Información básica
 	label = xbmc.getInfoLabel( 'listitem.label' )
@@ -349,10 +350,10 @@ def getLibraryInfo (mediaurl):
 	iconImage = xbmc.getInfoImage( 'listitem.icon' )
 	thumbnailImage = xbmc.getInfoImage( 'listitem.Thumb' ) #xbmc.getInfoLabel( 'listitem.thumbnailImage' )
 	if DEBUG:
-		xbmc.output ("[xbmctools.py]getMediaInfo: label = " + label) 
-		xbmc.output ("[xbmctools.py]getMediaInfo: label2 = " + label2) 
-		xbmc.output ("[xbmctools.py]getMediaInfo: iconImage = " + iconImage) 
-		xbmc.output ("[xbmctools.py]getMediaInfo: thumbnailImage = " + thumbnailImage) 
+		logger.info ("[xbmctools.py]getMediaInfo: label = " + label) 
+		logger.info ("[xbmctools.py]getMediaInfo: label2 = " + label2) 
+		logger.info ("[xbmctools.py]getMediaInfo: iconImage = " + iconImage) 
+		logger.info ("[xbmctools.py]getMediaInfo: thumbnailImage = " + thumbnailImage) 
 
 	# Creación de listitem
 	listitem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, mediaurl)
@@ -400,7 +401,7 @@ def getLibraryInfo (mediaurl):
 		value = xbmc.getInfoLabel( label )
 		if value != "":
 			if DEBUG:
-				xbmc.output ("[xbmctools.py]getMediaInfo: "+key+" = " + value) #infoimage=infolabel
+				logger.info ("[xbmctools.py]getMediaInfo: "+key+" = " + value) #infoimage=infolabel
 			if tipo == 's':
 				infodict[key]=value
 			elif tipo == 'i':
@@ -438,38 +439,38 @@ def getLibraryInfo (mediaurl):
 def launchplayer(mediaurl, listitem):
 
 	# Añadimos el listitem a una lista de reproducción (playlist)
-	xbmc.output("[xbmctools.py] 5")
+	logger.info("[xbmctools.py] 5")
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
 	playlist.clear()
 	playlist.add( mediaurl, listitem )
 
 	# Reproduce
-	xbmc.output("[xbmctools.py] 6")
+	logger.info("[xbmctools.py] 6")
 	playersettings = config.getSetting('player_type')
-	xbmc.output("[xbmctools.py] playersettings="+playersettings)
+	logger.info("[xbmctools.py] playersettings="+playersettings)
 
-	xbmc.output("[xbmctools.py] 7")
+	logger.info("[xbmctools.py] 7")
 	player_type = xbmc.PLAYER_CORE_AUTO
 	if playersettings == "0":
 		player_type = xbmc.PLAYER_CORE_AUTO
-		xbmc.output("[xbmctools.py] PLAYER_CORE_AUTO")
+		logger.info("[xbmctools.py] PLAYER_CORE_AUTO")
 	elif playersettings == "1":
 		player_type = xbmc.PLAYER_CORE_MPLAYER
-		xbmc.output("[xbmctools.py] PLAYER_CORE_MPLAYER")
+		logger.info("[xbmctools.py] PLAYER_CORE_MPLAYER")
 	elif playersettings == "2":
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
-		xbmc.output("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
-	xbmc.output("[xbmctools.py] 8")
+		logger.info("[xbmctools.py] PLAYER_CORE_DVDPLAYER")
+	logger.info("[xbmctools.py] 8")
 
 	xbmcPlayer = xbmc.Player( player_type )
 	xbmcPlayer.play(playlist)
 
 def logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot):
 	if (DEBUG):
-		xbmc.output("[xmbctools.py] scrapedtitle="+scrapedtitle)
-		xbmc.output("[xmbctools.py] scrapedurl="+scrapedurl)
-		xbmc.output("[xmbctools.py] scrapedthumbnail="+scrapedthumbnail)
-		xbmc.output("[xmbctools.py] scrapedplot="+scrapedplot)
+		logger.info("[xmbctools.py] scrapedtitle="+scrapedtitle)
+		logger.info("[xmbctools.py] scrapedurl="+scrapedurl)
+		logger.info("[xmbctools.py] scrapedthumbnail="+scrapedthumbnail)
+		logger.info("[xmbctools.py] scrapedplot="+scrapedplot)
 
 def alertnodisponible():
 	advertencia = xbmcgui.Dialog()
@@ -510,7 +511,7 @@ def addSingleChannelOptions(params,url,category):
 def playstrm(params,url,category):
 	'''Play para videos en ficheros strm
 	'''
-	xbmc.output("[xbmctools.py] playstrm url="+url)
+	logger.info("[xbmctools.py] playstrm url="+url)
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -522,3 +523,16 @@ def playstrm(params,url,category):
 		serie = ""
 	
 	playvideo("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
+
+def renderItems(itemlist, params, url, category):
+	for item in itemlist:
+		if item.folder:
+			addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot )
+		else:
+			addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot )
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+

@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "pelisflv"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[pelisflv.py] init")
+logger.info("[pelisflv.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[pelisflv.py] mainlist")
+	logger.info("[pelisflv.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Novedades"    ,"http://www.pelisflv.net","","")
@@ -59,7 +60,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[pelisflv.py] search")
+	logger.info("[pelisflv.py] search")
 
 	keyboard = xbmc.Keyboard()
 	#keyboard.setDefault('')
@@ -73,7 +74,7 @@ def search(params,url,category):
 			listvideos(params,searchUrl,category)
 
 def searchresults(params,url,category):
-	xbmc.output("[pelisflv.py] SearchResult")
+	logger.info("[pelisflv.py] SearchResult")
 	
 	
 	# Descarga la página
@@ -96,7 +97,7 @@ def searchresults(params,url,category):
 		scrapedtitle = scrapedtitle.replace("&nbsp;"," ")
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -109,11 +110,11 @@ def searchresults(params,url,category):
 
 
 def ListadoSeries(params,url,category):
-	xbmc.output("[peliculas24h.py] ListadoTotal")
+	logger.info("[peliculas24h.py] ListadoTotal")
 	title = urllib.unquote_plus( params.get("title") )
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Patron de las entradas
 	patron = "<h2>"+title+"</h2>[^<]+<[^>]+>[^<]+<ul>(.*?)</ul>"
@@ -131,7 +132,7 @@ def ListadoSeries(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -143,14 +144,14 @@ def ListadoSeries(params,url,category):
         
 
 def listvideos(params,url,category):
-	xbmc.output("[pelisflv.py] listvideos")
+	logger.info("[pelisflv.py] listvideos")
 
 	if url=="":
 		url = "http://www.pelisflv.net/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Extrae las entradas (carpetas)
@@ -184,9 +185,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC
@@ -214,7 +215,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[pelisflv.py] detail")
+	logger.info("[pelisflv.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -222,7 +223,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	datafull = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	patron = "<!-- google_ad_section_start -->.*?<!-- google_ad_section_end -->"
 	matches = re.compile(patron,re.DOTALL).findall(datafull)
 	data = matches[0]
@@ -245,7 +246,7 @@ def detail(params,url,category):
 	patronvideos  = "'(http://stagevu.com[^']+)'"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
-		xbmc.output(" Servidor Stagevu")
+		logger.info(" Servidor Stagevu")
 		for match in matches:
 			scrapedurl = match.replace("&amp;","&")
 			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Stagevu" , title+" - [Stagevu]", scrapedurl , thumbnail , plot )
@@ -255,7 +256,7 @@ def detail(params,url,category):
 	patronvideos  = "'(http://www.movshare.net[^']+)'"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
-		xbmc.output(" Servidor Movshare")
+		logger.info(" Servidor Movshare")
 		for match in matches:
 			scrapedurl = match.replace("&amp;","&")
 			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Movshare" , title+" - [Movshare]", scrapedurl , thumbnail , plot )
@@ -275,7 +276,7 @@ def detail(params,url,category):
 			subtitle = "[FLV-Directo]"
 			if ("xml" in match):
 				data2 = scrapertools.cachePage(match)
-				xbmc.output("data2="+data2)
+				logger.info("data2="+data2)
 				patronvideos  = '<track>.*?'
 				patronvideos += '<title>([^<]+)</title>[^<]+'
 				patronvideos += '<location>([^<]+)</location>(?:[^<]+'
@@ -303,7 +304,7 @@ def detail(params,url,category):
 						scrapedurl = scrapedurl + "|" + match2[2]
 						playWithSubt = "play2"
 							
-					if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+					if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 							
 					# Añade al listado de XBMC
 					xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
@@ -328,7 +329,7 @@ def detail(params,url,category):
 			subtitle = "[FLV-Directo]"
 					
 			data2 = scrapertools.cachePage(match)
-			xbmc.output("data2="+data2)
+			logger.info("data2="+data2)
 			patronvideos  = '<track>.*?'
 			patronvideos += '<title>([^<]+)</title>.*?'
 			patronvideos += '<location>([^<]+)</location>(?:[^<]+'
@@ -354,7 +355,7 @@ def detail(params,url,category):
 					scrapedurl = scrapedurl + "|" + match2[2]
 					playWithSubt = "play2"
 						
-				if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+				if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 						
 				# Añade al listado de XBMC
 				xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )					
@@ -364,7 +365,7 @@ def detail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
-		xbmc.output(" Servidor Videoweed")
+		logger.info(" Servidor Videoweed")
 		for match in matches:
 			scrapedurl = match.replace("&amp;","&")
 			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Videoweed" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )		
@@ -374,7 +375,7 @@ def detail(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
-		xbmc.output(" Servidor Gigabyteupload")
+		logger.info(" Servidor Gigabyteupload")
 		for match in matches:
 			
 			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Gigabyteupload" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )
@@ -389,7 +390,7 @@ def detail(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[pelisflv.py] play")
+	logger.info("[pelisflv.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -399,7 +400,7 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
-	xbmc.output("[pelisflv.py] play2")
+	logger.info("[pelisflv.py] play2")
 	url1 = url
 	if "|" in url:
 		urlsplited = url.split("|")
@@ -448,12 +449,12 @@ def downloadstr(urlsub):
 			subtitfile = open(fullpath,"w")
 			subtitfile.close()
 		except IOError:
-			xbmc.output("Error al limpiar el archivo subtitulo.srt "+fullpath)
+			logger.info("Error al limpiar el archivo subtitulo.srt "+fullpath)
 			raise
 	try:		
 		ok = downloadtools.downloadfile(urlsub,fullpath)
 	except IOError:
-		xbmc.output("Error al descargar el subtitulo "+urlsub)
+		logger.info("Error al descargar el subtitulo "+urlsub)
 		return -1
 	return ok
 

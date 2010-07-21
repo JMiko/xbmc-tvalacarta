@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "peliculashd"
 
@@ -26,19 +27,19 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[peliculashd.py] init")
+logger.info("[peliculashd.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[peliculashd.py] mainlist")
+	logger.info("[peliculashd.py] mainlist")
 	
 	if url=="":
 		url="http://www.peliculashd.net/"
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patron  = '<p class="news"><span class="title"><a href="([^"]+)"></span><img src="([^"]+)".*?alt="([^"]+)"'
@@ -57,7 +58,7 @@ def mainlist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -78,7 +79,7 @@ def mainlist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -96,7 +97,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[peliculashd.py] detail")
+	logger.info("[peliculashd.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -104,7 +105,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	patron = '<span class="title">([^<]+)</span>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -134,7 +135,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[peliculashd.py] play")
+	logger.info("[peliculashd.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

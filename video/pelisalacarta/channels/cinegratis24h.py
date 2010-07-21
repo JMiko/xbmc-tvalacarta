@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "cinegratis24h"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[cinegratis24h.py] init")
+logger.info("[cinegratis24h.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[cinegratis24h.py] mainlist")
+	logger.info("[cinegratis24h.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimas Películas Subidas"    ,"http://www.cinegratis24h.com/search?max-results=50","","")
@@ -53,11 +54,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def ListadoTotal(params,url,category):
-	xbmc.output("[peliculas24h.py] ListadoTotal")
+	logger.info("[peliculas24h.py] ListadoTotal")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Patron de las entradas
 	patron = "<a dir='ltr' href='([^']+)'>(.*?)</a>"
@@ -71,7 +72,7 @@ def ListadoTotal(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -83,14 +84,14 @@ def ListadoTotal(params,url,category):
         
 
 def listvideos(params,url,category):
-	xbmc.output("[cinegratis24h.py] listvideos")
+	logger.info("[cinegratis24h.py] listvideos")
 
 	if url=="":
 		url = "http://www.cinegratis24h.com/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Extrae las entradas (carpetas)
@@ -124,9 +125,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		if not "adelante" in scrapedthumbnail:
 			# Añade al listado de XBMC
@@ -155,7 +156,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[cinegratis24h.py] detail")
+	logger.info("[cinegratis24h.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -163,7 +164,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
         patrondescrip = '<a onblur=.*?src="([^"]+)" border.*?</a><.*?><.*?>(Sinopsis:<br />.*?)</div>'
         matches = re.compile(patrondescrip,re.DOTALL).findall(data)
         if DEBUG:
@@ -186,19 +187,6 @@ def detail(params,url,category):
 					except:
 						plot = descripcion
 				                    
-                   
-          
-	# ------------------------------------------------------------------------------------
-	# Busca los enlaces a los videos
-	# ------------------------------------------------------------------------------------
-	#listavideos = servertools.findvideos(data)
-
-	#for video in listavideos:
-	#	videotitle = video[0]
-	#	url = video[1]
-	#	server = video[2]
-	#	xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
-	# ------------------------------------------------------------------------------------
         #--- Busca los videos Directos
         patronvideos = 'flashvars="file=([^\&]+)\&amp'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -214,11 +202,11 @@ def detail(params,url,category):
                 return
             data=response.read()
 	    response.close()
-            #xbmc.output("archivo xml :"+data)
+            #logger.info("archivo xml :"+data)
             newpatron = '<title>([^<]+)</title>[^<]+<location>([^<]+)</location>'
             newmatches = re.compile(newpatron,re.DOTALL).findall(data)
             for match in newmatches:
-				xbmc.output(" videos = "+match)
+				logger.info(" videos = "+match)
 				if match[1].startwith("vid"):
 					subtitle = match[0] + " (rtmpe) no funciona en xbmc"
 				else:
@@ -229,9 +217,20 @@ def detail(params,url,category):
           else:
 			parte = 0
 			for match in matches:
-				xbmc.output(" matches = "+match)
+				logger.info(" matches = "+match)
 				parte = parte + 1
 				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " "+str(parte)+" (FLV)", match , thumbnail , plot )
+
+	# ------------------------------------------------------------------------------------
+	# Busca los enlaces a los videos
+	# ------------------------------------------------------------------------------------
+	listavideos = servertools.findvideos(data)
+
+	for video in listavideos:
+		videotitle = video[0]
+		url = video[1]
+		server = video[2]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -243,7 +242,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[cinegratis24h.py] play")
+	logger.info("[cinegratis24h.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

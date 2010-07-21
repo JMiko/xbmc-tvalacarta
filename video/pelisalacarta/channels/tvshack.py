@@ -17,6 +17,7 @@ import os
 import library
 import string
 import config
+import logger
 
 CHANNELNAME = "tvshack"
 
@@ -37,13 +38,13 @@ except:
     pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[tvshack.py] init")
+logger.info("[tvshack.py] init")
 
 
 #fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack'+ str (random.randint(1,5))+'.png' ) )
 fanartfile = xbmc.translatePath( os.path.join( FANART_PATH, 'tvshack.jpg' ) )
-xbmc.output("[tvshac.py] init pluginhandle: "+str(pluginhandle))
-xbmc.output("[tvshac.py] init fanart: "+fanartfile)
+logger.info("[tvshac.py] init pluginhandle: "+str(pluginhandle))
+logger.info("[tvshac.py] init fanart: "+fanartfile)
 xbmcplugin.setPluginFanart(pluginhandle, fanartfile)
 
 DEBUG = True
@@ -53,7 +54,7 @@ def mainlist(params,url,category):
     """Lista las categorías principales del canal
 
     """
-    xbmc.output("[tvshac.py] mainlist")
+    logger.info("[tvshac.py] mainlist")
 
 
     # Lista de Categorías 
@@ -68,13 +69,13 @@ def mainlist(params,url,category):
     if config.getSetting ("singlechannel")=="true":
         xbmctools.addSingleChannelOptions (params , url , category)
 
-    xbmc.output("[tvshac.py] mainlist finalizaplugin handle: "+str(pluginhandle))
+    logger.info("[tvshac.py] mainlist finalizaplugin handle: "+str(pluginhandle))
     FinalizaPlugin (pluginhandle,category)
 
 def Buscar (params,url,category):
     '''Busca en todo el canal y muestra lista de resultados
     '''
-    xbmc.output("[tvshac.py] Buscar")
+    logger.info("[tvshac.py] Buscar")
     
     keyboard = xbmc.Keyboard()
     keyboard.doModal()
@@ -163,7 +164,7 @@ def Buscar (params,url,category):
 def ListaSeries(params,url,category):
   """Crea el listado de series,Anime o música y lo muestra para selección
   """
-  xbmc.output("[tvshack.py] ListaSeries")
+  logger.info("[tvshack.py] ListaSeries")
 
   # Iniciamos un cruadro de diálogo de espera.
   pDialog = xbmcgui.DialogProgress()
@@ -252,7 +253,7 @@ def ListaSeries(params,url,category):
 def ListaEpisodios(params,url,category):
   """Muestra los episodios de una serie
   """
-  xbmc.output("[tvshack.py] ListaEpisodios")
+  logger.info("[tvshack.py] ListaEpisodios")
   
   if params.has_key("Serie"):
     serie = params.get("Serie")
@@ -273,7 +274,7 @@ def ListaEpisodios(params,url,category):
 def addlist2Library(params,url,category,verbose=True):
   """Añade todos los episodios de una serie a la biblioteca
   """
-  xbmc.output("[tvshack.py] addlist2Library")
+  logger.info("[tvshack.py] addlist2Library")
 
   if params.has_key("Serie"):
     serie = params.get("Serie")
@@ -297,13 +298,13 @@ def addlist2Library(params,url,category,verbose=True):
       nuevos = nuevos + library.savelibrary(ep['title'],ep['url'],ep['thumbnail'],"",ep['plot'],canal=CHANNELNAME,category="Series",Serie=serie,verbose=False,accion="strm_detail",pedirnombre=False)
       episodios = episodios + 1
     except IOError:
-      xbmc.output("Error al grabar el archivo "+ep['title'])
+      logger.info("Error al grabar el archivo "+ep['title'])
       errores = errores + 1
 
   if verbose:
     pDialog.close()
   if errores > 0:
-    xbmc.output ("[tvshack.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
+    logger.info ("[tvshack.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
 
   if verbose:
     library.update(episodios,errores,nuevos)
@@ -397,7 +398,7 @@ def devuelveListaEpisodios (params,url,category):
 def ListaDetallada(params,url,category):
   """Crea el listado de Espectáculos de las secciones de Cine y Docs.
   """
-  xbmc.output("[tvshack.py] ListaDetallada")
+  logger.info("[tvshack.py] ListaDetallada")
 
   # Iniciamos un cruadro de diálogo de espera.
   pDialog = xbmcgui.DialogProgress()
@@ -484,7 +485,7 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
   elegir una al azar o por algún mecanismo mejor. Así se ahorraría un paso
   aunque supongo que habrá riesgo de no elegir una buena opción.
   '''
-  xbmc.output("[tvshack.py] ListaVideosEpisodios")
+  logger.info("[tvshack.py] ListaVideosEpisodios")
 
 
   if params.has_key("Serie"):
@@ -571,7 +572,7 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
 def playVideo(params,url,category,strmfile=False):
   '''Reproduce el video seleccionado
   '''
-  xbmc.output("[tvshack.py] playVideo")
+  logger.info("[tvshack.py] playVideo")
 
   if params.has_key("Serie"):
     serie = params.get("Serie")
@@ -595,11 +596,11 @@ def playVideo(params,url,category,strmfile=False):
   server = params["server"]
 
   if DEBUG:
-    xbmc.output("[tvshack.py] url="+url)
-    xbmc.output("[tvshack.py] title="+title)
-    xbmc.output("[tvshack.py] plot="+plot)
-    xbmc.output("[tvshack.py] thumbnail="+thumbnail)
-    xbmc.output("[tvshack.py] server="+server)
+    logger.info("[tvshack.py] url="+url)
+    logger.info("[tvshack.py] title="+title)
+    logger.info("[tvshack.py] plot="+plot)
+    logger.info("[tvshack.py] thumbnail="+thumbnail)
+    logger.info("[tvshack.py] server="+server)
 
   # Descarga la página
   data = scrapertools.cachePage(url)
@@ -625,7 +626,7 @@ def playVideo(params,url,category,strmfile=False):
   # Para los vídeos con más partes habrá que crear una función especial que
   # pregunte una sola vez y meta todos los vídeos juntos.
   if len(partes) > 1:
-    xbmc.output ("[tvshack] playVideo - Video multiparte - pendiente:" + str(len(partes)))
+    logger.info ("[tvshack] playVideo - Video multiparte - pendiente:" + str(len(partes)))
     dialog = xbmcgui.Dialog()
     dialog.ok('pelisalacarta - tvshack','Este video tiene varias partes.','En esta versión de pelisalacarta no están soportados.','Eliga otro video con una sóla parte.')
 #    for parte in partes:
@@ -760,5 +761,5 @@ def LeeDatosSerie (tdata):
 
 def dlog (text):
   if DEBUG:
-    xbmc.output(text)
+    logger.info(text)
 

@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "peliculaseroticas"
 
@@ -26,19 +27,19 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[peliculaseroticas.py] init")
+logger.info("[peliculaseroticas.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[peliculaseroticas.py] mainlist")
+	logger.info("[peliculaseroticas.py] mainlist")
             
         if url == "":
 	  url = "http://www.peliculaseroticas.net/"
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<h3 class=\'post-title entry-title\'>.*?<a href=\'[^\']+\''
@@ -79,9 +80,9 @@ def mainlist(params,url,category):
 		scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" ,category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot  )
@@ -112,17 +113,17 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[peliculaseroticas.py] detail")
+	logger.info("[peliculaseroticas.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	thumnbail = thumbnail
-	xbmc.output("[peliculaseroticas.py] title="+title)
-	xbmc.output("[peliculaseroticas.py] thumbnail="+thumbnail)
+	logger.info("[peliculaseroticas.py] title="+title)
+	logger.info("[peliculaseroticas.py] thumbnail="+thumbnail)
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-        #xbmc.output(data)
+        #logger.info(data)
         #detalle = "<div class='post-body entry-content'>([^<]+).*?"
         #matches = re.compile(detalle,re.DOTALL).findall(data)
         #matches += thumnbail
@@ -152,13 +153,13 @@ def detail(params,url,category):
 
         patronvideos = '(http://www.mystream.to/.*?)"'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        #xbmc.output(data)
-        #xbmc.output("[peliculaseroticas.py] matches="+matches[0])  
+        #logger.info(data)
+        #logger.info("[peliculaseroticas.py] matches="+matches[0])  
         if len(matches)>0:
             data = scrapertools.cachePage(matches[0])
             patronvideos = 'flashvars" value="file=(.*?)"'
             videosdirecto = re.compile(patronvideos,re.DOTALL).findall(data)
-            #xbmc.output("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
+            #logger.info("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
             if len(videosdirecto)>0:
               xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Directo con mystream.to"  , videosdirecto[0] ,thumbnail, plot )
        
@@ -169,11 +170,11 @@ def detail(params,url,category):
               data = scrapertools.cachePage(matches[0])
               patronvideos ='param name="src" value="http://stream.movshare.net/(.*?).avi'   
               videosdirecto = re.compile(patronvideos,re.DOTALL).findall(data)
-            #xbmc.output("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
+            #logger.info("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
               if len(videosdirecto)>0:
                  import movshare
                  mediaurl = "http://www.movshare.net/video/" + videosdirecto[0]
-                 xbmc.output("[peliculaseroticas.py] mediaurl = "+ mediaurl)
+                 logger.info("[peliculaseroticas.py] mediaurl = "+ mediaurl)
                  mediaurl = movshare.getvideo(mediaurl)
                  xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en movshare"  , mediaurl ,thumbnail, plot )
 
@@ -185,11 +186,11 @@ def detail(params,url,category):
              # extrae los videos para servidor stagevu
               patronvideos ="http://stagevu.com/.*?uid=(.*?)'"   
               videosdirecto = re.compile(patronvideos,re.DOTALL).findall(data)
-            #xbmc.output("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
+            #logger.info("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
               if len(videosdirecto)>0:
                  import stagevu
                  mediaurl = "http://stagevu.com/video/" + videosdirecto[0]
-                 xbmc.output("[peliculaseroticas.py] mediaurl = "+ mediaurl)
+                 logger.info("[peliculaseroticas.py] mediaurl = "+ mediaurl)
                  mediaurl = stagevu.Stagevu(mediaurl)
                  xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en stagevu"  , mediaurl ,thumbnail, plot ) 
                 
@@ -200,7 +201,7 @@ def detail(params,url,category):
         data = scrapertools.cachePage(url)
         patronvideos = 'flashvars.*?file=(.*?.flv).*?'
         videosdirecto = re.compile(patronvideos,re.DOTALL).findall(data)
-        #xbmc.output("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
+        #logger.info("[peliculaseroticas.py] videosdirecto="+videosdirecto[0])
         if len(videosdirecto)>0:
               xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en myspacecdn"  , videosdirecto[0] ,thumbnail, plot )
 	# --------------------------------------------------------------------------------
@@ -209,16 +210,16 @@ def detail(params,url,category):
           
         patronvideos = '<a href=\"http://www.adnstream.tv/video/(.*?)/.*?"'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        #xbmc.output("[peliculaseroticas.py] matches="+matches[0])
+        #logger.info("[peliculaseroticas.py] matches="+matches[0])
         if len(matches)>0:
               mediaurl = "http://www.adnstream.tv/get_playlist.php?lista=video&param="+matches[0]+"&c=463"
-              xbmc.output(" mediaurl -------"+mediaurl)
+              logger.info(" mediaurl -------"+mediaurl)
               data = scrapertools.cachePage(mediaurl)
-              #xbmc.output("[peliculaseroticas.py] data="+data)
+              #logger.info("[peliculaseroticas.py] data="+data)
               patronvideos = '</description>.*?<enclosure type="video/x-flv" url="(.*?)"'
               matchvideo = re.compile(patronvideos,re.DOTALL).findall(data)
               if len(matchvideo)>0:
-                 xbmc.output("[peliculaseroticas.py] videoflv = "+ matchvideo[0])
+                 logger.info("[peliculaseroticas.py] videoflv = "+ matchvideo[0])
                  xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en adnstream.tv"  , matchvideo[0] ,thumbnail, plot )
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -230,7 +231,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[peliculaseroticas.py] play")
+	logger.info("[peliculaseroticas.py] play")
 
 	#title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	#thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
@@ -240,8 +241,8 @@ def play(params,url,category):
 	server = urllib.unquote_plus(params["server"])
         #xbmc.executebuiltin("XBMC.ActivateWindow(contextmenu)")
         #xbmc.executebuiltin("XBMC.ActivateWindow(movieinformation)")
-	xbmc.output("[peliculaseroticas.py] thumbnail="+thumbnail)
-	xbmc.output("[peliculaseroticas.py] server="+server)
+	logger.info("[peliculaseroticas.py] thumbnail="+thumbnail)
+	logger.info("[peliculaseroticas.py] server="+server)
 	
         
         #xbmc.executebuiltin("XBMC.ReplaceWindow(contextmenu)")

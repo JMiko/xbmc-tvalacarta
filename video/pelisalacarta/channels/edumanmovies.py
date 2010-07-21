@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "edumanmovies"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[edumanmovies.py] init")
+logger.info("[edumanmovies.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[edumanmovies.py] mainlist")
+	logger.info("[edumanmovies.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Novedades"            ,"http://edumanmovies.com/","","")
@@ -48,11 +49,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listvideos(params,url,category):
-	xbmc.output("[edumanmovies.py] listvideos")
+	logger.info("[edumanmovies.py] listvideos")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<div class="item">[^<]+'
@@ -73,7 +74,7 @@ def listvideos(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[1])
 		scrapedthumbnail = urlparse.urljoin(url,match[0])
 		scrapedplot = match[3]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -131,7 +132,7 @@ def pelisalfa(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[edumanmovies.py] search")
+	logger.info("[edumanmovies.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -144,7 +145,7 @@ def search(params,url,category):
 			listvideos(params,searchUrl,category)
 
 def performsearch(texto):
-	xbmc.output("[edumanmovies.py] performsearch")
+	logger.info("[edumanmovies.py] performsearch")
 	url = "http://edumanmovies.com/?s="+texto
 
 	# Descarga la página
@@ -167,11 +168,13 @@ def performsearch(texto):
 
 	for match in matches:
 		# Atributos
+
+
 		scrapedtitle = match[2]
 		scrapedurl = urlparse.urljoin(url,match[1])
 		scrapedthumbnail = urlparse.urljoin(url,match[0])
 		scrapedplot = match[3]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -179,7 +182,7 @@ def performsearch(texto):
 	return resultados
 
 def peliscat(params,url,category):
-	xbmc.output("[edumanmovies.py] peliscat")
+	logger.info("[edumanmovies.py] peliscat")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -195,7 +198,7 @@ def peliscat(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -206,7 +209,7 @@ def peliscat(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[edumanmovies.py] detail")
+	logger.info("[edumanmovies.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -214,7 +217,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	#<iframe name="frame" marginwidth="0" marginheight="0" src="/p.php?f=43&#038;n=negrologoxd" scrolling="no" frameborder="0"
 
 	# ------------------------------------------------------------------------------------
@@ -235,7 +238,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[edumanmovies.py] play")
+	logger.info("[edumanmovies.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

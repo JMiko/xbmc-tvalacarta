@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import string
 import config
+import logger
 
 CHANNELNAME = "filmesonlinebr"
 
@@ -27,12 +28,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[filmesonlinebr.py] init")
+logger.info("[filmesonlinebr.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[filmesonlinebr.py] mainlist")
+	logger.info("[filmesonlinebr.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimos Filmes Subidos"    ,"http://www.filmesonlinebr.com/","","")
@@ -55,7 +56,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listcategorias(params,url,category):
-	xbmc.output("[filmeonlinebr.py] listcategorias")
+	logger.info("[filmeonlinebr.py] listcategorias")
 
 
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Animações e Animes"    ,"http://www.filmesonlinebr.com/category/filmes-animacoes-e-animes/","","")
@@ -85,7 +86,7 @@ def listcategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
         
 def listalfa(params,url,category):
-	xbmc.output("[filmesonlinebr.py] listalfa")
+	logger.info("[filmesonlinebr.py] listalfa")
 	
 	xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "0-9","http://www.filmesonlinebr.com/search/label/0-9/","","","")
 	xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "A","http://www.filmesonlinebr.com/search/label/a/","","","")
@@ -125,7 +126,7 @@ def listalfa(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	
 def listvideos(params,url,category):
-	xbmc.output("[filmesonlinebr.py] listvideos")
+	logger.info("[filmesonlinebr.py] listvideos")
 	adulto = config.getSetting("enableadultmode")
 	if url=="":
 		url = "http://www.filmesonlinebr.com/"
@@ -151,9 +152,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC
@@ -181,7 +182,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 	
 def detail(params,url,category):
-	xbmc.output("[filmesonlinebr.py] detail")
+	logger.info("[filmesonlinebr.py] detail")
 	adulto = config.getSetting("enableadultmode")
 	title = xbmc.getInfoLabel( "ListItem.Title" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -226,7 +227,7 @@ def detail(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[filmesonlinebr.py] play")
+	logger.info("[filmesonlinebr.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -251,9 +252,9 @@ def listar(title,thumbnail,plot,matches,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC

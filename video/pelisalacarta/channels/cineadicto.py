@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "cineadicto"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[cineadicto.py] init")
+logger.info("[cineadicto.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[cineadicto.py] mainlist")
+	logger.info("[cineadicto.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.cine-adicto.com/","","")
@@ -55,7 +56,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[cineadicto.py] search")
+	logger.info("[cineadicto.py] search")
 
 	keyboard = xbmc.Keyboard()
 	#keyboard.setDefault('')
@@ -69,7 +70,7 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def searchresults(params,url,category):
-	xbmc.output("[cineadicto.py] SearchResult")
+	logger.info("[cineadicto.py] SearchResult")
 	
 	
 	# Descarga la página
@@ -92,7 +93,7 @@ def searchresults(params,url,category):
 		scrapedtitle = scrapedtitle.replace("&nbsp;"," ")
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -104,7 +105,7 @@ def searchresults(params,url,category):
 			
 
 def ListaCat(params,url,category):
-	xbmc.output("[cineadicto.py] ListaCat")
+	logger.info("[cineadicto.py] ListaCat")
 	import downloadtools
 	nombrefichero = ""
 	fullpath = os.path.join( downloadtools.getDownloadPath(),"subtitulos" , nombrefichero )
@@ -186,11 +187,11 @@ def ListaAlfa(params, url, category):
 
         
 def ListvideosMirror(params,url,category):
-	xbmc.output("[cineadicto.py] ListvideosMirror")
+	logger.info("[cineadicto.py] ListvideosMirror")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Patron de las entradas
@@ -207,7 +208,7 @@ def ListvideosMirror(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -231,14 +232,14 @@ def ListvideosMirror(params,url,category):
         
 
 def listvideos(params,url,category):
-	xbmc.output("[cineadicto.py] listvideos")
+	logger.info("[cineadicto.py] listvideos")
 
 	if url=="":
 		url = "http://www.cine-adicto.com/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Extrae las entradas (carpetas)
@@ -265,9 +266,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC
@@ -295,7 +296,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[cineadicto.py] detail")
+	logger.info("[cineadicto.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -303,7 +304,7 @@ def detail(params,url,category):
 	scrapedurl = ""
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
     # Extrae el argumento
 	patronarg = '</p><p>.*?<strong>([^<]+</strong> <strong>.*?)<p></p>'
 	matches   = re.compile(patronarg,re.DOTALL).findall(data)
@@ -339,7 +340,7 @@ def detail(params,url,category):
 			c += 1
 			if ("playlist" in match):
 				data2 = scrapertools.cachePage(match)
-				xbmc.output("data2="+data2)
+				logger.info("data2="+data2)
 				patronvideos  = '<track>.*?'
 				patronvideos += '<title>([^<]+)</title>[^<]+'
 				patronvideos += '<location>([^<]+)</location>(?:[^<]+'
@@ -367,7 +368,7 @@ def detail(params,url,category):
 							scrapedurl = scrapedurl + "|" + match2[2]
 							playWithSubt = "play2"
 							
-					if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+					if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 							
 					# Añade al listado de XBMC
 					xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
@@ -394,7 +395,7 @@ def detail(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[cineadicto.py] play")
+	logger.info("[cineadicto.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -404,7 +405,7 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
-	xbmc.output("[cineadicto.py] play2")
+	logger.info("[cineadicto.py] play2")
 	url1 = url
 	if "|" in url:
 		urlsplited = url.split("|")
@@ -452,12 +453,12 @@ def downloadstr(urlsub):
 			subtitfile = open(fullpath,"w")
 			subtitfile.close()
 		except IOError:
-			xbmc.output("Error al limpiar el archivo subtitulo.srt "+fullpath)
+			logger.info("Error al limpiar el archivo subtitulo.srt "+fullpath)
 			raise
 	try:		
 		ok = downloadtools.downloadfile(urlsub,fullpath)
 	except IOError:
-		xbmc.output("Error al descargar el subtitulo "+urlsub)
+		logger.info("Error al descargar el subtitulo "+urlsub)
 		return -1
 	return ok
 

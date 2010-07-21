@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "nolomires"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[nolomires.py] init")
+logger.info("[nolomires.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[nolomires.py] mainlist")
+	logger.info("[nolomires.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "search" , category , "Buscar","http://www.nolomires.com/","","")
@@ -57,7 +58,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[nolomires.py] search")
+	logger.info("[nolomires.py] search")
 
 	keyboard = xbmc.Keyboard()
 	#keyboard.setDefault('')
@@ -74,7 +75,7 @@ def search(params,url,category):
 
 
 def ListaCat(params,url,category):
-	xbmc.output("[nolomires.py] ListaCat")
+	logger.info("[nolomires.py] ListaCat")
 	
 	
 	xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Acción","http://www.nolomires.com/category/peliculas-de-accion/","","")
@@ -112,11 +113,11 @@ def ListaCat(params,url,category):
 
         
 def TagList(params,url,category):
-	xbmc.output("[nolomires.py] TagList")
+	logger.info("[nolomires.py] TagList")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Patron de las entradas
@@ -133,7 +134,7 @@ def TagList(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -145,11 +146,11 @@ def TagList(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
         
 def MostWatched(params,url,category):
-	xbmc.output("[nolomires.py] MostWatched")
+	logger.info("[nolomires.py] MostWatched")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Patron de las entradas
@@ -166,7 +167,7 @@ def MostWatched(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -178,11 +179,11 @@ def MostWatched(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def LastSearch(params,url,category):
-	xbmc.output("[nolomires.py] LastSearch")
+	logger.info("[nolomires.py] LastSearch")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Patron de las entradas
@@ -200,7 +201,7 @@ def LastSearch(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -213,14 +214,14 @@ def LastSearch(params,url,category):
 
  
 def listvideos(params,url,category):
-	xbmc.output("[nolomires.py] listvideos")
+	logger.info("[nolomires.py] listvideos")
 
 	if url=="":
 		url = "http://www.nolomires.com/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Extrae las entradas (carpetas)
@@ -247,9 +248,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC
@@ -278,14 +279,14 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listvideosMirror(params,url,category):
-	xbmc.output("[nolomires.py] listvideosMirror")
+	logger.info("[nolomires.py] listvideosMirror")
 
 	if url=="":
 		url = "http://www.nolomires.com/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Extrae las entradas (carpetas)
@@ -312,9 +313,9 @@ def listvideosMirror(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC
@@ -343,7 +344,7 @@ def listvideosMirror(params,url,category):
 
 
 def detail(params,url,category):
-	xbmc.output("[nolomires.py] detail")
+	logger.info("[nolomires.py] detail")
 
 	title = acentos(urllib.unquote_plus( params.get("title") ))
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -351,7 +352,7 @@ def detail(params,url,category):
 	scrapedurl = ""
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
     # Extrae el argumento
 	patronarg = '<h[2-3]>(<span style.*?)</p>'
 	matches   = re.compile(patronarg,re.DOTALL).findall(data)
@@ -392,7 +393,7 @@ def detail(params,url,category):
 			sub = ""
 			if ("/xml" in match):
 				data2 = scrapertools.cachePage(match)
-				xbmc.output("data2="+data2)
+				logger.info("data2="+data2)
 				patronvideos  = '<track>.*?'
 				patronvideos += '<title>([^<]+)</title>[^<]+'
 				patronvideos += '<location>([^<]+)</location>(?:[^<]+'
@@ -427,7 +428,7 @@ def detail(params,url,category):
 								scrapedurl = scrapedurl + "|" + match2[2]
 								playWithSubt = "play2"
 						except:pass	
-					if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+					if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 							
 					# Añade al listado de XBMC
 					xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
@@ -454,7 +455,7 @@ def detail(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[nolomires.py] play")
+	logger.info("[nolomires.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -464,7 +465,7 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
-	xbmc.output("[nolomires.py] play2")
+	logger.info("[nolomires.py] play2")
 	url1 = url
 	if "|" in url:
 		urlsplited = url.split("|")
@@ -514,12 +515,12 @@ def downloadstr(urlsub):
 			subtitfile = open(fullpath,"w")
 			subtitfile.close()
 		except IOError:
-			xbmc.output("Error al limpiar el archivo subtitulo.srt "+fullpath)
+			logger.info("Error al limpiar el archivo subtitulo.srt "+fullpath)
 			raise
 	try:		
 		ok = downloadtools.downloadfile(urlsub,fullpath)
 	except IOError:
-		xbmc.output("Error al descargar el subtitulo "+urlsub)
+		logger.info("Error al descargar el subtitulo "+urlsub)
 		return -1
 	return ok
 

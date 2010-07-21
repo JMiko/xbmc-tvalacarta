@@ -21,6 +21,7 @@ import scrapertools
 import servertools
 import linkbucks
 import config
+import logger
 
 CHANNELNAME = "capitancinema"
 
@@ -31,12 +32,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[capitancinema.py] init")
+logger.info("[capitancinema.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[capitancinema.py] mainlist")
+	logger.info("[capitancinema.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Películas - Novedades"            ,"http://www.capitancinema.com/peliculas-online-novedades.htm","","")
@@ -50,7 +51,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def novedades(params,url,category):
-	xbmc.output("[capitancinema.py] novedades")
+	logger.info("[capitancinema.py] novedades")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -69,7 +70,7 @@ def novedades(params,url,category):
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -80,7 +81,7 @@ def novedades(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def mirrors(params,url,category):
-	xbmc.output("[capitancinema.py] mirrors")
+	logger.info("[capitancinema.py] mirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -112,7 +113,7 @@ def mirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[capitancinema.py] play")
+	logger.info("[capitancinema.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

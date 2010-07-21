@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "ecarteleratrailers"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[ecarteleratrailers.py] init")
+logger.info("[ecarteleratrailers.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[ecarteleratrailers.py] mainlist")
+	logger.info("[ecarteleratrailers.py] mainlist")
 
 	if url=="":
 		url="http://www.ecartelera.com/videos/"
@@ -40,7 +41,7 @@ def mainlist(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -69,10 +70,10 @@ def mainlist(params,url,category):
 
 		# Depuracion
 		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedplot="+scrapedplot)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -93,9 +94,9 @@ def mainlist(params,url,category):
 
 		# Depuracion
 		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -114,7 +115,7 @@ def mainlist(params,url,category):
 
 # Reproducir un vídeo
 def play(params,url,category):
-	xbmc.output("[ecarteleratrailers.py] play")
+	logger.info("[ecarteleratrailers.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -125,7 +126,7 @@ def play(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -138,5 +139,5 @@ def play(params,url,category):
 
 	if len(matches)>0:
 		url = urlparse.urljoin(url,matches[0])
-		xbmc.output("[ecarteleratrailers.py] url="+url)
+		logger.info("[ecarteleratrailers.py] url="+url)
 		xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)

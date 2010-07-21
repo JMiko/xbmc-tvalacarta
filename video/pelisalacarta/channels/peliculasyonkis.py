@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import DecryptYonkis as Yonkis
 import config
+import logger
 
 CHANNELNAME = "peliculasyonkis"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -36,12 +37,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[peliculasyonkis.py] init")
+logger.info("[peliculasyonkis.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[peliculasyonkis.py] mainlist")
+	logger.info("[peliculasyonkis.py] mainlist")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
@@ -66,7 +67,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[peliculasyonkis.py] search")
+	logger.info("[peliculasyonkis.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -79,7 +80,7 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def performsearch(texto):
-	xbmc.output("[peliculasyonkis.py] performsearch")
+	logger.info("[peliculasyonkis.py] performsearch")
 	url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
 
 	# Descarga la página
@@ -98,7 +99,7 @@ def performsearch(texto):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "detailfolder" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -106,14 +107,14 @@ def performsearch(texto):
 	return resultados
 
 def searchresults(params,url,category):
-	xbmc.output("[peliculasyonkis.py] searchresults")
+	logger.info("[peliculasyonkis.py] searchresults")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	#<li> <a href="http://www.peliculasyonkis.com/pelicula/las-edades-de-lulu-1990/" title="Las edades de Lulú (1990)"><img width="77" height="110" src="http://images.peliculasyonkis.com/thumbs/las-edades-de-lulu-1990.jpg" alt="Las edades de Lulú (1990)" align="right" />
@@ -127,7 +128,7 @@ def searchresults(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[2]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Label (top-right)...
@@ -182,14 +183,14 @@ def listalfabetico(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listnovedades(params,url,category):
-	xbmc.output("[peliculasyonkis.py] listnovedades")
+	logger.info("[peliculasyonkis.py] listnovedades")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<td align=\'center\'><center><span style=\'font-size: 0.7em\'><a href="([^"]+)" title="([^"]+)">'
@@ -215,9 +216,9 @@ def listnovedades(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -232,14 +233,14 @@ def listnovedades(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listcategorias(params,url,category):
-	xbmc.output("[peliculasyonkis.py] listcategorias")
+	logger.info("[peliculasyonkis.py] listcategorias")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<li class="page_item"><a href="(http\://www.peliculasyonkis.com/genero/[^"]+)"[^>]+>([^<]+)</a></li>'
@@ -264,9 +265,9 @@ def listcategorias(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -281,7 +282,7 @@ def listcategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def buscaporanyo(params,url,category):
-	xbmc.output("[peliculasyonkis.py] buscaporanyo")
+	logger.info("[peliculasyonkis.py] buscaporanyo")
 	anho=2010
 	anyoactual = anho
 	anyoinic   = 1920
@@ -291,7 +292,7 @@ def buscaporanyo(params,url,category):
 		anyoactual = anyoactual - 1           
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Listar desde el Año: ", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1 :return
 	if seleccion == 0:
 		url = "http://www.peliculasyonkis.com/estreno/"+opciones[seleccion]+"/"+opciones[seleccion]+"/0/"
@@ -320,14 +321,14 @@ def buscaporanyo(params,url,category):
 	return
 
 def listvideos(params,url,category):
-	xbmc.output("[peliculasyonkis.py] listvideos")
+	logger.info("[peliculasyonkis.py] listvideos")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = "<a href='([^']+)'>Siguiente &gt;&gt;</a>"
@@ -349,9 +350,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -402,9 +403,9 @@ def listvideos(params,url,category):
 		scrapedplot = scrapedplot.replace("b>","\n")
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Megavideo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -415,7 +416,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detailfolder(params,url,category):
-	xbmc.output("[peliculasyonkis.py] detail")
+	logger.info("[peliculasyonkis.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -429,7 +430,7 @@ def detailfolder(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[peliculasyonkis.py] detail")
+	logger.info("[peliculasyonkis.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -437,7 +438,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -452,7 +453,7 @@ def detail(params,url,category):
 	if len(matches)>0:
 		scrapertools.printMatches(matches)
 		id,serv = ChoiceOneVideo(matches,title)
-		xbmc.output("[peliculasyonkis.py]  id="+id)
+		logger.info("[peliculasyonkis.py]  id="+id)
 		url = Decrypt_Server(id,serv)
 		if (serv in ["pymeno2","pymeno3"]) and (":" in url):
 			match = url.split(":")
@@ -476,13 +477,13 @@ def choiceOnePart(matches):
 		
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select("Selecciona uno ", opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1 : return ""
 	id = matches[seleccion]
 	return id
 	
 def ChoiceOneVideo(matches,title):
-	xbmc.output("[peliculasyonkis.py] ChoiceOneVideo")
+	logger.info("[peliculasyonkis.py] ChoiceOneVideo")
 	
 	opciones = []
 	IDlist = []
@@ -541,12 +542,12 @@ def ChoiceOneVideo(matches,title):
 				IDlist.append(codigo)
 				servlist.append(server)
 		except urllib2.URLError,e:
-			xbmc.output("[peliculasyonkis.py] error:%s (%s)" % (e.code,server))
+			logger.info("[peliculasyonkis.py] error:%s (%s)" % (e.code,server))
 		except:
 			pass
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select(title, opciones)
-	xbmc.output("seleccion=%d" % seleccion)
+	logger.info("seleccion=%d" % seleccion)
 	if seleccion == -1 : return "",""
 	id = IDlist[seleccion]
 	serv = servlist[seleccion]
