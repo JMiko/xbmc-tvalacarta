@@ -15,6 +15,7 @@ import tutv
 import servertools
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "tutvsite"
 
@@ -24,12 +25,12 @@ try:
 except:
 	pluginhandle = ""
 
-xbmc.output("[tutvsite.py] init")
+logger.info("[tutvsite.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[tutvsite.py] mainlist")
+	logger.info("[tutvsite.py] mainlist")
 
 	# Añade al listado de XBMC
 	addfolder("Buscar","http://www.tu.tv/","search")
@@ -47,7 +48,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[tutvsite.py] list")
+	logger.info("[tutvsite.py] list")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -60,7 +61,7 @@ def search(params,url,category):
 			list(params,searchUrl,category)
 
 def performsearch(texto):
-	xbmc.output("[tutvsite.py] performsearch")
+	logger.info("[tutvsite.py] performsearch")
 	url = "http://www.tu.tv/buscar/?str="+texto
 
 	# Descarga la página
@@ -86,7 +87,7 @@ def performsearch(texto):
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = match[4].strip()
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "playfolder" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -94,11 +95,11 @@ def performsearch(texto):
 	return resultados
 
 def list(params,url,category):
-	xbmc.output("[tutvsite.py] list")
+	logger.info("[tutvsite.py] list")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<a href="([^"]+)" class="enlace_si">Siguiente'
@@ -112,9 +113,9 @@ def list(params,url,category):
 		
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		addfolder(scrapedtitle,scrapedurl,"list")
@@ -145,9 +146,9 @@ def list(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		addthumbnailvideo(scrapedtitle,scrapedurl,scrapedthumbnail,scrapeddescription,category,"tu.tv")
@@ -158,7 +159,7 @@ def list(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def playfolder(params,url,category):
-	xbmc.output("[tutvsite.py] playfolder")
+	logger.info("[tutvsite.py] playfolder")
 	
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -172,46 +173,46 @@ def playfolder(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[tutvsite.py] play")
+	logger.info("[tutvsite.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
-	xbmc.output("[tutvsite.py] thumbnail="+thumbnail)
-	xbmc.output("[tutvsite.py] server="+server)
+	logger.info("[tutvsite.py] thumbnail="+thumbnail)
+	logger.info("[tutvsite.py] server="+server)
 	
 	# Descarga la página de detalle y extrae el vídeo
 	data = scrapertools.cachePage(url)
 	listavideos = servertools.findvideos(data)
 	if len(listavideos)>0:
 		url = listavideos[0][1]
-	xbmc.output("[tutvsite.py] url="+url)
+	logger.info("[tutvsite.py] url="+url)
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
-	xbmc.output('[tutvsite.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
+	logger.info('[tutvsite.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
 	itemurl = '%s?channel=tutvsite&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
 
 def addvideo(nombre,url,category,server):
-	xbmc.output('[tutvsite.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
+	logger.info('[tutvsite.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
 	itemurl = '%s?channel=tutvsite&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , urllib.quote_plus(url) , server )
 	xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
 
 def addthumbnailvideo(nombre,url,thumbnail,descripcion,category,server):
-	xbmc.output('[tutvsite.py] addvideo( "'+nombre+'" , "' + url + '" , "'+thumbnail+'" , "'+server+'")"')
+	logger.info('[tutvsite.py] addvideo( "'+nombre+'" , "' + url + '" , "'+thumbnail+'" , "'+server+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : descripcion } )
 	itemurl = '%s?channel=tutvsite&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , url , server )
 	xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
 
 def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-	xbmc.output('[tutvsite.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
+	logger.info('[tutvsite.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
 	itemurl = '%s?channel=tutvsite&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)

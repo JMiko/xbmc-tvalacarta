@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "newdivx"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[newdivx.py] init")
+logger.info("[newdivx.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[newdivx.py] mainlist")
+	logger.info("[newdivx.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.newdivx.net/","","")
@@ -54,7 +55,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[newdivx.py] search")
+	logger.info("[newdivx.py] search")
 
 	keyboard = xbmc.Keyboard()
 	#keyboard.setDefault('')
@@ -68,7 +69,7 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def searchresults(params,url,category):
-	xbmc.output("[newdivx.py] SearchResult")
+	logger.info("[newdivx.py] SearchResult")
 	
 	#post = {"do": "search","subaction":"search","story":tecleado}
 	# Descarga la página
@@ -90,7 +91,7 @@ def searchresults(params,url,category):
 		scrapedtitle = scrapedtitle.replace("&nbsp;"," ")
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -102,7 +103,7 @@ def searchresults(params,url,category):
 			
 
 def ListaCat(params,url,category):
-	xbmc.output("[newdivx.py] ListaCat")
+	logger.info("[newdivx.py] ListaCat")
 	
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Acción","http://www.newdivx.net/peliculas-online/accion/","","")
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Adolescencia","http://www.newdivx.net/peliculas-online/adolescencia/","","")
@@ -127,11 +128,11 @@ def ListaCat(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
         
 def ListvideosMirror(params,url,category):
-	xbmc.output("[newdivx.py] ListvideosMirror")
+	logger.info("[newdivx.py] ListvideosMirror")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Patron de las entradas
@@ -148,7 +149,7 @@ def ListvideosMirror(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -172,14 +173,14 @@ def ListvideosMirror(params,url,category):
         
 
 def listvideos(params,url,category):
-	xbmc.output("[newdivx.py] listvideos")
+	logger.info("[newdivx.py] listvideos")
 
 	if url=="":
 		url = "http://www.newdivx.com/"
                 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 
 	# Extrae las entradas (carpetas)
@@ -195,9 +196,9 @@ def listvideos(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		
 			# Añade al listado de XBMC
@@ -225,7 +226,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[newdivx.py] detail")
+	logger.info("[newdivx.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -233,7 +234,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	patronvideos = '<p class="Estilo2">([^<]+)</p>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
@@ -266,7 +267,7 @@ def detail(params,url,category):
 				parte = 0
 				subtitle = "[Divx-Directo-Przeklej]"
 				for match in matches:
-					xbmc.output(" matches = "+match)
+					logger.info(" matches = "+match)
 					parte = parte + 1
 					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle+" "+str(parte), match , thumbnail , plot )
 					
@@ -317,7 +318,7 @@ def detail(params,url,category):
 		subtitle = "[FLV-Directo]"
 		if ("xml" in matches[0]):
 			data2 = scrapertools.cachePage(matches[0])
-			xbmc.output("data2="+data2)
+			logger.info("data2="+data2)
 			patronvideos  = '<track>.*?'
 			patronvideos += '<title>([^<]+)</title>(?:[^<]+'
 			patronvideos += '<annotation>([^<]+)</annotation>[^<]+|[^<]+)'
@@ -333,7 +334,7 @@ def detail(params,url,category):
 				scrapedurl = match[2].strip()
 				scrapedthumbnail = thumbnail
 				scrapedplot = plot
-				if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+				if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 				# Añade al listado de XBMC
 				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
@@ -431,7 +432,7 @@ def detail(params,url,category):
 
 
 def play(params,url,category):
-	xbmc.output("[newdivx.py] play")
+	logger.info("[newdivx.py] play")
 	strmplay = False
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -441,7 +442,7 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
-	xbmc.output("[newdivx.py] play")
+	logger.info("[newdivx.py] play")
 	url1 = url
 	if "|" in url:
 		urlsplited = url.split("|")
@@ -488,7 +489,7 @@ def downloadstr(urlsub):
 			subtitfile = open(fullpath,"w")
 			subtitfile.close()
 		except IOError:
-			xbmc.output("Error al limpiar el archivo subtitulo.srt "+fullpath)
+			logger.info("Error al limpiar el archivo subtitulo.srt "+fullpath)
 			raise		
 	ok = downloadtools.downloadfile(urlsub,fullpath)
 	#xbmc.setSubtitles(fullpath)

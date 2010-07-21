@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "sevillista"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[sevillista.py] init")
+logger.info("[sevillista.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[sevillista.py] mainlist")
+	logger.info("[sevillista.py] mainlist")
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , CHANNELNAME , "Películas - Novedades" , "http://pelis-sevillista56.blogspot.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "categorias" , CHANNELNAME , "Películas - Por categoría" , "http://pelis-sevillista56.blogspot.com/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , CHANNELNAME , "Series - Novedades" , "http://pelis-sevillista56.blogspot.com/search/label/Series" , "", "" )
@@ -45,11 +46,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def categorias(params,url,category):
-	xbmc.output("[sevillista.py] categorias")
+	logger.info("[sevillista.py] categorias")
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas
 	'''
@@ -80,7 +81,7 @@ def categorias(params,url,category):
 			scrapedurl = urlparse.urljoin(url,match[0])
 			scrapedthumbnail = ""
 			scrapedplot = ""
-			if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 			xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Cierra el directorio
@@ -89,11 +90,11 @@ def categorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def novedades(params,url,category):
-	xbmc.output("[sevillista.py] novedades")
+	logger.info("[sevillista.py] novedades")
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas
 	patron  = "<div class='post hentry'>[^<]+"
@@ -111,7 +112,7 @@ def novedades(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[2])
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	patron  = "<div id='blog-pager'>.*?a href='([^']+)' id='[^']+' title='Entradas antiguas'>"
@@ -122,7 +123,7 @@ def novedades(params,url,category):
 		scrapedurl = urlparse.urljoin(url,matches[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Cierra el directorio
@@ -131,7 +132,7 @@ def novedades(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[sevillista.py] detail")
+	logger.info("[sevillista.py] detail")
 
 	# Recupera los parámetros
 	title = urllib.unquote_plus( params.get("title") )
@@ -169,7 +170,7 @@ def detail(params,url,category):
 					scrapedurl = urlparse.urljoin(url,match[2])
 					scrapedthumbnail = thumbnail
 					scrapedplot = plot
-					if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+					if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 			else:
 				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]" , url , thumbnail , plot )
@@ -192,7 +193,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[sevillista.py] play")
+	logger.info("[sevillista.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

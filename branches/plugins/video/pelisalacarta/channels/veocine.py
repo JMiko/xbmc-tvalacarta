@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "veocine"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[veocine.py] init")
+logger.info("[veocine.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[veocine.py] mainlist")
+	logger.info("[veocine.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas","http://www.veocine.es/peliculas.html","","")
@@ -53,13 +54,13 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def videolist(params,url,category):
-	xbmc.output("[veocine.py] mainlist")
+	logger.info("[veocine.py] mainlist")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las películas
@@ -102,10 +103,10 @@ def videolist(params,url,category):
 
 		# Depuracion
 		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-			xbmc.output("scrapedplot="+scrapedplot)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedplot="+scrapedplot)
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -126,9 +127,9 @@ def videolist(params,url,category):
 
 		# Depuracion
 		if DEBUG:
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
@@ -143,7 +144,7 @@ def videolist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[veocine.py] listmirrors")
+	logger.info("[veocine.py] listmirrors")
 
 	#50=full list
 	#xbmc.executebuiltin("Container.SetViewMode(50)")
@@ -154,7 +155,7 @@ def listmirrors(params,url,category):
 
 	# Descarga la página de detalle
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	
 	# Extrae los enlaces a los vídeos (Megavídeo)
 	#reproductor.php?video=53842&media=tutv&titulo=Obsesion Extraterrestre - Mirror 1&titulop=Obsesion Extraterrestre
@@ -190,7 +191,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[veocine.py] play")
+	logger.info("[veocine.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

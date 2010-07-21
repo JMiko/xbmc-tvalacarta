@@ -1,7 +1,7 @@
 <app>
   <id>info.mimediacenter.pelisalacarta</id>
   <name>pelisalacarta</name>
-  <version>2.16</version>
+  <version>2.17</version>
   <description>Películas y series a la carta</description>
   <thumb>http://www.mimediacenter.info/boxee/pelisalacarta.png</thumb>
   <repositoryid>info.mimediacenter</repositoryid>

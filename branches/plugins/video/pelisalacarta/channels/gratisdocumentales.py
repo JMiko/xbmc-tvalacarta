@@ -16,7 +16,8 @@ import servertools
 import binascii
 import xbmctools
 import config
- 
+import logger
+
 CHANNELNAME = "gratisdocumentales"
  
 # Esto permite su ejecución en modo emulado
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[gratisdocumentales.py] init")
+logger.info("[gratisdocumentales.py] init")
  
 DEBUG = True
  
 def mainlist(params,url,category):
-	xbmc.output("[gratisdocumentales.py] mainlist")
+	logger.info("[gratisdocumentales.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "parseweb" , category, "Novedades" , "http://www.gratisdocumentales.com/" , "" , "")
@@ -48,7 +49,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[newdivx.py] search")
+	logger.info("[newdivx.py] search")
 
 	keyboard = xbmc.Keyboard()
 	#keyboard.setDefault('')
@@ -62,12 +63,12 @@ def search(params,url,category):
 			parseweb(params,searchUrl,category)
 
 def buscacategorias(params,url,category):
-	xbmc.output("[gratisdocumentales.py] buscacategorias")
+	logger.info("[gratisdocumentales.py] buscacategorias")
 	data = scrapertools.cachePage(url)
 	#href='http://www.gratisdocumentales.com/category/arte/' title="ARTE">ARTE</a></li><li><a
 	patronvideos  = 'href=\'(.+?/category/.+?/)\' title="(.+?)">.*?</a></li><li><a'
 
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -79,12 +80,12 @@ def buscacategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def buscatags(params,url,category):
-	xbmc.output("[gratisdocumentales.py] buscacategorias")
+	logger.info("[gratisdocumentales.py] buscacategorias")
 	data = scrapertools.cachePage(url)
 	#href='http://www.gratisdocumentales.com/category/arte/' title="ARTE">ARTE</a></li><li><a
 	patronvideos  = 'href="(http://www.gratisdocumentales.com/tag/.*?/)" id="tag-link-.+?>(.+?)</a> <a'
 
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -96,17 +97,17 @@ def buscatags(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def parseweb(params,url,category):
-	xbmc.output("[gratisdocumentales.py] parseweb")
+	logger.info("[gratisdocumentales.py] parseweb")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	patronvideos  = '<h2  class="posttitle"><a\s+href="(.+?)" rel="bookmark" title="Permanent Link to .*?">(.+?)</a>'
 
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -122,7 +123,7 @@ def parseweb(params,url,category):
 
 	patronvideos  = 'href=\'(.+?/page/[0-9]+?/.*?)\' class=\'.*?page\'>(\d+?)</a>'
 
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -136,7 +137,7 @@ def parseweb(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[gratisdocumentales.py] detail")
+	logger.info("[gratisdocumentales.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -147,7 +148,7 @@ def listmirrors(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca el argumento
@@ -200,7 +201,7 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
-		xbmc.output("Encontrado iframe mirrors "+match[0])
+		logger.info("Encontrado iframe mirrors "+match[0])
 		# Lee el iframe
 		mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
 		req = urllib2.Request(mirror)
@@ -223,7 +224,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[gratisdocumentales.py] play")
+	logger.info("[gratisdocumentales.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

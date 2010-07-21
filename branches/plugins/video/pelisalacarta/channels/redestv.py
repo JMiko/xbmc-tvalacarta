@@ -18,6 +18,7 @@ import xbmctools
 import bliptv
 from pprint import pprint
 import config
+import logger
 
 CHANNELNAME = "redestv"
  
@@ -28,12 +29,12 @@ except:
 	pluginhandle = ""
  
 # Traza el inicio del canal
-xbmc.output("[redestv.py] init")
+logger.info("[redestv.py] init")
  
 DEBUG = True
  
 def mainlist(params,url,category):
-	xbmc.output("[redestv.py] mainlist")
+	logger.info("[redestv.py] mainlist")
 	#bliptv.video("+3KBt+grAg")
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , category, "Novedades" , "http://www.redes-tv.com/" , "" , "")
@@ -51,7 +52,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
  
 def search(params,url,category):
-	xbmc.output("[newdivx.py] search")
+	logger.info("[newdivx.py] search")
  
 	keyboard = xbmc.Keyboard()
 	#keyboard.setDefault('')
@@ -67,14 +68,14 @@ def search(params,url,category):
  
  
 def parsebusquedas(params,url,category):
-	xbmc.output("[redestv.py] parsebusquedas")
+	logger.info("[redestv.py] parsebusquedas")
 	data = scrapertools.cachePage(url)
 	#<td style="text-align: left;"><a href="/index.php?option=com_content&amp;view=article&amp;id=41:500-por-que-mas-es-menos&amp;catid=6:tercol&amp;Itemid=14" title="500: Por qué más es menos">500: Por qué más es menos</a></td>
 	#<td style="text-align: center;">13 Ene 10</td>
  
 	patronvideos  = '<fieldset>(.+?)</fieldset>'
  
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	if len(matches)>0:
@@ -88,13 +89,13 @@ def parsebusquedas(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
  
 def buscacategorias(params,url,category):
-	xbmc.output("[redestv.py] buscacategorias")
+	logger.info("[redestv.py] buscacategorias")
 	data = scrapertools.cachePage(url)
 	#href='http://www.redestv.com/category/arte/' title="ARTE">ARTE</a></li><li><a
 	#href="/index.php?option=com_content&amp;view=category&amp;layout=blog&amp;id=1&amp;Itemid=9" title="Biotecnolog\xc3\xada y Salud"
 	patronvideos  = 'href="/index\.php\?(option=com_content\&amp;view=category.*?)" title="(.+?)"'
 	#pprint(data)
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos).findall(data)
 	#if DEBUG:
 	scrapertools.printMatches(matches)
@@ -106,7 +107,7 @@ def buscacategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
  
 def parsewebcategorias(params,url,category):
-	xbmc.output("[redestv.py] buscacategorias")
+	logger.info("[redestv.py] buscacategorias")
 	data = scrapertools.cachePage("http://www.redes-tv.com/index.php?option=com_xmap&sitemap=1&Itemid=31")
 	#href='http://www.redestv.com/category/arte/' title="ARTE">ARTE</a></li><li><a
 	#href="/index.php?option=com_content&amp;view=category&amp;layout=blog&amp;id=1&amp;Itemid=9" title="Biotecnolog\xc3\xada y Salud"
@@ -115,8 +116,8 @@ def parsewebcategorias(params,url,category):
 	#patronvideos=patronvideos.replace(";","\;")
 	#patronvideos=patronvideos.replace("=","\=")
 	#patronvideos=patronvideos.replace("_","\_")
-	#xbmc.output(patronvideos)
-	#xbmc.output("web"+data)
+	#logger.info(patronvideos)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -133,14 +134,14 @@ def parsewebcategorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
  
 def orden(params,url,category):
-	xbmc.output("[redestv.py] buscacategorias")
+	logger.info("[redestv.py] buscacategorias")
 	data = scrapertools.cachePage(url)
 	#<td style="text-align: left;"><a href="/index.php?option=com_content&amp;view=article&amp;id=41:500-por-que-mas-es-menos&amp;catid=6:tercol&amp;Itemid=14" title="500: Por qué más es menos">500: Por qué más es menos</a></td>
 	#<td style="text-align: center;">13 Ene 10</td>
  
 	patronvideos  = '<td style="text-align: left;"><a href="(.+?)" title="(.+?)".+?<td style="text-align: center;">(.+?)</td>'
  
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	#if DEBUG:
 	scrapertools.printMatches(matches)
@@ -168,20 +169,20 @@ def buscavideos(params,url,category):
 	bliptv.video(matches[0])
  
 def novedades(params,url,category):
-	xbmc.output("[redestv.py] parseweb")
+	logger.info("[redestv.py] parseweb")
  
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
  
 	#<div style="text-align: justify;">Cre?amos que el ser humano era el ?nico animal capaz de sentir empat?a.  Sin embargo, el altruismo existe en muchos otros animales. Estar  conectado con los dem?s, entenderlos y sentir su dolor no es exclusivo  del ser humano. El prim?tologo Frans de Waal, gran estudiador de las  emociones animales, habla con Punset sobre empat?a y simpat?a,  capacidades clave para el ?xito en la vida social.</div><div class="jcomments-links"> <a href="/index.php?option=com_content&amp;view=article&amp;id=161:501-nuestro-cerebro-altruista&amp;catid=2:cermen&amp;Itemid=10#addcomments" class="comment-link">Escribir un comentario</a></div> 
  
 	patronvideos  = '<td class="contentheading" width="100%">.+?<a href="(.+?)" class="contentpagetitle">\s+(\d+.+?)</a>'
 	#patronvideos  = '<div style="text-align: justify;">.+?</div>.+?<a href="(.+?)#'
  
-	#xbmc.output("web"+data)
+	#logger.info("web"+data)
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if DEBUG:
 		scrapertools.printMatches(matches)
@@ -211,7 +212,7 @@ def novedades(params,url,category):
  
  
 def listmirrors(params,url,category):
-	xbmc.output("[redestv.py] detail")
+	logger.info("[redestv.py] detail")
  
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -222,7 +223,7 @@ def listmirrors(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
  
 	# ------------------------------------------------------------------------------------
 	# Busca el argumento
@@ -275,7 +276,7 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
  
 	for match in matches:
-		xbmc.output("Encontrado iframe mirrors "+match[0])
+		logger.info("Encontrado iframe mirrors "+match[0])
 		# Lee el iframe
 		mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
 		req = urllib2.Request(mirror)
@@ -308,7 +309,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
  
 def play(params,url,category):
-	xbmc.output("[redestv.py] play")
+	logger.info("[redestv.py] play")
  
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -318,20 +319,20 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
  
 def addfolder(nombre,url,accion):
-	xbmc.output('[redestv.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
+	logger.info('[redestv.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
 	itemurl = '%s?channel=redestv&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , url )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
  
 def addvideo(nombre,url,category,server):
-	xbmc.output('[redestv.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
+	logger.info('[redestv.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
 	itemurl = '%s?channel=redestv&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , url , server )
 	xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
  
 def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-	xbmc.output('[redestv.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
+	logger.info('[redestv.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
 	itemurl = '%s?channel=redestv&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)

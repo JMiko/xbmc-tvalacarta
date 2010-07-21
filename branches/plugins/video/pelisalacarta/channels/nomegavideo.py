@@ -22,6 +22,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "nomegavideo"
 
@@ -32,12 +33,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[nomegavideo.py] init")
+logger.info("[nomegavideo.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[nomegavideo.py] mainlist")
+	logger.info("[nomegavideo.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( "capitancinema" , "novedades"  , category , "Películas - Novedades [ES] [Capitan Cinema]"     ,"http://www.capitancinema.com/peliculas-online-novedades.htm","","")

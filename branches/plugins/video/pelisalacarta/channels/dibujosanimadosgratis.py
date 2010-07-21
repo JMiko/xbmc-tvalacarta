@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "dibujosanimadosgratis"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[dibujosanimadosgratis.py] init")
+logger.info("[dibujosanimadosgratis.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[dibujosanimadosgratis.py] mainlist")
+	logger.info("[dibujosanimadosgratis.py] mainlist")
 	xbmctools.addnewfolder( CHANNELNAME , "novedades" , CHANNELNAME , "Novedades" , "http://dibujosanimadosgratis.net/" , "", "" )
 	xbmctools.addnewfolder( CHANNELNAME , "categorias" , CHANNELNAME , "Por categorías" , "http://dibujosanimadosgratis.net/" , "", "" )
 	
@@ -44,11 +45,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def categorias(params,url,category):
-	xbmc.output("[dibujosanimadosgratis.py] categorias")
+	logger.info("[dibujosanimadosgratis.py] categorias")
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas
 	patron  = '<li class="cat-item cat-item[^"]+"><a href="([^"]+)" title="[^"]+">([^"]+)</a>'
@@ -58,7 +59,7 @@ def categorias(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Cierra el directorio
@@ -67,11 +68,11 @@ def categorias(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def novedades(params,url,category):
-	xbmc.output("[dibujosanimadosgratis.py] novedades")
+	logger.info("[dibujosanimadosgratis.py] novedades")
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas
 	'''
@@ -103,7 +104,7 @@ def novedades(params,url,category):
 		if len(matchesthumb)>0:
 			scrapedthumbnail = matchesthumb[0]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	patron  = '<a href="([^"]+)">&laquo; videos anteriores</a>'
@@ -114,7 +115,7 @@ def novedades(params,url,category):
 		scrapedurl = urlparse.urljoin(url,matches[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	patron  = '<a href="([^"]+)">&laquo; previous entries</a>'
@@ -125,7 +126,7 @@ def novedades(params,url,category):
 		scrapedurl = urlparse.urljoin(url,matches[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Cierra el directorio
@@ -134,7 +135,7 @@ def novedades(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[dibujosanimadosgratis.py] detail")
+	logger.info("[dibujosanimadosgratis.py] detail")
 
 	# Recupera los parámetros
 	title = urllib.unquote_plus( params.get("title") )
@@ -160,7 +161,7 @@ def detail(params,url,category):
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if len(matches)>0:
 		data = matches[0]
-		xbmc.output(data)
+		logger.info(data)
 		
 		# Plot
 		scrapedplot = scrapertools.htmlclean(data)
@@ -192,7 +193,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[dibujosanimadosgratis.py] play")
+	logger.info("[dibujosanimadosgratis.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

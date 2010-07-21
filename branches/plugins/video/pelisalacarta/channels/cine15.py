@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "cine15"
 
@@ -26,12 +27,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[cine15.py] init")
+logger.info("[cine15.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[cine15.py] mainlist")
+	logger.info("[cine15.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Películas - Novedades"            ,"http://www.cine15.com/","","")
@@ -47,7 +48,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[cine15.py] search")
+	logger.info("[cine15.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -60,7 +61,7 @@ def search(params,url,category):
 			listvideos(params,searchUrl,category)
 
 def performsearch(texto):
-	xbmc.output("[cine15.py] performsearch")
+	logger.info("[cine15.py] performsearch")
 	url = "http://www.cine15.com/?s="+texto+"&x=0&y=0"
 
 	# Descarga la página
@@ -90,7 +91,7 @@ def performsearch(texto):
 		scrapedthumbnail = urlparse.urljoin(url,match[2])
 		scrapedplot = match[3]
 
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
@@ -98,7 +99,7 @@ def performsearch(texto):
 	return resultados
 
 def peliscat(params,url,category):
-	xbmc.output("[cine15.py] peliscat")
+	logger.info("[cine15.py] peliscat")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
@@ -114,7 +115,7 @@ def peliscat(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -125,11 +126,11 @@ def peliscat(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listvideos(params,url,category):
-	xbmc.output("[cine15.py] listvideos")
+	logger.info("[cine15.py] listvideos")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	'''
@@ -158,7 +159,7 @@ def listvideos(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[2])
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -181,7 +182,7 @@ def listvideos(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[cine15.py] detail")
+	logger.info("[cine15.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -189,7 +190,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a videos no megavideo (playlist xml)
@@ -201,7 +202,7 @@ def detail(params,url,category):
 	if len(matches)>0:
 		if ("xml" in matches[0]):
 			data2 = scrapertools.cachePage(matches[0])
-			xbmc.output("data2="+data2)
+			logger.info("data2="+data2)
 			patronvideos  = '<track>[^<]+'
 			patronvideos += '<title>([^<]+)</title>[^<]+'
 			patronvideos += '<location>([^<]+)</location>[^<]+'
@@ -214,7 +215,7 @@ def detail(params,url,category):
 				scrapedurl = match[1].strip()
 				scrapedthumbnail = thumbnail
 				scrapedplot = plot
-				if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+				if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 				# Añade al listado de XBMC
 				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
@@ -244,7 +245,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[cine15.py] play")
+	logger.info("[cine15.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

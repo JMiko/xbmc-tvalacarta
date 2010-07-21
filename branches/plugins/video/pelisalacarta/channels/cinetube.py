@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import config
 from item import Item
+import logger
 
 CHANNELNAME = "cinetube"
 
@@ -27,30 +28,18 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[cinetube.py] init")
+logger.info("[cinetube.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[cinetube.py] mainlist")
+	logger.info("[cinetube.py] mainlist")
 	
 	itemlist = getmainlist(params,url,category)
-	xbmcRenderItems(itemlist, params, url, category)
-
-def xbmcRenderItems(itemlist, params, url, category):
-	for item in itemlist:
-		if item.folder:
-			xbmctools.addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot )
-		else:
-			xbmctools.addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot )
-
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	xbmctools.renderItems(itemlist, params, url, category)
 
 def getmainlist(params,url,category):
-	xbmc.output("[cinetube.py] getmainlist")
+	logger.info("[cinetube.py] getmainlist")
 
 	itemlist = []
 	itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades (con carátula)"  , action="listpeliconcaratula", url="http://www.cinetube.es/peliculas/"      , folder=True) )
@@ -72,7 +61,7 @@ def getmainlist(params,url,category):
 	return itemlist
 
 def search(params,url,category):
-	xbmc.output("[cinetube.py] search")
+	logger.info("[cinetube.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -85,78 +74,33 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def searchresults(params,url,category):
-	xbmc.output("[cinetube.py] searchresults")
+	logger.info("[cinetube.py] searchresults")
 
 	itemlist = getsearchresults(params,url,category)
-	xbmcRenderItems(itemlist, params, url, category)
+	xbmctools.renderItems(itemlist, params, url, category)
 
 def getsearchresults(params,url,category):
-	xbmc.output("[cinetube.py] getsearchresults")
+	logger.info("[cinetube.py] getsearchresults")
 
 	if (not url.startswith("http://")):
 		url = "http://www.cinetube.es/buscar/peliculas/?palabra="+url+"&categoria=&valoracion="
 
-	# Descarga la página
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
-
-	# Extrae las entradas (carpetas)
-	patronvideos  = '<!--PELICULA-->[^<]+'
-	patronvideos += '<div class="peli_item textcenter">[^<]+'
-	patronvideos += '<div class="pelicula_img"><a[^<]+'
-	patronvideos += '<img src="([^"]+)"[^<]+</a>[^<]+'
-	patronvideos += '</div[^<]+<a href="([^"]+)".*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
-
-	itemlist = []
-	for match in matches:
-		# Titulo
-		scrapedtitle = match[2] + " [" + match[3] + "]"
-		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[4])
-		conectores = ""
-		for matchconector in matchesconectores:
-			xbmc.output("matchconector="+matchconector)
-			if matchconector=="":
-				matchconector = "megavideo"
-			conectores = conectores + matchconector + "/"
-		if len(matchesconectores)>0:
-
-			scrapedtitle = scrapedtitle + " (" + conectores[:-1] + ")"
-
-		# Convierte desde UTF-8 y quita entidades HTML
-		try:
-			scrapedtitle = unicode( scrapedtitle, "utf-8" ).encode("iso-8859-1")
-		except:
-			pass
-		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-
-		# procesa el resto
-		scrapedplot = ""
-
-		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[1])
-		scrapedthumbnail = match[0]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-		# Añade al listado
-		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="listmirrors", url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-	
-	return itemlist
+	return getlistpeliconcaratula(params,url,category)
 
 def listpeliconcaratula(params,url,category):
-	xbmc.output("[cinetube.py] listpeliconcaratula")
+	logger.info("[cinetube.py] listpeliconcaratula")
 
 	itemlist = getlistpeliconcaratula(params,url,category)
-	xbmcRenderItems(itemlist, params, url, category)
+	xbmctools.renderItems(itemlist, params, url, category)
 
 def getlistpeliconcaratula(params,url,category):
-	xbmc.output("[cinetube.py] getlistpeliconcaratula")
+	logger.info("[cinetube.py] getlistpeliconcaratula")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las entradas
@@ -198,7 +142,7 @@ def getlistpeliconcaratula(params,url,category):
 		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[4])
 		conectores = ""
 		for matchconector in matchesconectores:
-			xbmc.output("matchconector="+matchconector)
+			logger.info("matchconector="+matchconector)
 			if matchconector=="":
 				matchconector = "megavideo"
 			conectores = conectores + matchconector + "/"
@@ -217,7 +161,7 @@ def getlistpeliconcaratula(params,url,category):
 
 		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[1])
 		scrapedthumbnail = match[0]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		itemlist.append( Item(channel=CHANNELNAME, action="listmirrors", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
@@ -237,13 +181,13 @@ def getlistpeliconcaratula(params,url,category):
 	return itemlist
 
 def listpelisincaratula(params,url,category):
-	xbmc.output("[cinetube.py] listpelisincaratula")
+	logger.info("[cinetube.py] listpelisincaratula")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las entradas
@@ -295,7 +239,7 @@ def listpelisincaratula(params,url,category):
 		scrapedplot = ""
 		scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[2])
 		scrapedthumbnail = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -317,7 +261,7 @@ def listpelisincaratula(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listalfabetico(params, url, category):
-	xbmc.output("[cinetube.py] listalfabetico")
+	logger.info("[cinetube.py] listalfabetico")
 	
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula" , category , "0-9"  ,"http://www.cinetube.es/peliculas/0-9/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listpeliconcaratula" , category , "A"  ,"http://www.cinetube.es/peliculas/A/","","")
@@ -388,13 +332,13 @@ def listalfabeticoseries(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listtemporadacaratula(params,url,category):
-	xbmc.output("[cinetube.py] listtemporadacaratula")
+	logger.info("[cinetube.py] listtemporadacaratula")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las entradas
@@ -428,7 +372,7 @@ def listtemporadacaratula(params,url,category):
 		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[2])
 		conectores = ""
 		for matchconector in matchesconectores:
-			xbmc.output("matchconector="+matchconector)
+			logger.info("matchconector="+matchconector)
 			if matchconector=="":
 				matchconector = "megavideo"
 			conectores = conectores + matchconector + "/"
@@ -448,7 +392,7 @@ def listtemporadacaratula(params,url,category):
 
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = match[1]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -470,13 +414,13 @@ def listtemporadacaratula(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listserieconcaratula(params,url,category):
-	xbmc.output("[cinetube.py] listserieconcaratula")
+	logger.info("[cinetube.py] listserieconcaratula")
 
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las entradas
@@ -509,7 +453,7 @@ def listserieconcaratula(params,url,category):
 		matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[2])
 		conectores = ""
 		for matchconector in matchesconectores:
-			xbmc.output("matchconector="+matchconector)
+			logger.info("matchconector="+matchconector)
 			if matchconector=="":
 				matchconector = "megavideo"
 			conectores = conectores + matchconector + "/"
@@ -529,7 +473,7 @@ def listserieconcaratula(params,url,category):
 
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = match[1]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -551,12 +495,12 @@ def listserieconcaratula(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listseriesincaratula(params,url,category):
-	xbmc.output("[cinetube.py] listseriesincaratula")
+	logger.info("[cinetube.py] listseriesincaratula")
 	# ------------------------------------------------------
 	# Descarga la página
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------
 	# Extrae las entradas
@@ -608,7 +552,7 @@ def listseriesincaratula(params,url,category):
 		scrapedplot = ""
 		scrapedurl = urlparse.urljoin(url,match[2])
 		scrapedthumbnail = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -664,7 +608,7 @@ def listalfabeticodocumentales(params, url, category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listmirrors(params,url,category):
-	xbmc.output("[cinetube.py] listmirrors")
+	logger.info("[cinetube.py] listmirrors")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -675,7 +619,7 @@ def listmirrors(params,url,category):
 	# Descarga la página
 	# ------------------------------------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	
 	# ------------------------------------------------------------------------------------
 	# Busca el argumento
@@ -684,9 +628,9 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		plot = scrapertools.htmlclean(matches[0])
-		xbmc.output("plot actualizado en detalle");
+		logger.info("plot actualizado en detalle");
 	else:
-		xbmc.output("plot no actualizado en detalle");
+		logger.info("plot no actualizado en detalle");
 	
 	# ------------------------------------------------------------------------------------
 	# Busca el thumbnail
@@ -696,9 +640,9 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		thumbnail = matches[0]
-		xbmc.output("thumb actualizado en detalle");
+		logger.info("thumb actualizado en detalle");
 	else:
-		xbmc.output("thumb no actualizado en detalle");
+		logger.info("thumb no actualizado en detalle");
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los mirrors, o a los capítulos de las series...
@@ -755,7 +699,7 @@ def listmirrors(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	
 	for match in matches:
-		xbmc.output("Encontrado iframe mirrors "+match[0])
+		logger.info("Encontrado iframe mirrors "+match[0])
 		# Lee el iframe
 		mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
 		req = urllib2.Request(mirror)
@@ -788,7 +732,7 @@ def listmirrors(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[cinetube.py] play")
+	logger.info("[cinetube.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -798,20 +742,20 @@ def play(params,url,category):
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
-	xbmc.output('[cinetube.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
+	logger.info('[cinetube.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
 	itemurl = '%s?channel=cinetube&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , url )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
 
 def addvideo(nombre,url,category,server):
-	xbmc.output('[cinetube.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
+	logger.info('[cinetube.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
 	itemurl = '%s?channel=cinetube&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , url , server )
 	xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
 
 def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-	xbmc.output('[cinetube.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
+	logger.info('[cinetube.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
 	itemurl = '%s?channel=cinetube&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
 	xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)

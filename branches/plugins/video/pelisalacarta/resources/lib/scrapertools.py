@@ -11,6 +11,7 @@ import md5
 import os
 import xbmc
 import config
+import logger
 
 cacheactiva = False
 
@@ -18,22 +19,22 @@ def cachePage(url):
 
 	# Si la cache está desactivada, lo descarga siempre
 	if not cacheactiva:
-		xbmc.output("[scrapertools.py] cache desactivada")
+		logger.info("[scrapertools.py] cache desactivada")
 		data = downloadpage(url)
 	else:
-		xbmc.output("[scrapertools.py] cache activada")
+		logger.info("[scrapertools.py] cache activada")
 		# Fichero con la cache
 		localFileName = binascii.hexlify(md5.new(url).digest()) + ".cache"
-		xbmc.output("[scrapertools.py] cacheFile="+localFileName)
+		logger.info("[scrapertools.py] cacheFile="+localFileName)
 
 		# La crea en TEMP
 		# TODO:crear subdirectorio nuevo (adnstream_plugin_cache)
 		localFileName = xbmc.translatePath( os.path.join( "special://temp/", localFileName ))
-		xbmc.output("[scrapertools.py] cacheDir="+localFileName)
+		logger.info("[scrapertools.py] cacheDir="+localFileName)
 		
 		# Si el fichero existe en cache, lo lee
 		if os.path.exists(localFileName):
-			xbmc.output("[scrapertools.py] Leyendo de cache " + localFileName)
+			logger.info("[scrapertools.py] Leyendo de cache " + localFileName)
 			infile = open( localFileName )
 			data = infile.read()
 			infile.close();
@@ -47,16 +48,16 @@ def cachePage(url):
 			outfile.write(data)
 			outfile.flush()
 			outfile.close()
-			xbmc.output("[scrapertools.py] Grabado a " + localFileName)
+			logger.info("[scrapertools.py] Grabado a " + localFileName)
 	return data
 
 def cachePage2(url,headers):
 
-	xbmc.output("Descargando " + url)
+	logger.info("Descargando " + url)
 	inicio = time.clock()
 	req = urllib2.Request(url)
 	for header in headers:
-		xbmc.output(header[0]+":"+header[1])
+		logger.info(header[0]+":"+header[1])
 		req.add_header(header[0], header[1])
 
 	try:
@@ -64,26 +65,26 @@ def cachePage2(url,headers):
 	except:
 		req = urllib2.Request(url.replace(" ","%20"))
 		for header in headers:
-			xbmc.output(header[0]+":"+header[1])
+			logger.info(header[0]+":"+header[1])
 			req.add_header(header[0], header[1])
 		response = urllib2.urlopen(req)
 	data=response.read()
 	response.close()
 	fin = time.clock()
-	xbmc.output("Descargado en %d segundos " % (fin-inicio+1))
+	logger.info("Descargado en %d segundos " % (fin-inicio+1))
 
 	'''
 		outfile = open(localFileName,"w")
 		outfile.write(data)
 		outfile.flush()
 		outfile.close()
-		xbmc.output("Grabado a " + localFileName)
+		logger.info("Grabado a " + localFileName)
 	'''
 	return data
 
 def cachePagePost(url,data):
 
-	xbmc.output("Descargando " + url)
+	logger.info("Descargando " + url)
 	inicio = time.clock()
 	req = urllib2.Request(url,data)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -97,26 +98,26 @@ def cachePagePost(url,data):
 	data=response.read()
 	response.close()
 	fin = time.clock()
-	xbmc.output("Descargado en %d segundos " % (fin-inicio+1))
+	logger.info("Descargado en %d segundos " % (fin-inicio+1))
 
 	'''
 		outfile = open(localFileName,"w")
 		outfile.write(data)
 		outfile.flush()
 		outfile.close()
-		xbmc.output("Grabado a " + localFileName)
+		logger.info("Grabado a " + localFileName)
 	'''
 	return data
 
 def downloadpage(url):
-	xbmc.output("[scrapertools.py] Descargando " + url)
+	logger.info("[scrapertools.py] Descargando " + url)
 	inicio = time.clock()
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
 #	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3')
 	req.add_header('X-Requested-With','XMLHttpRequest') #Añadido para TVShack - Vigilar que no joda algún canal.
 	#if referer!="":
-	#	xbmc.output("[scrapertools.py] Referer=" + referer)
+	#	logger.info("[scrapertools.py] Referer=" + referer)
 	#	req.add_header('Referer', referer)
 	try:
 		response = urllib2.urlopen(req)
@@ -128,7 +129,7 @@ def downloadpage(url):
 	data=response.read()
 	response.close()
 	fin = time.clock()
-	xbmc.output("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
+	logger.info("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
 	return data
 
 def downloadpagewithcookies(url):
@@ -226,7 +227,7 @@ def downloadpagewithcookies(url):
 def printMatches(matches):
 	i = 0
 	for match in matches:
-		xbmc.output("[scrapertools.py] %d %s" % (i , match))
+		logger.info("[scrapertools.py] %d %s" % (i , match))
 		i = i + 1
 
 def entityunescape(cadena):
@@ -312,7 +313,7 @@ def getRandom(str):
 	return binascii.hexlify(md5.new(str).digest())
 
 def getLocationHeaderFromResponse(url):
-	xbmc.output("[scrapertools.py] getLocationHeaderFromResponse")
+	logger.info("[scrapertools.py] getLocationHeaderFromResponse")
 
 	if url=='':
 		return None

@@ -72,6 +72,8 @@ def listchannels(params,url,category):
 	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
 	if config.getSetting("enableadultmode") == "true":
 		addfolder("MocosoftX","mocosoftx","mainlist")
+		addfolder("Anifenix.com","anifenix","mainlist")
+		addfolder("tuporno.tv","tupornotv","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
 	addfolder("Capitan Cinema","capitancinema","mainlist")
 	addfolder("Film Streaming [IT]","filmstreaming","mainlist")

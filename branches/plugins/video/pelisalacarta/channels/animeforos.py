@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal "Anime (foros)" by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated: 02/07/2010
+# Last Updated: 11/07/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -19,6 +19,7 @@ import binascii
 import xbmctools
 import casttv
 import config
+import logger
 
 CHANNELNAME = "animeforos"
 
@@ -29,7 +30,7 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[animeforos.py] init")
+logger.info("[animeforos.py] init")
 
 DEBUG = True
 
@@ -41,91 +42,93 @@ STARORANGE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 
 STARGREEN_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall.png' ) )
 STARGREEN2_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall2.png' ) )
 STARGREY_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreysmall.png' ) )
+STAR4COLORS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','star4colors.png' ) )
 HD_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','harddisk.png' ) )
 HELP_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','help.png' ) )
+urlerdm = "http://www.elrincondelmanga.com/foro/showthread.php?t=75282"
 
 def mainlist(params,url,category):
-	xbmc.output("[animeforos.py] mainlist")
+	logger.info("[animeforos.py] mainlist")
 
 	category = "Anime"
 	categoryerdm = "El Rincón del Manga  -  Anime"
-	aviso = "Esta carpeta contiene una pequeña selección de series infantiles (TP), en cuanto al resto, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia. En el aptdo -Información de la Película- encontrará información procedente de la propia release y de McAnime. La disponibilidad de información por género y edades desde el canal irá mejorando."
+	aviso = "Esta carpeta contiene una pequeña selección de series infantiles (TP). En cuanto al resto, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia. En el aptdo -Información de la Película- encontrará información procedente de la propia release y de McAnime. La disponibilidad de información por género y edades desde el canal irá mejorando."
 	thumbchannel = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/animeforos.png"
 
-	addsimplefolder( CHANNELNAME , "clasicos" , category , "Anime - Selección Clásicos Infantiles TV" , "" , thumbchannel , aviso)
-	addsimplefolder( CHANNELNAME , "astroteamrg" , "AstroteamRG" , "Anime - AstroteamRG" , "" , thumbchannel , "Fuente: http://www.astroteamrg.org")
-	addsimplefolder( CHANNELNAME , "search" , categoryerdm , "Anime - El Rincón del Manga","http://www.elrincondelmanga.com/foro/showthread.php?t=75282", thumbchannel ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+	addsimplefolder( CHANNELNAME , "seleccion" , category , "Anime - Selección Clásicos Infantiles TV" , "" , thumbchannel , aviso)
+	addsimplefolder( CHANNELNAME , "seleccion" , "AstroteamRG" , "Anime - AstroteamRG" , "" , thumbchannel , "Fuente: http://www.astroteamrg.org")
+	addsimplefolder( CHANNELNAME , "searcherdm" , categoryerdm , "Anime - El Rincón del Manga","http://www.elrincondelmanga.com/foro/showthread.php?t=75282", thumbchannel ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
 	addsimplefolder( CHANNELNAME , "genres" , "Géneros  -  McAnime-Enciclopedia" , "Anime - McAnime-Enciclopedia - El Rincón del Manga","http://www.mcanime.net/enciclopedia/anime", thumbchannel ,"Fuentes: http://www.mcanime.net/enciclopedia/anime y http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	addsimplefolder( CHANNELNAME , "favoritos" , "Mis Favoritos" , "Anime - Mis Favoritos","http://www.elrincondelmanga.com/foro/showthread.php?t=75282",STARORANGE_THUMB,"" )
+	addsimplefolder( CHANNELNAME , "favoritos" , "Mis Favoritos" , "Anime - Mis Favoritos","",STARORANGE_THUMB,"" )
+	addsimplefolder( CHANNELNAME , "searchvistos" , "Anime - Vistos" , "Anime - Vistos" , "" , thumbchannel , "" )
+	addsimplefolder( CHANNELNAME , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos","",STAR4COLORS_THUMB, "" )
 	addsimplefolder( CHANNELNAME , "ayuda" , "Anime Foros - Ayuda" , "Ayuda" , "" , HELP_THUMB , "" )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
+def seleccion(params,url,category):
+	logger.info("[animeforos.py] clasicos")
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	if category=="Anime":
+		listado = clasicoslist()
+	else:
+		listado = astroteamrglist()
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def clasicos(params,url,category):
-	xbmc.output("[animeforos.py] clasicos")
-
-	adderdmfolder( CHANNELNAME , "listados" , category , "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Heidi" , "http://www.elrincondelmanga.com/foro/showthread.php?t=1173" , "http://images.mcanime.net/images/anime/433.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Marco, de los Apeninos a los Andes" , "http://www.elrincondelmanga.com/foro/showthread.php?t=65463#1" , "http://img115.imageshack.us/img115/8325/1612df65c4rs6.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Detective Holmes" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "El Patito Alfred" , "http://www.elrincondelmanga.com/foro/showthread.php?t=63927#1" , "http://www.fotodiario.com/fotos/7596/75967b6200db43e76e7d2d87c3e90191_709x963.jpg" , "Fuente: http://www.elrincondelmanga.com" , "Alfred J. Quack" , "Serie" , "eRdM" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Ulises 31" , "http://www.elrincondelmanga.com/foro/showthread.php?t=3294" , "http://img208.imageshack.us/img208/4820/ulyssesbox9sh.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def astroteamrg(params,url,category):
-	xbmc.output("[animeforos.py] astroteamrg")
-
-	adderdmfolder( CHANNELNAME , "listados" , category , "Kochikame (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1" , "" , "Serie", "astro2" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Slam Dunk (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16731" , "http://upload.wikimedia.org/wikipedia/en/b/b3/Slamdunk_cover1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16731 por friki100." , "" , "Serie", "astro2" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Detective Holmes" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Ponyo en el acantilado (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://www.caratulasdecine.com/Caratulas5/ponyoenelacantilado.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Ponyo on the Cliff by the Sea" , "Película" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Conan, el niño del futuro (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img220.imageshack.us/img220/425/50332do7.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Conan, the Boy in Future" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Cowboy Bebop (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://upload.wikimedia.org/wikipedia/en/3/37/CowboyBebopDVDBoxSet.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Sailor Moon (by Tuxedo_Mask)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16406" , "http://upload.wikimedia.org/wikipedia/en/4/40/Sailor_Moon_S.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16406 por Tuxedo_Mask." , "" , "Serie", "astro2" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Master Keaton VOSE (by Tom_Bombadil)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16761" , "http://upload.wikimedia.org/wikipedia/en/f/f7/Master_Keaton_cover.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16761 por Tom_Bombadil" , "" , "Serie", "astro2" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Eureka Seven VOSE (by skait)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16784" , "http://upload.wikimedia.org/wikipedia/en/4/45/Eureka_Seven_DVD_1_-_North_America.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16784 por skait." , "" , "Serie", "astro2" )
-	adderdmfolder( CHANNELNAME , "listados" , category , "Cross Game VOSE (by gatest)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16808" , "http://upload.wikimedia.org/wikipedia/en/c/cf/Cross_Game_DVDv1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16808 por gatest" , "" , "Serie", "astro2" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	for item in listado:
+		adderdmfolder( CHANNELNAME , "listados" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5], item[6] )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def favoritos(params,url,category):
-	xbmc.output("[animeforos.py] favoritos")
+	logger.info("[animeforos.py] favoritos")
 
-	favoritosupdate(url,category,"[^<]+","Completo","",False)
+	favoritosupdate(category,"[^<]+","Completo","",False)
 
-def favoritosupdate(url,category,tipocontenido,tipolist,idioma,listupdate):
-	xbmc.output("[animeforos.py] favoritosupdate")
+def favoritosupdate(category,tipocontenido,tipolist,idioma,listupdate):
+	logger.info("[animeforos.py] favoritosupdate")
+
+	series = []
+	todostitulo = ""
+	category2 = category
 
 	Dialogespera = xbmcgui.DialogProgress()
-	line1 = 'Buscando información de "Mis Favoritos"...'
-	line2 = ''
-	resultado = Dialogespera.create('pelisalacarta' , line1 , line2 )
+	line1 = 'Buscando información de "'+category+'"...'
+	resultado = Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	if category=="Todos Mis Favoritos":
+		series,seriesnuevos = casttv.findlistado("Favoritas")
+		todostitulo = "Anime - "
+		category2 = "Mis Favoritos"
+
+	listanime,nuevos = findfavoritos(category2,tipocontenido,tipolist,idioma)
+
+	if len(listanime)==0 and len(series)==0:
+		return
+
+	if category=="Todos Mis Favoritos":
+		if len(nuevos)>0 or len(seriesnuevos)>0:
+			addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , STARGREEN2_THUMB , "" )
+		if len(listanime)>0:
+			additem( CHANNELNAME , category , "------------------------------------ ANIME - FOROS ------------------------------------" , "" , "" , "" )
+	if len(nuevos)>0:
+		addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritos - Nuevos Contenidos" , "-*-"+todostitulo+"Nuevos Contenidos (Posteriores a [LW])" , "" , STARGREEN2_THUMB , "" )
+	for anime in listanime:
+		adderdmfolder( CHANNELNAME , "listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
+
+	if category=="Todos Mis Favoritos" and len(series)>0:
+		additem( CHANNELNAME , category , "----------------------------- CASTTV - SERIESYONKIS -----------------------------" , "" , "" , "" )
+		if len(seriesnuevos)>0:
+			addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB , "" )
+		for serie in series:
+			casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,False)
+	# ------------------------------------------------------------------------------------
+
+def findfavoritos(category,tipocontenido,tipolist,idioma):
+	logger.info("[animeforos.py] findfavoritos")
 
 	thumbnail=""
 	search = ""
@@ -138,7 +141,7 @@ def favoritosupdate(url,category,tipocontenido,tipolist,idioma,listupdate):
 
 	if len(listafav)==0:
 		alertnofav()
-		return
+		return listanime,nuevos
 
 	listaseries=listafav
 	for fav in listafav:
@@ -151,13 +154,14 @@ def favoritosupdate(url,category,tipocontenido,tipolist,idioma,listupdate):
 				search=search+"|"+titulo
 	if search<>"":
 		search="(?:"+search+")"
-		listaerdm = findcontenidos(url,tipolist,tipocontenido,search,idioma)
+		listaerdm = finderdm(urlerdm,tipolist,tipocontenido,search,idioma)
 		if len(listaerdm)==0:
-			alertnoerdmfav()
+			alertnoweb("El Rincón del Manga")
 		else:
 			listaerdm.sort(key=lambda erdm: erdm[0].lower())
-
+	OKmca = "-1"
 	for serie in listaseries:
+		url = serie[2]
 		plot = ""
 		tcsearch = ""
 		titleerdm = ""
@@ -166,8 +170,7 @@ def favoritosupdate(url,category,tipocontenido,tipolist,idioma,listupdate):
 		thumbnail=STARORANGE_THUMB
 		if serie[3]=="1":
 			thumbnail=STARGREY_THUMB
-		matchurl=re.search('(elrincondelmanga|mcanime|astroteamrg)',serie[2],re.IGNORECASE)
-		if matchurl.group(0)=="elrincondelmanga":
+		if "elrincondelmanga" in url:
 			if len(listaerdm)==0:
 				continue
 			encontrado = "0"
@@ -179,34 +182,44 @@ def favoritosupdate(url,category,tipocontenido,tipolist,idioma,listupdate):
 					tcsearch = erdm[5]
 					titleerdm = erdm[6]
 					plot = "eRdM"
-					# Revisar: caso especial porque está en el aptdo "Selección" y por el tema de la inicial en busca info
-					if serie[0]=="El Patito Alfred":
-						titleinfo = "Alfred J. Quack"
-						titleerdm = "eRdM"
-						plot = ""
 					break
 			if encontrado=="0":
 				tcsearch = serie[1]
 				#evita status desactualizado caso extremo de no encontrarse ya en eRdM
 				serie[1] = ""
-		elif matchurl.group(0)=="astroteamrg":
+		elif "astroteamrg" in url:
 			tcsearch = serie[1]
 			serie[1] = ""
 			match = re.search('\(by Chihiro\)$',serie[0],re.IGNORECASE)
 			if (match):
 				titleerdm = "astro"
-				title2 = ftitleinfo(serie[0])
+				title2 = ftitleastrosearch(serie[0])
 				if serie[0]<>title2:
 					titleinfo = title2
 			else:
 				titleerdm = "astro2"
-		elif matchurl.group(0)=="mcanime":
+		elif "mcanime" in url:
+			if OKmca=="0":
+				continue
 			matchinfo = re.match('^([^\(]+)\s\((.*?)\)$',serie[0])
 			if (matchinfo):
 				titleinfo = matchinfo.group(1)
 				tcsearch = matchinfo.group(2)
 			titleerdm = "mc-anime-fav"
 			category0 = category+" - "+titleinfo
+			try:
+				datamca = scrapertools.cachePage(url)
+			except:
+				alertnoresultados(url)
+				try:
+					scrapertools.cachePage("http://www.mcanime.net")
+				except:
+					alertnoweb("McAnime")
+					OKmca="0"
+				continue
+			matchstatus = re.search('<h3>([^<]+)</h3>',datamca)
+			if (matchstatus):
+				serie[1] = matchstatus.group(1)
 
 		if category0=="":
 			category0 = category+" - "+serie[0]
@@ -234,24 +247,10 @@ def favoritosupdate(url,category,tipocontenido,tipolist,idioma,listupdate):
 
 		listanime.append([ category0 , serie[0]+status , serie[2] , thumbnail , plot , titleinfo , tcsearch , titleerdm  ])
 
-	if len(nuevos)>0:
-		addsimplefolder( CHANNELNAME , "listatres" , "Mis Favoritas - Nuevos Episodios" , "***Nuevos Episodios (Posteriores a [LW])***" , "" , STARGREEN2_THUMB , "" )
-
-	for anime in listanime:
-		adderdmfolder( CHANNELNAME , "listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
-
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate , cacheToDisc=False )
+	return listanime,nuevos
 
 def findnuevos(title,titleserievisto,url,todos,web):
-	xbmc.output("[animeforos.py] findnuevos")
+	logger.info("[animeforos.py] findnuevos")
 	
 	listanuevos = []
 
@@ -314,7 +313,7 @@ def findnuevos(title,titleserievisto,url,todos,web):
 	return listanuevos
 
 def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listupdate):
-	xbmc.output("[animeforos.py] detail")
+	logger.info("[animeforos.py] detail")
 
 	paramsback = {'title': title, 'titleinfo': titleinfo, 'tcsearch': tcsearch, 'titleerdm': titleerdm, 'thumbnail': thumbnail, 'plot': plot }
 	autor = ""
@@ -372,8 +371,10 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 		alertnoresultados("")
 		return
 
-	if titleerdm == "" or titleerdm=="eRdM" or titleerdm == "astro" or titleerdm == "astro2" or titleerdm == "mc-anime-fav":
-		titleerdm = searchtitle(titleinfo)
+	if titleerdm == "" or titleerdm == "astro" or titleerdm == "astro2" or titleerdm == "mc-anime-fav":
+		titleerdm = ftitlesearch(titleinfo)
+	elif titleerdm=="eRdM":
+		titleerdm = ftitleerdmsearch(titleinfo)
 
 	if titleerdm <> "mc-anime":
 		# ------------------------------------------------------
@@ -469,22 +470,21 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 	for video in listavideos2:
 		addvideofolder( CHANNELNAME , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
 
-	# Extrae la fecha de la próxima actualización
-	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
-	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
+	# Extrae la fecha de la próxima actualización
+
+	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
+
+	matches = re.compile(patronvideos,re.DOTALL).search(data)
+
+	if (matches):
+
 		titulo = matches.group(2)
 		# Añade al listado de XBMC 
 		additem( CHANNELNAME , category , titulo , "" , "" , plot )
 					
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,True)
+	# ------------------------------------------------------------------------------------
 
 def astrodata(title,url):
 	data = ""
@@ -521,7 +521,8 @@ def astrodata(title,url):
 	# ------------------------------------------------------
 	patronvideos = inicios+'(.*?)'+fins
 	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
+	if (matches):
+
 		data = matches.group(1)
 
 	return data
@@ -546,7 +547,8 @@ def erdmdata(url):
 		post = matchR0.group(1)	
 		patronvideos = 'name="'+post+'">#</a>(.*?)<!-- / message -->'
 		matches = re.compile(patronvideos,re.DOTALL).search(data)
-		if (matches):
+		if (matches):
+
 			data = matches.group(1)
 		
 	# ------------------------------------------------------
@@ -574,31 +576,40 @@ def erdmdata(url):
 	return data,plot
 	
 def findvideos(data,title):
-	xbmc.output("[animeforos.py] findvideos")
+	logger.info("[animeforos.py] findvideos")
 	encontrados = set()
 	devuelve = []
 
-	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título - Skait
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título - Skait
+
 	patronvideos  = '(<br /><b>|<br />)\s([^<]+)<br />\s'
 	patronvideos += '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)" target="_blank">'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-	for match in matches:
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+
+
+	for match in matches:
+
 		titulo = match[1]
 		titulo = titulo.replace(' -  ' , '')
 		titulo = titulo.replace(' - Ovas ' , ' Ovas')
-
+
+
 		url = match[2]
 
 		if url not in encontrados:
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
 
-	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
-	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
+	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
+
+	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
+
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+
+
 	for match in matches:
 
 		# Titulo quita código html
@@ -614,7 +625,8 @@ def findvideos(data,title):
 		foro = ""
 		if title == "Sailor Moon":
 			match0 = re.match('(\d\d\.\-\s)<a',match[0])
-			if (match0):
+			if (match0):
+
 				titulo = match0.group(1)+titulo
 				foro = "AT"
 			if titulo == "01.- La niña llorona se convierte en guerrero":
@@ -626,8 +638,10 @@ def findvideos(data,title):
 		# Cross Game
 		if title == "Cross Game":
 			match1 = re.match('\[Rakuen~SnF\] Cross Game HDTV (\d{2,4})$',titulo,re.IGNORECASE)
-			if (match1):
-				titulo = match1.group(1)+ " - HDTV [Rakuen~SnF]"
+			if (match1):
+
+				titulo = match1.group(1)+ " - HDTV [Rakuen~SnF]"
+
 
 		# Kochikame
 		if title == "Kochikame":
@@ -677,7 +691,7 @@ def findvideos(data,title):
 						titulo = titulo0+" "+titulo
 
 		if url not in encontrados and url <> "":
-			xbmc.output("  url="+url)
+			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' , parte , titulo0 ] )
 			encontrados.add(url)
 			if parte == "-1" and titulo0 == "":
@@ -701,8 +715,8 @@ def findvideos(data,title):
 
 	return devuelve
 
-def findcontenidos(url,tipolist,tipocontenido,search,idioma):
-	xbmc.output("[animeforos.py] findcontenidos")
+def finderdm(url,tipolist,tipocontenido,search,idioma):
+	logger.info("[animeforos.py] finderdm")
 	serieslist = []
 
 	try:
@@ -735,7 +749,7 @@ def findcontenidos(url,tipolist,tipocontenido,search,idioma):
 		titulo = re.sub('\s+$','',titulo)
 
 		# Titulo para búsquedas
-		titleerdm = searchtitle(titulo)
+		titleerdm = ftitleerdmsearch(titulo)
 				
 		# AnexoTitulo/idioma
 		anextitulo = match[2]
@@ -778,13 +792,148 @@ def findcontenidos(url,tipolist,tipocontenido,search,idioma):
 	
 	return serieslist
 
-def search(params,url,category):
-	xbmc.output("[animeforos.py] search")
+def searchvistos(params,url,category):
+	logger.info("[animeforos] searchvistos")
+        
+	listaseries = []
+	listaseries2 = []
+	listavistos2 = []
+	searcherdm = ""
 
-	searchupdate(-2,"",category,"[^<]+","Completo","",False)
+	listavistos = casttv.readvisto("","",CHANNELNAME)
+	if len(listavistos)==0:
+		alertnoresultadosearch()
+		return
+	listadoseries = astroteamrglist()
+	for visto in listavistos:
+		encontrado="0"
+		for serie in listadoseries:
+			if visto[0]==serie[0]:
+				encontrado="-1"
+				if serie[4]=="":
+					serie[4]=serie[0]
+				if listaseries.count(serie)==0:
+					listaseries.append(serie)
+				break
+		if encontrado=="0":
+			listavistos2.append(visto)
+	if len(listavistos2)>0:
+		for visto in listavistos2:
+			matchurl = re.match('^([^\/]+)(\/.*?)$',visto[0])
+			if (matchurl):
+				title = matchurl.group(1)
+				titleinfo = title
+				tcsearch = ""
+				if "showthread" in matchurl.group(2):
+					urlvisto = "http://www.elrincondelmanga.com/foro"+matchurl.group(2)
+					titleerdm = "eRdM"
+					titlesearch=re.sub('[\\\\]?(?P<signo>[^\w\s\\\\])','\\\\\g<signo>',title)
+					if searcherdm=="":
+						searcherdm=titlesearch
+					else:
+						searcherdm=searcherdm+"|"+titlesearch
+				else:
+					urlvisto = "http://www.mcanime.net/descarga_directa/anime/detalle"+matchurl.group(2)
+					titleerdm = "mc-anime-fav"
+					matchinfo = re.match('^([^\(]+)\s\((.*?)\)$',matchurl.group(1))
+					if (matchinfo):
+						titleinfo = matchinfo.group(1)
+						tcsearch = matchinfo.group(2)
+				if listaseries.count([ title , urlvisto , "" , "" , titleinfo , tcsearch , titleerdm ])==0:
+					listaseries.append([ title , urlvisto , "" , "" , titleinfo , tcsearch , titleerdm ])
 
-def searchupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,listupdate):
-	xbmc.output("[animeforos.py] searchupdate")
+	if len(listaseries)==0:
+		alertnoresultadosearch()
+		return
+
+	if searcherdm<>"":
+		searcherdm="(?:"+searcherdm+")"
+		listaerdm = finderdm(urlerdm,"Completo","[^<]+",searcherdm,"")
+		if len(listaerdm)==0:
+			alertnoweb("El Rincón del Manga")
+		else:
+			listaerdm.sort(key=lambda erdm: erdm[0].lower())
+
+	OKmca="-1"
+	for serie in listaseries:
+		listafav = casttv.readfav(serie[0],serie[1],"",CHANNELNAME)
+		if len(listafav)==0:
+			if serie[6]<>"eRdM" and serie[6]<>"mc-anime-fav":
+				listaseries2.append(serie)
+				continue
+			elif serie[6]=="mc-anime-fav":
+				if OKmca=="0":
+					continue
+				try:
+					datamca = scrapertools.cachePage(serie[1])
+				except:
+					alertnoresultados(serie[1])
+					try:
+						scrapertools.cachePage("http://www.mcanime.net")
+					except:
+						alertnoweb("McAnime")
+						OKmca="0"
+					continue
+				matchstatus = re.search('<h3>([^<]+)</h3>',datamca)
+				if (matchstatus):
+					serie[0] = serie[0]+"  -  "+matchstatus.group(1)
+				listaseries2.append(serie)
+				continue
+			for erdm in listaerdm:			
+				if serie[0]==erdm[0] and serie[1]==erdm[4]:
+					serie[0] = serie[0]+"  -  "+erdm[1]+" ["+erdm[5]+"]"+" ["+erdm[2]+"]"+erdm[3]
+					serie[4] = erdm[0]
+					serie[5] = erdm[5]
+					serie[6] = erdm[6]
+					serie[3] = "eRdM"
+					listaseries2.append(serie)
+					break
+	if len(listaseries2)==0:
+		alertnoresultadosearch()
+		return
+	listaseries = listaseries2
+	listaseries.sort()
+
+	for serie in listaseries:
+		adderdmfolder( CHANNELNAME , "listadosvistos" , category , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] , serie[6] )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,False)
+	# ------------------------------------------------------------------------------------
+
+def listadosvistos(params,url,category):
+	logger.info("[animeforos.py] listadosvistos")
+
+	title = urllib.unquote_plus( params.get("title") )
+	titleinfo = urllib.unquote_plus( params.get("titleinfo") )
+	plot = urllib.unquote_plus( params.get("plot") )
+	tcsearch = urllib.unquote_plus( params.get("tcsearch") )
+	titleerdm = urllib.unquote_plus( params.get("titleerdm") )
+	if titleerdm<>"mc-anime-fav":
+		match = re.match('^(.*?)\s+\-\s+(.*?)$',title)
+		if (match):
+			titleinfo2 = match.group(1)
+			status = match.group(2)	
+		else:
+			titleinfo2 = title
+			status = tcsearch
+	if titleerdm=="mc-anime-fav":
+		status = re.sub('^.*?\s+\-\s+','',title)
+		titleinfo2 = titleinfo+" ("+tcsearch+")"
+		title = titleinfo
+
+	respuesta = casttv.serieupdate(titleinfo2,status,url,tcsearch,CHANNELNAME)
+
+	if respuesta<>1 and respuesta<>2 and respuesta<>3:
+		category = category+" - "+titleinfo
+		detail(title,url,category,titleinfo,tcsearch,titleerdm,"",plot,False)
+
+def searcherdm(params,url,category):
+	logger.info("[animeforos.py] searcherdm")
+
+	searcherdmupdate(-2,"",category,"[^<]+","Completo","",False)
+
+def searcherdmupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,listupdate):
+	logger.info("[animeforos.py] searcherdmupdate")
 
 	url="http://www.elrincondelmanga.com/foro/showthread.php?t=75282"
 	letras = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -831,7 +980,7 @@ def searchupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,listu
 		search = letras[seleccion-2]
 		category = category+" - Buscar - "+letras[seleccion-2]
 
-	listaseries = findcontenidos(url,tipolist,tipocontenido,search,idioma)
+	listaseries = finderdm(url,tipolist,tipocontenido,search,idioma)
 
 	if len(listaseries)==0:
 		alertnoresultadosearch()
@@ -871,19 +1020,14 @@ def searchupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,listu
 			else:
 				titulo = serie[0]+"  -  "+serie[1]+" ["+serie[2]+"]"
 
-		adderdmfolder( CHANNELNAME , "listadossearch" , str(seleccion)+";"+tecleado+";"+tipocontenido+";"+tipolist+";"+idioma , titulo , serie[4] , thumbnail , "eRdM" , serie[0] , serie[5] , serie[6] )
+		adderdmfolder( CHANNELNAME , "listadoserdmsearch" , str(seleccion)+";"+tecleado+";"+tipocontenido+";"+tipolist+";"+idioma , titulo , serie[4] , thumbnail , "eRdM" , serie[0] , serie[5] , serie[6] )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,True)
+	# ------------------------------------------------------------------------------------
 
 def listados(params,url,category):
-	xbmc.output("[animeforos.py] listados")
+	logger.info("[animeforos.py] listados")
 
 	title = urllib.unquote_plus( params.get("title") )
 	plot = urllib.unquote_plus( params.get("plot") )
@@ -932,8 +1076,8 @@ def listados(params,url,category):
 			info = info1+"|"+info2+"|"+info3+"|"+info4+"|"+info5
 			detail(title,url,category,info,tcsearch,"mc-anime",thumbnail,plot,False)
 
-def listadossearch(params,url,category):
-	xbmc.output("[animeforos.py] listadossearch")
+def listadoserdmsearch(params,url,category):
+	logger.info("[animeforos.py] listadoserdmsearch")
 
 	title = urllib.unquote_plus( params.get("title") )
 	titleinfo = urllib.unquote_plus( params.get("titleinfo") )
@@ -956,20 +1100,45 @@ def listadossearch(params,url,category):
 	respuesta = casttv.serieupdate(titleinfo,status,url,tcsearch,CHANNELNAME)
 
 	if respuesta==1 or respuesta==2 or respuesta==3:
-		searchupdate(seleccion,tecleado,category0,tipocontenido,tipolist,idioma,True)
+		searcherdmupdate(seleccion,tecleado,category0,tipocontenido,tipolist,idioma,True)
 	else:
 		category = "El Rincón del Manga - "+titleinfo
 		detail(title,url,category,titleinfo,tcsearch,titleerdm,"",plot,False)
 
-def listatres(params,url,category):
-	xbmc.output("[animeforos.py] listatres")
+def listadonuevos(params,url,category):
+	logger.info("[animeforos.py] listadonuevos")
 
-	listatresupdate(category,False)
+	listadonvosupdate(category,False)
 
-def listatresupdate(category,listupdate):
-	xbmc.output("[animeforos.py] listatresupdate")
+def listadonvosupdate(category,listupdate):
+	logger.info("[animeforos.py] listadonvosupdate")
 
-	listafav = []
+	seriesnuevos=[]
+
+	if "Todos" in category:
+		seriesnuevos = casttv.findlistadonvos()
+
+	nuevos = findlistadonvos(category)
+
+	if len(nuevos)==0 and len(seriesnuevos)==0:
+		casttv.alertnoepisodios(4)
+
+	if "Todos" in category and len(nuevos)>0:
+		additem( CHANNELNAME , category , "------------------------------------ ANIME - FOROS ------------------------------------" , "" , "" , "" )
+	for item in nuevos:
+		addvideofolder( CHANNELNAME , "episodiomenu" , item[0] , item[1] , item[2] , item[3] , "" , "" )
+
+	if len(seriesnuevos)>0:
+		additem( CHANNELNAME , category , "----------------------------- CASTTV - SERIESYONKIS -----------------------------" , "" , "" , "" )
+		for item in seriesnuevos:
+			casttv.addnewfolder( CHANNELNAME , "casttv.episodiomenu" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , item[10] , ";" , "New" )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,True)
+	# ------------------------------------------------------------------------------------
+
+def findlistadonvos(category):
+	logger.info("[animeforos.py] findlistadonvos")
+
 	listafav = casttv.readfav("","","-1",CHANNELNAME)
 	nuevos = []
 
@@ -1005,24 +1174,13 @@ def listatresupdate(category,listupdate):
 
 		listanuevos=findnuevos(title,titleserievisto,serie[2],"-1",web)
 		if len(listanuevos)>0:
-			nuevos.extend(listanuevos)
 			for video in listanuevos:
-				addvideofolder( CHANNELNAME , "episodiomenu" , category+";;New;;;;;;;"+titleserievisto+";"+video[0]+";;"+urlOK , video[2] , title+" - "+video[0] , video[1] , "" , "" )
+				nuevos.append([ category+";;New;;;;;;;"+titleserievisto+";"+video[0]+";;"+urlOK , video[2] , title+" - "+video[0] , video[1] ])
 
-	if len(nuevos)==0:
-		alertnoepisodios(2)
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
+	return nuevos
 
 def fcategory(tipocontenido,tipolist,idioma):
-	xbmc.output("[animeforos.py] fcategory")
+	logger.info("[animeforos.py] fcategory")
 	if tipocontenido<>"[^<]+":
 		category = "El Rincón del Manga - "+tipocontenido+"s - "+tipolist+idioma
 	else:
@@ -1035,7 +1193,7 @@ def fcategory(tipocontenido,tipolist,idioma):
 	return category	
 
 def findinfo(data,title,tcsearch,todos,genre,titleerdm):
-	xbmc.output("[animeforos.py] findinfo")
+	logger.info("[animeforos.py] findinfo")
 	animemclist = []
 	listinfomc = []
 	infoencontrada = []
@@ -1046,7 +1204,8 @@ def findinfo(data,title,tcsearch,todos,genre,titleerdm):
 
 	# Inicial
 	inicial = "#"
-	match0 = re.match('(?:The\s+|Las?\s+|Los\s+|An?\s+|[^\w\#]*)(\w|\#)',title,re.IGNORECASE)
+	titleinicial = finicialformca(title)
+	match0 = re.match('(?:The\s+|Las?\s+|Los\s+|An?\s+|[^\w\#]*)(\w|\#)',titleinicial,re.IGNORECASE)
 	if (match0):
 		inicial = match0.group(1)
 	
@@ -1088,7 +1247,7 @@ def findinfo(data,title,tcsearch,todos,genre,titleerdm):
 		titulomc = titlemc+" "+match[2]
 
 		# Titulo para búsquedas
-		titlemcanime = searchtitle(titlemc)
+		titlemcanime = ftitlesearch(titlemc)
 
 		# Tipo contenido
 		tpcontenidomc = re.sub('(?:\(|\))','',match[2])
@@ -1120,7 +1279,7 @@ def findinfo(data,title,tcsearch,todos,genre,titleerdm):
 		return listinfomc
 
 def findlistinfo(data,title,url):
-	xbmc.output("[animeforos.py] findlistinfo")
+	logger.info("[animeforos.py] findlistinfo")
 
 	infomclist = []
 
@@ -1197,7 +1356,7 @@ def findlistinfo(data,title,url):
 	return infomclist
 
 def findinfo2(params,url,category):
-	xbmc.output("[animeforos.py] findinfo2")
+	logger.info("[animeforos.py] findinfo2")
 
 	title = urllib.unquote_plus( params.get("title") )
 	title = re.sub('\s+\-\s+\[McAnime\-Enciclopedia\]','',title)
@@ -1218,7 +1377,7 @@ def findinfo2(params,url,category):
 
 	if plot == "McAnime-Enciclopedia":
 		urleRdM = "http://www.elrincondelmanga.com/foro/showthread.php?t=75282"
-		listaseries = findcontenidos(urleRdM,"Completo",tcsearch,titlesearch,"")
+		listaseries = finderdm(urleRdM,"Completo",tcsearch,titlesearch,"")
 		urltodas = re.sub('enciclopedia','descarga_directa',url)
 		listaseriesmc = findseriesmc(urltodas)
 			
@@ -1259,7 +1418,7 @@ def findinfo2(params,url,category):
 	
 	if plot == "McAnime-Enciclopedia":
 		category = category+"  -  McAnime-Enciclopedia  -  Releases"
-		addsimplefolder( CHANNELNAME , "search" , "El Rincón del Manga  -  Anime" , "[+] Buscar en El Rincón del Manga","http://www.elrincondelmanga.com/foro/showthread.php?t=75282", "" ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+		addsimplefolder( CHANNELNAME , "searcherdm" , "El Rincón del Manga  -  Anime" , "[+] Buscar en El Rincón del Manga","http://www.elrincondelmanga.com/foro/showthread.php?t=75282", "" ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
 	else:
 		category = "McAnime-Enciclopedia"
 
@@ -1267,18 +1426,12 @@ def findinfo2(params,url,category):
 		additem( CHANNELNAME , category , "Releases en McAnime: " , "" , "" , "" )
 		for seriemc in listaseriesmc:	
 			addmcarelfolder( CHANNELNAME , "listados" , genero+"  -  McAnime;"+title+";"+seriemc[0]+";"+titleinfo+";"+tcsearch , seriemc[0]+seriemc[2] , seriemc[1] , listainfomc[0][6] , listainfomc[0][5] , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "Clasificación: "+listainfomc[0][1] , "Géneros: "+listainfomc[0][2] , "Contenido: "+listainfomc[0][3] , "Sinopsis: "+listainfomc[0][4] )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True)	
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------	
 
 def searchmc(params,url,category):
-	xbmc.output("[animeforos.py] searchmc")
+	logger.info("[animeforos.py] searchmc")
 
 	title = urllib.unquote_plus( params.get("title") )
 	plot = urllib.unquote_plus( params.get("plot") )
@@ -1329,7 +1482,7 @@ def searchmc(params,url,category):
 			else:
 				return
 		urleRdM = "http://www.elrincondelmanga.com/foro/showthread.php?t=75282"
-		listaseries = findcontenidos(urleRdM,"Completo",tipocontenido,inicial,"")
+		listaseries = finderdm(urleRdM,"Completo",tipocontenido,inicial,"")
 		listaseries.sort(key=lambda serie: serie[6].lower())
 		for info in listainfo:
 			tituloencontrado = "0"
@@ -1389,22 +1542,15 @@ def searchmc(params,url,category):
 		seriesencontradas.sort(key=lambda serie: serie[0].lower())
 		for serie in seriesencontradas:	
 			adderdmfolder( CHANNELNAME , "listados" , category , serie[0]+"  -  "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "eRdM" , serie[0] , serie[5] , serie[6] )
-
 					
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 	if len(listainfo)>300 and resultado<>"":
 		Dialogespera.close()
 
 def searchmctc():
-	xbmc.output("[animeforos.py] searchmctc")
+	logger.info("[animeforos.py] searchmctc")
 
 	selecciontctx = "[^<]+"
 	opciones = []
@@ -1428,7 +1574,7 @@ def searchmctc():
 	return selecciontctx
 
 def searchmctl(selecciontc):
-	xbmc.output("[animeforos.py] searchmctl")
+	logger.info("[animeforos.py] searchmctl")
 
 	selecciontltx = "Completo"
 	idioma = ""
@@ -1448,7 +1594,7 @@ def searchmctl(selecciontc):
 	return selecciontltx,idioma
 
 def searchinicial():
-	xbmc.output("[animeforos.py] searchinicial")
+	logger.info("[animeforos.py] searchinicial")
 
 	opciones = []
 	letras = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1466,7 +1612,7 @@ def searchinicial():
 	return selinicial
 
 def genres(params,url,category):
-	xbmc.output("[animeforos.py] genres")
+	logger.info("[animeforos.py] genres")
 
 	try:
 		data = scrapertools.cachePage(url)
@@ -1480,18 +1626,12 @@ def genres(params,url,category):
 
 	for genre in listagenres:
 		addsimplefolder( CHANNELNAME , "searchmc" , category , genre[0] , genre[1] , "" , "genre" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def findgenres(data):
-	xbmc.output("[animeforos.py] findgenres")
+	logger.info("[animeforos.py] findgenres")
 	genreslist = []
 
 	patronvideos  = '<a\s+href="(/enciclopedia/anime/genero/[^"]+)">([^<]+)</a>'
@@ -1511,7 +1651,7 @@ def findgenres(data):
 	return genreslist
 
 def findseriesmc(url):
-	xbmc.output("[animeforos.py] findseriesmc")
+	logger.info("[animeforos.py] findseriesmc")
 	seriesmclist = []
 
 	data = scrapertools.cachePage(url)
@@ -1545,7 +1685,7 @@ def findseriesmc(url):
 
 
 def episodiomenu(params,url,category):
-	xbmc.output("[animeforos.py] episodiomenu")
+	logger.info("[animeforos.py] episodiomenu")
 
 	match = re.match('^([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)$',category)
 	categoryback = match.group(1)
@@ -1568,7 +1708,7 @@ def episodiomenu(params,url,category):
 		if tipovisto<>"New":
 			detail(titleback,urlback,categoryback,titleinfo,tcsearch,titleerdm,thumbnailback,plotback,True)
 		else:
-			listatresupdate(categoryback,True)
+			listadonvosupdate(categoryback,True)
 
 	elif seleccion==-1 or seleccion==0:
 		title = urllib.unquote_plus( params.get("title") )
@@ -1592,7 +1732,7 @@ def episodiomenu(params,url,category):
 		# play(params,url,categoryback)
 
 def play(params,url,category):
-	xbmc.output("[animeforos.py] play")
+	logger.info("[animeforos.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
@@ -1601,7 +1741,17 @@ def play(params,url,category):
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
-def searchtitle(title):
+def ftitleerdmsearch(title):
+	title = re.sub('^El Patito Alfred$','Alfred J Quack',title)
+	title = re.sub('Shippuden','Shippuuden',title)
+	title = ftitlesearch(title)
+	return title
+
+def finicialformca(title):
+	title = re.sub('^El Patito Alfred$','Alfred J Quack',title)
+	return title
+
+def ftitlesearch(title):
 	title = title.lower()
 	title = re.sub('^(?:the|el|las?|los?)[^\w]+','',title)
 	title = re.sub('[^\w]+(?:the|el|las?|los?)[^\w]+',' ',title)
@@ -1610,10 +1760,10 @@ def searchtitle(title):
 	title = re.sub('[^\w]+','',title)
 	return title
 
-def ftitleinfo(title):
-	title = re.sub('Sherlock Holmes \(by Chihiro\)','Detective Holmes',title)
-	title = re.sub('Ponyo en el acantilado \(by Chihiro\)','Ponyo on the Cliff by the Sea',title)
-	title = re.sub('Conan, el niño del futuro \(by Chihiro\)','Conan, the Boy in Future',title)
+def ftitleastrosearch(title):
+	title = re.sub('^Sherlock Holmes \(by Chihiro\)$','Detective Holmes',title)
+	title = re.sub('^Ponyo en el acantilado \(by Chihiro\)$','Ponyo on the Cliff by the Sea',title)
+	title = re.sub('^Conan, el niño del futuro \(by Chihiro\)$','Conan, the Boy in Future',title)
 	return title
 
 def formatostring(cadena):
@@ -1667,11 +1817,11 @@ def alertnoresultadosearch():
 
 def alertnofav():
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('pelisalacarta' , 'No se han añadido contenidos a "Mis Favoritos".' , '')
+	resultado = advertencia.ok('Anime Foros' , 'No se han añadido contenidos a "Mis Favoritos".' , '')
 
-def alertnoerdmfav():
+def alertnoweb(web):
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('pelisalacarta' , 'No se mostrarán favoritos de El Rincón del Manga.' , 'El sitio no está disponible en estos momentos.')
+	resultado = advertencia.ok('pelisalacarta' , 'No se mostrarán contenidos de '+web+'.' , 'El sitio no está disponible en estos momentos.')
 
 def alertcontinuar(inicial,selecciontc):
 	advertencia = xbmcgui.Dialog()
@@ -1688,56 +1838,56 @@ def alertcontinuar(inicial,selecciontc):
 	return resultado
 
 def addsimplefolder( canal , accion , category , title , url , thumbnail , plot ):
-	xbmc.output("[animeforos.py] addsimplefolder")
+	logger.info("[animeforos.py] addsimplefolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot} )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def adderdmfolder( canal , accion , category , title , url , thumbnail , plot , titleinfo , tcsearch , titleerdm):
-	xbmc.output("[animeforos.py] adderdmfolder")
+	logger.info("[animeforos.py] adderdmfolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot} )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&titleinfo=%s&tcsearch=%s&titleerdm=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( titleinfo ) , urllib.quote_plus( tcsearch ) , urllib.quote_plus( titleerdm ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addmcafolder( canal , accion , category , title , url , thumbnail , plot , titleinfo , tcsearch , titlemcanime):
-	xbmc.output("[animeforos.py] addmcafolder")
+	logger.info("[animeforos.py] addmcafolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot} )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&titleinfo=%s&tcsearch=%s&titlemcanime=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( titleinfo ) , urllib.quote_plus( tcsearch ) , urllib.quote_plus( titlemcanime ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addmcarelfolder( canal , accion , category , title , url , thumbnail , plot , info1 , info2 , info3 , info4 , info5):
-	xbmc.output("[animeforos.py] addmcarelfolder")
+	logger.info("[animeforos.py] addmcarelfolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot} )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&info1=%s&info2=%s&info3=%s&info4=%s&info5=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) ,  urllib.quote_plus( info1 ) , urllib.quote_plus( info2 ) , urllib.quote_plus( info3 ) , urllib.quote_plus( info4 ) , urllib.quote_plus( info5 ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
-	xbmc.output('[animeforos.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	logger.info('[animeforos.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def addvideofolder( canal , accion , category , server , title , url , thumbnail, plot ):
-	xbmc.output('[animeforos.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	logger.info('[animeforos.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=True)
 
 def additem( canal , category , title , url , thumbnail, plot ):
-	xbmc.output('[animeforos.py] additem')
+	logger.info('[animeforos.py] additem')
 	listitem = xbmcgui.ListItem( title, iconImage=HD_THUMB, thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def ayuda(params,url,category):
-	xbmc.output("[animeforos.py] ayuda")
+	logger.info("[animeforos.py] ayuda")
 
 	additem( CHANNELNAME , category , "------------------------------------------ Leyenda ------------------------------------------" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , HELP_THUMB , "" )
@@ -1750,14 +1900,49 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
 	additem( CHANNELNAME , category , "--------------------------------------------- Info ----------------------------------------------" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "Mis Favoritos: Si cambia el status (info anexa al título) de releases de McAnime no se actualizará" , "" , HD_THUMB , "" )
+	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , HD_THUMB , "" )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+def astroteamrglist():
+	logger.info("[animeforos.py] astroteamrglist")
+	
+	astrolist = []
+	
+	astrolist.append([ "Kochikame (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1" , "" , "Serie", "astro2" ])
+	astrolist.append([ "Slam Dunk (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16731" , "http://upload.wikimedia.org/wikipedia/en/b/b3/Slamdunk_cover1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16731 por friki100." , "" , "Serie", "astro2" ])
+	astrolist.append([ "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Detective Holmes" , "Serie" , "astro" ])
+	astrolist.append([ "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
+	astrolist.append([ "Ponyo en el acantilado (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://www.caratulasdecine.com/Caratulas5/ponyoenelacantilado.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Ponyo on the Cliff by the Sea" , "Película" , "astro" ])
+	astrolist.append([ "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
+	astrolist.append([ "Conan, el niño del futuro (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img220.imageshack.us/img220/425/50332do7.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Conan, the Boy in Future" , "Serie" , "astro" ])
+	astrolist.append([ "Cowboy Bebop (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://upload.wikimedia.org/wikipedia/en/3/37/CowboyBebopDVDBoxSet.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
+	astrolist.append([ "Sailor Moon (by Tuxedo_Mask)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16406" , "http://upload.wikimedia.org/wikipedia/en/4/40/Sailor_Moon_S.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16406 por Tuxedo_Mask." , "" , "Serie", "astro2" ])
+	astrolist.append([ "Master Keaton VOSE (by Tom_Bombadil)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16761" , "http://upload.wikimedia.org/wikipedia/en/f/f7/Master_Keaton_cover.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16761 por Tom_Bombadil" , "" , "Serie", "astro2" ])
+	astrolist.append([ "Eureka Seven VOSE (by skait)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16784" , "http://upload.wikimedia.org/wikipedia/en/4/45/Eureka_Seven_DVD_1_-_North_America.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16784 por skait." , "" , "Serie", "astro2" ])
+	astrolist.append([ "Cross Game VOSE (by gatest)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16808" , "http://upload.wikimedia.org/wikipedia/en/c/cf/Cross_Game_DVDv1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16808 por gatest" , "" , "Serie", "astro2" ])
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	return astrolist
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def clasicoslist():
+	logger.info("[animeforos.py] clasicoslist")
 
+	clasiclist = []
+
+	clasiclist.append([ "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
+	clasiclist.append([ "Heidi" , "http://www.elrincondelmanga.com/foro/showthread.php?t=1173" , "http://images.mcanime.net/images/anime/433.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
+	clasiclist.append([ "Marco, de los Apeninos a los Andes" , "http://www.elrincondelmanga.com/foro/showthread.php?t=65463#1" , "http://img115.imageshack.us/img115/8325/1612df65c4rs6.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
+	clasiclist.append([ "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Detective Holmes" , "Serie" , "astro" ])
+	clasiclist.append([ "El Patito Alfred" , "http://www.elrincondelmanga.com/foro/showthread.php?t=63927#1" , "http://www.fotodiario.com/fotos/7596/75967b6200db43e76e7d2d87c3e90191_709x963.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
+	clasiclist.append([ "Ulises 31" , "http://www.elrincondelmanga.com/foro/showthread.php?t=3294" , "http://img208.imageshack.us/img208/4820/ulyssesbox9sh.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
+	clasiclist.append([ "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
+
+	return clasiclist
+
+def EndDirectory(category,sortmethod,listupdate,cachedisc):
+	if sortmethod=="":
+		sortmethod=xbmcplugin.SORT_METHOD_NONE
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=sortmethod)
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate , cacheToDisc=cachedisc  )

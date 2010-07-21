@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal CastTV by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated: 02/07/2010
+# Last Updated: 11/07/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -18,8 +18,10 @@ import servertools
 import binascii
 import xbmctools
 import downloadtools
+import animeforos
 import seriesyonkis
 import config
+import logger
 
 CHANNELNAME = "casttv"
 
@@ -30,7 +32,7 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[casttv.py] init")
+logger.info("[casttv.py] init")
 
 DEBUG = True
 
@@ -41,17 +43,18 @@ LoadThumbnails = True # indica si cargar los carteles
 STARORANGE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','starorangesmall.png' ) )
 STARBLUE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','starbluesmall.png' ) )
 STARGREEN_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall.png' ) )
+STARGB_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreenblue.png' ) )
 STARGREEN2_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall2.png' ) )
 STARGREY_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreysmall.png' ) )
 STARGREYBLUE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreyblue.png' ) )
+STAR4COLORS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','star4colors.png' ) )
 HD_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','harddisk.png' ) )
-STARGB_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreenblue.png' ) )
 FOLDERBLUE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','foldericonblue.png' ) )
 HELP_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','help.png' ) )
 DESCARGAS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','descargados.png' ) )
 
 def mainlist(params,url,category):
-	xbmc.output("[casttv.py] mainlist")
+	logger.info("[casttv.py] mainlist")
 
 	category = "CastTV - SeriesYonkis - Series VO"
 
@@ -60,19 +63,14 @@ def mainlist(params,url,category):
 	addsimplefolder( CHANNELNAME , "listado" , "Mis Favoritas" , "Series VO - Mis Favoritas","http://www.casttv.com/shows/",STARORANGE_THUMB )
 	addsimplefolder( CHANNELNAME , "search" , "Series VO - Buscar" , "Series VO - Buscar" , "http://www.casttv.com/shows/","http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png" )
 	addsimplefolder( CHANNELNAME , "searchsub" , "Subtítulos.es" , "Subtítulos.es" , "" , "http://www.subtitulos.es/images/subslogo.png" )
+	addsimplefolder( CHANNELNAME , "listado" , "Todos Mis Favoritos" , "Todos Mis Favoritos","",STAR4COLORS_THUMB )
 	addsimplefolder( CHANNELNAME , "ayuda" , "Series VO - Ayuda" , "Ayuda" , "" , HELP_THUMB )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def listado(params,url,category):
-	xbmc.output("[casttv.py] listado")
+	logger.info("[casttv.py] listado")
 
 	title = urllib.unquote_plus( params.get("title") )
 	match = re.search('\s(\w+)$',title)
@@ -81,13 +79,48 @@ def listado(params,url,category):
 	listadoupdate(tipolist,category,False)
 
 def listadoupdate(tipolist,category,listupdate):
-	xbmc.output("[casttv.py] listadoupdate")
+	logger.info("[casttv.py] listadoupdate")
 
-	if tipolist=="Favoritas":
+	listanime = []
+	todostitulo = ""
+
+	if tipolist[0:3]=="Fav":
 		Dialogespera = xbmcgui.DialogProgress()
-		line1 = 'Buscando información de "Mis Favoritas"...'
-		line2 = ''
-  		resultado = Dialogespera.create('pelisalacarta' , line1 , line2 )
+		line1 = 'Buscando información de "'+category+'"...'
+  		resultado = Dialogespera.create('pelisalacarta' , line1 , '' )
+		tipolist = "Favoritas"
+
+	series,nuevos = findlistado(tipolist)
+
+	if category=="Todos Mis Favoritos":
+		listanime,animenuevos = animeforos.findfavoritos("Mis Favoritos","[^<]+","Completo","")
+		todostitulo = "Series VO - "
+
+	if len(series)==0 and len(listanime)==0:
+		return
+
+	if category=="Todos Mis Favoritos":
+		if len(nuevos)>0 or len(animenuevos)>0:
+			addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , STARGREEN2_THUMB )
+		if len(series)>0:
+			additem( CHANNELNAME , category , "----------------------------- CASTTV - SERIESYONKIS -----------------------------" , "" , "" , "" )
+	if len(nuevos)>0:
+		addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritas - Nuevos Episodios" , "-*-"+todostitulo+"Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
+	for serie in series:
+		addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] )
+
+	if category=="Todos Mis Favoritos" and len(listanime)>0:
+		additem( CHANNELNAME , category , "------------------------------------ ANIME - FOROS ------------------------------------" , "" , "" , "" )
+		if len(animenuevos)>0:
+			addsimplefolder( CHANNELNAME , "animeforos.listadonuevos" , "Anime - Mis Favoritos - Nuevos Contenidos" , "-*-Anime - Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
+		for anime in listanime:
+			animeforos.adderdmfolder( CHANNELNAME , "animeforos.listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,False)
+	# ------------------------------------------------------------------------------------
+
+def findlistado(tipolist):
+	logger.info("[casttv.py] findlistado")
 
 	thumbnail=""
 	search = ""
@@ -100,11 +133,11 @@ def listadoupdate(tipolist,category,listupdate):
 	if tipolist <> "Favoritas":
 		listaseries = findcasttv(tipolist,"","","")
 		if len(listaseries)==0:
-			return
+			return series,nuevos
 	else:	
 		if len(listafav)==0:
 			alertnofav()
-			return
+			return series,nuevos
 		else:
 			listaseries=listafav
 			for fav in listafav:
@@ -159,6 +192,7 @@ def listadoupdate(tipolist,category,listupdate):
 					if serie[0]==ctv[0]:
 						encontrado = "-1"
 						serie[1] = ctv[1]
+
 						serie[2] = ctv[2]
 						if ctv[3]=="-1":
 							updated="-1"
@@ -181,23 +215,10 @@ def listadoupdate(tipolist,category,listupdate):
 
 		series.append( [ tipolist , serie[0]+status , serie[2] , thumbnail , serievistos , dataweb ] )
 
-	if len(nuevos)>0:
-		addsimplefolder( CHANNELNAME , "listatres" , "Mis Favoritas - Nuevos Episodios" , "***Nuevos Episodios (Posteriores a [LW])***" , "" , STARGREEN2_THUMB )
-
-	for serie in series:
-		addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate , cacheToDisc=False )
+	return series,nuevos
 
 def findnuevos(serie,url,todos):
-	xbmc.output("[casttv.py] findnuevos")
+	logger.info("[casttv.py] findnuevos")
 	
 	listanuevos = []
 
@@ -236,7 +257,7 @@ def findnuevos(serie,url,todos):
 					if int(episodio[5])<int(visto[3]):		
 						stop="-1"
 						break
-					if int(episodio[5])==int(visto[3]) and episodio[7]<int(visto[4]):
+					if int(episodio[5])==int(visto[3]) and episodio[7]<=int(visto[4]):
 						stop="-1"
 						break
 		if stop=="-1":
@@ -251,12 +272,12 @@ def findnuevos(serie,url,todos):
 		return serievistos,listanuevos
 
 def search(params,url,category):
-	xbmc.output("[casttv.py] search")
+	logger.info("[casttv.py] search")
 
 	searchupdate(-2,"",category,"",False)
 
 def searchupdate(seleccion,tecleado,category,web,listupdate):
-	xbmc.output("[casttv.py] searchupdate")
+	logger.info("[casttv.py] searchupdate")
 
 	thumbnail = ""
 	letras = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -278,6 +299,8 @@ def searchupdate(seleccion,tecleado,category,web,listupdate):
 		listavistos = readvisto("","",CHANNELNAME)
 		if len(listavistos)==0:
 			alertnoresultadosearch()
+			if listupdate==True:
+				EndDirectory(category,"",listupdate,True)
 			return
 		listadoseries = findcasttv("","","","")
 		for visto in listavistos:
@@ -310,6 +333,8 @@ def searchupdate(seleccion,tecleado,category,web,listupdate):
 		#				break
 		if len(listaseries)==0:
 			alertnoresultadosearch()
+			if listupdate==True:
+				EndDirectory(category,"",listupdate,True)
 			return
 		for serie in listaseries:
 			encontrado="0"
@@ -324,6 +349,8 @@ def searchupdate(seleccion,tecleado,category,web,listupdate):
 				listaseries2.append(serie)
 		if len(listaseries2)==0:
 			alertnoresultadosearch()
+			if listupdate==True:
+				EndDirectory(category,"",listupdate,True)
 			return
 		listaseries = listaseries2
 		listaseries.sort()
@@ -428,19 +455,12 @@ def searchupdate(seleccion,tecleado,category,web,listupdate):
 			if sy=="-1" and thumbnail=="":
 				thumbnail=serie[5]
 			addsimplefolder( CHANNELNAME , "listadossearch" , str(seleccion)+";"+tecleado+";"+tipo , titlertdo , urlrtdo , thumbnail )
-
-					
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,True)
+	# ------------------------------------------------------------------------------------
 
 def findcasttv(tipolist,search,titlesearch,dataweb):
-	xbmc.output("[casttv.py] findcasttv")
+	logger.info("[casttv.py] findcasttv")
 
 	url = "http://www.casttv.com/shows/"
 	serieslist = []
@@ -461,7 +481,7 @@ def findcasttv(tipolist,search,titlesearch,dataweb):
 		if tipolist<>"listforsubs" and tipolist<>"S" and tipolist<>"CheckFav":
 			return serieslist
 		elif tipolist=="S":
-			return miseriectv,urlctv,listepisodios,episodioscasttv,seasonlist,thumbnail,plot
+			return miseriectv,urlctv,listepisodios,episodioscasttv,listseasepctv,seasonlist,thumbnail,plot
 		elif tipolist=="CheckFav":
 			return miseriectv,urlctv
 		else:
@@ -535,7 +555,7 @@ def findcasttv(tipolist,search,titlesearch,dataweb):
 			return miseriectv,urlctv,statusctv
 
 def findstatus(serieslist):
-	xbmc.output("[casttv.py] findstatus")
+	logger.info("[casttv.py] findstatus")
 	
 	url = "http://eztv.it/showlist/"
 	try:
@@ -599,7 +619,7 @@ def findstatus(serieslist):
 	return serieslist
 
 def listados(params,url,category):
-	xbmc.output("[casttv.py] listados")
+	logger.info("[casttv.py] listados")
 
 	title = urllib.unquote_plus( params.get("title") )
 	miserievo = title
@@ -608,23 +628,21 @@ def listados(params,url,category):
 	if (match):
 		miserievo = match.group(1)
 		status = match.group(2)
-	tipolist = category
-	category = "Series VO"
-	serievistos0 = urllib.unquote_plus( params.get("serievistos") )
-	if serievistos0=="":
-		serievistos0 = miserievo
-	
-	serievistos,dataweb,respuesta = serieupdate(serievistos0,status,url,"",CHANNELNAME)
+
+	serievistos,dataweb,respuesta = serieupdate(miserievo,status,url,"",CHANNELNAME)
 
 	if respuesta<>1 and respuesta<>2 and respuesta<>3:
-		category = "Series VO - "+miserievo
+		if category=="Favoritas":
+			category="Mis Favoritas - "+miserievo
+		else:
+			category = "Series VO - "+miserievo
 		if dataweb=="":
 			dataweb = urllib.unquote_plus( params.get("dataweb") )
 			serievistos = urllib.unquote_plus( params.get("serievistos") )
 		listadosupdate(miserievo,url,category,serievistos,dataweb,False)
 
 def listadossearch(params,url,category):
-	xbmc.output("[casttv.py] listadossearch")
+	logger.info("[casttv.py] listadossearch")
 
 	title = urllib.unquote_plus( params.get("title") )
 	miserievo = title
@@ -648,7 +666,7 @@ def listadossearch(params,url,category):
 		listadosupdate(miserievo,url,category,serievistos,dataweb,False)
 			
 def listadosupdate(miserievo,url,category,serievistos,dataweb,listupdate):
-	xbmc.output("[casttv.py] listadosupdate")
+	logger.info("[casttv.py] listadosupdate")
 
 	if dataweb=="":
 		serievistos,dataweb,listavistos = checkvistosfav(miserievo,url,"listadosupdate")
@@ -674,6 +692,8 @@ def listadosupdate(miserievo,url,category,serievistos,dataweb,listupdate):
 		if episodio[3] == "0":
 			tipovisto = ""
 			if len(listavistos)>0:
+				#check: audio en otra variable
+				eptitle = re.sub('\s\-\s(?:ES|LT)$','',episodio[0])
 				vistoid = vistoid2
 				if vistoid2<>"":
 					tipovisto="1A"
@@ -681,7 +701,7 @@ def listadosupdate(miserievo,url,category,serievistos,dataweb,listupdate):
 				diferenteOK = "-1"				
 				for visto in listavistos:
 					#por si hay algún duplicado se evita que se duplique la marca [LW]
-					if episodio[0]==visto[1]:
+					if eptitle==visto[1]:
 						diferenteOK = "0"
 					elif episodio[1]=="" or visto[2]=="":
 						if episodio[7]==int(visto[4]) and episodio[7]<>0 and episodio[5]==visto[3] and episodio[5]<>"0":					
@@ -723,18 +743,14 @@ def listadosupdate(miserievo,url,category,serievistos,dataweb,listupdate):
 
 			addnewfolder( CHANNELNAME , "episodiomenu" , category , titulo , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] , miserievo+";"+url , tipovisto )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
 	# Sorting by date útil para invertir el listado (ep 1 1º...) por el momento descartado porque a igualdad de fecha(automáticos) no respeta el orden inicial...
 	# Revisar: probar a crear un índice o agregar fecha a los episodios añadidos "automáticamente"
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,True)
+	# ------------------------------------------------------------------------------------
 
 def checkvistosfav(miserievo,url,tipo):
-	xbmc.output("[casttv.py] checkvistosfav")
+	logger.info("[casttv.py] checkvistosfav")
 
 	listseries = [ miserievo ]
 	listfav=[]
@@ -825,7 +841,7 @@ def checkvistosfav(miserievo,url,tipo):
 			return seriefav
 
 def findtsearch(miserievo,url):
-	xbmc.output("[casttv.py] findtsearch")
+	logger.info("[casttv.py] findtsearch")
 
 	matchini = re.match('^(?:The\s+)?(.)',miserievo.lower(),re.IGNORECASE)
 	iniciosearch = re.sub('(?P<signo>[^\w])','\\\\\g<signo>',matchini.group(1))
@@ -856,7 +872,7 @@ def findtsearch(miserievo,url):
 	return iniciosearch,titlesearch
 
 def findepisodios(url,miserievo,dataweb):
-	xbmc.output("[casttv.py] findepisodios")
+	logger.info("[casttv.py] findepisodios")
 
 	episodioslist = []
 	miserie = ""
@@ -882,10 +898,11 @@ def findepisodios(url,miserievo,dataweb):
 			thumbnail = ""
 			plot = ""
 		if urlsy<>"":
-			listseasepsy,listseasonsy,thumbnailsy,plotsy = findsyep(urlsy,"S","0",0)
+			listseasepsy,listseasonsy,listaudio,thumbnailsy,plotsy = findsyep(urlsy,"S","0",0)
 		else:
 			listseasepsy = []
 			listseasonsy = []
+			listaudio = []
 			thumbnailsy = ""
 			plotsy = ""
 		#if urltv<>"":
@@ -900,14 +917,14 @@ def findepisodios(url,miserievo,dataweb):
 			miseriectv = miserievo
 			urlctv = url
 			#miserietv,urltv,listseaseptv,listseasontv = findtv(iniciosearch,"S",titlesearch)
-			miseriesy,urlsy,listseasepsy,listseasonsy,thumbnailsy,plotsy = findseriesyonkis(miserievo,"S",titlesearch)
+			miseriesy,urlsy,listseasepsy,listseasonsy,listaudio,thumbnailsy,plotsy = findseriesyonkis(miserievo,"S",titlesearch)
 			#dataweb = iniciosearch+";"+titlesearch+";"+miserietv+";"+urltv+";"+miseriesy+";"+urlsy+";"+miseriectv+";"+urlctv
 			dataweb = iniciosearch+";"+titlesearch+";"+miseriesy+";"+urlsy+";"+miseriectv+";"+urlctv
 			episodioslist,episodioscasttv,listseasepctv,seasonlist,thumbnail,plot = findcasttvep(url,miserievo,"S","0",0,dataweb)
 		elif "seriesyonkis" in url:
 			miseriesy = miserievo
 			urlsy = url
-			listseasepsy,listseasonsy,thumbnailsy,plotsy = findsyep(url,"S","0",0)
+			listseasepsy,listseasonsy,listaudio,thumbnailsy,plotsy = findsyep(url,"S","0",0)
 			#miserietv,urltv,listseaseptv,listseasontv = findtv(iniciosearch,"S",titlesearch)
 			#dataweb0 = iniciosearch+";"+titlesearch+";"+miserietv+";"+urltv+";"+miseriesy+";"+urlsy
 			dataweb0 = iniciosearch+";"+titlesearch+";"+miseriesy+";"+urlsy
@@ -918,7 +935,7 @@ def findepisodios(url,miserievo,dataweb):
 		#	urltv = url
 		#	params = {'Serie': miserietv}
 		#	listseaseptv,listseasontv = findtvep(params,url,"","S","0",0)
-		#	miseriesy,urlsy,listseasepsy,listseasonsy,thumbnailsy,plotsy = findseriesyonkis(miserievo,"S",titlesearch)
+		#	miseriesy,urlsy,listseasepsy,listseasonsy,listaudio,thumbnailsy,plotsy = findseriesyonkis(miserievo,"S",titlesearch)
 		#	dataweb0 = iniciosearch+";"+titlesearch+";"+miserietv+";"+urltv+";"+miseriesy+";"+urlsy
 		#	miseriectv,urlctv,episodioslist,episodioscasttv,listseasepctv,seasonlist,thumbnail,plot = findcasttv("S",iniciosearch,titlesearch,dataweb0)
 		#	dataweb = dataweb0+";"+miseriectv+";"+urlctv
@@ -982,7 +999,7 @@ def findepisodios(url,miserievo,dataweb):
 	OKseason="-1"
 	#arriesgado check (rapidez): muy poco probable que teniendo CTV las mismas o más temporadas se necesite completar
 	#if len(seasonlist)<len(listseasontv) or len(seasonlist)<len(listseasonsy):
-	if len(seasonlist)<len(listseasonsy):
+	if len(seasonlist)<=len(listseasonsy):
 		OKseason="0"
 	if OKseason=="0":
 		for seasonsy in listseasonsy:
@@ -1039,9 +1056,15 @@ def findepisodios(url,miserievo,dataweb):
 					epT = "E"+str(n)
 				episodioslist.append([ miserie+" - "+seasonT+epT , "" , date , "0" , dataweb , seasontv[0] , seasonT+epT , n , seasontv[5] , thumbnail , plot , seasontv[2] , seasontv[3] , seasontv[4] ])
 				n=n-1
+	if len(listaudio)>0:
+		for episodio in episodioslist:
+			for audio in listaudio:
+				if audio[0]==episodio[5] and audio[1]==episodio[7]:
+					episodio[0]=episodio[0]+audio[2]
+					break
 
 	episodioslist.sort(key=lambda episodio: episodio[7])
-	episodioslist.sort(key=lambda episodio: episodio[5])
+	episodioslist.sort(key=lambda episodio: int(episodio[5]))
 	episodioslist.sort(key=lambda episodio: episodio[11])
 	episodioslist.sort(key=lambda episodio: episodio[12])
 	episodioslist.sort(key=lambda episodio: episodio[13])
@@ -1049,7 +1072,7 @@ def findepisodios(url,miserievo,dataweb):
 	return episodioslist
 
 def findcasttvep(url,miserievo,todos,seasonsearch,episodiosearch,dataweb):
-	xbmc.output("[casttv.py] findcasttvep")
+	logger.info("[casttv.py] findcasttvep")
 
 	episodioslist = []
 	seasonlist = []
@@ -1062,7 +1085,7 @@ def findcasttvep(url,miserievo,todos,seasonsearch,episodiosearch,dataweb):
 		data = scrapertools.cachePage(url)
 	except:
 		if todos=="S":
-			return episodioslist,episodioscasttv,seasonlist,thumbnail,plot
+			return episodioslist,episodioscasttv,listseasepctv,seasonlist,thumbnail,plot
 		elif todos=="0":
 			return episodioslist,thumbnail,plot
 
@@ -1181,7 +1204,7 @@ def findcasttvep(url,miserievo,todos,seasonsearch,episodiosearch,dataweb):
 		return episodioslist,thumbnail,plot
 
 def findtvep(params,url,category,todos,season,episodio):
-	xbmc.output("[casttv.py] findtvep")
+	logger.info("[casttv.py] findtvep")
 
 	listepisodios = []
 	listepisodio = []
@@ -1238,11 +1261,12 @@ def findtvep(params,url,category,todos,season,episodio):
 		return listepisodio,listseason
 
 def findsyep(url,todos,season,episodio):
-	xbmc.output("[casttv.py] findsyep")
+	logger.info("[casttv.py] findsyep")
 
 	listepisodios = []
 	listepisodio = []
 	listseason = []
+	listaudio = []
 	thumbnail = ""
 	plot = ""
 
@@ -1254,7 +1278,7 @@ def findsyep(url,todos,season,episodio):
 		elif todos=="0":
 			return listepisodio,thumbnail,plot
 		elif todos=="S":
-			return listepisodio,listseason,thumbnail,plot
+			return listepisodio,listseason,listaudio,thumbnail,plot
 
 	# Thumbnail
 	matchthumb = re.search('<img title="[^"]+" src="(http\:\/\/images.seriesyonkis[^"]+)"',data,re.IGNORECASE)
@@ -1269,14 +1293,20 @@ def findsyep(url,todos,season,episodio):
 		plot = re.sub('(?:<.*?>|\n)','',plot)
 
 	# Episodios
-	patronvideos = '<a href="(http://www.seriesyonkis.com/capitulo[^"]+)"[^>]+>([^<]+)</a>'
+	patronvideos = '<a href="(http://www.seriesyonkis.com/capitulo[^"]+)"[^>]+>([^<]+)</a>([^>]*)'
 	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
 	for match in matches:
 		# Titulo
-		title = match[1]		
+		title = match[1]
+		# audio (solo audio español)
+		audio = ""
+		if "spanish.png" in match[2]:
+			audio = " - ES"
+		elif "latino.png" in match[2]:
+			audio = " - LT"
 		# URL
 		url = match[0]	
-		listepisodios.append([ title , url ])
+		listepisodios.append([ title , url , audio ])
 	
 	if todos=="-1":
 		return listepisodios
@@ -1306,10 +1336,12 @@ def findsyep(url,todos,season,episodio):
 					listepisodio[n][6]=listepisodio[n][6]+1
 					if episodioep>listepisodio[n][1]:
 						listepisodio[n][1]=episodioep
-		return listepisodio,listseason,thumbnail,plot
+				if ep[2]<>"":
+					listaudio.append([ seasonep , episodioep , ep[2] ])					
+		return listepisodio,listseason,listaudio,thumbnail,plot
 
 def findsubseries(title,todos,titlesearch,season,episodio):
-	xbmc.output("[casttv.py] findsubseries")
+	logger.info("[casttv.py] findsubseries")
 
 	url = "http://www.subtitulos.es/series"
 	subserieslist=[]
@@ -1376,7 +1408,7 @@ def findsubseries(title,todos,titlesearch,season,episodio):
 		return miseriesub,urlsub,miep,listsubs
 
 def findtv(title,todos,titlesearch):
-	xbmc.output("[casttv.py] findtv")
+	logger.info("[casttv.py] findtv")
 
 	url = ""
 	listseries = []
@@ -1435,12 +1467,13 @@ def findtv(title,todos,titlesearch):
 			return miserietv,urltv
 
 def findseriesyonkis(title,todos,titlesearch):
-	xbmc.output("[casttv.py] findseriesyonkis")
+	logger.info("[casttv.py] findseriesyonkis")
 
 	url = "http://www.seriesyonkis.com/"
 	listseries = []
 	listepisodios = []
 	listseason = []
+	listaudio = []
 	miseriesy = ""
 	urlsy = ""
 	thumbnail = ""
@@ -1453,7 +1486,7 @@ def findseriesyonkis(title,todos,titlesearch):
 		if todos=="-1" or todos=="-1S":
 			return listseries
 		elif todos=="S":
-			return miseriesy,urlsy,listepisodios,listseason,thumbnail,plot
+			return miseriesy,urlsy,listepisodios,listseason,listaudio,thumbnail,plot
 		elif todos=="CheckFav":
 			return miseriesy,urlsy
 
@@ -1467,7 +1500,8 @@ def findseriesyonkis(title,todos,titlesearch):
 	# Extrae el bloque de las series
 	patronvideos = '<h4><a.*?id="series".*?<ul>(.*?)</ul>.*?<h4><a.*?id="miniseries".*?<ul>(.*?)</ul>'
 	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
+	if (matches):
+
 		data = matches.group(1)+matches.group(2)
 
 	# Extrae las entradas (carpetas)
@@ -1495,14 +1529,14 @@ def findseriesyonkis(title,todos,titlesearch):
 				miseriesy = itemencontrado[0][0]
 				urlsy = itemencontrado[0][2]
 				if todos=="S":
-					listepisodios,listseason,thumbnail,plot = findsyep(urlsy,todos,"0",0)
+					listepisodios,listseason,listaudio,thumbnail,plot = findsyep(urlsy,todos,"0",0)
 		if todos=="S":
-			return miseriesy,urlsy,listepisodios,listseason,thumbnail,plot
+			return miseriesy,urlsy,listepisodios,listseason,listaudio,thumbnail,plot
 		elif todos=="CheckFav":
 			return miseriesy,urlsy
 
 def searchgate(listforsearchin,titletosearch,tipo):
-	xbmc.output("[animeforos.py] searchgate")
+	logger.info("[animeforos.py] searchgate")
 	# listforsearchin tiene que tener en la última columna [-1] el campo para búsquedas
 
 	itemencontrado = []
@@ -1587,7 +1621,7 @@ def searchgate(listforsearchin,titletosearch,tipo):
 	return itemencontrado
 
 def listasubep(params,url,category):
-	xbmc.output("[casttv.py] listasubep")
+	logger.info("[casttv.py] listasubep")
 
 	miseriesub = urllib.unquote_plus( params.get("title") )
 	miseriesub = re.sub('\s+\-\s+\[Subtítulos\]','',miseriesub)
@@ -1600,18 +1634,12 @@ def listasubep(params,url,category):
 
 	for subep in listasubep:
 		addsimplefolder( CHANNELNAME , "listasubs" , category , subep[0]+"  -  [Subtítulos]" , subep[1] , "" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def listasubs(params,url,category):
-	xbmc.output("[casttv.py] listasubs")
+	logger.info("[casttv.py] listasubs")
 
 	miep = urllib.unquote_plus( params.get("title") )
 	miep = re.sub('\s+\-\s+\[Subtítulos\]','',miep)
@@ -1686,11 +1714,11 @@ def listasubs(params,url,category):
 		#		tituloserie = miserietv
 		#		urlserie = urltv
 
-		if len(listacasttv)>0 or len(listatv)>0 or len(listasy)>0:
-
-			additem( CHANNELNAME , category , "VIDEOS :" , "" , "" , "" )
-
+		additem( CHANNELNAME , category , "VIDEOS :" , "" , "" , "" )
+		if tituloserie<>"":
 			addseriefolder( CHANNELNAME , "listados" , category , tituloserie , urlserie , "" , "" , "" )
+		else:
+			addsimplefolder( CHANNELNAME , "search" , category , "Buscar Serie" , "" , "" )
 
 		if len(listacasttv)>0:
 			for video in listacasttv:
@@ -1699,7 +1727,7 @@ def listasubs(params,url,category):
 				addnewvideo( CHANNELNAME , "play" , category , video[2] , titlectv+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
 		if len(listasy)>0:
 			for ep in listasy:
-				xbmctools.addnewvideo( CHANNELNAME , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie=miseriesy )
+				xbmctools.addnewvideo( CHANNELNAME , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+ep[2]+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie=miseriesy )
 		#if len(listatv)>0:
 		#	for ep in listatv:
 		#		#se deja la fecha porque no se muestra previamente el ltdo de episodios...
@@ -1709,17 +1737,12 @@ def listasubs(params,url,category):
 		#			plot=ep['plot']
 		#		xbmctools.addnewvideo( CHANNELNAME , "" , category , "" , titletv+" - [TV]" , ep['url'] , thumbnail , plot , Serie=miserietv )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def findsubsep(url,todos,seasonsearch0,episodiosearch):
-	xbmc.output("[casttv.py] findsubsep")
+	logger.info("[casttv.py] findsubsep")
 
 	listseason = []
 	listepisodios = []
@@ -1809,7 +1832,7 @@ def findsubsep(url,todos,seasonsearch0,episodiosearch):
 		return miep,listsubtitulos
 
 def findsubupdates():
-	xbmc.output("[casttv.py] findsubupdates")
+	logger.info("[casttv.py] findsubupdates")
 
 	listsubupdates = []
 
@@ -1837,7 +1860,7 @@ def findsubupdates():
 		except:
 			idioma = match[2]
 		# Tiempo
-		tiempo = formatostring(match[3])
+		tiempo = animeforos.formatostring(match[3])
 		# Tituloupdate
 		tituloupdate = titulo+" - "+idioma+" "+tiempo
 		# URL
@@ -1848,7 +1871,7 @@ def findsubupdates():
 	return listsubupdates
 
 def findsubs(miep,url):
-	xbmc.output("[casttv.py] findsubs")
+	logger.info("[casttv.py] findsubs")
 
 	listsubtitulos = []
 
@@ -1866,7 +1889,7 @@ def findsubs(miep,url):
 		
 	for match in matches:
 		version = match[0]
-		version = formatostring(version)
+		version = animeforos.formatostring(version)
 
 		# para a anexar al nombre del archivo
 		versionf = ""
@@ -1921,7 +1944,7 @@ def findsubs(miep,url):
 	return listsubtitulos
 
 def searchsub(params,url,category):
-	xbmc.output("[casttv.py] searchsub")
+	logger.info("[casttv.py] searchsub")
 
 	listasubseries = []
 	listasubupdates = []
@@ -1975,51 +1998,60 @@ def searchsub(params,url,category):
 		for subupdate in listasubupdates:
 			addsimplefolder( CHANNELNAME , "listasubs" , category+";"+subupdate[0], subupdate[2] , subupdate[1] , "" )
 
-					
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
+def listadonuevos(params,url,category):
+	logger.info("[casttv.py] listadonuevos")
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+	listadonvosupdate(category,False)
 
+def listadonvosupdate(category,listupdate):
+	logger.info("[casttv.py] listadonvosupdate")
 
-def listatres(params,url,category):
-	xbmc.output("[casttv.py] listatres")
+	animenuevos=[]
+	tipo = 2
 
-	listatresupdate(category,False)
+	if "Todos" in category:
+		animenuevos = animeforos.findlistadonvos(category)
+		tipo = 4
 
-def listatresupdate(category,listupdate):
-	xbmc.output("[casttv.py] listatresupdate")
+	nuevos = findlistadonvos()
 
-	listafav = []
+	if len(nuevos)==0 and len(animenuevos)==0:
+		alertnoepisodios(tipo)
+
+	if tipo==4 and len(nuevos)>0:
+		additem( CHANNELNAME , category , "----------------------------- CASTTV - SERIESYONKIS -----------------------------" , "" , "" , "" )
+	for item in nuevos:
+		addnewfolder( CHANNELNAME , "episodiomenu" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , item[10] , ";" , "New" )
+
+	if len(animenuevos)>0:
+		additem( CHANNELNAME , category , "------------------------------------ ANIME - FOROS ------------------------------------" , "" , "" , "" )
+		for item in animenuevos:
+			animeforos.addvideofolder( CHANNELNAME , "animeforos.episodiomenu" , item[0] , item[1] , item[2] , item[3] , "" , "" )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",listupdate,True)
+	# ------------------------------------------------------------------------------------
+
+def findlistadonvos():
+	logger.info("[casttv.py] findlistadonvos")
+
 	listafav = readfav("","","-1",CHANNELNAME)
 	nuevos = []
 
 	for serie in listafav:
 		serievistos,listanuevos=findnuevos(serie[0],serie[2],"-1")
 		if len(listanuevos)>0:
-			nuevos.extend(listanuevos)
+			listanuevos.sort()
 			for episodio in listanuevos:
 				if episodio[3] == "0":
-					addnewfolder( CHANNELNAME , "episodiomenu" , category , episodio[0] , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] , ";" , "New" )
-
-	if len(nuevos)==0:
-		alertnoepisodios(2)
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate )
+					nuevos.append([ episodio[0] , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] ])
+	return nuevos
 
 def detaildos(params,url,category):
-	xbmc.output("[casttv.py] detaildos")
+	logger.info("[casttv.py] detaildos")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -2040,6 +2072,7 @@ def detaildos(params,url,category):
 	titleshort = title
 	if date<>"":
 		titleshort = re.sub('\s\-\s\d+\/\d+\/\d+','',titleshort)
+	titleshort = re.sub('\s\-\s(?:ES|LT)','',titleshort)
 	titleshort = re.sub('\s+\-\s+',' - ',titleshort)
 	visto = ""
 	matchv = re.search('\[(?:LW|NW|UW|W)\]',titleshort)
@@ -2088,7 +2121,7 @@ def detaildos(params,url,category):
 	#	titletv = re.sub('\s+\([^\)]+\)$','',ep['title'])
 	#	xbmctools.addnewvideo( CHANNELNAME , "" , category , "" , titletv+visto+" - [TV]" , ep['url'] , thumbnail , plot , Serie=miserietv )
 	for ep in listasy:
-		xbmctools.addnewvideo( CHANNELNAME , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+visto+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie=miseriesy )
+		xbmctools.addnewvideo( CHANNELNAME , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+ep[2]+visto+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie=miseriesy )
 
 	# ------------------------------------------------------------------------------------
 	# Añade los enlaces a los Subtítulos
@@ -2103,18 +2136,11 @@ def detaildos(params,url,category):
 		if miseriesub<>"":
 			addsimplefolder( CHANNELNAME , "listasubep" , "Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
 	# ------------------------------------------------------------------------------------
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def findvideoscasttv(url):
-	xbmc.output("[casttv.py] findvideoscasttv")
+	logger.info("[casttv.py] findvideoscasttv")
 
 	listacasttv = []
 	listactmirrors = []
@@ -2147,14 +2173,14 @@ def findvideoscasttv(url):
 	return listacasttv,listactmirrors
 
 def play(params,url,category):
-	xbmc.output("[casttv.py] play")
+	logger.info("[casttv.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]	
-	xbmc.output("[casttv.py] thumbnail="+thumbnail)
-	xbmc.output("[casttv.py] server="+server)
+	logger.info("[casttv.py] thumbnail="+thumbnail)
+	logger.info("[casttv.py] server="+server)
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
@@ -2165,7 +2191,7 @@ def play(params,url,category):
 		pass
 
 def serieupdate(miserievo,status,url,tipocontenido,channel):
-	xbmc.output("[casttv.py] serieupdate")
+	logger.info("[casttv.py] serieupdate")
 
 	urlsearch0 = ""
 	if channel=="animeforos":
@@ -2215,7 +2241,7 @@ def serieupdate(miserievo,status,url,tipocontenido,channel):
 		return respuesta
 
 def seriemenu(tipofav,tiponuevos,tipocontenido,seriefav,channel):
-	xbmc.output("[casttv.py] seriemenu")
+	logger.info("[casttv.py] seriemenu")
 
 	misfavtext="Mis Favoritas"
 	anexofavtext=""
@@ -2249,7 +2275,7 @@ def seriemenu(tipofav,tiponuevos,tipocontenido,seriefav,channel):
 	return seleccion
 
 def episodiomenu(params,url,category):
-	xbmc.output("[casttv.py] episodiomenu")
+	logger.info("[casttv.py] episodiomenu")
 
 	title = urllib.unquote_plus( params.get("title") )
 	tipovisto = urllib.unquote_plus( params.get("tipovisto") )
@@ -2265,9 +2291,10 @@ def episodiomenu(params,url,category):
 	episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,season,episodio,dataweb,tipovisto,CHANNELNAME,"-1")
 
 def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,season,episodio,dataweb,tipovisto,channel,urlOK):
-	xbmc.output("[casttv.py] episodiomenugnral")
+	logger.info("[casttv.py] episodiomenugnral")
 
 	title0 = re.sub('\s+\-\s+\[U?L?N?W\]$','',title)
+	title0 = re.sub('\s\-\s(?:ES|LT)$','',title0)
 
 	if tipovisto=="1": textipo="Último Visto y anteriores [LW]/[W]"
 	elif tipovisto=="2": textipo="Último Visto [LW]"
@@ -2389,12 +2416,12 @@ def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,se
 		return seleccion
 
 	if tipovisto=="New":
-		listatresupdate(category,True)
+		listadonvosupdate(category,True)
 	else:
 		listadosupdate(serieback,urlback,category,serievistos,dataweb,True)
 
 def readfav(seriesearch0,urlsearch0,tiponuevos,channel):
-	xbmc.output("[casttv.py] readfav")
+	logger.info("[casttv.py] readfav")
 
 	if seriesearch0<>"":	
 		seriesearch = re.sub('(?P<signo>\(|\)|\'|\"|\[|\]|\.|\?|\+)','\\\\\g<signo>',seriesearch0)
@@ -2440,7 +2467,7 @@ def readfav(seriesearch0,urlsearch0,tiponuevos,channel):
 	return favlist
 
 def upgradefav(serie,status,url,seguirnuevos,tipo,channel):
-	xbmc.output("[casttv.py] upgradefav")
+	logger.info("[casttv.py] upgradefav")
 
 	#el status se podría quitar, se guarda sólo por mantener el formato...
 
@@ -2475,7 +2502,7 @@ def upgradefav(serie,status,url,seguirnuevos,tipo,channel):
 	favfile.close()
 
 def readvisto(serie,tipo,channel):
-	xbmc.output("[casttv.py] readvisto")
+	logger.info("[casttv.py] readvisto")
 
 	if serie<>"":	
 		seriesearch = re.sub('(?P<signo>\(|\)|\'|\"|\[|\]|\.|\?|\+)','\\\\\g<signo>',serie)
@@ -2522,7 +2549,7 @@ def readvisto(serie,tipo,channel):
 	return vistolist
 
 def upgradevisto(serie,titulo,url,season,episodio,tipo,channel,urlOK):
-	xbmc.output("[casttv.py] upgradevisto")
+	logger.info("[casttv.py] upgradevisto")
 
 	#urlOK añadido para Mcanime en Anime(Foros) por los enlaces que genéricos sin títulos...  
 	#urlOK indica si se usa la url ("0") o no ("-1") para identificar los episodios vistos 
@@ -2667,6 +2694,7 @@ def alertcontinuar(tipo,tipof):
 
 def alertcontinuarT():
 	advertencia = xbmcgui.Dialog()
+
 	linea1 = "Se desmarcarán todos los episodios."
 	linea2 = "¿Desea continuar?"
 	resultado = advertencia.yesno('pelisalacarta' , linea1 , linea2 )
@@ -2685,7 +2713,7 @@ def alertnocompletado(porcentaje):
 	return resultado
 
 def subtitulo(params,url,category):
-	xbmc.output("[casttv.py] subtitulo")
+	logger.info("[casttv.py] subtitulo")
 
 	misub = urllib.unquote_plus( params.get("title") )
 	matchC = re.search('\(([^\)]+)Completado\)',misub)
@@ -2797,6 +2825,8 @@ def alertnoepisodios(tipo):
 		resultado = advertencia.ok('pelisalacarta' , 'No se han encontrado Nuevos Episodios.' , '')
 	elif tipo==3:
 		resultado = advertencia.ok('pelisalacarta' , 'No se han encontrado Subtítulos.' , '')
+	elif tipo==4:
+		resultado = advertencia.ok('pelisalacarta' , 'No se han encontrado Nuevos Contenidos.' , '')
 
 def alertservidor(url):
 	advertencia = xbmcgui.Dialog()
@@ -2811,43 +2841,43 @@ def alertnoresultadosearch():
 
 def alertnofav():
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('pelisalacarta' , 'No se han añadido Series a "Mis Favoritas".' , '')
+	resultado = advertencia.ok('CastTV' , 'No se han añadido Series a "Mis Favoritas".' , '')
 
 def addsimplefolder( canal , accion , category , title , url , thumbnail ):
-	xbmc.output("[casttv.py] addsimplefolder")
+	logger.info("[casttv.py] addsimplefolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addseriefolder( canal , accion , category , title , url , thumbnail , serievistos , dataweb ):
-	xbmc.output("[casttv.py] addsimplefolder")
+	logger.info("[casttv.py] addsimplefolder")
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&serievistos=%s&dataweb=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( serievistos ) , urllib.quote_plus( dataweb ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , date , dataweb , seasontvid , seasontv , serievistos , web , episodiotv , databack , tipovisto ):
-	xbmc.output("[casttv.py] addnewfolder")
+	logger.info("[casttv.py] addnewfolder")
 	listitem= xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( type="Video", infoLabels={ "Title" : title, "Plot" : plot, "Date" : date } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&date=%s&dataweb=%s&seasontvid=%s&seasontv=%s&serievistos=%s&web=%s&episodiotv=%s&databack=%s&tipovisto=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( date ) , urllib.quote_plus( dataweb ) , urllib.quote_plus( seasontvid ) , urllib.quote_plus( seasontv ) , urllib.quote_plus( serievistos ) , urllib.quote_plus( web ) , episodiotv , urllib.quote_plus( databack ) , urllib.quote_plus( tipovisto ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
-	xbmc.output('[casttv.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
+	logger.info('[casttv.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def additem( canal , category , title , url , thumbnail, plot ):
-	xbmc.output('[casttv.py] additem')
+	logger.info('[casttv.py] additem')
 	listitem = xbmcgui.ListItem( title, iconImage=HD_THUMB, thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def ayuda(params,url,category):
-	xbmc.output("[casttv.py] ayuda")
+	logger.info("[casttv.py] ayuda")
 
 	additem( CHANNELNAME , category , "--------------------------------------------- Info ----------------------------------------------" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "Teclado: búsqueda alternativa en CastTV y SeriesYonkis (hasta encontrar resultados)" , "" , "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png" , "" )
@@ -2856,6 +2886,7 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios)" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "ES/LT: Existe enlace de vídeo con Audio Español/Latino" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Actualizadas [excepto Aptdo Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Favoritas" , "" , STARORANGE_THUMB , "" )
 	additem( CHANNELNAME , category , "(1) Favoritas Actualizadas [excepto Aptdo Actualizaciones]" , "" , STARBLUE_THUMB , "" )
@@ -2866,15 +2897,9 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritas]" , "" , STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Subtítulo - [Descargar]" , "" , DESCARGAS_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,True)
+	# ------------------------------------------------------------------------------------
 
 def ftitlectvsearch(title):
 	title = re.sub('^All In$','(Korean) All In',title)
@@ -3033,6 +3058,7 @@ def ftitlesysearch(title):
 			title = re.sub('^La Clave Da Vinci$','Da Vincis inquest',title)
 			title = re.sub('^La dimensi..n desconocida$','The Twilight Zone',title)
 			title = re.sub('^La doctora Quinn$','Dr Quinn, Medicine Woman',title)
+			title = re.sub('^la enfermera jefe$','Hawthorne',title.lower())
 			title = re.sub('^La Familia Monster$','The Munsters',title)
 			title = re.sub('^La fuga de Logan$','Logans Run',title)
 			title = re.sub('^La Habitacion Perdida$','The Lost Room',title)
@@ -3056,11 +3082,13 @@ def ftitlesysearch(title):
 			title = re.sub('^Life on Mars \(UK\)$','Life on Mars UK',title)
 			title = re.sub('^Loco por ti$','Mad About You',title)
 			title = re.sub('^Locos por la ciencia$','Wicked Science',title)
+			title = re.sub('^Londres\: Distrito criminal$','Law & Order: UK',title)
 			title = re.sub('^Los 4400$','4400',title)
 			title = re.sub('^Los Colby$','The Colby',title)
 			title = re.sub('^Los Hijos De Dune$','Children of Dune',title)
 			title = re.sub('^Los J..venes Jinetes$','The Young Riders',title)
 			title = re.sub('^Los Magos de Waverly Place$','Wizards of Waverly Place',title)
+			title = re.sub('^Los Soprano$','Sopranos',title)
 			title = re.sub('^Lost \(Perdidos\)$','Lost 2004 (Perdidos)',title)
 	elif inicial=="M":
 		title = re.sub('^Matrimonio Con Hijos \(USA\)$','Married with Children',title)
@@ -3130,39 +3158,9 @@ def ftitlesysearch(title):
 	title = re.sub('[^\w\(\)]+','',title)
 	return title
 
-def formatostring(cadena):
-	#cadena = cadena.replace('\n' , '')
-	cadena = re.sub('(?:&amp;|&#38;)','&',cadena)
-        cadena = cadena.replace('&#33;' , '!')
-	cadena = cadena.replace('&Aacute;' , 'Á')
-	cadena = cadena.replace('&Eacute;' , 'É')
-	cadena = cadena.replace('&Iacute;' , 'Í')
-	cadena = cadena.replace('&Oacute;' , 'Ó')
-	cadena = cadena.replace('&Uacute;' , 'Ú')
-	cadena = re.sub('(?:&ntilde;|&#241;)','ñ',cadena)
-	cadena = cadena.replace('&Ntilde;' , 'Ñ')
-	cadena = cadena.replace('&aacute;' , 'á')
-	cadena = cadena.replace('&#225;' , 'á')
-	cadena = cadena.replace('&eacute;' , 'é')
-	cadena = cadena.replace('&#233;' , 'é')
-	cadena = cadena.replace('&iacute;' , 'í')
-	cadena = cadena.replace('&#237;' , 'í')
-	cadena = cadena.replace('&oacute;' , 'ó')
-	cadena = cadena.replace('&#243;' , 'ó')
-	cadena = cadena.replace('&#333;' , 'o')
-	cadena = cadena.replace('&uacute;' , 'ú')
-	cadena = cadena.replace('&#250;' , 'ú')
-	cadena = re.sub('(?:&iexcl;|&#161;)','¡',cadena)
-	cadena = re.sub('(?:&iquest;|&#191;)','¿',cadena)
-	cadena = re.sub('&#63;','\?',cadena)
-	cadena = cadena.replace('&ordf;' , 'ª')
-	cadena = cadena.replace('&quot;' , '"')
-	cadena = cadena.replace('&nbsp;' , ' ')
-	# cadena = cadena.replace('&hellip;' , '...')
-	cadena = re.sub('(?:&#39;|&#039;)','\'',cadena)
-	cadena = re.sub('&sup2;','^2',cadena)
-	cadena = re.sub('&middot;','-',cadena)
-	cadena = re.sub('&frac12;','1/2',cadena)
-	cadena = re.sub('&#\d{3};','-',cadena)
-	cadena = re.sub('&#\d{4};','',cadena)
-	return cadena
+def EndDirectory(category,sortmethod,listupdate,cachedisc):
+	if sortmethod=="":
+		sortmethod=xbmcplugin.SORT_METHOD_NONE
+	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=sortmethod)
+	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True , updateListing=listupdate , cacheToDisc=cachedisc  )

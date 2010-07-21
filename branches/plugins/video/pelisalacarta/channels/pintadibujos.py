@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import string
 import config
+import logger
 
 CHANNELNAME = "pintadibujos"
 
@@ -27,12 +28,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[pintadibujos.py] init")
+logger.info("[pintadibujos.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[pintadibujos.py] mainlist")
+	logger.info("[pintadibujos.py] mainlist")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
@@ -57,14 +58,14 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def movielist(params,url,category):
-	xbmc.output("[pintadibujos.py] mainlist")
+	logger.info("[pintadibujos.py] mainlist")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<td><a href="([^"]+)" target="_blank"><img SRC="([^"]+)"(| ALT=".*?") BORDER'
@@ -94,9 +95,9 @@ def movielist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
@@ -111,7 +112,7 @@ def movielist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[pintadibujos.py] detail")
+	logger.info("[pintadibujos.py] detail")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
@@ -121,7 +122,7 @@ def detail(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# ------------------------------------------------------------------------------------
 	# Busca los enlaces a los videos
@@ -142,7 +143,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[pintadibujos.py] play")
+	logger.info("[pintadibujos.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

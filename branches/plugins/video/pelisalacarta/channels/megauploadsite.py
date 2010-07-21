@@ -15,6 +15,7 @@ import megavideo
 import servertools
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "megauploadsite"
 
@@ -24,12 +25,12 @@ try:
 except:
 	pluginhandle = ""
 
-xbmc.output("[megaupload.py] init")
+logger.info("[megaupload.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[megaupload.py] mainlist")
+	logger.info("[megaupload.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "search" , CHANNELNAME , "Introduce el código del fichero de vídeo" , "" , "", "" )
@@ -43,7 +44,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[megaupload.py] list")
+	logger.info("[megaupload.py] list")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -55,7 +56,7 @@ def search(params,url,category):
 			list(params,tecleado,category)
 
 def list(params,url,category):
-	xbmc.output("[megaupload.py] list")
+	logger.info("[megaupload.py] list")
 
 	xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megaupload" , "Ver el vídeo [Megaupload]" , url , "" , "" )
 
@@ -65,7 +66,7 @@ def list(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[megaupload.py] list")
+	logger.info("[megaupload.py] list")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )

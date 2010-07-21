@@ -16,6 +16,7 @@ import servertools
 import binascii
 import xbmctools
 import config
+import logger
 
 CHANNELNAME = "pelis24"
 
@@ -25,12 +26,12 @@ try:
 except:
 	pluginhandle = ""
 
-xbmc.output("[pelis24.py] init")
+logger.info("[pelis24.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[pelis24.py] mainlist")
+	logger.info("[pelis24.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "list", category , "Peliculas","http://pelis24.com/peliculas/","","")
@@ -51,11 +52,11 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def list(params,url,category):
-	xbmc.output("[pelis24.py] list")
+	logger.info("[pelis24.py] list")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	'''
@@ -100,7 +101,7 @@ def list(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -135,7 +136,9 @@ def list(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -160,7 +163,7 @@ def list(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+			logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "list" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
@@ -175,14 +178,14 @@ def list(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[pelis24.py] detail")
+	logger.info("[pelis24.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Busca los enlaces a los mirrors, o a los capítulos de las series...
 	patronvideos  = '<a href="([^"]+)">Sigu'
@@ -195,7 +198,7 @@ def detail(params,url,category):
 	if len(matches)>0:
 		if ("xml" in matches[0]):
 			data2 = scrapertools.cachePage(matches[0])
-			xbmc.output("data2="+data2)
+			logger.info("data2="+data2)
 			patronvideos  = '<track>[^<]+'
 			patronvideos += '<creator>([^<]+)</creator>[^<]+'
 			patronvideos += '<location>([^<]+)</location>.*?'
@@ -212,7 +215,7 @@ def detail(params,url,category):
 				scrapedurl = match[1].strip()
 				scrapedthumbnail = thumbnail
 				scrapedplot = plot
-				if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+				if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 				# Añade al listado de XBMC
 				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
@@ -251,7 +254,7 @@ def detail(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[pelis24.py] play")
+	logger.info("[pelis24.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
