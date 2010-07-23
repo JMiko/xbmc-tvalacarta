@@ -14,7 +14,7 @@ import scrapertools
 import unpackerjs2
 import config
 
-COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
 def geturl(urlvideo):
 	xbmc.output("[zshare.py] url="+urlvideo)

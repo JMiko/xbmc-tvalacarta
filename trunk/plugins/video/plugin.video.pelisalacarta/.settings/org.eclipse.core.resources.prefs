@@ -1,3 +1,18 @@
-#Fri Jul 23 20:16:56 BST 2010
+#Fri Jul 23 22:06:58 BST 2010
 eclipse.preferences.version=1
+encoding//channels/animeforos.py=iso-8859-1
+encoding//channels/descargacineclasico.py=iso-8859-1
+encoding//resources/lib/config.py=iso-8859-1
+encoding//servers/cinshare.py=iso-8859-1
+encoding//servers/divxden.py=iso-8859-1
+encoding//servers/divxlink.py=iso-8859-1
+encoding//servers/gigabyteupload.py=iso-8859-1
+encoding//servers/megavideo.py=iso-8859-1
+encoding//servers/metadivx.py=iso-8859-1
+encoding//servers/movshare.py=iso-8859-1
+encoding//servers/vreel.py=iso-8859-1
+encoding//servers/zshare.py=iso-8859-1
 encoding/<project>=ISO-8859-1
+encoding/default.py=iso-8859-1
+encoding/pelisalacarta.py=iso-8859-1
+encoding/updater.py=iso-8859-1

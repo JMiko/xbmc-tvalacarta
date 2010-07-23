@@ -17,10 +17,12 @@ import xbmcgui
 import config
 
 # Esto funciona en todos, excepto plex y linux
-#COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+#COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
 # Esto funciona en plex!
-COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
+#COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
+
 print "Cookiefile="+COOKIEFILE
 
 #Python Video Decryption and resolving routines.

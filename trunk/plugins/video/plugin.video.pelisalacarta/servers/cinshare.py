@@ -15,7 +15,7 @@ import unpackerjs
 import socket
 import config
 
-COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
 def geturl(urlvideo):
 	xbmc.output("[cinshare.py] url="+urlvideo)
