@@ -8,17 +8,22 @@
 import xbmc
 import xbmcplugin
 import sys
+import os
+
 try:
 	import xbmcaddon
 	DHARMA = True
 except ImportError:
 	DHARMA = False
 
+PLUGIN_ID = "plugin.video.pelisalacarta"
+if DHARMA:
+	__settings__ = xbmcaddon.Addon(id=PLUGIN_ID)
+
 def openSettings():
 	
 	# Nuevo XBMC
 	if DHARMA:
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
 		__settings__.openSettings()
 	# Antiguo XBMC
 	else:
@@ -27,7 +32,6 @@ def openSettings():
 def getSetting(name):
 	# Nuevo XBMC
 	if DHARMA:
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
 		return __settings__.getSetting( name )
 	# Antiguo XBMC
 	else:
@@ -38,7 +42,6 @@ def getSetting(name):
 def setSetting(name,value):
 	# Nuevo XBMC
 	if DHARMA:
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
 		__settings__.setSetting( name,value ) # this will return "foo" setting value
 	# Antiguo XBMC
 	else:
@@ -47,10 +50,27 @@ def setSetting(name,value):
 def getLocalizedString(code):
 	# Nuevo XBMC
 	if DHARMA:
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
-		__language__ = __settings__.getLocalizedString
 		__language__ = __settings__.getLocalizedString
 		return __language__(code)
 	# Antiguo XBMC
 	else:
 		return "no implementado"
+	
+def getPluginId():
+	if DHARMA:
+		return PLUGIN_ID
+	else:
+		return "pelisalacarta"
+	
+def getLibraryPath():
+	if DHARMA:
+		LIBRARY_PATH = xbmc.translatePath("special://profile/addon_data/%s/library" % getPluginId())
+	else:
+		#Este directorio no es el correcto. 
+		#Debería ser special://profile/addon_data/<plugin_id>
+		#Pero mantenemos el antiguo por razones de compatibilidad preDHARMA
+		LIBRARY_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'library' ) )
+		
+	return LIBRARY_PATH
+		
+	
