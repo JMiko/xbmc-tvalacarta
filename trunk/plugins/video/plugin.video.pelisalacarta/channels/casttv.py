@@ -53,6 +53,24 @@ FOLDERBLUE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 
 HELP_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','help.png' ) )
 DESCARGAS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','descargados.png' ) )
 
+#JUR: Tralado esto al inicio del módulo para evitar hacerlo 4 veces dentro.
+#Esper que te parezca bien.
+BOOKMARK_PATH = os.path.join( config.DATA_PATH, 'bookmarks' )
+VISTO_PATH = os.path.join( BOOKMARK_PATH, 'vistos' )
+
+# Crea el directorio si no existe
+#try:
+#	os.mkdir(VISTO_PATH)
+#except:
+#	pass
+if not os.path.exists(BOOKMARK_PATH):
+	xbmc.output("[casttv.py] Path de bookmarks no existe, se crea: "+BOOKMARK_PATH)
+	os.mkdir(BOOKMARK_PATH)
+if not os.path.exists(VISTO_PATH):
+	xbmc.output("[casttv.py] Path de vistos no existe, se crea: "+VISTO_PATH)
+	os.mkdir(VISTO_PATH)
+
+
 def mainlist(params,url,category):
 	logger.info("[casttv.py] mainlist")
 
@@ -2436,14 +2454,6 @@ def readfav(seriesearch0,urlsearch0,tiponuevos,channel):
 	if tiponuevos=="":
 		tiponuevos = "[^;]+"
 
-	VISTO_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks/vistos' ) )
-
-	# Crea el directorio si no existe
-	try:
-		os.mkdir(VISTO_PATH)
-	except:
-		pass
-
 	favlist = []
 	filename = channel+'fav.txt'
 	fullfilename = os.path.join(VISTO_PATH,filename)
@@ -2471,7 +2481,6 @@ def upgradefav(serie,status,url,seguirnuevos,tipo,channel):
 
 	#el status se podría quitar, se guarda sólo por mantener el formato...
 
-	VISTO_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks/vistos' ) )
 	favlist = []
 	filename = channel+'fav.txt'
 	fullfilename = os.path.join(VISTO_PATH,filename)
@@ -2514,14 +2523,7 @@ def readvisto(serie,tipo,channel):
 	else:
 		tipos="[^;]+"
 
-	VISTO_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks/vistos' ) )
 
-	# Crea el directorio de visto si no existe
-	try:
-		os.mkdir(VISTO_PATH)
-	except:
-		pass
-	
 	encontrado = "0"
 	vistolist = []
 	filename = channel+'.txt'
@@ -2554,7 +2556,6 @@ def upgradevisto(serie,titulo,url,season,episodio,tipo,channel,urlOK):
 	#urlOK añadido para Mcanime en Anime(Foros) por los enlaces que genéricos sin títulos...  
 	#urlOK indica si se usa la url ("0") o no ("-1") para identificar los episodios vistos 
 
-	VISTO_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks/vistos' ) )
 	vistolist = []
 	encontrado = "0"
 	detener = "0"
