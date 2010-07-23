@@ -64,10 +64,10 @@ VISTO_PATH = os.path.join( BOOKMARK_PATH, 'vistos' )
 #except:
 #	pass
 if not os.path.exists(BOOKMARK_PATH):
-	xbmc.output("[casttv.py] Path de bookmarks no existe, se crea: "+BOOKMARK_PATH)
+	logger.info("[casttv.py] Path de bookmarks no existe, se crea: "+BOOKMARK_PATH)
 	os.mkdir(BOOKMARK_PATH)
 if not os.path.exists(VISTO_PATH):
-	xbmc.output("[casttv.py] Path de vistos no existe, se crea: "+VISTO_PATH)
+	logger.info("[casttv.py] Path de vistos no existe, se crea: "+VISTO_PATH)
 	os.mkdir(VISTO_PATH)
 
 
@@ -2786,7 +2786,7 @@ def subtitulo(params,url,category):
 	resultado = Dialogfin.create('pelisalacarta' , 'El Subtítulo descargado se activará' , 'automáticamente en la próxima reproducción' )
 	if os.path.exists(fullfilename): # Añadido por bandavi
 		from shutil import copy2
-		copy2(fullfilename,xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' )))
+		copy2(fullfilename,os.path.join( config.DATA_PATH, 'subtitulo.srt' ))
 		try:
 			xbmcplugin.setSetting("subtitulo", "true")
 		except:
