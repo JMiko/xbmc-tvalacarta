@@ -45,7 +45,7 @@ def mainlist(params,url,category):
 
 	for match in matches:
 		scrapedtitle = match[1]
-		scrapedurl = "http://www.barcelonatv.cat/alacarta/cerca.php?cercaProgrames=%s&txt_fInici=01/01/2008&txt_fFin=31/12/2010&Cercar_x=17&Cercar_y=18" % match[0]
+		scrapedurl = "http://www.barcelonatv.cat/alacarta/cerca.php?cercaProgrames=%s&txt_fInici=01/01/2004&txt_fFin=31/12/2035&Cercar_x=17&Cercar_y=18" % match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
 
@@ -78,7 +78,7 @@ def videolist(params,url,category):
 	#xbmc.output(data)
 
 	# --------------------------------------------------------
-	# Extrae los programas
+	# Extrae los videos
 	# --------------------------------------------------------
 	patron  = '<li>[^<]+'
 	patron += '<div class="pro"><strong>[^<]+</strong>[^<]+'
@@ -112,23 +112,32 @@ def videolist(params,url,category):
 		except:
 			pass
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
 		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
+	# --------------------------------------------------------
+	# Extrae el enlace a la siguiente página
+	# --------------------------------------------------------
+	patron  = "<a href='([^']+)'><img src='([^']+)' alt='Mes' title='Mes' id='botomes' /></a>"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = "Página siguiente"
+		scrapedurl = urlparse.urljoin(url,match[0])
+		scrapedthumbnail = urlparse.urljoin(url,match[1])
+		scrapedplot = ""
+		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
