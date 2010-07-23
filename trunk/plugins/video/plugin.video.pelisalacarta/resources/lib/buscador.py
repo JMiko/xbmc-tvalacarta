@@ -30,7 +30,7 @@ import tutvsite
 import tumejortv
 import config
 import cinetube
-
+import logger
 from item import Item
 
 CHANNELNAME = "buscador"
@@ -42,12 +42,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[buscador.py] init")
+logger.info("[buscador.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[buscador.py] mainlist")
+	logger.info("[buscador.py] mainlist")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
