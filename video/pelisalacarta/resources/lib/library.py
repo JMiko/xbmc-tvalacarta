@@ -38,8 +38,7 @@ xbmc.output("[library.py] init")
 
 DEBUG = True
 
-#LIBRARY_PATH
-LIBRARY_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'library' ) )
+LIBRARY_PATH = config.getLibraryPath()
 if not os.path.exists(LIBRARY_PATH):
 	xbmc.output("[library.py] Library path doesn't exist:"+LIBRARY_PATH)
 	os.mkdir(LIBRARY_PATH)
