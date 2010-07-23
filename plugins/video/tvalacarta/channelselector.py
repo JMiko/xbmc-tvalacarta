@@ -1,12 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 
-import urlparse,urllib2,urllib,re
+import urllib
 import os
 import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
 
 xbmc.output("[channelselector.py] init")
 
@@ -49,6 +48,10 @@ def listchannels(params,url,category):
 	addfolder("TVE","rtve","mainlist")
 	addfolder("TVE Programas","rtveprogramas","mainlist")
 	addfolder("TVE Mediateca","rtvemediateca","mainlist")
+	#addfolder("TV Azteca","tva","mainlist")
+	addfolder("Berria TB","berriatb","mainlist")
+	addfolder("Earth TV","earthtv","mainlist")
+	addfolder("Euronews","euronews","mainlist")
 	addfolder("Comunidad Valenciana","rtvv","mainlist")
 	#addfolder("Terra TV","terratv","mainlist")
 	addfolder("Turbonick","turbonick","mainlist")

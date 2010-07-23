@@ -356,8 +356,6 @@ def getLocationHeaderFromResponse(url):
 	if url=='':
 		return None
 
-	location = None
-	import httplib
 	parsedurl = urlparse.urlparse(url)
 	print "parsedurl=",parsedurl
 
