@@ -8,48 +8,69 @@
 import xbmc
 import xbmcplugin
 import sys
+import os
+
+try:
+	import xbmcaddon
+	DHARMA = True
+except ImportError:
+	DHARMA = False
+
+PLUGIN_ID = "plugin.video.pelisalacarta"
+if DHARMA:
+	__settings__ = xbmcaddon.Addon(id=PLUGIN_ID)
 
 def openSettings():
 	
 	# Nuevo XBMC
-	try:
-		import xbmcaddon
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
+	if DHARMA:
 		__settings__.openSettings()
 	# Antiguo XBMC
-	except ImportError:
+	else:
 		xbmcplugin.openSettings( sys.argv[ 0 ] )
 
 def getSetting(name):
 	# Nuevo XBMC
-	try:
-		import xbmcaddon
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
+	if DHARMA:
 		return __settings__.getSetting( name )
 	# Antiguo XBMC
-	except ImportError:
+	else:
 		value = xbmcplugin.getSetting(name)
 		xbmc.output("[config.py] antiguo getSetting(%s)=%s" % (name,value))
 		return value
 
 def setSetting(name,value):
 	# Nuevo XBMC
-	try:
-		import xbmcaddon
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
+	if DHARMA:
 		__settings__.setSetting( name,value ) # this will return "foo" setting value
 	# Antiguo XBMC
-	except ImportError:
+	else:
 		xbmcplugin.setSetting("name",value)
 
 def getLocalizedString(code):
 	# Nuevo XBMC
-	try:
-		import xbmcaddon
-		__settings__ = xbmcaddon.Addon(id="plugin.video.pelisalacarta")
-		__language__ = __settings__.getLocalizedString
+	if DHARMA:
 		__language__ = __settings__.getLocalizedString
 		return __language__(code)
 	# Antiguo XBMC
-	except ImportError:
+	else:
 		return "no implementado"
+	
+def getPluginId():
+	if DHARMA:
+		return PLUGIN_ID
+	else:
+		return "pelisalacarta"
+	
+def getLibraryPath():
+	if DHARMA:
+		LIBRARY_PATH = xbmc.translatePath("special://profile/addon_data/%s/library" % getPluginId())
+	else:
+		#Este directorio no es el correcto. 
+		#Debería ser special://profile/addon_data/<plugin_id>
+		#Pero mantenemos el antiguo por razones de compatibilidad preDHARMA
+		LIBRARY_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'library' ) )
+		
+	return LIBRARY_PATH
+		
+	
