@@ -19,7 +19,10 @@ except ImportError:
 PLUGIN_ID = "plugin.video.pelisalacarta"
 if DHARMA:
 	__settings__ = xbmcaddon.Addon(id=PLUGIN_ID)
-
+	DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % PLUGIN_ID)
+else:
+	DATA_PATH = os.getcwd()
+	
 def openSettings():
 	
 	# Nuevo XBMC
@@ -69,8 +72,6 @@ def getLibraryPath():
 		#Este directorio no es el correcto. 
 		#Debería ser special://profile/addon_data/<plugin_id>
 		#Pero mantenemos el antiguo por razones de compatibilidad preDHARMA
-		LIBRARY_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'library' ) )
+		LIBRARY_PATH = os.path.join( os.getcwd(), 'library' )
 		
 	return LIBRARY_PATH
-		
-	

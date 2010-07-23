@@ -11,7 +11,7 @@ import sys
 import xbmc
 import config
 
-COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
 def getvideo(urlpagina):
     # ---------------------------------------
