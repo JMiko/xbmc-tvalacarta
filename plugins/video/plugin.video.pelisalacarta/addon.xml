@@ -12,7 +12,7 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="es">Películas y series a la carta</summary>
     <description lang="es">Plugin en castellano para ver películas y series online, publicadas por más de 50 sitios en servidores de video online</description>
-    <summary lang="en">Movies and TV Shows on demand</summary>
+    <summary lang="en">Movies and TV Shows on demand (Spanish)</summary>
     <description lang="en">Spanish plugin for watching Movies and TV Shows on demand. It uses more than 50 different source sites that provide streamed media contents. WARNING: Menus and options only in Spanish (for the moment)</description>
     <platform>all</platform>
   </extension>
