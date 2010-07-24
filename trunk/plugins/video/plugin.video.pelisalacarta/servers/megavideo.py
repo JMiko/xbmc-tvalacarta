@@ -15,15 +15,11 @@ import xbmc
 import xbmcplugin
 import xbmcgui
 import config
+import logger
 
-# Esto funciona en todos, excepto plex y linux
-#COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
-
-# Esto funciona en plex!
-#COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
 COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
-print "Cookiefile="+COOKIEFILE
+logger.debug("[megavideo.py] Cookiefile="+COOKIEFILE) 
 
 #Python Video Decryption and resolving routines.
 #Courtesy of Voinage, Coolblaze.

@@ -18,7 +18,7 @@ import config
 
 DEBUG = False
 
-COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
+COOKIEFILE = os.path.join( config.DATA_PATH, 'cookies.lwp' )
 
 # Convierte el código de megaupload a megavideo
 def convertcode(megauploadcode):

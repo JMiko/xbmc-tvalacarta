@@ -483,7 +483,7 @@ def downloadstr(urlsub):
 	
 	import downloadtools
 	
-	fullpath = os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' )
+	fullpath = os.path.join( config.DATA_PATH , 'subtitulo.srt' )
 	if os.path.exists(fullpath):
 		try:
 			subtitfile = open(fullpath,"w")

@@ -18,6 +18,7 @@ import library
 import string
 import config
 import logger
+#TODO:Limpiar variables y módulos no utilizados
 
 CHANNELNAME = "tvshack"
 

@@ -134,7 +134,7 @@ def downloadpage(url):
 
 def downloadpagewithcookies(url):
 	#  Inicializa la librería de las cookies
-	ficherocookies = os.path.join( os.getcwd(), 'cookies.lwp' )
+	ficherocookies = os.path.join( config.DATA_PATH, 'cookies.lwp' )
 	print "Cookiefile="+ficherocookies
 
 	cj = None
