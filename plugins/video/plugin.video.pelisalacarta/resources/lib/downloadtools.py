@@ -380,7 +380,6 @@ def getDownloadListPath():
 			
 			# No es Telebision, fuerza el directorio home de XBMC
 			if downloadpath == "":
-				downloadpath = xbmc.translatePath( "special://home/downloads/list")
 				downloadpath = os.path.join (config.DATA_PATH,"downloads","list")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
 				if not os.path.exists(downloadpath):
