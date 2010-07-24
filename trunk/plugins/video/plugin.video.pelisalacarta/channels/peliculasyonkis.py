@@ -18,6 +18,7 @@ import xbmctools
 import DecryptYonkis as Yonkis
 import config
 import logger
+import buscador
 
 CHANNELNAME = "peliculasyonkis"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -43,12 +44,26 @@ DEBUG = True
 
 def mainlist(params,url,category):
 	logger.info("[peliculasyonkis.py] mainlist")
-
+	
+	activar = config.getSetting("activar")
+	print "activado como :%s" %activar
+	if activar == "":
+		activar = "false"
+		config.setSetting("activar",activar)
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(50)") #full list
-
+	if activar == "false":
+		flecha = "+"
+	else:
+		flecha = "-"
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Últimas películas","http://www.peliculasyonkis.com/ultimas-peliculas.php","","")
+	
+	xbmctools.addnewfolder( CHANNELNAME , "Activar_Novedades"  , category , "%s Últimas Novedades" %flecha,activar,"","")
+	if config.getSetting("activar")=="true":
+		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Estrenos de cartelera" ,"http://www.peliculasyonkis.com/ultimas-peliculas/cartelera/","","")
+		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Estrenos de DVD" ,"http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-dvd/","","")
+		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Ultimas Peliculas Actualizadas","http://www.peliculasyonkis.com/ultimas-peliculas/actualizadas/","","")
+		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Ultimas peliculas añadidas a la web","http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-web/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Listado por categorias","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico" , category , "Listado alfabético","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
@@ -68,21 +83,15 @@ def mainlist(params,url,category):
 
 def search(params,url,category):
 	logger.info("[peliculasyonkis.py] search")
-
-	keyboard = xbmc.Keyboard('')
-	keyboard.doModal()
-	if (keyboard.isConfirmed()):
-		tecleado = keyboard.getText()
-		if len(tecleado)>0:
-			#convert to HTML
-			tecleado = tecleado.replace(" ", "+")
-			searchUrl = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+tecleado
-			searchresults(params,searchUrl,category)
+	
+	buscador.listar_busquedas(params,url,category)
+	
 
 def performsearch(texto):
+	
 	logger.info("[peliculasyonkis.py] performsearch")
 	url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
-
+	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 
@@ -106,9 +115,13 @@ def performsearch(texto):
 		
 	return resultados
 
-def searchresults(params,url,category):
+def searchresults(params,Url,category):
 	logger.info("[peliculasyonkis.py] searchresults")
-
+	
+	buscador.salvar_busquedas(params,Url,category)
+	
+	url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+Url.replace(" ", "+")
+	
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
 
@@ -543,8 +556,6 @@ def ChoiceOneVideo(matches,title):
 				servlist.append(server)
 		except urllib2.URLError,e:
 			logger.info("[peliculasyonkis.py] error:%s (%s)" % (e.code,server))
-		except:
-			pass
 	dia = xbmcgui.Dialog()
 	seleccion = dia.select(title, opciones)
 	logger.info("seleccion=%d" % seleccion)
@@ -601,3 +612,17 @@ def Decrypt_Server(id_encoded,servidor):
 		return ""
 	
 	return idd
+	
+	
+	
+	
+def Activar_Novedades(params,activar,category):
+	if activar == "false":
+		config.setSetting("activar","true")
+	else:
+		config.setSetting("activar","false")
+	print "opcion menu novedades :%s" %config.getSetting("activar")
+	
+	xbmc.executebuiltin('Container.Update')	
+	xbmc.executebuiltin('Container.Refresh')
+	

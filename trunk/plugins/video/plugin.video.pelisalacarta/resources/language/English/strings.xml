@@ -16,11 +16,11 @@
     <string id="30010">Watch in high quality</string>
 
 
-    <string id="30012">Channel logos:</string>
-    <string id="30013">Poster (vertical)</string>
-    <string id="30014">Banner (horizontal)</string>
+	<string id="30012">Channel logos:</string>
+	<string id="30013">Poster (vertical)</string>
+	<string id="30014">Banner (horizontal)</string>
 
-    <string id="30100">Megavideo premium mode:</string>
+	<string id="30100">Megavideo premium mode:</string>
     <string id="30101">Megavideo user:</string>
     <string id="30102">Megavideo password:</string>
     <string id="30103">Megavideo cookie:</string>
@@ -33,4 +33,9 @@
     <string id="30206">Enable Subtitle:</string>
     <string id="30207">JDownloader URL:</string>
     <string id="30208">Full detail log:</string>
+    <string id="30209">Number of searches to save:</string>
+    
+    <!-- Context menu strings -->
+    <string id="30300">Delete saved search</string>
+    
 </strings>

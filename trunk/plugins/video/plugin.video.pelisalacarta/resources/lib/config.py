@@ -48,7 +48,7 @@ def setSetting(name,value):
 		__settings__.setSetting( name,value ) # this will return "foo" setting value
 	# Antiguo XBMC
 	else:
-		xbmcplugin.setSetting("name",value)
+		xbmcplugin.setSetting(name,value)
 
 def getLocalizedString(code):
 	# Nuevo XBMC
@@ -57,7 +57,8 @@ def getLocalizedString(code):
 		return __language__(code)
 	# Antiguo XBMC
 	else:
-		return "no implementado"
+		return xbmc.getLocalizedString( code )
+		
 	
 def getPluginId():
 	if DHARMA:
