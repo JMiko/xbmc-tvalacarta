@@ -339,8 +339,11 @@ def getDownloadPath():
 			
 			# No es Telebision, fuerza el directorio home de XBMC
 			if downloadpath == "":
-				downloadpath = xbmc.translatePath( "special://home/downloads")
+				downloadpath = os.path.join (config.DATA_PATH,"downloads")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+				if not os.path.exists(downloadpath):
+					xbmc.output("[downliadtools.py] download path doesn't exist:"+downloadpath)
+					os.mkdir(downloadpath)
 				config.setSetting("downloadpath",downloadpath)
 			
 			# Es Telebision, lo pone en el skin
@@ -378,7 +381,11 @@ def getDownloadListPath():
 			# No es Telebision, fuerza el directorio home de XBMC
 			if downloadpath == "":
 				downloadpath = xbmc.translatePath( "special://home/downloads/list")
+				downloadpath = os.path.join (config.DATA_PATH,"downloads","list")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+				if not os.path.exists(downloadpath):
+					xbmc.output("[downliadtools.py] download path doesn't exist:"+downloadpath)
+					os.mkdir(downloadpath)
 				config.setSetting("downloadlistpath",downloadpath)
 			
 			# Es Telebision, lo pone en el skin
