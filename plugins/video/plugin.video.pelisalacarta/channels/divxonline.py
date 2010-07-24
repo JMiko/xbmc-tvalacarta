@@ -367,7 +367,7 @@ def movielist(params,url,category): # pelis sin ficha (en listados por género)
 	#scrapertools.printMatches(matches)
 
 	if (Generate):
-		f = open(os.getcwd()+'/films.tab', 'w') # fichero para obtener las notas
+		f = open(config.DATA_PATH+'/films.tab', 'w') # fichero para obtener las notas
 
 	for match in matches:
 		# Titulo

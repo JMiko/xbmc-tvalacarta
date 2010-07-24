@@ -69,8 +69,8 @@ def listchannels(params,url,category):
 	addfolder("Pelis24","pelis24","mainlist")
 	addfolder("Veocine","veocine","mainlist")
 	addfolder("Pintadibujos","pintadibujos","mainlist")
-	addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
 	if config.getSetting("enableadultmode") == "true":
+		addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
 		addfolder("MocosoftX","mocosoftx","mainlist")
 		addfolder("Anifenix.com","anifenix","mainlist")
 		addfolder("tuporno.tv","tupornotv","mainlist")
