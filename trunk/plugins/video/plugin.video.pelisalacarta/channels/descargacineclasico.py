@@ -76,7 +76,7 @@ def movielist(params,url,category):
 	#scrapertools.printMatches(matches)
 
 	if (Generate):
-		f = open(os.getcwd()+'/films.tab', 'w') # fichero para obtener las notas
+		f = open(config.DATA_PATH + '/films.tab', 'w') # fichero para obtener las notas
 
 	for match in matches:
 		# Titulo

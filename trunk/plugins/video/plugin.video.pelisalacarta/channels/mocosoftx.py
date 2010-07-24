@@ -19,7 +19,6 @@ import config
 import logger
 
 CHANNELNAME = "mocosoftx"
-BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails","videos" )
 
 
 
