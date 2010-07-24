@@ -18,7 +18,7 @@ import library
 import string
 import config
 import logger
-#TODO:Limpiar variables y módulos no utilizados
+#TODO:@jurrabi Limpiar variables y módulos no utilizados
 
 CHANNELNAME = "tvshack"
 
