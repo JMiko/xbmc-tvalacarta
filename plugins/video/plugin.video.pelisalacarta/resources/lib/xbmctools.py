@@ -334,7 +334,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 		launchplayer(mediaurl, listitem)
 		
 	if (config.getSetting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
-		xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' ) ) )
+		xbmc.Player().setSubtitles(os.path.join( config.DATA_PATH, 'subtitulo.srt' ) )
 		config.setSetting("subtitulo", "false")
 
 

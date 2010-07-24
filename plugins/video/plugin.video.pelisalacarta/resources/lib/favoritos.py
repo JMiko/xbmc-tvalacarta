@@ -17,6 +17,7 @@ import binascii
 import xbmctools
 import downloadtools
 import config
+import logger
 
 CHANNELNAME = "favoritos"
 
@@ -31,16 +32,14 @@ xbmc.output("[favoritos.py] init")
 
 DEBUG = True
 
-BOOKMARK_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'bookmarks' ) )
+BOOKMARK_PATH = os.path.join( config.DATA_PATH, 'bookmarks'  )
+if not os.path.exists(BOOKMARK_PATH):
+	logger.debug("[favoritos.py] Path de bookmarks no existe, se crea: "+BOOKMARK_PATH)
+	os.mkdir(BOOKMARK_PATH)
 
 def mainlist(params,url,category):
 	xbmc.output("[favoritos.py] mainlist")
 
-	# Crea el directorio de favoritos si no existe
-	try:
-		os.mkdir(BOOKMARK_PATH)
-	except:
-		pass
 
 	# Crea un listado con las entradas de favoritos
 	ficheros = os.listdir(BOOKMARK_PATH)
