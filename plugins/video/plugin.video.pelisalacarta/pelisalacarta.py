@@ -9,13 +9,18 @@ import urllib,urllib2
 import os
 import sys
 import xbmc
-import xbmctools
 import xbmcgui
 import logger
+import config
 
 def run():
 	logger.info("[pelisalacarta.py] run")
 	
+	# Verifica si el path de usuario del plugin está creado
+	if not os.path.exists(config.DATA_PATH):
+		logger.debug("[pelisalacarta.py] Path de usuario no existe, se crea: "+config.DATA_PATH)
+		os.mkdir(config.DATA_PATH)
+
 	# Imprime en el log los parámetros de entrada
 	logger.info("[pelisalacarta.py] sys.argv=%s" % str(sys.argv))
 	
@@ -82,6 +87,7 @@ def run():
 			plugin.listchannels(params, url, category)
 		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
 		elif (action=="strm"):
+			import xbmctools
 			xbmctools.playstrm(params, url, category)
 		else:
 			exec "import "+params.get("channel")+" as plugin"
