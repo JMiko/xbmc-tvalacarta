@@ -72,8 +72,12 @@ def run():
 			plugin.listchannels(params, url, category)
 		# Actualizar version
 		elif ( action=="update" ):
-			import updater
-			updater.update(params)
+			try:
+				import updater
+				updater.update(params)
+			except ImportError:
+				logger.info("[pelisalacarta.py] Actualizacion automática desactivada")
+				
 			import channelselector as plugin
 			plugin.listchannels(params, url, category)
 		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
