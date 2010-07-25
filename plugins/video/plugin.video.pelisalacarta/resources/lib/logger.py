@@ -8,7 +8,6 @@
 import config
 import xbmc
 
-xbmc.output("debug)"+config.getSetting("debug"))
 loggeractive = (config.getSetting("debug")=="true")
 
 def info(texto):

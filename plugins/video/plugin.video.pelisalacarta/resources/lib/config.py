@@ -39,7 +39,7 @@ def getSetting(name):
 	# Antiguo XBMC
 	else:
 		value = xbmcplugin.getSetting(name)
-		xbmc.output("[config.py] antiguo getSetting(%s)=%s" % (name,value))
+		#xbmc.output("[config.py] antiguo getSetting(%s)=%s" % (name,value))
 		return value
 
 def setSetting(name,value):

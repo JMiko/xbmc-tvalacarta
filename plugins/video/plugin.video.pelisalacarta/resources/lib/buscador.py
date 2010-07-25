@@ -41,7 +41,6 @@ try:
 except:
 	pluginhandle = ""
 
-# Traza el inicio del canal
 logger.info("[buscador.py] init")
 
 DEBUG = True
