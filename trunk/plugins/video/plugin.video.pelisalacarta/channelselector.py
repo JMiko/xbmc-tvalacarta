@@ -10,8 +10,6 @@ import scrapertools
 import config
 import logger
 
-logger.info("[channelselector.py] init")
-
 DEBUG = True
 
 if config.getSetting("thumbnail_type")=="0":

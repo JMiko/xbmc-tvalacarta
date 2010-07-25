@@ -18,8 +18,7 @@ import xbmctools
 import downloadtools
 import shutil
 import config
-
-CHANNELNAME = "descargadoslist"
+import logger
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -27,8 +26,9 @@ try:
 except:
 	pluginhandle = ""
 
-# Traza el inicio del canal
-xbmc.output("[descargadoslist.py] init")
+CHANNELNAME = "descargadoslist"
+
+logger.info("[descargadoslist.py] init")
 
 DEBUG = True
 
@@ -37,7 +37,7 @@ IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'imag
 ERROR_PATH = os.path.join( downloadtools.getDownloadListPath(), 'error' )
 
 def mainlist(params,url,category):
-	xbmc.output("[descargadoslist.py] mainlist")
+	logger.info("[descargadoslist.py] mainlist")
 
 	# Crea el directorio de la lista de descargas si no existe
 	try:
@@ -62,9 +62,9 @@ def mainlist(params,url,category):
 			xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( DOWNLOAD_PATH, fichero ) , server , titulo , url , thumbnail, plot )
 		except:
 			pass
-			xbmc.output("[downloadall.py] error al leer bookmark")
+			logger.info("[downloadall.py] error al leer bookmark")
 			for line in sys.exc_info():
-				xbmc.output( "%s" % line , xbmc.LOGERROR )
+				logger.info( "%s" % line , xbmc.LOGERROR )
 
 	xbmctools.addnewvideo( CHANNELNAME , "downloadall" , "category" , "server" , "(Empezar la descarga de la lista)" , "" , os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png"), "" )
 
@@ -74,7 +74,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def errorlist(params,url,category):
-	xbmc.output("[descargadoslist.py] errorlist")
+	logger.info("[descargadoslist.py] errorlist")
 
 	# Crea el directorio de la lista de descargas con error si no existe
 	try:
@@ -87,10 +87,10 @@ def errorlist(params,url,category):
 		pass
 
 	# Crea un listado con las entradas de favoritos
-	xbmc.output("[downloadall.py] ERROR_PATH="+ERROR_PATH)
+	logger.info("[downloadall.py] ERROR_PATH="+ERROR_PATH)
 	ficheros = os.listdir(ERROR_PATH)
 	for fichero in ficheros:
-		xbmc.output("[downloadall.py] fichero="+fichero)
+		logger.info("[downloadall.py] fichero="+fichero)
 		try:
 			# Lee el bookmark
 			titulo,thumbnail,plot,server,url = readbookmarkfile(fichero,ERROR_PATH)
@@ -100,9 +100,9 @@ def errorlist(params,url,category):
 			xbmctools.addnewvideo( CHANNELNAME , "playerror" , os.path.join( ERROR_PATH, fichero ) , server , titulo , url , thumbnail, plot )
 		except:
 			pass
-			xbmc.output("[downloadall.py] error al leer bookmark")
+			logger.info("[downloadall.py] error al leer bookmark")
 			for line in sys.exc_info():
-				xbmc.output( "%s" % line , xbmc.LOGERROR )
+				logger.info( "%s" % line , xbmc.LOGERROR )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -110,25 +110,25 @@ def errorlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def downloadall(params,url,category):
-	xbmc.output("[downloadall.py] downloadall")
+	logger.info("[downloadall.py] downloadall")
 
-	xbmc.output("[downloadall.py] DOWNLOAD_PATH=%s" % DOWNLOAD_PATH)
+	logger.info("[downloadall.py] DOWNLOAD_PATH=%s" % DOWNLOAD_PATH)
 
 	lista = os.listdir(DOWNLOAD_PATH)
 
-	xbmc.output("[downloadall.py] numero de ficheros=%d" % len(lista))
+	logger.info("[downloadall.py] numero de ficheros=%d" % len(lista))
 
 	# Crea un listado con las entradas de favoritos
 	for fichero in lista:
 		# El primer video de la lista
-		xbmc.output("[downloadall.py] fichero="+fichero)
+		logger.info("[downloadall.py] fichero="+fichero)
 
 		if fichero!="error":
 			# Descarga el vídeo
 			try:
 				# Lee el bookmark
 				titulo,thumbnail,plot,server,url = readbookmark(fichero)
-				xbmc.output("[downloadall.py] url="+url)
+				logger.info("[downloadall.py] url="+url)
 
 				# Averigua la URL del vídeo
 				if (server=="Megavideo" or server=="Megaupload") and config.getSetting("megavideopremium")=="true":
@@ -138,7 +138,7 @@ def downloadall(params,url,category):
 						mediaurl = servertools.getmegavideohigh(url)
 				else:
 					mediaurl = servertools.findurl(url,server)
-				xbmc.output("[downloadall.py] mediaurl="+mediaurl)
+				logger.info("[downloadall.py] mediaurl="+mediaurl)
 				
 				# Genera el NFO
 				nfofilepath = downloadtools.getfilefromtitle("sample.nfo",titulo)
@@ -171,41 +171,41 @@ def downloadall(params,url,category):
 				outfile.write("</movie>")
 				outfile.flush()
 				outfile.close()
-				xbmc.output("[downloadall.py] Creado fichero NFO")
+				logger.info("[downloadall.py] Creado fichero NFO")
 				
 				# Descarga el thumbnail
-				xbmc.output("[downloadall.py] thumbnail="+thumbnail)
+				logger.info("[downloadall.py] thumbnail="+thumbnail)
 				thumbnailfile = downloadtools.getfilefromtitle(thumbnail,titulo)
 				thumbnailfile = thumbnailfile[:-4] + ".tbn"
-				xbmc.output("[downloadall.py] thumbnailfile="+thumbnailfile)
+				logger.info("[downloadall.py] thumbnailfile="+thumbnailfile)
 				try:
 					downloadtools.downloadfile(thumbnail,thumbnailfile)
-					xbmc.output("[downloadall.py] Thumbnail descargado")
+					logger.info("[downloadall.py] Thumbnail descargado")
 				except:
-					xbmc.output("[downloadall.py] error al descargar thumbnail")
+					logger.info("[downloadall.py] error al descargar thumbnail")
 					for line in sys.exc_info():
-						xbmc.output( "%s" % line , xbmc.LOGERROR )
+						logger.info( "%s" % line , xbmc.LOGERROR )
 				
 				# Descarga el video
 				dev = downloadtools.downloadtitle(mediaurl,titulo)
 				if dev == -1:
 					# El usuario ha cancelado la descarga
-					xbmc.output("[downloadall.py] Descarga cancelada")
+					logger.info("[downloadall.py] Descarga cancelada")
 					return
 				elif dev == -2:
 					# Error en la descarga, lo mueve a ERROR y continua con el siguiente
-					xbmc.output("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
+					logger.info("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
 					origen = os.path.join( DOWNLOAD_PATH , fichero )
 					destino = os.path.join( ERROR_PATH , fichero )
 					shutil.move( origen , destino )
 				else:
-					xbmc.output("[downloadall.py] Video descargado")
+					logger.info("[downloadall.py] Video descargado")
 					# Borra el bookmark e itera para obtener el siguiente video
 					filepath = os.path.join( DOWNLOAD_PATH , fichero )
 					os.remove(filepath)
-					xbmc.output("[downloadall.py] "+fichero+" borrado")
+					logger.info("[downloadall.py] "+fichero+" borrado")
 			except:
-				xbmc.output("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
+				logger.info("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
 				origen = os.path.join( DOWNLOAD_PATH , fichero )
 				destino = os.path.join( ERROR_PATH , fichero )
 				shutil.move( origen , destino )
@@ -216,7 +216,7 @@ def downloadall(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	
 def play(params,url,category):
-	xbmc.output("[descargadoslist.py] play")
+	logger.info("[descargadoslist.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
@@ -226,7 +226,7 @@ def play(params,url,category):
 	xbmctools.playvideo3(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def playerror(params,url,category):
-	xbmc.output("[descargadoslist.py] play")
+	logger.info("[descargadoslist.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
@@ -236,7 +236,7 @@ def playerror(params,url,category):
 	xbmctools.playvideo4(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def readbookmark(filename):
-	xbmc.output("[descargadoslist.py] readbookmark")
+	logger.info("[descargadoslist.py] readbookmark")
 	return readbookmarkfile(filename,DOWNLOAD_PATH)
 
 def readbookmarkfile(filename,path):
@@ -244,13 +244,13 @@ def readbookmarkfile(filename,path):
 	filepath = os.path.join( path , filename )
 
 	# Lee el fichero de configuracion
-	xbmc.output("[descargadoslist.py] filepath="+filepath)
+	logger.info("[descargadoslist.py] filepath="+filepath)
 	bookmarkfile = open(filepath)
 
 	try:
 		lines = bookmarkfile.readlines()
 
-		xbmc.output("[descargadoslist.py] numero lines=%d" % len(lines))
+		logger.info("[descargadoslist.py] numero lines=%d" % len(lines))
 		try:
 			titulo = urllib.unquote_plus(lines[0].strip())
 		except:
@@ -282,16 +282,16 @@ def readbookmarkfile(filename,path):
 		else:
 			plot=""
 	except:
-		xbmc.output("[descargadoslist.py] Error inesperado al leer el bookmark")
+		logger.info("[descargadoslist.py] Error inesperado al leer el bookmark")
 		for line in sys.exc_info():
-			xbmc.output( "%s" % line , xbmc.LOGERROR )
+			logger.info( "%s" % line , xbmc.LOGERROR )
 
 	bookmarkfile.close();
 
 	return titulo,thumbnail,plot,server,url
 
 def savebookmark(titulo,url,thumbnail,server,plot):
-	xbmc.output("[descargadoslist.py] savebookmark")
+	logger.info("[descargadoslist.py] savebookmark")
 
 	try:
 		os.mkdir(DOWNLOAD_PATH)
@@ -306,9 +306,9 @@ def savebookmark(titulo,url,thumbnail,server,plot):
 	salir = False
 	while not salir:
 		filename = '%08d.txt' % filenumber
-		xbmc.output("[descargadoslist.py] savebookmark filename="+filename)
+		logger.info("[descargadoslist.py] savebookmark filename="+filename)
 		fullfilename = os.path.join(DOWNLOAD_PATH,filename)
-		xbmc.output("[descargadoslist.py] savebookmark fullfilename="+fullfilename)
+		logger.info("[descargadoslist.py] savebookmark fullfilename="+fullfilename)
 		if not os.path.exists(fullfilename):
 			salir=True
 		filenumber = filenumber + 1

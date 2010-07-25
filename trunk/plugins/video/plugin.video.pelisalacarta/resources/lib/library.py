@@ -21,6 +21,7 @@ import downloadtools
 import string
 import xml.parsers.expat
 import config
+import logger
 
 CHANNELNAME = "library"
 allchars = string.maketrans('', '')
@@ -33,32 +34,29 @@ try:
 except:
 	pluginhandle = ""
 
-# Traza el inicio del canal
-xbmc.output("[library.py] init")
-
 DEBUG = True
 
 LIBRARY_PATH = config.getLibraryPath()
 if not os.path.exists(LIBRARY_PATH):
-	xbmc.output("[library.py] Library path doesn't exist:"+LIBRARY_PATH)
+	logger.info("[library.py] Library path doesn't exist:"+LIBRARY_PATH)
 	os.mkdir(LIBRARY_PATH)
 
 #MOVIES_PATH
 MOVIES_PATH = xbmc.translatePath( os.path.join( LIBRARY_PATH, 'CINE' ) )
 if not os.path.exists(MOVIES_PATH):
-	xbmc.output("[library.py] Movies path doesn't exist:"+MOVIES_PATH)
+	logger.info("[library.py] Movies path doesn't exist:"+MOVIES_PATH)
 	os.mkdir(MOVIES_PATH)
 
 #SERIES_PATH
 SERIES_PATH = xbmc.translatePath( os.path.join( LIBRARY_PATH, 'SERIES' ) )
 if not os.path.exists(SERIES_PATH):
-	xbmc.output("[library.py] Series path doesn't exist:"+SERIES_PATH)
+	logger.info("[library.py] Series path doesn't exist:"+SERIES_PATH)
 	os.mkdir(SERIES_PATH)
 
 #MONITOR_FILE
 MONITOR_FILE = xbmc.translatePath( os.path.join( LIBRARY_PATH, 'monitor.xml' ) )
 if not os.path.exists(MONITOR_FILE):
-	xbmc.output("[library.py] No existe fichero de monitorización de series:"+MONITOR_FILE)
+	logger.info("[library.py] No existe fichero de monitorización de series:"+MONITOR_FILE)
 #	os.mkdir(SERIES_PATH) SUSTITUIR POR FUNCION ADECUADA PARA CREACIÓN DE FICHEROS XML CON LA SIGUIENTE ESTRUCTURA:
 # <monitor>
 #   <series serie=name>url</serie>
@@ -72,14 +70,14 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="",category="Cine",Serie=
 	 Si pedirnombre  = True entonces se muestra pantalla de selección
 	'''
 
-	xbmc.output("[favoritos.py] saveLIBRARY")
-	xbmc.output("[library.py] saveLIBRARY titulo="+titulo)
-	xbmc.output("[library.py] saveLIBRARY url="+url)
-	xbmc.output("[library.py] saveLIBRARY server="+server)
-	xbmc.output("[library.py] saveLIBRARY canal="+canal)
-	xbmc.output("[library.py] saveLIBRARY category="+category)
-	xbmc.output("[library.py] saveLIBRARY serie="+Serie)
-	xbmc.output("[library.py] saveLIBRARY accion="+accion)
+	logger.info("[favoritos.py] saveLIBRARY")
+	logger.info("[library.py] saveLIBRARY titulo="+titulo)
+	logger.info("[library.py] saveLIBRARY url="+url)
+	logger.info("[library.py] saveLIBRARY server="+server)
+	logger.info("[library.py] saveLIBRARY canal="+canal)
+	logger.info("[library.py] saveLIBRARY category="+category)
+	logger.info("[library.py] saveLIBRARY serie="+Serie)
+	logger.info("[library.py] saveLIBRARY accion="+accion)
 	
 	#Limpiamos el título para usarlo como fichero
 	try:
@@ -105,36 +103,36 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="",category="Cine",Serie=
 		fullfilename = os.path.join(MOVIES_PATH,filename)
 	elif category == "Series":
 		if Serie == "": #Añadir comprobación de len>0 bien hecha
-			xbmc.output('[library.py] ERROR: intentando añadir una serie y serie=""')
+			logger.info('[library.py] ERROR: intentando añadir una serie y serie=""')
 			pathserie = SERIES_PATH
 		else:
 			#Eliminamos caracteres indeseados para archivos en el nombre de la serie
 			Serie = string.translate(Serie,allchars,deletechars)
 			pathserie = xbmc.translatePath( os.path.join( SERIES_PATH, Serie ) )
 		if not os.path.exists(pathserie):
-			xbmc.output("[library.py] Creando directorio serie:"+pathserie)
+			logger.info("[library.py] Creando directorio serie:"+pathserie)
 			os.mkdir(pathserie)
 		fullfilename = os.path.join(pathserie,filename)
 	else:    #Resto de categorias de momento en la raiz de library
 		fullfilename = os.path.join(LIBRARY_PATH,filename)
 	
 		
-	xbmc.output("[favoritos.py] saveLIBRARY fullfilename="+fullfilename)
+	logger.info("[favoritos.py] saveLIBRARY fullfilename="+fullfilename)
 	if os.path.exists(fullfilename):
-		xbmc.output("[favoritos.py] el fichero existe. Se sobreescribe")
+		logger.info("[favoritos.py] el fichero existe. Se sobreescribe")
 		nuevo = 0
 	else:
 		nuevo = 1
 	try:
 		LIBRARYfile = open(fullfilename,"w")
 	except IOError:
-		xbmc.output("Error al grabar el archivo "+fullfilename)
+		logger.info("Error al grabar el archivo "+fullfilename)
 		nuevo = 0
 		raise
 #	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 # Eliminación de plot i thumnai
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie)
-	xbmc.output("[library.py] itemurl=%s" % itemurl)
+	logger.info("[library.py] itemurl=%s" % itemurl)
 
 	LIBRARYfile.write(itemurl)
 #	LIBRARYfile.write(urllib.quote_plus(url)+'\n')
@@ -190,7 +188,7 @@ def update(total,errores=0, nuevos=0, serie="No indicada"):
 	if actualizar:
 		xbmc.executebuiltin('UpdateLibrary(video)')
 
-	xbmc.output ('[Library update] Serie: "%s". Total: %d, Erroneos: %d, Nuevos: %d' %(serie, total, errores, nuevos))
+	logger.info ('[Library update] Serie: "%s". Total: %d, Erroneos: %d, Nuevos: %d' %(serie, total, errores, nuevos))
 
 def MonitorSerie ( canal, accion, server, url, serie): 
 	''' Añade una serie a la lista de series a monitorizar.
@@ -216,17 +214,17 @@ def fixStrmLibrary(path = LIBRARY_PATH):
     experimentando con urls del tipo addon://... hemos decidido crear esta función
     para arreglar los strm en cualquier momento.
     '''
-    xbmc.output("[library.py] fixStrm")
-    xbmc.output("[library.py] fixStrm path="+path)
+    logger.info("[library.py] fixStrm")
+    logger.info("[library.py] fixStrm path="+path)
     # Comprobamos la validez del parámetro
     if not os.path.exists(path):
-        xbmc.output("[library.py] fixStrm ERROR: PATH NO EXISTE")
+        logger.info("[library.py] fixStrm ERROR: PATH NO EXISTE")
         return 0
     if not os.path.isdir(path):
-        xbmc.output("[library.py] fixStrm ERROR: PATH NO ES DIRECTORIO")
+        logger.info("[library.py] fixStrm ERROR: PATH NO ES DIRECTORIO")
         return 0
     else:
-        xbmc.output("[library.py] fixStrm El path es un directorio")
+        logger.info("[library.py] fixStrm El path es un directorio")
     total,errores = 0,0 
     for dirpath, dirnames, filenames in os.walk(path):
         for file in filenames:
@@ -234,7 +232,7 @@ def fixStrmLibrary(path = LIBRARY_PATH):
                 if fixStrm (os.path.join(dirpath,file)):
                 	total = total + 1
                 else:
-                    xbmc.output("[library.py] fixStrm ERROR al fixear "+file)
+                    logger.info("[library.py] fixStrm ERROR al fixear "+file)
                     errores = errores + 1
         #Excluye las carpetas de Subversión de la búsqueda
         if ".svn" in dirnames:
@@ -242,13 +240,13 @@ def fixStrmLibrary(path = LIBRARY_PATH):
     return total,errores
    
 def fixStrm (file):
-    xbmc.output("[library.py] fixStrm file: "+file)
+    logger.info("[library.py] fixStrm file: "+file)
     url = LeeStrm (file)
     if len(url)==0:
     	return False
     args = url.split('?',1)
     url2 = '%s?%s' % (sys.argv[ 0 ],args [1])
-    xbmc.output ("[library.py] fixStrm new url: "+url2)
+    logger.info ("[library.py] fixStrm new url: "+url2)
     return SaveStrm (file,url2)
     
 def LeeStrm(file):
@@ -267,7 +265,7 @@ def SaveStrm (file, data):
         LIBRARYfile.flush()
         LIBRARYfile.close()
     except IOError:
-        xbmc.output("Error al grabar el archivo "+file)
+        logger.info("Error al grabar el archivo "+file)
         return False
     return True
 
@@ -275,4 +273,4 @@ def SaveStrm (file, data):
 def dlog (text):
 	if DEBUG:
 
-		xbmc.output(text)
+		logger.info(text)

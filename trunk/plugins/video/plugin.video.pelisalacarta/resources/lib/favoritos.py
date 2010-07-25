@@ -27,9 +27,6 @@ try:
 except:
 	pluginhandle = ""
 
-# Traza el inicio del canal
-xbmc.output("[favoritos.py] init")
-
 DEBUG = True
 
 BOOKMARK_PATH = os.path.join( config.DATA_PATH, 'bookmarks'  )
@@ -38,7 +35,7 @@ if not os.path.exists(BOOKMARK_PATH):
 	os.mkdir(BOOKMARK_PATH)
 
 def mainlist(params,url,category):
-	xbmc.output("[favoritos.py] mainlist")
+	logger.info("[favoritos.py] mainlist")
 
 
 	# Crea un listado con las entradas de favoritos
@@ -65,7 +62,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[favoritos.py] play")
+	logger.info("[favoritos.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
@@ -75,12 +72,12 @@ def play(params,url,category):
 	xbmctools.playvideo2(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def readbookmark(filename):
-	xbmc.output("[favoritos.py] readbookmark")
+	logger.info("[favoritos.py] readbookmark")
 
 	filepath = os.path.join( BOOKMARK_PATH , filename )
 
 	# Lee el fichero de configuracion
-	xbmc.output("[favoritos.py] filepath="+filepath)
+	logger.info("[favoritos.py] filepath="+filepath)
 	bookmarkfile = open(filepath)
 	lines = bookmarkfile.readlines()
 
@@ -114,7 +111,7 @@ def readbookmark(filename):
 	return titulo,thumbnail,plot,server,url
 
 def savebookmark(titulo,url,thumbnail,server,plot):
-	xbmc.output("[favoritos.py] savebookmark")
+	logger.info("[favoritos.py] savebookmark")
 
 	# No va bien más que en Windows
 	#bookmarkfiledescriptor,bookmarkfilepath = tempfile.mkstemp(suffix=".txt",prefix="",dir=BOOKMARK_PATH)
@@ -129,9 +126,9 @@ def savebookmark(titulo,url,thumbnail,server,plot):
 	salir = False
 	while not salir:
 		filename = '%08d.txt' % filenumber
-		xbmc.output("[favoritos.py] savebookmark filename="+filename)
+		logger.info("[favoritos.py] savebookmark filename="+filename)
 		fullfilename = os.path.join(BOOKMARK_PATH,filename)
-		xbmc.output("[favoritos.py] savebookmark fullfilename="+fullfilename)
+		logger.info("[favoritos.py] savebookmark fullfilename="+fullfilename)
 		if not os.path.exists(fullfilename):
 			salir=True
 		filenumber = filenumber + 1

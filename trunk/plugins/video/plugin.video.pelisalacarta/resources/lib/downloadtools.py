@@ -21,6 +21,7 @@ import xbmctools
 import httplib
 import gzip,StringIO
 import config
+import logger
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -331,18 +332,18 @@ def getDownloadPath():
 	# No está fijada, intenta forzarla
 	try:
 		if downloadpath == "":
-			xbmc.output("[downloadtools.py] downloadpath está vacio")
+			logger.info("[downloadtools.py] downloadpath está vacio")
 			
 			# Busca un setting del skin (Telebision)
 			downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-			xbmc.output("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+			logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
 			
 			# No es Telebision, fuerza el directorio home de XBMC
 			if downloadpath == "":
 				downloadpath = os.path.join (config.DATA_PATH,"downloads")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
 				if not os.path.exists(downloadpath):
-					xbmc.output("[downliadtools.py] download path doesn't exist:"+downloadpath)
+					logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
 					os.mkdir(downloadpath)
 				config.setSetting("downloadpath",downloadpath)
 			
@@ -350,12 +351,12 @@ def getDownloadPath():
 			else:
 				# guardar setting del skin en setting del plugin
 				downloadpath = xbmc.translatePath( downloadpath )
-				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
+				logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
 				config.setSetting("downloadpath", downloadpath)
 	except:
 		pass
 	
-	xbmc.output("[downloadtools.py] downloadpath="+downloadpath)
+	logger.info("[downloadtools.py] downloadpath="+downloadpath)
 	
 	try:
 		os.mkdir(downloadpath)
@@ -372,18 +373,18 @@ def getDownloadListPath():
 	# No está fijada, intenta forzarla
 	try:
 		if downloadpath == "":
-			xbmc.output("[downloadtools.py] downloadpath está vacio")
+			logger.info("[downloadtools.py] downloadpath está vacio")
 			
 			# Busca un setting del skin (Telebision)
 			downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-			xbmc.output("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+			logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
 			
 			# No es Telebision, fuerza el directorio home de XBMC
 			if downloadpath == "":
 				downloadpath = os.path.join (config.DATA_PATH,"downloads","list")
 				xbmc.log("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
 				if not os.path.exists(downloadpath):
-					xbmc.output("[downliadtools.py] download path doesn't exist:"+downloadpath)
+					logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
 					os.mkdir(downloadpath)
 				config.setSetting("downloadlistpath",downloadpath)
 			
@@ -392,12 +393,12 @@ def getDownloadListPath():
 				# guardar setting del skin en setting del plugin
 				downloadpath = os.path.join( downloadpath , "list" )
 				downloadpath = xbmc.translatePath( downloadpath )
-				xbmc.output("[downloadtools.py] downloadpath nativo es "+downloadpath)
+				logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
 				config.setSetting("downloadlistpath", downloadpath)
 	except:
 		pass
 	
-	xbmc.output("[downloadtools.py] downloadlistpath="+downloadpath)
+	logger.info("[downloadtools.py] downloadlistpath="+downloadpath)
 	
 	try:
 		os.mkdir(downloadpath)
@@ -428,46 +429,46 @@ def limpia_nombre_excepto_1(s):
 
 	# Titulo de entrada
 	try:
-		xbmc.output("s1="+urllib.quote_plus(s))
+		logger.info("s1="+urllib.quote_plus(s))
 	except:
-		xbmc.output("s1=no printable")
+		logger.info("s1=no printable")
 
 	# Convierte a unicode
 	try:
 		s = unicode( s, "utf-8" )
 	except:
-		xbmc.output("no es utf-8")
+		logger.info("no es utf-8")
 		try:
 			s = unicode( s, "iso-8859-1" )
 		except:
-			xbmc.output("no es iso-8859-1")
+			logger.info("no es iso-8859-1")
 			pass
 	try:
-		xbmc.output("s2="+urllib.quote_plus(s))
+		logger.info("s2="+urllib.quote_plus(s))
 	except:
-		xbmc.output("s2=no printable")
+		logger.info("s2=no printable")
 
 	# Elimina acentos
 	s = limpia_nombre_sin_acentos(s)
 	try:
-		xbmc.output("s3="+urllib.quote_plus(s))
+		logger.info("s3="+urllib.quote_plus(s))
 	except:
-		xbmc.output("s3=no printable")	
+		logger.info("s3=no printable")	
 
 	# Elimina caracteres prohibidos
 	validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
 	stripped = ''.join(c for c in s if c in validchars)
 	try:
-		xbmc.output("s4="+urllib.quote_plus(stripped))
+		logger.info("s4="+urllib.quote_plus(stripped))
 	except:
-		xbmc.output("s4=no printable")
+		logger.info("s4=no printable")
 	
 	# Convierte a iso
 	s = stripped.encode("iso-8859-1")
 	try:
-		xbmc.output("s5="+urllib.quote_plus(s))
+		logger.info("s5="+urllib.quote_plus(s))
 	except:
-		xbmc.output("s5=no printable")
+		logger.info("s5=no printable")
 
 	return s;
 
@@ -480,10 +481,10 @@ def limpia_nombre_excepto_2(s):
 
 def getfilefromtitle(url,title):
 	# Imprime en el log lo que va a descartar
-	xbmc.output("[downloadtools.py] getfilefromtitle: url="+url )
-	#xbmc.output("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
+	logger.info("[downloadtools.py] getfilefromtitle: url="+url )
+	#logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
 	plataforma = xbmctools.get_system_platform();
-	xbmc.output("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
+	logger.info("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
 	
 	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
 	if plataforma=="xbox":
@@ -503,23 +504,23 @@ def downloadtitle(url,title):
 	return downloadfile(url,fullpath)
 
 def downloadfile(url,nombrefichero):
-	xbmc.output("[downloadtools.py] downloadfile: url="+url)
-	xbmc.output("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+	logger.info("[downloadtools.py] downloadfile: url="+url)
+	logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
 	# antes
 	#f=open(nombrefichero,"wb")
 	nombrefichero = xbmc.makeLegalFilename(nombrefichero)
-	xbmc.output("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+	logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
 
 	# despues
 	if os.path.exists(nombrefichero):
 		f = open(nombrefichero, 'r+b')
 		existSize = os.path.getsize(nombrefichero)
-		xbmc.output("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
+		logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
 		grabado = existSize
 		f.seek(existSize)
 	else:
 		existSize = 0
-		xbmc.output("[downloadtools.py] downloadfile: el fichero no existe")
+		logger.info("[downloadtools.py] downloadfile: el fichero no existe")
 		f = open(nombrefichero, 'wb')
 		grabado = 0
 
@@ -540,7 +541,7 @@ def downloadfile(url,nombrefichero):
 	try:
 		connexion = opener.open(request)
 	except urllib2.HTTPError,e:
-		xbmc.output("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+		logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
 		#print e.code
 		#print e.msg
 		#print e.hdrs
@@ -596,7 +597,7 @@ def downloadfile(url,nombrefichero):
 					reintentos = reintentos + 1
 					xbmc.log("ERROR en la descarga del bloque, reintento %d" % reintentos)
 					for line in sys.exc_info():
-						xbmc.output( "%s" % line , xbmc.LOGERROR )
+						logger.info( "%s" % line , xbmc.LOGERROR )
 			
 			# El usuario cancelo la descarga
 			if progreso.iscanceled():
@@ -616,7 +617,7 @@ def downloadfile(url,nombrefichero):
 		except:
 			xbmc.log("ERROR en la descarga del fichero")
 			for line in sys.exc_info():
-				xbmc.output( "%s" % line , xbmc.LOGERROR )
+				logger.info( "%s" % line , xbmc.LOGERROR )
 			f.close()
 			progreso.close()
 			
@@ -630,17 +631,17 @@ def downloadfile(url,nombrefichero):
 	xbmc.log("Fin descarga del fichero")
 
 def downloadfileGzipped(url,pathfichero):
-	xbmc.output("[downloadtools.py] downloadfileGzipped: url="+url)
+	logger.info("[downloadtools.py] downloadfileGzipped: url="+url)
 	nombrefichero = pathfichero
-	xbmc.output("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
+	logger.info("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
 
 	nombrefichero = xbmc.makeLegalFilename(nombrefichero)
-	xbmc.output("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
+	logger.info("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
 	patron = "(http://[^/]+)/.+"
 	matches = re.compile(patron,re.DOTALL).findall(url)
 	
 	if len(matches):
-		xbmc.output("[downloadtools.py] URL principal :"+matches[0])
+		logger.info("[downloadtools.py] URL principal :"+matches[0])
 		url1= matches[0]
 	else:
 		url1 = url
@@ -677,7 +678,7 @@ def downloadfileGzipped(url,pathfichero):
 	try:
 		connexion = opener.open(request)
 	except urllib2.HTTPError,e:
-		xbmc.output("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+		logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
 		#print e.code
 		#print e.msg
 		#print e.hdrs
@@ -712,12 +713,12 @@ def downloadfileGzipped(url,pathfichero):
 		f = open(nombrefichero, 'w')
 		
 		existSize = 0
-		xbmc.output("[downloadtools.py] downloadfileGzipped: el fichero existe, se sobreescribirá, size=%d" % existSize)
+		logger.info("[downloadtools.py] downloadfileGzipped: el fichero existe, se sobreescribirá, size=%d" % existSize)
 		
 		
 	else:
 		existSize = 0
-		xbmc.output("[downloadtools.py] downloadfileGzipped: el fichero no existe")
+		logger.info("[downloadtools.py] downloadfileGzipped: el fichero no existe")
 		f = open(nombrefichero, 'wb')
 		
 
@@ -774,7 +775,7 @@ def downloadfileGzipped(url,pathfichero):
 					reintentos = reintentos + 1
 					xbmc.log("ERROR en la descarga del bloque, reintento %d" % reintentos)
 					for line in sys.exc_info():
-						xbmc.output( "%s" % line , xbmc.LOGERROR )
+						logger.info( "%s" % line , xbmc.LOGERROR )
 			
 			# El usuario cancelo la descarga
 			if progreso.iscanceled():
@@ -794,7 +795,7 @@ def downloadfileGzipped(url,pathfichero):
 		except:
 			xbmc.log("ERROR en la descarga del fichero")
 			for line in sys.exc_info():
-				xbmc.output( "%s" % line , xbmc.LOGERROR )
+				logger.info( "%s" % line , xbmc.LOGERROR )
 			f.close()
 			progreso.close()
 			
@@ -810,10 +811,10 @@ def downloadfileGzipped(url,pathfichero):
 	
 def GetTitleFromFile(title):
 	# Imprime en el log lo que va a descartar
-	xbmc.output("[downloadtools.py] GetTitleFromFile: titulo="+title )
-	#xbmc.output("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
+	logger.info("[downloadtools.py] GetTitleFromFile: titulo="+title )
+	#logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
 	plataforma = xbmctools.get_system_platform();
-	xbmc.output("[downloadtools.py] GetTitleFromFile: plataforma="+plataforma)
+	logger.info("[downloadtools.py] GetTitleFromFile: plataforma="+plataforma)
 	
 	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
 	if plataforma=="xbox":

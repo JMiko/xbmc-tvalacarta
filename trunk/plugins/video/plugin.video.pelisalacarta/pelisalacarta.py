@@ -35,21 +35,18 @@ def run():
 		url = urllib.unquote_plus( params.get("url") )
 	else:
 		url=''
-	logger.info("[pelisalacarta.py] url="+url)
 
 	# Extrae la accion
 	if (params.has_key("action")):
 		action = params.get("action")
 	else:
 		action = "selectchannel"
-	logger.info("[pelisalacarta.py] action="+action)
 
 	# Extrae el server
 	if (params.has_key("server")):
 		server = params.get("server")
 	else:
 		server = ""
-	logger.info("[pelisalacarta.py] server="+server)
 
 	# Extrae la categoria
 	if (params.has_key("category")):
@@ -59,14 +56,13 @@ def run():
 			category = params.get("channel")
 		else:
 			category = ""
-	logger.info("[pelisalacarta.py] category="+category)
 
 	# Extrae la serie
 	if (params.has_key("Serie")):
 		serie = params.get("Serie")
 	else:
 		serie = ""
-	logger.info("[pelisalacarta.py] Serie="+serie)
+	logger.info("[pelisalacarta.py] url="+url+", action="+action+", server="+server+", category="+category+", serie="+serie)
 
 	#JUR - Gestión de Errores de Internet (Para que no casque el plugin 
 	#      si no hay internet (que queda feo)
@@ -97,11 +93,11 @@ def run():
 		ventana_error = xbmcgui.Dialog()
 		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):
-			print "Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1])
+			logger.info("Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1]))
 			ok= ventana_error.ok ("pelisalacarta", "No se puede conectar con el servidor",'compruebe la direccion de la página',"o su conexión a internet")
 		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		elif hasattr(e,'code'):
-			print "codigo de error HTTP : %d" %e.code 
+			logger.info("codigo de error HTTP : %d" %e.code)
 			ok= ventana_error.ok ("pelisalacarta", "El servidor solicitado no pudo realizar la peticion", texto_error(e.code),"codigo de error : %d " %e.code)	
 		else:
 			pass	
