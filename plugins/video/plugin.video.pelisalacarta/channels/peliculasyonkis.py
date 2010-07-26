@@ -58,12 +58,10 @@ def mainlist(params,url,category):
 		flecha = "-"
 	# Añade al listado de XBMC
 	
-	xbmctools.addnewfolder( CHANNELNAME , "Activar_Novedades"  , category , "%s Últimas Novedades" %flecha,activar,"","")
-	if config.getSetting("activar")=="true":
-		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Estrenos de cartelera" ,"http://www.peliculasyonkis.com/ultimas-peliculas/cartelera/","","")
-		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Estrenos de DVD" ,"http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-dvd/","","")
-		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Ultimas Peliculas Actualizadas","http://www.peliculasyonkis.com/ultimas-peliculas/actualizadas/","","")
-		xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "      Ultimas peliculas añadidas a la web","http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-web/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Estrenos de cartelera" ,"http://www.peliculasyonkis.com/ultimas-peliculas/cartelera/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Estrenos de DVD" ,"http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-dvd/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Ultimas Peliculas Actualizadas","http://www.peliculasyonkis.com/ultimas-peliculas/actualizadas/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Ultimas peliculas añadidas a la web","http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-web/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Listado por categorias","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listalfabetico" , category , "Listado alfabético","http://www.peliculasyonkis.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
