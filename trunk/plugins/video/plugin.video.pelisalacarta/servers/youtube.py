@@ -9,8 +9,8 @@ import xbmc,xbmcplugin,xbmcgui
 import config
 
 _VALID_URL = r'^((?:http://)?(?:\w+\.)?youtube\.com/(?:(?:v/)|(?:(?:watch(?:\.php)?)?\?(?:.+&)?v=)))?([0-9A-Za-z_-]+)(?(1).+)?$'
-AVAILABLE_FORMATS  = ['13','17','34','5','18','35','22','37']
-AVAILABLE_FORMATS2 = {'13':'Baja','17':'Media (3gp)','34':'High (FLV)','5':'360p','18':'480p','35':'1227KBS (FLV)','22':'720p','37':'1080p'}
+AVAILABLE_FORMATS  = ['13','17','5','34','18','35','22','37']
+AVAILABLE_FORMATS2 = {'13':'Baja','17':'Media (3gp)','5':'240p (FLV)','34':'360p (FLV)','18':'360p (MP4)','35':'480p (FLV)','22':'720p (HD)','37':'1080p (HD)'}
 std_headers = {
 	'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2',
 	'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
@@ -34,7 +34,7 @@ def geturls(id,data):
 		format = []
 		for link in reglinks:
 			try:
-				fmt = link.split('|')
+				fmt = link.replace("|http","*http").split('*')
 				opciones.append("Calidad %s" %AVAILABLE_FORMATS2[fmt[0]])
 				links.append(fmt[1])
 				format.append(fmt[0])
@@ -44,18 +44,19 @@ def geturls(id,data):
 		dia = xbmcgui.Dialog()
 		seleccion = dia.select("Elige una Calidad", opciones)
 		xbmc.output("seleccion=%d calidad : (%s) %s " % (seleccion,format[seleccion],AVAILABLE_FORMATS2[format[seleccion]]))
-		if seleccion == -1: return ""
+		if seleccion == -1:
+			return "Esc"
 		return links[seleccion]
 	else:
 		alertaNone()
-	return ""
+	return "Esc"
 	
 	
 def geturl( id ):
 	print '[pelisalacarta] youtube.py Modulo: geturl(%s)' %id
 	quality = int(config.getSetting("quality_youtube"))
 	if id != "":
-		url = "http://www.youtube.com/watch?v=%s&fmt=18" % id
+		url = "http://www.youtube.com/watch?v=%s" % id
 		print 'esta es la url: %s'%url
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -63,28 +64,42 @@ def geturl( id ):
 		data = response.read()
 		response.close()
 		if data != "":
+			print "Calidad encontrada es :%s" %quality
 			if quality == 8:
 				videourl = geturls(id,data)
 				return videourl
-			regexp = re.compile(r'\&t=([^\&]+)\&')
+			
+			regexp = re.compile(r'fmt_stream_map=([^\&]+)\&')
 			match = regexp.search(data)
 			print 'match : %s'%str(match)
 			videourl = ""
 			if match is not None:
-				tParam = match.group(1)
+				fmt_stream_map = urllib.unquote_plus(match.group(1))
+				print "fmt_stream_map :%s" %fmt_stream_map
+				
+				videourls = dict (nvp.replace("|http","*http").split("*") for nvp in fmt_stream_map.split(","))
+				print videourls
+				
 				while True:
 					Tquality = AVAILABLE_FORMATS[quality]
-					
-					videourl1 = "http://www.youtube.com/get_video?video_id=%s&t=%s&fmt=%s" % ( id, tParam ,Tquality)
+					print "AVAILABLE FORMAT :%s %s" %(Tquality,AVAILABLE_FORMATS2[Tquality])
+					#videourl1 = "http://www.youtube.com/get_video?t=%s&video_id=%s&fmt=%s" % (  tParam ,id,Tquality)
 					try:
-						videourl = verify_url( videourl1.encode( 'utf-8' ) ).decode( 'utf-8' )
+						#videourl = verify_url( videourl1.encode( 'utf-8' ) ).decode( 'utf-8' )
+						videourl = videourls[Tquality]
 						break
 					except:
+						
 						quality -= 1
-				print "Quality Found: (%s) %s " % (AVAILABLE_FORMATS[quality],AVAILABLE_FORMATS2[AVAILABLE_FORMATS[quality]])
+						if quality == -1:
+							break
+				try:
+					print "Quality Found: (%s) %s " % (AVAILABLE_FORMATS[quality],AVAILABLE_FORMATS2[AVAILABLE_FORMATS[quality]])
+				except:
+					print "Quality not available, result : -1"
 				if videourl == "":
 					alertaCalidad()
-					return "" 
+					return "Esc" 
 				return videourl
 			else:
 				alertaNone()
@@ -92,7 +107,7 @@ def geturl( id ):
 			alertaNone()
 		
 	
-	return ""
+	return "Esc"
 
 def GetYoutubeVideoInfo(videoID,eurl=None):
 	'''
@@ -144,7 +159,7 @@ def verify_url( url ):
 
 def alertaCalidad():
 	ventana = xbmcgui.Dialog()
-	ok= ventana.ok ("Conector de Youtube", "La calidad elegida en configuracion",'no esta disponible o es muy baja',"elijá otra calidad distinta y vuelva a probar")
+	ok= ventana.ok ("Conector de Youtube", "La calidad elegida en configuracion",'no esta disponible o es muy baja',"elija otra calidad distinta y vuelva a probar")
 	
 def alertaNone():
 	ventana = xbmcgui.Dialog()

@@ -18,6 +18,7 @@ import xbmctools
 import string
 import youtube
 import config
+import config
 import logger
 
 CHANNELNAME = "peliculas21"
@@ -32,7 +33,7 @@ except:
 logger.info("[peliculas21.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images','posters' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.DATA_PATH, 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
 	logger.info("[peliculas21.py] mainlist")
@@ -198,8 +199,8 @@ def listsimple(params,url,category):
 	data = scrapertools.cachePage(url)
 
 	# Extrae las entradas (carpetas)
-	patronvideos  = '<div class="filmgal"[^>]+><a href="([^"]+)"[^>]+' # url
-	patronvideos += '><img alt="([^"]+)" '                                       # Titulo
+	patronvideos  = '<div[^c]+class="filmgal"[^>]+>.*?<a href="([^"]+)"[^>]+' # url
+	patronvideos += '>.*?<img alt="([^"]+)" '                                       # Titulo
 	patronvideos += 'src="([^"]+)"'                                            # Imagen
 	patronvideos += '.*?(Genero: </strong>.*?)</div>'                           # Genero
 	patronvideos += '.*?(Duracion: </strong>[^<]+)</div>'                       # Duracion si hay

@@ -55,7 +55,10 @@ def mainlist(params,url,category):
 
 def listcategorias(params,url,category):
         logger.info("[peliculas.py] listcategorias")
-
+		
+        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2008"    ,"http://peliculasid.com/2008-1.html","","")
+        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2009"    ,"http://peliculasid.com/2009-1.html","","")
+        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2010"    ,"http://peliculasid.com/2010-1.html","","")
         xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Acción"    ,"http://www.peliculasid.com/accion-1.html","","")
         xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Animación"    ,"http://www.peliculasid.com/animacion-1.html","","")
         xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Aventura"    ,"http://www.peliculasid.com/aventura-1.html","","")
@@ -103,6 +106,7 @@ def listvideos(params,url,category):
 	for match in matches:
 		# Titulo
 		scrapedtitle = match[0]
+		scrapedtitle = scrapedtitle.replace('&#8217;',"'")
 		# URL
 		scrapedurl = match[1]
 		# Thumbnail
@@ -159,7 +163,6 @@ def detail(params,url,category):
 		descripcion = matches[0]
                 descripcion = descripcion.replace('&#8220;','"')
                 descripcion = descripcion.replace('&#8221;','"')
-
                 descripcion = descripcion.replace('&#8230;','...')
                 descripcion = descripcion.replace('&#8217;',"'")
                 descripcion = descripcion.replace("&nbsp;","")
@@ -219,45 +222,53 @@ def detail(params,url,category):
 		server = video[2]
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , (title.strip() + " (%d) " + videotitle) % j , url , thumbnail , plot )
 		j=j+1
-
-	# Carga los iframes
-	#<a href="http://peliculasid.com/iframeplayer.php?url=aHR0cDovL3ZpZGVvLmFrLmZhY2Vib29rLmNvbS9jZnMtYWstc25jNC80MjIxNi82MS8xMjgxMTI4ODgxOTUwXzM5NTAwLm1wNA==" target="repro">Parte 1</a>
-        patronvideos = '<a href="(http...peliculasid.com.iframeplayer[^"]+)"[^>]+>([^<]+)</a>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-	for match in matches:
-		scrapedtitle = match[1]
-		scrapedurl = match[0]
-		scrapedthumbnail = thumbnail
-		scrapedplot = plot
-
-		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "iframes" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def iframes(params,url,category):
-	logger.info("[peliculasid.py] iframes")
-
-	title = urllib.unquote_plus( params.get("title") )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-
-	# Descarga la página
-	data = scrapertools.cachePage(url)
-	#logger.info(data)
-	listavideos = servertools.findvideos(data)
-	j=1
-	for video in listavideos:
-		videotitle = video[0]
-		url = video[1]
-		server = video[2]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , (title.strip() + " (%d) " + videotitle) % j , url , thumbnail , plot )
-		j=j+1
-
+	patronvideos = '<a href="(http://peliculasid.com/iframeplayer.php[^"]+)" target="[^"]+">([^<]+)</a>'
+	#patronvideos2 = 'file=([^\&]+)\&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		for match in matches:
+			#data2 = scrapertools.cachePage(match[0])
+			#matches2 = re.compile(patronvideos2,re.DOTALL).findall(data2)
+			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - "+match[1], match[0] , thumbnail , plot )
+	
+	## --------------------------------------------------------------------------------------##
+	#            Busca enlaces de videos para el servidor vkontakte.ru                        #
+	## --------------------------------------------------------------------------------------##
+	#"http://vkontakte.ru/video_ext.php?oid=89710542&id=147003951&hash=28845bd3be717e11&hd=1
+	'''
+	var video_host = 'http://cs12916.vkontakte.ru/';
+	var video_uid = '87155741';
+	var video_vtag = 'fc697084d3';
+	var video_no_flv = 1;
+	var video_max_hd = '1'
+	'''
+	patronvideos = '<iframe src="(http://vk[^/]+/video_ext.php[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		print " encontro VKontakte.ru :%s" %matches[0]
+ 		
+		data2 = scrapertools.cachePage(matches[0])
+		print data2
+		patron  = "var video_host = '([^']+)'.*?"
+		patron += "var video_uid = '([^']+)'.*?"
+		patron += "var video_vtag = '([^']+)'.*?"
+		patron += "var video_no_flv = ([^;]+);.*?"
+		patron += "var video_max_hd = '([^']+)'"
+		matches2 = re.compile(patron,re.DOTALL).findall(data2)
+		if len(matches2)>0:    #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
+			for match in matches2:
+				if match[3].strip() == "0":
+					tipo = "flv"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKONTAKTE] [%s]" %tipo, videourl , thumbnail , plot )
+				else:
+					tipo = "360.mp4"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKONTAKTE] [%s]" %tipo, videourl , thumbnail , plot )
+					tipo = "240.mp4"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKONTAKTE] [%s]" %tipo, videourl , thumbnail , plot )
+			
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -265,11 +276,22 @@ def iframes(params,url,category):
 
 def play(params,url,category):
 	logger.info("[peliculasid.py] play")
-
+	
+	
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
+	try:
+		plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	except:
+		plot = xbmc.getInfoLabel( "ListItem.Plot" )
 	server = params["server"]
+	
+	if "iframeplayer.php" in url:      #"http://peliculasid.com/iframeplayer.php?url=aHR0cDovL3ZpZGVvLmFrLmZhY2Vib29rLmNvbS9jZnMtYWstc25jNC80MjIxNi82MS8xMjgxMTI4ODgxOTUwXzM5NTAwLm1wNA=="
+		data = scrapertools.cachePage(url)
+		patronvideos = 'file=([^\&]+)\&'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)
+		if len(matches)>0:
+			url = matches[0]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

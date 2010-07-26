@@ -406,18 +406,29 @@ def detail(params,url,category):
 	patronvideos = '<iframe src="(http://vk.com/video_ext.php[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
-		print " encontroooo VK.COM :%s" %matches[0]
+		print " encontro VK.COM :%s" %matches[0]
  		
 		data2 = scrapertools.cachePage(matches[0])
 		print data2
 		patron  = "var video_host = '([^']+)'.*?"
 		patron += "var video_uid = '([^']+)'.*?"
-		patron += "var video_vtag = '([^']+)'"
+		patron += "var video_vtag = '([^']+)'.*?"
+		patron += "var video_no_flv = ([^;]+);.*?"
+		patron += "var video_max_hd = '([^']+)'"
 		matches2 = re.compile(patron,re.DOTALL).findall(data2)
 		if len(matches2)>0:    #http://cs12387.vk.com/u87155741/video/fe5ee11ddb.360.mp4
 			for match in matches2:
-				videourl = "%s/u%s/video/%s.360.mp4" % (match[0],match[1],match[2])
-				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
+				if match[3].strip() == "0":
+					tipo = "flv"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+				else:
+					tipo = "360.mp4"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+					tipo = "240.mp4"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
 		
 		
 	# Label (top-right)...
@@ -483,7 +494,7 @@ def downloadstr(urlsub):
 	
 	import downloadtools
 	
-	fullpath = os.path.join( config.DATA_PATH , 'subtitulo.srt' )
+	fullpath = os.path.join( os.getcwd(), 'resources', 'lib', 'subtitulo.srt' )
 	if os.path.exists(fullpath):
 		try:
 			subtitfile = open(fullpath,"w")
