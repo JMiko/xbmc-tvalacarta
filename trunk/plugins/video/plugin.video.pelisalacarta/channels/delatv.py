@@ -73,8 +73,10 @@ def novedades(params,url,category):
 		scrapedplot = ""
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 		try:
-			scrapedtitle = unicode(scrapedtitle, "utf-8" )
-			scrapedtitle = scrapedtitle.replace("\xf1","ñ")
+			print scrapedtitle
+			scrapedtitle = scrapedtitle.replace("Ã±","ñ")
+			#scrapedtitle = unicode(scrapedtitle, "utf-8" )
+			
 		except:
 			pass
 		# Añade al listado de XBMC
@@ -245,11 +247,11 @@ def play(params,url,category):
 				for match in matches2:
 					if match[3].strip() == "0":
 						tipo = "flv"
-						url = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+						url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
 					
 					else:
 						tipo = "360.mp4"
-						url = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+						url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
 						
 	
 	
