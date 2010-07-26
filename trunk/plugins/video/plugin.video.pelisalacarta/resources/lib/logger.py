@@ -19,6 +19,5 @@ def debug(texto):
 		xbmc.output(texto)
 
 def error(texto):
-	if loggeractive:
-		xbmc.output(texto)
+	xbmc.output(texto,xbmc.LOGERROR)
 

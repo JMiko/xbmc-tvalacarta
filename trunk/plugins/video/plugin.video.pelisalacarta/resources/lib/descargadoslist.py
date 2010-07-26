@@ -51,8 +51,9 @@ def mainlist(params,url,category):
 
 	# Crea un listado con las entradas de favoritos
 	ficheros = os.listdir(DOWNLOAD_PATH)
+	ficheros.sort()
 	for fichero in ficheros:
-
+		xbmc.output("fichero="+fichero)
 		try:
 			# Lee el bookmark
 			titulo,thumbnail,plot,server,url = readbookmark(fichero)
@@ -64,7 +65,7 @@ def mainlist(params,url,category):
 			pass
 			logger.info("[downloadall.py] error al leer bookmark")
 			for line in sys.exc_info():
-				logger.info( "%s" % line , xbmc.LOGERROR )
+				logger.error( "%s" % line )
 
 	xbmctools.addnewvideo( CHANNELNAME , "downloadall" , "category" , "server" , "(Empezar la descarga de la lista)" , "" , os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png"), "" )
 
@@ -102,7 +103,7 @@ def errorlist(params,url,category):
 			pass
 			logger.info("[downloadall.py] error al leer bookmark")
 			for line in sys.exc_info():
-				logger.info( "%s" % line , xbmc.LOGERROR )
+				logger.error( "%s" % line )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -184,7 +185,7 @@ def downloadall(params,url,category):
 				except:
 					logger.info("[downloadall.py] error al descargar thumbnail")
 					for line in sys.exc_info():
-						logger.info( "%s" % line , xbmc.LOGERROR )
+						logger.error( "%s" % line )
 				
 				# Descarga el video
 				dev = downloadtools.downloadtitle(mediaurl,titulo)
@@ -284,7 +285,7 @@ def readbookmarkfile(filename,path):
 	except:
 		logger.info("[descargadoslist.py] Error inesperado al leer el bookmark")
 		for line in sys.exc_info():
-			logger.info( "%s" % line , xbmc.LOGERROR )
+			logger.error( "%s" % line )
 
 	bookmarkfile.close();
 

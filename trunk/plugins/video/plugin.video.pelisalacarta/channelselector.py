@@ -81,6 +81,7 @@ def listchannels(params,url,category):
 	addfolder("Capitan Cinema","capitancinema","mainlist")
 	addfolder("Film Streaming [IT]","filmstreaming","mainlist")
 	addfolder("No Megavideo","nomegavideo","mainlist")
+	addfolder("LetMeWatchThis","letmewatchthis","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	#addfolder("seriesonline.us","seriesonline","mainlist")
