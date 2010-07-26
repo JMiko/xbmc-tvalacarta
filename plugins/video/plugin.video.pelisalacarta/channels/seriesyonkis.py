@@ -19,6 +19,7 @@ import library
 import DecryptYonkis as Yonkis
 import config
 import logger
+import buscador
 
 CHANNELNAME = "seriesyonkis"
 SERVER = {'pymeno2':'','pymeno3':'','pymeno4':'','pymeno5':'','pymeno6':'','svueno':'(Stagevu)'}
@@ -68,16 +69,8 @@ def mainlist(params,url,category):
 def search(params,url,category):
 	logger.info("[seriesyonkis.py] search")
 
-	keyboard = xbmc.Keyboard('')
-	keyboard.doModal()
-	if (keyboard.isConfirmed()):
-		tecleado = keyboard.getText()
-		if len(tecleado)>0:
-			#convert to HTML
-			tecleado = tecleado.replace(" ", "+")
-			searchUrl = "http://www.seriesyonkis.com/buscarSerie.php?s="+tecleado
-			searchresults(params,searchUrl,category)
-
+	buscador.listar_busquedas(params,url,category)
+	
 def performsearch(texto):
 	logger.info("[cine15.py] performsearch")
 	url = "http://www.seriesyonkis.com/buscarSerie.php?s="+texto
@@ -106,8 +99,11 @@ def performsearch(texto):
 		
 	return resultados
 
-def searchresults(params,url,category):
+def searchresults(params,Url,category):
 	logger.info("[seriesyonkis.py] searchresults")
+	
+	buscador.salvar_busquedas(params,Url,category)
+	url = "http://www.seriesyonkis.com/buscarSerie.php?s="+Url.replace(" ", "+")
 
 	if config.getSetting("forceview")=="true":
 		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons

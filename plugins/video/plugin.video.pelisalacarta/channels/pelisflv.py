@@ -224,7 +224,7 @@ def detail(params,url,category):
 	# Descarga la página
 	datafull = scrapertools.cachePage(url)
 	#logger.info(data)
-	patron = "<!-- google_ad_section_start -->.*?<!-- google_ad_section_end -->"
+	patron = "google_ad_section_start(.*?)google_ad_section_end -->"
 	matches = re.compile(patron,re.DOTALL).findall(datafull)
 	data = matches[0]
                    
@@ -378,7 +378,62 @@ def detail(params,url,category):
 		logger.info(" Servidor Gigabyteupload")
 		for match in matches:
 			
-			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Gigabyteupload" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )
+			xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Gigabyteupload" , title+" - [Gigabyteupload]",match  , thumbnail , plot )
+
+	## --------------------------------------------------------------------------------------##
+	#            Busca enlaces de videos para el servidor vk.com                             #
+	## --------------------------------------------------------------------------------------##
+	'''
+	var video_host = '447.gt3.vkadre.ru';
+	var video_uid = '0';
+	var video_vtag = '2638f17ddd39-';
+	var video_no_flv = 0;
+	var video_max_hd = '0';
+	var video_title = 'newCine.NET+-+neWG.Es+%7C+Chicken+Little';
+
+	'''
+	patronvideos = '<iframe src="(http://vk.com/video_ext.php[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		print " encontro VK.COM :%s" %matches[0]
+ 		
+		data2 = scrapertools.downloadpageGzip(matches[0])
+		print data2
+		regexp =re.compile(r'vkid=([^\&]+)\&')
+		match = regexp.search(data2)
+		vkid = ""
+		print 'match %s'%str(match)
+		if match is not None:
+			vkid = match.group(1)
+		else:
+			print "no encontro vkid"
+			
+		patron  = "var video_host = '([^']+)'.*?"
+		patron += "var video_uid = '([^']+)'.*?"
+		patron += "var video_vtag = '([^']+)'.*?"
+		patron += "var video_no_flv = ([^;]+);.*?"
+		patron += "var video_max_hd = '([^']+)'"
+		matches2 = re.compile(patron,re.DOTALL).findall(data2)
+		if len(matches2)>0:    
+			for match in matches2:
+				if match[3].strip() == "0" and match[1] != "0":
+					tipo = "flv"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+				elif match[1]== "0" and vkid != "":     #http://447.gt3.vkadre.ru/assets/videos/2638f17ddd39-75081019.vk.flv
+					tipo = "flv"
+					videourl = "%s/assets/videos/%s%s.vk.%s" % (match[0],match[1],vkid,tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+				else:
+					tipo = "360.mp4"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+					tipo = "240.mp4"
+					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
+					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+		
+
+
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		

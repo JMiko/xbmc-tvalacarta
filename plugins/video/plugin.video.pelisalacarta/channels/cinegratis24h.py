@@ -187,8 +187,22 @@ def detail(params,url,category):
 					except:
 						plot = descripcion
 				                    
+                   
+          
+	# ------------------------------------------------------------------------------------
+	# Busca los enlaces a los videos
+	# ------------------------------------------------------------------------------------
+	#listavideos = servertools.findvideos(data)
+
+	#for video in listavideos:
+	#	videotitle = video[0]
+	#	url = video[1]
+	#	server = video[2]
+	#	xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+	# ------------------------------------------------------------------------------------
+        
         #--- Busca los videos Directos
-        patronvideos = 'flashvars="file=([^\&]+)\&amp'
+        patronvideos = 'file=([^\&]+)\&'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         
         if len(matches)>0:
@@ -216,22 +230,14 @@ def detail(params,url,category):
                  
           else:
 			parte = 0
+			tipo = " (FLV)"
 			for match in matches:
 				logger.info(" matches = "+match)
 				parte = parte + 1
-				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " "+str(parte)+" (FLV)", match , thumbnail , plot )
-
-	# ------------------------------------------------------------------------------------
-	# Busca los enlaces a los videos
-	# ------------------------------------------------------------------------------------
-	listavideos = servertools.findvideos(data)
-
-	for video in listavideos:
-		videotitle = video[0]
-		url = video[1]
-		server = video[2]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
-
+				if match.endswith('mp4'):
+					tipo = " (MP4)"
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " (%d) %s" %(parte,tipo), match , thumbnail , plot )
+	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 		

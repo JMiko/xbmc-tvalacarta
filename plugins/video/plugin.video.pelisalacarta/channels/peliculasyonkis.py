@@ -623,6 +623,6 @@ def Activar_Novedades(params,activar,category):
 		config.setSetting("activar","false")
 	print "opcion menu novedades :%s" %config.getSetting("activar")
 	
-	xbmc.executebuiltin('Container.Update')	
+	#xbmc.executebuiltin('Container.Update')	
 	xbmc.executebuiltin('Container.Refresh')
 	

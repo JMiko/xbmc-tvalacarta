@@ -62,7 +62,7 @@ def listchannels(params,url,category):
 	addfolder("Peliculasid","peliculasid","mainlist")
 	addfolder("Cinegratis24h","cinegratis24h","mainlist")
 	addfolder("Cine-Adicto","cineadicto","mainlist")
-	addfolder("PelisFlv","pelisflv","mainlist")
+	#addfolder("PelisFlv","pelisflv","mainlist")  # de momento queda apartado por falta de tiempo
 	addfolder("NoloMires","nolomires","mainlist")
 	addfolder("NewDivx","newdivx","mainlist")
 	#addfolder("Pelis-Sevillista56","sevillista","mainlist")

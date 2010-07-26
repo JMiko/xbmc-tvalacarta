@@ -48,7 +48,7 @@ def mainlist(params,url,category):
 def catlist(params,url,category):
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
@@ -74,7 +74,7 @@ def catlist(params,url,category):
 def fulllist(params,url,category):
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
@@ -100,7 +100,7 @@ def fulllist(params,url,category):
 def newlist(params,url,category):
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
@@ -130,7 +130,8 @@ def detail(params,url,category):
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
+	
 	#logger.info(data)
 	
 	# Extrae el argumento
@@ -151,7 +152,7 @@ def detail(params,url,category):
 	if len(matches)>0:
 		data = matches[0]
 
-	patronvideos = '<a href="([^"]+)" target="_blank">([^<]+)</a>'
+	patronvideos = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
@@ -163,7 +164,7 @@ def detail(params,url,category):
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		xbmctools.addnewfolder( CHANNELNAME , "detail2" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	patronvideos = "<a href='([^']+)' target='_blank'>([^<]+)</a>"
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -226,8 +227,9 @@ def play(params,url,category):
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
 
+	scrapedurl = ""
 	# Lee la página con el player
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 
 	# Extrae las entradas (capítulos
@@ -236,12 +238,13 @@ def play(params,url,category):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
 		scrapedurl = matches[0]
+		server = "Directo"
 	else:
 		patronvideos  = '<param name="flashvars" value="file=([^\&]+)&'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
 		if len(matches)>0:
 			scrapedurl = matches[0]
-
+			server= "Directo"
 	xbmctools.playvideo(CHANNELNAME,server,scrapedurl,category,title,thumbnail,plot)
 
 def playmega(params,url,category):
@@ -257,7 +260,7 @@ def playmega(params,url,category):
 	if url.startswith("http://www.animeid.com"):
 		url = "http://animeid.com" + url[22:]
 	logger.info("[animeid.py] url="+url)
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 
 	# Extrae las entradas (videos)
@@ -284,5 +287,50 @@ def playdirecto(params,url,category):
 	# Cierra dialogo
 	dialogWait.close()
 	del dialogWait
+
+	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+
+
+def detail2(params,url,category):
+	logger.info("[animeid.py] detail2")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	
+	scrapedurl = ""
+	# Lee la página con el player
+	data = scrapertools.downloadpageGzip(url)
+	#logger.info(data)
+	
+	patronvideos = 'file=([^\&]+)\&'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		scrapedurl = matches[0]
+		server = 'Directo'
+		
+		if (DEBUG): logger.info("title=["+title+"], url=["+scrapedurl+"], thumbnail=["+thumbnail+"]")
+		xbmctools.addnewvideo( CHANNELNAME , "play2" , category , server , title + " - [%s]" %server , scrapedurl , thumbnail, plot )
+	patronvideos = 'http://[^\.]+.megavideo.com[^\?]+\?v=([A-Z0-9a-z]{8})'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		scrapedurl = matches[0]
+		server = 'Megavideo'
+		
+		if (DEBUG): logger.info("title=["+title+"], url=["+scrapedurl+"], thumbnail=["+thumbnail+"]")
+		xbmctools.addnewvideo( CHANNELNAME , "play2" , category , server , title + " - [%s]" %server , scrapedurl , thumbnail, plot )
+		
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def play2(params,url,category):
+	logger.info("[animeid.py] play2")
+
+	title = urllib.unquote_plus( params.get("title") )
+	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+	server = params["server"]
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
