@@ -40,6 +40,7 @@ def mainlist(params,url,category):
 
 	# Crea un listado con las entradas de favoritos
 	ficheros = os.listdir(BOOKMARK_PATH)
+	ficheros.sort()
 	for fichero in ficheros:
 
 		try:
@@ -54,11 +55,7 @@ def mainlist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
