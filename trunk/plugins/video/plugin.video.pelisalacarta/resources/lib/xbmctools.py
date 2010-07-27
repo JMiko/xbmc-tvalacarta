@@ -164,6 +164,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	else:
 		opciones.append("Añadir a lista de descargas")
 	opciones.append("Enviar a JDownloader")
+	if default_action=="3":
+		seleccion = len(opciones)-1
 	if desderrordescargas:
 		opciones.append("Borrar descarga definitivamente")
 		opciones.append("Pasar de nuevo a lista de descargas")
@@ -200,7 +202,6 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 			d = {"web": "http://www.megavideo.com/?v=" + url}
 			
 		data = scrapertools.cachePage(config.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+urllib.urlencode(d)+ " " +thumbnail)
-		data = scrapertools.cachePage(config.getSetting("jdownloader")+"/action/add/links/grabber0/start1/"+thumbnail)
 		return
 
 	# Ver en calidad alta

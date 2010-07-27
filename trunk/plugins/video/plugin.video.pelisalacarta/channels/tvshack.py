@@ -544,7 +544,7 @@ def listaVideosEpisodio (params,url,category,strmfile=False):
       scrapedtitle = scrapedtitle + ' (NO SOPORTADO)'
       
     opciones.append(scrapedtitle)
-  if config.getSetting("default_action")=="0":
+  if config.getSetting("default_action")=="0" or config.getSetting("default_action")=="3":
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Elige un vídeo", opciones)
   else:
