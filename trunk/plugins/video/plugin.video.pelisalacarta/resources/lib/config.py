@@ -53,7 +53,7 @@ def setSetting(name,value):
 def getLocalizedString(code):
 	# Nuevo XBMC
 	if DHARMA:
-		__language__ = __settings__.getLocalizedString( code )
+		__language__ = __settings__.getLocalizedString
 		return __language__(code)
 	# Antiguo XBMC
 	else:
