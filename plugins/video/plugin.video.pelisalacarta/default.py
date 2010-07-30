@@ -40,7 +40,7 @@ if REMOTE_DBG:
         import pysrc.pydevd as pydevd
     # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
     # El server está en el PC donde tengas ejecutando eclipse
-        pydevd.settrace('192.168.1.30', stdoutToServer=True, stderrToServer=True)
+        pydevd.settrace('localhost', stdoutToServer=True, stderrToServer=True)
         logger.debug ("[default.py] REMOTE_DGB ON -  conectando con el server en 192.168.1.30")
     except ImportError:
         xbmc.output("[default.py] REMOTE_DBG Error: " +
