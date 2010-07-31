@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <strings>
 	<string id="30000">Nombre:</string>
 	<string id="30001">Version:</string>
@@ -10,7 +10,7 @@
 	<string id="30005">MPlayer</string>
 	<string id="30006">DVDPlayer</string>
 
-	<string id="30011">Accion al seleccionar v�deo:</string>
+	<string id="30011">Accion al seleccionar vídeo:</string>
 	<string id="30008">Preguntar</string>
 	<string id="30009">Ver</string>
 	<string id="30010">Ver en calidad alta</string>
@@ -25,7 +25,7 @@
 	<string id="30102">Password Megavideo:</string>
 	<string id="30103">Cookie Megavideo:</string>
 	<string id="30200">Comprobar actualizaciones:</string>
-	<string id="30202">Forzar modo de vista �ptimo:</string>
+	<string id="30202">Forzar modo de vista Óptimo:</string>
 	<string id="30201">Directorio de descargas:</string>
 	<string id="30203">Directorio de lista descargas:</string>
 	<string id="30204">Activar modo adultos:</string>
@@ -39,54 +39,54 @@
 	<string id="30300">Eliminar esta busqueda</string>
 
 	<!-- LetMeWatchThis -->
-	<string id="40001">Pel�culas - Novedades</string>
+	<string id="40001">Películas - Novedades</string>
 	<string id="40002">Series - Novedades</string>
-	<string id="40003">!P�gina siguiente</string>
+	<string id="40003">!Página siguiente</string>
 
 	<!-- TVShack strings -->
-	<string id="41000">TVShack</string>
-	<string id="41001">Series TV (VO)</string>
-	<string id="41002">Películas (VO)</string>
-	<string id="41003">Documentales (VO)</string>
-	<string id="41004">Anime (VO)</string>
-	<string id="41005">Música</string>
-	<string id="41006">Busqueda Global en TVShack</string>
-	<string id="41007">No se produjeron resultados de búsqueda</string>
-	<string id="41008">Serie - %s (%s episodios)</string>
-	<string id="41009">Serie - </string>
+	<string id="30900">TVShack</string>
+	<string id="30901">Series TV (VO)</string>
+	<string id="30902">Películas (VO)</string>
+	<string id="30903">Documentales (VO)</string>
+	<string id="30904">Anime (VO)</string>
+	<string id="30905">Música</string>
+	<string id="30906">Busqueda Global en TVShack</string>
+	<string id="30907">No se produjeron resultados de búsqueda</string>
+	<string id="30908">Serie - %s (%s episodios)</string>
+	<string id="30909">Serie - </string>
 
-	<string id="41010">Cine - %s (%s)</string>
-	<string id="41011">"Música - "</string>
-	<string id="41012">Leyendo %s...</string>
-	<string id="41013">No se encontró nada que listar</string>
-	<string id="41014">episodio</string>
-	<string id="41015">episodios</string>
-	<string id="41016">canción</string>
-	<string id="41017">canciones</string>
-	<string id="41018"> (Nuevo)</string>
-	<string id="41019"> (Nuevos contenidos)</string>
+	<string id="30910">Cine - %s (%s)</string>
+	<string id="30911">"Música - "</string>
+	<string id="30912">Leyendo %s...</string>
+	<string id="30913">No se encontró nada que listar</string>
+	<string id="30914">episodio</string>
+	<string id="30915">episodios</string>
+	<string id="30916">canción</string>
+	<string id="30917">canciones</string>
+	<string id="30918"> (Nuevo)</string>
+	<string id="30919"> (Nuevos contenidos)</string>
 
-	<string id="41020">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
-	<string id="41021"></string>
-	<string id="41022"></string>
-	<string id="41023"></string>
-	<string id="41024"></string>
-	<string id="41025"></string>
-	<string id="41026"></string>
-	<string id="41027"></string>
-	<string id="41028"></string>
-	<string id="41029"></string>
+	<string id="30920">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
+	<string id="30921"></string>
+	<string id="30922"></string>
+	<string id="30923"></string>
+	<string id="30924"></string>
+	<string id="30925"></string>
+	<string id="30926"></string>
+	<string id="30927"></string>
+	<string id="30928"></string>
+	<string id="30929"></string>
 
-	<string id="41030"></string>
-	<string id="41031"></string>
-	<string id="41032"></string>
-	<string id="41033"></string>
-	<string id="41034"></string>
-	<string id="41035"></string>
-	<string id="41036"></string>
-	<string id="41037"></string>
-	<string id="41038"></string>
-	<string id="41039"></string>
+	<string id="30930"></string>
+	<string id="30931"></string>
+	<string id="30932"></string>
+	<string id="30933"></string>
+	<string id="30934"></string>
+	<string id="30935"></string>
+	<string id="30936"></string>
+	<string id="30937"></string>
+	<string id="30938"></string>
+	<string id="30939"></string>
 
 
 
