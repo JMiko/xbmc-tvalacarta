@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+	<string id="30000">Név:</string>
+	<string id="30001">Verzió:</string>
+	<string id="30002">Készítő:</string>
+	<string id="30003">Web:</string>
+
+	<string id="30007">Lejátszó</string>
+	<string id="30004">Auto</string>
+	<string id="30005">MPlayer</string>
+	<string id="30006">DVDPlayer</string>
+
+	<string id="30011">Lejátszáskor:</string>
+	<string id="30008">Rákérdez</string>
+	<string id="30009">Megnéz</string>
+	<string id="30010">Megnéz jó minőségben</string>
+
+
+	<string id="30012">Csatorna logók:</string>
+	<string id="30013">Poszter (függőleges)</string>
+	<string id="30014">Hírdetéssáv (vízszintes)</string>
+
+	<string id="30100">Megavideo prémium mód:</string>
+	<string id="30101">Megavideo felhasználó:</string>
+	<string id="30102">Megavideo jelszó:</string>
+	<string id="30103">Megavideo cookie:</string>
+	<string id="30200">Frissítések keresése</string>
+	<string id="30202">Nézetmód kényszerítése</string>
+	<string id="30201">Letöltési hely:</string>
+	<string id="30203">Letöltési lista helye:</string>
+	<string id="30204">Felnőtt mód engedélyezése</string>
+	<string id="30205">Legjobb minőség (Youtube)</string>
+	<string id="30206">Felirat engedélyezése</string>
+	<string id="30207">JDownloader cím:</string>
+	<string id="30208">Részletes napló</string>
+	<string id="30209">Ennyi keresést mentsen</string>
+
+	<!-- Context menu strings -->
+	<string id="30300">Mentett keresés törlése</string>
+
+	<!-- LetMeWatchThis -->
+	<string id="40001">Filmek - most hozzáadva</string>
+	<string id="40002">TV műsorok - most hozzáadva</string>
+	<string id="40003">!Következő oldal</string>
+
+</strings>
