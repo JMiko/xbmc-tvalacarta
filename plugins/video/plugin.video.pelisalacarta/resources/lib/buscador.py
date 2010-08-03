@@ -167,7 +167,7 @@ def salvar_busquedas(params,url,category):
 		presets = url
 	config.setSetting("presets_buscados",presets)
     # refresh container so items is changed
-	xbmc.executebuiltin( "Container.Refresh" )
+	#xbmc.executebuiltin( "Container.Refresh" )
 		
 def listar_busquedas(params,url,category):
 	print "listar_busquedas()"
