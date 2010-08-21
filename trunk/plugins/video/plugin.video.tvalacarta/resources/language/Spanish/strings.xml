@@ -7,4 +7,13 @@
     <string id="30200">Comprobar actualizaciones:</string>
     <string id="30201">Directorio de descargas:</string>
     <string id="30203">Directorio de lista descargas:</string>
+
+	<!-- kideos -->
+    <string id="30801">De 0 a 3 años</string>
+    <string id="30802">De 3 a 5 años</string>
+    <string id="30803">De 5 a 7 años</string>
+    <string id="30804">De 7 a 9 años</string>
+    <string id="30805">De 9 a 10 años</string>
+    <string id="30806">Cualquier edad</string>
+    <string id="30900">Página siguiente</string>
 </strings>
