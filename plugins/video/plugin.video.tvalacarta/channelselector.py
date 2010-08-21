@@ -28,11 +28,11 @@ def listchannels(params,url,category):
 
 	# Verifica actualizaciones solo en el primer nivel
 	if xbmcplugin.getSetting("updatecheck2") == "true":
-		xbmc.output("updatecheck=true")
+		xbmc.output("[channelselector.py] updatecheck=true")
 		import updater
 		updater.checkforupdates()
 	else:
-		xbmc.output("updatecheck=false")
+		xbmc.output("[channelselector.py] updatecheck=false")
 
 	addfolder("Antena3","a3","mainlist")
 	addfolder("ADNStream","adnstream","mainlist")
@@ -40,6 +40,7 @@ def listchannels(params,url,category):
 	addfolder("Clan TV","clantv","mainlist")
 	addfolder("El cine de las 3 mellizas","tresmellizas","mainlist")
 	addfolder("Boing","boing","mainlist")
+	addfolder("Totlol","totlol","mainlist")
 	addfolder("EITB","eitb","mainlist")
 	addfolder("Extremadura TV","extremaduratv","mainlist")
 	addfolder("Hogarutil","hogarutil","mainlist")
