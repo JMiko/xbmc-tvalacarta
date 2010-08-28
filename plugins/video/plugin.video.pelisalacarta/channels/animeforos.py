@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal "Anime (foros)" by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated: 31/07/2010
+# Last Updated:27/08/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -74,10 +74,10 @@ def favoritosupdate(category,tipocontenido,tipolist,idioma,listupdate):
 
 	Dialogespera = xbmcgui.DialogProgress()
 	line1 = 'Buscando información de "'+category+'"...'
-	resultado = Dialogespera.create('pelisalacarta' , line1 , '' )
+	Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if category=="Todos Mis Favoritos":
-		series,seriesnuevos = casttv.findlistado("Favoritas")
+		series,seriesnuevos = casttv.findlistado("Favoritas","")
 		todostitulo = "Anime - "
 		category2 = "Mis Favoritos"
 
@@ -101,7 +101,7 @@ def favoritosupdate(category,tipocontenido,tipolist,idioma,listupdate):
 		if len(seriesnuevos)>0:
 			addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB , "" )
 		for serie in series:
-			casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
+			casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] , category+";"+serie[6] )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",listupdate,False)
 	# ------------------------------------------------------------------------------------
@@ -230,9 +230,8 @@ def findnuevos(title,titleserievisto,url,todos,web):
 	listanuevos = []
 
 	listavistos = casttv.readvisto(titleserievisto,"LW",CHANNELNAME)
-	if len(listavistos)==0:
-		return listanuevos
-	else:
+
+	if len(listavistos)>0:
 		listavistos.sort(key=lambda visto: visto[5])
 		if listavistos[0][5]=="4":
 			return listanuevos
@@ -259,6 +258,10 @@ def findnuevos(title,titleserievisto,url,todos,web):
 		#en el caso de mcanime, se añaden las releases, por completar desde la Enciclopedia, extrayendo simplemente los vídeos usando servertools,
 		# por eso muchos episodios no se identifican por el título y hay que usar tb la url...
 		urlOK="0"
+
+	if len(listavistos)==0:
+		listanuevos.append(listavideos[0])
+		return listanuevos
 
 	listavideos.reverse()
 	stop="0"
@@ -442,14 +445,11 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 	for video in listavideos2:
 		addvideofolder( CHANNELNAME , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
 
-	# Extrae la fecha de la próxima actualización
-	patronvideos = '<span style="font-size:12pt;line-height:(100)%"><!--/sizeo-->([^<]+)<!--sizec-->'
-	matches = re.compile(patronvideos,re.DOTALL).search(data)
-	if (matches):
-		titulo = matches.group(2)
-		# Añade al listado de XBMC 
-		additem( CHANNELNAME , category , titulo , "" , "" , plot )
-					
+	if "friki100" in autor:
+		# Extrae la fecha de la próxima actualización
+		update = re.search('<span style=\'color: \#ff0000\'><strong class=\'bbc\'><span style=\'font-size: 15px;\'>([^<]+)</span>',data)
+		if (update):
+			additem( CHANNELNAME , category , update.group(1) , "" , "" , plot )					
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",listupdate,True)
 	# ------------------------------------------------------------------------------------
@@ -562,7 +562,7 @@ def findvideos(data,title):
 			encontrados.add(url)
 
 	# Extrae los enlaces a los vídeos - Megaupload - Vídeos con título
-	patronvideos = '(\d\d\.\-\s<a|<a) href\="?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
+	patronvideos = '(\d\d\.\-\s<a|<a) href\=(?:\"|\')?http\:\/\/www.megaupload.com(?:\/es\/|\/)\?d\=(\w+)[^>]*>(<br[^<]+<img[^>]+>.*?|<img[^>]+>.*?|.*?)(?:</?a>|<img|</a<|</tr>)'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
 	for match in matches:
@@ -743,6 +743,9 @@ def finderdm(url,tipolist,tipocontenido,search,idioma):
 	return serieslist
 
 def searchvistos(params,url,category):
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Buscando información de "'+category+'"...'
+	Dialogespera.create('pelisalacarta' , line1 , '' )
 	listaseries = []
 	listaseries2 = []
 	listavistos2 = []
@@ -1780,7 +1783,8 @@ def additem( canal , category , title , url , thumbnail, plot ):
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def ayuda(params,url,category):
-	additem( CHANNELNAME , category , "------------------------------------------ Leyenda ------------------------------------------" , "" , HELP_THUMB , "" )
+	info1 = "Anime - Mis Favoritos: El primer vídeo de los Favoritos sin Vistos se trata como Nuevo Contenido (al igual que los Posteriores a [LW])"
+	additem( CHANNELNAME , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
@@ -1790,7 +1794,8 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
-	additem( CHANNELNAME , category , "--------------------------------------------- Info ----------------------------------------------" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------ Info: 27/08/2010 ------------------------------------" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , info1 , "" , HD_THUMB , "" )
 	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , HD_THUMB , "" )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,True)
