@@ -10,14 +10,13 @@ __plugin__  = "pelisalacarta"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/"
 __date__    = "21 Julio 2010"
-__version__ = "2.17"
+__version__ = "2.17.1"
 
 import os
 import sys
 import xbmc
 
 xbmc.output("[default.py] pelisalacarta init...")
-
 
 # Configura los directorios donde hay librerías
 librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
@@ -46,8 +45,6 @@ if REMOTE_DBG:
         xbmc.output("[default.py] REMOTE_DBG Error: " +
             "You must add org.python.pydev.debug.pysrc to your PYTHONPATH.")
         REMOTE_DBG = False 
-
-
 
 # Ejecuta el programa principal
 import pelisalacarta
