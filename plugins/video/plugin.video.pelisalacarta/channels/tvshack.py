@@ -65,10 +65,6 @@ def mainlist(params,url,category):
     xbmctools.addnewfolder( CHANNELNAME , "ListaSeries" , "Musica" , getStr(30905) , "http://tvshack.cc/music" , thumbnail="" , plot="" )
     xbmctools.addnewfolder( CHANNELNAME , "Buscar" , "" , getStr(30906) , "http://tvshack.cc/search/" , thumbnail=SEARCH_THUMBNAIL , plot="" )
 
-    # Options for Single Channel mode
-    if config.getSetting ("singlechannel")=="true":
-        xbmctools.addSingleChannelOptions (params , url , category)
-
     FinalizaPlugin (pluginhandle,category)
 
 def Buscar (params,url,category):
