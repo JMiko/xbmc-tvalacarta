@@ -1,0 +1,12 @@
+2.17.1
+
+- Removed download option
+- Updated and fixed channels
+
+2.17.0
+
+- First addon repository version (Dharma)
+
+For more history visit mimediacenter.info
+
+__________________
