@@ -225,7 +225,7 @@ def play(params,url,category):
 	# Averigua la URL y la descripcion
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	patron = '(/commons/pet/getMedia.php\?id\=[^&]+)&'
+	patron = '<a id="descargaMp4" href="([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	try:
@@ -233,16 +233,6 @@ def play(params,url,category):
 	except:
 		url = ""
 
-	xbmc.output("[eitb.py] url="+url)
-	data = scrapertools.cachePage(url)
-	xbmc.output("[eitb.py] data="+data)
-	patron  = "<media\:content url\='([^']+)'"
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-	try:
-		url = urlparse.urljoin("http://www.eitb.com",matches[0])
-	except:
-		url = ""
 	xbmc.output("[eitb.py] url="+url)
 
 	# Playlist vacia

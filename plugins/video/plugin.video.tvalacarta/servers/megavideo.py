@@ -13,18 +13,18 @@ import os.path
 import sys
 import xbmc
 import xbmcplugin
+import xbmcgui
+import config
+import logger
 
-# Esto funciona en todos, excepto plex y linux
-#COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
-# Esto funciona en plex!
-COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
-print "Cookiefile="+COOKIEFILE
+logger.debug("[megavideo.py] Cookiefile="+COOKIEFILE) 
 
 #Python Video Decryption and resolving routines.
 #Courtesy of Voinage, Coolblaze.
 
-DEBUG = True
+DEBUG = False
 
 #Megavideo - Coolblaze # Part 1 put this below VIDEOLINKS function. Ctrl & C after highlighting.
 
@@ -210,7 +210,7 @@ def Megavideo(mega):
 	mega = getcode(mega)
 
 	xbmc.output("[megavideo.py] Megavideo")
-	modoPremium = xbmcplugin.getSetting("megavideopremium")
+	modoPremium = config.getSetting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	
 	if modoPremium == "false":
@@ -228,7 +228,7 @@ def getlowurl(code):
 	
 	code=getcode(code)
 
-	modoPremium = xbmcplugin.getSetting("megavideopremium")
+	modoPremium = config.getSetting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	if modoPremium == "false":
 		xbmc.output("[megavideo.py] usando modo normal para baja calidad")
@@ -247,21 +247,23 @@ def getlowurl(code):
 			#addLink(name, movielink+'?.flv','')
 	else:
 		xbmc.output("[megavideo.py] usando modo premium para baja calidad")
-		
-		megavideocookie = xbmcplugin.getSetting("megavideocookie")
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-		#if megavideocookie=="":
+		megavideocookie = config.getSetting("megavideocookie")
+		if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+
 		xbmc.output("[megavideo.py] Averiguando cookie...")
-		megavideologin = xbmcplugin.getSetting("megavideouser")
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
-		megavideopassword = xbmcplugin.getSetting("megavideopassword")
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
+		megavideologin = config.getSetting("megavideouser")
+		if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
+
+		megavideopassword = config.getSetting("megavideopassword")
+		if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
+
 		megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-		if DEBUG:
-			xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+		if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+
+		if len(megavideocookie) == 0:
+			advertencia = xbmcgui.Dialog()
+			resultado = advertencia.ok('Cuenta de Megavideo errónea' , 'La cuenta de Megavideo que usas no es válida' , 'Comprueba el login y password en la configuración')
+			return ""
 
 		req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code+"&u="+megavideocookie)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
@@ -284,21 +286,22 @@ def gethighurl(code):
 	
 	code = getcode(code)
 
-	megavideocookie = xbmcplugin.getSetting("megavideocookie")
+	megavideocookie = config.getSetting("megavideocookie")
 	if DEBUG:
 		xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 	#if megavideocookie=="":
 	xbmc.output("[megavideo.py] Averiguando cookie...")
-	megavideologin = xbmcplugin.getSetting("megavideouser")
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
-	megavideopassword = xbmcplugin.getSetting("megavideopassword")
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
+	megavideologin = config.getSetting("megavideouser")
+	if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
+	megavideopassword = config.getSetting("megavideopassword")
+	if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 	megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-	if DEBUG:
-		xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-	#xbmcplugin.setSetting("megavideocookie",megavideocookie)
+	if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+
+	if len(megavideocookie) == 0:
+		advertencia = xbmcgui.Dialog()
+		resultado = advertencia.ok('Cuenta de Megavideo errónea' , 'La cuenta de Megavideo que usas no es válida' , 'Comprueba el login y password en la configuración')
+		return ""
 
 	req = urllib2.Request("http://www.megavideo.com/xml/player_login.php?u="+megavideocookie+"&v="+code)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -322,6 +325,12 @@ def GetMegavideoUser(login, password):
 	#  Inicializa la librería de las cookies
 	# ---------------------------------------
 	ficherocookies = COOKIEFILE
+	# Borra el fichero de cookies para evitar errores
+	try:
+		os.remove(ficherocookies)
+	except:
+		pass
+
 	# the path and filename to save your cookies in
 
 	cj = None
@@ -392,13 +401,13 @@ def GetMegavideoUser(login, password):
 	# an example url that sets a cookie,
 	# try different urls here and see the cookie collection you can make !
 
-	txdata = "action=login&cnext=&snext=&touser=&user=&nickname="+login+"&password="+password
+	passwordesc=password.replace("&","%26")
+	txdata = "action=login&cnext=&snext=&touser=&user=&nickname="+login+"&password="+passwordesc
 	# if we were making a POST type request,
 	# we could encode a dictionary of values here,
 	# using urllib.urlencode(somedict)
 
-	txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
-				  'Referer':'http://www.megavideo.com/?s=signup'}
+	txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3','Referer':'http://www.megavideo.com/?s=signup'}
 	# fake a user agent, some websites (like google) don't like automated exploration
 
 	req = Request(theurl, txdata, txheaders)
@@ -445,5 +454,6 @@ def GetMegavideoUser(login, password):
 		xbmc.output("----------------------")
 		xbmc.output(cookiedata)
 		xbmc.output("----------------------")
-
-	return matches[0]
+		return ""
+	else:
+		return matches[0]

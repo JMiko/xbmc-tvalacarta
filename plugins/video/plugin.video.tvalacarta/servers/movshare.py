@@ -9,14 +9,19 @@ import urlparse,urllib2,urllib,re
 import os.path
 import sys
 import xbmc
+import config
 
-COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
 def getvideo(urlpagina):
     # ---------------------------------------
     #  Inicializa la libreria de las cookies
     # ---------------------------------------
     ficherocookies = COOKIEFILE
+    try:
+        os.remove(ficherocookies)
+    except:
+        pass
     xbmc.output("ficherocookies %s" % ficherocookies)
     # the path and filename to save your cookies in
 
@@ -117,4 +122,7 @@ def getvideo(urlpagina):
     patronvideos  = '<embed type="video/divx" src="([^"]+)"'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)== 0:
+		patronvideos  = '"file","([^"]+)"'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)	
     return matches[0]

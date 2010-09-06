@@ -16,20 +16,21 @@ import xbmcgui
 import xbmcplugin
 import scrapertools
 import binascii
+import logger
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
 except:
 	pluginhandle = ""
 
-xbmc.output("[hogarutil.py] init")
+logger.info("[hogarutil.py] init")
 
 DEBUG = True
 CHANNELNAME = "hogarutil.com"
 CHANNELCODE = "hogarutil"
 
 def mainlist(params,url,category):
-	xbmc.output("[hogarutil.py] mainlist")
+	logger.info("[hogarutil.py] mainlist")
 
 	# Añade al listado de XBMC
 	addfolder("Cocina","http://www.hogarutil.com/Cocina/Recetas+en+v%C3%ADdeo","videococinalist")
@@ -41,16 +42,11 @@ def mainlist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-#
 def search(params,url,category):
-	xbmc.output("[hogarutil.py] search")
+	logger.info("[hogarutil.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -64,11 +60,11 @@ def search(params,url,category):
 			searchresults(params,searchUrl,category)
 
 def searchresults(params,url,category):
-	xbmc.output("[hogarutil.py] searchresults")
+	logger.info("[hogarutil.py] searchresults")
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
 	#<li><font size="-2"><b></b></font> <a href="http://www.hogarutil.com/Jardineria/Trabajos+en+v%C3%ADdeo/Palmera+de+Roebelen?q=palmera&start=0&urlBuscador=http://www.hogarutil.com/portal/site/PortalUtil/menuitem.c4c49aecb2a32733c4a69810843000a0&site=Delivery"><span>Palmera de Roebelen</span></a>
@@ -77,43 +73,31 @@ def searchresults(params,url,category):
 	scrapertools.printMatches(matches)
 
 	for match in matches:
-		# Titulo
 		scrapedtitle = match[1]
-
-		# URL
 		scrapedurl = match[0]
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 			
 		if scrapedurl.find("Trabajos+en+v%C3%ADdeo")!=-1 or scrapedurl.find("Recetas+en+v%C3%ADdeo")!=-1:
-			# Añade al listado de XBMC
 			addvideo( scrapedtitle , scrapedurl , category )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 
 def videococinalist(params,url,category):
-	xbmc.output("[hogarutil.py] videolist")
+	logger.info("[hogarutil.py] videolist")
 
 	if (params.has_key("baseurl")):
 		baseurl = urllib.unquote_plus( params.get("baseurl") )
 	else:
 		baseurl = url
-	xbmc.output("[hogarutil.py] baseurl="+baseurl)
+	logger.info("[hogarutil.py] baseurl="+baseurl)
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae el enlace a la página siguiente
 	#<span style="color:white" class="pagActual">2</span><a onmouseout="javascript:setDefaultColor(this);" onmouseover="javascript:setWhiteColor(this);" style="color:#5C758C; font-weight:normal;" href="?vgnextoid=550c8fc16b4bd110VgnVCM100000720d1ec2RCRD&vgnextrefresh=1&nextItem=40" class="pagRef">3</a>
@@ -129,9 +113,9 @@ def videococinalist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		addpagina( scrapedtitle , scrapedurl , baseurl , "videococinalist" )
@@ -163,9 +147,9 @@ def videococinalist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		addvideo( scrapedtitle , scrapedurl , category )
@@ -180,7 +164,7 @@ def videococinalist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def videobricolajelist(params,url,category):
-	xbmc.output("[hogarutil.py] videolist")
+	logger.info("[hogarutil.py] videolist")
 
 	if (params.has_key("baseurl")):
 		baseurl = urllib.unquote_plus( params.get("baseurl") )
@@ -189,7 +173,7 @@ def videobricolajelist(params,url,category):
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	
 	# Extrae el enlace a la página siguiente
 	#<span style="color:white" class="pagActual">2</span><a onmouseout="javascript:setDefaultColor(this);" onmouseover="javascript:setWhiteColor(this);" style="color:#5C758C; font-weight:normal;" href="?vgnextoid=550c8fc16b4bd110VgnVCM100000720d1ec2RCRD&vgnextrefresh=1&nextItem=40" class="pagRef">3</a>
@@ -206,9 +190,9 @@ def videobricolajelist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		addpagina( scrapedtitle , scrapedurl , baseurl , "videobricolajelist" )
@@ -239,9 +223,9 @@ def videobricolajelist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		addvideo( scrapedtitle , scrapedurl , category )
@@ -256,10 +240,11 @@ def videobricolajelist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[hogarutil.py] play")
+	logger.info("[hogarutil.py] play")
 
+	logger.info("url="+url)
 	infotitle = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	#xbmc.output("[hogarutil.py] infotitle="+infotitle)
+	#logger.info("[hogarutil.py] infotitle="+infotitle)
 	
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
@@ -274,7 +259,7 @@ def play(params,url,category):
 		infoplot = matches[0]
 	except:
 		infoplot = ""
-	xbmc.output("[hogarutil.py] infoplot="+infoplot)
+	logger.info("[hogarutil.py] infoplot="+infoplot)
 
 	# Averigua el thumbnail
 	patronvideos = '<img class="fotoreceta" alt="[^"]*" src="([^"]+)"/>'
@@ -284,19 +269,17 @@ def play(params,url,category):
 		infothumbnail = scrapedurl = urlparse.urljoin("http://www.hogarutil.com",urllib.quote(matches[0]))
 	except:
 		infothumbnail = ""
-	xbmc.output("[hogarutil.py] infothumbnail="+infothumbnail)
+	logger.info("[hogarutil.py] infothumbnail="+infothumbnail)
 
 	# Averigua la URL del video
-	#patronvideos = 'addVariable\("paramVideoContent", "([^"]+)"'
-	#addVariable("mainVideoURL", "rtmp://aialanetfs.fplive.net/aialanet/Cocina/Karlos/karl0886-acelgas-guisadas-hojaldre.flv");
-	patronvideos = 'addVariable\("mainVideoURL", "([^"]+)"'
+	patronvideos = '\&urlVideo=([^\&]+)\&'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	try:
 		mediaurl = matches[0]
 	except:
 		mediaurl = ""
-	xbmc.output("[hogarutil.py] mediaurl="+mediaurl)
+	logger.info("[hogarutil.py] mediaurl="+mediaurl)
 
 	# Playlist vacia
 	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
@@ -334,33 +317,33 @@ def directplay(params,url,category):
 	xbmcPlayer.play(playlist)   
 
 def addfolder(nombre,url,accion):
-	xbmc.output('[hogarutil.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
+	logger.info('[hogarutil.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
 	itemurl = '%s?channel=hogarutil&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addpagina(nombre,url,baseurl,accion):
-	xbmc.output('[hogarutil.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
+	logger.info('[hogarutil.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
 	itemurl = '%s?channel=hogarutil&action=%s&category=%s&url=%s&baseurl=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url)  , urllib.quote_plus(baseurl) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addvideo(nombre,url,category):
-	xbmc.output('[hogarutil.py] addvideo( "'+nombre+'" , "' + url + '" , "'+category+'")"')
+	logger.info('[hogarutil.py] addvideo( "'+nombre+'" , "' + url + '" , "'+category+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
 	itemurl = '%s?channel=hogarutil&action=play&category=%s&url=%s' % ( sys.argv[ 0 ] , category , urllib.quote_plus(url) )
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def addvideodirecto(nombre,url,category):
-	xbmc.output('[hogarutil.py] addvideodirecto( "'+nombre+'" , "' + url + '" , "'+category+'")"')
+	logger.info('[hogarutil.py] addvideodirecto( "'+nombre+'" , "' + url + '" , "'+category+'")"')
 	listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
 	listitem.setInfo( "video", { "Title" : nombre, "Plot" : "Emision en directo" } )
 	itemurl = '%s?channel=hogarutil&action=directplay&category=%s&url=%s' % ( sys.argv[ 0 ] , category , urllib.quote_plus(url) )
 	xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-	xbmc.output('[hogarutil.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
+	logger.info('[hogarutil.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
 	listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
 	itemurl = '%s?channel=hogarutil&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)

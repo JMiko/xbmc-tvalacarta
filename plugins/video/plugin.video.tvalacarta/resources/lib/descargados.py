@@ -16,6 +16,8 @@ import servertools
 import binascii
 import xbmctools
 import downloadtools
+import config
+import logger
 
 CHANNELNAME = "descargados"
 
@@ -26,12 +28,12 @@ except:
 	pluginhandle = ""
 
 # Traza el inicio del canal
-xbmc.output("[descargados.py] init")
+logger.info("[descargados.py] init")
 
 DEBUG = True
 
 def mainlist(params,url,category):
-	xbmc.output("[descargados.py] mainlist")
+	logger.info("[descargados.py] mainlist")
 
 	# Verifica ruta de descargas
 	downloadpath = downloadtools.getDownloadPath()

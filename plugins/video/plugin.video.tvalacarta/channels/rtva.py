@@ -14,20 +14,21 @@ import xbmcplugin
 import scrapertools
 import binascii
 import xbmctools
+import logger
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
 except:
 	pluginhandle = ""
 
-xbmc.output("[rtva.py] init")
+logger.info("[rtva.py] init")
 
-DEBUG = True
+DEBUG = False
 CHANNELNAME = "Andalucia TV"
 CHANNELCODE = "rtva"
 
 def mainlist(params,url,category):
-	xbmc.output("[rtva.py] mainlist")
+	logger.info("[rtva.py] mainlist")
 
 	url = "http://www.radiotelevisionandalucia.es/tvcarta/impe/web/portada"
 
@@ -35,7 +36,7 @@ def mainlist(params,url,category):
 	# Descarga la página
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# --------------------------------------------------------
 	# Extrae los programas
@@ -67,30 +68,23 @@ def mainlist(params,url,category):
 		scrapedplot = ""
 
 		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addfolder( scrapedtitle , scrapedurl , "videolist" )
 		if dictionaryurl.has_key(scrapedtitle):
-			xbmc.output("%s ya existe" % scrapedtitle)
+			if DEBUG: logger.info("%s ya existe" % scrapedtitle)
 		else:
 			xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 			dictionaryurl[scrapedtitle] = True
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_TITLE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def videolist(params,url,category):
-	xbmc.output("[rtva.py] videolist")
+	logger.info("[rtva.py] videolist")
 
 	title = urllib.unquote_plus( params.get("title") )
 
@@ -98,7 +92,7 @@ def videolist(params,url,category):
 	# Descarga la página
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# --------------------------------------------------------
 	# Extrae los programas
@@ -142,32 +136,24 @@ def videolist(params,url,category):
 		scrapedplot = titulocapitulo
 
 		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		#addvideo( scrapedtitle , scrapedurl , category )
 		if scrapedtitle == title:
 			xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle + " " + scrapedplot , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[rtva.py] play")
+	logger.info("[rtva.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[rtva.py] thumbnail="+thumbnail)
+	logger.info("[rtva.py] thumbnail="+thumbnail)
 
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
@@ -184,7 +170,10 @@ def play(params,url,category):
 		url = matches[0].replace(' ','%20')
 	except:
 		url = ""
-	xbmc.output("[rtva.py] url="+url)
+	logger.info("[rtva.py] url="+url)
+	if url.find("&") != -1:
+		url = url.split("&")[0]
+		logger.info("[rtva.py] url="+url)
 
 	# --------------------------------------------------------
 	# Argumento detallado

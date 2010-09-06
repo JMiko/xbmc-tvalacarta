@@ -6,8 +6,11 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
+import parametrizacion
+import logger
+import config
 
-xbmc.output("[channelselector.py] init")
+logger.info("[channelselector.py] init")
 
 DEBUG = True
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
@@ -24,15 +27,19 @@ IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'imag
 #xbmc.executebuiltin("Container.SetViewMode(54)")
 
 def listchannels(params,url,category):
-	xbmc.output("[channelselector.py] listchannels")
+	logger.info("[channelselector.py] listchannels")
 
 	# Verifica actualizaciones solo en el primer nivel
-	if xbmcplugin.getSetting("updatecheck2") == "true":
-		xbmc.output("[channelselector.py] updatecheck=true")
+	try:
 		import updater
-		updater.checkforupdates()
+	except ImportError:
+		logger.info("[channelselector.py] No disponible modulo actualizaciones")
 	else:
-		xbmc.output("[channelselector.py] updatecheck=false")
+		if config.getSetting("updatecheck2") == "true":
+			logger.info("[channelselector.py] Verificar actualizaciones activado")
+			updater.checkforupdates()
+		else:
+			logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
 	addfolder("Antena3","a3","mainlist")
 	addfolder("ADNStream","adnstream","mainlist")
@@ -40,7 +47,7 @@ def listchannels(params,url,category):
 	addfolder("Clan TV","clantv","mainlist")
 	addfolder("El cine de las 3 mellizas","tresmellizas","mainlist")
 	addfolder("Boing","boing","mainlist")
-	addfolder("Totlol","totlol","mainlist")
+	#addfolder("Totlol","totlol","mainlist")
 	addfolder("EITB","eitb","mainlist")
 	addfolder("Extremadura TV","extremaduratv","mainlist")
 	addfolder("Hogarutil","hogarutil","mainlist")
@@ -61,20 +68,20 @@ def listchannels(params,url,category):
 	addfolder("Mallorca TV","tvmallorca","mainlist")
 	addfolder("Meristation","meristation","mainlist")
 	addfolder("7rm","sieterm","mainlist")
-	addfolder("Televisión Canaria","rtvc","mainlist")
+	addfolder("TelevisiÃ³n Canaria","rtvc","mainlist")
 	addfolder("Internautas TV","internautastv","mainlist")
 	addfolder("Publico.tv","publicotv","mainlist")
-	addfolder("Favoritos","favoritos","mainlist")
-	addfolder("Descargas","descargados","mainlist")
-	addfolder("Configuración","configuracion","mainlist")
+	
+	cadena = config.getLocalizedString(30100)
+	logger.info("cadena="+cadena)
+	addfolder(cadena,"configuracion","mainlist") # Configuracion
+	if (parametrizacion.DOWNLOAD_ENABLED):
+		addfolder(config.getLocalizedString(30101),"descargados","mainlist")   # Descargas
+	addfolder(config.getLocalizedString(30102),"favoritos","mainlist")     # Favoritos
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )
-		
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def addfolder(nombre,channelname,accion):

@@ -14,20 +14,21 @@ import xbmcplugin
 import scrapertools
 import binascii
 import xbmctools
+import logger
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
 except:
 	pluginhandle = ""
 
-xbmc.output("[rtvc.py] init")
+logger.info("[rtvc.py] init")
 
 DEBUG = True
 CHANNELNAME = "rtvc"
 CHANNELCODE = "rtvc"
 
 def mainlist(params,url,category):
-	xbmc.output("[rtvc.py] mainlist")
+	logger.info("[rtvc.py] mainlist")
 
 	# Empieza con el listado sólo de videos
 	url="http://www.rtvc.es/television/emisiones.aspx"
@@ -35,7 +36,7 @@ def mainlist(params,url,category):
 	
 	# Descarga la página
 	data = scrapertools.cachePagePost(url,data)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae las categorías de vídeos
 	patron  = '<select name="ctl00$content$ddlEmisionesCategoria"[^>]+>(.*?)</select>'
@@ -52,7 +53,7 @@ def mainlist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELCODE , "programlist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -63,7 +64,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def programlist(params,url,category):
-	xbmc.output("[rtvc.py] programlist")
+	logger.info("[rtvc.py] programlist")
 
 	# La url es el id del combo de categorías, lo pega dentro del DATA del POST
 	data="ctl00$content$ScriptManager1=ctl00$content$UpdatePanel1|ctl00$content$ddlEmisionesCategoria&__EVENTTARGET=ctl00%24content%24ddlEmisionesCategoria&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwULLTEzNjQ1NDg2NTgPZBYCZg9kFgICAxBkZBYEZg9kFgYCAQ8WAh4Fc3R5bGUFDWRpc3BsYXk6bm9uZTtkAgMPFgIfAAUPZGlzcGxheTppbmxpbmU7ZAIFDxYCHwAFDWRpc3BsYXk6bm9uZTtkAgIPZBYOAgMPDxYCHghJbWFnZVVybAUqL2ltYWdlcy93ZWIvYnRuX2VtaXNpb25lc190b2RvX2NoZWNrZWQucG5nZGQCBQ8PFgIfAQUjL2ltYWdlcy93ZWIvYnRuX2VtaXNpb25lc192aWRlby5wbmdkZAIHDw8WAh8BBSMvaW1hZ2VzL3dlYi9idG5fZW1pc2lvbmVzX2F1ZGlvLnBuZ2RkAgkPDxYCHwEFIy9pbWFnZXMvd2ViL2J0bl9lbWlzaW9uZXNfZm90b3MucG5nZGQCCw8PFgIfAQUhL2ltYWdlcy93ZWIvYnRuX2VtaXNpb25lc19wZGYucG5nZGQCDQ9kFgJmD2QWAgIBDxAPFgYeDURhdGFUZXh0RmllbGQFBXZhbHVlHg5EYXRhVmFsdWVGaWVsZAUDa2V5HgtfIURhdGFCb3VuZGdkEBUIFVRvZGFzIGxhcyBjYXRlZ29yw61hcwhDYXJuYXZhbAhEZXBvcnRlcwVIdW1vcgxJbmZvcm1hdGl2b3MJTWFnYXppbmUgB011c2ljYWwFT3Ryb3MVCAEwBDUwNDkBNgIyNQExATUCMTEENTA0NhQrAwhnZ2dnZ2dnZxYBZmQCDw9kFgJmD2QWAgICDzwrAAkBAA8WBB4IRGF0YUtleXMWAB4LXyFJdGVtQ291bnQCH2QWPmYPZBYCAgEPFQUzL3RlbGV2aXNpb24vZW1pc2lvbi9idWVub3MtZMOtYXMtY2FuYXJpYXMtMTEyNi5hc3B4FkJ1ZW5vcyBkw61hcywgQ2FuYXJpYXMZQnVlbm9zIGTDrWFzLCBDYW5hcmlhcy4uLgxJbmZvcm1hdGl2b3MiL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzExMjYuYXNweGQCAQ9kFgICAQ8VBS4vdGVsZXZpc2lvbi9lbWlzaW9uL2NhbmFyaWFzLWRpcmVjdG8tMTEwNS5hc3B4EENhbmFyaWFzIERpcmVjdG8TQ2FuYXJpYXMgRGlyZWN0by4uLglNYWdhemluZSAiL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzExMDUuYXNweGQCAg9kFgICAQ8VBS4vdGVsZXZpc2lvbi9lbWlzaW9uL2VsLWd1c3RvLWVzLW3DrW8tODg0Mi5hc3B4EEVsIGd1c3RvIGVzIG3DrW8TRWwgZ3VzdG8gZXMgbcOtby4uLglNYWdhemluZSAiL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzg4NDIuYXNweGQCAw9kFgICAQ8VBVMvdGVsZXZpc2lvbi9lbWlzaW9uL2lpLWZhc2UtbXVyZ2FzLWNhcm5hdmFsLWRlLWxhcy1wYWxtYXMtZGUtZ3Jhbi1jYW5hcmlhLTc5MTkuYXNweDVJSSBGYXNlIE11cmdhcyBDYXJuYXZhbCBkZSBMYXMgUGFsbWFzIGRlIEdyYW4gQ2FuYXJpYRFJSSBGYXNlIE11cmdhcy4uLghDYXJuYXZhbCIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNzkxOS5hc3B4ZAIED2QWAgIBDxUFKy90ZWxldmlzaW9uL2VtaXNpb24vbnVlc3RyYS1nZW50ZS01MjY4LmFzcHgNTnVlc3RyYSBnZW50ZQ1OdWVzdHJhIGdlbnRlCU1hZ2F6aW5lICIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNTI2OC5hc3B4ZAIFD2QWAgIBDxUFUC90ZWxldmlzaW9uL2VtaXNpb24vc2VndW5kYS1mYXNlLWRlLW11cmdhcy1pbmZhbnRpbGVzLWRlLXRlbmVyaWZlLTIwMTAtODk3OC5hc3B4MlNlZ3VuZGEgRmFzZSBkZSBNdXJnYXMgSW5mYW50aWxlcyBkZSBUZW5lcmlmZSAyMDEwElNlZ3VuZGEgRmFzZSBkZS4uLghDYXJuYXZhbCIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvODk3OC5hc3B4ZAIGD2QWAgIBDxUFKi90ZWxldmlzaW9uL2VtaXNpb24vdGVsZW5vdGljaWFzLTEtNDYuYXNweA5UZWxlbm90aWNpYXMgMRFUZWxlbm90aWNpYXMgMS4uLgxJbmZvcm1hdGl2b3MgL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzQ2LmFzcHhkAgcPZBYCAgEPFQUsL3RlbGV2aXNpb24vZW1pc2lvbi90ZWxlbm90aWNpYXMtMi0xOTM3LmFzcHgOVGVsZW5vdGljaWFzIDIRVGVsZW5vdGljaWFzIDIuLi4MSW5mb3JtYXRpdm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS8xOTM3LmFzcHhkAggPZBYCAgEPFQVAL3RlbGV2aXNpb24vZW1pc2lvbi9wcmVzZW50YWNpw7NuLWNhbmRpZGF0YXMtcmVpbmEtdG5mLTc4ODMuYXNweCJQcmVzZW50YWNpw7NuIENhbmRpZGF0YXMgUmVpbmEgVE5GG1ByZXNlbnRhY2nDs24gQ2FuZGlkYXRhcy4uLghDYXJuYXZhbCIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNzg4My5hc3B4ZAIJD2QWAgIBDxUFVi90ZWxldmlzaW9uL2VtaXNpb24vaS1mYXNlLW11cmdhcy1kZWwtY2FybmF2YWwtZGUtbGFzLXBhbG1hcy1kZS1ncmFuLWNhbmFyaWEtNzkxNy5hc3B4OEkgRmFzZSBNdXJnYXMgZGVsIENhcm5hdmFsIGRlIExhcyBQYWxtYXMgZGUgR3JhbiBDYW5hcmlhEEkgRmFzZSBNdXJnYXMuLi4IQ2FybmF2YWwiL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzc5MTcuYXNweGQCCg9kFgICAQ8VBSUvdGVsZXZpc2lvbi9lbWlzaW9uL2xhLWdhbGEtNzE3My5hc3B4B0xhIEdhbGEHTGEgR2FsYQdNdXNpY2FsIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS83MTczLmFzcHhkAgsPZBYCAgEPFQUkL3RlbGV2aXNpb24vZW1pc2lvbi9yZXBvcjctNzY4Ni5hc3B4BlJlcG9yNwZSZXBvcjcMSW5mb3JtYXRpdm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS83Njg2LmFzcHhkAgwPZBYCAgEPFQU6L3RlbGV2aXNpb24vZW1pc2lvbi9nYWxhLWRyYWctZGUtbWFzcGFsb21hcy0yMDA2LTY2ODMuYXNweBxHYWxhIERyYWcgZGUgTWFzcGFsb21hcyAyMDA2GkdhbGEgRHJhZyBkZSBNYXNwYWxvbWFzLi4uBU90cm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS82NjgzLmFzcHhkAg0PZBYCAgEPFQVTL3RlbGV2aXNpb24vZW1pc2lvbi9maW5hbC1jb25jdXJzby1tdXJnYXMtYWR1bHRhcy1kZS1zLWMtZGUtdGVuZXJpZmUtMjAwOS02NjU1LmFzcHg2RmluYWwgQ29uY3Vyc28gTXVyZ2FzIEFkdWx0YXMgZGUgUy5DLiBkZSBUZW5lcmlmZSAyMDA5EUZpbmFsIENvbmN1cnNvLi4uCENhcm5hdmFsIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS82NjU1LmFzcHhkAg4PZBYCAgEPFQUyL3RlbGV2aXNpb24vZW1pc2lvbi9nYWxhLWRyYWctcXVlZW4tMjAwOC01NjY0LmFzcHgUR2FsYSBEcmFnIFF1ZWVuIDIwMDgSR2FsYSBEcmFnIFF1ZWVuLi4uBU90cm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS81NjY0LmFzcHhkAg8PZBYCAgEPFQU6L3RlbGV2aXNpb24vZW1pc2lvbi9nYWxhLXJlaW5hLWFkdWx0YS1kZS10Zi0yMDA5LTY3MDAuYXNweB1HYWxhIFJlaW5hIEFkdWx0YSBkZSBUZi4gMjAwORRHYWxhIFJlaW5hIEFkdWx0YS4uLgVPdHJvcyIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNjcwMC5hc3B4ZAIQD2QWAgIBDxUFKy90ZWxldmlzaW9uL2VtaXNpb24vbHVjaGEtY2FuYXJpYS03MDk4LmFzcHgNTHVjaGEgQ2FuYXJpYQ1MdWNoYSBDYW5hcmlhCERlcG9ydGVzIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS83MDk4LmFzcHhkAhEPZBYCAgEPFQUnL3RlbGV2aXNpb24vZW1pc2lvbi9lbC1lbnZpdGUtNzgwMi5hc3B4CUVsIGVudml0ZQlFbCBlbnZpdGUMSW5mb3JtYXRpdm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS83ODAyLmFzcHhkAhIPZBYCAgEPFQVAL3RlbGV2aXNpb24vZW1pc2lvbi9maW5hbC1kZS1tdXJnYXMtYWR1bHRhcy1kZS1scC0yMDA4LTY2NzkuYXNweCJGaW5hbCBkZSBNdXJnYXMgQWR1bHRhcyBkZSBMUCAyMDA4EkZpbmFsIGRlIE11cmdhcy4uLghDYXJuYXZhbCIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNjY3OS5hc3B4ZAITD2QWAgIBDxUFOi90ZWxldmlzaW9uL2VtaXNpb24vZ2FsYS1yZWluYS1hZHVsdGEtZGUtbHAtMjAwOC02NjQ5LmFzcHgcR2FsYSBSZWluYSBBZHVsdGEgZGUgTFAgMjAwOBRHYWxhIFJlaW5hIEFkdWx0YS4uLgVPdHJvcyIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNjY0OS5hc3B4ZAIUD2QWAgIBDxUFRi90ZWxldmlzaW9uL2VtaXNpb24vZmluYWwtZGUtbXVyZ2FzLWFkdWx0YXMtZGUtdGVuZXJpZmUtMjAwOC02NjgwLmFzcHgoRmluYWwgZGUgTXVyZ2FzIEFkdWx0YXMgZGUgVGVuZXJpZmUgMjAwOBJGaW5hbCBkZSBNdXJnYXMuLi4IQ2FybmF2YWwiL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzY2ODAuYXNweGQCFQ9kFgICAQ8VBSwvdGVsZXZpc2lvbi9lbWlzaW9uL2VuLWNsYXZlLWRlLWphLTM1MDYuYXNweA5FbiBjbGF2ZSBkZSBKYRFFbiBjbGF2ZSBkZSBKYS4uLgVIdW1vciIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvMzUwNi5hc3B4ZAIWD2QWAgIBDxUFSy90ZWxldmlzaW9uL2VtaXNpb24vZ2FsYS1yZWluYS1kZS1sYXMtcGFsbWFzLWctYy0yMDA3LXJlZGlmdXNpw7NuLTU2NDUuYXNweDBHYWxhIFJlaW5hIGRlIExhcyBQYWxtYXMgRy5DLiAyMDA3IChyZWRpZnVzacOzbikQR2FsYSBSZWluYSBkZS4uLghDYXJuYXZhbCIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNTY0NS5hc3B4ZAIXD2QWAgIBDxUFMS90ZWxldmlzaW9uL2VtaXNpb24vbGEtYm9kZWdhLWRlLWp1bGnDoW4tODE3LmFzcHgUTGEgYm9kZWdhIGRlIEp1bGnDoW4XTGEgYm9kZWdhIGRlIEp1bGnDoW4uLi4HTXVzaWNhbCEvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvODE3LmFzcHhkAhgPZBYCAgEPFQU2L3RlbGV2aXNpb24vZW1pc2lvbi9jYW5jacOzbi1kZS1sYS1yaXNhLTIwMDktODA2MC5hc3B4GENhbmNpw7NuIGRlIGxhIFJpc2EgMjAwORFDYW5jacOzbiBkZSBsYS4uLgVPdHJvcyIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvODA2MC5hc3B4ZAIZD2QWAgIBDxUFLS90ZWxldmlzaW9uL2VtaXNpb24vY8OzZGlnby1hYmllcnRvLTc0NzIuYXNweA9Dw7NkaWdvIGFiaWVydG8SQ8OzZGlnbyBhYmllcnRvLi4uCU1hZ2F6aW5lICIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvNzQ3Mi5hc3B4ZAIaD2QWAgIBDxUFTS90ZWxldmlzaW9uL2VtaXNpb24vbWVuc2FqZS1kZWwtcHJlc2lkZW50ZS1kZWwtZ29iaWVybm8tZGUtY2FuYXJpYXMtODg1Mi5hc3B4L01lbnNhamUgZGVsIHByZXNpZGVudGUgZGVsIEdvYmllcm5vIGRlIENhbmFyaWFzGU1lbnNhamUgZGVsIHByZXNpZGVudGUuLi4MSW5mb3JtYXRpdm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS84ODUyLmFzcHhkAhsPZBYCAgEPFQUqL3RlbGV2aXNpb24vZW1pc2lvbi90ZWxlbm90aWNpYXMtMy05MC5hc3B4DlRlbGVub3RpY2lhcyAzEVRlbGVub3RpY2lhcyAzLi4uDEluZm9ybWF0aXZvcyAvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvOTAuYXNweGQCHA9kFgICAQ8VBTsvdGVsZXZpc2lvbi9lbWlzaW9uL3JlcG9yNy1lc3BlY2lhbC1yZXN1bWVuLWFudWFsLTg4NDAuYXNweB1SZXBvcjcgRXNwZWNpYWwgUmVzdW1lbiBBbnVhbBJSZXBvcjcgRXNwZWNpYWwuLi4MSW5mb3JtYXRpdm9zIi9yc3MvdGVsZXZpc2lvbi9wcm9ncmFtYS84ODQwLmFzcHhkAh0PZBYCAgEPFQUrL3RlbGV2aXNpb24vZW1pc2lvbi96b25hLW1vdG9yLXR2LTg0NTMuYXNweA1ab25hIE1vdG9yIFRWDVpvbmEgTW90b3IgVFYIRGVwb3J0ZXMiL3Jzcy90ZWxldmlzaW9uL3Byb2dyYW1hLzg0NTMuYXNweGQCHg9kFgICAQ8VBSQvdGVsZXZpc2lvbi9lbWlzaW9uL3Byb21vcy04NDM2LmFzcHgGUHJvbW9zBlByb21vcwVPdHJvcyIvcnNzL3RlbGV2aXNpb24vcHJvZ3JhbWEvODQzNi5hc3B4ZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBwUcY3RsMDAkbG9naW5idXR0b25zJGJ0bkVudmlhcgUeY3RsMDAkbG9naW5idXR0b25zJGNoYlJlY29yZGFyBRVjdGwwMCRjb250ZW50JGltZ1RvZG8FF2N0bDAwJGNvbnRlbnQkaW1nVmlkZW9zBRZjdGwwMCRjb250ZW50JGltZ0F1ZGlvBRZjdGwwMCRjb250ZW50JGltZ0ZvdG9zBRRjdGwwMCRjb250ZW50JGltZ1BERg%3D%3D&ctl00$loginbuttons$txtUsuario=&ctl00$loginbuttons$txtPassword=&ctl00$content$ddlEmisionesCategoria="+url+"&ctl00$content$typeselected=video&"
@@ -71,7 +72,7 @@ def programlist(params,url,category):
 	
 	# Descarga la página
 	data = scrapertools.cachePagePost(url,data)
-	xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae los programas
 	patron  = '<div class="emision">[^<]+'
@@ -91,7 +92,7 @@ def programlist(params,url,category):
 		#scrapedthumbnail = urlparse.urljoin(url,match[0].replace("&amp;","&"))
 		scrapedthumbnail = urlparse.urljoin(url,match[0].replace(" ","%20"))
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -102,13 +103,13 @@ def programlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def videolist(params,url,category):
-	xbmc.output("[rtvc.py] videolist")
+	logger.info("[rtvc.py] videolist")
 
 	title = urllib.unquote_plus( params.get("title") )
 
 	# Descarga la página
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# Extrae la tabla de los vídeos
 	patron  = '<table id="emisiones"[^>]+>.*?<tbody>(.*?)</tbody>'
@@ -117,13 +118,24 @@ def videolist(params,url,category):
 	if len(matches)>0:
 		data = matches[0]
 	
+	'''
+	<tr>
+	<td>1126_030910-BDC.wmv</td>
+	<td>Video</td>
+	<td>03/09/2010</td>
+	<td>Interceptado un barco negrero en aguas de Gran Canaria. La tripulación ha sido detenida.</td>
+	<td class="play"><a id="ctl00_content_repEmisiones_ctl01_lnkAction" href="javascript:PopupCenter('/television/diferido.aspx?id=1126&amp;fichero=1126_030910-BDC.wmv','Diferido','745','548')"><img src="/images/web/btn_emisiones_play.png" style="border-width:0px;" /></a></td>
+	<td class="download"></td>
+	</tr>
+	'''
+
 	patron  = '<tr>[^<]+'
 	patron += '<td>[^<]+</td>[^<]+'
 	patron += '<td>Video</td>[^<]+'
 	patron += '<td>([^<]+)</td>[^<]+'
 	patron += '<td>([^<]+)</td>[^<]+'
-	patron += '<td class="play"><a[^>]+><img[^>]+></a></td>[^<]+'
-	patron += '<td class="download"><a id="[^"]+" href="([^"]+)"'
+	patron += '<td class="play"><a id="[^"]+" href="javascript\:PopupCenter\(\'([^\']+)\'[^"]+"><img[^>]+></a></td>[^<]+'
+	patron += '<td class="download">'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 
 	for match in matches:
@@ -132,7 +144,7 @@ def videolist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[2])
 		scrapedthumbnail = ""
 		scrapedplot = match[1].strip()
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewvideo( CHANNELCODE , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -143,11 +155,20 @@ def videolist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[rtvc.py] play")
+	logger.info("[rtvc.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = "Directo"
+
+	# Descarga la página
+	url = url.replace("&amp;","&")
+	logger.info("[rtvc.py] url="+url)
+	data = scrapertools.cachePage(url)
+	patron  = '<input type="hidden" id="hidden_url" value=\'([^\']+)\''
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	url = matches[0]
+	logger.info("[rtvc.py] url="+url)
 
 	xbmctools.playvideo(CHANNELCODE,server,url,category,title,thumbnail,plot)
