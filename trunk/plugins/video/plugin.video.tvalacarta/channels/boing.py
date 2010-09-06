@@ -29,8 +29,8 @@ def mainlist(params,url,category):
 	xbmc.output("[boing.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "novedades" , CHANNELNAME , "Novedades" , "http://www.boing.es/videos/videos.xml"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "series"    , CHANNELNAME , "Series"    , "http://www.boing.es/videos/videos.xml"  , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "novedades" , CHANNELNAME , "Novedades" , "http://www.boing.es/videos/FFFFFF.xml"  , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "series"    , CHANNELNAME , "Series"    , "http://www.boing.es/videos/FFFFFF.xml"  , "" , "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -76,7 +76,7 @@ def episodios(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 
 	# Descarga la página
-	data = scrapertools.cachePage("http://www.boing.es/videos/videos.xml")
+	data = scrapertools.cachePage("http://www.boing.es/videos/FFFFFF.xml")
 	#xbmc.output(data)
 
 	'''

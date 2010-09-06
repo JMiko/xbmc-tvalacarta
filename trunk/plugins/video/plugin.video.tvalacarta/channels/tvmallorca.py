@@ -14,20 +14,21 @@ import xbmcplugin
 import scrapertools
 import binascii
 import xbmctools
+import logger
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
 except:
 	pluginhandle = ""
 
-xbmc.output("[tvmallorca.py] init")
+logger.info("[tvmallorca.py] init")
 
 DEBUG = True
 CHANNELNAME = "TV Mallorca"
 CHANNELCODE = "tvmallorca"
 
 def mainlist(params,url,category):
-	xbmc.output("[tvmallorca.py] mainlist")
+	logger.info("[tvmallorca.py] mainlist")
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELCODE , "programas" , CHANNELNAME , "Programas" , "" , "" , "" )
@@ -39,7 +40,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def search(params,url,category):
-	xbmc.output("[tvmallorca.py] search")
+	logger.info("[tvmallorca.py] search")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -52,14 +53,14 @@ def search(params,url,category):
 			videolist(params,searchUrl,category)
 
 def programas(params,url,category):
-	xbmc.output("[tvmallorca.py] mainlist")
+	logger.info("[tvmallorca.py] mainlist")
 
 	# --------------------------------------------------------
 	# Descarga la página
 	# --------------------------------------------------------
 	url = 'http://www.rtvmallorca.cat/menu/cercador.php?tipo=tv'
 	data = scrapertools.cachePage(url)
-	xbmc.output(data)
+	logger.info(data)
 
 	# --------------------------------------------------------
 	# Extrae los programas
@@ -80,7 +81,7 @@ def programas(params,url,category):
 		scrapedurl = "http://www.rtvmallorca.cat/inferior/cerca.php?id_sel=0&id="+match[0]+"&par=&da=&dm=&dd=&tipo=1"
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
@@ -92,7 +93,7 @@ def programas(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def videolist(params,url,category):
-	xbmc.output("[tvmallorca.py] videolist")
+	logger.info("[tvmallorca.py] videolist")
 
 	'''
 	http://www.rtvmallorca.cat/inferior/cerca.php?id_sel=0&id=131&par=&da=&dm=&dd=&tipo=1
@@ -132,7 +133,7 @@ def videolist(params,url,category):
 	# Descarga la página
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	xbmc.output(data)
+	logger.info(data)
 
 	# --------------------------------------------------------
 	# Extrae los capítulos
@@ -149,7 +150,7 @@ def videolist(params,url,category):
 		scrapedurl = match[0]
 		scrapedthumbnail = match[1]
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELCODE , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -160,7 +161,7 @@ def videolist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def detail(params,url,category):
-	xbmc.output("[tvmallorca.py] detail")
+	logger.info("[tvmallorca.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -177,7 +178,7 @@ def detail(params,url,category):
 	# --------------------------------------------------------
 	url = "http://www.rtvmallorca.cat/recursos/flash/desc/"+codigo+".txt"
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 	scrapedplot = data[6:]
 	
 	# --------------------------------------------------------
@@ -204,11 +205,13 @@ def detail(params,url,category):
 
 	
 def play(params,url,category):
-	xbmc.output("[tvmallorca.py] play")
+	logger.info("[tvmallorca.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
 	server = "Directo"
+	
+	logger.info("url="+url)
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)

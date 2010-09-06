@@ -14,36 +14,49 @@ import xbmcplugin
 import scrapertools
 import binascii
 import xbmctools
+import logger
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
 except:
 	pluginhandle = ""
 
-xbmc.output("[extremaduratv.py] init")
+logger.info("[extremaduratv.py] init")
 
 DEBUG = True
 CHANNELNAME = "Extremadura TV"
 CHANNELCODE = "extremaduratv"
 
 def mainlist(params,url,category):
-	xbmc.output("[extremaduratv.py] mainlist")
+	logger.info("[extremaduratv.py] channel")
 
-	url = "http://extremaduratv.canalextremadura.es/tv-a-la-carta"
+	# Anade al listado de XBMC
+	xbmctools.addnewfolder( CHANNELCODE , "categorias" , CHANNELNAME , "Por categorías" , "http://extremaduratv.canalextremadura.es/tv-a-la-carta" , "" , "" )
+	xbmctools.addnewfolder( CHANNELCODE , "programas"  , CHANNELNAME , "Por programas"  , "http://extremaduratv.canalextremadura.es/tv-a-la-carta" , "" , "" )
+
+	# Cierra el directorio
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def categorias(params,url,category):
+	logger.info("[extremaduratv.py] categorias")
 
 	# --------------------------------------------------------
 	# Descarga la página
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
 
 	# --------------------------------------------------------
 	# Extrae los programas
 	# --------------------------------------------------------
+	patron = '<select name="categoria"(.*?)</select>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	data = matches[0]
 	patron = '<option value="(\d+)">([^<]+)</option>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	for match in matches:
 		scrapedtitle = match[1]
@@ -54,34 +67,62 @@ def mainlist(params,url,category):
 		scrapedurl = "http://extremaduratv.canalextremadura.es/search/videos/programa%3A" + match[0] + "+categoria%3A0"
 		scrapedthumbnail = ""
 		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		#addfolder( scrapedtitle , scrapedurl , "videolist" )
 		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def videolist(params,url,category):
-	xbmc.output("[extremaduratv.py] videolist")
+def programas(params,url,category):
+	logger.info("[extremaduratv.py] programas")
 
 	# --------------------------------------------------------
 	# Descarga la página
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	#logger.info(data)
+
+	# --------------------------------------------------------
+	# Extrae los programas
+	# --------------------------------------------------------
+	patron = ' <select name="programa"(.*?)</select>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	data = matches[0]
+	patron = '<option value="(\d+)">([^<]+)</option>'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+
+	for match in matches:
+		scrapedtitle = match[1]
+		try:
+			scrapedtitle = unicode( scrapedtitle, "utf-8" ).encode("iso-8859-1")
+		except:
+			pass
+		scrapedurl = "http://extremaduratv.canalextremadura.es/search/videos/programa%3A" + match[0] + "+categoria%3A0"
+		scrapedthumbnail = ""
+		scrapedplot = ""
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+		# Añade al listado de XBMC
+		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+
+	# Label (top-right)...
+	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def videolist(params,url,category):
+	logger.info("[extremaduratv.py] videolist")
+
+	# --------------------------------------------------------
+	# Descarga la página
+	# --------------------------------------------------------
+	data = scrapertools.cachePage(url)
+	#logger.info(data)
 
 	# --------------------------------------------------------
 	# Extrae los programas
@@ -110,9 +151,9 @@ def videolist(params,url,category):
 
 		# Depuracion
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			logger.info("scrapedtitle="+scrapedtitle)
+			logger.info("scrapedurl="+scrapedurl)
+			logger.info("scrapedthumbnail="+scrapedthumbnail)
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
@@ -120,20 +161,16 @@ def videolist(params,url,category):
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[extremaduratv.py] play")
+	logger.info("[extremaduratv.py] play")
 
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[extremaduratv.py] thumbnail="+thumbnail)
+	logger.info("[extremaduratv.py] thumbnail="+thumbnail)
 
 	# Abre dialogo
 	dialogWait = xbmcgui.DialogProgress()
@@ -143,14 +180,14 @@ def play(params,url,category):
 	# Descarga pagina detalle
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url)
-	patron = 'crea_video_hd\("([^"]+)"\)'
+	patron = 'fluURL\: "([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	try:
 		url = matches[0].replace(' ','%20')
 	except:
 		url = ""
-	xbmc.output("[extremaduratv.py] play url="+url)
+	logger.info("[extremaduratv.py] play url="+url)
 	
 	# Construye un plot más completo
 	matches = re.compile("<div class=\"view-field view-data-title\">([^<]+)<",re.DOTALL).findall(data)

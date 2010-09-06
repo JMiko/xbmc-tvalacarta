@@ -9,14 +9,20 @@ import urlparse,urllib2,urllib,re
 import os.path
 import sys
 import xbmc
+import os
+import config
 
-COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
+COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
 def Vreel(urlvideo):
     # ---------------------------------------
     #  Inicializa la libreria de las cookies
     # ---------------------------------------
     ficherocookies = COOKIEFILE
+    try:
+        os.remove(ficherocookies)
+    except:
+        pass
     xbmc.output("ficherocookies %s", ficherocookies)
     # the path and filename to save your cookies in
 
