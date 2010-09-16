@@ -526,7 +526,7 @@ def downloadfile(url,nombrefichero):
 
 	# Crea el diálogo de progreso
 	progreso = xbmcgui.DialogProgress()
-	progreso.create( 'Pelisalacarta' , "Descargando vídeo..." , url , nombrefichero )
+	progreso.create( config.getPluginId() , "Descargando vídeo..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
 	socket.setdefaulttimeout(10)
@@ -658,12 +658,10 @@ def downloadfileGzipped(url,pathfichero):
 	              
 		
 	txdata = ""
-	
-
 
 	# Crea el diálogo de progreso
 	progreso = xbmcgui.DialogProgress()
-	progreso.create( 'Pelisalacarta' , "Descargando file..." , url , nombrefichero )
+	progreso.create( config.getPluginId() , "Descargando file..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
 	socket.setdefaulttimeout(10)
@@ -714,8 +712,7 @@ def downloadfileGzipped(url,pathfichero):
 		
 		existSize = 0
 		logger.info("[downloadtools.py] downloadfileGzipped: el fichero existe, se sobreescribirá, size=%d" % existSize)
-		
-		
+
 	else:
 		existSize = 0
 		logger.info("[downloadtools.py] downloadfileGzipped: el fichero no existe")
