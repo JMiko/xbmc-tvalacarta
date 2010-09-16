@@ -26,6 +26,7 @@
 	<target name="prepare" depends="init">
 		<delete dir="target"/>
         <mkdir dir="target/boxee/info.mimediacenter.pelisalacarta"/>
+        <mkdir dir="target/xbmc-old/pelisalacarta"/>
         <mkdir dir="target/xbmc-full/plugin.video.pelisalacarta"/>
         <mkdir dir="target/xbmc-official/plugin.video.pelisalacarta"/>
 	</target>
@@ -48,6 +49,22 @@
         </copy>
         <copy file="parametrizacion-xbmc-full.py" tofile="target/xbmc-full/plugin.video.pelisalacarta/parametrizacion.py"/>
 		
+		<!-- xbmc-old -->
+        <copy todir="target/xbmc-old/pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/parametrizacion*.*"/>
+				<exclude name="descriptor.xml"/>
+			</fileset>
+        </copy>
+        <copy file="parametrizacion-xbmc-full.py" tofile="target/xbmc-old/pelisalacarta/parametrizacion.py"/>
+
 		<!-- xbmc-official -->
         <copy todir="target/xbmc-official/plugin.video.pelisalacarta">
             <fileset dir=".">
@@ -90,7 +107,8 @@
 
     <!-- package =============================================== -->
     <target name="package" depends="copy">
-		<zip destfile="target/boxee/info.mimediacenter.pelisalacarta-2.17.1.zip" basedir="target/boxee/info.mimediacenter.pelisalacarta"/>
-		<zip destfile="target/xbmc-full/pelisalacarta-2.17.1.zip" basedir="target/xbmc-full/plugin.video.pelisalacarta"/>
+		<zip destfile="target/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="target/boxee"/>
+		<zip destfile="target/xbmc-full/pelisalacarta-${version}.zip" basedir="target/xbmc-full"/>
+		<zip destfile="target/xbmc-old/pelisalacarta-${version}.zip" basedir="target/xbmc-old"/>
     </target>
 </project>

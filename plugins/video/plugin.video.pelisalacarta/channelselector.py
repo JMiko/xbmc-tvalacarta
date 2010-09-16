@@ -30,7 +30,7 @@ def listchannels(params,url,category):
 	try:
 		import updater
 	except ImportError:
-		logger.info("[pelisalacarta.py] No disponible modulo actualizaciones")
+		logger.info("[channelselector.py] No disponible modulo actualizaciones")
 	else:
 		if config.getSetting("updatecheck2") == "true":
 			logger.info("[channelselector.py] Verificar actualizaciones activado")

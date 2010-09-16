@@ -7,6 +7,6 @@
 
 - First addon repository version (Dharma)
 
-For more history visit mimediacenter.info
+For more info visit http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta
 
 __________________
