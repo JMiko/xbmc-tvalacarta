@@ -319,6 +319,14 @@ def detalle(item):
 	# Descarga la página de detalle
 	data = scrapertools.cachePage(item.url)
 
+	patron="<source src='([^']+)'"
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+	scrapedurl = urlparse.urljoin(item.url,matches[0])
+	itemlist = []
+	itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=scrapedurl, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , folder=False) )
+
+	'''
 	# Extrae el xml
 	patron = 'so.addVariable\("xml","([^"]+)"'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -357,7 +365,7 @@ def detalle(item):
 		logger.info("scrapedurl="+scrapedurl)
 		itemlist.append( Item(channel=CHANNELNAME, title="(%d) %s" % (i,item.title) , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=item.plot , server = "directo" , folder=False) )
 		i=i+1
-
+	'''
 	return itemlist
 
 def test():
