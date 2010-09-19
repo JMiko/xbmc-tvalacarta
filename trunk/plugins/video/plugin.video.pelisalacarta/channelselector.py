@@ -62,16 +62,17 @@ def listchannels(params,url,category):
 	addfolder("Pelis24","pelis24","mainlist")
 	addfolder("Veocine","veocine","mainlist")
 	addfolder("Pintadibujos","pintadibujos","mainlist")
-	if config.getSetting("enableadultmode") == "true":
-		addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
-		addfolder("MocosoftX","mocosoftx","mainlist")
-		addfolder("Anifenix.com","anifenix","mainlist")
-		addfolder("tuporno.tv","tupornotv","mainlist")
 	addfolder("Descarga Cine Clásico","descargacineclasico","mainlist")
 	addfolder("Capitan Cinema","capitancinema","mainlist")
 	addfolder("Film Streaming [IT]","filmstreaming","mainlist")
 	addfolder("No Megavideo","nomegavideo","mainlist")
 	addfolder("LetMeWatchThis","letmewatchthis","mainlist")
+	addfolder("Cineblog01","cineblog01","mainlist")
+	if config.getSetting("enableadultmode") == "true":
+		addfolder("PeliculasEroticas","peliculaseroticas","mainlist")
+		addfolder("MocosoftX","mocosoftx","mainlist")
+		addfolder("Anifenix.com","anifenix","mainlist")
+		addfolder("tuporno.tv","tupornotv","mainlist")
 	addfolder("Seriesyonkis","seriesyonkis","mainlist","Series") #Modificado por JUR para añadir la categoría
 	addfolder("Seriespepito","seriespepito","mainlist")
 	#addfolder("seriesonline.us","seriesonline","mainlist")
