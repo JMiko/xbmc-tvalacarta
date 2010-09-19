@@ -693,7 +693,8 @@ def listmirrors(params,url,category):
 	</div>
 	</div>
 	'''
-	patronvideos  = '<div class="tit_opts"><a href="([^"]+)">[^<]+'
+	#patronvideos  = '<div class="tit_opts"><a href="([^"]+)">[^<]+'
+	patronvideos = '<div class="tit_opts"><a href="([^"]+)".*?>[^<]+'
 	patronvideos += '<p>([^<]+)</p>[^<]+'
 	patronvideos += '<p><span>([^<]+)</span>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
