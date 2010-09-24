@@ -76,6 +76,22 @@
 	<string id="30115">Trailer for %s</string> <!-- El Trailer para %s -->
 	<string id="30116">cannot be found.</string> <!-- no se ha podido localizar. -->
 	<string id="30117">Do you want to refine search with keyboard?</string> <!-- ¿Quieres refinar la búsqueda con el teclado? -->
+	
+	<string id="30118">Channels</string>
+	<string id="30119">Choose a Category</string>
+	<string id="30120">Choose a Language</string>
+	<string id="30121">All (default option)</string>
+	<string id="30122">Movies</string>
+	<string id="30123">TV Shows</string>
+	<string id="30124">Anime</string>
+	<string id="30125">Documentaries</string>
+	<string id="30126">Music</string>
+	<string id="30127">search by ID</string>
+	<string id="30128">Search Trailers</string>
+	<string id="30129">Spanish</string>
+	<string id="30130">English</string>
+	<string id="30131">Italian</string>
+	<string id="30132">Portuguese</string>
 
 	<!-- =============================================================== -->
 	<!-- 30150 to 30199: Action menu / contextual menu                   -->

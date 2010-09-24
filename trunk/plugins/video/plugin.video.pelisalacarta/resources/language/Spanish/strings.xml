@@ -76,6 +76,22 @@
 	<string id="30115">El Trailer para %s</string>
 	<string id="30116">no se ha podido localizar.</string>
 	<string id="30117">¿Quieres refinar la búsqueda con el teclado?</string>
+	
+	<string id="30118">Canales</string>
+	<string id="30119">Seleccione una Categoría</string>
+	<string id="30120">Seleccione un Idioma</string>
+	<string id="30121">Todos (opción por defecto)</string>
+	<string id="30122">Películas</string>
+	<string id="30123">Series</string>
+	<string id="30124">Anime</string>
+	<string id="30125">Documentales</string>
+	<string id="30126">Música</string>
+	<string id="30127">buscar por ID</string>
+	<string id="30128">Buscador de Trailers</string>
+	<string id="30129">Español</string>
+	<string id="30130">Inglés</string>
+	<string id="30131">Italiano</string>
+	<string id="30132">Portugués</string>
 
 	<!-- =============================================================== -->
 	<!-- De 30150 a 30199: Menú acción / contextual                      -->

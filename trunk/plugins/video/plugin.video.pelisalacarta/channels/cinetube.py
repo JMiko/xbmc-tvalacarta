@@ -698,7 +698,7 @@ def listmirrors(params,url,category):
 	patronvideos += '<p>([^<]+)</p>[^<]+'
 	patronvideos += '<p><span>([^<]+)</span>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	
+
 	for match in matches:
 		logger.info("Encontrado iframe mirrors "+match[0])
 		# Lee el iframe
