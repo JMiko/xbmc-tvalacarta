@@ -306,7 +306,7 @@ def play(params,url,category):
 			print match
 			data = scrapertools.cachePage(match)
 			matches2 = re.compile(patronvideos,re.DOTALL).findall(data)
-			listdata.append([title + " Parte %d" %c,matches2[0]])
+			listdata.append(["Parte %d" %c,matches2[0]])
 		
 		url = xmltoplaylist.MakePlaylistFromList(listdata)	
 	elif "iframeplayer.php" in url:      #"http://peliculasid.com/iframeplayer.php?url=aHR0cDovL3ZpZGVvLmFrLmZhY2Vib29rLmNvbS9jZnMtYWstc25jNC80MjIxNi82MS8xMjgxMTI4ODgxOTUwXzM5NTAwLm1wNA=="
