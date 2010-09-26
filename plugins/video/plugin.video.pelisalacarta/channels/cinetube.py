@@ -4,6 +4,7 @@
 # Canal para cinetube
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+#Modificado
 import urlparse,urllib2,urllib,re
 import os
 import sys
