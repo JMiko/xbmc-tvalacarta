@@ -526,6 +526,7 @@ def downloadfile(url,nombrefichero):
 
 	# Crea el diálogo de progreso
 	progreso = xbmcgui.DialogProgress()
+	
 	progreso.create( config.getPluginId() , "Descargando vídeo..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
@@ -590,6 +591,7 @@ def downloadfile(url,nombrefichero):
 							tiempofalta=falta/velocidad
 						else:
 							tiempofalta=0
+
 						#xbmc.log(sec_to_hms(tiempofalta))
 						progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
 					break
@@ -661,6 +663,7 @@ def downloadfileGzipped(url,pathfichero):
 
 	# Crea el diálogo de progreso
 	progreso = xbmcgui.DialogProgress()
+
 	progreso.create( config.getPluginId() , "Descargando file..." , url , nombrefichero )
 
 	# Timeout del socket a 60 segundos
@@ -707,17 +710,16 @@ def downloadfileGzipped(url,pathfichero):
 	totalfichero = int(connexion.headers["Content-Length"])
 	 
 	# despues
-	if os.path.exists(nombrefichero):
-		f = open(nombrefichero, 'w')
-		
-		existSize = 0
-		logger.info("[downloadtools.py] downloadfileGzipped: el fichero existe, se sobreescribirá, size=%d" % existSize)
 
-	else:
-		existSize = 0
-		logger.info("[downloadtools.py] downloadfileGzipped: el fichero no existe")
-		f = open(nombrefichero, 'wb')
+	
+	f = open(nombrefichero, 'w')
+	
+	existSize = 0
+	
+	logger.info("[downloadtools.py] downloadfileGzipped: fichero nuevo abierto")
+	
 		
+
 
 	#if existSize > 0:
 	#	totalfichero = totalfichero + existSize
@@ -728,12 +730,18 @@ def downloadfileGzipped(url,pathfichero):
 
 	bloqueleido = connexion.read(blocksize)
 	
-	compressedstream = StringIO.StringIO(bloqueleido)
-	gzipper = gzip.GzipFile(fileobj=compressedstream)
-	bloquedata = gzipper.read()
-	gzipper.close()
-	xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
-
+	try:
+		compressedstream = StringIO.StringIO(bloqueleido)
+		gzipper = gzip.GzipFile(fileobj=compressedstream)
+		bloquedata = gzipper.read()
+		gzipper.close()
+		xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
+	except:
+		xbmc.log( "ERROR : El archivo a descargar no esta comprimido con Gzip")
+		f.close()
+		progreso.close()
+		return -2
+		
 	maxreintentos = 10
 	
 	while len(bloqueleido)>0:

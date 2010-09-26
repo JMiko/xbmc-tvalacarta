@@ -676,6 +676,9 @@ def findurl(code,server):
 	if server == "facebook":
 		mediaurl = code
 		
+	if server == "xml":
+		mediaurl = xmltoplaylist.geturl(code)
+		
 	return mediaurl
 
 def getmegavideolow(code):
