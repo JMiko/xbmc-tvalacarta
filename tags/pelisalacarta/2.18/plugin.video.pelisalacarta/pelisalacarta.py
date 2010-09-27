@@ -91,16 +91,7 @@ def run():
 
 		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
 		else:
-			
-			if action=="mainlist" and config.getSetting("updatechannels")=="true":
-				import downloadtools
-				actualizado = downloadtools.updatechannel(params.get("channel"))
 
-				if actualizado:
-					advertencia = xbmcgui.Dialog()
-					advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
-
-			
 			exec "import "+params.get("channel")+" as plugin"
 			exec "plugin."+action+"(params, url, category)"
 	
