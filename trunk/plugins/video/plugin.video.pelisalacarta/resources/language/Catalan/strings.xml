@@ -9,6 +9,7 @@
 	<!-- Comunes -->
 	<string id="30000">Reproductor:</string>
 	<string id="30001">Comprovar actualitzacions:</string>
+	<string id="30004">Actualització automática de canals:</string>
 	<string id="30002">Activar mode adults:</string>
 	<string id="30003">Generar log detallat:</string>
  
@@ -32,10 +33,19 @@
 	<!-- Otras -->
 	<string id="30017">Directori de descarregues:</string>
 	<string id="30018">Directori de la llista de descarregues:</string>
+	<string id="30030">Directori de favorits:</string>
 	<string id="30020">Elegir qualitat mes alta (Youtube)</string>
 	<string id="30021">Activar Subtitols:</string>
 	<string id="30022">URL de JDownloader:</string>
 	<string id="30024">Numero de recerques a salvar:</string>
+ 
+ 	<string id="30019">Filtrar canals per idioma:</string>
+
+	<string id="30025">Tots els idiomes</string>
+	<string id="30026">Espanyol</string>
+	<string id="30027">Anglés</string>
+	<string id="30028">Italiano</string>
+	<string id="30029">Portugués</string>
  
 	<!-- =============================================================== -->
 	<!-- De 30050 a 30099: Mensajes informativos - error                 -->
@@ -53,6 +63,7 @@
 	<string id="30060">No es pot accedir por un error al lloc web</string>
 	<string id="30061">La qualitat elegida no esta disponible o el video ha sigut borrat</string>
 	<string id="30062">Prova a reproduir en un altre qualitat</string>
+	<string id="30063">Canal descarregat y actualitzat!</string>
  
 	<!-- =============================================================== -->
 	<!-- De 30100 a 30149: Canales genéricos (buscador, descargas, etc.) -->
@@ -80,18 +91,14 @@
 	<string id="30118">Canals</string>
 	<string id="30119">Seleccione una Categoría</string>
 	<string id="30120">Seleccione un Idioma</string>
-	<string id="30121">Todos (opción por defecto)</string>
-	<string id="30122">Películas</string>
+	<string id="30121">Tots</string>
+	<string id="30122">Pel.liculas</string>
 	<string id="30123">Series</string>
 	<string id="30124">Anime</string>
 	<string id="30125">Documentals</string>
 	<string id="30126">Música</string>
-	<string id="30127">buscar por ID</string>
+	<string id="30127">Servidors</string>
 	<string id="30128">Buscador de Trailers</string>
-	<string id="30129">Español</string>
-	<string id="30130">Inglés</string>
-	<string id="30131">Italiano</string>
-	<string id="30132">Portugués</string>
  
 	<!-- =============================================================== -->
 	<!-- De 30150 a 30199: Menú acción / contextual                      -->
