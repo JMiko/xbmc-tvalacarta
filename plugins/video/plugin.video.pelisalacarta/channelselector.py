@@ -79,7 +79,7 @@ def channeltypes(params,url,category):
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="" )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
+	
 def listchannels(params,url,category):
 	logger.info("[channelselector.py] listchannels")
 
@@ -94,11 +94,11 @@ def listchannels(params,url,category):
 	for channel in channelslist:
 		# Pasa si no ha elegido "todos" y no está en la categoría elegida
 		if category<>"*" and category not in channel[4]:
-			logger.info(channel[0]+" no entra por tipo #"+channel[4]+"#, el usuario ha elegido #"+category+"#")
+			#logger.info(channel[0]+" no entra por tipo #"+channel[4]+"#, el usuario ha elegido #"+category+"#")
 			continue
 		# Pasa si no ha elegido "todos" y no está en el idioma elegido
 		if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
-			logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
+			#logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
 			continue
 		addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
 
