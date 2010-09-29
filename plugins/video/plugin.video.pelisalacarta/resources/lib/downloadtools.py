@@ -895,6 +895,7 @@ def updatechannel(channelName):
 		outfile.close()
 		logger.info("Grabado a " + channelFileSource)
 		
-		os.remove(channelFileCompiled)
+		if os.path.exists(channelFileCompiled):
+			os.remove(channelFileCompiled)
 
 	return updated
