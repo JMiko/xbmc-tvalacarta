@@ -25,7 +25,10 @@ REMOTE_FILE = "http://xbmc-tvalacarta.googlecode.com/files/tvalacarta-"
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "tvalacarta-" ) )
 
 try:
-	DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+	if config.DHARMA:
+		DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
+	else:
+		DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
 except:
 	DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 

@@ -6,13 +6,11 @@
 #------------------------------------------------------------
 
 import urllib
+import urllib2
 import os
 import sys
-import xbmc
-import xbmcgui
 import logger
 import config
-import urllib2
 
 def run():
 	logger.info("[tvalacarta.py] run")
@@ -66,12 +64,26 @@ def run():
 			plugin.listchannels(params, url, category)
 		# Actualizar version
 		elif ( action=="update" ):
-			import updater
-			updater.update(params)
+			try:
+				import updater
+				updater.update(params)
+			except ImportError:
+				logger.info("[pelisalacarta.py] Actualizacion automática desactivada")
+
 			import channelselector as plugin
 			plugin.listchannels(params, url, category)
+
 		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
 		else:
+			if action=="mainlist" and config.getSetting("updatechannels")=="true":
+				import downloadtools
+				actualizado = downloadtools.updatechannel(params.get("channel"))
+
+				if actualizado:
+					import xbmcgui
+					advertencia = xbmcgui.Dialog()
+					advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
+
 			exec "import "+params.get("channel")+" as channel"
 			generico = False
 			try:
@@ -112,16 +124,17 @@ def run():
 					xbmctools.renderItems(itemlist, params, url, category)
 
 	except urllib2.URLError,e:
+		import xbmcgui
 		ventana_error = xbmcgui.Dialog()
 		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):
 			logger.info("Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1]))
 			texto = config.getLocalizedString(30050) # "No se puede conectar con el sitio web"
-			ok = ventana_error.ok ("pelisalacarta", texto)
+			ok = ventana_error.ok ("tvalacarta", texto)
 		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		elif hasattr(e,'code'):
 			logger.info("codigo de error HTTP : %d" %e.code)
 			texto = (config.getLocalizedString(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
-			ok = ventana_error.ok ("pelisalacarta", texto)	
+			ok = ventana_error.ok ("tvalacarta", texto)	
 		else:
 			pass
