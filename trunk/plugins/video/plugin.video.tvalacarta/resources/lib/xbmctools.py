@@ -32,19 +32,6 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 DEBUG = True
 
-def get_system_platform():
-	""" fonction: pour recuperer la platform que xbmc tourne """
-	platform = "unknown"
-	if xbmc.getCondVisibility( "system.platform.linux" ):
-		platform = "linux"
-	elif xbmc.getCondVisibility( "system.platform.xbox" ):
-		platform = "xbox"
-	elif xbmc.getCondVisibility( "system.platform.windows" ):
-		platform = "windows"
-	elif xbmc.getCondVisibility( "system.platform.osx" ):
-		platform = "osx"
-	return platform
-
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0):
 	addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
 
@@ -260,12 +247,15 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 			downloadtools.downloadtitle(mediaurl,title)
 		return
 
-	# TODO: Mover a modulo favoritos
 	elif opciones[seleccion]==config.getLocalizedString(30154): #"Quitar de favoritos"
+		import favoritos
 		# La categoría es el nombre del fichero en favoritos
-		os.remove(urllib.unquote_plus( category ))
+		favoritos.deletebookmark(category)
+				
 		advertencia = xbmcgui.Dialog()
 		resultado = advertencia.ok(config.getLocalizedString(30102) , title , config.getLocalizedString(30105)) # 'Se ha quitado de favoritos'
+		
+		xbmc.executebuiltin( "Container.Refresh" )
 		return
 
 	# TODO: Mover a modulo descargadoslist
@@ -293,7 +283,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
 	elif opciones[seleccion]==config.getLocalizedString(30155): #"Añadir a favoritos":
 		import favoritos
 		import downloadtools
-		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
+		keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title)+" ["+canal+"]")
 		keyboard.doModal()
 		if keyboard.isConfirmed():
 			title = keyboard.getText()

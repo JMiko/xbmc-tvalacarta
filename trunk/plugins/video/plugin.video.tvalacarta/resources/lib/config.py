@@ -7,12 +7,12 @@
 
 import sys
 import os
+import xbmc
 
 PLUGIN_ID = "plugin.video.tvalacarta"
 
 try:
 	import xbmcaddon
-	import xbmc
 	DHARMA = True
 	__settings__ = xbmcaddon.Addon(id=PLUGIN_ID)
 	__language__ = __settings__.getLocalizedString
@@ -20,6 +20,19 @@ try:
 except ImportError:
 	DHARMA = False
 	DATA_PATH = os.getcwd()
+	
+def get_system_platform():
+	""" fonction: pour recuperer la platform que xbmc tourne """
+	platform = "unknown"
+	if xbmc.getCondVisibility( "system.platform.linux" ):
+		platform = "linux"
+	elif xbmc.getCondVisibility( "system.platform.xbox" ):
+		platform = "xbox"
+	elif xbmc.getCondVisibility( "system.platform.windows" ):
+		platform = "windows"
+	elif xbmc.getCondVisibility( "system.platform.osx" ):
+		platform = "osx"
+	return platform
 	
 def openSettings():
 
