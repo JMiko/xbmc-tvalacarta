@@ -32,6 +32,7 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 #IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 DEBUG = True
 
+# TODO: Esto es un lío, hay que unificar
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0):
 	addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
 
@@ -546,7 +547,7 @@ def playstrm(params,url,category):
 def renderItems(itemlist, params, url, category):
 	for item in itemlist:
 		if item.folder:
-			addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot )
+			addnewfolderextra( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , item.extra )
 		else:
 			addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot )
 

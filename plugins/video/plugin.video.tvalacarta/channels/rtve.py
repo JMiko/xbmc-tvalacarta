@@ -4,53 +4,39 @@
 # Canal para RTVE
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
-
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
+import urlparse,re
+import logger
 import scrapertools
-import binascii
-import xbmctools
+from item import Item
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
-
-xbmc.output("[rtve.py] init")
+logger.info("[rtve.py] init")
 
 DEBUG = True
-CHANNELNAME = "TVE"
-CHANNELCODE = "rtve"
+CHANNELNAME = "rtve"
 
-def mainlist(params,url,category):
-	xbmc.output("[rtve.py] mainlist")
+def isGeneric():
+	return True
 
-	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Recomendados"   , "http://www.rtve.es/alacarta/todos/recomendados/index.html"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Últimos 7 días" , "http://www.rtve.es/alacarta/todos/ultimos/index.html"       , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Temas"          , "http://www.rtve.es/alacarta/todos/temas/index.html"         , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Todos A-Z"      , "http://www.rtve.es/alacarta/todos/abecedario/index.html"    , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , "Archivo TVE"    , "http://www.rtve.es/alacarta/archivo/index.html"             , "" , "" )
+def mainlist(item):
+	logger.info("[rtve.py] mainlist")
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	itemlist = []
+	itemlist.append( Item(channel=CHANNELNAME, title="Recomendados"   , action="videolist" , url="http://www.rtve.es/alacarta/todos/recomendados/index.html", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="Últimos 7 días" , action="videolist" , url="http://www.rtve.es/alacarta/todos/ultimos/index.html", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="Temas"          , action="videolist" , url="http://www.rtve.es/alacarta/todos/temas/index.html", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="Todos A-Z"      , action="videolist" , url="http://www.rtve.es/alacarta/todos/abecedario/index.html", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="Archivo TVE"    , action="videolist" , url="http://www.rtve.es/alacarta/todos/archivo-tve/index.html", folder=True) )
 
-def videolist(params,url,category):
-	xbmc.output("[rtve.py] videolist")
+	return itemlist
 
-	title = urllib.unquote_plus( params.get("title") )
+def videolist(item):
+	logger.info("[rtve.py] videolist")
 
 	# --------------------------------------------------------
 	# Descarga la página
 	# --------------------------------------------------------
-	xbmc.output("[rtve.py] videolist descarga página principal "+url)
-	data = scrapertools.cachePage(url)
+	logger.info("[rtve.py] videolist descarga página principal "+item.url)
+	data = scrapertools.cachePage(item.url)
 	#xbmc.output(data)
 
 	# --------------------------------------------------------
@@ -58,23 +44,23 @@ def videolist(params,url,category):
 	# --------------------------------------------------------
 	patron  = '<a href="(/alacarta/todos/[^"]+)".*?>([^<]+)</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	#if DEBUG: scrapertools.printMatches(matches)
 
+	itemlist = []
 	for match in matches:
 		# Datos
 		scrapedtitle = scrapertools.entityunescape(match[1].strip())
 		scrapedurl = urlparse.urljoin("http://www.rtve.es", match[0])
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
 		#addvideo( scrapedtitle , scrapedurl , category )
 		if scrapedtitle=="Recomendados" or scrapedtitle=="Temas" or scrapedtitle=="Todos A-Z" or scrapedtitle=="Archivo TVE" or scrapedtitle=="Ultimos 7 dias" or scrapedtitle=="Adelante":
 			pass
 		else:
-			xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+			itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
 
 	# --------------------------------------------------------
 	# Extrae los videos de la página actual
@@ -92,12 +78,12 @@ def videolist(params,url,category):
 	patron += '<p>([^<]+)</p>[^<]+'
 	patron += '<span>([^<]+)<'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	anyadevideos(matches)
+	anyadevideos(matches,itemlist)
 
 	# --------------------------------------------------------
 	# Extrae los videos del resto de páginas
 	# --------------------------------------------------------
-	xbmc.output("Paginación...")
+	logger.info("Paginación...")
 	'''
 	<a href="/alacarta/todos/recomendados/2.html"  class="">
 	  Adelante
@@ -105,25 +91,22 @@ def videolist(params,url,category):
 	'''
 	patronpaginas = '<a href="([^"]+)"  class="">\s+Adelante\s+</a>'
 	paginas = re.compile(patronpaginas,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(paginas)
+	#if DEBUG: scrapertools.printMatches(paginas)
 	print paginas
 
 	# Hay al menos otra página
 	while len(paginas)>0:
-		urlpagina = urlparse.urljoin(url,paginas[0])
-		xbmc.output("urlpagina="+urlpagina)
+		urlpagina = urlparse.urljoin(item.url,paginas[0])
+		logger.info("urlpagina="+urlpagina)
 		datapagina = scrapertools.cachePage(urlpagina)
 		matches = re.compile(patron,re.DOTALL).findall(datapagina)
-		anyadevideos(matches)
+		anyadevideos(matches,itemlist)
 		paginas = re.compile(patronpaginas,re.DOTALL).findall(datapagina)
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_TITLE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	return itemlist
 
-def anyadevideos(matches):
-	if DEBUG: scrapertools.printMatches(matches)
+def anyadevideos(matches,itemlist):
+	#if DEBUG: scrapertools.printMatches(matches)
 
 	'''
 	patron  = '<li id="video-(\d+)" class="videoThumbnail">[^<]+'   [0] 244902
@@ -142,7 +125,7 @@ def anyadevideos(matches):
 	for match in matches:
 		patron = "Emitido:\s+([^\s]+)\s+\/\s+(\d+)\:(\d+)h"
 		fechahora = re.compile(patron,re.DOTALL).findall(match[6])
-		if DEBUG: scrapertools.printMatches(fechahora)
+		#if DEBUG: scrapertools.printMatches(fechahora)
 
 		if len(fechahora)>0:
 			scrapedtitle = scrapertools.entityunescape(match[4] + " ("+fechahora[0][0]+") (" + fechahora[0][1]+"'"+fechahora[0][2]+'")')
@@ -152,15 +135,10 @@ def anyadevideos(matches):
 
 		scrapedthumbnail = "http://www.rtve.es%s" % match[2]
 		scrapedplot = scrapertools.entityunescape(match[3].strip()+"\n"+match[5].strip())
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=scrapedplot , server = "directo" , folder=False) )
 
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 '''
 def play(params,url,category):
 	xbmc.output("[rtve.py] play")
@@ -322,3 +300,13 @@ def play(params,url,category):
 		xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 	else:
 		xbmctools.alertnodisponible()
+
+
+def test():
+	itemsmainlist = mainlist(None)
+	for item in itemsmainlist: print item.tostring()
+
+	itemsrecomendados = videolist(itemsmainlist[0])
+
+if __name__ == "__main__":
+	test()
