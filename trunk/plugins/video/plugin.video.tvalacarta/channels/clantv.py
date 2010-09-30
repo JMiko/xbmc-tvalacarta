@@ -4,30 +4,21 @@
 # Canal para Clan TV
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
-
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
+import urlparse,re
+import logger
 import scrapertools
-import binascii
-import xbmctools
+from item import Item
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
-
-xbmc.output("[clantv.py] init")
+logger.info("[clantv.py] init")
 
 DEBUG = True
-CHANNELNAME = "Clan TV"
-CHANNELCODE = "clantv"
+CHANNELNAME = "clantv"
 
-def mainlist(params,url,category):
-	xbmc.output("[clantv.py] mainlist")
+def isGeneric():
+	return True
+
+def mainlist(item):
+	logger.info("[clantv.py] mainlist")
 
 	url = 'http://www.rtve.es/infantil/videos-juegos/#/videos/clan/todos/'
 
@@ -42,9 +33,9 @@ def mainlist(params,url,category):
 	# --------------------------------------------------------
 	patron = '<li.*?><a rel="([^"]+)" title="[^"]+" href="([^"]+)"><strong>([^<]+)</strong><img src="([^"]+)".*?><span>([^<]+)</span>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	#if DEBUG: scrapertools.printMatches(matches)
 
+	itemlist = []
 	for match in matches:
 		try:
 			scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
@@ -52,48 +43,34 @@ def mainlist(params,url,category):
 			scrapedtitle = match[2]
 		scrapedtitle = scrapedtitle + " ("+match[4].replace("&iacute;","i")+")"
 		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-		
-		#scrapedurl = "http://www.rtve.es/infantil/components/"+match[0]+"/videos/videos-1.inc"
 		scrapedurl = "http://www.rtve.es/infantil/components/"+match[0]+"/videos.xml.inc"
 		scrapedthumbnail = urlparse.urljoin(url,match[3])
 		scrapedplot = ""
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
-		#addvideo( scrapedtitle , scrapedurl , category )
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		# Añade al listado
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+	return itemlist
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def videolist(params,url,category):
-	xbmc.output("[clantv.py] videolist")
+def episodios(item):
+	logger.info("[clantv.py] episodios")
 
 	# --------------------------------------------------------
 	# Descarga la página
 	# --------------------------------------------------------
-	data = scrapertools.cachePage2(url,[["Referer","http://www.rtve.es/infantil/videos-juegos/#/videos/edebits/todos/"],["User-Agent","Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; InfoPath.2)"]])
-	xbmc.output(data)
+	data = scrapertools.cachePage2(item.url,[["Referer","http://www.rtve.es/infantil/videos-juegos/#/videos/edebits/todos/"],["User-Agent","Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; InfoPath.2)"]])
+	#xbmc.output(data)
 
 	# --------------------------------------------------------
 	# Extrae los capítulos
 	# --------------------------------------------------------
 	patron = '<video id="[^"]+" thumbnail="([^"]+)" url="([^"]+)" publication_date="([^T]+)T[^>]+>[^<]+<title>([^<]+)</title>[^<]+<sinopsis([^<]+)<'
 	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
+	itemlist = []
 	for match in matches:
 		try:
 			scrapedtitle = unicode( match[3], "utf-8" ).encode("iso-8859-1")
@@ -101,34 +78,21 @@ def videolist(params,url,category):
 			scrapedtitle = match[3]
 		scrapedtitle = scrapedtitle + " ("+match[2]+")"
 		scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-		scrapedurl = urlparse.urljoin(url,match[1])
-		scrapedthumbnail = urlparse.urljoin(url,match[0])
+		scrapedurl = urlparse.urljoin(item.url,match[1])
+		scrapedthumbnail = urlparse.urljoin(item.url,match[0])
 		scrapedplot = match[4]
+		if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+		# Añade al listado
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo", url=scrapedurl, page = item.url, thumbnail=scrapedthumbnail, plot=scrapedplot) )
 
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+	return itemlist
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+def test():
+	itemsmainlist = mainlist(None)
+	for item in itemsmainlist: print item.tostring()
 
-	# Disable sorting...
-	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+	itemsepisodios = episodios(itemsmainlist[0])
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def play(params,url,category):
-	xbmc.output("[clantv.py] play")
-
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = "Directo"
-	
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+if __name__ == "__main__":
+	test()

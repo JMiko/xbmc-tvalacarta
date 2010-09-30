@@ -18,7 +18,7 @@ def isGeneric():
 	return True
 
 def mainlist(item):
-	logger.info("[a3parser.py] mainlist")
+	logger.info("[a3.py] mainlist")
 
 	itemlist = []
 	itemlist.append( Item(channel=CHANNELNAME, title="Los más vistos" , action="losmasvistos" , url="http://www.antena3.com/videos/", folder=True) )
@@ -32,15 +32,15 @@ def mainlist(item):
 	return itemlist
 
 def losmasvistos(item):
-	logger.info("[a3parser.py] losmasvistos")
+	logger.info("[a3.py] losmasvistos")
 	return videosportada(item,"masVistos")
 
 def ultimosvideos(item):
-	logger.info("[a3parser.py] ultimosvideos")
+	logger.info("[a3.py] ultimosvideos")
 	return videosportada(item,"ultimosVideos")
 
 def videosportada(item,id):
-	logger.info("[a3parser.py] videosportada")
+	logger.info("[a3.py] videosportada")
 	
 	print item.tostring()
 	
@@ -89,7 +89,7 @@ def videosportada(item,id):
 	return itemlist
 
 def ultimasemana(item):
-	logger.info("[a3parser.py] ultimasemana")
+	logger.info("[a3.py] ultimasemana")
 	
 	print item.tostring()
 	
@@ -139,7 +139,7 @@ def ultimasemana(item):
 	return itemlist
 
 def series(item):
-	logger.info("[a3parser.py] series")
+	logger.info("[a3.py] series")
 	
 	print item.tostring()
 	
@@ -181,7 +181,7 @@ def series(item):
 	return itemlist
 
 def capitulos(item):
-	logger.info("[a3parser.py] capitulos")
+	logger.info("[a3.py] capitulos")
 	
 	print item.tostring()
 	
@@ -256,7 +256,7 @@ def capitulos(item):
 	return itemlist
 
 def noticias(item):
-	logger.info("[a3parser.py] noticias")
+	logger.info("[a3.py] noticias")
 	
 	print item.tostring()
 	
@@ -305,15 +305,15 @@ def noticias(item):
 	return itemlist
 	
 def programas(item):
-	logger.info("[a3parser.py] programas")
+	logger.info("[a3.py] programas")
 	return series(item)
 	
 def tvmovies(item):
-	logger.info("[a3parser.py] tvmovies")
+	logger.info("[a3.py] tvmovies")
 	return series(item)
 
 def detalle(item):
-	logger.info("[a3parser.py] detalle")
+	logger.info("[a3.py] detalle")
 	print item.tostring()
 
 	# Descarga la página de detalle
@@ -324,7 +324,7 @@ def detalle(item):
 	if DEBUG: scrapertools.printMatches(matches)
 	scrapedurl = urlparse.urljoin(item.url,matches[0])
 	itemlist = []
-	itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=scrapedurl, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , folder=False) )
+	itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=scrapedurl, page = item.url, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , folder=False) )
 
 	'''
 	# Extrae el xml

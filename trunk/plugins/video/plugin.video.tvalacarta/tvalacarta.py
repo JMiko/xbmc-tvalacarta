@@ -112,13 +112,17 @@ def run():
 					server = urllib.unquote_plus( params.get("server") )
 				else:
 					server = "directo"
+				if params.has_key("extradata"):
+					extra = urllib.unquote_plus( params.get("extradata") )
+				else:
+					extra = ""
 			
 				import xbmctools
 				if action=="play":
 					xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
 				else:
 					from item import Item
-					item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server)
+					item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, extra=extra)
 		
 					exec "itemlist = channel."+action+"(item)"
 					xbmctools.renderItems(itemlist, params, url, category)

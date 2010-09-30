@@ -7,7 +7,10 @@
 
 import sys
 import os
-import xbmc
+try:
+	import xbmc
+except:
+	pass
 
 PLUGIN_ID = "plugin.video.tvalacarta"
 
@@ -20,7 +23,7 @@ try:
 except ImportError:
 	DHARMA = False
 	DATA_PATH = os.getcwd()
-	
+
 def get_system_platform():
 	""" fonction: pour recuperer la platform que xbmc tourne """
 	platform = "unknown"

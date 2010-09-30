@@ -9,7 +9,6 @@ import time
 import binascii
 import md5
 import os
-import xbmc
 import config
 import logger
 import gzip,StringIO

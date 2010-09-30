@@ -4,81 +4,84 @@
 # Canal para boing.es
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import xbmctools
+import urlparse,re
+import logger
 import scrapertools
-import binascii
+from item import Item
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
+logger.info("[boing.py] init")
 
-xbmc.output("[boing.py] init")
+DEBUG = True
+CHANNELNAME = "boing"
 
-DEBUG = False
-CHANNELNAME = "Boing"
-CHANNELCODE = "boing"
+def isGeneric():
+	return True
 
-def mainlist(params,url,category):
-	xbmc.output("[boing.py] mainlist")
-
-	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "novedades" , CHANNELNAME , "Novedades" , "http://www.boing.es/videos/FFFFFF.xml"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "series"    , CHANNELNAME , "Series"    , "http://www.boing.es/videos/FFFFFF.xml"  , "" , "" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def series(params,url,category):
-	xbmc.output("[boing.py] series")
+def mainlist(item):
+	logger.info("[boing.py] mainlist")
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.cachePage("http://www.boing.es/videos")
 	#xbmc.output(data)
 
 	# Extrae las entradas (series)
+	patronvideos = 'so.addVariable\("xcode"\, "([^\"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if DEBUG: scrapertools.printMatches(matches)
+	code = matches[0]
+
+	itemlist = []
+	itemlist.append( Item(channel=CHANNELNAME, extra=code, title="Novedades" , action="novedades" , url="http://www.boing.es/videos/"+code+".xml", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, extra=code, title="Series"    , action="series"    , url="http://www.boing.es/videos/"+code+".xml", folder=True) )
+
+	return itemlist
+
+def series(item):
+	logger.info("[boing.py] series")
+
+	print item.tostring()
+	print "extra="+item.extra
+	
+	# Descarga la página
+	data = scrapertools.cachePage(item.url)
+	#logger.info(data)
+
+	# Extrae el bloque donde están las series
 	patronvideos = '<series>(.*?)</series>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+	#if DEBUG: scrapertools.printMatches(matches)
 	data = matches[0]
 	
+	# Extrae las series
 	patronvideos = '<item id="([^"]+)" nombre="([^"]+)"/>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+	#if DEBUG: scrapertools.printMatches(matches)
 
+	itemlist = []
 	for match in matches:
 		scrapedtitle = match[1]
-		scrapedurl = match[0]
-		scrapedthumbnail = "http://www.boing.es/videos/1clips/"+scrapedurl+"/videos/imagen.jpg"
+		code = match[0]
+		scrapedthumbnail = "http://www.boing.es/videos/1clips/"+code+"/videos/imagen.jpg"
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], code=["+code+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELCODE , "episodios" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		# Añade al listado
+		itemlist.append( Item(channel=CHANNELNAME, extra=code, title=scrapedtitle , action="episodios" , url=item.url, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_LABEL )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	return itemlist
 
-def episodios(params,url,category):
-	xbmc.output("[boing.py] videolist")
+def episodios(item):
+	logger.info("[boing.py] episodios")
 
-	# El título es el de la serie
-	title = urllib.unquote_plus( params.get("title") )
-
+	print item.tostring()
+	print "extra=#"+item.extra+"#"
+	print "url=#"+item.url+"#"
+	
 	# Descarga la página
-	data = scrapertools.cachePage("http://www.boing.es/videos/FFFFFF.xml")
-	#xbmc.output(data)
+	data = scrapertools.cachePage(item.url)
+	#logger.info(data)
 
+	# Extrae los videos
 	'''
 	<video id="ben10af_ep2_01" series="ben10af" extras="" novedad="0">
 	<titulo>Episodio 2  (parte 1)</titulo>
@@ -88,9 +91,9 @@ def episodios(params,url,category):
 	<descripcion><![CDATA[<a href='/microsites/ben10alienforce/index.jsp' target='_self'><font color='#FF0000'>Pincha</font></a> para visitar la página de Ben 10 Alien Force<br/>Episodios solamente disponibles en España]]></descripcion>
 	</video>
 	'''
-
-	# Extrae las entradas (videos, el parámetro url es el id de la serie)
-	patronvideos  = '<video id="[^"]+" series="'+url+'"[^>]+>[^<]+'
+	# Extrae las entradas (videos, extra es el id de la serie)
+	print "extra=#"+item.extra+"#"
+	patronvideos  = '<video id="[^"]+" series="'+item.extra+'"[^>]+>[^<]+'
 	patronvideos += '<titulo>([^<]+)</titulo>[^<]+'
 	patronvideos += '<imagen>([^<]+)</imagen>[^<]+'
 	patronvideos += '<url>([^<]+)</url>[^<]+'
@@ -99,47 +102,39 @@ def episodios(params,url,category):
 	patronvideos += '</video>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
+	#if DEBUG: scrapertools.printMatches(matches)
 
+	itemlist = []
 	for match in matches:
 		# Titulo
 		try:
 			scrapedtitle = unicode( match[0], "utf-8" ).encode("iso-8859-1")
 		except:
 			scrapedtitle = match[0]
-		scrapedurl = urlparse.urljoin(url,match[2])
-		scrapedthumbnail = urlparse.urljoin(url,match[1])
+		scrapedurl = urlparse.urljoin(item.url,match[2])
+		scrapedthumbnail = urlparse.urljoin(item.url,match[1])
 		try:
 			scrapedplot = scrapertools.htmlclean(unicode( match[3], "utf-8" ).encode("iso-8859-1"))
 		except:
 			scrapedplot = scrapertools.htmlclean(match[3])
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		xbmctools.addnewvideo( CHANNELCODE , "play" , category , "Directo" , title + " - " + scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		# Añade al listado
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_LABEL )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	return itemlist
 
-def novedades(params,url,category):
-	xbmc.output("[boing.py] videolist")
+def novedades(item):
+	logger.info("[boing.py] novedades")
 
+	print item.tostring()
+	
 	# Descarga la página
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+	data = scrapertools.cachePage(item.url)
+	#logger.info(data)
 
-	'''
-	<video id="naruto_promo" extras="naruto" novedad="1" promo="">
-	<titulo>Naruto en Boing FDF</titulo>
-	<imagen>/videos/extras/naruto/thumb.jpg</imagen>
-	<url>http://ht.cdn.turner.com/tbseurope/big/toones/naruto/PromoNaruto.flv</url>
-	<stats>http://www.boing.es/videos/stats/clips.html</stats>			
-	<descripcion><![CDATA[<a href='/microsites/naruto/index.jsp' target='_self'><font color='#FF0000'>Pincha</font></a> para visitar la página de Naruto para Juegos y Descargas]]></descripcion>
-	</video>
-	'''
-
-	# Extrae las entradas (videos, el parámetro url es el id de la serie)
-	patronvideos  = '<video id="[^"]+" extras="([^"]+)"[^>]+>[^<]+'
+	# Extrae los videos
+	patronvideos  = '<video id="[^"]+" series="([^\"]+)" novedad="1"[^>]+>[^<]+'
 	patronvideos += '<titulo>([^<]+)</titulo>[^<]+'
 	patronvideos += '<imagen>([^<]+)</imagen>[^<]+'
 	patronvideos += '<url>([^<]+)</url>[^<]+'
@@ -148,34 +143,34 @@ def novedades(params,url,category):
 	patronvideos += '</video>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
+	#if DEBUG: scrapertools.printMatches(matches)
 
+	itemlist = []
 	for match in matches:
 		# Titulo
 		try:
-			scrapedtitle = match[0] + " - " + unicode( match[1], "utf-8" ).encode("iso-8859-1")
+			scrapedtitle = unicode( match[0] + " - " + match[1], "utf-8" ).encode("iso-8859-1")
 		except:
-			scrapedtitle = match[1]
-		scrapedurl = urlparse.urljoin(url,match[3])
-		scrapedthumbnail = urlparse.urljoin(url,match[2])
+			scrapedtitle = match[0] + " - " + match[1]
+		scrapedurl = urlparse.urljoin(item.url,match[3])
+		scrapedthumbnail = urlparse.urljoin(item.url,match[2])
 		try:
 			scrapedplot = scrapertools.htmlclean(unicode( match[4], "utf-8" ).encode("iso-8859-1"))
 		except:
 			scrapedplot = scrapertools.htmlclean(match[4])
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		xbmctools.addnewvideo( CHANNELCODE , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+		# Añade al listado
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_LABEL )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+	return itemlist
 
-def play(params,url,category):
-	xbmc.output("[boing.py] play")
+def test():
+	itemsmainlist = mainlist(None)
+	for item in itemsmainlist: print item.tostring()
 
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = "Directo"
+	itemsseries = series(itemsmainlist[1])
+	itemsepisodios = episodios(itemsseries[4])
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+if __name__ == "__main__":
+	test()
