@@ -83,12 +83,16 @@ def cachePage2(url,headers):
 	'''
 	return data
 
-def cachePagePost(url,data):
+def cachePagePost(url,data,headers=[['User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3']]):
 
-	logger.info("Descargando " + url)
+	logger.info("[scrapertools.py] cachePagePost")
+	logger.info("[scrapertools.py] url="+url)
+	logger.info("[scrapertools.py] data="+data)
 	inicio = time.clock()
 	req = urllib2.Request(url,data)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	for header in headers:
+		logger.info("[scrapertools.py] header="+header[0]+":"+header[1])
+		req.add_header(header[0],header[1])
 
 	try:
 		response = urllib2.urlopen(req)
@@ -224,7 +228,6 @@ def downloadpagewithcookies(url):
 	handle.close()
 
 	return data
-
 
 def downloadpageGzip(url):
 	
