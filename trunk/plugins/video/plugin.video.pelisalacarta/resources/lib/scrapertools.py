@@ -4,7 +4,7 @@
 # Scraper Tools
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
+import urlparse,urllib2,urllib
 import time
 import binascii
 import md5
@@ -31,7 +31,7 @@ def cachePage(url):
 
 		# La crea en TEMP
 		# TODO:crear subdirectorio nuevo (adnstream_plugin_cache)
-		localFileName = xbmc.translatePath( os.path.join( "special://temp/", localFileName ))
+		localFileName = config.getTempFile(localFileName)
 		logger.info("[scrapertools.py] cacheDir="+localFileName)
 		
 		# Si el fichero existe en cache, lo lee

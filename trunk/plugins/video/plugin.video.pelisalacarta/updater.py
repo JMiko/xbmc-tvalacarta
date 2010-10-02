@@ -14,6 +14,8 @@ import xbmcgui
 import xbmcplugin
 import scrapertools
 import time
+import config
+import logger
 
 PLUGIN_NAME = "pelisalacarta"
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
@@ -25,10 +27,12 @@ REMOTE_FILE = "http://xbmc-tvalacarta.googlecode.com/files/pelisalacarta-"
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "pelisalacarta-" ) )
 
 try:
-	DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+	if config.DHARMA:
+		DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
+	else:
+		DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
 except:
 	DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
-
 
 def checkforupdates():
 	xbmc.output("[updater.py] checkforupdates")
@@ -131,3 +135,72 @@ def update(params):
 	# Borra el zip descargado
 	xbmc.output("[updater.py] borra fichero...")
 	os.remove(localfilename)
+
+def updatechannel(channelName):
+	logger.info("Buscando actualizacion del canal " + channelName)
+	
+	# URL de descarga desde subversion
+	channelURL = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channelName+".py"
+	logger.info("channelURL="+channelURL)
+	
+	# Obtiene la fecha del fichero
+	import xbmc
+	channelFileSource = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".py" ) )
+	logger.info("channelFileSource="+channelFileSource)
+	
+	if not os.path.exists(channelFileSource):
+		return False;
+
+	channelFileCompiled = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".pyo" ) )
+	logger.info("channelFileCompiled="+channelFileCompiled)
+		
+	fechaFichero = os.path.getmtime(channelFileSource)
+	logger.info("fechaFichero=%s"% time.ctime(fechaFichero))
+	fechaFormateada = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(fechaFichero))
+	logger.info("fechaFormateada=%s" % fechaFormateada)
+
+	# Comprueba si ha cambiado
+	inicio = time.clock()
+	req = urllib2.Request(channelURL)
+	req.add_header('If-Modified-Since', fechaFormateada)
+
+	updated = False
+
+	try:
+		logger.info("Verificando si el canal ha cambiado")
+		response = urllib2.urlopen(req)
+		data = response.read()
+		#info = response.info()
+		#logger.info( info.headers )
+		
+		# Si llega hasta aquí, es que ha cambiado
+		updated = True
+		response.close()
+
+	except urllib2.URLError,e:
+		# Si devuelve 304 es que no ha cambiado
+		if hasattr(e,'code'):
+			logger.info("Codigo de respuesta HTTP : %d" %e.code)
+			if e.code == 304:
+				logger.info("El canal no ha cambiado")
+				updated = False
+		elif hasattr(e, 'reason'):
+			logger.info("ERROR Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1]))
+		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
+		else:
+			logger.info("ERROR error por otra cosa")
+	
+	fin = time.clock()
+	logger.info("Descargado en %d segundos " % (fin-inicio+1))
+
+	if updated:
+		outfile = open(channelFileSource,"w")
+		outfile.write(data)
+		outfile.flush()
+		outfile.close()
+		logger.info("Grabado a " + channelFileSource)
+		
+		if os.path.exists(channelFileCompiled):
+			os.remove(channelFileCompiled)
+
+	return updated

@@ -25,13 +25,6 @@ try:
 except:
 	pluginhandle = ""
 
-STARORANGE_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','starorangesmall.png' ) )
-STARGREEN_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall.png' ) )
-STARGREEN2_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreensmall2.png' ) )
-STARGREY_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','stargreysmall.png' ) )
-STAR4COLORS_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','star4colors.png' ) )
-HD_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','harddisk.png' ) )
-HELP_THUMB = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv','help.png' ) )
 urleRdM = "http://www.elrincondelmanga.com/foro/showthread.php?t=75282"
 
 def mainlist(params,url,category):
@@ -39,18 +32,19 @@ def mainlist(params,url,category):
 	categoryerdm = "El Rincón del Manga  -  Anime"
 	aviso = "Esta carpeta contiene una pequeña selección de series infantiles (TP). En cuanto al resto, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia. En el aptdo -Información de la Película- encontrará información procedente de la propia release y de McAnime. La disponibilidad de información por género y edades desde el canal irá mejorando."
 	thumbchannel = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/animeforos.png"
-
 	addsimplefolder( CHANNELNAME , "seleccion" , category , "Anime  -  Selección Clásicos Infantiles TV" , "" , thumbchannel , aviso)
 	addsimplefolder( CHANNELNAME , "seleccion" , "AstroteamRG" , "Anime  -  AstroteamRG" , "" , thumbchannel , "Fuente: http://www.astroteamrg.org")
 	addsimplefolder( CHANNELNAME , "searcherdm" , categoryerdm , "Anime  -  El Rincón del Manga", "" , thumbchannel ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
 	addsimplefolder( CHANNELNAME , "genres" , "Géneros  -  McAnime-Enciclopedia" , "Anime  -  McAnime-Enciclopedia - El Rincón del Manga","http://www.mcanime.net/enciclopedia/anime", thumbchannel ,"Fuentes: http://www.mcanime.net/enciclopedia/anime y http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-	addsimplefolder( CHANNELNAME , "favoritos" , "Mis Favoritos" , "Anime  -  Mis Favoritos","",STARORANGE_THUMB,"" )
+	addsimplefolder( CHANNELNAME , "favoritos" , "Mis Favoritos" , "Anime  -  Mis Favoritos","",casttv.STARORANGE_THUMB,"" )
 	addsimplefolder( CHANNELNAME , "searchvistos" , "Anime - Vistos" , "Anime  -  Vistos" , "" , thumbchannel , "" )
-	addsimplefolder( CHANNELNAME , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos","",STAR4COLORS_THUMB, "" )
-	addsimplefolder( CHANNELNAME , "ayuda" , "Anime Foros - Ayuda" , "Ayuda" , "" , HELP_THUMB , "" )
+	addsimplefolder( CHANNELNAME , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos","",casttv.STAR4COLORS_THUMB, "" )
+	addsimplefolder( CHANNELNAME , "ayuda" , "Anime Foros - Ayuda" , "Ayuda" , "" , casttv.HELP_THUMB , "" )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,True)
 	# ------------------------------------------------------------------------------------
+	casttv.writetmplist(casttv.FAVCTV_FILE,[],"-1","")
+	casttv.writetmplist(casttv.FAVANF_FILE,[],"-1","")
 
 def seleccion(params,url,category):
 	if category=="Anime":
@@ -65,54 +59,82 @@ def seleccion(params,url,category):
 	# ------------------------------------------------------------------------------------
 
 def favoritos(params,url,category):
-	favoritosupdate(category,"[^<]+","Completo","",False)
-
-def favoritosupdate(category,tipocontenido,tipolist,idioma,listupdate):
 	series = []
+	listanime = []
 	todostitulo = ""
-	category2 = category
+	respuesta=""
 
 	Dialogespera = xbmcgui.DialogProgress()
-	line1 = 'Buscando información de "'+category+'"...'
-	Dialogespera.create('pelisalacarta' , line1 , '' )
+	line1 = 'Espere por favor...'
+ 	Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	if os.path.exists(casttv.FAVANF_FILE):
+		listanime,nuevos,update = casttv.readtmplist(casttv.FAVANF_FILE,"-1")
+		if update=="1":
+			respuesta = casttv.alertreturnfav(category,update)
+			if respuesta:
+				respuesta="-1"
+		if len(listanime)>0:
+			nuevosep="0"
+			if len(nuevos)>0:
+				nuevosep="-1"
+			casttv.writetmplist(casttv.FAVANF_FILE,listanime,"-1",nuevosep)
+	if len(listanime)==0 or respuesta=="-1":
+		listanime,nuevos = findfavoritos(category)
+		line1 = 'Espere por favor...'
+ 		Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if category=="Todos Mis Favoritos":
-		series,seriesnuevos = casttv.findlistado("Favoritas","")
 		todostitulo = "Anime - "
-		category2 = "Mis Favoritos"
-
-	listanime,nuevos = findfavoritos(category2,tipocontenido,tipolist,idioma)
+		if os.path.exists(casttv.FAVCTV_FILE):
+			series,seriesnuevos,updatectv = casttv.readtmplist(casttv.FAVCTV_FILE,"-1")
+			if len(series)>0:
+				nuevosep="0"
+				if len(seriesnuevos)>0:
+					nuevosep="-1"
+				casttv.writetmplist(casttv.FAVCTV_FILE,series,"-1",nuevosep)
+		if len(series)==0 or respuesta=="-1":
+			series,seriesnuevos = casttv.findfavoritos(category)
+			line1 = 'Espere por favor...'#
+ 			Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if len(listanime)==0 and len(series)==0:
 		return
 
 	if category=="Todos Mis Favoritos":
 		if len(nuevos)>0 or len(seriesnuevos)>0:
-			addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , STARGREEN2_THUMB , "" )
+			addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , casttv.STARGREEN2_THUMB , "" )
 		if len(listanime)>0:
 			additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
 	if len(nuevos)>0:
-		addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritos - Nuevos Contenidos" , "-*-"+todostitulo+"Nuevos Contenidos (Posteriores a [LW])" , "" , STARGREEN2_THUMB , "" )
+		addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritos - Nuevos Contenidos" , "-*-"+todostitulo+"Nuevos Contenidos (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
 	for anime in listanime:
 		adderdmfolder( CHANNELNAME , "listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
 
 	if category=="Todos Mis Favoritos" and len(series)>0:
 		additem( CHANNELNAME , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
 		if len(seriesnuevos)>0:
-			addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB , "" )
+			addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
 		for serie in series:
 			casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] , category+";"+serie[6] )
 	# ------------------------------------------------------------------------------------
-	EndDirectory(category,"",listupdate,False)
+	EndDirectory(category,"",False,False)
 	# ------------------------------------------------------------------------------------
+	casttv.writetmplist(casttv.NEWCTV_FILE,[],"-2","")
+	casttv.writetmplist(casttv.NEWANF_FILE,[],"-2","")
 
-def findfavoritos(category,tipocontenido,tipolist,idioma):
+def findfavoritos(category):
+	#tipocontenido,tipolist e idioma posibilidad filtro
+	tipocontenido = "[^<]+"
+	tipolist = "Completo"
+	idioma = ""
 	thumbnail=""
 	search = ""
 	listaseries = []
 	listaerdm = []
 	nuevos = []
 	listanime = []
+	nuevosep="0"
 
 	listafav = casttv.readfav("","","",CHANNELNAME)
 
@@ -139,6 +161,19 @@ def findfavoritos(category,tipocontenido,tipolist,idioma):
 			alertnoweb("El Rincón del Manga")
 		else:
 			listaerdm.sort(key=lambda erdm: erdm[0].lower())
+
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Buscando información de "'+category+'":'
+	Dialogespera.create('pelisalacarta' , line1 , '0%  -  ')
+	total = len(listaseries)
+	if total>20:
+  		n = int(total/20)
+		m = 5
+	else:
+		n = 1
+		m = int(100/total)
+	i = 0
+	j = 0
 	OKmca = "-1"
 	for serie in listaseries:
 		url = serie[2]
@@ -147,9 +182,18 @@ def findfavoritos(category,tipocontenido,tipolist,idioma):
 		titleerdm = ""
 		titleinfo = ""
 		category0 = ""
-		thumbnail=STARORANGE_THUMB
+
+		if i>=n:
+			i=0
+			j=j+m
+		if j>=100:
+			j=95
+		Dialogespera.update(j, line1 , str(j)+'%  -  '+serie[0] )
+		i=i+1
+
+		thumbnail=casttv.STARORANGE_THUMB
 		if serie[3]=="1":
-			thumbnail=STARGREY_THUMB
+			thumbnail=casttv.STARGREY_THUMB
 		if "elrincondelmanga" in url:
 			if len(listaerdm)==0:
 				continue
@@ -221,12 +265,15 @@ def findfavoritos(category,tipocontenido,tipolist,idioma):
 				titleserievisto = titleserievisto+matchurl2.group(0)
 			listanuevos=findnuevos(title,titleserievisto,serie[2],"0",titleerdm)
 			if len(listanuevos)>0:
-				thumbnail=STARGREEN_THUMB
+				thumbnail=casttv.STARGREEN_THUMB
 				if serie[3]=="-1" or serie[3]=="-2":
 					nuevos.extend(listanuevos)
 
 		listanime.append([ category0 , serie[0]+status , serie[2] , thumbnail , plot , titleinfo , tcsearch , titleerdm  ])
 
+	if len(nuevos)>0:
+		nuevosep="-1"
+	casttv.writetmplist(casttv.FAVANF_FILE,listanime,"-1",nuevosep)
 	return listanime,nuevos
 
 def findnuevos(title,titleserievisto,url,todos,web):
@@ -952,9 +999,9 @@ def searcherdmupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,l
 			for fav in listafav:
 				if serie[0]==fav[0] and serie[4]==fav[2]:
 					if fav[3]=="1":
-						thumbnail=STARGREY_THUMB
+						thumbnail=casttv.STARGREY_THUMB
 						break
-					thumbnail=STARORANGE_THUMB
+					thumbnail=casttv.STARORANGE_THUMB
 					break
 		if tipolist=="Completo":
 			if tipocontenido == "[^<]+":
@@ -1013,6 +1060,9 @@ def listados(params,url,category):
 	respuesta = casttv.serieupdate(titleinfo2,status,url,tcsearch,CHANNELNAME)
 
 	if respuesta<>1 and respuesta<>2 and respuesta<>3 and respuesta<>4:
+		if "Fav" in category:
+			favnoupdate(category,"1")
+			category = re.sub('^Todos ','',category)
 		if params.has_key("titleerdm"):
 			detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,False)
 		else:
@@ -1023,6 +1073,57 @@ def listados(params,url,category):
 			info5 = urllib.unquote_plus( params.get("info5") )
 			info = info1+"|"+info2+"|"+info3+"|"+info4+"|"+info5
 			detail(title,url,category,info,tcsearch,"mc-anime",thumbnail,plot,False)
+	elif "Fav" in category:
+		category = re.sub('\s\-\s.*?$','',category)
+		respuesta2 = casttv.alertreturnfav(category,"0")
+		if respuesta2:
+			pass
+		else:
+			listanime,nuevos,update = casttv.readtmplist(casttv.FAVANF_FILE,"0")
+			if len(nuevos)>0:
+				nuevosep = "-1"
+			else:
+				nuevosep = "0"
+			eliminar=[]
+			if respuesta==1 or respuesta==2:
+				for anime in listanime:
+					if anime[1]==title and anime[2]==url:
+						if respuesta==2:
+							if anime[3]==casttv.STARGREY_THUMB:
+								anime[3]=casttv.STARORANGE_THUMB
+							else:
+								anime[3]=casttv.STARGREY_THUMB
+						else:
+							eliminar=anime
+						break
+			if len(eliminar)>0:
+				listanime.remove(eliminar)
+			casttv.writetmplist(casttv.FAVANF_FILE,listanime,"0",nuevosep)
+			favnoupdate(category,"0")
+
+def favnoupdate(category,value):
+	if value<>"0":
+		listanime,nuevos,update = casttv.readtmplist(casttv.FAVANF_FILE,value)
+		if len(nuevos)>0:
+			nuevosep = "-1"
+		else:
+			nuevosep = "0"
+		casttv.writetmplist(casttv.FAVANF_FILE,listanime,value,nuevosep)
+	if "Todos" in category or "Anime" in category:
+		series,seriesnuevos,update = casttv.readtmplist(casttv.FAVCTV_FILE,value)
+		if len(seriesnuevos)>0:
+			nuevosep = "-1"
+		else:
+			nuevosep = "0"
+		casttv.writetmplist(casttv.FAVCTV_FILE,series,value,nuevosep)
+
+def nuevosnoupdate(category,value):
+	if value<>"2":
+		animenuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,value)
+		casttv.writetmplist(casttv.NEWANF_FILE,animenuevos,value,"")
+	if "Todos" in category:
+		nuevos,update = casttv.readtmplist(casttv.NEWCTV_FILE,value)
+		casttv.writetmplist(casttv.NEWCTV_FILE,nuevos,value,"")
 
 def listadoserdmsearch(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
@@ -1052,15 +1153,38 @@ def listadoserdmsearch(params,url,category):
 		detail(title,url,category,titleinfo,tcsearch,titleerdm,"",plot,False)
 
 def listadonuevos(params,url,category):
-	listadonvosupdate(category,False)
-
-def listadonvosupdate(category,listupdate):
+	nuevos = []
 	seriesnuevos=[]
+	category2 = re.sub(r".*?\s\-\s([^\-]+)$",lambda micat: micat.group(1),category)
+	respuesta=""
+
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Espere por favor...'
+ 	Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	favnoupdate(category,"1")
+
+	if os.path.exists(casttv.NEWANF_FILE):
+		nuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,"-2")
+		if update=="3":
+			respuesta = casttv.alertreturnfav(category2,update)
+			if respuesta:
+				respuesta="-1"
+		if len(nuevos)>0:
+			casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"-2","")
+	if len(nuevos)==0 or respuesta=="-1":
+		line1 = 'Buscando "'+category2+'"...'
+ 		Dialogespera.create('pelisalacarta' , line1 , '' )
+		nuevos = findlistadonvos(category)
 
 	if "Todos" in category:
-		seriesnuevos = casttv.findlistadonvos()
-
-	nuevos = findlistadonvos(category)
+		tipo = 4
+		if os.path.exists(casttv.NEWCTV_FILE):
+			seriesnuevos,update = casttv.readtmplist(casttv.NEWCTV_FILE,"-2")
+			if len(seriesnuevos)>0:
+				casttv.writetmplist(casttv.NEWCTV_FILE,seriesnuevos,"-2","")
+		if len(seriesnuevos)==0 or respuesta=="-1":
+			seriesnuevos = casttv.findlistadonvos()
 
 	if len(nuevos)==0 and len(seriesnuevos)==0:
 		casttv.alertnoepisodios(4)
@@ -1075,7 +1199,7 @@ def listadonvosupdate(category,listupdate):
 		for item in seriesnuevos:
 			casttv.addnewfolder( CHANNELNAME , "casttv.episodiomenu" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , item[10] , ";" , "New" )
 	# ------------------------------------------------------------------------------------
-	EndDirectory(category,"",listupdate,True)
+	EndDirectory(category,"",False,False)
 	# ------------------------------------------------------------------------------------
 
 def findlistadonvos(category):
@@ -1120,6 +1244,7 @@ def findlistadonvos(category):
 				n=n+1
 				if serie[3]=="-2" and n==3:
 					break
+	casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"-2","")
 	return nuevos
 
 def fcategory(tipocontenido,tipolist,idioma):
@@ -1598,6 +1723,7 @@ def findseriesmc(url):
 	return seriesmclist
 
 def episodiomenu(params,url,category):
+	title = urllib.unquote_plus( params.get("title") )
 	match = re.match('^([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)$',category)
 	categoryback = match.group(1)
 	urlback = match.group(2)
@@ -1613,16 +1739,33 @@ def episodiomenu(params,url,category):
 	autor = match.group(12)
 	urlOK = match.group(13)
 
-	seleccion = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,CHANNELNAME,urlOK)
+	seleccion,accion = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,CHANNELNAME,urlOK)
 
 	if seleccion>0:
 		if tipovisto<>"New":
 			detail(titleback,urlback,categoryback,titleinfo,tcsearch,titleerdm,thumbnailback,plotback,True)
 		else:
-			listadonvosupdate(categoryback,True)
-
+			category2 = re.sub(r".*?\s\-\s([^\-]+)$",lambda micat: micat.group(1),categoryback)
+			respuesta = casttv.alertreturnfav(category2,"2")
+			if respuesta:
+				pass
+			else:
+				nuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,"2")
+				listaeliminar=[]		
+				for nuevo in nuevos:
+					if titleserievisto in nuevo[0]:
+						if nuevo[2]==title and nuevo[3]==url:
+							listaeliminar.append(nuevo)
+							break
+						elif accion<>"4":
+							listaeliminar.append(nuevo)
+				for nuevo in listaeliminar:
+					nuevos.remove(nuevo)
+				casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"2","")
+				nuevosnoupdate(categoryback,"2")
 	elif seleccion==-1 or seleccion==0:
-		title = urllib.unquote_plus( params.get("title") )
+		if tipovisto=="New":
+			nuevosnoupdate(categoryback,"3")
 		title = re.sub('\s+\-\s+',' - ',title)
 		thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 		plot = urllib.unquote_plus( params.get("plot") )
@@ -1636,7 +1779,8 @@ def episodiomenu(params,url,category):
 		xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
 		xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-		xbmctools.playvideo(CHANNELNAME,server,url,categoryback,title,thumbnail,plot)
+		#Check: no se muestran los strings con el texto de las opciones...
+		#xbmctools.playvideo(CHANNELNAME,server,url,categoryback,title,thumbnail,plot)
 
 		# Otra manera de continuar sin abrir nuevo directorio pero lento en listados grandes...
 		# detail(titleback,urlbac...
@@ -1646,7 +1790,7 @@ def play(params,url,category):
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = params["server"]	
+	server = params["server"]
 
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
@@ -1783,26 +1927,26 @@ def addvideofolder( canal , accion , category , server , title , url , thumbnail
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=True)
 
 def additem( canal , category , title , url , thumbnail, plot ):
-	listitem = xbmcgui.ListItem( title, iconImage=HD_THUMB, thumbnailImage=thumbnail )
+	listitem = xbmcgui.ListItem( title, iconImage=casttv.HD_THUMB, thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot } )
 	itemurl = '%s?channel=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
 def ayuda(params,url,category):
-	info1 = "Anime - Mis Favoritos: El primer vídeo de los Favoritos sin Vistos se trata como Nuevo Contenido (al igual que los Posteriores a [LW])"
-	additem( CHANNELNAME , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios) " , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "Mis Favoritos [Listados sin carátula]" , "" , STARORANGE_THUMB , "" )
-	additem( CHANNELNAME , category , "Mis Favoritos Desactivados [Listados sin carátula]", "" , STARGREY_THUMB , "" )
-	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , STARGREEN_THUMB , "" )
-	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , STARGREEN2_THUMB , "" )
-	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
-	additem( CHANNELNAME , category , "------------------------------------ Info: 25/09/2010 ------------------------------------" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , info1 , "" , HD_THUMB , "" )
-	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , HD_THUMB , "" )
+	info1 = "Anime - Mis Favoritos: El primer vídeo de los Favoritos sin ningún tipo de marca de Vistos se trata como Nuevo Contenido (al igual que los Posteriores a [LW])"
+	additem( CHANNELNAME , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios) " , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "Mis Favoritos [Listados sin carátula]" , "" , casttv.STARORANGE_THUMB , "" )
+	additem( CHANNELNAME , category , "Mis Favoritos Desactivados [Listados sin carátula]", "" , casttv.STARGREY_THUMB , "" )
+	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN_THUMB , "" )
+	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN2_THUMB , "" )
+	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , casttv.HD_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------ Info: 25/09/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , info1 , "" , casttv.HD_THUMB , "" )
+	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , casttv.HD_THUMB , "" )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,True)
 	# ------------------------------------------------------------------------------------
