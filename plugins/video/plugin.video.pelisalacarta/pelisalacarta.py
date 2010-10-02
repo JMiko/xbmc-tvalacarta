@@ -5,11 +5,10 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
-import urllib,urllib2
+import urllib
+import urllib2
 import os
 import sys
-import xbmc
-import xbmcgui
 import logger
 import config
 
@@ -91,20 +90,65 @@ def run():
 
 		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
 		else:
-			
+
+			# Actualiza el canal si ha cambiado			
 			if action=="mainlist" and config.getSetting("updatechannels")=="true":
-				import downloadtools
-				actualizado = downloadtools.updatechannel(params.get("channel"))
+				try:
+					import updater
+					actualizado = updater.updatechannel(params.get("channel"))
+	
+					if actualizado:
+						import xbmcgui
+						advertencia = xbmcgui.Dialog()
+						advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
+				except:
+					logger.info("Actualización de canales desactivada")
 
-				if actualizado:
-					advertencia = xbmcgui.Dialog()
-					advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
+			# Ejecuta el canal
+			exec "import "+params.get("channel")+" as channel"
+			generico = False
+			try:
+				generico = channel.isGeneric()
+			except:
+				generico = False
 
+			print "generico=" , generico 
 			
-			exec "import "+params.get("channel")+" as plugin"
-			exec "plugin."+action+"(params, url, category)"
+			# Es un canal específico de xbmc
+			if not generico:
+				exec "channel."+action+"(params, url, category)"
+			
+			# Es un canal genérico
+			else:
+				if params.has_key("title"):
+					title = urllib.unquote_plus( params.get("title") )
+				else:
+					title = ""
+				if params.has_key("thumbnail"):
+					thumbnail = urllib.unquote_plus( params.get("thumbnail") )
+				else:
+					thumbnail = ""
+				if params.has_key("plot"):
+					plot = urllib.unquote_plus( params.get("plot") )
+				else:
+					plot = ""
+				if params.has_key("server"):
+					server = urllib.unquote_plus( params.get("server") )
+				else:
+					server = "directo"
+			
+				import xbmctools
+				if action=="play":
+					xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
+				else:
+					from item import Item
+					item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server)
+		
+					exec "itemlist = channel."+action+"(item)"
+					xbmctools.renderItems(itemlist, params, url, category)
 	
 	except urllib2.URLError,e:
+		import xbmcgui
 		ventana_error = xbmcgui.Dialog()
 		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):

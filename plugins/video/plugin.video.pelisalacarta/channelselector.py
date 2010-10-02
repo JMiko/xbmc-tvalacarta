@@ -83,11 +83,14 @@ def channeltypes(params,url,category):
 def listchannels(params,url,category):
 	logger.info("[channelselector.py] listchannels")
 
-	idioma = config.getSetting("languagefilter")
-	logger.info("[channelselector.py] idioma=%s" % idioma)
-	langlistv = ["","ES","EN","IT","PT"]
-	idiomav = langlistv[int(idioma)]
-	logger.info("[channelselector.py] idiomav=%s" % idiomav)
+	try:
+		idioma = config.getSetting("languagefilter")
+		logger.info("[channelselector.py] idioma=%s" % idioma)
+		langlistv = ["","ES","EN","IT","PT"]
+		idiomav = langlistv[int(idioma)]
+		logger.info("[channelselector.py] idiomav=%s" % idiomav)
+	except:
+		idiomav=""
 
 	channelslist = channels_list()
 
