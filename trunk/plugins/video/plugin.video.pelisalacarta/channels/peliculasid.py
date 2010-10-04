@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para peliculasid
+# Canal para peliculasid - actual. automat. ver.1.0
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -41,10 +41,8 @@ def mainlist(params,url,category):
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimas Películas Subidas"    ,"http://www.peliculasid.com/","","")
-	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Estrenos","http://www.peliculasid.net/index.php?module=estrenos","","")
-	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series","http://www.peliculasid.net/index.php?module=series","","")
 	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://www.peliculasid.com/","","")
-	#xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Buscar","http://www.peliculasid.net/index.php?module=documentales","","")
+	
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -163,11 +161,6 @@ def detail(params,url,category):
 	
 	if len(matches)>0:
 		descripcion = matches[0]
-		descripcion = descripcion.replace('&#8220;','"')
-		descripcion = descripcion.replace('&#8221;','"')
-		descripcion = descripcion.replace('&#8230;','...')
-		descripcion = descripcion.replace('&#8217;',"'")
-		descripcion = descripcion.replace("&nbsp;","")
 		descripcion = descripcion.replace("<br/>","")
 		descripcion = descripcion.replace("\r","")
 		descripcion = descripcion.replace("\n"," ")
@@ -180,7 +173,7 @@ def detail(params,url,category):
 			plot = unicode( descripcion, "utf-8" ).encode("iso-8859-1")
 		except:
 			plot = descripcion
-
+		plot = scrapertools.unescape(plot.strip())
 		#--- Busca los videos Directos
 		patronvideos = 'flashvars" value="file=([^\&]+)\&amp'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -228,7 +221,7 @@ def detail(params,url,category):
 		server = video[2]
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , (title.strip() + " (%d) " + videotitle) % j , url , thumbnail , plot )
 		j=j+1
-	patronvideos = '<a href="(http://peliculasid.com/iframeplayer.php[^"]+)" target="[^"]+">([^<]+)</a>'
+	patronvideos = '<a href="(http://peliculasid.com/modulos/iframeplayer.php[^"]+)" target="[^"]+">([^<]+)</a>'
 	#patronvideos2 = 'file=([^\&]+)\&'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if len(matches)>0:
@@ -241,7 +234,7 @@ def detail(params,url,category):
 			#data2 = scrapertools.cachePage(match[0])
 			#matches2 = re.compile(patronvideos2,re.DOTALL).findall(data2)
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - "+match[1], match[0] , thumbnail , plot )
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "Reproducir todas las partes a la vez...", urllists , thumbnail , plot )
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "(Reproducir todas las partes a la vez...)", urllists , thumbnail , plot )
 	## --------------------------------------------------------------------------------------##
 	#            Busca enlaces de videos para el servidor vkontakte.ru                        #
 	## --------------------------------------------------------------------------------------##
@@ -279,7 +272,18 @@ def detail(params,url,category):
 					tipo = "240.mp4"
 					videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
 					xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKONTAKTE] [%s]" %tipo, videourl , thumbnail , plot )
-			
+	
+	patronvideos = '"(http://peliculasid.com/modulos/iframevk.php[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		print " encontro VKontakte.ru :%s" %matches[0]	
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - [VKserver]", matches[0] , thumbnail , plot )
+		
+	patronvideos = '"(http://peliculasid.com/modulos/iframemv.php[^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	if len(matches)>0:
+		print " encontro Megavideo :%s" %matches[0]	
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title+" - [Megavideo]", matches[0] , thumbnail , plot )		
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -314,6 +318,22 @@ def play(params,url,category):
 		patronvideos = 'file=([^\&]+)\&'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
 		if len(matches)>0:
+			url = matches[0]
+			
+	elif "iframevk.php" in url:
+		data = scrapertools.cachePage(url)
+		patronvideos = '<iframe src="(http://vk[^/]+/video_ext.php[^"]+)"'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)
+		if len(matches)>0:
+			import vk
+			server = "Directo"
+			url = 	vk.geturl(matches[0])
+	elif "iframemv.php" in url:
+		data = scrapertools.cachePage(url)
+		patronvideos  = 'src="http://www.megavideo.com/mv_player.swf\?v\=([^"]+)"'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)	
+		if len(matches)>0:
+			server = "Megavideo"
 			url = matches[0]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
