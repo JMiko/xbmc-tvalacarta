@@ -27,8 +27,9 @@ except:
 	pluginhandle = ""
 
 DEBUG = True
+bookmark_setting = config.getSetting( "bookmarkpath")
 
-BOOKMARK_PATH = config.getSetting( "bookmarkpath" )
+BOOKMARK_PATH = (len(bookmark_setting)>0 and bookmark_setting) or os.path.join(config.DATA_PATH,"bookmarks")  
 
 usingsamba=BOOKMARK_PATH.upper().startswith("SMB://")
 
@@ -137,9 +138,16 @@ def savebookmark(titulo,url,thumbnail,server,plot):
 	else:
 		ficheros = os.listdir(BOOKMARK_PATH)
 	ficheros.sort()
-	
+	#print ficheros
+	#Filtra solo los ficheros
+	ficheros2 = [f for f in ficheros
+				if os.path.isfile(os.path.join(BOOKMARK_PATH, f)) and os.path.join(BOOKMARK_PATH, f).endswith(".txt")]
 	# Averigua el último número
-	filenumber = int( ficheros[len(ficheros)-1][0:-4] )+1
+	try:
+		filenumber = int( ficheros2[len(ficheros2)-1][0:-4] )+1
+	except:
+		filenumber = 0
+	
 
 	# Genera el contenido
 	filecontent = ""
