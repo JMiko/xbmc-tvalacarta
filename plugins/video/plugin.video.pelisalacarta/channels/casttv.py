@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal CastTV by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated:01/10/2010
+# Last Updated:08/10/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -51,6 +51,8 @@ FAVCTV_FILE = os.path.join(TEMP_PATH,'casttv_s.txt')
 FAVANF_FILE = os.path.join(TEMP_PATH,'animef_s.txt')
 NEWCTV_FILE = os.path.join(TEMP_PATH,'casttv_n.txt')
 NEWANF_FILE = os.path.join(TEMP_PATH,'animef_n.txt')
+WCTV_FILE = os.path.join(TEMP_PATH,'casttv_w.txt')
+WANF_FILE = os.path.join(TEMP_PATH,'animef_w.txt')
 
 SUB_PATH = xbmc.translatePath( os.path.join( downloadtools.getDownloadPath() , 'Subtitulos' ) )
 if not os.path.exists(SUB_PATH):
@@ -87,6 +89,10 @@ def mainlist(params,url,category):
 	# ------------------------------------------------------------------------------------
 	writetmplist(FAVCTV_FILE,[],"-1","")
 	writetmplist(FAVANF_FILE,[],"-1","")
+	writetmplist(NEWCTV_FILE,[],"-2","")
+	writetmplist(NEWANF_FILE,[],"-2","")
+	writetmplist(WCTV_FILE,[],"-2","")
+	writetmplist(WANF_FILE,[],"-2","")
 
 def favoritos(params,url,category):
 	listanime = []
@@ -111,7 +117,6 @@ def favoritos(params,url,category):
 			writetmplist(FAVCTV_FILE,series,"-1",nuevosep)
 	if len(series)==0 or respuesta=="-1":
 		series,nuevos = findfavoritos(category)
-		line1 = 'Espere por favor...'
  		Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if category=="Todos Mis Favoritos":
@@ -125,7 +130,6 @@ def favoritos(params,url,category):
 				writetmplist(FAVANF_FILE,listanime,"-1",nuevosep)
 		if len(listanime)==0 or respuesta=="-1":
 			listanime,animenuevos = animeforos.findfavoritos(category)
-			line1 = 'Espere por favor...'#
  			Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if len(series)==0 and len(listanime)==0:
@@ -139,7 +143,7 @@ def favoritos(params,url,category):
 	if len(nuevos)>0:
 		addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritas - Nuevos Episodios" , "-*-"+todostitulo+"Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
 	for serie in series:
-		addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] , category+";" )
+		addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
 
 	if category=="Todos Mis Favoritos" and len(listanime)>0:
 		additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
@@ -150,8 +154,6 @@ def favoritos(params,url,category):
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,False)
 	# ------------------------------------------------------------------------------------
-	writetmplist(NEWCTV_FILE,[],"-2","")
-	writetmplist(NEWANF_FILE,[],"-2","")
 
 def findfavoritos(category):
 	thumbnail=""
@@ -203,14 +205,7 @@ def findfavoritos(category):
 	line1 = 'Buscando información de "'+category+'":'
 	Dialogespera.create('pelisalacarta' , line1 , '0%  -  ')
 	total = len(listaseries)
-	if total>20:
-  		n = int(total/20)
-		m = 5
-	else:
-		n = 1
-		m = int(100/total)
-	i = 0
-	j = 0
+	i,j,n,m = progreso(total)
 	for serie in listaseries:
 		dataweb = ""
 		serievistos = ""
@@ -230,7 +225,10 @@ def findfavoritos(category):
 			thumbnail=STARGREY_THUMB
 		else:
 			thumbnail=STARORANGE_THUMB
-			serievistos,dataweb,listanuevos=findnuevos(serie[0],serie[2],"0")
+			serievistos,dataweb,listanuevos=findnuevos(serie[0],serie[2],"1")
+			if serie[3]=="-2" and len(listanuevos)>3:
+				listanuevos0 = listanuevos
+				listanuevos = [ listanuevos0[0] , listanuevos0[1] , listanuevos0[2] ]
 
 		if "casttv" in serie[2]:
 			for ctv in listactv:			
@@ -272,11 +270,12 @@ def findfavoritos(category):
 			if (matchnet):
 				network=" ("+matchnet.group(1)+")"
 
-		series.append( [ category+";"+serie[0]+";"+serie[1]+";"+serie[4] , serie[0]+network+status , serie[2] , thumbnail , serievistos , dataweb ,  ";" ] )
+		series.append( [ category+";"+serie[0]+";"+serie[1]+";"+serie[4] , serie[0]+network+status , serie[2] , thumbnail , serievistos , dataweb ] )
 
 	if len(nuevos)>0:
 		nuevosep="-1"
 	writetmplist(FAVCTV_FILE,series,"-1",nuevosep)
+	writetmplist(NEWCTV_FILE,nuevos,"3","")
 	return series,nuevos
 
 def alertreturnfav(category,tipo):
@@ -284,7 +283,7 @@ def alertreturnfav(category,tipo):
 	if tipo=="0" or tipo=="2":
 		resultado = advertencia.yesno('peliscalacarta' , '¿Desea actualizar "'+category+'"' , 'al volver?' )
 	elif  tipo=="1" or tipo=="3":
-		resultado = advertencia.yesno('peliscalacarta' , 'Se está abriendo "'+category+'"' , 'Existen datos guardados, ¿Desea actualizarlos?' , '' )
+		resultado = advertencia.yesno('peliscalacarta' , 'Se está abriendo "'+category+'"' , 'con datos guardados, ¿Desea actualizarlos?' , '' )
 	return resultado
 
 def readtmplist(fullfilename,update):
@@ -292,34 +291,27 @@ def readtmplist(fullfilename,update):
 	nuevos = []
 	if os.path.exists(fullfilename):
 		listfile = open(fullfilename)
-		n = 0
 		for line in listfile:
+			matchup = re.match('Update=(0|1|2|3)\n',line)
 			if update=="-1" or update=="-2":
-				matchup = re.match('(0|1|2|3)\n',line)
 				if (matchup):
 					update = matchup.group(1)
 					continue
 				else:
 					break
-			matchn = re.match('Nuevos=-1\n',line)
+			elif (matchup):
+				continue
+			matchn = re.match('Nuevos=(.*?)\n',line)
 			if (matchn):
-				nuevos.append(-1)
+				if matchn.group(1)=="-1":
+					nuevos.append(-1)
 				continue
-			match = re.match('([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)([|]?)([^|]*)([|]?)([^|]*)([|]?)([^|]*)([|]?)([^|]*)\n',line)
-			if (match):
-				serie = [ match.group(1) , match.group(2) , match.group(3) , match.group(4) , match.group(5) , match.group(6), match.group(7) ]
-				if match.group(8)=="|":
-					serie.append(match.group(9))
-				if match.group(14)=="|":
-					serie.append(match.group(11))
-					serie.append(match.group(13))
-					serie.append(int(match.group(15)))
-				series.append(serie)
-				continue
-			match2 = re.match('([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\n',line)
-			if (match2):
-				serie = [ match2.group(1) , match2.group(2) , match2.group(3) , match2.group(4) ]
-				series.append(serie)
+			serie = []
+			patron = '([^\t]*)(?:\t|\n)'
+			matches = re.compile(patron).findall(line)
+			for match in matches:
+				serie.append(match)
+			series.append(serie)
 		listfile.close()
 	if update=="-2" or update=="2" or update=="3":
 		return series,update
@@ -328,7 +320,7 @@ def readtmplist(fullfilename,update):
 def writetmplist(fullfilename,list,update,nuevosep):
 	listfile = open(fullfilename,"w")
 	if int(update)>=0:
-		listfile.write(update+"\n")
+		listfile.write("Update="+update+"\n")
 	if len(list)>0:
 		listfile.write("Nuevos="+nuevosep+"\n")
 		for item in list:
@@ -337,7 +329,7 @@ def writetmplist(fullfilename,list,update,nuevosep):
 				if fila=="":
 					fila = str(subitem)
 				else:
-					fila = fila+"|"+str(subitem)
+					fila = fila+"\t"+str(subitem)
 			fila = fila+"\n"
 			listfile.write(fila)
 	listfile.close()
@@ -350,10 +342,10 @@ def findnuevos(serie,url,todos):
 	if len(listavistos)>0:
 		listavistos.sort(key=lambda visto: visto[5])
 		if listavistos[0][5]<>"1" and listavistos[0][5]<>"2":
-			if todos=="0":
+			if todos=="0" or todos=="1":
 				return serievistos,dataweb,listanuevos
 			else:
-				return serievistos,listanuevos
+				return listanuevos
 
 	listaepisodios=findepisodios(url,serie,dataweb)
 
@@ -361,12 +353,12 @@ def findnuevos(serie,url,todos):
 		listaepisodios.reverse()
 		for episodio in listaepisodios:
 			if episodio[3]=="0":
-				listanuevos.append(episodio)
+				listanuevos.append([ episodio[0] , episodio[1] , episodio[9] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serie , episodio[8] , episodio[7] ])
 				break
-		if todos=="0":
+		if todos=="0" or todos=="1":
 			return serie,dataweb,listanuevos
 		else:
-			return serie,listanuevos
+			return listanuevos
 
 	#el listado está ordenado por fecha lo que simplifica la búsqueda
 	stop="0"
@@ -397,13 +389,14 @@ def findnuevos(serie,url,todos):
 		if stop=="-1":
 			break
 		if OK=="-1":
-			listanuevos.append(episodio)
+			listanuevos.append([ episodio[0] , episodio[1] , episodio[9] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] ])
 			if todos=="0":
 				break
-	if todos=="0":
+	listanuevos.reverse()
+	if todos=="0" or todos=="1":
 		return serievistos,dataweb,listanuevos
 	else:
-		return serievistos,listanuevos
+		return listanuevos
 
 def search(params,url,category):
 	searchupdate(2,"",category,"","",False)
@@ -566,17 +559,48 @@ def searchupdate(seleccion,tecleado,category,web,datafilter,listupdate):
 	# ------------------------------------------------------------------------------------
 
 def searchvistos(params,url,category):
+	seriesvistas = []
+	respuesta = ""
+
 	Dialogespera = xbmcgui.DialogProgress()
-	line1 = 'Buscando información de "'+category+'"...'
-  	Dialogespera.create('pelisalacarta' , line1 , '' )
+	line1 = 'Espere por favor...'
+ 	Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	if os.path.exists(WCTV_FILE):
+		seriesvistas,update = readtmplist(WCTV_FILE,"-2")
+		if update=="3":
+			respuesta = alertreturnfav(category,update)
+			if respuesta:
+				respuesta="-1"
+		if len(seriesvistas)>0 and update<>"3":
+			writetmplist(WCTV_FILE,seriesvistas,"3","")
+	if len(seriesvistas)==0 or respuesta=="-1":
+		seriesvistas = findvistos(category)
+	 	Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	if len(seriesvistas)==0:
+		writetmplist(WCTV_FILE,[],"-2","")
+		alertnoresultadosearch()
+		return 
+	for serie in seriesvistas:
+		addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , "" , "" )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,False)
+	# ------------------------------------------------------------------------------------
+
+def findvistos(category):
 	search=""
 	listaseries = []
 	listaseries2 = []
 	listavistos2 = []
 	listavistos = readvisto("","",CHANNELNAME)
 	if len(listavistos)==0:
-		alertnoresultadosearch()
-		return
+		return listavistos
+
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Buscando información de "'+category+'"...'
+  	Dialogespera.create('pelisalacarta' , line1 , '' )
+
 	for visto in listavistos:
 		titulo = re.sub('[\\\\]?(?P<signo>[^\w\s\\\\])','\\\\\g<signo>',visto[0])
 		titulo = re.sub('&','&(?:amp;)?',titulo)
@@ -647,8 +671,7 @@ def searchvistos(params,url,category):
 		listaseries.extend(listaseriesnoctv2)
 
 	if len(listaseries)==0:
-		alertnoresultadosearch()
-		return
+		return listaseries
 	for serie in listaseries:
 		encontrado="0"
 		listafav = readfav(serie[0],"","",CHANNELNAME)
@@ -661,11 +684,11 @@ def searchvistos(params,url,category):
 		if encontrado=="0" and listaseries2.count(serie)==0:
 			listaseries2.append(serie)
 	if len(listaseries2)==0:
-		alertnoresultadosearch()
-		return
+		return listaseries2
 	listaseries = listaseries2
 	listaseries.sort()
 
+	seriesvistas = []
 	for serie in listaseries:
 		thumbnail=""
 		status=""
@@ -682,11 +705,10 @@ def searchvistos(params,url,category):
 			matchnet=re.match('^[^;]*;[^;]*;[^;]*;([^;]+);',serie[4])
 			if (matchnet):
 				network=" ("+matchnet.group(1)+")"
+		seriesvistas.append([ "Vistos;"+serie[0]+";"+serie[1]+";"+serie[4] , serie[0]+network+status , serie[2] , thumbnail ])
 
-		addseriefolder( CHANNELNAME , "listados" , "Vistos;"+serie[0]+";"+serie[1]+";"+serie[4] , serie[0]+network+status , serie[2] , thumbnail , "" , "" , "" , "" )
-	# ------------------------------------------------------------------------------------
-	EndDirectory(category,"",False,False)
-	# ------------------------------------------------------------------------------------
+	writetmplist(WCTV_FILE,seriesvistas,"3","")
+	return seriesvistas
 
 def casttvfilters(tipolist,search,datafilter):
 	listseries = []
@@ -877,7 +899,8 @@ def listados(params,url,category):
 	serievistos,dataweb,respuesta = serieupdate(miserievo,status,url,tipocontenido,CHANNELNAME)
 
 	if respuesta=="Futon":
-		favnoupdate(category,"1")
+		if "Vistos" not in category:
+			favnoupdate(category,"1")
 		listinfofuton(params,url,datafuton)
 	elif respuesta<>1 and respuesta<>2 and respuesta<>3 and respuesta<>4:
 		if "Consulta" in category:
@@ -893,18 +916,22 @@ def listados(params,url,category):
 			dataweb = urllib.unquote_plus( params.get("dataweb") )
 			serievistos = urllib.unquote_plus( params.get("serievistos") )
 		listadosupdate(miserievo,url,category,serievistos,dataweb,False)
-	elif "Fav" in category and 'Futon' not in category:
-		respuesta2 = alertreturnfav(category,"0")
+	elif "Fav" in category:
+		category2 = re.sub('Futon','',category)
+		respuesta2 = alertreturnfav(category2,"0")
 		if respuesta2:
-			pass
+			if "Futon" in category:
+				writetmplist(FAVCTV_FILE,[],"-1","")
+				if "Todos" in category:
+					writetmplist(FAVANF_FILE,[],"-1","")
 		else:
 			series,nuevos,update = readtmplist(FAVCTV_FILE,"0")
 			if len(nuevos)>0:
 				nuevosep = "-1"
 			else:
 				nuevosep = "0"
-			eliminar=[]
 			if respuesta==1 or respuesta==2:
+				eliminar=[]
 				for serie in series:
 					if serie[1]==title and serie[2]==url:
 						if respuesta==2:
@@ -919,10 +946,26 @@ def listados(params,url,category):
 						else:
 							eliminar=serie
 						break
-			if len(eliminar)>0:
-				series.remove(eliminar)
+				if len(eliminar)>0:
+					series.remove(eliminar)
 			writetmplist(FAVCTV_FILE,series,"0",nuevosep)
 			favnoupdate(category,"0")
+	elif "Vistos" in category:
+		respuesta2 = alertreturnfav("Series VO - Vistas","2")
+		if respuesta2:
+			if "Futon" in category:
+				writetmplist(WCTV_FILE,[],"-2","")
+		else:
+			series,update = readtmplist(WCTV_FILE,"2")
+			if respuesta==1:
+				eliminar=[]
+				for serie in series:
+					if serie[1]==title and serie[2]==url:
+						eliminar=serie
+						break
+				if len(eliminar)>0:
+					series.remove(eliminar)
+			writetmplist(WCTV_FILE,series,"2","")
 
 def favnoupdate(category,value):
 	if value<>"0":
@@ -1166,7 +1209,7 @@ def findtsearch(miserievo,url):
 		iniciosearch = iniciosearch+"|"+ititlesearch
 
 	#Hasta resolverlo de mejor forma, casos en que la inicial del título y titlesearch no coinciden (excepto "The")
-	iniciod = "a,b,c,k,l,r,s,t,w,3,5,7,8"
+	iniciod = "a,c,k,l,r,s,t,w,3,5,7,8"
 	if ititlesearch in iniciod:
 		iniciosearch = finiciosearch(iniciosearch,titlesearch,ititlesearch)
 
@@ -2133,7 +2176,7 @@ def listasubs(params,url,category):
 		if tituloserie<>"":
 			foldertitle = tituloserie+network+"  -  "+statusfuton
 			foldertitle = re.sub('\s+\-\s+$','',foldertitle)
-			addseriefolder( CHANNELNAME , "listados" , category+";"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" , "" )
+			addseriefolder( CHANNELNAME , "listados" , category+";"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" )
 		elif datafuton<>"":
 			addsimplefolder( CHANNELNAME , "listinfofuton" , datafuton , serie+"  -  [The Futon Critic]" , "thefutoncritic" , "" )
 		else:
@@ -2988,7 +3031,7 @@ def listinfofuton(params,url,category):
 			else:
 				folderstatus = statusbroadcast
 			foldertitle = tituloserie+"  -  "+folderstatus
-			addseriefolder( CHANNELNAME , "listados" , category+";"+tituloserie+";"+folderstatus+";"+datafuton , foldertitle , urlserie , "" , plot , "" , "" , "" )
+			addseriefolder( CHANNELNAME , "listados" , category+";"+tituloserie+";"+folderstatus+";"+datafuton , foldertitle , urlserie , "" , plot , "" , "" )
 		elif tipowatch=="":
 			addsimplefolder( CHANNELNAME , "search" , category , "Buscar Serie" , "" , "" )
 	elif "casttv" in url or "seriesyonkis" in url or "tvshack" in url:
@@ -3004,7 +3047,7 @@ def listinfofuton(params,url,category):
 			dataweb = ""
 			categoryback = re.sub('^[^;]*;\d+;[^;]*;[^;]*;[^;]*;[^;]*;','',categoryback)
 			categoryback = "Futon;"+categoryback
-		addseriefolder( CHANNELNAME , "listados" , categoryback , title , url , "" , plot , serievistos , dataweb , "" )
+		addseriefolder( CHANNELNAME , "listados" , categoryback , title , url , "" , plot , serievistos , dataweb )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,True)
 	# ------------------------------------------------------------------------------------
@@ -3081,32 +3124,36 @@ def listadonuevos(params,url,category):
 	if os.path.exists(NEWCTV_FILE):
 		nuevos,update = readtmplist(NEWCTV_FILE,"-2")
 		if update=="3":
-			respuesta = alertreturnfav(category2,update)
-			if respuesta:
-				respuesta="-1"
-		if len(nuevos)>0:
-			writetmplist(NEWCTV_FILE,nuevos,"-2","")
+			if len(nuevos)==0 and "Todos" not in category:
+				pass
+			else:
+				respuesta = alertreturnfav(category2,update)
+				if respuesta:
+					respuesta="-1"
+		if len(nuevos)>0 and update<>"3":
+			writetmplist(NEWCTV_FILE,nuevos,"3","")
 	if len(nuevos)==0 or respuesta=="-1":
-		line1 = 'Buscando "'+category2+'"...'
+		nuevos = findlistadonvos(category2)
  		Dialogespera.create('pelisalacarta' , line1 , '' )
-		nuevos = findlistadonvos()
 
 	if "Todos" in category:
 		tipo = 4
 		if os.path.exists(NEWANF_FILE):
 			animenuevos,update = readtmplist(NEWANF_FILE,"-2")
-			if len(animenuevos)>0:
-				writetmplist(NEWANF_FILE,animenuevos,"-2","")
+			if len(animenuevos)>0 and update<>"3":
+				writetmplist(NEWANF_FILE,animenuevos,"3","")
 		if len(animenuevos)==0 or respuesta=="-1":
-			animenuevos = animeforos.findlistadonvos(category)
+			animenuevos = animeforos.findlistadonvos(category,category2)
+ 			Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if len(nuevos)==0 and len(animenuevos)==0:
 		alertnoepisodios(tipo)
+		return
 
 	if tipo==4 and len(nuevos)>0:
 		additem( CHANNELNAME , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
 	for item in nuevos:
-		addnewfolder( CHANNELNAME , "episodiomenu" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , item[10] , ";" , "New" )
+		addnewfolder( CHANNELNAME , "episodiomenu" , category , item[0] , item[1] , item[2] , "" , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , int(item[9]) , ";" , "New" )
 
 	if len(animenuevos)>0:
 		additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
@@ -3116,22 +3163,35 @@ def listadonuevos(params,url,category):
 	EndDirectory(category,"",False,False)
 	# ------------------------------------------------------------------------------------
 
-def findlistadonvos():
+def findlistadonvos(category2):
 	listafav = readfav("","","-1|-2",CHANNELNAME)
 	nuevos = []
-	for serie in listafav:
-		serievistos,listanuevos=findnuevos(serie[0],serie[2],"-1")
-		if len(listanuevos)>0:
-			listanuevos.reverse()
-			n=0
-			for episodio in listanuevos:
-				if episodio[3] == "0":
-					nuevos.append([ episodio[0] , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] ])
-					n=n+1
-					if serie[3]=="-2" and n==3:
-						break
 
-	writetmplist(NEWCTV_FILE,nuevos,"-2","")
+	if len(listafav)==0:
+		writetmplist(NEWCTV_FILE,nuevos,"3","")
+		return nuevos
+
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Buscando "'+category2+'":'
+	Dialogespera.create('pelisalacarta' , line1 , '0%  -  ')
+	total = len(listafav)
+	i,j,n,m = progreso(total)
+	for serie in listafav:
+		if i>=n:
+			i=0
+			j=j+m
+		if j>=100:
+			j=95
+		Dialogespera.update(j, line1 , str(j)+'%  -  '+serie[0] )
+		i=i+1
+		listanuevos=findnuevos(serie[0],serie[2],"-1")
+		if len(listanuevos)>0:
+			if serie[3]=="-2" and len(listanuevos)>3:
+				listanuevos0 = listanuevos
+				listanuevos = [ listanuevos0[0] , listanuevos0[1] , listanuevos0[2] ]
+			nuevos.extend(listanuevos)
+
+	writetmplist(NEWCTV_FILE,nuevos,"3","")
 	return nuevos
 
 def detaildos(params,url,category):
@@ -3224,7 +3284,7 @@ def detaildos(params,url,category):
 		foldertitle = tituloserie+network+"  -  "+statusfuton
 		foldertitle = re.sub('\s+\-\s+$','',foldertitle)
 			
-		addseriefolder( CHANNELNAME , "listados" , "Series VO - Consulta - ;"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" , "" )
+		addseriefolder( CHANNELNAME , "listados" , "Series VO - Consulta - ;"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" )
 	# ------------------------------------------------------------------------------------
 	# Añade los enlaces a los videos
 	# ------------------------------------------------------------------------------------
@@ -3355,9 +3415,11 @@ def serieupdate(miserievo,status,url,tipocontenido,channel):
 
 def seriemenu(tipofav,tiponuevos,tipocontenido,seriefav,channel):
 	misfavtext="Mis Favoritas"
+	newtext="Nuevos Episodios"
 	anexofavtext=""
 	if channel=="animeforos":
 		misfavtext="Mis Favoritos"
+		newtext="Nuevos Contenidos"
 	if seriefav<>"":
 		anexofavtext="  ("+seriefav+")"
 
@@ -3382,13 +3444,13 @@ def seriemenu(tipofav,tiponuevos,tipocontenido,seriefav,channel):
 		else:
 			opciones.append('Desactivar en "'+misfavtext+'"'+anexofavtext)
 			if tiponuevos=="0":
-				opciones.append('Activar Seguimiento en "Nuevos Episodios"')
+				opciones.append('Activar Seguimiento en "'+newtext+'"')
 			else:
-				opciones.append('Desactivar Seguimiento en "Nuevos Episodios"')
+				opciones.append('Desactivar Seguimiento en "'+newtext+'"')
 				if tiponuevos=="-1":
-					opciones.append('Activar Límite de 3 episodios en "Nuevos Episodios"')
+					opciones.append('Activar Límite de 3 episodios en "'+newtext+'"')
 				elif tiponuevos=="-2":
-					opciones.append('Desactivar Límite de 3 episodios en "Nuevos Episodios"')
+					opciones.append('Desactivar Límite de 3 episodios en "'+newtext+'"')
 
 	searchtype = xbmcgui.Dialog()
 	seleccion = searchtype.select("Seleccione una opción:", opciones)
@@ -3455,11 +3517,10 @@ def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,se
 
 	if seleccion==-1 or seleccion==0:
 		if channel=="casttv":
-			if tipovisto=="New":
-				nuevosnoupdate(category,"3")
 			detaildos(params,url,category)
 			return
 		accion = ""
+		detener = ""
 	else:
 		if tipovisto=="" or tipovisto=="N" or tipovisto=="0" or tipovisto=="New":
 			if seleccion==3:
@@ -3539,12 +3600,16 @@ def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,se
 			else:
 				accion = str(seleccion)
 
-		upgradevisto(serievistos,title0,url,season,episodio,accion,channel,urlOK)
+		detener = upgradevisto(serievistos,title0,url,season,episodio,accion,channel,urlOK)
 
 	if channel=="animeforos":
-		return seleccion,accion
+		return seleccion,accion,detener
 
-	if tipovisto=="New":
+	if tipovisto<>"New":
+		if "Fav" in category and detener<>"-1":
+			writetmplist(NEWCTV_FILE,[],"3","")
+		listadosupdate(serieback,urlback,category,serievistos,dataweb,True)
+	elif detener<>"-1":
 		category2 = re.sub(r".*?\s\-\s([^\-]+)$",lambda micat: micat.group(1),category)
 		respuesta = alertreturnfav(category2,"2")
 		if respuesta:
@@ -3553,7 +3618,7 @@ def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,se
 			nuevos,update = readtmplist(NEWCTV_FILE,"2")
 			listaeliminar=[]		
 			for nuevo in nuevos:
-				if nuevo[5]==dataweb:
+				if nuevo[7]==serievistos:
 					n = nuevos.index(nuevo)
 					if nuevo[0]==title and nuevo[1]==url:
 						listaeliminar.append(nuevo)
@@ -3564,8 +3629,6 @@ def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,se
 				nuevos.remove(nuevo)
 			writetmplist(NEWCTV_FILE,nuevos,"2","")
 			nuevosnoupdate(category,"2")
-	else:
-		listadosupdate(serieback,urlback,category,serievistos,dataweb,True)
 
 def readfav(seriesearch0,urlsearch0,tiponuevos,channel):
 	if seriesearch0<>"":	
@@ -3780,7 +3843,8 @@ def upgradevisto(serie,titulo,url,season,episodio,tipo,channel,urlOK):
 			
 
 	vistofile.close()
-	if detener=="-1": return
+	if detener=="-1":
+		return detener
 
 	if tipo[0:1]=="0" and encontrado=="0":
 		vistolist.append([ serie , titulo , url , season, episodio , "0" ])
@@ -3793,7 +3857,7 @@ def upgradevisto(serie,titulo,url,season,episodio,tipo,channel,urlOK):
 	for visto in vistolist:
 		vistofile.write(visto[0]+';'+visto[1]+';'+visto[2]+';'+visto[3]+';'+visto[4]+';'+visto[5]+';\n')
 	vistofile.close()
-
+	return detener
 	
 def alertcontinuar(tipo,tipof):
 	advertencia = xbmcgui.Dialog()
@@ -3885,8 +3949,6 @@ def subtitulo(params,url,category):
 def subtitulovye(urlvye,fullfilename):
 	listainicios=[ "0" ]
 	sublist = []
-	i = 0
-  	j = 0
 	try:
 		data = scrapertools.cachePage(urlvye+"0")
 	except:
@@ -3903,19 +3965,19 @@ def subtitulovye(urlvye,fullfilename):
 	for match in matches:
 		listainicios.append(str(match))
 
+	if len(listainicios)==0:
+		return
+
 	total = len(listainicios)
-	if total>20:
-  		n = int(total/20)
-		m = 5
-	else:
-		n = 1
-		m = int(100/total)
+	i,j,n,m = progreso(total)
 	for inicio in listainicios:
 		if i>=n:
 			i=0
 			j=j+m
 		if j>100: j=100
 		Dialogespera.update(j, line1+'    ('+str(j)+'%)' , line2 , line3 )
+		i = i + 1
+
 		urlL = urlvye+inicio
 		dataL = scrapertools.cachePage(urlL)
 		patronsub  = '<tr[^>]+><td><div[^>]+>(\d+)</div>'
@@ -3931,7 +3993,6 @@ def subtitulovye(urlvye,fullfilename):
 			# Texto
 			text=re.sub('<.*?>','',match[2])
 			sublist.append([ secuencia , tiempos , text ])
-		i = i + 1
 
   	Dialogespera.update(100, line1+'    (100%)' , line2 , line3 )
 	subfile = open(fullfilename,"w")
@@ -3944,6 +4005,17 @@ def subtitulovye(urlvye,fullfilename):
 		copy2(fullfilename,SUBTEMP_PATH)
 		config.setSetting("subtitulo", "true")
   	Dialogespera.close()
+
+def progreso(total):
+	i = 0
+  	j = 0
+	if total>20:
+  		n = int(total/20)
+		m = 5
+	else:
+		n = 1
+		m = int(100/total)
+	return i,j,n,m
 
 def alertdescarga(filename):
 	advertencia = xbmcgui.Dialog()
@@ -3964,7 +4036,7 @@ def alerttituloarchivo(archivo):
 
 def alertnovideo():
 	advertencia = xbmcgui.Dialog()
-	resultado = advertencia.ok('Vídeo no disponible' , 'No se ha añadido aún a ninguna de las webs' , 'un enlace compatible.')
+	resultado = advertencia.ok('pelisalacarta' , 'No se han encontrado enlaces de vídeo' , 'compatibles en este momento.' )
 
 def alertnoepisodios(tipo):
 	advertencia = xbmcgui.Dialog()
@@ -4017,10 +4089,10 @@ def addsub( canal , accion , category , title , url , thumbnail ):
 	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=False)
 
-def addseriefolder( canal , accion , category , title , url , thumbnail , plot , serievistos , dataweb , databack ):
+def addseriefolder( canal , accion , category , title , url , thumbnail , plot , serievistos , dataweb ):
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( type="Video", infoLabels={ "Title" : title, "Plot" : plot } )
-	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&serievistos=%s&dataweb=%s&databack=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( serievistos ) , urllib.quote_plus( dataweb ) , urllib.quote_plus( databack ) )
+	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&serievistos=%s&dataweb=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( serievistos ) , urllib.quote_plus( dataweb ) )
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
 
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , date , dataweb , seasontvid , seasontv , serievistos , web , episodiotv , databack , tipovisto ):
@@ -4046,7 +4118,7 @@ def ayuda(params,url,category):
 	info3 = "Premiere: Estreno de los últimos tres meses"
 	info4 = "Series VO - Vistas: Distintas de Mis Favoritas"
 	info5 = 'Series VO - Mis Favoritas: El primer "episodio" de las Favoritas sin ningún tipo de marca de Vistos se trata como Nuevo Episodio (al igual que los Posteriores a [LW])'
-	additem( CHANNELNAME , category , "------------------------------------ Info: 01/10/2010 ------------------------------------" , "" , HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------ Info: 08/10/2010 ------------------------------------" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , info5 , "" , HD_THUMB , info5 )
 	additem( CHANNELNAME , category , info4 , "" , HD_THUMB , info4 )
 	additem( CHANNELNAME , category , info1 , "" , HD_THUMB , info1 )
@@ -4057,13 +4129,13 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios)" , "" , HELP_THUMB , "" )
 	additem( CHANNELNAME , category , "ES/LT: Existe enlace de vídeo con Audio Español/Latino" , "" , HELP_THUMB , "" )
-	additem( CHANNELNAME , category , "Series Actualizadas [excepto Aptdo Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
+	additem( CHANNELNAME , category , "Series Actualizadas [excepto Ltdos Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Favoritas" , "" , STARORANGE_THUMB , "" )
-	additem( CHANNELNAME , category , "(1) Favoritas Actualizadas [excepto Aptdo Actualizaciones]" , "" , STARBLUE_THUMB , "" )
+	additem( CHANNELNAME , category , "(1) Favoritas Actualizadas [excepto Ltdos Actualizaciones]" , "" , STARBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "(2) Favoritas con Nuevos Episodios [Aptdo Mis Favoritas]" , "" , STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "(1) y (2) - [Aptdo Mis Favoritas]" , "" , STARGB_THUMB , "" )
 	additem( CHANNELNAME , category , "Series Favoritas Desactivadas", "" , STARGREY_THUMB , "" )
-	additem( CHANNELNAME , category , "Desactivadas Actualizadas - [excepto Aptdo Actualizaciones]" , "" , STARGREYBLUE_THUMB , "" )
+	additem( CHANNELNAME , category , "Desactivadas Actualizadas - [excepto Ltdos Actualizaciones]" , "" , STARGREYBLUE_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritas]" , "" , STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Subtítulo - [Descargar]" , "" , DESCARGAS_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
@@ -4076,9 +4148,6 @@ def ayuda(params,url,category):
 def finiciosearch(iniciosearch,titlesearch,inicial):
 	if inicial=="a":
 		if titlesearch=="abducidos(taken)":
-			iniciosearch = "s|"+iniciosearch
-	elif inicial=="b":
-		if titlesearch=="bleepmydadsays":
 			iniciosearch = "s|"+iniciosearch
 	elif inicial=="c":
 		if titlesearch=="cellbbc":
@@ -4097,7 +4166,9 @@ def finiciosearch(iniciosearch,titlesearch,inicial):
 		if titlesearch=="randyjacksonpresentsamericasbestdancecrew":
 			iniciosearch = "a|"+iniciosearch
 	elif inicial=="s":
-		if titlesearch=="stephenhawkingsintotheuniverse":
+		if titlesearch=="shitmydadsays":
+			iniciosearch = "b|"+iniciosearch
+		elif titlesearch=="stephenhawkingsintotheuniverse":
 			iniciosearch = "i|"+iniciosearch
 	elif inicial=="t":
 		if titlesearch=="taken":
@@ -4160,7 +4231,6 @@ def ftitlectvsearch(title):
 		title = re.sub('^Queer as Folk$','Queer as Folk (US)',title)
 	elif inicial=="S":
 		title = re.sub('^Shameless$','Shameless (UK)',title)
-		title = re.sub('^Shit My Dad Says$','Bleep My Dad Says',title)
 		title = re.sub('^Skins$','Skins (2008)',title)
 		title = re.sub('^Southern Belles$','Southern Belles: Louisville',title)
 		title = re.sub('^Spartacus$','Spartacus: Blood and Sand',title)
@@ -4228,7 +4298,6 @@ def ftitlesubsearch(title):
 		title = re.sub('^Sabrina\, la bruja Adolescente$','Sabrina, the Teenage Witch 1996',title)
 		title = re.sub('^Scrubs Interns$','Webisode Series Scrubs Interns',title)
 		title = re.sub('^Shameless$','Shameless (UK)',title)
-		title = re.sub('^Shit My Dad Says$','Bleep My Dad Says',title)
 		title = re.sub('^Skins$','Skins (2008)',title)
 		title = re.sub('^Star Trek$','Star Trek: The Original Series',title)
 		title = re.sub('^Survivor$','Survivor (Reality Show)',title)
@@ -4236,6 +4305,7 @@ def ftitlesubsearch(title):
 		title = re.sub('^The Beast$','The Beast (2009)',title)
 		title = re.sub('^The Office$','The Office (US)',title)
 		title = re.sub('^The phantom MiniSerie$','The Phantom',title)
+		title = re.sub('^Top Chef: Just deserts$','Top Chef: Just desserts',title)
 		title = re.sub('^Top Gear$','Top Gear (UK)',title)
 		title = re.sub('^Trinity$','Trinity (UK)',title)
 	elif inicial=="W":
@@ -4266,7 +4336,7 @@ def ftitletvsearch(title):
 		title = re.sub('^Eleventh Hour \(US\)$','Eleventh Hour (2008)',title)
 	elif inicial=="H":
 		title = re.sub('^Haven$','Haven (2010)',title)
-		title = re.sub('^Hawaii Five-O \(2010\)$','Hawaii Five0',title)
+		title = re.sub('^Hawaii Five-0 \(2010\)$','Hawaii Five0',title)
 		title = re.sub('^Heroes$','Heroes (USA)',title)
 		title = re.sub('^House$','House MD',title)
 	elif inicial=="I":
@@ -4286,7 +4356,6 @@ def ftitletvsearch(title):
 	elif inicial=="R":
 		title = re.sub('^Ramsay\'s Kitchen Nightmares$','Kitchen Nightmares (UK)',title)
 	elif inicial=="S":
-		title = re.sub('^Shit My Dad Says$','Bleep My Dad Says',title)
 		title = re.sub('^Skin$','Skin (2003)',title)
 		title = re.sub('^Skins$','Skins (2008)',title)
 		title = re.sub('^Star Trek$','Star Trek: The Original Series',title)
@@ -4325,6 +4394,7 @@ def ftitlefutonsearch(title):
 		title = re.sub('^apprentice\, the$','the apprentice (us)',title)
 	elif inicial=="b":
 		title = re.sub('^big brother$','big brother (us)',title)
+		title = re.sub('^bleep my dad says$','shit my dad says',title)
 	elif inicial=="c":
 		title = re.sub('^childrens hospital$','childrens hospital (us)',title)
 		title = re.sub('^city, the','city (2008)',title)
@@ -4539,6 +4609,7 @@ def ftitlesysearch(title):
 		title = re.sub('^Dawson Crece$','Dawsons Creek',title)
 		title = re.sub('^De cacharros a cochazos$','Wrecks Riches',title)
 		#title = re.sub('^De cacharros a cochazos$','Ultimate Car Build Off',title)
+		title = re.sub('^De culo y cuesta abajo$','Eastbound & Down',title)
 		#title = re.sub('^De trastos a cochazos$','Wrecks Riches',title)
 		title = re.sub('^De la Tierra a la Luna$','From The Earth to the Moon',title)
 		title = re.sub('^Deja la sangre correr$','Let the blood run free',title)
@@ -4563,6 +4634,7 @@ def ftitlesysearch(title):
 			title = re.sub('^El Ala Oeste de la Casa Blanca$','The West Wing',title)
 			title = re.sub('^El bufete$','The Deep End',title)
 			title = re.sub('^El Cuentacuentos$','The StoryTeller',title)
+			title = re.sub('^El cuerpo humano \(BBC\)$','The Human Body',title)
 			title = re.sub('^El club contra el crimen$','Womens murder club',title)
 			title = re.sub('^El club de medianoche$','Are you afraid of the dark?',title)
 			title = re.sub('^El club de la herradura$','The Saddle Club',title)
@@ -4590,6 +4662,7 @@ def ftitlesysearch(title):
 			title = re.sub('^El Universo$','The Universe',title)
 			title = re.sub('^El Universo Elegante \(la teor..a de las cuerdas\)$','The elegant Universe',title)
 			title = re.sub('^El Universo de Stephen Hawking$','Stephen Hawkings Universe',title)
+			title = re.sub('^El universo mec..nico$','The Mechanical Universe',title)
 			title = re.sub('^El Valle secreto$','Secret Valley',title)
 		else:
 			title = re.sub('^Embrujada$','Bewitched ',title)
@@ -4622,6 +4695,7 @@ def ftitlesysearch(title):
 		title = re.sub('^Hotel Dulce Hotel$','The Suite Life of Zack and Cody',title)
 		title = re.sub('^House$','House MD',title)
 		title = re.sub('^Hustle\, La Movida$','Hustle (The Con Is On)',title)
+		title = re.sub('^Hurac..n$','Category 6: Day of Destruction',title)
 	elif inicial=="I":
 		title = re.sub('^Identity$','Identity UK',title)
 		title = re.sub('^Infelices para siempre$','Unhappily Ever After',title)
@@ -4650,6 +4724,7 @@ def ftitlesysearch(title):
 			title = re.sub('^La Familia Monster$','The Munsters',title)
 			title = re.sub('^La familia salvaje$','Complete Savages',title)
 			title = re.sub('^La fuga de Logan$','Logans Run',title)
+			title = re.sub('^La Gestapo$','Gestapo The Sword is Forged',title)
 			title = re.sub('^La guerra del siglo$','War of the Century',title)
 			title = re.sub('^La Habitacion Perdida$','The Lost Room',title)
 			title = re.sub('^La Hora De Bill Cosby$','The Cosby Show',title)
@@ -4678,6 +4753,7 @@ def ftitlesysearch(title):
 			title = re.sub('^Las Hermanas McLeod$','McLeods Daughters',title)
 			title = re.sub('^Las pesadillas de Freddy$','Freddys Nightmares',title)
 			title = re.sub('^Ley y Orden: Acci..n Criminal$','Law & Order: Criminal Intent',title)
+			title = re.sub('^Ley y Orden: Los ..ngeles$','Law & Order: Los Angeles',title)
 			title = re.sub('^Ley y Orden U\.V\.E.$','Law & Order: SVU',title)
 			title = re.sub('^Lex$','Lex ES',title)
 			title = re.sub('^Life$','Life USA',title)
@@ -4694,6 +4770,7 @@ def ftitlesysearch(title):
 			title = re.sub('^Los Magos de Waverly Place$','Wizards of Waverly Place',title)
 			title = re.sub('^Los pilares de la tierra$','The Pillars of the Earth',title)
 			title = re.sub('^Los roper$','The Ropers',title)
+			title = re.sub('^Los secretos de la f..rmula 1$','The Secret Life of Formula One',title)
 			title = re.sub('^Los Soprano$','Sopranos',title)
 			title = re.sub('^Lost \(Perdidos\)$','Lost 2004 (Perdidos)',title)
 	elif inicial=="M":
@@ -4706,6 +4783,7 @@ def ftitlesysearch(title):
 		title = re.sub('^Matrimonio Con Hijos \(USA\)$','Married with Children',title)
 		title = re.sub('^M..s all.. del l..mite$','The Outer Limits',title)
 		title = re.sub('^Me Llamo Earl$','My Name is Earl',title)
+		title = re.sub('^Medicina ins..lita$','Medical Incredible',title)
 		title = re.sub('^Megaestructuras$','Megastructures',title)
 		title = re.sub('^Melrose place$','Melrose Place 1992',title)
 		title = re.sub('^Melrose Place 2\.0$','Melrose Place 2009',title)
@@ -4735,7 +4813,9 @@ def ftitlesysearch(title):
 		title = re.sub('^Phil Del Futuro$','Phil of the future',title)
 		title = re.sub('^Pippi Calzaslargas$','Pippi Longstocking',title)
 		title = re.sub('^Planeta Tierra$','Planet Earth',title)
+		title = re.sub('^Policias de ..lite$','Chris Ryans Elite Police',title)
 		title = re.sub('^Policias de Nueva York$','NYPD Blue',title)
+		title = re.sub('^Poltergeist El Legado$','Poltergeist: The Legacy',title)
 		title = re.sub('^Popular$','Popular 1999',title)
 	elif inicial=="Q":
 		title = re.sub('^Quark\, la escoba espacial','Quark',title)

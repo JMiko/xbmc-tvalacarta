@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal "Anime (foros)" by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated:25/09/2010
+# Last Updated:08/10/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -45,6 +45,10 @@ def mainlist(params,url,category):
 	# ------------------------------------------------------------------------------------
 	casttv.writetmplist(casttv.FAVCTV_FILE,[],"-1","")
 	casttv.writetmplist(casttv.FAVANF_FILE,[],"-1","")
+	casttv.writetmplist(casttv.NEWCTV_FILE,[],"-2","")
+	casttv.writetmplist(casttv.NEWANF_FILE,[],"-2","")
+	casttv.writetmplist(casttv.WCTV_FILE,[],"-2","")
+	casttv.writetmplist(casttv.WANF_FILE,[],"-2","")
 
 def seleccion(params,url,category):
 	if category=="Anime":
@@ -81,7 +85,6 @@ def favoritos(params,url,category):
 			casttv.writetmplist(casttv.FAVANF_FILE,listanime,"-1",nuevosep)
 	if len(listanime)==0 or respuesta=="-1":
 		listanime,nuevos = findfavoritos(category)
-		line1 = 'Espere por favor...'
  		Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if category=="Todos Mis Favoritos":
@@ -95,7 +98,6 @@ def favoritos(params,url,category):
 				casttv.writetmplist(casttv.FAVCTV_FILE,series,"-1",nuevosep)
 		if len(series)==0 or respuesta=="-1":
 			series,seriesnuevos = casttv.findfavoritos(category)
-			line1 = 'Espere por favor...'#
  			Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if len(listanime)==0 and len(series)==0:
@@ -116,12 +118,10 @@ def favoritos(params,url,category):
 		if len(seriesnuevos)>0:
 			addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
 		for serie in series:
-			casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] , category+";"+serie[6] )
+			casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,False)
 	# ------------------------------------------------------------------------------------
-	casttv.writetmplist(casttv.NEWCTV_FILE,[],"-2","")
-	casttv.writetmplist(casttv.NEWANF_FILE,[],"-2","")
 
 def findfavoritos(category):
 	#tipocontenido,tipolist e idioma posibilidad filtro
@@ -166,14 +166,7 @@ def findfavoritos(category):
 	line1 = 'Buscando información de "'+category+'":'
 	Dialogespera.create('pelisalacarta' , line1 , '0%  -  ')
 	total = len(listaseries)
-	if total>20:
-  		n = int(total/20)
-		m = 5
-	else:
-		n = 1
-		m = int(100/total)
-	i = 0
-	j = 0
+	i,j,n,m = casttv.progreso(total)
 	OKmca = "-1"
 	for serie in listaseries:
 		url = serie[2]
@@ -263,9 +256,12 @@ def findfavoritos(category):
 			matchurl2 = re.search('(?:\/showthread.php\?t[^\/]+|\/[^\/]+\/\d+)$',serie[2])
 			if (matchurl2):	
 				titleserievisto = titleserievisto+matchurl2.group(0)
-			listanuevos=findnuevos(title,titleserievisto,serie[2],"0",titleerdm)
+			listanuevos=findnuevos(category,title,titleserievisto,serie[2],"1",titleerdm)
 			if len(listanuevos)>0:
 				thumbnail=casttv.STARGREEN_THUMB
+				if serie[3]=="-2" and len(listanuevos)>3:
+					listanuevos0 = listanuevos
+					listanuevos = [ listanuevos0[0] , listanuevos0[1] , listanuevos0[2] ]
 				if serie[3]=="-1" or serie[3]=="-2":
 					nuevos.extend(listanuevos)
 
@@ -274,9 +270,10 @@ def findfavoritos(category):
 	if len(nuevos)>0:
 		nuevosep="-1"
 	casttv.writetmplist(casttv.FAVANF_FILE,listanime,"-1",nuevosep)
+	casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"3","")
 	return listanime,nuevos
 
-def findnuevos(title,titleserievisto,url,todos,web):
+def findnuevos(category,title,titleserievisto,url,todos,web):
 	listanuevos = []
 
 	listavistos = casttv.readvisto(titleserievisto,"LW",CHANNELNAME)
@@ -310,7 +307,7 @@ def findnuevos(title,titleserievisto,url,todos,web):
 		urlOK="0"
 
 	if len(listavistos)==0:
-		listanuevos.append(listavideos[0])
+		listanuevos.append([ category+";;New;;;;;;;"+titleserievisto+";"+listavideos[0][0]+";;"+urlOK , listavideos[0][2] , title+" - "+listavideos[0][0] , listavideos[0][1] ])
 		return listanuevos
 
 	listavideos.reverse()
@@ -333,7 +330,7 @@ def findnuevos(title,titleserievisto,url,todos,web):
 		if stop=="-1":
 			break
 		if OK=="-1":
-			listanuevos.append(video)
+			listanuevos.append([ category+";;New;;;;;;;"+titleserievisto+";"+video[0]+";;"+urlOK , video[2] , title+" - "+video[0] , video[1] ])
 			if todos=="0":
 				break
 
@@ -793,9 +790,37 @@ def finderdm(url,tipolist,tipocontenido,search,idioma):
 	return serieslist
 
 def searchvistos(params,url,category):
+	listaseries = []
+	respuesta = ""
+
 	Dialogespera = xbmcgui.DialogProgress()
-	line1 = 'Buscando información de "'+category+'"...'
-	Dialogespera.create('pelisalacarta' , line1 , '' )
+	line1 = 'Espere por favor...'
+ 	Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	if os.path.exists(casttv.WANF_FILE):
+		listaseries,update = casttv.readtmplist(casttv.WANF_FILE,"-2")
+		if update=="3":
+			respuesta = casttv.alertreturnfav(category,update)
+			if respuesta:
+				respuesta="-1"
+		if len(listaseries)>0 and update<>"3":
+			casttv.writetmplist(casttv.WANF_FILE,listaseries,"3","")
+	if len(listaseries)==0 or respuesta=="-1":
+		listaseries = findvistos(category)
+	 	Dialogespera.create('pelisalacarta' , line1 , '' )
+
+	if len(listaseries)==0:
+		casttv.writetmplist(casttv.WANF_FILE,listaseries,"-2","")
+		alertnoresultadosearch()
+		return 
+
+	for serie in listaseries:
+		adderdmfolder( CHANNELNAME , "listadosvistos" , category , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] , serie[6] )
+	# ------------------------------------------------------------------------------------
+	EndDirectory(category,"",False,False)
+	# ------------------------------------------------------------------------------------
+
+def findvistos(category):
 	listaseries = []
 	listaseries2 = []
 	listavistos2 = []
@@ -803,8 +828,12 @@ def searchvistos(params,url,category):
 
 	listavistos = casttv.readvisto("","",CHANNELNAME)
 	if len(listavistos)==0:
-		alertnoresultadosearch()
-		return
+		return listavistos
+
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Buscando información de "'+category+'"...'
+	Dialogespera.create('pelisalacarta' , line1 , '' )
+
 	listadoseries = astroteamrglist()
 	for visto in listavistos:
 		encontrado="0"
@@ -844,8 +873,7 @@ def searchvistos(params,url,category):
 					listaseries.append([ title , urlvisto , "" , "" , titleinfo , tcsearch , titleerdm ])
 
 	if len(listaseries)==0:
-		alertnoresultadosearch()
-		return
+		return listaseries
 
 	if searcherdm<>"":
 		searcherdm = re.sub('&','&(?:amp;)?',searcherdm)
@@ -893,19 +921,16 @@ def searchvistos(params,url,category):
 					listaseries2.append(serie)
 					break
 	if len(listaseries2)==0:
-		alertnoresultadosearch()
-		return
+		return listaseries2
 	listaseries = listaseries2
 	listaseries.sort()
 
-	for serie in listaseries:
-		adderdmfolder( CHANNELNAME , "listadosvistos" , category , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] , serie[6] )
-	# ------------------------------------------------------------------------------------
-	EndDirectory(category,"",False,False)
-	# ------------------------------------------------------------------------------------
+	casttv.writetmplist(casttv.WANF_FILE,listaseries,"3","")
+	return listaseries
 
 def listadosvistos(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
+	titleback = title
 	titleinfo = urllib.unquote_plus( params.get("titleinfo") )
 	plot = urllib.unquote_plus( params.get("plot") )
 	tcsearch = urllib.unquote_plus( params.get("tcsearch") )
@@ -928,6 +953,21 @@ def listadosvistos(params,url,category):
 	if respuesta<>1 and respuesta<>2 and respuesta<>3 and respuesta<>4:
 		category = category+" - "+titleinfo
 		detail(title,url,category,titleinfo,tcsearch,titleerdm,"",plot,False)
+	else:
+		respuesta2 = casttv.alertreturnfav(category,"2")
+		if respuesta2:
+			pass
+		else:
+			series,update = casttv.readtmplist(casttv.WANF_FILE,"2")
+			if respuesta==1:
+				eliminar=[]
+				for serie in series:
+					if serie[0]==titleback and serie[1]==url:
+						eliminar=serie
+						break
+				if len(eliminar)>0:
+					series.remove(eliminar)
+			casttv.writetmplist(casttv.WANF_FILE,series,"2","")
 
 def searcherdm(params,url,category):
 	searcherdmupdate(-2,"",category,"[^<]+","Completo","",False)
@@ -1025,6 +1065,7 @@ def searcherdmupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,l
 
 def listados(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
+	titleback = title
 	plot = urllib.unquote_plus( params.get("plot") )
 	status = ""
 	titleerdm = ""
@@ -1087,7 +1128,7 @@ def listados(params,url,category):
 			eliminar=[]
 			if respuesta==1 or respuesta==2:
 				for anime in listanime:
-					if anime[1]==title and anime[2]==url:
+					if anime[1]==titleback and anime[2]==url:
 						if respuesta==2:
 							if anime[3]==casttv.STARGREY_THUMB:
 								anime[3]=casttv.STARORANGE_THUMB
@@ -1167,27 +1208,31 @@ def listadonuevos(params,url,category):
 	if os.path.exists(casttv.NEWANF_FILE):
 		nuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,"-2")
 		if update=="3":
-			respuesta = casttv.alertreturnfav(category2,update)
-			if respuesta:
-				respuesta="-1"
-		if len(nuevos)>0:
-			casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"-2","")
+			if len(nuevos)==0 and "Todos" not in category:
+				pass
+			else:
+				respuesta = casttv.alertreturnfav(category2,update)
+				if respuesta:
+					respuesta="-1"
+		if len(nuevos)>0 and update<>"3":
+			casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"3","")
 	if len(nuevos)==0 or respuesta=="-1":
-		line1 = 'Buscando "'+category2+'"...'
+		nuevos = findlistadonvos(category,category2)
  		Dialogespera.create('pelisalacarta' , line1 , '' )
-		nuevos = findlistadonvos(category)
 
 	if "Todos" in category:
 		tipo = 4
 		if os.path.exists(casttv.NEWCTV_FILE):
 			seriesnuevos,update = casttv.readtmplist(casttv.NEWCTV_FILE,"-2")
-			if len(seriesnuevos)>0:
-				casttv.writetmplist(casttv.NEWCTV_FILE,seriesnuevos,"-2","")
+			if len(seriesnuevos)>0 and update<>"3":
+				casttv.writetmplist(casttv.NEWCTV_FILE,seriesnuevos,"3","")
 		if len(seriesnuevos)==0 or respuesta=="-1":
-			seriesnuevos = casttv.findlistadonvos()
+			seriesnuevos = casttv.findlistadonvos(category2)
+ 			Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	if len(nuevos)==0 and len(seriesnuevos)==0:
 		casttv.alertnoepisodios(4)
+		return
 
 	if "Todos" in category and len(nuevos)>0:
 		additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
@@ -1197,17 +1242,34 @@ def listadonuevos(params,url,category):
 	if len(seriesnuevos)>0:
 		additem( CHANNELNAME , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
 		for item in seriesnuevos:
-			casttv.addnewfolder( CHANNELNAME , "casttv.episodiomenu" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , item[10] , ";" , "New" )
+			casttv.addnewfolder( CHANNELNAME , "casttv.episodiomenu" , category , item[0] , item[1] , item[2] , "" , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , ";" , "New" )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,False)
 	# ------------------------------------------------------------------------------------
 
-def findlistadonvos(category):
+def findlistadonvos(category,category2):
 	listafav = casttv.readfav("","","-1|-2",CHANNELNAME)
 	nuevos = []
 
+	if len(listafav)==0:
+		casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"3","")
+		return nuevos
+
+	Dialogespera = xbmcgui.DialogProgress()
+	line1 = 'Buscando "'+category2+'":'
+	Dialogespera.create('pelisalacarta' , line1 , '0%  -  ')
+
+	total = len(listafav)
+	i,j,n,m = casttv.progreso(total)
 	for serie in listafav:
-		n=0
+		if i>=n:
+			i=0
+			j=j+m
+		if j>=100:
+			j=95
+		Dialogespera.update(j, line1 , str(j)+'%  -  '+serie[0] )
+		i=i+1
+
 		#Título Anime en Vistos
 		titleserievisto = serie[0]
 		matchurl2 = re.search('(?:\/showthread.php\?t[^\/]+|\/[^\/]+\/\d+)$',serie[2])
@@ -1237,14 +1299,13 @@ def findlistadonvos(category):
 		if web<>"mc-anime":
 			title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)$|\s+$)','',title)
 
-		listanuevos=findnuevos(title,titleserievisto,serie[2],"-1",web)
+		listanuevos=findnuevos(category,title,titleserievisto,serie[2],"-1",web)
 		if len(listanuevos)>0:
-			for video in listanuevos:
-				nuevos.append([ category+";;New;;;;;;;"+titleserievisto+";"+video[0]+";;"+urlOK , video[2] , title+" - "+video[0] , video[1] ])
-				n=n+1
-				if serie[3]=="-2" and n==3:
-					break
-	casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"-2","")
+			if serie[3]=="-2" and len(listanuevos)>3:
+				listanuevos0 = listanuevos
+				listanuevos = [ listanuevos0[0] , listanuevos0[1] , listanuevos0[2] ]
+			nuevos.extend(listanuevos)
+	casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"3","")
 	return nuevos
 
 def fcategory(tipocontenido,tipolist,idioma):
@@ -1739,21 +1800,24 @@ def episodiomenu(params,url,category):
 	autor = match.group(12)
 	urlOK = match.group(13)
 
-	seleccion,accion = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,CHANNELNAME,urlOK)
+	seleccion,accion,detener = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,CHANNELNAME,urlOK)
 
 	if seleccion>0:
 		if tipovisto<>"New":
+			if "Fav" in categoryback and detener<>"-1":
+				casttv.writetmplist(casttv.NEWANF_FILE,[],"3","")
 			detail(titleback,urlback,categoryback,titleinfo,tcsearch,titleerdm,thumbnailback,plotback,True)
-		else:
+		elif detener<>"-1":
 			category2 = re.sub(r".*?\s\-\s([^\-]+)$",lambda micat: micat.group(1),categoryback)
 			respuesta = casttv.alertreturnfav(category2,"2")
 			if respuesta:
 				pass
 			else:
 				nuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,"2")
-				listaeliminar=[]		
+				listaeliminar=[]
+				serievisto = ";"+titleserievisto+";"
 				for nuevo in nuevos:
-					if titleserievisto in nuevo[0]:
+					if serievisto in nuevo[0]:
 						if nuevo[2]==title and nuevo[3]==url:
 							listaeliminar.append(nuevo)
 							break
@@ -1764,8 +1828,6 @@ def episodiomenu(params,url,category):
 				casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"2","")
 				nuevosnoupdate(categoryback,"2")
 	elif seleccion==-1 or seleccion==0:
-		if tipovisto=="New":
-			nuevosnoupdate(categoryback,"3")
 		title = re.sub('\s+\-\s+',' - ',title)
 		thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 		plot = urllib.unquote_plus( params.get("plot") )
@@ -1944,7 +2006,7 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , casttv.HD_THUMB , "" )
-	additem( CHANNELNAME , category , "------------------------------------ Info: 25/09/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------ Info: 08/10/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
 	additem( CHANNELNAME , category , info1 , "" , casttv.HD_THUMB , "" )
 	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , casttv.HD_THUMB , "" )
 	# ------------------------------------------------------------------------------------
