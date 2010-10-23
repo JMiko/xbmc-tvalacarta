@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para cinetube
@@ -23,7 +23,7 @@ import buscador
 
 CHANNELNAME = "cinetube"
 
-# Esto permite su ejecución en modo emulado
+# Esto permite su ejecuciï¿½n en modo emulado
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
 except:
@@ -44,18 +44,18 @@ def getmainlist(params,url,category):
 	logger.info("[cinetube.py] getmainlist")
 
 	itemlist = []
-	itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades (con carátula)"  , action="listpeliconcaratula", url="http://www.cinetube.es/peliculas/"      , folder=True) )
-	itemlist.append( Item(channel=CHANNELNAME, title="Películas - Todas (sin carátula)"      , action="listpelisincaratula", url="http://www.cinetube.es/peliculas-todas/", folder=True) )
-	itemlist.append( Item(channel=CHANNELNAME, title="Películas - Alfabético (con carátula)" , action="listalfabetico"     , url=""                                       , folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="PelÃ­culas - Novedades (con carÃ¡tula)"  , action="listpeliconcaratula", url="http://www.cinetube.es/peliculas/"      , folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="PelÃ­culas - Todas (sin carÃ¡tula)"      , action="listpelisincaratula", url="http://www.cinetube.es/peliculas-todas/", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="PelÃ­culas - AlfabÃ©tico (con carÃ¡tula)" , action="listalfabetico"     , url=""                                       , folder=True) )
 	itemlist.append( Item(channel=CHANNELNAME, title="Buscar"                                , action="search"             , url=""                                       , folder=True) )
 	
-	#xbmctools.addnewfolder( CHANNELNAME , "listtemporadacaratula" , category , "Series - Novedades (con carátula)"     ,"http://www.cinetube.es/series/","","")
-	#xbmctools.addnewfolder( CHANNELNAME , "listseriesincaratula"  , category , "Series - Todas (sin carátula)"         ,"http://www.cinetube.es/series-todas/","","")
-	#xbmctools.addnewfolder( CHANNELNAME , "listalfabeticoseries"  , category , "Series - Alfabético (con carátula)"    ,"","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listtemporadacaratula" , category , "Series - Novedades (con carÃ¡tula)"     ,"http://www.cinetube.es/series/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listseriesincaratula"  , category , "Series - Todas (sin carÃ¡tula)"         ,"http://www.cinetube.es/series-todas/","","")
+	#xbmctools.addnewfolder( CHANNELNAME , "listalfabeticoseries"  , category , "Series - AlfabÃ©tico (con carÃ¡tula)"    ,"","","")
 	'''
 	addfolder("Documentales - Novedades","http://www.cinetube.es/subindices/idocumentalesnovedades.html","list")
 	addfolder("Documentales - Todos","http://www.cinetube.es/subindices/idocumentalestodos.html","listtodasseries")
-	addfolder("Documentales - Alfabético","","listalfabeticodocumentales")
+	addfolder("Documentales - AlfabÃ©tico","","listalfabeticodocumentales")
 	addfolder("Anime - Series","http://www.cinetube.es/subindices/ianimeseries.html","list")
 	addfolder("Anime - Peliculas","http://www.cinetube.es/subindices/ianimepeliculas.html","list")
 	'''
@@ -94,7 +94,7 @@ def getlistpeliconcaratula(params,url,category):
 	logger.info("[cinetube.py] getlistpeliconcaratula")
 
 	# ------------------------------------------------------
-	# Descarga la página
+	# Descarga la pï¿½gina
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
@@ -160,7 +160,7 @@ def getlistpeliconcaratula(params,url,category):
 		scrapedthumbnail = match[0]
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
+		# Aï¿½ade al listado de XBMC
 		itemlist.append( Item(channel=CHANNELNAME, action="listmirrors", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
 	# ------------------------------------------------------
@@ -173,7 +173,7 @@ def getlistpeliconcaratula(params,url,category):
 
 	if len(matches)>0:
 		scrapedurl = urlparse.urljoin(url,matches[0])
-		itemlist.append( Item(channel=CHANNELNAME, action="listpeliconcaratula", title="!Página siguiente" , url=scrapedurl , folder=True) )
+		itemlist.append( Item(channel=CHANNELNAME, action="listpeliconcaratula", title="!Pï¿½gina siguiente" , url=scrapedurl , folder=True) )
 
 	return itemlist
 
@@ -181,7 +181,7 @@ def listpelisincaratula(params,url,category):
 	logger.info("[cinetube.py] listpelisincaratula")
 
 	# ------------------------------------------------------
-	# Descarga la página
+	# Descarga la pï¿½gina
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
@@ -238,7 +238,7 @@ def listpelisincaratula(params,url,category):
 		scrapedthumbnail = ""
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
+		# Aï¿½ade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# ------------------------------------------------------
@@ -250,7 +250,7 @@ def listpelisincaratula(params,url,category):
 	scrapertools.printMatches(matches)
 
 	if len(matches)>0:
-		xbmctools.addnewfolder( CHANNELNAME , "listpelisincaratula" , category , "!Página siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
+		xbmctools.addnewfolder( CHANNELNAME , "listpelisincaratula" , category , "!Pï¿½gina siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -332,7 +332,7 @@ def listtemporadacaratula(params,url,category):
 	logger.info("[cinetube.py] listtemporadacaratula")
 
 	# ------------------------------------------------------
-	# Descarga la página
+	# Descarga la pï¿½gina
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
@@ -391,7 +391,7 @@ def listtemporadacaratula(params,url,category):
 		scrapedthumbnail = match[1]
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
+		# Aï¿½ade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# ------------------------------------------------------
@@ -403,7 +403,7 @@ def listtemporadacaratula(params,url,category):
 	scrapertools.printMatches(matches)
 
 	if len(matches)>0:
-		xbmctools.addnewfolder( CHANNELNAME , "listtemporadacaratula" , category , "!Página siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
+		xbmctools.addnewfolder( CHANNELNAME , "listtemporadacaratula" , category , "!Pï¿½gina siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -414,7 +414,7 @@ def listserieconcaratula(params,url,category):
 	logger.info("[cinetube.py] listserieconcaratula")
 
 	# ------------------------------------------------------
-	# Descarga la página
+	# Descarga la pï¿½gina
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
@@ -472,7 +472,7 @@ def listserieconcaratula(params,url,category):
 		scrapedthumbnail = match[1]
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
+		# Aï¿½ade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# ------------------------------------------------------
@@ -484,7 +484,7 @@ def listserieconcaratula(params,url,category):
 	scrapertools.printMatches(matches)
 
 	if len(matches)>0:
-		xbmctools.addnewfolder( CHANNELNAME , "listserieconcaratula" , category , "!Página siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
+		xbmctools.addnewfolder( CHANNELNAME , "listserieconcaratula" , category , "!Pï¿½gina siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -494,7 +494,7 @@ def listserieconcaratula(params,url,category):
 def listseriesincaratula(params,url,category):
 	logger.info("[cinetube.py] listseriesincaratula")
 	# ------------------------------------------------------
-	# Descarga la página
+	# Descarga la pï¿½gina
 	# ------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
@@ -551,7 +551,7 @@ def listseriesincaratula(params,url,category):
 		scrapedthumbnail = ""
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
+		# Aï¿½ade al listado de XBMC
 		xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# ------------------------------------------------------
@@ -563,7 +563,7 @@ def listseriesincaratula(params,url,category):
 	scrapertools.printMatches(matches)
 
 	if len(matches)>0:
-		xbmctools.addnewfolder( CHANNELNAME , "listseriesincaratula" , category , "!Página siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
+		xbmctools.addnewfolder( CHANNELNAME , "listseriesincaratula" , category , "!Pï¿½gina siguiente" , urlparse.urljoin(url,matches[0]) , "", "" )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -613,7 +613,7 @@ def listmirrors(params,url,category):
 	plot = urllib.unquote_plus( params.get("plot") )
 
 	# ------------------------------------------------------------------------------------
-	# Descarga la página
+	# Descarga la pï¿½gina
 	# ------------------------------------------------------------------------------------
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
@@ -642,7 +642,7 @@ def listmirrors(params,url,category):
 		logger.info("thumb no actualizado en detalle");
 
 	# ------------------------------------------------------------------------------------
-	# Busca los enlaces a los mirrors, o a los capítulos de las series...
+	# Busca los enlaces a los mirrors, o a los capï¿½tulos de las series...
 	# ------------------------------------------------------------------------------------
 	#	url = "http://www.cinetube.es/inc/mostrar_contenido.php?sec=pelis_ficha&zona=online&id=video-4637"
 	#patronvideos  = '<div class="ver_des_peli iframe2">[^<]+'
