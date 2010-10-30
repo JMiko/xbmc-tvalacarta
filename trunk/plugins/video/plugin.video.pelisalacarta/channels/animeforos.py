@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal "Anime (foros)" by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated:08/10/2010
+# Last Updated:30/10/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -15,7 +15,6 @@ import scrapertools
 import servertools
 import xbmctools
 import casttv
-import config
 
 CHANNELNAME = "animeforos"
 
@@ -30,7 +29,7 @@ urleRdM = "http://www.elrincondelmanga.com/foro/showthread.php?t=75282"
 def mainlist(params,url,category):
 	category = "Anime"
 	categoryerdm = "El Rincón del Manga  -  Anime"
-	aviso = "Esta carpeta contiene una pequeña selección de series infantiles (TP). En cuanto al resto, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia. En el aptdo -Información de la Película- encontrará información procedente de la propia release y de McAnime. La disponibilidad de información por género y edades desde el canal irá mejorando."
+	aviso = "Esta carpeta contiene una pequeña selección de series infantiles. En cuanto al resto, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia. En el aptdo -Información de la Película- encontrará información procedente de la propia release y de McAnime."
 	thumbchannel = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/animeforos.png"
 	addsimplefolder( CHANNELNAME , "seleccion" , category , "Anime  -  Selección Clásicos Infantiles TV" , "" , thumbchannel , aviso)
 	addsimplefolder( CHANNELNAME , "seleccion" , "AstroteamRG" , "Anime  -  AstroteamRG" , "" , thumbchannel , "Fuente: http://www.astroteamrg.org")
@@ -65,6 +64,7 @@ def seleccion(params,url,category):
 def favoritos(params,url,category):
 	series = []
 	listanime = []
+	OKxbmcfav="0"
 	todostitulo = ""
 	respuesta=""
 
@@ -100,21 +100,25 @@ def favoritos(params,url,category):
 			series,seriesnuevos = casttv.findfavoritos(category)
  			Dialogespera.create('pelisalacarta' , line1 , '' )
 
-	if len(listanime)==0 and len(series)==0:
+		OKxbmcfav = casttv.readxbmcfav("0")
+
+	if len(listanime)==0 and len(series)==0 and OKxbmcfav=="0":
 		return
 
 	if category=="Todos Mis Favoritos":
 		if len(nuevos)>0 or len(seriesnuevos)>0:
 			addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , casttv.STARGREEN2_THUMB , "" )
+		if OKxbmcfav=="-1":
+			addsimplefolder( CHANNELNAME , "casttv.xbmcfav" , category , "--------------------------------------------- XBMC ---------------------------------------------" , "" , "" , "" )
 		if len(listanime)>0:
-			additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
+			additem( CHANNELNAME , category , "-------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
 	if len(nuevos)>0:
 		addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritos - Nuevos Contenidos" , "-*-"+todostitulo+"Nuevos Contenidos (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
 	for anime in listanime:
 		adderdmfolder( CHANNELNAME , "listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
 
 	if category=="Todos Mis Favoritos" and len(series)>0:
-		additem( CHANNELNAME , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
+		additem( CHANNELNAME , category , "---------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
 		if len(seriesnuevos)>0:
 			addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
 		for serie in series:
@@ -191,7 +195,7 @@ def findfavoritos(category):
 			if len(listaerdm)==0:
 				continue
 			encontrado = "0"
-			for erdm in listaerdm:			
+			for erdm in listaerdm:
 				if serie[0]==erdm[0] and serie[2]==erdm[4]:
 					encontrado = "-1"
 					serie[1] = erdm[1]+" ["+erdm[5]+"]"+" ["+erdm[2]+"]"+erdm[3]
@@ -237,10 +241,14 @@ def findfavoritos(category):
 			matchstatus = re.search('<h3>([^<]+)</h3>',datamca)
 			if (matchstatus):
 				serie[1] = matchstatus.group(1)
+		elif "tusdivx" in url:
+			tcsearch = serie[1]
+			serie[1] = ""
+			titleerdm = "tusdivx"
 
 		if category0=="":
 			category0 = category+" - "+serie[0]
-			category0 = re.sub('\s+\(.*?\)$','',category0)
+			category0 = re.sub('(?:\s+\(.*?\)\s+\[Mirror.*\]$|\s+\(.*?\)$)','',category0)
 		status=""
 		if serie[1]<>"":
 			status="  -  "+serie[1]
@@ -251,7 +259,7 @@ def findfavoritos(category):
 			if titleerdm=="mc-anime-fav":
 				title = titleinfo
 			else:
-				title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)$|\s+$)','',title)
+				title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)\s+\[Mirror.*\]$|\s+\(by \w+\)$|\s+$)','',title)
 			titleserievisto = serie[0]
 			matchurl2 = re.search('(?:\/showthread.php\?t[^\/]+|\/[^\/]+\/\d+)$',serie[2])
 			if (matchurl2):	
@@ -287,7 +295,7 @@ def findnuevos(category,title,titleserievisto,url,todos,web):
 		data = astrodata(title,url)
 		if data=="":
 			return listanuevos
-	elif web == "astro2" or web == "mc-anime" or web == "mc-anime-fav":
+	elif web == "astro2" or web == "mc-anime" or web == "mc-anime-fav" or web == "tusdivx":
 		try:
 			data = scrapertools.cachePage(url)
 		except:
@@ -345,7 +353,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 		match0 = re.search('\s+\((by \w+)\)$',title,re.IGNORECASE)
 		if (match0):
 			autor = " - "+match0.group(1)
-		title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)$|\s+$)','',title)
+		title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)\s+\[Mirror.*\]$|\s+\(by \w+\)$|\s+$)','',title)
 	if titleerdm=="mc-anime":
 		infos = titleinfo
 		titleinfo = title
@@ -362,7 +370,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 	titleinfo2 = titleinfo
 	if titleerdm=="mc-anime" or titleerdm=="mc-anime-fav":
 		titleinfo2 = titleinfo+" ("+tcsearch+")"
-	elif titleerdm=="astro" or titleerdm=="astro2":
+	elif titleerdm=="astro" or titleerdm=="astro2" or titleerdm=="tusdivx":
 		titleinfo2 = paramsback['title']
 
 	# Descarga la página
@@ -371,7 +379,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 		if data=="":
 			alertnoresultados("")
 			return
-	elif titleerdm == "astro2" or titleerdm == "mc-anime" or titleerdm == "mc-anime-fav":
+	elif titleerdm=="astro2" or titleerdm=="mc-anime" or titleerdm=="mc-anime-fav" or titleerdm=="tusdivx":
 		try:
 			data = scrapertools.cachePage(url)
 		except:
@@ -394,7 +402,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 		alertnoresultados("")
 		return
 
-	if titleerdm == "" or titleerdm == "astro" or titleerdm == "astro2" or titleerdm == "mc-anime-fav":
+	if titleerdm=="" or titleerdm=="astro" or titleerdm=="astro2" or titleerdm=="mc-anime-fav" or titleerdm=="tusdivx":
 		titleerdm = ftitlesearch(titleinfo)
 	elif titleerdm=="eRdM":
 		titleerdm = ftitleerdmsearch(titleinfo)
@@ -493,9 +501,16 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 		addvideofolder( CHANNELNAME , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
 
 	if "friki100" in autor:
+		OKup = "0"
 		# Extrae la fecha de la próxima actualización
-		update = re.search('<span style=\'color: \#ff0000\'><strong class=\'bbc\'><span style=\'font-size: 15px;\'>([^<]+)</span>',data)
-		if (update):
+		update = re.search('<font color="#ff0000"><b><font size="3">([^<]+)<',data)
+		if (update):
+			OKup = "-1"
+		else:
+			update = re.search('<span style=\'color: \#ff0000\'><strong class=\'bbc\'><span style=\'font-size: 15px;\'>([^<]+)</span>',data)
+			if (update):
+				OKup = "-1"
+		if OKup=="-1":
 			additem( CHANNELNAME , category , update.group(1) , "" , "" , plot )					
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",listupdate,True)
@@ -835,6 +850,8 @@ def findvistos(category):
 	Dialogespera.create('pelisalacarta' , line1 , '' )
 
 	listadoseries = astroteamrglist()
+	#tusdivx = tusdivxlist()
+	#listadoseries.extend(tusdivx)
 	for visto in listavistos:
 		encontrado="0"
 		for serie in listadoseries:
@@ -943,7 +960,7 @@ def listadosvistos(params,url,category):
 		else:
 			titleinfo2 = title
 			status = tcsearch
-	if titleerdm=="mc-anime-fav":
+	else:
 		status = re.sub('^.*?\s+\-\s+','',title)
 		titleinfo2 = titleinfo+" ("+tcsearch+")"
 		title = titleinfo
@@ -952,22 +969,23 @@ def listadosvistos(params,url,category):
 
 	if respuesta<>1 and respuesta<>2 and respuesta<>3 and respuesta<>4:
 		category = category+" - "+titleinfo
+		category = re.sub('(?:\s+\(.*?\)\s+\[Mirror.*\]$|\s+\(.*?\)$)','',category)
 		detail(title,url,category,titleinfo,tcsearch,titleerdm,"",plot,False)
 	else:
-		respuesta2 = casttv.alertreturnfav(category,"2")
-		if respuesta2:
-			pass
-		else:
-			series,update = casttv.readtmplist(casttv.WANF_FILE,"2")
-			if respuesta==1:
-				eliminar=[]
-				for serie in series:
-					if serie[0]==titleback and serie[1]==url:
-						eliminar=serie
-						break
-				if len(eliminar)>0:
-					series.remove(eliminar)
-			casttv.writetmplist(casttv.WANF_FILE,series,"2","")
+		#respuesta2 = casttv.alertreturnfav(category,"2")
+		#if respuesta2:
+		#	pass
+		#else:
+		series,update = casttv.readtmplist(casttv.WANF_FILE,"2")
+		if respuesta==1:
+			eliminar=[]
+			for serie in series:
+				if serie[0]==titleback and serie[1]==url:
+					eliminar=serie
+					break
+			if len(eliminar)>0:
+				series.remove(eliminar)
+		casttv.writetmplist(casttv.WANF_FILE,series,"2","")
 
 def searcherdm(params,url,category):
 	searcherdmupdate(-2,"",category,"[^<]+","Completo","",False)
@@ -1092,6 +1110,10 @@ def listados(params,url,category):
 		status = re.sub('^.*?\s+\-\s+','',title)
 		titleinfo2 = titleinfo+" ("+tcsearch+")"
 		title = titleinfo
+	#elif titleerdm=="mc-anime-list":
+	#	titleinfo2 = titleinfo+" ("+tcsearch+")"
+	#	status = tcsearch
+	#	titleerdm = "mc-anime-fav"
 	
 	if category=="AstroteamRG" or category=="Anime" or params.has_key("info1"):
 		thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -1115,32 +1137,32 @@ def listados(params,url,category):
 			info = info1+"|"+info2+"|"+info3+"|"+info4+"|"+info5
 			detail(title,url,category,info,tcsearch,"mc-anime",thumbnail,plot,False)
 	elif "Fav" in category:
-		category = re.sub('\s\-\s.*?$','',category)
-		respuesta2 = casttv.alertreturnfav(category,"0")
-		if respuesta2:
-			pass
+		#category = re.sub('\s\-\s.*?$','',category)
+		#respuesta2 = casttv.alertreturnfav(category,"0")
+		#if respuesta2:
+		#	pass
+		#else:
+		listanime,nuevos,update = casttv.readtmplist(casttv.FAVANF_FILE,"0")
+		if len(nuevos)>0:
+			nuevosep = "-1"
 		else:
-			listanime,nuevos,update = casttv.readtmplist(casttv.FAVANF_FILE,"0")
-			if len(nuevos)>0:
-				nuevosep = "-1"
-			else:
-				nuevosep = "0"
-			eliminar=[]
-			if respuesta==1 or respuesta==2:
-				for anime in listanime:
-					if anime[1]==titleback and anime[2]==url:
-						if respuesta==2:
-							if anime[3]==casttv.STARGREY_THUMB:
-								anime[3]=casttv.STARORANGE_THUMB
-							else:
-								anime[3]=casttv.STARGREY_THUMB
+			nuevosep = "0"
+		eliminar=[]
+		if respuesta==1 or respuesta==2:
+			for anime in listanime:
+				if anime[1]==titleback and anime[2]==url:
+					if respuesta==2:
+						if anime[3]==casttv.STARGREY_THUMB:
+							anime[3]=casttv.STARORANGE_THUMB
 						else:
-							eliminar=anime
-						break
-			if len(eliminar)>0:
-				listanime.remove(eliminar)
-			casttv.writetmplist(casttv.FAVANF_FILE,listanime,"0",nuevosep)
-			favnoupdate(category,"0")
+							anime[3]=casttv.STARGREY_THUMB
+					else:
+						eliminar=anime
+					break
+		if len(eliminar)>0:
+			listanime.remove(eliminar)
+		casttv.writetmplist(casttv.FAVANF_FILE,listanime,"0",nuevosep)
+		favnoupdate(category,"0")
 
 def favnoupdate(category,value):
 	if value<>"0":
@@ -1282,22 +1304,23 @@ def findlistadonvos(category,category2):
 		#Web y urlOK
 		web = ""
 		urlOK="-1"
-		matchurl=re.search('mcanime',serie[2],re.IGNORECASE)
-		if (matchurl):
+		if "mcanime" in serie[2]:
 			matchtitle=re.match('^([^\(]+)\s\(.*?\)$',serie[0])
 			if (matchtitle):
 				title = matchtitle.group(1)
 			web = "mc-anime"
 			urlOK="0"
-		matchurl1=re.search('astroteam',serie[2],re.IGNORECASE)
-		if (matchurl1):
+		elif "astroteam" in serie[2]:
 			matchtitle1=re.search('\(by Chihiro\)$',serie[0],re.IGNORECASE)
 			if (matchtitle1):
 				web = "astro"
 			else:
 				web = "astro2"
+		elif "tusdivx" in serie[2]:
+			web = "tusdivx"
+
 		if web<>"mc-anime":
-			title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)$|\s+$)','',title)
+			title = re.sub('(?:\s+VOSE|\s*\-*\s+\[.*\]|\s+\(by \w+\)\s+\[Mirror.*\]$|\s+\(by \w+\)$|\s+$)','',title)
 
 		listanuevos=findnuevos(category,title,titleserievisto,serie[2],"-1",web)
 		if len(listanuevos)>0:
@@ -1758,8 +1781,14 @@ def findseriesmc(url):
 
 	patronvideos  = '<li class="dd_type"><img.*?title="([^"]+)"\s*/></li>\n'
 	patronvideos += '\s+<li class="dd_update">[^<]+<img[^>]+>([^<]+)</li>\n'
-	patronvideos += '\s+<li class="dd_title">\n\s+<h5><a href="(/descarga_directa/anime/detalle/[^"]+)">([^<]*\[MU\][^<]*)</a>'
+	patronvideos += '\s+<li class="dd_title">\n\s+<h5><a href="(/descarga_directa/anime/detalle/[^"]+)">([^<]*[^\w]MU[^\w][^<]*)</a>'
 	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
+
+	if len(matches)==0:
+		patronvideos  = '<li class="dd_type"><img.*?title="([^"]+)"\s*/></li>\n'
+		patronvideos += '\s+<li class="dd_update">[^<]+<img[^>]+>([^<]+)</li>\n'
+		patronvideos += '\s+<li class="dd_title">\n\s+<h5><a href="(/descarga_directa/anime/detalle/[^"]+)">([^<]+)</a>'
+		matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
 
 	for match in matches:
 		# Titulo
@@ -1808,25 +1837,27 @@ def episodiomenu(params,url,category):
 				casttv.writetmplist(casttv.NEWANF_FILE,[],"3","")
 			detail(titleback,urlback,categoryback,titleinfo,tcsearch,titleerdm,thumbnailback,plotback,True)
 		elif detener<>"-1":
-			category2 = re.sub(r".*?\s\-\s([^\-]+)$",lambda micat: micat.group(1),categoryback)
-			respuesta = casttv.alertreturnfav(category2,"2")
-			if respuesta:
-				pass
-			else:
-				nuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,"2")
-				listaeliminar=[]
-				serievisto = ";"+titleserievisto+";"
-				for nuevo in nuevos:
-					if serievisto in nuevo[0]:
-						if nuevo[2]==title and nuevo[3]==url:
-							listaeliminar.append(nuevo)
-							break
-						elif accion<>"4":
-							listaeliminar.append(nuevo)
-				for nuevo in listaeliminar:
-					nuevos.remove(nuevo)
-				casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"2","")
-				nuevosnoupdate(categoryback,"2")
+			#category2 = re.sub(r".*?\s\-\s([^\-]+)$",lambda micat: micat.group(1),categoryback)
+			#respuesta = casttv.alertreturnfav(category2,"2")
+			#if respuesta:
+			#	casttv.writetmplist(casttv.NEWANF_FILE,[],"2","")
+			#	if "Todos" in categoryback:
+			#		casttv.writetmplist(casttv.NEWCTV_FILE,[],"2","")
+			#else:
+			nuevos,update = casttv.readtmplist(casttv.NEWANF_FILE,"2")
+			listaeliminar=[]
+			serievisto = ";"+titleserievisto+";"
+			for nuevo in nuevos:
+				if serievisto in nuevo[0]:
+					if nuevo[2]==title and nuevo[3]==url:
+						listaeliminar.append(nuevo)
+						break
+					elif accion<>"4":
+						listaeliminar.append(nuevo)
+			for nuevo in listaeliminar:
+				nuevos.remove(nuevo)
+			casttv.writetmplist(casttv.NEWANF_FILE,nuevos,"2","")
+			nuevosnoupdate(categoryback,"2")
 	elif seleccion==-1 or seleccion==0:
 		title = re.sub('\s+\-\s+',' - ',title)
 		thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -1858,12 +1889,14 @@ def play(params,url,category):
 
 def ftitleerdmsearch(title):
 	title = re.sub('^El Patito Alfred$','Alfred J Quack',title)
+	title = re.sub('^Sherlock Holmes$','Detective Holmes',title)
 	title = re.sub('Shippuden','Shippuuden',title)
 	title = ftitlesearch(title)
 	return title
 
 def finicialformca(title):
 	title = re.sub('^El Patito Alfred$','Alfred J Quack',title)
+	title = re.sub('^Sherlock Holmes$','Detective Holmes',title)
 	return title
 
 def ftitlesearch(title):
@@ -2006,7 +2039,7 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , casttv.HD_THUMB , "" )
-	additem( CHANNELNAME , category , "------------------------------------ Info: 08/10/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------ Info: 30/10/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
 	additem( CHANNELNAME , category , info1 , "" , casttv.HD_THUMB , "" )
 	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , casttv.HD_THUMB , "" )
 	# ------------------------------------------------------------------------------------
@@ -2016,6 +2049,7 @@ def ayuda(params,url,category):
 def astroteamrglist():
 	astrolist = []
 	astrolist.append([ "Kochikame (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=15845" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=15845 por friki100. Colaboradores: curro1" , "" , "Serie", "astro2" ])
+	astrolist.append([ "Kochikame (by friki100) [Mirror] [TusDivx]" , "http://www.tusdivx.org/anime-peliculas-series-y-ost-en-dd/23352-kochikame-%5B194-203-367%5D%5Bdd%5D%5Bmegaupload%5D.html" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.tusdivx.org/ por friki100" , "" , "Serie", "tusdivx" ])
 	astrolist.append([ "Slam Dunk (by friki100)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16731" , "http://upload.wikimedia.org/wikipedia/en/b/b3/Slamdunk_cover1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16731 por friki100." , "" , "Serie", "astro2" ])
 	astrolist.append([ "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Detective Holmes" , "Serie" , "astro" ])
 	astrolist.append([ "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
@@ -2027,20 +2061,25 @@ def astroteamrglist():
 	astrolist.append([ "Master Keaton VOSE (by Tom_Bombadil)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16761" , "http://upload.wikimedia.org/wikipedia/en/f/f7/Master_Keaton_cover.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16761 por Tom_Bombadil" , "" , "Serie", "astro2" ])
 	astrolist.append([ "Eureka Seven VOSE (by skait)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16784" , "http://upload.wikimedia.org/wikipedia/en/4/45/Eureka_Seven_DVD_1_-_North_America.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16784 por skait." , "" , "Serie", "astro2" ])
 	astrolist.append([ "Cross Game VOSE (by gatest)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16808" , "http://upload.wikimedia.org/wikipedia/en/c/cf/Cross_Game_DVDv1.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16808 por gatest" , "" , "Serie", "astro2" ])
-
 	return astrolist
 
 def clasicoslist():
 	clasiclist = []
 	clasiclist.append([ "La Aldea del Arce (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://spe.fotolog.com/photo/46/13/24/soy_un_sol/1226490296711_f.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
+	clasiclist.append([ "El Patito Alfred" , "http://www.elrincondelmanga.com/foro/showthread.php?t=63927#1" , "http://www.fotodiario.com/fotos/7596/75967b6200db43e76e7d2d87c3e90191_709x963.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
 	clasiclist.append([ "Heidi" , "http://www.elrincondelmanga.com/foro/showthread.php?t=1173" , "http://images.mcanime.net/images/anime/433.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
 	clasiclist.append([ "Marco, de los Apeninos a los Andes" , "http://www.elrincondelmanga.com/foro/showthread.php?t=65463#1" , "http://img115.imageshack.us/img115/8325/1612df65c4rs6.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
 	clasiclist.append([ "Sherlock Holmes (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "Detective Holmes" , "Serie" , "astro" ])
-	clasiclist.append([ "El Patito Alfred" , "http://www.elrincondelmanga.com/foro/showthread.php?t=63927#1" , "http://www.fotodiario.com/fotos/7596/75967b6200db43e76e7d2d87c3e90191_709x963.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
+	#clasiclist.append([ "Sherlock Holmes" , "http://www.elrincondelmanga.com/foro/showthread.php?t=2401" , "http://img515.imageshack.us/img515/1050/sherlock20dq.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
 	clasiclist.append([ "Ulises 31" , "http://www.elrincondelmanga.com/foro/showthread.php?t=3294" , "http://img208.imageshack.us/img208/4820/ulyssesbox9sh.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
+	clasiclist.append([ "Captain Tsubasa" , "http://www.elrincondelmanga.com/foro/showthread.php?t=85186#1" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.elrincondelmanga.com" , "" , "Serie" , "eRdM" ])
 	clasiclist.append([ "Campeones (Oliver y Benji) (by Chihiro)" , "http://www.astroteamrg.org/foro/index.php?showtopic=16333" , "http://img135.imageshack.us/img135/3906/dvdcaptaintsubasaboxset3tp.jpg" , "Fuente: http://www.astroteamrg.org/foro/index.php?showtopic=16333 por Chihiro." , "" , "Serie" , "astro" ])
-
 	return clasiclist
+
+def tusdivxlist():
+	tusdivx = []
+	tusdivx.append([ "Kochikame (by friki100)" , "http://www.tusdivx.org/anime-peliculas-series-y-ost-en-dd/23352-kochikame-%5B194-203-367%5D%5Bdd%5D%5Bmegaupload%5D.html" , "http://img516.imageshack.us/img516/7731/kochikamepj9.jpg" , "Fuente: http://www.tusdivx.org/ por friki100" , "" , "Serie", "tusdivx" ])
+	return tusdivx
 
 def EndDirectory(category,sortmethod,listupdate,cachedisc):
 	if sortmethod=="":
