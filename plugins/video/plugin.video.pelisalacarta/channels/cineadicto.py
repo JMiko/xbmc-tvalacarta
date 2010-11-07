@@ -106,17 +106,6 @@ def searchresults2(params,url,category):
 
 def ListaCat(params,url,category):
 	logger.info("[cineadicto.py] ListaCat")
-	import downloadtools
-	nombrefichero = ""
-	fullpath = os.path.join( downloadtools.getDownloadPath(),"subtitulos" , nombrefichero )
-	urlfile = "http://www.subtitulos.es/updated/5/10855/0"
-	fullnombrefichero = downloadtools.downloadfileGzipped(urlfile,fullpath)
-	print fullnombrefichero
-	fichero = os.path.basename(fullnombrefichero).encode('utf-8')
-	print fichero
-	fichero = u'%s' %fichero
-	print fichero
-	
 	
 	
 	xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Acción","http://www.cine-adicto.com/category/categorias/accion/","","")
@@ -295,7 +284,7 @@ def listvideos(params,url,category):
 	# End of directory...
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
-def detail(params,url,category):
+def detail(params,url,category,cLose="true"):
 	logger.info("[cineadicto.py] detail")
 
 	title = urllib.unquote_plus( params.get("title") )
@@ -335,8 +324,8 @@ def detail(params,url,category):
 				patronvideos  = '<track>.*?'
 				patronvideos += '<title>([^<]+)</title>[^<]+'
 				patronvideos += '<location>([^<]+)</location>(?:[^<]+'
-				patronvideos += '<meta rel="type">video</meta>[^<]+|[^<]+)'
-				patronvideos += '<meta rel="captions">([^<]+)</meta>[^<]+'
+				patronvideos += '<meta rel="type">video</meta>[^<]+|[^<]+'
+				patronvideos += '<meta rel="captions">([^<]+)</meta>[^<]+)'
 				patronvideos += '</track>'
 				matches2 = re.compile(patronvideos,re.DOTALL).findall(data2)
 				scrapertools.printMatches(matches)
@@ -418,6 +407,14 @@ def detail(params,url,category):
 		print " encontro VK.COM :%s" %matches[0]
  		videourl = 	vk.geturl(matches[0])
  		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
+ 		
+	patronvideos = 'name="Pelicula" src="([^"]+)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+	if cLose == "false":return
+	if len(matches)>0:
+		for match in matches:
+			detail(params,match,category,"false")
 	
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
