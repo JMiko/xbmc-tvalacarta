@@ -132,6 +132,7 @@ def channels_list():
 	channelslist.append([ "LetMeWatchThis"        , "letmewatchthis"       , "" , "EN" , "F,S" , "xbmc"  ])
 	channelslist.append([ "Cineblog01"            , "cineblog01"           , "" , "IT" , "F,S,A" , "xbmc"  ])
 	channelslist.append([ "Descargapelis"         , "descargapelis"        , "" , "ES" , "F" , "xbmc"  ])
+	channelslist.append([ "Vagos"                 , "vagos"                , "" , "ES" , "F,S" , "xbmc"  ])
 	channelslist.append([ "Seriesyonkis"          , "seriesyonkis"         , "Series" , "ES" , "S,A" , "xbmc"  ]) #Modificado por JUR para añadir la categoría
 	channelslist.append([ "Seriespepito"          , "seriespepito"         , "" , "ES" , "S" , "generic" ])
 	channelslist.append([ "Series21"              , "series21"             , "" , "ES" , "S" , "xbmc"  ])
