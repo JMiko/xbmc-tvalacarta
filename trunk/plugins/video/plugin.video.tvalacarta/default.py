@@ -19,12 +19,12 @@ import xbmc
 xbmc.output("[default.py] tvalacarta init...")
 
 # Configura los directorios donde hay librerías
-librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
-sys.path.append (librerias)
-librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' ) )
-sys.path.append (librerias)
-librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'servers' ) )
-sys.path.append (librerias)
+#librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
+#sys.path.append (librerias)
+#librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' ) )
+#sys.path.append (librerias)
+#librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'servers' ) )
+#sys.path.append (librerias)
 librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'youtubeAPI' ) )
 sys.path.append (librerias)
 

@@ -9,7 +9,7 @@ import config
 
 REMOTE_DBG = False
 
-loggeractive = (config.getSetting("debug")=="true")
+loggeractive = (config.get_setting("debug")=="true")
 
 def info(texto):
 	if loggeractive:

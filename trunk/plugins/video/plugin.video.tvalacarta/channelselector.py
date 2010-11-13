@@ -7,8 +7,9 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 import parametrizacion
-import logger
-import config
+
+from core import logger
+from core import config
 
 logger.info("[channelselector.py] init")
 

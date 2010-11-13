@@ -27,7 +27,8 @@ logger.info("[scrapertools.py] CACHE_PATH="+CACHE_PATH)
 
 DEBUG = False
 
-# FIXME: Quitar el parámetro modoCache (ahora se hace por configuración)
+# TODO: Quitar el parámetro modoCache (ahora se hace por configuración)
+# TODO: Usar notación minusculas_con_underscores para funciones y variables como recomienda Python http://www.python.org/dev/peps/pep-0008/
 def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14']],modoCache=CACHE_ACTIVA):
 
 	logger.info("[scrapertools.py] cachePage url="+url)
@@ -768,11 +769,3 @@ def getLocationHeaderFromResponse(url):
 		print "Encontrado header location"
 	
 	return location
-
-
-def test():
-	
-	data = cachePage("http://www.antena3.com/videos/noticias/noticias1-30-09-2010.html")
-
-if __name__ == "__main__":
-	test()
