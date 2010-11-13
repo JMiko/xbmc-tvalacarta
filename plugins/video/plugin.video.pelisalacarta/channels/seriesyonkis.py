@@ -29,6 +29,7 @@ SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo',
 		  'veoh2'     :'Veoh'      ,
 		  'megaupload':'Megaupload',
 		  'pfflano'   :'Directo'   ,
+		  'descargar':'Megaupload',
 		  }
 
 #xbmc.executebuiltin("Container.SetViewMode(57)")  #57=DVD Thumbs
@@ -586,8 +587,17 @@ def scrapvideoURL(urlSY):
 	patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
 	patronvideos += '<td><div[^>]+><[^>]+>(.*?)</tr>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	
+	patronvideos1  = 'http://www.seriesyonkis.com/lista-series/(descargar)/n/(.+?)/.*?alt="([^"]+)".*?'
+	patronvideos1 += 'Durac.+?:\s?([^>]+?)>'
+	matches1 = re.compile(patronvideos1,re.DOTALL).findall(data)
+	if (len(matches1) > 0):
+		for j in matches1:
+			matches.append(j)
 	scrapertools.printMatches(matches)
 	id=""
+	#newdec = Yonkis.DecryptYonkis()
+	#xbmc.output(newdec.ccM(newdec.charting(newdec.unescape("%B7%AC%A6%B1%B7%AD%A9%B1"))))
 	
 	if len(matches)==0:
 		xbmctools.alertnodisponible()
@@ -654,7 +664,13 @@ def choiceOne(matches):
 		id = cortar[0]
 		logger.info("[seriesyonkis.py]  id="+id)
 		dec = Yonkis.DecryptYonkis()
-		id = dec.decryptID_series(dec.unescape(id))		
+		id = dec.decryptID_series(dec.unescape(id))
+	elif servlist[seleccion] == "descargar":
+		cortar = IDlist[seleccion].split("&")
+		id = cortar[0]
+		logger.info("[seriesyonkis.py]  id="+id)
+		dec = Yonkis.DecryptYonkis()
+		id = dec.ccM(dec.unescape(id))		
 	elif servlist[seleccion] == "svueno":
 		id = IDlist[seleccion]
 		logger.info("[seriesyonkis.py]  id="+id)
