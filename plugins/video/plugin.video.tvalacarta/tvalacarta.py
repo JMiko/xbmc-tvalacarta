@@ -9,8 +9,9 @@ import urllib
 import urllib2
 import os
 import sys
-import logger
-import config
+
+from core import logger
+from core import config
 
 def run():
 	logger.info("[tvalacarta.py] run")
