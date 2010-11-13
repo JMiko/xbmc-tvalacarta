@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# Gestión de parámetros de configuración bajo xbmc
+# Gestión de parámetros de configuración - xbmc
 #------------------------------------------------------------
 # pelisalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/

@@ -1,11 +1,18 @@
-# -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
-# pelisalacarta - XBMC Plugin
+# -*- coding: utf-8 -*-
+#------------------------------------------------------------
 # Download Tools
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-#------------------------------------------------------------
 # Based on the code from VideoMonkey XBMC Plugin
 #------------------------------------------------------------
+# pelisalacarta
+# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+#------------------------------------------------------------
+# Creado por: Jes√∫s (tvalacarta@gmail.com)
+# Licencia: GPL (http://www.gnu.org/licenses/gpl-3.0.html)
+#------------------------------------------------------------
+# Historial de cambios:
+#------------------------------------------------------------
+
 import sys, os.path
 import re
 import urllib,urllib2
@@ -299,32 +306,32 @@ entitydefs2 = {
 }
 
 entitydefs3 = {
-    u'¬¡¿ƒ√≈':  u'A',
-    u'‚·‡‰„Â':  u'a',
-    u'‘”“÷’':   u'O',
-    u'ÙÛÚˆı¯': u'o',
-    u'€⁄Ÿ‹':    u'U',
-    u'˚˙˘¸µ':   u'u',
-    u' …»À':    u'E',
-    u'ÍÈËÎ':    u'e',
-    u'ŒÕÃœ':    u'I',
-    u'ÓÏÌÔ':    u'i',
-    u'Ò':       u'n',
-    u'ﬂ':       u'B',
-    u'˜':       u'%',
-    u'Á':       u'c',
-    u'Ê':       u'ae'
+    u'√Ç√Å√Ä√Ñ√É√Ö':  u'A',
+    u'√¢√°√†√§√£√•':  u'a',
+    u'√î√ì√í√ñ√ï':   u'O',
+    u'√¥√≥√≤√∂√µ√∞√∏': u'o',
+    u'√õ√ö√ô√ú':    u'U',
+    u'√ª√∫√π√º¬µ':   u'u',
+    u'√ä√â√à√ã':    u'E',
+    u'√™√©√®√´':    u'e',
+    u'√é√ç√å√è':    u'I',
+    u'√Æ√¨√≠√Ø':    u'i',
+    u'√±':       u'n',
+    u'√ü':       u'B',
+    u'√∑':       u'%',
+    u'√ß':       u'c',
+    u'√¶':       u'ae'
 }
 
 def getDownloadPath():
 	
-	# La ruta de descarga es un par·metro
+	# La ruta de descarga es un par√°metro
 	downloadpath = config.getSetting("downloadpath")
 	
-	# No est· fijada, intenta forzarla
+	# No est√° fijada, intenta forzarla
 	try:
 		if downloadpath == "":
-			logger.info("[downloadtools.py] downloadpath est· vacio")
+			logger.info("[downloadtools.py] downloadpath est√° vacio")
 			
 			# Busca un setting del skin (Telebision)
 			try:
@@ -363,13 +370,13 @@ def getDownloadPath():
 
 def getDownloadListPath():
 	
-	# La ruta de la lista de descargas es un par·metro
+	# La ruta de la lista de descargas es un par√°metro
 	downloadpath = config.getSetting("downloadlistpath")
 	
-	# No est· fijada, intenta forzarla
+	# No est√° fijada, intenta forzarla
 	try:
 		if downloadpath == "":
-			logger.info("[downloadtools.py] downloadpath est· vacio")
+			logger.info("[downloadtools.py] downloadpath est√° vacio")
 			
 			# Busca un setting del skin (Telebision)
 			try:
@@ -528,11 +535,11 @@ def downloadfile(url,nombrefichero):
 		f = open(nombrefichero, 'wb')
 		grabado = 0
 
-	# Crea el di·logo de progreso
+	# Crea el di√°logo de progreso
 	try:
 		import xbmcgui
 		progreso = xbmcgui.DialogProgress()
-		progreso.create( config.getPluginId() , "Descargando vÌdeo..." , url , nombrefichero )
+		progreso.create( config.getPluginId() , "Descargando v√≠deo..." , url , nombrefichero )
 	except:
 		progreso = ""
 
@@ -559,7 +566,7 @@ def downloadfile(url,nombrefichero):
 			progreso.close()
 		except:
 			pass
-		# El error 416 es que el rango pedido es mayor que el fichero => es que ya est· completo
+		# El error 416 es que el rango pedido es mayor que el fichero => es que ya est√° completo
 		if e.code==416:
 			return 0
 		else:
@@ -685,7 +692,7 @@ def downloadfileGzipped(url,pathfichero):
 		
 	txdata = ""
 
-	# Crea el di·logo de progreso
+	# Crea el di√°logo de progreso
 	import xbmcgui
 	progreso = xbmcgui.DialogProgress()
 	progreso.create( config.getPluginId() , "Descargando file..." , url , nombrefichero )
@@ -709,7 +716,7 @@ def downloadfileGzipped(url,pathfichero):
 		#print e.hdrs
 		#print e.fp
 		progreso.close()
-		# El error 416 es que el rango pedido es mayor que el fichero => es que ya est· completo
+		# El error 416 es que el rango pedido es mayor que el fichero => es que ya est√° completo
 		if e.code==416:
 			return 0
 		else:
@@ -908,7 +915,7 @@ def downloadIfNotModifiedSince(url,timestamp):
 		#info = response.info()
 		#logger.info( info.headers )
 		
-		# Si llega hasta aquÌ, es que ha cambiado
+		# Si llega hasta aqu√≠, es que ha cambiado
 		updated = True
 		response.close()
 

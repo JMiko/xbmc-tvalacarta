@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# Logger multiplataforma
+# Módulo de logging - modo desarollo
 #------------------------------------------------------------
 # pelisalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
@@ -11,17 +11,13 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-from core import config
-
-exec "import platform."+config.get_platform()+".logger as platformlogger"
-
-loggeractive = (config.get_setting("debug")=="true")
+import xbmc
 
 def info(texto):
-    if loggeractive: platformlogger.info(texto)
+    xbmc.output(texto)
 
 def debug(texto):
-    if loggeractive: platformlogger.info(texto)
+    xbmc.output(texto)
 
 def error(texto):
-    if loggeractive: platformlogger.info(texto)
+    xbmc.output(texto)

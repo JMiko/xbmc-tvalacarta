@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# Gestión de parámetros de configuración bajo xbmc dharma
+# Gestión de parámetros de configuración - xbmc dharma
 #------------------------------------------------------------
 # pelisalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
