@@ -11,8 +11,9 @@ class Item(object):
 	action = ""
 	server = ""
 	extra = ""
+	show = ""
 
-	def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="", extra="", folder=False):
+	def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="", extra="", show="", folder=True):
 		self.channel = channel
 		self.title = title
 		self.url = url
@@ -28,6 +29,7 @@ class Item(object):
 		self.server = server
 		self.action = action
 		self.extra = extra
+		self.show = show
 
 	def tostring(self):
-		return "title=["+self.title+"], url=["+self.url+"], thumbnail=["+self.thumbnail+"], extra=["+self.extra+"]"
+		return "title=["+self.title+"], url=["+self.url+"], thumbnail=["+self.thumbnail+"], action=["+self.action+"], show=["+self.show+"]"

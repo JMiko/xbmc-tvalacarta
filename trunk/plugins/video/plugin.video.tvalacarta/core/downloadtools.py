@@ -529,9 +529,12 @@ def downloadfile(url,nombrefichero):
 		grabado = 0
 
 	# Crea el diálogo de progreso
-	import xbmcgui
-	progreso = xbmcgui.DialogProgress()
-	progreso.create( config.getPluginId() , "Descargando vídeo..." , url , nombrefichero )
+	try:
+		import xbmcgui
+		progreso = xbmcgui.DialogProgress()
+		progreso.create( config.getPluginId() , "Descargando vídeo..." , url , nombrefichero )
+	except:
+		progreso = ""
 
 	# Timeout del socket a 60 segundos
 	socket.setdefaulttimeout(10)
@@ -552,7 +555,10 @@ def downloadfile(url,nombrefichero):
 		#print e.hdrs
 		#print e.fp
 		f.close()
-		progreso.close()
+		try:
+			progreso.close()
+		except:
+			pass
 		# El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
 		if e.code==416:
 			return 0
@@ -596,7 +602,10 @@ def downloadfile(url,nombrefichero):
 						else:
 							tiempofalta=0
 						#logger.info(sec_to_hms(tiempofalta))
-						progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
+						try:
+							progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
+						except:
+							pass
 					break
 				except:
 					reintentos = reintentos + 1
@@ -605,17 +614,23 @@ def downloadfile(url,nombrefichero):
 						logger.error( "%s" % line )
 			
 			# El usuario cancelo la descarga
-			if progreso.iscanceled():
-				logger.info("Descarga del fichero cancelada")
-				f.close()
-				progreso.close()
-				return -1
+			try:
+				if progreso.iscanceled():
+					logger.info("Descarga del fichero cancelada")
+					f.close()
+					progreso.close()
+					return -1
+			except:
+				pass
 
 			# Ha habido un error en la descarga
 			if reintentos > maxreintentos:
 				logger.info("ERROR en la descarga del fichero")
 				f.close()
-				progreso.close()
+				try:
+					progreso.close()
+				except:
+					pass
 
 				return -2
 
@@ -624,7 +639,10 @@ def downloadfile(url,nombrefichero):
 			for line in sys.exc_info():
 				logger.error( "%s" % line )
 			f.close()
-			progreso.close()
+			try:
+				progreso.close()
+			except:
+				pass
 			
 			#advertencia = xbmcgui.Dialog()
 			#resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
@@ -632,7 +650,10 @@ def downloadfile(url,nombrefichero):
 			return -2
 
 	f.close()
-	progreso.close()
+	try:
+		progreso.close()
+	except:
+		pass
 	logger.info("Fin descarga del fichero")
 
 def downloadfileGzipped(url,pathfichero):
@@ -851,18 +872,37 @@ def updatechannel(channelName):
 		
 	fechaFichero = os.path.getmtime(channelFileSource)
 	logger.info("fechaFichero=%s"% time.ctime(fechaFichero))
-	fechaFormateada = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(fechaFichero))
-	logger.info("fechaFormateada=%s" % fechaFormateada)
 
+	updated , data = downloadIfNotModifiedSince(channelURL,fechaFichero)
+
+	if updated:
+		outfile = open(channelFileSource,"w")
+		outfile.write(data)
+		outfile.flush()
+		outfile.close()
+		logger.info("Grabado a " + channelFileSource)
+		
+		if os.path.exists(channelFileCompiled):
+			os.remove(channelFileCompiled)
+
+	return updated
+
+def downloadIfNotModifiedSince(url,timestamp):
+
+	logger.info("[downloadtools.py] downloadIfNotModifiedSince("+url+","+time.ctime(timestamp)+")")
+	
+	# Convierte la fecha a GMT
+	fechaFormateada = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(timestamp))
+	logger.info("fechaFormateada=%s" % fechaFormateada)
+	
 	# Comprueba si ha cambiado
 	inicio = time.clock()
-	req = urllib2.Request(channelURL)
+	req = urllib2.Request(url)
 	req.add_header('If-Modified-Since', fechaFormateada)
 
 	updated = False
 
 	try:
-		logger.info("Verificando si el canal ha cambiado")
 		response = urllib2.urlopen(req)
 		data = response.read()
 		#info = response.info()
@@ -877,25 +917,15 @@ def updatechannel(channelName):
 		if hasattr(e,'code'):
 			logger.info("Codigo de respuesta HTTP : %d" %e.code)
 			if e.code == 304:
-				logger.info("El canal no ha cambiado")
+				logger.info("No ha cambiado")
 				updated = False
-		elif hasattr(e, 'reason'):
-			logger.info("ERROR Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1]))
 		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		else:
-			logger.info("ERROR error por otra cosa")
-	
+			for line in sys.exc_info():
+				logger.error( "%s" % line )
+		data=""
+
 	fin = time.clock()
 	logger.info("Descargado en %d segundos " % (fin-inicio+1))
 
-	if updated:
-		outfile = open(channelFileSource,"w")
-		outfile.write(data)
-		outfile.flush()
-		outfile.close()
-		logger.info("Grabado a " + channelFileSource)
-		
-		if os.path.exists(channelFileCompiled):
-			os.remove(channelFileCompiled)
-
-	return updated
+	return updated,data
