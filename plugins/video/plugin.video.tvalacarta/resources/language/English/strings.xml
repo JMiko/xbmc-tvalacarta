@@ -36,6 +36,10 @@
 	<string id="30021">Enable Subtitle:</string>
 	<string id="30022">JDownloader URL:</string>
 	<string id="30024">Number of searches to save:</string>
+	<string id="30025">Cache mode:</string>
+	<string id="30027">Automatic</string>
+	<string id="30026">Cache all</string>
+	<string id="30027">Cache nothing</string>
 	
 	<!-- =============================================================== -->
 	<!-- 30050 to 30099: Info / error messages                           -->

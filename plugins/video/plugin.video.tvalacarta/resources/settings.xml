@@ -17,4 +17,5 @@
     <setting id="subtitulo" type="bool" label="30021" default="false"/>	
     <setting id="jdownloader" type="text" label="30022" default="http://127.0.0.1:10025"/>
     <setting id="limite_busquedas" type="enum" values="10|20|30|40" label="30024" default="0"/>
+    <setting id="modo_cache" type="enum" lvalues="30025|30026|30027" label="30025" default="0"/>
 </settings>
