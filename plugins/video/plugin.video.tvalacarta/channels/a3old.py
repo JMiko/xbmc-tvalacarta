@@ -7,9 +7,9 @@
 import urlparse,re
 import urllib
 
-from core import logger
-from core import scrapertools
-from core.item import Item
+from resources.lib import logger
+from resources.lib import scrapertools
+from resources.lib.item import Item
 
 logger.info("[a3.py] init")
 
@@ -172,7 +172,7 @@ def series(item):
 
 	itemlist = []
 	for match in matches:
-		scrapedtitle = match[2].strip()
+		scrapedtitle = match[2]
 		# Hace un quote porque algunas URL están con acentos
 		#/videos/Deberías saber de mi .html
 		#/videos/Deber%C3%ADas%20saber%20de%20mi%20.html
@@ -182,13 +182,14 @@ def series(item):
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado
-		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , program=scrapedtitle, folder=True) )
 
 	return itemlist
 
 def capitulos(item):
 	logger.info("[a3.py] capitulos")
-	logger.info(item.tostring())
+	
+	print item.tostring()
 	
 	# Descarga la página
 	data = scrapertools.cachePage(item.url,modoCache=MODO_CACHE)
@@ -227,7 +228,7 @@ def capitulos(item):
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado
-		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="detalle" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=True) )
+		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="detalle" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , program=item.program , folder=True) )
 
 	# Otras temporadas
 	patron = '<dd class="paginador">(.*?)</dd>'
@@ -257,7 +258,7 @@ def capitulos(item):
 			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 	
 			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
+			itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, program=item.program , folder=True) )
 
 	return itemlist
 
@@ -382,18 +383,18 @@ def test():
 	for item in itemsmainlist: print item.tostring()
 
 	# Listado principal
-	#itemsmasvistos = losmasvistos(itemsmainlist[0])
+	itemsmasvistos = losmasvistos(itemsmainlist[0])
 	
 	# Listados de secciones
-	#itemsultimosvideos = ultimosvideos(itemsmainlist[1])
-	#itemsultimasemana = ultimasemana(itemsmainlist[2])
+	itemsultimosvideos = ultimosvideos(itemsmainlist[1])
+	itemsultimasemana = ultimasemana(itemsmainlist[2])
 	itemsseries = series(itemsmainlist[3])
-	#itemsnoticias = noticias(itemsmainlist[4])
-	#itemsprogramas = programas(itemsmainlist[5])
-	#itemstvmovies = tvmovies(itemsmainlist[6])
+	itemsnoticias = noticias(itemsmainlist[4])
+	itemsprogramas = programas(itemsmainlist[5])
+	itemstvmovies = tvmovies(itemsmainlist[6])
 	
 	# Capítulos
-	#itemscapitulos = capitulos(itemsseries[1])
+	itemscapitulos = capitulos(itemsseries[1])
 	
 	# Detalle
 	itemsdetalle = detalle(itemsmasvistos[0])
