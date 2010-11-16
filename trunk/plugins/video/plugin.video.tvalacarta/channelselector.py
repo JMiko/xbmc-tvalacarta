@@ -45,7 +45,7 @@ def listchannels(params,url,category):
 	addfolder("Antena3","a3","mainlist")
 	addfolder("ADNStream","adnstream","mainlist")
 	addfolder("Barcelona TV","barcelonatv","mainlist")
-	addfolder("Clan TV","clantv","mainlist")
+	addfolder("Clan TV","clantve","mainlist")
 	addfolder("El cine de las 3 mellizas","tresmellizas","mainlist")
 	addfolder("Boing","boing","mainlist")
 	#addfolder("Totlol","totlol","mainlist")
