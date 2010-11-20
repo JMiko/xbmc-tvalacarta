@@ -29,5 +29,5 @@ librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'youtubeAPI' ) )
 sys.path.append (librerias)
 
 # Ejecuta el programa principal
-import tvalacarta
-tvalacarta.run()
+import launcher
+launcher.run()
