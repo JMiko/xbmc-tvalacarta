@@ -13,6 +13,8 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
+print "Using DEVELOPER config"
+
 import os
 
 DATA_PATH = os.getcwd()
