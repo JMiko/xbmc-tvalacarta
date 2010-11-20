@@ -11,13 +11,13 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-import xbmc
+print "Using DEVELOPER logger"
 
 def info(texto):
-    xbmc.output(texto)
+    print texto
 
 def debug(texto):
-    xbmc.output(texto)
+    print texto
 
 def error(texto):
-    xbmc.output(texto)
+    print texto

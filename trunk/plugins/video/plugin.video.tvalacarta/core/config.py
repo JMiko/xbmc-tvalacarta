@@ -32,6 +32,7 @@ DATA_PATH = os.getcwd()
 
 # XBMC Dharma
 try:
+    print "Testing xbmc dharma..."
     import xbmcaddon
     import xbmc
     PLATFORM = "xbmcdharma"
@@ -43,12 +44,14 @@ try:
 except ImportError:
     # XBMC
     try:
+        print "Testing xbmc..."
         import xbmc
         PLATFORM = "xbmc"
         PLUGIN_ID = "tvalacarta"
         DHARMA = False
         DATA_PATH = os.getcwd()
     except ImportError:
+        print "Platform=DEVELOPER"
         # Eclipse
         PLATFORM = "developer"
         PLUGIN_ID = "tvalacarta"
