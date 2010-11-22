@@ -36,18 +36,18 @@ def listchannels(params,url,category):
 	except ImportError:
 		logger.info("[channelselector.py] No disponible modulo actualizaciones")
 	else:
-		if config.getSetting("updatecheck2") == "true":
+		if config.get_setting("updatecheck2") == "true":
 			logger.info("[channelselector.py] Verificar actualizaciones activado")
 			updater.checkforupdates()
 		else:
 			logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
-	addfolder("Antena3","a3","mainlist")
+	addfolder("Antena3","antena3","mainlist")
 	addfolder("ADNStream","adnstream","mainlist")
 	addfolder("Barcelona TV","barcelonatv","mainlist")
 	addfolder("Clan TV","clantve","mainlist")
 	addfolder("El cine de las 3 mellizas","tresmellizas","mainlist")
-	addfolder("Boing","boing","mainlist")
+	#addfolder("Boing","boing","mainlist")
 	#addfolder("Totlol","totlol","mainlist")
 	addfolder("EITB","eitb","mainlist")
 	addfolder("Extremadura TV","extremaduratv","mainlist")
@@ -73,12 +73,12 @@ def listchannels(params,url,category):
 	addfolder("Internautas TV","internautastv","mainlist")
 	addfolder("Publico.tv","publicotv","mainlist")
 	
-	cadena = config.getLocalizedString(30100)
+	cadena = config.get_localized_string(30100)
 	logger.info("cadena="+cadena)
 	addfolder(cadena,"configuracion","mainlist") # Configuracion
 	if (parametrizacion.DOWNLOAD_ENABLED):
-		addfolder(config.getLocalizedString(30101),"descargados","mainlist")   # Descargas
-	addfolder(config.getLocalizedString(30102),"favoritos","mainlist")     # Favoritos
+		addfolder(config.get_localized_string(30101),"descargados","mainlist")   # Descargas
+	addfolder(config.get_localized_string(30102),"favoritos","mainlist")     # Favoritos
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )

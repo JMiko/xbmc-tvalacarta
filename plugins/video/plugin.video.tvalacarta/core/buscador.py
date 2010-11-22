@@ -141,10 +141,10 @@ def searchresults(params,url,category):
 
 def salvar_busquedas(params,url,category):
 	channel = params.get("channel")
-	limite_busquedas = ( 10, 20, 30, 40, )[ int( config.getSetting( "limite_busquedas" ) ) ]
+	limite_busquedas = ( 10, 20, 30, 40, )[ int( config.get_setting( "limite_busquedas" ) ) ]
 	matches = []
 	try:
-		presets = config.getSetting("presets_buscados")
+		presets = config.get_setting("presets_buscados")
 		if "|" in presets:
 			presets = matches = presets.split("|")			
 			for count, preset in enumerate( presets ):
@@ -174,7 +174,7 @@ def listar_busquedas(params,url,category):
 	channel2 = ""
 	# Despliega las busquedas anteriormente guardadas
 	try:
-		presets = config.getSetting("presets_buscados")
+		presets = config.get_setting("presets_buscados")
 		channel_preset  = params.get("channel")
 		if channel_preset != CHANNELNAME:
 			channel2 = channel_preset
@@ -183,9 +183,9 @@ def listar_busquedas(params,url,category):
 		matches = ""
 		if "|" in presets:
 			matches = presets.split("|")
-			addfolder( "buscador"   , config.getLocalizedString(30103)+"..." , matches[0] , "por_teclado", channel2 ) # Buscar
+			addfolder( "buscador"   , config.get_localized_string(30103)+"..." , matches[0] , "por_teclado", channel2 ) # Buscar
 		else:
-			addfolder( "buscador"   , config.getLocalizedString(30103)+"..." , "" , "por_teclado", channel2 )
+			addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado", channel2 )
 		if len(matches)>0:	
 			for match in matches:
 				
@@ -197,7 +197,7 @@ def listar_busquedas(params,url,category):
 			title = scrapedurl = presets
 			addfolder( channel_preset , title , scrapedurl , "searchresults" )
 	except:
-		addfolder( "buscador"   , config.getLocalizedString(30103)+"..." , "" , "por_teclado" , channel2 )
+		addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado" , channel2 )
 		
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -208,7 +208,7 @@ def borrar_busqueda(params,url,category):
 	channel = params.get("channel")
 	matches = []
 	try:
-		presets = config.getSetting("presets_buscados")
+		presets = config.get_setting("presets_buscados")
 		if "|" in presets:
 			presets = matches = presets.split("|")
 			for count, preset in enumerate( presets ):
@@ -272,7 +272,7 @@ def addfolder( canal , nombre , url , accion , channel2 = "" ):
 	if accion != "por_teclado":
 		contextCommands = []
 		DeleteCommand = "XBMC.RunPlugin(%s?channel=buscador&action=borrar_busqueda&title=%s&url=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( nombre ) , urllib.quote_plus( url ) )
-		contextCommands.append((config.getLocalizedString( 30300 ),DeleteCommand))
+		contextCommands.append((config.get_localized_string( 30300 ),DeleteCommand))
 		listitem.addContextMenuItems ( contextCommands, replaceItems=False)
 		
 	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)

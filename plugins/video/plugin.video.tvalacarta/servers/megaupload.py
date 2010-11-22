@@ -201,10 +201,10 @@ def getvideo(code):
 	return megavideo.Megavideo(convertcode(code))
 
 def gethighurl(code):
-	megavideologin = config.getSetting("megavideouser")
+	megavideologin = config.get_setting("megavideouser")
 	if DEBUG:
 		xbmc.output("[megaupload.py] megavideouser=#"+megavideologin+"#")
-	megavideopassword = config.getSetting("megavideopassword")
+	megavideopassword = config.get_setting("megavideopassword")
 	if DEBUG:
 		xbmc.output("[megaupload.py] megavideopassword=#"+megavideopassword+"#")
 	cookie = getmegauploaduser(megavideologin,megavideopassword)

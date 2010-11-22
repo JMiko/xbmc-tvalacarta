@@ -77,7 +77,7 @@ def set_setting(name,value):
     platformconfig.set_setting(name,value)
 
 def get_localized_string(code):
-    return platformconfig.get_localized_string(name,value)
+    return platformconfig.get_localized_string(code)
 
 def get_plugin_id():
     return PLUGIN_ID
