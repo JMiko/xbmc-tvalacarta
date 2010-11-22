@@ -20,6 +20,7 @@ except:
 
 PLUGIN_ID = "plugin.video.tvalacarta"
 
+# TODO: Quitar código Dharma
 try:
     import xbmcaddon
     DHARMA = True
@@ -85,7 +86,7 @@ def setSetting(name,value):
         except:
             pass
 
-def getLocalizedString(code):
+def get_localized_string(code):
     # Nuevo XBMC
     if DHARMA:
         dev = __language__(code)

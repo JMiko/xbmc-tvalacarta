@@ -132,7 +132,7 @@ def downloadall(params,url,category):
 				logger.info("[downloadall.py] url="+url)
 
 				# Averigua la URL del vídeo
-				if (server=="Megavideo" or server=="Megaupload") and config.getSetting("megavideopremium")=="true":
+				if (server=="Megavideo" or server=="Megaupload") and config.get_setting("megavideopremium")=="true":
 					if server=="Megaupload":
 						mediaurl = servertools.getmegauploadhigh(url)
 					else:

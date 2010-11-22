@@ -28,7 +28,7 @@ except:
 
 DEBUG = True
 
-BOOKMARK_PATH = config.getSetting( "bookmarkpath" )
+BOOKMARK_PATH = config.get_setting( "bookmarkpath" )
 
 usingsamba=BOOKMARK_PATH.upper().startswith("SMB://")
 

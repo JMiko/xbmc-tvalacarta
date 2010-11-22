@@ -210,7 +210,7 @@ def Megavideo(mega):
 	mega = getcode(mega)
 
 	xbmc.output("[megavideo.py] Megavideo")
-	modoPremium = config.getSetting("megavideopremium")
+	modoPremium = config.get_setting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	
 	if modoPremium == "false":
@@ -228,7 +228,7 @@ def getlowurl(code):
 	
 	code=getcode(code)
 
-	modoPremium = config.getSetting("megavideopremium")
+	modoPremium = config.get_setting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	if modoPremium == "false":
 		xbmc.output("[megavideo.py] usando modo normal para baja calidad")
@@ -247,14 +247,14 @@ def getlowurl(code):
 			#addLink(name, movielink+'?.flv','')
 	else:
 		xbmc.output("[megavideo.py] usando modo premium para baja calidad")
-		megavideocookie = config.getSetting("megavideocookie")
+		megavideocookie = config.get_setting("megavideocookie")
 		if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 
 		xbmc.output("[megavideo.py] Averiguando cookie...")
-		megavideologin = config.getSetting("megavideouser")
+		megavideologin = config.get_setting("megavideouser")
 		if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
 
-		megavideopassword = config.getSetting("megavideopassword")
+		megavideopassword = config.get_setting("megavideopassword")
 		if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 
 		megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
@@ -286,14 +286,14 @@ def gethighurl(code):
 	
 	code = getcode(code)
 
-	megavideocookie = config.getSetting("megavideocookie")
+	megavideocookie = config.get_setting("megavideocookie")
 	if DEBUG:
 		xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 	#if megavideocookie=="":
 	xbmc.output("[megavideo.py] Averiguando cookie...")
-	megavideologin = config.getSetting("megavideouser")
+	megavideologin = config.get_setting("megavideouser")
 	if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
-	megavideopassword = config.getSetting("megavideopassword")
+	megavideopassword = config.get_setting("megavideopassword")
 	if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 	megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
 	if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")

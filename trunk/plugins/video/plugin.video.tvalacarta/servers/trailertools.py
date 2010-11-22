@@ -47,10 +47,10 @@ def buscartrailer(params,url,category):
 	print "[trailertools.py] Modulo: buscartrailer()"
 	thumbnail = ""
 	videotitle = title = urllib.unquote_plus( params.get("title") ).strip()
-	if config.getLocalizedString(30110) in videotitle: #"Buscar tailer para"
-		videotitle = videotitle.replace(config.getLocalizedString(30110),"").strip()
-	if config.getLocalizedString(30111) in videotitle: #"Insatisfecho?, busca otra vez : "
-		videotitle = videotitle.replace(config.getLocalizedString(30111),"").strip()
+	if config.get_localized_string(30110) in videotitle: #"Buscar tailer para"
+		videotitle = videotitle.replace(config.get_localized_string(30110),"").strip()
+	if config.get_localized_string(30111) in videotitle: #"Insatisfecho?, busca otra vez : "
+		videotitle = videotitle.replace(config.get_localized_string(30111),"").strip()
 	
 		listavideos = GetTrailerbyKeyboard(videotitle.strip(),category)
 	else:
@@ -62,7 +62,7 @@ def buscartrailer(params,url,category):
 			thumbnail  = video[2]
 			xbmctools.addnewvideo( "trailertools" , "youtubeplay" , category , "Directo" ,  titulo , url , thumbnail , "Ver Video" )
 	
-	xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , config.getLocalizedString(30111)+" "+videotitle , url , os.path.join(IMAGES_PATH, 'trailertools.png'), "" ) #"Insatisfecho?, busca otra vez : "		
+	xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , config.get_localized_string(30111)+" "+videotitle , url , os.path.join(IMAGES_PATH, 'trailertools.png'), "" ) #"Insatisfecho?, busca otra vez : "		
 	# Propiedades
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -212,9 +212,9 @@ def GetTrailerbyKeyboard(titulo,category):
 	keyboard = xbmc.Keyboard('default','heading')
 	keyboard.setDefault(titulo)
 	if titulo == "":
-		keyboard.setHeading(config.getLocalizedString(30112)) #"Introduce el Titulo a buscar"
+		keyboard.setHeading(config.get_localized_string(30112)) #"Introduce el Titulo a buscar"
 	else:
-		keyboard.setHeading(config.getLocalizedString(30113)) #'Puedes recortar el titulo ó bien cambiar a otro idioma'
+		keyboard.setHeading(config.get_localized_string(30113)) #'Puedes recortar el titulo ó bien cambiar a otro idioma'
 	keyboard.doModal()
 	if (keyboard.isConfirmed()):
 		tecleado = keyboard.getText()
@@ -230,7 +230,7 @@ def alertnoencontrado(titulo):
 	#'no se ha podido localizar.'
 	#'¿Deseas seguir buscando con el teclado?'
 	tituloq = '"'+titulo+'"'
-	resultado = advertencia.yesno(config.getLocalizedString(30114), config.getLocalizedString(30115) % tituloq, config.getLocalizedString(30116),config.getLocalizedString(30117))
+	resultado = advertencia.yesno(config.get_localized_string(30114), config.get_localized_string(30115) % tituloq, config.get_localized_string(30116),config.get_localized_string(30117))
 	return(resultado)
 def LimpiarTitulo(title):
         title = string.lower(title)

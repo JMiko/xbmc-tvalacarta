@@ -329,7 +329,7 @@ entitydefs3 = {
 def getDownloadPath():
 	
 	# La ruta de descarga es un parámetro
-	downloadpath = config.getSetting("downloadpath")
+	downloadpath = config.get_setting("downloadpath")
 	
 	# No está fijada, intenta forzarla
 	try:
@@ -374,7 +374,7 @@ def getDownloadPath():
 def getDownloadListPath():
 	
 	# La ruta de la lista de descargas es un parámetro
-	downloadpath = config.getSetting("downloadlistpath")
+	downloadpath = config.get_setting("downloadlistpath")
 	
 	# No está fijada, intenta forzarla
 	try:

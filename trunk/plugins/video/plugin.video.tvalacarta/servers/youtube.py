@@ -54,7 +54,7 @@ def geturls(id,data):
 	
 def geturl( id ):
 	print '[pelisalacarta] youtube.py Modulo: geturl(%s)' %id
-	quality = int(config.getSetting("quality_youtube"))
+	quality = int(config.get_setting("quality_youtube"))
 	if id != "":
 		url = "http://www.youtube.com/watch?v=%s" % id
 		print 'esta es la url: %s'%url

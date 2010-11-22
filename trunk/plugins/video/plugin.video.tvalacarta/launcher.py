@@ -76,16 +76,16 @@ def run():
 
 		# El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
 		else:
-			if action=="mainlist" and config.getSetting("updatechannels")=="true":
-				import downloadtools
+			if action=="mainlist" and config.get_setting("updatechannels")=="true":
+				from core import downloadtools
 				actualizado = downloadtools.updatechannel(params.get("channel"))
 
 				if actualizado:
 					import xbmcgui
 					advertencia = xbmcgui.Dialog()
-					advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
+					advertencia.ok("pelisalacarta",params.get("channel"),config.get_localized_string(30063))
 
-			exec "import "+params.get("channel")+" as channel"
+			exec "import tvalacarta.channels."+params.get("channel")+" as channel"
 			generico = False
 			try:
 				generico = channel.isGeneric()
@@ -118,11 +118,11 @@ def run():
 				else:
 					extra = ""
 			
-				import xbmctools
+				from core import xbmctools
 				if action=="play":
 					xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
 				else:
-					from item import Item
+					from core.item import Item
 					item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, extra=extra)
 		
 					exec "itemlist = channel."+action+"(item)"
@@ -134,12 +134,12 @@ def run():
 		# Agarra los errores surgidos localmente enviados por las librerias internas
 		if hasattr(e, 'reason'):
 			logger.info("Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1]))
-			texto = config.getLocalizedString(30050) # "No se puede conectar con el sitio web"
+			texto = config.get_localized_string(30050) # "No se puede conectar con el sitio web"
 			ok = ventana_error.ok ("tvalacarta", texto)
 		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
 		elif hasattr(e,'code'):
 			logger.info("codigo de error HTTP : %d" %e.code)
-			texto = (config.getLocalizedString(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
+			texto = (config.get_localized_string(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
 			ok = ventana_error.ok ("tvalacarta", texto)	
 		else:
 			pass
