@@ -229,11 +229,11 @@ def findfavoritos(category):
 			titleerdm = "mc-anime-fav"
 			category0 = category+" - "+titleinfo
 			try:
-				datamca = scrapertools.cachePage(url)
+				datamca = scrapertools.downloadpage(url)
 			except:
 				alertnoresultados(url)
 				try:
-					scrapertools.cachePage("http://www.mcanime.net")
+					scrapertools.downloadpage("http://www.mcanime.net")
 				except:
 					alertnoweb("McAnime")
 					OKmca="0"
@@ -297,7 +297,7 @@ def findnuevos(category,title,titleserievisto,url,todos,web):
 			return listanuevos
 	elif web == "astro2" or web == "mc-anime" or web == "mc-anime-fav" or web == "tusdivx":
 		try:
-			data = scrapertools.cachePage(url)
+			data = scrapertools.downloadpage(url)
 		except:
 			return listanuevos
 	else:
@@ -381,7 +381,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 			return
 	elif titleerdm=="astro2" or titleerdm=="mc-anime" or titleerdm=="mc-anime-fav" or titleerdm=="tusdivx":
 		try:
-			data = scrapertools.cachePage(url)
+			data = scrapertools.downloadpage(url)
 		except:
 			alertnoresultados("")
 			return
@@ -542,7 +542,7 @@ def astrodata(title,url):
 	# Descarga la página
 	# ------------------------------------------------------
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		return data
 
@@ -564,7 +564,7 @@ def erdmdata(url):
 	# Descarga la página
 	# ------------------------------------------------------
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		return data,plot
 
@@ -732,7 +732,7 @@ def finderdm(url,tipolist,tipocontenido,search,idioma):
 	serieslist = []
 
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		alertnoresultados(url)
 		return serieslist
@@ -914,11 +914,11 @@ def findvistos(category):
 				if OKmca=="0":
 					continue
 				try:
-					datamca = scrapertools.cachePage(serie[1])
+					datamca = scrapertools.downloadpage(serie[1])
 				except:
 					alertnoresultados(serie[1])
 					try:
-						scrapertools.cachePage("http://www.mcanime.net")
+						scrapertools.downloadpage("http://www.mcanime.net")
 					except:
 						alertnoweb("McAnime")
 						OKmca="0"
@@ -1366,13 +1366,13 @@ def findinfo(data,title,tcsearch,todos,genre,titleerdm):
 		else:
 			url = urlparse.urljoin("http://www.mcanime.net/enciclopedia/anime/lista/",inicial.lower())
 		try:
-			data = scrapertools.cachePage(url)
+			data = scrapertools.downloadpage(url)
 		except:
 			alertnoresultados(url)
 			return animemclist
 	else:
 		try:
-			data0 = scrapertools.cachePage(url)
+			data0 = scrapertools.downloadpage(url)
 		except:
 			alertnoresultados(url)
 			return animemclist
@@ -1432,7 +1432,7 @@ def findlistinfo(data,title,url):
 	infomclist = []
 
 	if data == "":
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 
 	sinopsis = ""	
 	match1 = re.search('<h6>Sinopsis.*?</h6>\n\s*([^<]+)<br />',data,re.IGNORECASE)
@@ -1741,7 +1741,7 @@ def searchinicial():
 
 def genres(params,url,category):
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		alertnoresultados(url)
 		return
@@ -1777,7 +1777,7 @@ def findgenres(data):
 
 def findseriesmc(url):
 	seriesmclist = []
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpage(url)
 
 	patronvideos  = '<li class="dd_type"><img.*?title="([^"]+)"\s*/></li>\n'
 	patronvideos += '\s+<li class="dd_update">[^<]+<img[^>]+>([^<]+)</li>\n'
