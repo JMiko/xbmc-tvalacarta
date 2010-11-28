@@ -407,7 +407,7 @@ def findnuevos(serie,url,todos):
 def search(params,url,category):
 	opciones = []
 	opciones.append("CastTV->TVShack->SeriesYonkis")
-	opciones.append("TVShack")
+	opciones.append("TVShack->SeriesYonkis")
 	opciones.append("SeriesYonkis")
 	searchtype = xbmcgui.Dialog()
 	seleccion = searchtype.select("Seleccione una opción de búsqueda:", opciones)
@@ -743,7 +743,7 @@ def casttvfilters(tipolist,search,datafilter):
 		listvalue[0] = matchfilter.group(1)
 		listvalue[1] = matchfilter.group(2)
 	try:
-		data = scrapertools.cachePage(CTVURL)
+		data = scrapertools.downloadpage(CTVURL)
 	except:
 		alertservidor(CTVURL)
 		return listvalue[0],listvalue[1],listseries
@@ -826,7 +826,7 @@ def findcasttv(tipolist,search,titlesearch,tptitlesearch,dataweb):
 	if "casttv" in tipolist:
 		urldef = tipolist
 	try:
-		data = scrapertools.cachePage(urldef)
+		data = scrapertools.downloadpage(urldef)
 	except:
 		alertservidor(urldef)
 		if tipolist<>"listforsubs" and tipolist<>"S" and tipolist<>"CheckFav":
@@ -1472,7 +1472,7 @@ def findcasttvep(url,miserievo,todos,seasonsearch,episodiosearch,dataweb):
 	thumbnail = ""
 	plot = ""
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		if todos=="S":
 			return episodioslist,episodioscasttv,listseasepctv,seasonlist,thumbnail,plot
@@ -1689,7 +1689,7 @@ def findsyep(url,todos,season,episodio):
 	thumbnail = ""
 	plot = ""
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		if todos=="-1":
 			return listepisodios
@@ -1767,7 +1767,7 @@ def findsubseries(title,todos,titlesearch,season,episodio):
 	miseriesub = ""
 	urlsub = ""
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		alertservidor(url)
 		if todos=="-1" or todos=="checksearch":
@@ -1835,7 +1835,7 @@ def findtv(title,todos,titlesearch,tptitlesearch):
 	miserietv = ""
 	urltv = ""
 	try:
-		data = scrapertools.cachePage(TVSURL)
+		data = scrapertools.downloadpage(TVSURL)
 	except:
 		alertservidor(TVSURL)
 		if todos=="-1" or todos=="-1S" or todos=="checksearch" or todos=="Vistos":
@@ -1899,7 +1899,7 @@ def findseriesyonkis(title,todos,titlesearch,tptitlesearch):
 	plot = ""
 
 	try:
-		data = scrapertools.cachePage(SYURL)
+		data = scrapertools.downloadpage(SYURL)
 	except:
 		alertservidor(SYURL)
 		if todos=="-1" or todos=="-1S" or todos=="checksearch" or todos=="Vistos":
@@ -2240,7 +2240,7 @@ def findsubsep(url,todos,seasonsearch0,episodiosearch):
 		seasonsearch=seasonsearch0
 
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		if todos=="-1":
 			return listepisodios
@@ -2274,7 +2274,7 @@ def findsubsep(url,todos,seasonsearch0,episodiosearch):
 
 	for season in listseason:
 
-		data = scrapertools.cachePage(season[1])
+		data = scrapertools.downloadpage(season[1])
 		
 		# ------------------------------------------------------
 		# Extrae los Episodios
@@ -2320,7 +2320,7 @@ def findsubsep(url,todos,seasonsearch0,episodiosearch):
 def findsubupdates():
 	listsubupdates = []
 	try:
-		data = scrapertools.cachePage(SUBURL)
+		data = scrapertools.downloadpage(SUBURL)
 	except:
 		alertservidor(SUBURL)
 		return listsubupdates
@@ -2328,7 +2328,7 @@ def findsubupdates():
 	# ------------------------------------------------------
 	# Extrae los Episodios
 	# ------------------------------------------------------
-	patronvideos  = '<a href="([^"]+)">([^<]+)</a></li><li>([^<]+)<span[^>]+>([^<]+)'
+	patronvideos  = '<a href="([^"]+)">([^<]+)</a></li><li[^>]+>([^<]+)(?<!traducido)<span[^>]+>([^<]+)'
 	matches = re.compile(patronvideos,re.IGNORECASE).findall(data)
 	
 	for match in matches:
@@ -2356,15 +2356,16 @@ def findsubs(miep,url):
 	#por precaución
 	miep = re.sub('\;','',miep)
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		return listsubtitulos
 
 	# ------------------------------------------------------
 	# Extrae las versiones
 	# ------------------------------------------------------
-	patronvideos  = 'class="NewsTitle"><img[^>]+>\s*\n(Versi[^<]+)</td>'
-	patronvideos += '(.*?)</table>'
+	patronvideos  = '<div id="version" class="ssdiv">.*?'
+	patronvideos += 'height="24" />\n\s+(Versi&oacute;n[^<]*)<span'
+	patronvideos += '(.*?)\n</div>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 		
 	for match in matches:
@@ -2381,9 +2382,11 @@ def findsubs(miep,url):
 		# ------------------------------------------------------
 		# Extrae los Subtítulos
 		# ------------------------------------------------------
-		patronvideos  = '<td width="21%" class="language">\n([^<]+)</td>\n\s+<td width="19%"><strong>\n([^<]*Completado)\s+</strong>'
-		patronvideos += '.*?<a href="([^"]+)"[^>]+>(?:descargar|<b>m&aacute;s actualizado</b>)</a>.*?&middot\s+(\d+)\s+descargas'
-		patronvideos +=	'.*?<a href="([^"]+)">ver y editar</a>'
+		patronvideos  = '<li class=\'li-idioma\'>\n\s+<strong>([^<]+)</strong>\s+</li>\n\s+'
+		patronvideos += '<li class=\'li-estado[^>]*\'>\n\s+([^<]*Completado)\s+</li>'
+		patronvideos += '.*?<span class=\'descargar[^>]*\'>\n\s+(?:<a href="([^"]+)"[^>]+>)?(?:<img src="/images/download.png"[^>]+>)?(?:descargar|<b>m&aacute;s actualizado</b>|\s*Descarga a&uacute;n no disponible)'
+		patronvideos +=	'.*?<a href="([^"]+)">(?:<img[^>]+>)?\s*ver y editar</a>'
+		patronvideos +=	'.*?&middot\s+(\d+)\s+descargas'
 		subs = re.compile(patronvideos,re.DOTALL).findall(data1)
 
 		for sub in subs:
@@ -2412,11 +2415,14 @@ def findsubs(miep,url):
 			status = re.sub('\s+$','',status)
 
 			# NºDescargas
-			descargas = sub[3]
+			descargas = sub[4]
+			#descargas = sub[3]
 
 			# URL
 			url = sub[2]
-			urlvye = sub[4]+"&start="
+			#url = ""
+			urlvye = sub[3]+"&start="
+			#urlvye = sub[2]+"&start="
 			urlvye = re.sub("list","ajax_list",urlvye)
 	
 			titulo2 = idiomaf+versionf
@@ -2629,7 +2635,7 @@ def futonfilters(search,tipostatus):
 			tipostatus = "moviewatch"
 
 	try:
-		data = scrapertools.cachePage(url+"/")
+		data = scrapertools.downloadpage(url+"/")
 	except:
 		alertservidor(url+"/")
 		return listseries
@@ -2669,13 +2675,13 @@ def findfuton(search,url,tipostatus):
 	urlminiseries1 = "http://thefutoncritic.com/moviewatch.aspx?series=&network=&daycode=&statuscode=21&genre=mini-series&studio="
 	urlminiseries2 = "http://thefutoncritic.com/moviewatch.aspx?series=&network=&daycode=&statuscode=22&genre=mini-series&studio="
 	try:
-		data0 = scrapertools.cachePage(url)
+		data0 = scrapertools.downloadpage(url)
 		data1 = ""
 		data2 = ""
 		if tipostatus<>"" and  tipostatus<>"premiere" and  tipostatus<>"moviewatch":
-			data1 = scrapertools.cachePage(urlminiseries1)
+			data1 = scrapertools.downloadpage(urlminiseries1)
 			if tipostatus<>"premiere+miniseries":
-				data2 = scrapertools.cachePage(urlminiseries2)
+				data2 = scrapertools.downloadpage(urlminiseries2)
 		data = data0+data1+data2
 	except:
 		return listseries
@@ -2882,6 +2888,11 @@ def findfutonstatus(serieslist,tipostatus):
 			serie[4] = itemencontrado[0][0]+";"+itemencontrado[0][1]+";"+itemencontrado[0][2]+";"+itemencontrado[0][3]+";"+itemencontrado[0][4]+";"+itemencontrado[0][5]+";"+itemencontrado[0][6]+";"+itemencontrado[0][7]+";"+serie[1]
 		elif len(itemencontrado)>1:
 			serie[4]="varios"
+		elif len(itemencontrado)==0 and serie[1]=="[Current]":
+			#para contemplar caso de no encontrarse porque está en The Futon como cancelada...
+			#se deja así la búsqueda para el menú "Abrir Ficha..." para que statuslist no sea muy grande
+			#la pega es que por unos pocos errores en CastTV, se mostrará "Abrir Ficha..." siempre... 
+			serie[4]="ended"
 
 	if tipostatus=="bbc" or tipostatus=="ended" or tipostatus=="varios":
 		if len(itemencontrado)>1:
@@ -2891,7 +2902,7 @@ def findfutonstatus(serieslist,tipostatus):
 def findeztvstatus(search):
 	BBCstatus = []
 	try:
-		data = scrapertools.cachePage(EZURL)
+		data = scrapertools.downloadpage(EZURL)
 	except:
 		return BBCstatus
 
@@ -3087,7 +3098,7 @@ def listinfofuton(params,url,category):
 
 def findfutoninfo(url):
 	try:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpage(url)
 	except:
 		info = [ "" , "" , "" , "" , "" , "" , "" ]
 		return info
@@ -3359,7 +3370,7 @@ def findvideoscasttv(url):
 	listactmirrors = []
 	#listazs = []
 	try:
-		datazs = data = scrapertools.cachePage(url)
+		datazs = data = scrapertools.downloadpage(url)
 	except:
 		alertservidor(url)
 		return listacasttv,listactmirrors
@@ -3377,7 +3388,7 @@ def findvideoscasttv(url):
 		#obtiene la url de la página para reproducir con Megavideo si existe	
 		match = re.search('<a class="source_row" href="(.*?)"> <img alt="MegaVideo"',data,re.IGNORECASE)
 		if (match):
-			data2 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match.group(1)))
+			data2 = scrapertools.downloadpage(urlparse.urljoin("http://www.casttv.com",match.group(1)))
 			listacasttv = servertools.findvideos(data2)				
 			data = data2
 
@@ -3386,7 +3397,7 @@ def findvideoscasttv(url):
 	#	# obtiene la url de la página para reproducir con zSHARE si existe	
 	#	matchzs = re.search('<a class="source_row" href="(.*?)"> <img alt="zSHARE"',datazs,re.IGNORECASE)
 	#	if (matchzs):
-	#		datazs2 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",matchzs.group(1)))
+	#		datazs2 = scrapertools.downloadpage(urlparse.urljoin("http://www.casttv.com",matchzs.group(1)))
 	#		matchzs2 = re.search('http://www.zshare.net/videoplayer/player.php?[^>]+&H=([^&]+)&ISL=',datazs2,re.IGNORECASE)
 	#		if (matchzs2):
 	#			urlzs = zshare.geturl(urlparse.urljoin("http://www.zshare.net/download/",matchzs2.group(1)))
@@ -3397,14 +3408,14 @@ def findvideoscasttv(url):
 		# obtiene la url de la página para reproducir con Megavideo del mirror si existe	
 		match1 = re.search('<a class="source_copies" href="(.*?)">COPY 2',data,re.IGNORECASE)
 		if (match1):
-			data2 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
+			data2 = scrapertools.downloadpage(urlparse.urljoin("http://www.casttv.com",match1.group(1)))
 			listactmirrors = servertools.findvideos(data2)
 
 	#if len(listazs)>0:
 	#	# obtiene la url de la página para reproducir con zSHARE si existe	
 	#	matchzs = re.search('<a class="source_copies" href="(.*?)">COPY 2',datazs,re.IGNORECASE)
 	#	if (matchzs):
-	#		datazs2 = scrapertools.cachePage(urlparse.urljoin("http://www.casttv.com",matchzs.group(1)))
+	#		datazs2 = scrapertools.downloadpage(urlparse.urljoin("http://www.casttv.com",matchzs.group(1)))
 	#		matchzs2 = re.search('http://www.zshare.net/videoplayer/player.php?[^>]+&H=([^&]+)&ISL=',datazs2,re.IGNORECASE)
 	#		if (matchzs2):
 	#			urlzs = zshare.geturl(urlparse.urljoin("http://www.zshare.net/download/",matchzs2.group(1)))
@@ -4016,7 +4027,7 @@ def subtitulovye(urlvye,fullfilename):
 	listainicios=[ "0" ]
 	sublist = []
 	try:
-		data = scrapertools.cachePage(urlvye+"0")
+		data = scrapertools.downloadpage(urlvye+"0")
 	except:
 		alertservidor(urlvye)
 		return
@@ -4045,7 +4056,7 @@ def subtitulovye(urlvye,fullfilename):
 		i = i + 1
 
 		urlL = urlvye+inicio
-		dataL = scrapertools.cachePage(urlL)
+		dataL = scrapertools.downloadpage(urlL)
 		patronsub  = '<tr[^>]+><td><div[^>]+>(\d+)</div>'
 		patronsub += '</td><td><div[^>]+>\d+</div></td><td><div[^>]+><img src="images/table_(?:save.png|row_insert.png)"[^>]*></div></td><td><div[^>]+><a href="[^"]+">[^<]+</a></div></td>'
 		patronsub += '<td[^>]*>(\d+:\d+:\d+,\d+\s-->\s\d+:\d+:\d+,\d+)</td>'
@@ -4230,8 +4241,8 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritas]" , "" , STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Subtítulo - [Descargar]" , "" , DESCARGAS_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
-	#additem( CHANNELNAME , category , "-------------------------------------------- Tools --------------------------------------------" , "" , HELP_THUMB , "" )
-	#addsimplefolder( CHANNELNAME , "checksearchgate" , "" , "Herramienta de Revisión de las búsquedas de Títulos" , "" , HELP_THUMB )
+	additem( CHANNELNAME , category , "-------------------------------------------- Tools --------------------------------------------" , "" , HELP_THUMB , "" )
+	addsimplefolder( CHANNELNAME , "checksearchgate" , "" , "Herramienta de Revisión de las búsquedas de Títulos" , "" , HELP_THUMB )
 	# ------------------------------------------------------------------------------------
 	EndDirectory(category,"",False,True)
 	# ------------------------------------------------------------------------------------
@@ -5043,6 +5054,15 @@ def xbmcfav(params,url,category):
 	xbmcfavupd(tipo,False)
 
 def xbmcfavupd(tipo,listupdate):
+	# ------------------------------------------------------------------------------------
+	try:
+		skin = xbmc.getSkinDir()
+		if skin=="Project Mayhem III":
+			xbmc.executebuiltin("Container.SetViewMode(54)")
+	except:
+		pass
+	# ------------------------------------------------------------------------------------
+
 	if tipo=="2":
 		category2 = " - Archivo"
 	elif tipo=="1":
@@ -5079,6 +5099,7 @@ def readxbmcfav(tipo):
 	pmedia = []
 	plugpelis = []
 	plugpelisdir = []
+	plugpelisdir2 = []
 	if tipo=="1" or tipo=="0":
 		fullfilename = "special://masterprofile/favourites.xml"
 	elif tipo=="2":
@@ -5105,7 +5126,7 @@ def readxbmcfav(tipo):
 					url=re.sub('%2F','/',url)
 					url=re.sub('%3A',':',url)
 				plugpelis.append([ match[2] , match[3] , match[5] , match[0] , url , match[1] ])
-			patron = '<favourite name="([^"]+)"(?: thumb=")?([^">]*)"?>ActivateWindow\(\d+,(?:&quot;)?plugin://video/pelisalacarta/\?channel=([^&]+)&amp;action=([^&]+)[^\)]+&amp;url=([^&]+)&'
+			patron = '<favourite name="([^"]+)"(?: thumb=")?([^">]*)"?>ActivateWindow\(\d+,(?:&quot;)?plugin://video/pelisalacarta/\?channel=([^&]+)&amp;action=([^&]+)&[^\)]+&amp;url=([^&]*)&'
 			matches = re.compile(patron).findall(data)
 			for match in matches:
 				url = match[4]
@@ -5113,11 +5134,14 @@ def readxbmcfav(tipo):
 					url=re.sub('&amp;','&',url)
 					url=re.sub('%2F','/',url)
 					url=re.sub('%3A',':',url)
-				plugpelisdir.append([ match[2] , match[3] , match[0] , url , match[1] ])
-
-			if len(plugpelisdir)>0:
-				plugpelisdir.sort(key=lambda dir: dir[4])
-				plugpelisdir.reverse()
+				if url<>"" or match[3]=="search":
+					#para dejar al final las carpetas que no son contenidos con carátula
+					if match[1]<>"":
+						plugpelisdir.append([ match[2] , match[3] , match[0] , url , match[1] ])
+					else:
+						plugpelisdir2.append([ match[2] , match[3] , match[0] , url , match[1] ])
+			if len(plugpelisdir2)>0:
+				plugpelisdir.extend(plugpelisdir2)
 			if len(pmedia)>0 or len(plugpelis)>0 or len(plugpelisdir)>0:
 				OKxbmcfav="-1"
 	except:
@@ -5189,8 +5213,10 @@ def writexbmcfav(params,url,category):
 				listfile2.write(line)
 			listfile2.close()
 	listupdate=True
-	if "move" in category and tipo=="1":
+	if category=="move":
 		tipo="2"
+		listupdate=False
+	elif category=="eliminar" and len(archivom)==0:
 		listupdate=False
 	xbmcfavupd(tipo,listupdate)
 
