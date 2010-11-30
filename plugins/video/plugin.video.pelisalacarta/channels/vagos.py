@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import cookielib
 import urlparse,urllib2,urllib,re
 import os
@@ -53,8 +54,8 @@ def mainlist(params,url,category):
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - Haste el 2008 (Inclusive)","http://www.vagos.es/forumdisplay.php?f=455","","")
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - 2009/2010","http://www.vagos.es/forumdisplay.php?f=454","","")
     xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=365","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas en transmisión o incompletas","http://www.vagos.es/forumdisplay.php?f=364","","")
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Series - Capítulos sueltos","http://www.vagos.es/forumdisplay.php?f=372","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas en transmisiÃ³n o incompletas","http://www.vagos.es/forumdisplay.php?f=364","","")
+    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Series - CapÃ­tulos sueltos","http://www.vagos.es/forumdisplay.php?f=372","","")
     #xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Trailers","http://www.vagos.es/forumdisplay.php?f=456","","")
     xbmctools.addnewfolder( CHANNELNAME , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
 
@@ -125,21 +126,21 @@ def Foro(params,url,category,parse):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
     
             if match[1] not in chinchetas:
-                # Añade al listado de XBMC
+                # AÃ±ade al listado de XBMC
                 if(parse):
                     xbmctools.addnewfolder( CHANNELNAME , "SerieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
                 else:
                     xbmctools.addnewfolder( CHANNELNAME , "MovieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
             
             
-        # Extrae la marca de siguiente página
+        # Extrae la marca de siguiente pagina
         pnextp = '<a rel="next" class="smallfont" href="forumdisplay.php?f=.*page=(\d*)" title'
         pnextp = '<a rel="next" class="smallfont" href="([^"]+)" title'
         matches = re.compile(pnextp,re.DOTALL).findall(data)
         scrapertools.printMatches(matches)
     
         if len(matches)>0:
-            scrapedtitle = "Página siguiente"
+            scrapedtitle = "PÃ¡gina siguiente"
             replaced = str(matches[0]).replace("&amp;", "&")
             scrapedurl = urlparse.urljoin(url,replaced)        
             #scrapedurl = BASEURL + "forumdisplay.php?f="+matches[0][0]+"&order=desc&page="+matches[0][1]
@@ -587,7 +588,7 @@ def findTemp(data):
         except:
             pass
         
-    patronvideos = '(\d*)ª temporada'
+    patronvideos = '(\d*)Âª temporada'
     matches = re.compile(patronvideos).findall(data)
     for match in matches:  
         try:      
@@ -595,7 +596,7 @@ def findTemp(data):
         except:
             pass
         
-    patronvideos = 'temporada (\d*)ª'
+    patronvideos = 'temporada (\d*)Âª'
     matches = re.compile(patronvideos).findall(data)
     for match in matches:  
         try:      
