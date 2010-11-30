@@ -33,6 +33,9 @@
     <string id="30032">Calidad Normal (SD)</string>
     <string id="30033">Calidad Alta (HD)(si existe)</string>
     
+    <string id="30034">Usuario páginas privadas:</string>
+    <string id="30035">Password páginas privadas:</string>
+    
 	<!-- Otras -->
 	<string id="30017">Directori de descarregues:</string>
 	<string id="30018">Directori de la llista de descarregues:</string>

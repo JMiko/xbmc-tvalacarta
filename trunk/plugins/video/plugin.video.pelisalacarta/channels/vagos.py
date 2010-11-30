@@ -19,8 +19,9 @@ import megaupload
 CHANNELNAME = "vagos"
 BASEURL = "http://www.vagos.es/"
 
-USER = ""
-PASSWORD = ""
+USER = config.getSetting("privateuser")
+PASSWORD = config.getSetting("privatepassword")
+
 #La cookie se ha de ubicar en un sitio con permiso de lectura/escritura
 COOKIEFILE = os.path.join(config.DATA_PATH,"vagos.cookies")
 
