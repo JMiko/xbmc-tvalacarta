@@ -15,10 +15,37 @@ import xbmcgui
 import megavideo
 import scrapertools
 import config
+import logger
+import time
 
-DEBUG = False
+DEBUG = True
 
 COOKIEFILE = os.path.join( config.DATA_PATH, 'cookies.lwp' )
+
+
+class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
+	#def http_error_301(self, req, fp, code, msg, headers):
+	#	result = urllib2.HTTPRedirectHandler.http_error_301(self, req, fp, code, msg, headers)
+	#	result.status = code
+	#	return result
+
+	def http_error_302(self, req, fp, code, msg, headers):
+		result = urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
+		result.status = code
+		logger.info(headers.getheader("Location"))
+		result.location=headers.getheader("Location")
+		#return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers) 
+	#http_error_301 = http_error_303 = http_error_307 = http_error_302 
+
+		#break
+		raise Exception(302,headers.getheader("Location"))
+		#return result
+	
+class DefaultErrorHandler(urllib2.HTTPDefaultErrorHandler):
+	def http_error_default(self, req, fp, code, msg, headers):
+		result = urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
+		result.status = code
+		return result
 
 # Convierte el código de megaupload a megavideo
 def convertcode(megauploadcode):
@@ -173,27 +200,44 @@ def getmegauploaduser(login,password):
 	return devuelve
 
 def getmegauploadvideo(code,user):
+	logger.info("getmegauploadvideo")
 	req = urllib2.Request("http://www.megaupload.com/?d="+code)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
 	req.add_header('Cookie', 'l=es; user='+user)
 	try:
-		response = urllib2.urlopen(req)
-	except:
-		req = urllib2.Request(url.replace(" ","%20"))
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-		response = urllib2.urlopen(req)
-	data=response.read()
-	response.close()
+		logger.info("getmegauploadvideo1")
+		opener = urllib2.build_opener(SmartRedirectHandler(), DefaultErrorHandler())
+			
+		response = opener.open(req)
+			#logger.info(response.info() + " es el info")
+		time.sleep(15)
+	
+	except Exception, inst:# Exception as inst:
+	#	logger.info("getmegauploadvideo2")
+	#	req = urllib2.Request(url.replace(" ","%20"))
+	#	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	#	response = urllib2.urlopen(req)
+	#	logger.info("getmegauploadvideo3")
+#		logger.info(response.location)
+#		logger.info(response.status)
+		logger.info("getmegauploadvideo3.5")
+		status,location=inst
+		logger.info(str(status) + " " + location)
+	
+	
+	#data=response.read()
+	logger.info("getmegauploadvideo4")
+	#response.close()
 	#if DEBUG:
 	#	xbmc.output("[megaupload.py] data=#"+data+"#")
 	
-	patronvideos  = '<div class="down_ad_pad1">[^<]+<a href="([^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+	#patronvideos  = '<div.*?id="downloadlink">[^<]+<a href="([^"]+)"'
+	#matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	#scrapertools.printMatches(matches)
 	
-	mediaurl = ""
-	if len(matches)>0:
-		mediaurl = matches[0]
+	mediaurl = location
+	#if len(matches)>0:
+	#	mediaurl = matches[0]
 	
 	return mediaurl
 
@@ -202,6 +246,7 @@ def getvideo(code):
 
 def gethighurl(code):
 	megavideologin = config.getSetting("megavideouser")
+	DEBUG=True
 	if DEBUG:
 		xbmc.output("[megaupload.py] megavideouser=#"+megavideologin+"#")
 	megavideopassword = config.getSetting("megavideopassword")
