@@ -125,8 +125,26 @@ def findvideos(data):
 			logger.info("  url duplicada="+url)
 
 	logger.info("1d) Megaupload sin titulo...")
-	#http://www.megavideo.com/?v=OYGXMZBM
+	# "http://www.megaupload.com/?d=PGAB11B6"
 	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9a-z]{8})'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches)
+
+	for match in matches:
+		titulo = ""
+		if titulo == "":
+			titulo = "[Megaupload]"
+		url = match
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'Megaupload' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	logger.info("1e) Megaupload sin titulo...")
+	# "http://www.megaupload.com/es/?d=PGAB11B6"
+	patronvideos  = 'http\:\/\/www.megaupload.com/es/\?d\=([A-Z0-9a-z]{8})'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 
