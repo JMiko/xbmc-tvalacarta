@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para mocosoftx
@@ -19,10 +19,11 @@ import config
 import logger
 
 CHANNELNAME = "mocosoftx"
+USER = ""
+PASSWORD = ""
+LOGINURL = "http://mocosoftx.com/foro/login2/?user=" + USER + "&passwrd=" + PASSWORD + "&cookieneverexp=on&hash_passwrd="
 
-
-
-# Esto permite su ejecuci�n en modo emulado
+# Esto permite su ejecución en modo emulado
 try:
    pluginhandle = int( sys.argv[ 1 ] )
 except:
@@ -32,69 +33,84 @@ except:
 logger.info("[mocosoftx.py] init")
 
 DEBUG = True
+def GetSessionID():
+        # Descarga la página
+        data = scrapertools.cachePage(LOGINURL)
+        #logger.info(data)
+        plogin = '<a href="([^"]+)">ingresa</a>'
+        plogout = '<a href="http://mocosoftx.com/foro/logout/?([^"]+)"><span>'
+        matches = re.compile(plogout,re.DOTALL).findall(data)
+
+        if len(matches)>0:
+                return str(matches[0])
+        else:
+                return ''
+
 def mainlist(params,url,category):
-	logger.info("[mocosoftx.py] mainlist")
+        logger.info("[mocosoftx.py] mainlist")
 
-	# A�ade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php","","")
-	xbmctools.addnewfolder( CHANNELNAME , "FullList"   , category , "Listado Completo" ,"http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14","","")
+        sid = GetSessionID()
+        # Añade al listado de XBMC
+        xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php"+sid,"","")
+        if sid=='':
+                xbmctools.addnewfolder( CHANNELNAME , "FullList"   , category , "Listado Completo" ,"http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14","","")
+        else:
+                xbmctools.addnewfolder( CHANNELNAME , "FullList"   , category , "Listado Completo" ,"http://www.mocosoftx.com/foro/index.php"+sid+";action=.xml;type=rss2;limit=500;board=14","","")
 
-	# Propiedades
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-	
+        # Propiedades
+        xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+        xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
 def Novedades(params,url,category):
-	logger.info("[mocosoftx.py] Novedades")
+        logger.info("[mocosoftx.py] Novedades")
 
-	# Descarga la p�gina
-	data = scrapertools.cachePage(url)
-	#logger.info(data)
-	
-	# Extrae las entradas (carpetas)
-	patron  = '<td class="sp_middle sp_regular_padding sp_fullwidth">'
-	patron += '<a href="(http://mocosoftx.com/foro/peliculas-xxx-online-\(completas\)/[^/]+/)[^"]+"'
-	patron += '>([^<]+)</a>'
-	patron += '.*?<img src="([^"]+)" alt="'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-	for match in matches:
-		# Atributos
-		scrapedtitle = match[1]
-		scrapedurl = match[0]
-		scrapedthumbnail = match[2]
-		scrapedplot = ""
-		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        # Descarga la página
+        data = scrapertools.cachePage(url)
+        #logger.info(data)
 
-		# A�ade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-	# Extrae la marca de siguiente p�gina
-	patronvideos = '\[<b>[^<]+</b>\] <a class="navPages" href="([^"]+)">'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+        # Extrae las entradas (carpetas)
+        patron  = '<td class="sp_middle sp_regular_padding sp_fullwidth">'
+        patron += '<a href="(http://mocosoftx.com/foro/peliculas-xxx-online-\(completas\)/[^/]+/)[^"]+"'
+        patron += '>([^<]+)</a>'
+        patron += '.*?<img src="([^"]+)" alt="'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        for match in matches:
+                # Atributos
+                scrapedtitle = match[1]
+                scrapedurl = match[0]
+                scrapedthumbnail = match[2]
+                scrapedplot = ""
+                if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	if len(matches)>0:
-		scrapedtitle = "P�gina siguiente"
-		scrapedurl = urlparse.urljoin(url,matches[0])
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )  
-   
-	# Propiedades
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+                # Añade al listado de XBMC
+                xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        # Extrae la marca de siguiente página
+        patronvideos = '\[<b>[^<]+</b>\] <a class="navPages" href="([^"]+)">'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
 
-	
-	
+        if len(matches)>0:
+                scrapedtitle = "Página siguiente"
+                scrapedurl = urlparse.urljoin(url,matches[0])
+                scrapedthumbnail = ""
+                scrapedplot = ""
+                xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+        # Propiedades
+        xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+        xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+                                                                                         
 def FullList(params,url,category):
    logger.info("[mocosoftx.py] FullList")
-   
+
 
    if url=="":
       url = "http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14"
 
-   # Descarga la p�gina
+   # Descarga la página
    data = scrapertools.cachePage(url)
    #logger.info(data)
 
@@ -102,37 +118,37 @@ def FullList(params,url,category):
    patron      = '<item>(.*?)</item>'
    matchesITEM = re.compile(patron,re.DOTALL).findall(data)
    #scrapertools.printMatches(matchesITEM[0])
-	
+
    patronvideos = '<title>(.*?)</title>.*?'
    patronvideos += '<\!\[CDATA\[<a href="[^"]+" target="_blank"><img src="([^"]+)".*?'
    for match in matchesITEM:
-	matches = re.compile(patronvideos,re.DOTALL).findall(match)
-	scrapertools.printMatches(matches)
+        matches = re.compile(patronvideos,re.DOTALL).findall(match)
+        scrapertools.printMatches(matches)
 
-	for match2 in matches:
-		# Titulo
-		scrapedtitle = match2[0]
-		scrapedtitle = scrapedtitle.replace("<![CDATA[","")
-		scrapedtitle = scrapedtitle.replace("]]>","")
-		# URL
-		scrapedurl = match
-		# Thumbnail
-      
-		scrapedthumbnail = match2[1] 
-     
-		# Argumento
-		scrapedplot = ""
+        for match2 in matches:
+                # Titulo
+                scrapedtitle = match2[0]
+                scrapedtitle = scrapedtitle.replace("<![CDATA[","")
+                scrapedtitle = scrapedtitle.replace("]]>","")
+                # URL
+                scrapedurl = match
+                # Thumbnail
 
-		# Depuracion
-		if (DEBUG):
-			logger.info("scrapedtitle="+scrapedtitle)
-			logger.info("scrapedurl="+scrapedurl)
-			logger.info("scrapedthumbnail="+scrapedthumbnail)
+                scrapedthumbnail = match2[1]
 
-		# A�ade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
+                # Argumento
+                scrapedplot = ""
 
-   
+                # Depuracion
+                if (DEBUG):
+                        logger.info("scrapedtitle="+scrapedtitle)
+                        logger.info("scrapedurl="+scrapedurl)
+                        logger.info("scrapedthumbnail="+scrapedthumbnail)
+
+                # Añade al listado de XBMC
+                xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot)
+
+
 
    # Label (top-right)...
    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -145,21 +161,22 @@ def FullList(params,url,category):
 
 def detail(params,url,category):
    logger.info("[mocosoftx.py] detail")
-   	
+
    title = urllib.unquote_plus( params.get("title") )
    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
    if "CDATA" in url:
-	data = url
-	patronthumb = '<img src="([^"]+)"'
-	matches = re.compile(patronthumb,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)	
+        data = url
+        patronthumb = '<img src="([^"]+)"'
+        matches = re.compile(patronthumb,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
    else:
-    #Descarga la p�gina
-    data = scrapertools.cachePage(url)
+    #Descarga la página
+    sid = GetSessionID()
+    data = scrapertools.cachePage(url+sid)
     patronthumb = '<img src="([^"]+)" alt="" border="0" />[</a>|<br />]+'
     matches = re.compile(patronthumb,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches) 
+    scrapertools.printMatches(matches)
    #logger.info(data)
 #addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
    # ------------------------------------------------------------------------------------
@@ -168,17 +185,17 @@ def detail(params,url,category):
    listavideos = servertools.findvideos(data)
    c=0
    for video in listavideos:
-	c=c+1
-	try:
-		imagen = matches[c]
-	except:
-		imagen = thumbnail
-	xbmctools.addnewvideo( CHANNELNAME ,"play",category,video[2], title+" - ["+video[2]+"]" , video[1] , imagen, plot )
+        c=c+1
+        try:
+                imagen = matches[c]
+        except:
+                imagen = thumbnail
+        xbmctools.addnewvideo( CHANNELNAME ,"play",category,video[2], title+" - ["+video[2]+"]" , video[1] , imagen, plot )
    # ------------------------------------------------------------------------------------
 
    # Label (top-right)...
    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-     
+
    # Disable sorting...
    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
@@ -192,9 +209,7 @@ def play(params,url,category):
    thumbnail = ""#urllib.unquote_plus( params.get("thumbnail") )
    plot = "" #unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
    server = params["server"]
-   
-   
-   xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-   
 
+
+   xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

@@ -4,28 +4,9 @@
 # Utilidades para detectar vídeos de los diferentes conectores
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import scrapertools
+import re
 
-import megavideo
-import megaupload
-import tutv
-import stagevu
-import vreel
-import movshare
-import veoh
-import metadivx
-import divxden
-import divxlink
-import videoweed
-import youtube
-import cinshare
-import xmltoplaylist
+import scrapertools
 import config
 import logger
 
@@ -624,72 +605,145 @@ def findvideos(data):
 		else:
 			logger.info("  url duplicada="+url)
 
+	#http://www.4shared.com/embed/392975628/ff297d3f
+	logger.info("0) 4shared...")
+	patronvideos  = '"(http://www.4shared.com.*?)"'
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[4shared]"
+		url = match
+
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , '4shared' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	#http://www.4shared.com/embed/392975628/ff297d3f
+	logger.info("0) 4shared...")
+	patronvideos  = "'(http://www.4shared.com.*?)'"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[4shared]"
+		url = match
+
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , '4shared' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+
+	#file=http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv&
+	#http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv
+	logger.info("0) netlogicstat...")
+	patronvideos  = "file\=(http\:\/\/es.video.netlogstatic[^\&]+)\&"
+	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+	for match in matches:
+		titulo = "[Directo]"
+		url = match
+
+		if url not in encontrados:
+			logger.info("  url="+url)
+			devuelve.append( [ titulo , url , 'Directo' ] )
+			encontrados.add(url)
+		else:
+			logger.info("  url duplicada="+url)
+	
 	return devuelve
 
 def findurl(code,server):
 	mediaurl = "ERROR"
 	server = server.lower() #Para hacer el procedimiento case insensitive
+
 	if server == "megavideo":
+		import megavideo
 		mediaurl = megavideo.Megavideo(code)
 
 	if server == "megaupload":
+		import megaupload
 		mediaurl = megaupload.getvideo(code)
 		
-	if server == "wuapi":
-		mediaurl = wuapi.Wuapi(code)
-		
 	if server == "vreel":
+		import vreel
 		mediaurl = vreel.Vreel(code)
 
 	if server == "stagevu":
+		import stagevu
 		mediaurl = stagevu.Stagevu(code)
 	
 	if server == "tu.tv":
+		import tutv
 		mediaurl = tutv.Tutv(code)
 	
 	if server == "movshare":
+		import movshare
 		mediaurl = movshare.getvideo(code)
 	
 	if server == "veoh":
+		import veoh
 		mediaurl = veoh.getvideo(code)
 	
 	if server == "directo":
 		mediaurl = code
 		
 	if server == "metadivx":
+		import metadivx
 		mediaurl = metadivx.geturl(code)
 
 	if server == "divxden":
+		import divxden
 		mediaurl = divxden.geturl(code)
 
 	if server == "divxlink":
+		import divxlink
 		mediaurl = divxlink.geturl(code)
 
 	if server == "videoweed":
+		import videoweed
 		mediaurl = videoweed.geturl(code)
 	
 	if server == "youtube":
+		import youtube
 		mediaurl = youtube.geturl(code)
 	
+	if server == "zshare":
+		import zshare
+		mediaurl = zshare.geturl(code)
+
+	if server == "4shared":
+		import fourshared
+		mediaurl = fourshared.geturl(code)
+	
 	if server == "cinshare":
+		import cinshare
 		mediaurl = cinshare.geturl(code)
 		
 	if server == "facebook":
 		mediaurl = code
 		
 	if server == "xml":
+		import xmltoplaylist
 		mediaurl = xmltoplaylist.geturl(code)
-		
+
 	return mediaurl
 
 def getmegavideolow(code):
+	import megavideo
 	return megavideo.getlowurl(code)
 
 def getmegavideohigh(code):
+	import megavideo
 	return megavideo.gethighurl(code)
 
 def getmegauploadhigh(code):
+	import megaupload
 	return megaupload.gethighurl(code)
 
 def getmegauploadlow(code):
+	import megaupload
 	return megaupload.getlowurl(code)

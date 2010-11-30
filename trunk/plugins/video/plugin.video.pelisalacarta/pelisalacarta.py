@@ -144,7 +144,16 @@ def run():
 					from item import Item
 					item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server)
 		
-					exec "itemlist = channel."+action+"(item)"
+					if action!="findvideos":
+						exec "itemlist = channel."+action+"(item)"
+					else:
+						# Intenta ejecutar una posible funcion "findvideos" del canal
+						try:
+							exec "itemlist = channel."+action+"(item)"
+						# Si no funciona, lanza el método genérico para detectar vídeos
+						except:
+							itemlist = findvideos(item)
+
 					xbmctools.renderItems(itemlist, params, url, category)
 	
 	except urllib2.URLError,e:
@@ -162,3 +171,27 @@ def run():
 			ok = ventana_error.ok ("pelisalacarta", texto)	
 		else:
 			pass
+
+# Función genérica para encontrar vídeos en una página
+def findvideos(item):
+	logger.info("[pelisalacarta.py] findvideos")
+
+	# Descarga la página
+	import scrapertools
+	data = scrapertools.cachePage(item.url)
+	#logger.info(data)
+
+	# Busca los enlaces a los videos
+	import servertools
+	listavideos = servertools.findvideos(data)
+
+	itemlist = []
+	for video in listavideos:
+		scrapedtitle = item.title.strip() + " - " + video[0]
+		scrapedurl = video[1]
+		server = video[2]
+		import xbmctools
+		xbmctools.addnewvideo( item.channel , "play" , "" , server , scrapedtitle , scrapedurl , item.thumbnail , item.plot )
+	# ------------------------------------------------------------------------------------
+
+	return itemlist
