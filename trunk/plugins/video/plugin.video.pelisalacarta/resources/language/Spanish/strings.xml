@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <strings>
 	<!-- Los id disponibles son de 30000 a 30999 -->
 
@@ -19,6 +19,9 @@
 	<string id="30007">Ver</string>
 	<string id="30008">Ver en calidad alta</string>
     <string id="30009">Mandar a jdownloader</string>
+	<string id="30031">Calidad de videos (FLV)</string>
+	<string id="30032">Calidad Normal (SD)</string>
+	<string id="30033">Calidad Alta (HD)(si existe)</string>
 
 	<!-- Tipos de logos para los canales -->
 	<string id="30010">Logos de canales:</string>
@@ -29,6 +32,7 @@
 	<string id="30013">Modo premium Megavideo:</string>
 	<string id="30014">Usuario Megavideo:</string>
 	<string id="30015">Password Megavideo:</string>
+	
 	
 	<!-- Otras -->
 	<string id="30017">Directorio de descargas:</string>
