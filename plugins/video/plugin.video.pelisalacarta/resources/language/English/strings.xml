@@ -19,9 +19,6 @@
 	<string id="30007">Watch</string>
 	<string id="30008">Watch in high quality</string>
 	<string id="30009">Send to jDownloader</string>
-	<string id="30031">Video Quality (FLV)</string>
-	<string id="30032">Standard Definition (SD)</string>
-	<string id="30033">High Definition (HD)(when available)</string>	
 
 	<!-- Logo visualization for channels -->
 	<string id="30010">Channel icons view:</string>
@@ -32,6 +29,9 @@
 	<string id="30013">Megavideo premium mode:</string>
 	<string id="30014">Megavideo username:</string>
 	<string id="30015">Megavideo password:</string>
+    <string id="30031">Video Quality (FLV)</string>
+    <string id="30032">Standard Definition (SD)</string>
+    <string id="30033">High Definition (HD)(when available)</string>    
 
 	<!-- Other -->
 	<string id="30017">Download path:</string>
