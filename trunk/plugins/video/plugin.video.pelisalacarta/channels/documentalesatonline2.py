@@ -126,7 +126,7 @@ def novedades(params,url,category):
 			logger.info(j[1].encode("ascii","ignore")) #url
 			logger.info(j[2].encode("ascii","ignore")) #plot
 			
-			xbmctools.addnewfolder( CHANNELNAME , "detail" , j[0] , j[0] , j[1] , "" , j[2])
+			xbmctools.addnewfolder( CHANNELNAME , "detail" , j[0].encode("utf-8","ignore") , j[0].encode("utf-8","ignore") , j[1].encode("utf-8","ignore") , "" , j[2].encode("utf-8","ignore"))
 		
 		if len(elementos)==30:
 			logger.info("tiene 30 elementos tenemos que poner pagina siguiente")
