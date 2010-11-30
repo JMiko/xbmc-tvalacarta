@@ -120,7 +120,8 @@ def getsearchresults(params,url,category):
 	<h2><a href="/videos/cumpleanos_4">cumpleaños</a> <span class="tmp">1:53</span></h2>
 	'''
 	
-	patronvideos = '<td align="left"><a href="(.videos[^"]+)"><img src="([^"]+)" alt="([^"]+)"'
+	patronvideos = '<td align="left"><a href="(.videos[^"]+)"><img src="([^"]+)" alt="([^"]+)".*?</a>.*?'
+	patronvideos += '<span class="tmp">([^<]+)</span>'
 
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if DEBUG: scrapertools.printMatches(matches)
@@ -132,10 +133,12 @@ def getsearchresults(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
+		duracion = match[3].replace("Duración: ","")
+		print duracion
 		logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
+		itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False , duration=duracion) )
 
 
 	
@@ -175,7 +178,8 @@ def getnovedades(params,url,category):
 	<h2><a href="/videos/cogiendo-en-el-bosque">Cogiendo en el bosque</a></h2>
 	'''
 	patronvideos  = '(?:<table border="0" cellpadding="0" cellspacing="0" ><tr><td align="center" width="100." valign="top" height="160px">|<td align="center" valign="top" width="25%">)[^<]+'
-	patronvideos += '<a href="(.videos[^"]+)"><img src="([^"]+)" alt="([^"]+)"'
+	patronvideos += '<a href="(.videos[^"]+)"><img src="([^"]+)" alt="([^"]+)"(.*?)</td>'
+	
 
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	if DEBUG: scrapertools.printMatches(matches)
@@ -187,10 +191,17 @@ def getnovedades(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match[0])
 		scrapedthumbnail = urlparse.urljoin(url,match[1])
 		scrapedplot = ""
+		try:
+			duracion = re.compile('Duración: (.+?)</span>').findall(match[3])[0]
+		except:
+			try:
+				duracion = re.compile('\((.+?)\)<br').findall(match[3])[0]
+			except:
+				duracion = ""
 		logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
+		print duracion
 		# Añade al listado de XBMC
-		itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
+		itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False , duration=duracion) )
 
 
 	

@@ -67,14 +67,14 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 	else:
 		xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie=""):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration=""):
 	if DEBUG:
 		try:
 			logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
 		except:
 			logger.info('[xbmctools.py] addnewvideo(<unicode>)')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
+	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal } )
 	#listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
 	try:
 		title = title.encode ("utf-8")	 #This only aplies to unicode strings. The rest stay as they are.
@@ -564,7 +564,10 @@ def renderItems(itemlist, params, url, category):
 		if item.folder:
 			addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot )
 		else:
-			addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot )
+			if item.duration:
+				addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration )
+			else:	
+				addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot )
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

@@ -227,7 +227,11 @@ def getlowurl(code):
 	xbmc.output("[megavideo.py] Baja calidad")
 	
 	code=getcode(code)
-
+	try:
+		quality = config.getSetting("quality_flv")
+	except:
+		quality = "0"
+	
 	modoPremium = config.getSetting("megavideopremium")
 	xbmc.output("[megavideo.py] modoPremium="+modoPremium)
 	if modoPremium == "false":
@@ -251,6 +255,17 @@ def getlowurl(code):
 		errort = re.compile(' errortext="(.+?)"').findall(response)
 		movielink = ""
 		if len(errort) <= 0:
+			
+			if quality == "1":
+				hd = re.compile(' hd="(.+?)"').findall(response)
+				if len(hd)>0 and hd[0]=="1":
+					s = re.compile(' hd_s="(.+?)"').findall(response)
+					k1 = re.compile(' hd_k1="(.+?)"').findall(response)
+					k2 = re.compile(' hd_k2="(.+?)"').findall(response)
+					un = re.compile(' hd_un="(.+?)"').findall(response)
+					movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+					return movielink		
+			
 			s = re.compile(' s="(.+?)"').findall(response)
 			k1 = re.compile(' k1="(.+?)"').findall(response)
 			k2 = re.compile(' k2="(.+?)"').findall(response)
@@ -284,6 +299,17 @@ def getlowurl(code):
 		errort = re.compile(' errortext="(.+?)"').findall(response)
 		movielink = ""
 		if len(errort) <= 0:
+			
+			if quality == "1":
+				hd = re.compile(' hd="(.+?)"').findall(response)
+				if len(hd)>0 and hd[0]=="1":
+					s = re.compile(' hd_s="(.+?)"').findall(response)
+					k1 = re.compile(' hd_k1="(.+?)"').findall(response)
+					k2 = re.compile(' hd_k2="(.+?)"').findall(response)
+					un = re.compile(' hd_un="(.+?)"').findall(response)
+					movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+					return movielink
+				
 			s = re.compile(' s="(.+?)"').findall(response)
 			k1 = re.compile(' k1="(.+?)"').findall(response)
 			k2 = re.compile(' k2="(.+?)"').findall(response)
@@ -406,7 +432,7 @@ def GetMegavideoUser(login, password):
 			ClientCookie.install_opener(opener)
 
 	#print "-------------------------------------------------------"
-	url="http://www.megavideo.com/?s=signup"
+	url="http://www.megavideo.com/?c=login"
 	#print url
 	#print "-------------------------------------------------------"
 	theurl = url
@@ -414,7 +440,7 @@ def GetMegavideoUser(login, password):
 	# try different urls here and see the cookie collection you can make !
 
 	passwordesc=password.replace("&","%26")
-	txdata = "action=login&cnext=&snext=&touser=&user=&nickname="+login+"&password="+passwordesc
+	txdata = "login=1&redir=1&username="+login+"&password="+passwordesc
 	# if we were making a POST type request,
 	# we could encode a dictionary of values here,
 	# using urllib.urlencode(somedict)

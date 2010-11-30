@@ -187,7 +187,7 @@ def getmegauploadvideo(code,user):
 	#if DEBUG:
 	#	xbmc.output("[megaupload.py] data=#"+data+"#")
 	
-	patronvideos  = '<div.*?id="downloadlink">[^<]+<a href="([^"]+)"'
+	patronvideos  = '<div class="down_ad_pad1">[^<]+<a href="([^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
 	
