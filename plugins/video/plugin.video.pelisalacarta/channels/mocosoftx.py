@@ -19,8 +19,8 @@ import config
 import logger
 
 CHANNELNAME = "mocosoftx"
-USER = ""
-PASSWORD = ""
+USER = config.getSetting("privateuser")
+PASSWORD = config.getSetting("privatepassword")
 LOGINURL = "http://mocosoftx.com/foro/login2/?user=" + USER + "&passwrd=" + PASSWORD + "&cookieneverexp=on&hash_passwrd="
 
 # Esto permite su ejecución en modo emulado

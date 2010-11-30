@@ -16,6 +16,10 @@
     <setting id="quality_flv" type="enum"  lvalues="30032|30033" label="30031" default="0"/>
 
     <setting type="sep" />
+    <setting id="privateuser" type="text" label="30034" default=""/>
+    <setting id="privatepassword" type="text" option="hidden" label="30035" default=""/>
+
+    <setting type="sep" />
     <setting id="downloadpath" type="folder" source="video" option="writeable" label="30017" default=""/>
     <setting id="downloadlistpath" type="folder" source="video" option="writeable" label="30018" default=""/>
     <setting id="bookmarkpath" type="folder" source="video" option="writeable" label="30030" default=""/>
