@@ -394,7 +394,7 @@ def list(params,url,category):
     xbmctools.addnewvideo( CHANNELNAME , "addlist2Library" , category , "Megavideo", "AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA" , url , thumbnail , "" , Serie)
 
     for item in itemlist:
-        xbmctools.addnewfolder(item.channel , item.action , category , item.title , item.url , item.thumbnail, item.plot , Serie)
+        xbmctools.addnewvideo(item.channel , item.action , category , "Megavideo" , item.title , item.url , item.thumbnail, item.plot , Serie)
 
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -449,7 +449,7 @@ def getlist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="detail" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="detail" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False))
 
     return itemlist
 
