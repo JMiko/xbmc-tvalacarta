@@ -33,6 +33,7 @@ try:
         REMOTE_FILE = "http://www.mimediacenter.info/xbmc/pelisalacarta/nodharma/pelisalacarta-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
 except:
+    REMOTE_FILE = "http://www.mimediacenter.info/xbmc/pelisalacarta/nodharma/pelisalacarta-"
     DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
 def checkforupdates():
@@ -137,71 +138,64 @@ def update(params):
     xbmc.output("[updater.py] borra fichero...")
     os.remove(localfilename)
 
-def updatechannel(channelName):
-    logger.info("Buscando actualizacion del canal " + channelName)
+def updatechannel(channel_name):
+    logger.info("Buscando actualizacion del canal " + channel_name)
     
-    # URL de descarga desde subversion
-    channelURL = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channelName+".py"
-    logger.info("channelURL="+channelURL)
-    
-    # Obtiene la fecha del fichero
+    # Canal remoto
+    remote_channel_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channel_name+".py"
+    logger.info("remote_channel_url="+remote_channel_url)
+    remote_version_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channel_name+".xml"
+    logger.info("remote_version_url="+remote_version_url)
+
+    # Canal local
     import xbmc
-    channelFileSource = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".py" ) )
-    logger.info("channelFileSource="+channelFileSource)
+    local_channel_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".py" ) )
+    logger.info("local_channel_path="+local_channel_path)
+    local_version_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".xml" ) )
+    logger.info("local_version_path="+local_channel_path)
+    local_compiled_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".pyo" ) )
+    logger.info("local_compiled_path="+local_compiled_path)
     
-    if not os.path.exists(channelFileSource):
+    if not os.path.exists(local_channel_path):
         return False;
 
-    channelFileCompiled = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".pyo" ) )
-    logger.info("channelFileCompiled="+channelFileCompiled)
-        
-    fechaFichero = os.path.getmtime(channelFileSource)
-    logger.info("fechaFichero=%s"% time.ctime(fechaFichero))
-    fechaFormateada = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(fechaFichero))
-    logger.info("fechaFormateada=%s" % fechaFormateada)
-
-    # Comprueba si ha cambiado
-    inicio = time.clock()
-    req = urllib2.Request(channelURL)
-    req.add_header('If-Modified-Since', fechaFormateada)
-
-    updated = False
-
+    # Version remota
     try:
-        logger.info("Verificando si el canal ha cambiado")
-        response = urllib2.urlopen(req)
-        data = response.read()
-        #info = response.info()
-        #logger.info( info.headers )
-        
-        # Si llega hasta aquí, es que ha cambiado
-        updated = True
-        response.close()
+        data = scrapertools.cachePage( remote_version_url )
+        logger.info("remote_data="+data)
+        patronvideos  = '<tag>([^<]+)</tag>'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        remote_version = matches[0]
+    except:
+        remote_version = "0"
 
-    except urllib2.URLError,e:
-        # Si devuelve 304 es que no ha cambiado
-        if hasattr(e,'code'):
-            logger.info("Codigo de respuesta HTTP : %d" %e.code)
-            if e.code == 304:
-                logger.info("El canal no ha cambiado")
-                updated = False
-        elif hasattr(e, 'reason'):
-            logger.info("ERROR Razon del error, codigo: %d , Razon: %s" %(e.reason[0],e.reason[1]))
-        # Agarra los errores con codigo de respuesta del servidor externo solicitado 	
-        else:
-            logger.info("ERROR error por otra cosa")
+    logger.info("remote_version="+remote_version)
+
+    # Version local
+    if os.path.exists( local_version_path ):
+        infile = open( local_version_path )
+        data = infile.read()
+        infile.close();
+        logger.info("local_data="+data)
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        local_version_path = matches[0]
+    else:
+        local_version = "0"
     
-    fin = time.clock()
-    logger.info("Descargado en %d segundos " % (fin-inicio+1))
+    logger.info("local_version="+local_version)
+    
+    # Comprueba si ha cambiado
+    updated = remote_version > local_version
 
     if updated:
-        outfile = open(channelFileSource,"w")
-        outfile.write(data)
+        updated_channel_data = scrapertools.cachePage( remote_channel_url )
+        outfile = open(local_channel_path,"w")
+        outfile.write(updated_channel_data)
         outfile.flush()
         outfile.close()
-        logger.info("Grabado a " + channelFileSource)
-        
-        if os.path.exists(channelFileCompiled):
-            os.remove(channelFileCompiled)
+        logger.info("Grabado a " + local_channel_path)
+
+        if os.path.exists(local_compiled_path):
+            os.remove(local_compiled_path)
 
     return updated

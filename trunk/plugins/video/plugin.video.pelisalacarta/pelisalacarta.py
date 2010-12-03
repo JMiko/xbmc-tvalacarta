@@ -92,7 +92,6 @@ def run():
         else:
 
             # Actualiza el canal si ha cambiado    
-            '''        
             if action=="mainlist" and config.getSetting("updatechannels")=="true":
                 try:
                     import updater
@@ -104,7 +103,6 @@ def run():
                         advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
                 except:
                     logger.info("Actualización de canales desactivada")
-            '''
 
             # Ejecuta el canal
             exec "import "+params.get("channel")+" as channel"
