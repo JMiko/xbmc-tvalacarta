@@ -5,7 +5,6 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import re
-
 import scrapertools
 import config
 import logger
@@ -102,76 +101,18 @@ def findvideos(data):
 		else:
 			logger.info("  url duplicada="+url)
 
-	# KOCHIKAME - Megaupload - Vídeos con título
-	logger.info("1k) Megaupload con titulo...")
-	patronvideos  = '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)".*?>([^<]+)</a>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+	#2/12/2010 Megaupload
+	logger.info("1k) Megaupload...")
+	patronvideos  = 'http\://www.megaupload.com/(?:es/)?\?.*?d\=([A-Z0-9a-z]{8})(?:[^>]*>([^<]+)</a>)?'
+	matches = re.compile(patronvideos).findall(data)
 	for match in matches:
-		titulo = match[1].strip()+" - [Megaupload]"
-		if titulo[0:3] == "Cap":
-			titulo = titulo[9:]
+		if match[1]<>"":
+			titulo = match[1].strip()+" - [Megaupload]"
+		else:
+			titulo = "[Megaupload]"
 		url = match[0]
-		if url == "3P78ET7H":
-			titulo = "012 - "+titulo
-		if url == "99D5HEEY":
-			titulo = "000 - (muestra <1min)"
-			titulo = titulo.replace('&#33;' , '!') 
-
 		if url not in encontrados:
-			logger.info("  url="+url)
-			devuelve.append( [ titulo , url , 'Megaupload' ] )
-			encontrados.add(url)
-		else:
-			logger.info("  url duplicada="+url)
-
-	logger.info("1d) Megaupload sin titulo...")
-	# "http://www.megaupload.com/?d=PGAB11B6"
-	patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9a-z]{8})'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	for match in matches:
-		titulo = ""
-		if titulo == "":
-			titulo = "[Megaupload]"
-		url = match
-		if url not in encontrados:
-			logger.info("  url="+url)
-			devuelve.append( [ titulo , url , 'Megaupload' ] )
-			encontrados.add(url)
-		else:
-			logger.info("  url duplicada="+url)
-
-	logger.info("1e) Megaupload sin titulo...")
-	# "http://www.megaupload.com/es/?d=PGAB11B6"
-	patronvideos  = 'http\:\/\/www.megaupload.com/es/\?d\=([A-Z0-9a-z]{8})'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	for match in matches:
-		titulo = ""
-		if titulo == "":
-			titulo = "[Megaupload]"
-		url = match
-		if url not in encontrados:
-			logger.info("  url="+url)
-			devuelve.append( [ titulo , url , 'Megaupload' ] )
-			encontrados.add(url)
-		else:
-			logger.info("  url duplicada="+url)
-
-	logger.info("13) Megaupload sin titulo...")
-	#http://www.megaupload.com/?s=tumejortv&confirmed=1&d=6FQOWHTI
-	patronvideos  = 'http\:\/\/www.megaupload.com/.*?d\=([A-Z0-9a-z]{8})'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	for match in matches:
-		titulo = ""
-		if titulo == "":
-			titulo = "[Megaupload]"
-		url = match
-		if url not in encontrados:
+			logger.info("  titulo="+titulo)
 			logger.info("  url="+url)
 			devuelve.append( [ titulo , url , 'Megaupload' ] )
 			encontrados.add(url)
@@ -227,38 +168,6 @@ def findvideos(data):
 		else:
 			logger.info("  url duplicada="+url)
 
-	'''
-	# WUAPI
-	logger.info("5) wuapi sin título")
-	patronvideos  = '<a href\="(http://wuapi.com[^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-	for match in matches:
-		titulo = "Sin título ("+match[23:]+")"
-		url = match
-		if url not in encontrados:
-			logger.info("  url="+url)
-			devuelve.append( [ titulo , url , 'Wuapi' ] )
-			encontrados.add(url)
-		else:
-			logger.info("  url duplicada="+url)
-
-	# WUAPI
-	logger.info("6) wuapi sin título...")
-	patronvideos  = '(http://wuapi.com[^<]+)<'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-	for match in matches:
-		titulo = "Sin título ("+match[23:]+")"
-		url = match
-		if url not in encontrados:
-			logger.info("  url="+url)
-			devuelve.append( [ titulo , url , 'Wuapi' ] )
-			encontrados.add(url)
-		else:
-			logger.info("  url duplicada="+url)
-	'''
-	
 	# STAGEVU
 	logger.info("7) Stagevu sin título...")
 	patronvideos  = '"(http://stagevu.com[^"]+)"'
