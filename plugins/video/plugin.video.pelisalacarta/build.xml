@@ -12,7 +12,7 @@
 
 	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.class.path" />
 
-	<property name="version" value="2.19"/>
+	<property name="version" value="2.19.1"/>
 	
 	<!-- init ===================================================================== -->
 	<target name="init" description="Inicializa el timestamp">

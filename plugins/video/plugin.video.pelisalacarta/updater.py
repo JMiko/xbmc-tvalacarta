@@ -152,7 +152,7 @@ def updatechannel(channel_name):
     local_channel_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".py" ) )
     logger.info("local_channel_path="+local_channel_path)
     local_version_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".xml" ) )
-    logger.info("local_version_path="+local_channel_path)
+    logger.info("local_version_path="+local_version_path)
     local_compiled_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".pyo" ) )
     logger.info("local_compiled_path="+local_compiled_path)
     
