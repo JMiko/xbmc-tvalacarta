@@ -188,12 +188,21 @@ def updatechannel(channel_name):
     updated = remote_version > local_version
 
     if updated:
+        # Descarga el canal
         updated_channel_data = scrapertools.cachePage( remote_channel_url )
         outfile = open(local_channel_path,"w")
         outfile.write(updated_channel_data)
         outfile.flush()
         outfile.close()
         logger.info("Grabado a " + local_channel_path)
+
+        # Descarga la version
+        updated_version_data = scrapertools.cachePage( remote_version_url )
+        outfile = open(local_version_path,"w")
+        outfile.write(updated_version_data)
+        outfile.flush()
+        outfile.close()
+        logger.info("Grabado a " + local_version_path)
 
         if os.path.exists(local_compiled_path):
             os.remove(local_compiled_path)
