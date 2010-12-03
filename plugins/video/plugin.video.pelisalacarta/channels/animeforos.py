@@ -3,7 +3,7 @@
 # pelisalacarta - XBMC Plugin
 # Canal "Anime (foros)" by Lily
 # http://www.mimediacenter.info/foro/viewtopic.php?f=14&t=401
-# Last Updated:30/10/2010
+# Last Updated:29/11/2010
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
@@ -48,6 +48,10 @@ def mainlist(params,url,category):
 	casttv.writetmplist(casttv.NEWANF_FILE,[],"-2","")
 	casttv.writetmplist(casttv.WCTV_FILE,[],"-2","")
 	casttv.writetmplist(casttv.WANF_FILE,[],"-2","")
+	casttv.writecache(casttv.FTDATA0,"")
+	casttv.writecache(casttv.FTDATA1,"")
+	casttv.writecache(casttv.FTDATA2,"")
+	casttv.writecache(casttv.EZDATA,"")
 
 def seleccion(params,url,category):
 	if category=="Anime":
@@ -2039,7 +2043,7 @@ def ayuda(params,url,category):
 	additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN_THUMB , "" )
 	additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN2_THUMB , "" )
 	additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , casttv.HD_THUMB , "" )
-	additem( CHANNELNAME , category , "------------------------------------ Info: 30/10/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
+	additem( CHANNELNAME , category , "------------------------------------ Info: 29/11/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
 	additem( CHANNELNAME , category , info1 , "" , casttv.HD_THUMB , "" )
 	additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , casttv.HD_THUMB , "" )
 	# ------------------------------------------------------------------------------------
