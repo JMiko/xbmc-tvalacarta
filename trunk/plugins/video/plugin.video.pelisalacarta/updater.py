@@ -165,11 +165,11 @@ def updatechannel(channel_name):
         logger.info("remote_data="+data)
         patronvideos  = '<tag>([^<]+)</tag>'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        remote_version = matches[0]
+        remote_version = int(matches[0])
     except:
-        remote_version = "0"
+        remote_version = 0
 
-    logger.info("remote_version="+remote_version)
+    logger.info("remote_version=%d" % remote_version)
 
     # Version local
     if os.path.exists( local_version_path ):
@@ -178,11 +178,11 @@ def updatechannel(channel_name):
         infile.close();
         logger.info("local_data="+data)
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        local_version_path = matches[0]
+        local_version_path = int(matches[0])
     else:
-        local_version = "0"
+        local_version = 0
     
-    logger.info("local_version="+local_version)
+    logger.info("local_version=%d" % local_version)
     
     # Comprueba si ha cambiado
     updated = remote_version > local_version
