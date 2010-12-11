@@ -168,6 +168,9 @@ def channels_list():
         channelslist.append([ "MocosoftX"         , "mocosoftx" , "" , "ES" , "F" , "xbmc"  ])
         channelslist.append([ "Anifenix.com"      , "anifenix" , "" , "ES" , "F" , "xbmc"  ])
         channelslist.append([ "tuporno.tv"        , "tupornotv" , "" , "ES" , "F" , "xbmc"  ])
+        channelslist.append([ "myhentaitube"      , "myhentaitube" , "" , "ES" , "F" , "xbmc"  ])
+        channelslist.append([ "tubehentai"        , "tubehentai" , "" , "ES" , "F" , "xbmc"  ])
+        channelslist.append([ "xhamster"          , "xhamster" , "" , "ES" , "F" , "xbmc"  ])
 
     #channelslist.append([ "Divx Online" , "divxonline" , "" , "ES" , "F" ]) # added by ermanitu
     #channelslist.append([ "Eduman Movies" , "edumanmovies" , "" , "ES" , "F" ])
