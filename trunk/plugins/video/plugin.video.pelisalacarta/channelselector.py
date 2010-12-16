@@ -156,12 +156,14 @@ def channels_list():
     channelslist.append([ "Gratisdocumentales"    , "gratisdocumentales"   , "" , "ES" , "D" , "xbmc"  ])
     channelslist.append([ "Programas TV Online"   , "programastv"          , "" , "ES" , "D" , "xbmc"  ])
     channelslist.append([ "Redes.tv"              , "redestv"              , "" , "ES" , "D" , "xbmc"  ])
+    channelslist.append([ "Sonolatino"            , "sonolatino"           , "" , "ES,EN" , "M" , "xbmc"  ])    
     channelslist.append([ "Trailers ecartelera"   , "ecarteleratrailers"   , "" , "ES,EN" , "F" , "xbmc"  ])
     channelslist.append([ config.getLocalizedString(30128), "trailertools" , "" , "" , "F" , "xbmc"  ])
     channelslist.append([ "Stagevu"               , "stagevusite"          , "" , "" , "G" , "xbmc"  ])
     channelslist.append([ "tu.tv"                 , "tutvsite"             , "" , "ES", "G" , "xbmc"  ])
     channelslist.append([ "Megavideo"             , "megavideosite"        , "" , "" , "G" , "xbmc"  ])
     channelslist.append([ "Megaupload"            , "megauploadsite"       , "" , "" , "G" , "xbmc"  ])
+    channelslist.append([ "Megalive"              , "megalivewall"         , "" , "" , "G" , "xbmc"  ])
 
     if config.getSetting("enableadultmode") == "true":
         channelslist.append([ "PeliculasEroticas" , "peliculaseroticas" , "" , "ES" , "F" , "xbmc"  ])
