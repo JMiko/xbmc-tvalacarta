@@ -322,6 +322,7 @@ def detalle(item):
     print item.tostring()
 
     itemlist = []
+    '''
     try:
         # Descarga la página de detalle
         data = scrapertools.cachePage(item.url)
@@ -333,8 +334,9 @@ def detalle(item):
         itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=scrapedurl, page = item.url, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , folder=False) )
     except:
         logger.info("[antena3.py] nada encontrado en "+item.url)
-
     '''
+    data = scrapertools.cachePage(item.url)
+
     # Extrae el xml
     patron = 'so.addVariable\("xml","([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -373,5 +375,4 @@ def detalle(item):
         logger.info("scrapedurl="+scrapedurl)
         itemlist.append( Item(channel=CHANNELNAME, title="(%d) %s" % (i,item.title) , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=item.plot , server = "directo" , folder=False) )
         i=i+1
-    '''
     return itemlist

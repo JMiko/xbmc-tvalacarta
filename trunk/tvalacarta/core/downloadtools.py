@@ -327,615 +327,620 @@ entitydefs3 = {
 }
 
 def getDownloadPath():
-	
-	# La ruta de descarga es un parámetro
-	downloadpath = config.get_setting("downloadpath")
-	
-	# No está fijada, intenta forzarla
-	try:
-		if downloadpath == "":
-			logger.info("[downloadtools.py] downloadpath está vacio")
-			
-			# Busca un setting del skin (Telebision)
-			try:
-				import xbmc
-				downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-				logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
-			except:
-				downloadpath = ""
-			
-			# No es Telebision, fuerza el directorio home de XBMC
-			if downloadpath == "":
-				downloadpath = os.path.join (config.DATA_PATH,"downloads")
-				logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-				if not os.path.exists(downloadpath):
-					logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
-					os.mkdir(downloadpath)
-				config.setSetting("downloadpath",downloadpath)
-			
-			# Es Telebision, lo pone en el skin
-			else:
-				# guardar setting del skin en setting del plugin
-				downloadpath = xbmc.translatePath( downloadpath )
-				logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
-				config.setSetting("downloadpath", downloadpath)
-	except:
-		pass
-	
-	logger.info("[downloadtools.py] downloadpath="+downloadpath)
-	
-	try:
-		os.mkdir(downloadpath)
-	except:
-		pass
+    
+    # La ruta de descarga es un parámetro
+    downloadpath = config.get_setting("downloadpath")
+    
+    # No está fijada, intenta forzarla
+    try:
+        if downloadpath == "":
+            logger.info("[downloadtools.py] downloadpath está vacio")
+            
+            # Busca un setting del skin (Telebision)
+            try:
+                import xbmc
+                downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
+                logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+            except:
+                downloadpath = ""
+            
+            # No es Telebision, fuerza el directorio home de XBMC
+            if downloadpath == "":
+                downloadpath = os.path.join (config.DATA_PATH,"downloads")
+                logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+                if not os.path.exists(downloadpath):
+                    logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
+                    os.mkdir(downloadpath)
+                config.setSetting("downloadpath",downloadpath)
+            
+            # Es Telebision, lo pone en el skin
+            else:
+                # guardar setting del skin en setting del plugin
+                downloadpath = xbmc.translatePath( downloadpath )
+                logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
+                config.setSetting("downloadpath", downloadpath)
+    except:
+        pass
+    
+    logger.info("[downloadtools.py] downloadpath="+downloadpath)
+    
+    try:
+        os.mkdir(downloadpath)
+    except:
+        pass
 
-	return downloadpath
+    return downloadpath
 
 def getDownloadListPath():
-	
-	# La ruta de la lista de descargas es un parámetro
-	downloadpath = config.get_setting("downloadlistpath")
-	
-	# No está fijada, intenta forzarla
-	try:
-		if downloadpath == "":
-			logger.info("[downloadtools.py] downloadpath está vacio")
-			
-			# Busca un setting del skin (Telebision)
-			try:
-				import xbmc
-				downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-				logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
-			except:
-				pass
-			
-			# No es Telebision, fuerza el directorio home de XBMC
-			if downloadpath == "":
-				downloadpath = os.path.join (config.DATA_PATH,"downloads","list")
-				logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-				if not os.path.exists(downloadpath):
-					logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
-					os.mkdir(downloadpath)
-				config.setSetting("downloadlistpath",downloadpath)
-			
-			# Es Telebision, lo pone en el skin
-			else:
-				# guardar setting del skin en setting del plugin
-				downloadpath = os.path.join( downloadpath , "list" )
-				downloadpath = xbmc.translatePath( downloadpath )
-				logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
-				config.setSetting("downloadlistpath", downloadpath)
-	except:
-		pass
-	
-	logger.info("[downloadtools.py] downloadlistpath="+downloadpath)
-	
-	try:
-		os.mkdir(downloadpath)
-	except:
-		pass
+    
+    # La ruta de la lista de descargas es un parámetro
+    downloadpath = config.get_setting("downloadlistpath")
+    
+    # No está fijada, intenta forzarla
+    try:
+        if downloadpath == "":
+            logger.info("[downloadtools.py] downloadpath está vacio")
+            
+            # Busca un setting del skin (Telebision)
+            try:
+                import xbmc
+                downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
+                logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
+            except:
+                pass
+            
+            # No es Telebision, fuerza el directorio home de XBMC
+            if downloadpath == "":
+                downloadpath = os.path.join (config.DATA_PATH,"downloads","list")
+                logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
+                if not os.path.exists(downloadpath):
+                    logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
+                    os.mkdir(downloadpath)
+                config.setSetting("downloadlistpath",downloadpath)
+            
+            # Es Telebision, lo pone en el skin
+            else:
+                # guardar setting del skin en setting del plugin
+                downloadpath = os.path.join( downloadpath , "list" )
+                downloadpath = xbmc.translatePath( downloadpath )
+                logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
+                config.setSetting("downloadlistpath", downloadpath)
+    except:
+        pass
+    
+    logger.info("[downloadtools.py] downloadlistpath="+downloadpath)
+    
+    try:
+        os.mkdir(downloadpath)
+    except:
+        pass
 
-	return downloadpath
+    return downloadpath
 
 def limpia_nombre_caracteres_especiales(s):
-	if not s:
-		return ''
-	badchars = '\\/:*?\"<>|'
-	for c in badchars:
-		s = s.replace(c, '')
-		return s;
+    if not s:
+        return ''
+    badchars = '\\/:*?\"<>|'
+    for c in badchars:
+        s = s.replace(c, '')
+        return s;
 
 def limpia_nombre_sin_acentos(s):
-	if not s:
-		return ''
-	for key, value in entitydefs3.iteritems():
-		for c in key:
-			s = s.replace(c, value)
-			return s;
+    if not s:
+        return ''
+    for key, value in entitydefs3.iteritems():
+        for c in key:
+            s = s.replace(c, value)
+            return s;
 
 def limpia_nombre_excepto_1(s):
-	if not s:
-		return ''
+    if not s:
+        return ''
 
-	# Titulo de entrada
-	try:
-		logger.info("s1="+urllib.quote_plus(s))
-	except:
-		logger.info("s1=no printable")
+    # Titulo de entrada
+    try:
+        logger.info("s1="+urllib.quote_plus(s))
+    except:
+        logger.info("s1=no printable")
 
-	# Convierte a unicode
-	try:
-		s = unicode( s, "utf-8" )
-	except:
-		logger.info("no es utf-8")
-		try:
-			s = unicode( s, "iso-8859-1" )
-		except:
-			logger.info("no es iso-8859-1")
-			pass
-	try:
-		logger.info("s2="+urllib.quote_plus(s))
-	except:
-		logger.info("s2=no printable")
+    # Convierte a unicode
+    try:
+        s = unicode( s, "utf-8" )
+    except:
+        logger.info("no es utf-8")
+        try:
+            s = unicode( s, "iso-8859-1" )
+        except:
+            logger.info("no es iso-8859-1")
+            pass
+    try:
+        logger.info("s2="+urllib.quote_plus(s))
+    except:
+        logger.info("s2=no printable")
 
-	# Elimina acentos
-	s = limpia_nombre_sin_acentos(s)
-	try:
-		logger.info("s3="+urllib.quote_plus(s))
-	except:
-		logger.info("s3=no printable")	
+    # Elimina acentos
+    s = limpia_nombre_sin_acentos(s)
+    try:
+        logger.info("s3="+urllib.quote_plus(s))
+    except:
+        logger.info("s3=no printable")    
 
-	# Elimina caracteres prohibidos
-	validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
-	stripped = ''.join(c for c in s if c in validchars)
-	try:
-		logger.info("s4="+urllib.quote_plus(stripped))
-	except:
-		logger.info("s4=no printable")
-	
-	# Convierte a iso
-	s = stripped.encode("iso-8859-1")
-	try:
-		logger.info("s5="+urllib.quote_plus(s))
-	except:
-		logger.info("s5=no printable")
+    # Elimina caracteres prohibidos
+    validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+    stripped = ''.join(c for c in s if c in validchars)
+    try:
+        logger.info("s4="+urllib.quote_plus(stripped))
+    except:
+        logger.info("s4=no printable")
+    
+    # Convierte a iso
+    s = stripped.encode("iso-8859-1")
+    try:
+        logger.info("s5="+urllib.quote_plus(s))
+    except:
+        logger.info("s5=no printable")
 
-	return s;
+    return s;
 
 def limpia_nombre_excepto_2(s):
-	if not s:
-		return ''
-	validchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890."
-	stripped = ''.join(c for c in s if c in validchars)
-	return stripped;
+    if not s:
+        return ''
+    validchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890."
+    stripped = ''.join(c for c in s if c in validchars)
+    return stripped;
 
 def getfilefromtitle(url,title):
-	# Imprime en el log lo que va a descartar
-	logger.info("[downloadtools.py] getfilefromtitle: url="+url )
-	#logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
-	plataforma = config.get_system_platform();
-	logger.info("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
-	
-	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
-	if plataforma=="xbox":
-		nombrefichero = title[:38] + url[-4:]
-		nombrefichero = limpia_nombre_excepto_1(nombrefichero)
-	else:
-		nombrefichero = title + url[-4:]
+    # Imprime en el log lo que va a descartar
+    logger.info("[downloadtools.py] getfilefromtitle: url="+url )
+    #logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
+    plataforma = config.get_system_platform();
+    logger.info("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
+    
+    #nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+    if plataforma=="xbox":
+        nombrefichero = title[:38] + url[-4:]
+        nombrefichero = limpia_nombre_excepto_1(nombrefichero)
+    else:
+        nombrefichero = title + url[-4:]
 
-	logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
-	fullpath = os.path.join( getDownloadPath() , nombrefichero )
-	logger.info("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
-	
-	return fullpath
+    logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
+    fullpath = os.path.join( getDownloadPath() , nombrefichero )
+    logger.info("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
+    
+    return fullpath
 
 def downloadtitle(url,title):
-	fullpath = getfilefromtitle(url,title)
-	return downloadfile(url,fullpath)
+    fullpath = getfilefromtitle(url,title)
+    return downloadfile(url,fullpath)
 
 def downloadfile(url,nombrefichero):
-	logger.info("[downloadtools.py] downloadfile: url="+url)
-	logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
-	# antes
-	#f=open(nombrefichero,"wb")
-	try:
-		import xbmc
-		nombrefichero = xbmc.makeLegalFilename(nombrefichero)
-	except:
-		pass
-	logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+    logger.info("[downloadtools.py] downloadfile: url="+url)
+    logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+    # antes
+    #f=open(nombrefichero,"wb")
+    try:
+        import xbmc
+        nombrefichero = xbmc.makeLegalFilename(nombrefichero)
+    except:
+        pass
+    logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
 
-	# despues
-	if os.path.exists(nombrefichero):
-		f = open(nombrefichero, 'r+b')
-		existSize = os.path.getsize(nombrefichero)
-		logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
-		grabado = existSize
-		f.seek(existSize)
-	else:
-		existSize = 0
-		logger.info("[downloadtools.py] downloadfile: el fichero no existe")
-		f = open(nombrefichero, 'wb')
-		grabado = 0
+    # despues
+    if os.path.exists(nombrefichero):
+        f = open(nombrefichero, 'r+b')
+        existSize = os.path.getsize(nombrefichero)
+        logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
+        grabado = existSize
+        f.seek(existSize)
+    else:
+        existSize = 0
+        logger.info("[downloadtools.py] downloadfile: el fichero no existe")
+        f = open(nombrefichero, 'wb')
+        grabado = 0
 
-	# Crea el diálogo de progreso
-	try:
-		import xbmcgui
-		progreso = xbmcgui.DialogProgress()
-		progreso.create( config.getPluginId() , "Descargando vídeo..." , url , nombrefichero )
-	except:
-		progreso = ""
+    # Crea el diálogo de progreso
+    try:
+        import xbmcgui
+        progreso = xbmcgui.DialogProgress()
+        progreso.create( config.get_plugin_id() , "Descargando vídeo..." , url , nombrefichero )
+    except:
+        progreso = ""
 
-	# Timeout del socket a 60 segundos
-	socket.setdefaulttimeout(10)
+    # Timeout del socket a 60 segundos
+    socket.setdefaulttimeout(10)
 
-	h=urllib2.HTTPHandler(debuglevel=0)
-	request = urllib2.Request(url)
-	if existSize > 0:
-		request.add_header('Range', 'bytes=%d-' % (existSize, ))
+    h=urllib2.HTTPHandler(debuglevel=0)
+    request = urllib2.Request(url)
+    if existSize > 0:
+        request.add_header('Range', 'bytes=%d-' % (existSize, ))
 
-	opener = urllib2.build_opener(h)
-	urllib2.install_opener(opener)
-	try:
-		connexion = opener.open(request)
-	except urllib2.HTTPError,e:
-		logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
-		#print e.code
-		#print e.msg
-		#print e.hdrs
-		#print e.fp
-		f.close()
-		try:
-			progreso.close()
-		except:
-			pass
-		# El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
-		if e.code==416:
-			return 0
-		else:
-			return -2
+    opener = urllib2.build_opener(h)
+    urllib2.install_opener(opener)
+    try:
+        connexion = opener.open(request)
+    except urllib2.HTTPError,e:
+        logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+        #print e.code
+        #print e.msg
+        #print e.hdrs
+        #print e.fp
+        f.close()
+        try:
+            progreso.close()
+        except:
+            pass
+        # El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
+        if e.code==416:
+            return 0
+        else:
+            return -2
 
-	totalfichero = int(connexion.headers["Content-Length"])
-	if existSize > 0:
-		totalfichero = totalfichero + existSize
+    try:
+        totalfichero = int(connexion.headers["Content-Length"])
+    except:
+        totalfichero = 1
+            
+    if existSize > 0:
+        totalfichero = totalfichero + existSize
 
-	logger.info("Content-Length=%s" % totalfichero)
+    logger.info("Content-Length=%s" % totalfichero)
 
-	blocksize = 100*1024
+    blocksize = 100*1024
 
-	bloqueleido = connexion.read(blocksize)
-	logger.info("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
+    bloqueleido = connexion.read(blocksize)
+    logger.info("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
 
-	maxreintentos = 10
-	
-	while len(bloqueleido)>0:
-		try:
-			# Escribe el bloque leido
-			f.write(bloqueleido)
-			grabado = grabado + len(bloqueleido)
-			percent = int(float(grabado)*100/float(totalfichero))
-			totalmb = float(float(totalfichero)/(1024*1024))
-			descargadosmb = float(float(grabado)/(1024*1024))
+    maxreintentos = 10
+    
+    while len(bloqueleido)>0:
+        try:
+            # Escribe el bloque leido
+            f.write(bloqueleido)
+            grabado = grabado + len(bloqueleido)
+            percent = int(float(grabado)*100/float(totalfichero))
+            totalmb = float(float(totalfichero)/(1024*1024))
+            descargadosmb = float(float(grabado)/(1024*1024))
 
-			# Lee el siguiente bloque, reintentando para no parar todo al primer timeout
-			reintentos = 0
-			while reintentos <= maxreintentos:
-				try:
-					before = time.time()
-					bloqueleido = connexion.read(blocksize)
-					after = time.time()
-					if (after - before) > 0:
-						velocidad=len(bloqueleido)/((after - before))
-						falta=totalfichero-grabado
-						if velocidad>0:
-							tiempofalta=falta/velocidad
-						else:
-							tiempofalta=0
-						#logger.info(sec_to_hms(tiempofalta))
-						try:
-							progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
-						except:
-							pass
-					break
-				except:
-					reintentos = reintentos + 1
-					logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
-					for line in sys.exc_info():
-						logger.error( "%s" % line )
-			
-			# El usuario cancelo la descarga
-			try:
-				if progreso.iscanceled():
-					logger.info("Descarga del fichero cancelada")
-					f.close()
-					progreso.close()
-					return -1
-			except:
-				pass
+            # Lee el siguiente bloque, reintentando para no parar todo al primer timeout
+            reintentos = 0
+            while reintentos <= maxreintentos:
+                try:
+                    before = time.time()
+                    bloqueleido = connexion.read(blocksize)
+                    after = time.time()
+                    if (after - before) > 0:
+                        velocidad=len(bloqueleido)/((after - before))
+                        falta=totalfichero-grabado
+                        if velocidad>0:
+                            tiempofalta=falta/velocidad
+                        else:
+                            tiempofalta=0
+                        #logger.info(sec_to_hms(tiempofalta))
+                        try:
+                            progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
+                        except:
+                            pass
+                    break
+                except:
+                    reintentos = reintentos + 1
+                    logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
+                    for line in sys.exc_info():
+                        logger.error( "%s" % line )
+            
+            # El usuario cancelo la descarga
+            try:
+                if progreso.iscanceled():
+                    logger.info("Descarga del fichero cancelada")
+                    f.close()
+                    progreso.close()
+                    return -1
+            except:
+                pass
 
-			# Ha habido un error en la descarga
-			if reintentos > maxreintentos:
-				logger.info("ERROR en la descarga del fichero")
-				f.close()
-				try:
-					progreso.close()
-				except:
-					pass
+            # Ha habido un error en la descarga
+            if reintentos > maxreintentos:
+                logger.info("ERROR en la descarga del fichero")
+                f.close()
+                try:
+                    progreso.close()
+                except:
+                    pass
 
-				return -2
+                return -2
 
-		except:
-			logger.info("ERROR en la descarga del fichero")
-			for line in sys.exc_info():
-				logger.error( "%s" % line )
-			f.close()
-			try:
-				progreso.close()
-			except:
-				pass
-			
-			#advertencia = xbmcgui.Dialog()
-			#resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
-			
-			return -2
+        except:
+            logger.info("ERROR en la descarga del fichero")
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
+            f.close()
+            try:
+                progreso.close()
+            except:
+                pass
+            
+            #advertencia = xbmcgui.Dialog()
+            #resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
+            
+            return -2
 
-	f.close()
-	try:
-		progreso.close()
-	except:
-		pass
-	logger.info("Fin descarga del fichero")
+    f.close()
+    try:
+        progreso.close()
+    except:
+        pass
+    logger.info("Fin descarga del fichero")
 
 def downloadfileGzipped(url,pathfichero):
-	logger.info("[downloadtools.py] downloadfileGzipped: url="+url)
-	nombrefichero = pathfichero
-	logger.info("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
+    logger.info("[downloadtools.py] downloadfileGzipped: url="+url)
+    nombrefichero = pathfichero
+    logger.info("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
 
-	import xbmc
-	nombrefichero = xbmc.makeLegalFilename(nombrefichero)
-	logger.info("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
-	patron = "(http://[^/]+)/.+"
-	matches = re.compile(patron,re.DOTALL).findall(url)
-	
-	if len(matches):
-		logger.info("[downloadtools.py] URL principal :"+matches[0])
-		url1= matches[0]
-	else:
-		url1 = url
-	
-	txheaders =  {'User-Agent':'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)',
-	              'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-	              'Accept-Language':'es-es,es;q=0.8,en-us;q=0.5,en;q=0.3',
-	              'Accept-Encoding':'gzip,deflate',
-	              'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
-	              'Keep-Alive':'115',
-	              'Connection':'keep-alive',
-	              'Referer':url1,
-	              }
-		
-	txdata = ""
+    import xbmc
+    nombrefichero = xbmc.makeLegalFilename(nombrefichero)
+    logger.info("[downloadtools.py] downloadfileGzipped: nombrefichero="+nombrefichero)
+    patron = "(http://[^/]+)/.+"
+    matches = re.compile(patron,re.DOTALL).findall(url)
+    
+    if len(matches):
+        logger.info("[downloadtools.py] URL principal :"+matches[0])
+        url1= matches[0]
+    else:
+        url1 = url
+    
+    txheaders =  {'User-Agent':'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)',
+                  'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                  'Accept-Language':'es-es,es;q=0.8,en-us;q=0.5,en;q=0.3',
+                  'Accept-Encoding':'gzip,deflate',
+                  'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                  'Keep-Alive':'115',
+                  'Connection':'keep-alive',
+                  'Referer':url1,
+                  }
+        
+    txdata = ""
 
-	# Crea el diálogo de progreso
-	import xbmcgui
-	progreso = xbmcgui.DialogProgress()
-	progreso.create( config.getPluginId() , "Descargando file..." , url , nombrefichero )
+    # Crea el diálogo de progreso
+    import xbmcgui
+    progreso = xbmcgui.DialogProgress()
+    progreso.create( config.get_plugin_id() , "Descargando file..." , url , nombrefichero )
 
-	# Timeout del socket a 60 segundos
-	socket.setdefaulttimeout(10)
+    # Timeout del socket a 60 segundos
+    socket.setdefaulttimeout(10)
 
-	h=urllib2.HTTPHandler(debuglevel=0)
-	request = urllib2.Request(url, txdata, txheaders)
-	#if existSize > 0:
-	#	request.add_header('Range', 'bytes=%d-' % (existSize, ))
+    h=urllib2.HTTPHandler(debuglevel=0)
+    request = urllib2.Request(url, txdata, txheaders)
+    #if existSize > 0:
+    #    request.add_header('Range', 'bytes=%d-' % (existSize, ))
 
-	opener = urllib2.build_opener(h)
-	urllib2.install_opener(opener)
-	try:
-		connexion = opener.open(request)
-	except urllib2.HTTPError,e:
-		logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
-		#print e.code
-		#print e.msg
-		#print e.hdrs
-		#print e.fp
-		progreso.close()
-		# El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
-		if e.code==416:
-			return 0
-		else:
-			return -2
-	nombreficheroBase = os.path.basename(nombrefichero)
-	if len(nombreficheroBase) == 0:
-		print "Buscando nombre en el Headers de respuesta"
-		nombreBase = connexion.headers["Content-Disposition"]
-		print nombreBase
-		patron = 'filename="([^"]+)"'
-		matches = re.compile(patron,re.DOTALL).findall(nombreBase)
-		if len(matches)>0:
-			titulo = matches[0]
-			titulo = GetTitleFromFile(titulo)
-			nombrefichero = os.path.join(pathfichero,titulo)
-		else:
-			print "Nombre del fichero no encontrado"
-			print "Colocando nombre temporal :sin_nombre.txt"
-			titulo = "sin_nombre.txt"
-			nombrefichero = os.path.join(pathfichero,titulo)			
-	totalfichero = int(connexion.headers["Content-Length"])
+    opener = urllib2.build_opener(h)
+    urllib2.install_opener(opener)
+    try:
+        connexion = opener.open(request)
+    except urllib2.HTTPError,e:
+        logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+        #print e.code
+        #print e.msg
+        #print e.hdrs
+        #print e.fp
+        progreso.close()
+        # El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
+        if e.code==416:
+            return 0
+        else:
+            return -2
+    nombreficheroBase = os.path.basename(nombrefichero)
+    if len(nombreficheroBase) == 0:
+        print "Buscando nombre en el Headers de respuesta"
+        nombreBase = connexion.headers["Content-Disposition"]
+        print nombreBase
+        patron = 'filename="([^"]+)"'
+        matches = re.compile(patron,re.DOTALL).findall(nombreBase)
+        if len(matches)>0:
+            titulo = matches[0]
+            titulo = GetTitleFromFile(titulo)
+            nombrefichero = os.path.join(pathfichero,titulo)
+        else:
+            print "Nombre del fichero no encontrado"
+            print "Colocando nombre temporal :sin_nombre.txt"
+            titulo = "sin_nombre.txt"
+            nombrefichero = os.path.join(pathfichero,titulo)            
+    totalfichero = int(connexion.headers["Content-Length"])
 
-	# despues
-	f = open(nombrefichero, 'w')
-	
-	existSize = 0
-	
-	logger.info("[downloadtools.py] downloadfileGzipped: fichero nuevo abierto")
+    # despues
+    f = open(nombrefichero, 'w')
+    
+    existSize = 0
+    
+    logger.info("[downloadtools.py] downloadfileGzipped: fichero nuevo abierto")
 
-	#if existSize > 0:
-	#	totalfichero = totalfichero + existSize
-	grabado = 0
-	logger.info("Content-Length=%s" % totalfichero)
+    #if existSize > 0:
+    #    totalfichero = totalfichero + existSize
+    grabado = 0
+    logger.info("Content-Length=%s" % totalfichero)
 
-	blocksize = 100*1024
+    blocksize = 100*1024
 
-	bloqueleido = connexion.read(blocksize)
-	
-	try:
-		compressedstream = StringIO.StringIO(bloqueleido)
-		gzipper = gzip.GzipFile(fileobj=compressedstream)
-		bloquedata = gzipper.read()
-		gzipper.close()
-		xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
-	except:
-		xbmc.log( "ERROR : El archivo a descargar no esta comprimido con Gzip")
-		f.close()
-		progreso.close()
-		return -2
-		
-	maxreintentos = 10
-	
-	while len(bloqueleido)>0:
-		try:
-			# Escribe el bloque leido
-			f.write(bloquedata)
-			grabado = grabado + len(bloqueleido)
-			percent = int(float(grabado)*100/float(totalfichero))
-			totalmb = float(float(totalfichero)/(1024*1024))
-			descargadosmb = float(float(grabado)/(1024*1024))
+    bloqueleido = connexion.read(blocksize)
+    
+    try:
+        compressedstream = StringIO.StringIO(bloqueleido)
+        gzipper = gzip.GzipFile(fileobj=compressedstream)
+        bloquedata = gzipper.read()
+        gzipper.close()
+        xbmc.log("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
+    except:
+        xbmc.log( "ERROR : El archivo a descargar no esta comprimido con Gzip")
+        f.close()
+        progreso.close()
+        return -2
+        
+    maxreintentos = 10
+    
+    while len(bloqueleido)>0:
+        try:
+            # Escribe el bloque leido
+            f.write(bloquedata)
+            grabado = grabado + len(bloqueleido)
+            percent = int(float(grabado)*100/float(totalfichero))
+            totalmb = float(float(totalfichero)/(1024*1024))
+            descargadosmb = float(float(grabado)/(1024*1024))
 
 
-			# Lee el siguiente bloque, reintentando para no parar todo al primer timeout
-			reintentos = 0
-			while reintentos <= maxreintentos:
-				try:
-					before = time.time()
-					bloqueleido = connexion.read(blocksize)
-					
-					compressedstream = StringIO.StringIO(bloqueleido)
-					gzipper = gzip.GzipFile(fileobj=compressedstream)
-					bloquedata = gzipper.read()
-					gzipper.close()	
-					after = time.time()
-					if (after - before) > 0:
-						velocidad=len(bloqueleido)/((after - before))
-						falta=totalfichero-grabado
-						if velocidad>0:
-							tiempofalta=falta/velocidad
-						else:
-							tiempofalta=0
-						logger.info(sec_to_hms(tiempofalta))
-						progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
-					break
-				except:
-					reintentos = reintentos + 1
-					logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
-					for line in sys.exc_info():
-						logger.error( "%s" % line )
-			
-			# El usuario cancelo la descarga
-			if progreso.iscanceled():
-				logger.info("Descarga del fichero cancelada")
-				f.close()
-				progreso.close()
-				return -1
+            # Lee el siguiente bloque, reintentando para no parar todo al primer timeout
+            reintentos = 0
+            while reintentos <= maxreintentos:
+                try:
+                    before = time.time()
+                    bloqueleido = connexion.read(blocksize)
+                    
+                    compressedstream = StringIO.StringIO(bloqueleido)
+                    gzipper = gzip.GzipFile(fileobj=compressedstream)
+                    bloquedata = gzipper.read()
+                    gzipper.close()    
+                    after = time.time()
+                    if (after - before) > 0:
+                        velocidad=len(bloqueleido)/((after - before))
+                        falta=totalfichero-grabado
+                        if velocidad>0:
+                            tiempofalta=falta/velocidad
+                        else:
+                            tiempofalta=0
+                        logger.info(sec_to_hms(tiempofalta))
+                        progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
+                    break
+                except:
+                    reintentos = reintentos + 1
+                    logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
+                    for line in sys.exc_info():
+                        logger.error( "%s" % line )
+            
+            # El usuario cancelo la descarga
+            if progreso.iscanceled():
+                logger.info("Descarga del fichero cancelada")
+                f.close()
+                progreso.close()
+                return -1
 
-			# Ha habido un error en la descarga
-			if reintentos > maxreintentos:
-				logger.info("ERROR en la descarga del fichero")
-				f.close()
-				progreso.close()
+            # Ha habido un error en la descarga
+            if reintentos > maxreintentos:
+                logger.info("ERROR en la descarga del fichero")
+                f.close()
+                progreso.close()
 
-				return -2
+                return -2
 
-		except:
-			logger.info("ERROR en la descarga del fichero")
-			for line in sys.exc_info():
-				logger.error( "%s" % line )
-			f.close()
-			progreso.close()
-			
-			return -2
-	f.close()
-	
+        except:
+            logger.info("ERROR en la descarga del fichero")
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
+            f.close()
+            progreso.close()
+            
+            return -2
+    f.close()
+    
 
-	
-	#print data
-	progreso.close()
-	logger.info("Fin descarga del fichero")
-	return nombrefichero
-	
+    
+    #print data
+    progreso.close()
+    logger.info("Fin descarga del fichero")
+    return nombrefichero
+    
 def GetTitleFromFile(title):
-	# Imprime en el log lo que va a descartar
-	logger.info("[downloadtools.py] GetTitleFromFile: titulo="+title )
-	#logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
-	plataforma = config.get_system_platform();
-	logger.info("[downloadtools.py] GetTitleFromFile: plataforma="+plataforma)
-	
-	#nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
-	if plataforma=="xbox":
-		nombrefichero = title[:38] + title[-4:]
-		nombrefichero = limpia_nombre_excepto_1(nombrefichero)
-	else:
-		nombrefichero = title
-	return nombrefichero
-	
+    # Imprime en el log lo que va a descartar
+    logger.info("[downloadtools.py] GetTitleFromFile: titulo="+title )
+    #logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
+    plataforma = config.get_system_platform();
+    logger.info("[downloadtools.py] GetTitleFromFile: plataforma="+plataforma)
+    
+    #nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+    if plataforma=="xbox":
+        nombrefichero = title[:38] + title[-4:]
+        nombrefichero = limpia_nombre_excepto_1(nombrefichero)
+    else:
+        nombrefichero = title
+    return nombrefichero
+    
 def sec_to_hms(seconds):
-	m,s = divmod(int(seconds), 60)
-	h,m = divmod(m, 60)
-	return ("%02d:%02d:%02d" % ( h , m ,s ))
+    m,s = divmod(int(seconds), 60)
+    h,m = divmod(m, 60)
+    return ("%02d:%02d:%02d" % ( h , m ,s ))
 
 def updatechannel(channelName):
-	logger.info("Buscando actualizacion del canal " + channelName)
-	
-	# URL de descarga desde subversion
-	channelURL = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channelName+".py"
-	logger.info("channelURL="+channelURL)
-	
-	# Obtiene la fecha del fichero
-	import xbmc
-	channelFileSource = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".py" ) )
-	logger.info("channelFileSource="+channelFileSource)
-	
-	if not os.path.exists(channelFileSource):
-		return False;
+    logger.info("Buscando actualizacion del canal " + channelName)
+    
+    # URL de descarga desde subversion
+    channelURL = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channelName+".py"
+    logger.info("channelURL="+channelURL)
+    
+    # Obtiene la fecha del fichero
+    import xbmc
+    channelFileSource = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".py" ) )
+    logger.info("channelFileSource="+channelFileSource)
+    
+    if not os.path.exists(channelFileSource):
+        return False;
 
-	channelFileCompiled = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".pyo" ) )
-	logger.info("channelFileCompiled="+channelFileCompiled)
-		
-	fechaFichero = os.path.getmtime(channelFileSource)
-	logger.info("fechaFichero=%s"% time.ctime(fechaFichero))
+    channelFileCompiled = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".pyo" ) )
+    logger.info("channelFileCompiled="+channelFileCompiled)
+        
+    fechaFichero = os.path.getmtime(channelFileSource)
+    logger.info("fechaFichero=%s"% time.ctime(fechaFichero))
 
-	updated , data = downloadIfNotModifiedSince(channelURL,fechaFichero)
+    updated , data = downloadIfNotModifiedSince(channelURL,fechaFichero)
 
-	if updated:
-		outfile = open(channelFileSource,"w")
-		outfile.write(data)
-		outfile.flush()
-		outfile.close()
-		logger.info("Grabado a " + channelFileSource)
-		
-		if os.path.exists(channelFileCompiled):
-			os.remove(channelFileCompiled)
+    if updated:
+        outfile = open(channelFileSource,"w")
+        outfile.write(data)
+        outfile.flush()
+        outfile.close()
+        logger.info("Grabado a " + channelFileSource)
+        
+        if os.path.exists(channelFileCompiled):
+            os.remove(channelFileCompiled)
 
-	return updated
+    return updated
 
 def downloadIfNotModifiedSince(url,timestamp):
 
-	logger.info("[downloadtools.py] downloadIfNotModifiedSince("+url+","+time.ctime(timestamp)+")")
-	
-	# Convierte la fecha a GMT
-	fechaFormateada = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(timestamp))
-	logger.info("fechaFormateada=%s" % fechaFormateada)
-	
-	# Comprueba si ha cambiado
-	inicio = time.clock()
-	req = urllib2.Request(url)
-	req.add_header('If-Modified-Since', fechaFormateada)
+    logger.info("[downloadtools.py] downloadIfNotModifiedSince("+url+","+time.ctime(timestamp)+")")
+    
+    # Convierte la fecha a GMT
+    fechaFormateada = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(timestamp))
+    logger.info("fechaFormateada=%s" % fechaFormateada)
+    
+    # Comprueba si ha cambiado
+    inicio = time.clock()
+    req = urllib2.Request(url)
+    req.add_header('If-Modified-Since', fechaFormateada)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12')
 
-	updated = False
+    updated = False
 
-	try:
-		response = urllib2.urlopen(req)
-		data = response.read()
-		#info = response.info()
-		#logger.info( info.headers )
-		
-		# Si llega hasta aquí, es que ha cambiado
-		updated = True
-		response.close()
+    try:
+        response = urllib2.urlopen(req)
+        data = response.read()
+        #info = response.info()
+        #logger.info( info.headers )
+        
+        # Si llega hasta aquí, es que ha cambiado
+        updated = True
+        response.close()
 
-	except urllib2.URLError,e:
-		# Si devuelve 304 es que no ha cambiado
-		if hasattr(e,'code'):
-			logger.info("Codigo de respuesta HTTP : %d" %e.code)
-			if e.code == 304:
-				logger.info("No ha cambiado")
-				updated = False
-		# Agarra los errores con codigo de respuesta del servidor externo solicitado 	
-		else:
-			for line in sys.exc_info():
-				logger.error( "%s" % line )
-		data=""
+    except urllib2.URLError,e:
+        # Si devuelve 304 es que no ha cambiado
+        if hasattr(e,'code'):
+            logger.info("Codigo de respuesta HTTP : %d" %e.code)
+            if e.code == 304:
+                logger.info("No ha cambiado")
+                updated = False
+        # Agarra los errores con codigo de respuesta del servidor externo solicitado     
+        else:
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
+        data=""
 
-	fin = time.clock()
-	logger.info("Descargado en %d segundos " % (fin-inicio+1))
+    fin = time.clock()
+    logger.info("Descargado en %d segundos " % (fin-inicio+1))
 
-	return updated,data
+    return updated,data

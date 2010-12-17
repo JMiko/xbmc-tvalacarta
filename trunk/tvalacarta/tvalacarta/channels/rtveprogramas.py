@@ -1,228 +1,202 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta - XBMC Plugin
 # Canal para programas de RTVE
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
+import urlparse, re
 
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import scrapertools
-import binascii
-import xbmctools
-import rtve
+from core import logger
+from core import scrapertools
+from core.item import Item
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
-
-xbmc.output("[rtve.py] init")
+logger.info("[rtveprogramas.py] init")
 
 DEBUG = True
-CHANNELNAME = "Programas TVE"
-CHANNELCODE = "rtveprogramas"
+CHANNELNAME = "rtveprogramas"
 
-def mainlist(params,url,category):
-	xbmc.output("[rtveprogramas.py] mainlist")
+def isGeneric():
+    return True
 
-	# AÒade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "espanoles"  , CHANNELNAME        , "EspaÒoles en el mundo" , "http://www.rtve.es/television/espanoles-en-el-mundo/" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "aguilaroja" , CHANNELNAME        , "¡guila roja"           , "" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "AsÌ se hizo"           , "http://www.rtve.es/television/asi-se-hizo/" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "DÌas de cine"          , "http://www.rtve.es/television/dias-cine-programas/" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "lasenora"   , CHANNELNAME        , "La seÒora"             , "" , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico"   , "allowblanktitles" , "Guante blanco"         , "http://www.rtve.es/television/guanteblanco/capitulos-guante-blanco/" , "" , "" )
-	#xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "Azahar"                , "http://www.rtve.es/television/azahar/" , "" , "" )
-	#xbmctools.addnewfolder( CHANNELCODE , "generico"   , CHANNELNAME        , "50 aÒos de..."         , "http://www.rtve.es/television/50-de-tve/temporada1/" , "" , "" )
+def mainlist(item):
+    logger.info("[rtveprogramas.py] mainlist")
 
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Espa√±oles en el mundo" , action="espanoles"  , url="http://www.rtve.es/television/espanoles-en-el-mundo/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="√Åguila roja"           , action="aguilaroja" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="As√≠ se hizo"           , action="generico"   , url="http://www.rtve.es/television/asi-se-hizo/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="D√≠as de cine"          , action="generico"   , url="http://www.rtve.es/television/dias-cine-programas/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="La se√±ora"             , action="lasenora"   , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Guante blanco"         , action="generico"   , url="http://www.rtve.es/television/guanteblanco/capitulos-guante-blanco/" , extra="allowblanktitles", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Tres 14"               , action="generico"   , url="http://www.rtve.es/television/tres14/" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Redes"                 , action="generico"   , url="http://www.rtve.es/television/redes/archivo/" , folder=True) )
+    #itemlist.append( Item(channel=CHANNELNAME, title="Un pa√≠s para com√©rselo", action="generico"   , url="http://www.rtve.es/television/un-pais-para-comerselo/itinerario/" , folder=True) )
 
-def espanoles(params,url,category):
-	xbmc.output("[rtveprogramas.py] espanoles")
+    return itemlist
 
-	# --------------------------------------------------------
-	# Descarga la p·gina
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+def espanoles(item):
+    logger.info("[rtveprogramas.py] espanoles")
+    itemlist = []
+    
+    # Descarga la p√°gina
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-	# --------------------------------------------------------
-	# Extrae las categorias (carpetas)
-	# --------------------------------------------------------
-	#<div class="mark"><div class="news bg01   comp"><span class="imgL"><a href="http://www.rtve.es/television/espanoles-en-el-mundo/camerun/" title="Destino#46 Camer˙n"><img src="/imagenes/destino46-camerun/1267557505140.jpg" alt="Destino#46 Camer˙n" title="Destino#46 Camer˙n"/></a></span><h3 class="M "><a href="http://www.rtve.es/television/espanoles-en-el-mundo/camerun/" title="Destino#46 Camer˙n">Destino#46 Camer˙n</a></h3><div class="chapeaux">Este destino es mucho m·s que un paÌs... es todo un continente. <strong>Vuelve a verlo</strong>.</div></div></div>
-	#<div class="mark"><div class="news bg01   comp"><span class="imgT"><a href="http://www.rtve.es/television/espanoles-en-el-mundo/jalisco/" title="Destino#42 Jalisco (MÈxico)"><img src="/imagenes/destino42-jalisco-mexico/1264699947886.jpg" alt="Destino#42 Jalisco (MÈxico)" title="Destino#42 Jalisco (MÈxico)"/></a></span><h3 class="M "><a href="http://www.rtve.es/television/espanoles-en-el-mundo/jalisco/" title="Destino#42 Jalisco (MÈxico)">Destino#42 Jalisco (MÈxico)</a></h3><div class="chapeaux">øSabÌas que hay mariachis de chicas? øDe dÛnde viene el tequila? <strong>Vuelve a verlo</strong>.</div></div></div><div class="mark"><div class="
-	patron  = '<div class="mark"><div class="news bg01   comp"><span class="img."><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)" alt="[^"]+" title="[^"]+"/></a></span><h. class=". "><a href="[^"]+" title="[^"]+">([^<]+)</a></h.><div class="chapeaux">([^<]+)<'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+    # Extrae las categorias (carpetas)
+    #<div class="mark"><div class="news bg01   comp"><span class="imgL"><a href="http://www.rtve.es/television/espanoles-en-el-mundo/camerun/" title="Destino#46 Camer√∫n"><img src="/imagenes/destino46-camerun/1267557505140.jpg" alt="Destino#46 Camer√∫n" title="Destino#46 Camer√∫n"/></a></span><h3 class="M "><a href="http://www.rtve.es/television/espanoles-en-el-mundo/camerun/" title="Destino#46 Camer√∫n">Destino#46 Camer√∫n</a></h3><div class="chapeaux">Este destino es mucho m√°s que un pa√≠s... es todo un continente. <strong>Vuelve a verlo</strong>.</div></div></div>
+    #<div class="mark"><div class="news bg01   comp"><span class="imgT"><a href="http://www.rtve.es/television/espanoles-en-el-mundo/jalisco/" title="Destino#42 Jalisco (M√©xico)"><img src="/imagenes/destino42-jalisco-mexico/1264699947886.jpg" alt="Destino#42 Jalisco (M√©xico)" title="Destino#42 Jalisco (M√©xico)"/></a></span><h3 class="M "><a href="http://www.rtve.es/television/espanoles-en-el-mundo/jalisco/" title="Destino#42 Jalisco (M√©xico)">Destino#42 Jalisco (M√©xico)</a></h3><div class="chapeaux">¬øSab√≠as que hay mariachis de chicas? ¬øDe d√≥nde viene el tequila? <strong>Vuelve a verlo</strong>.</div></div></div><div class="mark"><div class="
+    patron  = '<div class="mark"><div class="news bg01   comp"><span class="img."><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)" alt="[^"]+" title="[^"]+"/></a></span><h. class=". "><a href="[^"]+" title="[^"]+">([^<]+)</a></h.><div class="chapeaux">([^<]+)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	for match in matches:
-		# Datos
-		scrapedtitle = scrapertools.entityunescape(match[3])
-		scrapedurl = urlparse.urljoin(url, match[0])
-		scrapedthumbnail = urlparse.urljoin(url, match[2])
-		scrapedplot = match[4]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for match in matches:
+        # Datos
+        scrapedtitle = scrapertools.entityunescape(match[3])
+        scrapedurl = urlparse.urljoin(item.url, match[0])
+        scrapedthumbnail = urlparse.urljoin(item.url, match[2])
+        scrapedplot = match[4]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# AÒade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="generico" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.title , folder=True) )
 
-	# --------------------------------------------------------
-	# Descarga la p·gina
-	# --------------------------------------------------------
-	url = "http://www.rtve.es/television/espanoles-en-el-mundo/programas-anteriores/"
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+    # Descarga la p√°gina
+    url = "http://www.rtve.es/television/espanoles-en-el-mundo/programas-anteriores/"
+    data = scrapertools.cachePage(url)
+    #logger.info(data)
 
-	# --------------------------------------------------------
-	# Extrae las categorias (carpetas)
-	# --------------------------------------------------------
-	#<div class="news bg01   comp"><span class="imgT"><a href="http://www.rtve.es/television/espanoles-en-el-mundo/seul/" title="Destino#28 Se˙l">
-	#<img src="/imagenes/destino28-seul/1264701360856.jpg" alt="Destino#28 Se˙l" title="Destino#28 Se˙l"/></a></span>
-	#<h3 class="M "><a href="http://www.rtve.es/television/espanoles-en-el-mundo/seul/" title="Destino#28 Se˙l">Destino#28 Se˙l</a></h3><div class="chapeaux"> Viajamos a la capital de Corea del Sur, la segunda urbe m·s poblada del planeta.<strong> Vuelve a verlo</strong></div>
-	patron  = '<div class="news bg01   comp">[^<]*'
-	patron += '<span class="img."><a href="([^"]+)" title="[^"]+"><img src="([^"]+)" alt="[^"]+" title="[^"]+"/></a></span>[^<]*'
-	patron += '<h. class=". ">[^<]*'
-	patron += '<a href="[^"]+" title="([^"]+)">([^<]+)</a>[^<]*'
-	patron += '</h.>[^<]*'
-	patron += '<div class="chapeaux">(.*?)</div>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+    # Extrae las categorias (carpetas)
+    #<div class="news bg01   comp"><span class="imgT"><a href="http://www.rtve.es/television/espanoles-en-el-mundo/seul/" title="Destino#28 Se√∫l">
+    #<img src="/imagenes/destino28-seul/1264701360856.jpg" alt="Destino#28 Se√∫l" title="Destino#28 Se√∫l"/></a></span>
+    #<h3 class="M "><a href="http://www.rtve.es/television/espanoles-en-el-mundo/seul/" title="Destino#28 Se√∫l">Destino#28 Se√∫l</a></h3><div class="chapeaux"> Viajamos a la capital de Corea del Sur, la segunda urbe m√°s poblada del planeta.<strong> Vuelve a verlo</strong></div>
+    patron  = '<div class="news bg01   comp">[^<]*'
+    patron += '<span class="img."><a href="([^"]+)" title="[^"]+"><img src="([^"]+)" alt="[^"]+" title="[^"]+"/></a></span>[^<]*'
+    patron += '<h. class=". ">[^<]*'
+    patron += '<a href="[^"]+" title="([^"]+)">([^<]+)</a>[^<]*'
+    patron += '</h.>[^<]*'
+    patron += '<div class="chapeaux">(.*?)</div>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	for match in matches:
-		# Datos
-		scrapedtitle = scrapertools.entityunescape(match[3])
-		scrapedurl = urlparse.urljoin(url, match[0])
-		scrapedthumbnail = urlparse.urljoin(url, match[1])
-		scrapedplot = match[4]
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for match in matches:
+        # Datos
+        scrapedtitle = scrapertools.entityunescape(match[3])
+        scrapedurl = urlparse.urljoin(url, match[0])
+        scrapedthumbnail = urlparse.urljoin(url, match[1])
+        scrapedplot = match[4]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# AÒade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        # A√±ade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="generico" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.title , folder=True) )
 
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    return itemlist
 
-def aguilaroja(params,url,category):
-	xbmc.output("[rtveprogramas.py] mainlist")
+def aguilaroja(item):
+    logger.info("[rtveprogramas.py] mainlist")
+    itemlist = []
+    
+    itemlist.append( Item(channel=CHANNELNAME, title="Temporada 1" , action="generico"  , url="http://www.rtve.es/television/aguila-roja/capitulos-completos/primera-temporada/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Temporada 2" , action="generico"  , url="http://www.rtve.es/television/aguila-roja/capitulos-completos/segunda-temporada/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Temporada 3" , action="generico"  , url="http://www.rtve.es/television/aguila-roja/capitulos-completos/tercera-temporada/", folder=True) )
 
-	# AÒade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , "Temporada 1" , "http://www.rtve.es/television/aguila-roja/capitulos-completos/primera-temporada/"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , "Temporada 2" , "http://www.rtve.es/television/aguila-roja/capitulos-completos/segunda-temporada/"  , "" , "" )
+    return itemlist
 
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def lasenora(item):
+    logger.info("[rtveprogramas.py] mainlist")
 
-def lasenora(params,url,category):
-	xbmc.output("[rtveprogramas.py] mainlist")
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Temporada 1" , action="generico"  , url="http://www.rtve.es/television/la-senora/capitulos-completos/primera-temporada/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Temporada 2" , action="generico"  , url="http://www.rtve.es/television/la-senora/capitulos-completos/segunda-temporada/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Temporada 3" , action="generico"  , url="http://www.rtve.es/television/la-senora/capitulos-completos/tercera-temporada/", folder=True) )
+    
+    return itemlist
 
-	# AÒade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , "Temporada 1" , "http://www.rtve.es/television/la-senora/capitulos-completos/primera-temporada/"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , "Temporada 2" , "http://www.rtve.es/television/la-senora/capitulos-completos/segunda-temporada/"  , "" , "" )
-	xbmctools.addnewfolder( CHANNELCODE , "generico" , CHANNELNAME , "Temporada 3" , "http://www.rtve.es/television/la-senora/capitulos-completos/tercera-temporada/"  , "" , "" )
+def generico(item):
+    logger.info("[rtveprogramas.py] generico")
+    itemlist = []
+    
+    # El parametro allowblanks permite que haya v√≠deos sin t√≠tulo
+    allowblanktitles = False
+    if item.extra=="allowblanktitles":
+        allowblanktitles = True
 
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    # --------------------------------------------------------
+    # Descarga la p√°gina
+    # --------------------------------------------------------
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-def generico(params,url,category):
-	xbmc.output("[rtveprogramas.py] generico")
+    # --------------------------------------------------------
+    # Extrae las categorias (carpetas)
+    # --------------------------------------------------------
+    patron  = '<div class="news[^"]+">(.*?</div>)'
+    bloques = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(bloques)
 
-	# El parametro allowblanks permite que haya vÌdeos sin tÌtulo
-	allowblanktitles = False
-	if category=="allowblanktitles":
-		allowblanktitles = True
-		category = CHANNELNAME
-	
+    for bloque in bloques:
+        '''
+        ##############################################################################################################    
+        <span class="imgL"><a href="/mediateca/videos/20100225/aguila-roja-cap21/705225.shtml" title=""><img src="/imagenes/jpg/1267703487420.jpg" alt="" title=""/></a></span>
+        <h3 class="M ">
+        <a href="/mediateca/videos/20100225/aguila-roja-cap21/705225.shtml" title="Cap√≠tulo 21">Cap√≠tulo 21</a>
+        </h3>
+        <div class="chapeaux">Emitido el 25/02/10</div>
+        ##############################################################################################################    
+        <span class="imgL"><a href="/mediateca/videos/20100218/aguila-roja-cap20/698541.shtml" title="Cap√≠tulo 20"><img src="/imagenes/capitulo-20/1267703445964.jpg" alt="Cap√≠tulo 20" title="Cap√≠tulo 20"/></a></span>
+        <h3 class="M ">
+        <a href="/mediateca/videos/20100218/aguila-roja-cap20/698541.shtml" title="Cap√≠tulo 20">Cap√≠tulo 20</a>
+        </h3>
+        <div class="chapeaux">Emitido el 18/02/10</div>
+        ##############################################################################################################    
+        '''
+        scrapedtitle = ""
+        scrapedurl = ""
+        scrapedthumbnail = ""
+        scrapedplot = ""
 
-	# --------------------------------------------------------
-	# Descarga la p·gina
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+        # Enlace a la p√°gina y t√≠tulo
+        patron = '<a href="([^"]+)"[^>]+>([^<]+)<'
+        matches = re.compile(patron,re.DOTALL).findall(bloque)
+        if DEBUG: scrapertools.printMatches(matches)
+        if len(matches)>0:
+            scrapedurl = urlparse.urljoin(item.url, matches[0][0])
+            scrapedtitle = scrapertools.entityunescape(matches[0][1])
+        
+        # Si no tiene titulo busca el primer enlace que haya
+        if scrapedurl=="":
+            # Enlace a la p√°gina y t√≠tulo
+            patron = '<a href="([^"]+)"'
+            matches = re.compile(patron,re.DOTALL).findall(bloque)
+            if DEBUG: scrapertools.printMatches(matches)
+            if len(matches)>0:
+                scrapedurl = urlparse.urljoin(item.url, matches[0])
 
-	# --------------------------------------------------------
-	# Extrae las categorias (carpetas)
-	# --------------------------------------------------------
-	patron  = '<div class="news[^"]+">(.*?</div>)'
-	bloques = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(bloques)
+        # Thumbnail
+        patron = '<img src="([^"]+)"'
+        matches = re.compile(patron,re.DOTALL).findall(bloque)
+        if DEBUG: scrapertools.printMatches(matches)
+        if len(matches)>0:
+            scrapedthumbnail = urlparse.urljoin(item.url, matches[0])
 
-	for bloque in bloques:
-		'''
-		##############################################################################################################	
-		<span class="imgL"><a href="/mediateca/videos/20100225/aguila-roja-cap21/705225.shtml" title=""><img src="/imagenes/jpg/1267703487420.jpg" alt="" title=""/></a></span>
-		<h3 class="M ">
-		<a href="/mediateca/videos/20100225/aguila-roja-cap21/705225.shtml" title="CapÌtulo 21">CapÌtulo 21</a>
-		</h3>
-		<div class="chapeaux">Emitido el 25/02/10</div>
-		##############################################################################################################	
-		<span class="imgL"><a href="/mediateca/videos/20100218/aguila-roja-cap20/698541.shtml" title="CapÌtulo 20"><img src="/imagenes/capitulo-20/1267703445964.jpg" alt="CapÌtulo 20" title="CapÌtulo 20"/></a></span>
-		<h3 class="M ">
-		<a href="/mediateca/videos/20100218/aguila-roja-cap20/698541.shtml" title="CapÌtulo 20">CapÌtulo 20</a>
-		</h3>
-		<div class="chapeaux">Emitido el 18/02/10</div>
-		##############################################################################################################	
-		'''
-		scrapedtitle = ""
-		scrapedurl = ""
-		scrapedthumbnail = ""
-		scrapedplot = ""
+        # Argumento
+        patron = '<div class="chapeaux">(.*?)</div>'
+        matches = re.compile(patron,re.DOTALL).findall(bloque)
+        if DEBUG: scrapertools.printMatches(matches)
+        if len(matches)>0:
+            scrapedplot = scrapertools.htmlclean(matches[0])
 
-		# Enlace a la p·gina y tÌtulo
-		patron = '<a href="([^"]+)"[^>]+>([^<]+)<'
-		matches = re.compile(patron,re.DOTALL).findall(bloque)
-		if DEBUG: scrapertools.printMatches(matches)
-		if len(matches)>0:
-			scrapedurl = urlparse.urljoin(url, matches[0][0])
-			scrapedtitle = scrapertools.entityunescape(matches[0][1])
-		
-		# Si no tiene titulo busca el primer enlace que haya
-		if scrapedurl=="":
-			# Enlace a la p·gina y tÌtulo
-			patron = '<a href="([^"]+)"'
-			matches = re.compile(patron,re.DOTALL).findall(bloque)
-			if DEBUG: scrapertools.printMatches(matches)
-			if len(matches)>0:
-				scrapedurl = urlparse.urljoin(url, matches[0])
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        
+        if allowblanktitles:
+            titulos = scrapedurl.split("/")
+            scrapedtitle = titulos[ len(titulos)-2 ]
 
-		# Thumbnail
-		patron = '<img src="([^"]+)"'
-		matches = re.compile(patron,re.DOTALL).findall(bloque)
-		if DEBUG: scrapertools.printMatches(matches)
-		if len(matches)>0:
-			scrapedthumbnail = urlparse.urljoin(url, matches[0])
+        # A√±ade al listado de XBMC
+        if scrapedtitle<>"" and scrapedurl<>"":
+            patron = 'http://.*?/([0-9]+).shtml'
+            matches = re.compile(patron,re.DOTALL).findall(scrapedurl)
+            if len(matches)>0:
+                itemlist.append( Item(channel="rtve", title=scrapedtitle , action="getvideo" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=scrapedplot , server = "directo" , show = item.title , folder=True) )
+            else:
+                itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="generico" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.title , folder=True) )
 
-		# Argumento
-		patron = '<div class="chapeaux">(.*?)</div>'
-		matches = re.compile(patron,re.DOTALL).findall(bloque)
-		if DEBUG: scrapertools.printMatches(matches)
-		if len(matches)>0:
-			scrapedplot = scrapertools.htmlclean(matches[0])
-
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-		
-		if allowblanktitles:
-			titulos = scrapedurl.split("/")
-			scrapedtitle = titulos[ len(titulos)-2 ]
-
-		# AÒade al listado de XBMC
-		if scrapedtitle<>"" and scrapedurl<>"":
-			xbmctools.addnewvideo( "rtve" , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
-
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    return itemlist

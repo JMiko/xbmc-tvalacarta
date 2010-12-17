@@ -10,15 +10,14 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import downloadtools
 import shutil
-import config
-import logger
+
+from core import config
+from core import logger
+from core import xbmctools
+from core import downloadtools
+
+from servers import servertools
 
 # Esto permite su ejecución en modo emulado
 try:

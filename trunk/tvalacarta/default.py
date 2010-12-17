@@ -1,6 +1,6 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
-# tvalacarta - XBMC Plugin
+# tvalacarta
 # Launcher
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
@@ -18,16 +18,9 @@ import xbmc
 
 xbmc.output("[default.py] tvalacarta init...")
 
-# Configura los directorios donde hay librerías
-#librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
-#sys.path.append (librerias)
-#librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' ) )
-#sys.path.append (librerias)
-#librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'servers' ) )
-#sys.path.append (librerias)
-librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'youtubeAPI' ) )
+librerias = xbmc.translatePath( os.path.join( os.getcwd(), 'lib' ) )
 sys.path.append (librerias)
 
 # Ejecuta el programa principal
-import launcher
+from platform.xbmc import launcher
 launcher.run()

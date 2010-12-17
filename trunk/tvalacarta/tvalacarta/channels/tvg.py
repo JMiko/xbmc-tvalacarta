@@ -1,253 +1,188 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta - XBMC Plugin
 # Canal para TVG
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import scrapertools
-import binascii
-import xbmctools
+import urlparse,urllib,re
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
+from core import logger
+from core import scrapertools
+from core.item import Item 
 
-xbmc.output("[tvg.py] init")
+logger.info("[tvg.py] init")
 
-DEBUG = True
-CHANNELNAME = "TVG"
-CHANNELCODE = "tvg"
+DEBUG = False
+CHANNELNAME = "tvg"
 
-def mainlist(params,url,category):
-	xbmc.output("[tvg.py] mainlist")
+def isGeneric():
+    return True
 
-	url = "http://www.crtvg.es/TVGacarta/"
+def mainlist(item):
+    logger.info("[tvg.py] mainlist")
+    itemlist=[]
 
-	# --------------------------------------------------------
-	# Descarga la página
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+    url = "http://www.crtvg.es/TVGacarta/"
 
-	# --------------------------------------------------------
-	# Extrae las categorias (carpetas)
-	# --------------------------------------------------------
-	patron = '<option>(.*?)\\n'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(url)
+    #logger.info(data)
 
-	for match in matches:
-		scrapedtitle = match.rstrip()
-		if scrapedtitle.startswith("<I>"):
-			scrapedtitle = scrapedtitle[3:-4]
-		scrapedurl = "http://www.crtvg.es/tvgacarta/index.asp?tipo=" + scrapedtitle.replace(" ","+") + "&procura="
-		scrapedthumbnail = ""
-		scrapedplot = ""
+    # Extrae las categorias (carpetas)
+    patron = '<option>(.*?)\\n'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+    for match in matches:
+        scrapedtitle = match.rstrip()
+        if scrapedtitle.startswith("<I>"):
+            scrapedtitle = scrapedtitle[3:-4]
+        scrapedurl = "http://www.crtvg.es/tvgacarta/index.asp?tipo=" + scrapedtitle.replace(" ","+") + "&procura="
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
-		#addvideo( scrapedtitle , scrapedurl , category )
-		xbmctools.addnewfolder( CHANNELCODE , "categorylist" , scrapedtitle , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" ).encode("utf-8")
+        scrapedurl = unicode( scrapedurl, "iso-8859-1" ).encode("utf-8")
+        scrapedplot = unicode( scrapedplot, "iso-8859-1" ).encode("utf-8")
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="programlist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show="" , category = scrapedtitle , folder=True) )
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    return itemlist
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def programlist(item):
+    logger.info("[tvg.py] categorylist")
+    itemlist=[]
+    
+    # Descarga la pÃ¡gina
+    posturl = item.url[:39]
+    postdata = item.url[40:]
+    logger.info("posturl="+posturl)
+    logger.info("postdata="+postdata)
+    data = scrapertools.cache_page(posturl,post=postdata)
+    #logger.info(data)
 
-def categorylist(params,url,category):
-	xbmc.output("[tvg.py] categorylist")
+    # Extrae las carpetas
+    patron = '<table align="center" id="prog_front">[^<]+<tr>[^<]+<th class="cab">[^<]+<strong>([^<]+)</strong>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	# --------------------------------------------------------
-	# Descarga la página
-	# --------------------------------------------------------
-	posturl = url[:39]
-	postdata = url[40:]
-	xbmc.output("posturl="+posturl)
-	xbmc.output("postdata="+postdata)
-	data = scrapertools.cachePagePost(posturl,postdata)
-	#xbmc.output(data)
+    for match in matches:
+        scrapedtitle = match.rstrip()
+        scrapedurl = "http://www.crtvg.es/tvgacarta/index.asp?tipo=" + item.category.replace(" ","+") + "&procura=" + match.replace(" ","+")
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	# --------------------------------------------------------
-	# Extrae las carpetas
-	# --------------------------------------------------------
-	patron = '<table align="center" id="prog_front">[^<]+<tr>[^<]+<th class="cab">[^<]+<strong>([^<]+)</strong>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" ).encode("utf-8")
+        scrapedurl = unicode( scrapedurl, "iso-8859-1" ).encode("utf-8")
+        scrapedplot = unicode( scrapedplot, "iso-8859-1" ).encode("utf-8")
 
-	for match in matches:
-		scrapedtitle = match.rstrip()
-		scrapedurl = "http://www.crtvg.es/tvgacarta/index.asp?tipo=" + category.replace(" ","+") + "&procura=" + match.replace(" ","+")
-		scrapedthumbnail = ""
-		scrapedplot = ""
+        # AÃ±ade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, page=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , category = item.category , folder=True) )
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+    return itemlist
 
-		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELCODE , "videolist" , scrapedtitle , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+def videolist(item):
+    import urllib
+    logger.info("[tvg.py] videolist")
+    itemlist = []
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    # Descarga la pÃ¡gina
+    posturl = item.url[:39]
+    postdata = item.url[40:]
+    logger.info("posturl="+posturl)
+    logger.info("postdata="+postdata)
+    data = scrapertools.cache_page(posturl,post=postdata)
+    #logger.info(data)
 
-	# Disable sorting...
-	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    # Extrae los videos
+    patron = '[^<]+<table class="video" onmouseover="[^"]+" onmouseout="[^"]+" onclick="javascript:AbreReproductor\(\'([^\']+)\'[^"]+" >[^<]+<tr>[^<]+<td rowspan="2" class="foto"><img src="([^"]+)"></td>[^<]+<td class="texto">(.*?)</td>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    for match in matches:
+        patron2 = "programa=([^&]+)&"
+        matches2 = re.compile(patron2,re.DOTALL).findall(match[0])
+        scrapedtitle = urllib.unquote_plus(matches2[0])
 
-def videolist(params,url,category):
-	xbmc.output("[tvg.py] videolist")
+        patron2 = "fecha=([^&]+)&"
+        matches2 = re.compile(patron2,re.DOTALL).findall(match[0])
+        scrapedtitle = scrapedtitle + " (" + matches2[0] + ")"
 
-	# --------------------------------------------------------
-	# Descarga la página
-	# --------------------------------------------------------
-	posturl = url[:39]
-	postdata = url[40:]
-	xbmc.output("posturl="+posturl)
-	xbmc.output("postdata="+postdata)
-	data = scrapertools.cachePagePost(posturl,postdata)
-	#xbmc.output(data)
+        scrapedurl = "http://www.crtvg.es" + match[0].replace("&amp;","&").replace(" ","%20")
+        scrapedthumbnail = "http://www.crtvg.es"+match[1]
+        scrapedplot = match[2]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	# --------------------------------------------------------
-	# Extrae los videos
-	# --------------------------------------------------------
-	patron = '[^<]+<table class="video" onmouseover="[^"]+" onmouseout="[^"]+" onclick="javascript:AbreReproductor\(\'([^\']+)\'[^"]+" >[^<]+<tr>[^<]+<td rowspan="2" class="foto"><img src="([^"]+)"></td>[^<]+<td class="texto">(.*?)</td>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" ).encode("utf-8")
+        scrapedurl = unicode( scrapedurl, "iso-8859-1" ).encode("utf-8")
+        scrapedplot = unicode( scrapedplot, "iso-8859-1" ).encode("utf-8")
 
-	for match in matches:
-		patron2 = "programa=([^&]+)&"
-		matches2 = re.compile(patron2,re.DOTALL).findall(match[0])
-		scrapedtitle = matches2[0]
+        # AÃ±ade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="getvideo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=True) )
 
-		patron2 = "fecha=([^&]+)&"
-		matches2 = re.compile(patron2,re.DOTALL).findall(match[0])
-		scrapedtitle = scrapedtitle + " (" + matches2[0] + ")"
+    return itemlist
 
-		scrapedurl = "http://www.crtvg.es" + match[0].replace("&amp;","&").replace(" ","%20")
-		scrapedthumbnail = "http://www.crtvg.es"+match[1]
-		scrapedplot = match[2]
+def getvideo(item):
+    logger.info("[tvg.py] play")
+    itemlist = []
 
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+    # Descarga pagina detalle
+    logger.info("[tvg.py] descarga "+item.url)
+    data = scrapertools.cachePage(item.url)
 
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    # Primer frame
+    #<frame src="laterali.asp?canal=tele&amp;arquivo=1&amp;Programa=ALALÃ&amp;hora=09/02/2009 21:35:16&amp;fecha=03/02/2009&amp;id_Programa=7" name="pantalla" frameborder="0" scrolling="NO" noresize>
+    patron = '<frame src="(laterali.asp[^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    url = matches[0].replace("&amp;","&")
+    url = url.replace(" ","%20")
+    url = "http://www.crtvg.es/reproductor/"+url
 
-	# Disable sorting...
-	#xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    # Segundo frame
+    #<frame src="ipantalla.asp?canal=tele&amp;arquivo=1&amp;Programa=ALALÃ&amp;hora=09/02/2009 21:35:16&amp;fecha=03/02/2009&amp;opcion=pantalla&amp;id_Programa=7" name="pantalla" frameborder="0" scrolling="NO" noresize>
+    logger.info("[tvg.py] descarga "+url)
+    data = scrapertools.cachePage(url)
+    patron = '<frame src="(ipantalla.asp[^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    url = matches[0].replace("&amp;","&")
+    url = url.replace(" ","%20")
+    url = "http://www.crtvg.es/reproductor/"+url
 
-def play(params,url,category):
-	xbmc.output("[tvg.py] play")
+    # Video
+    #<param name='url' value='http://www.crtvg.es/asfroot/acarta_tvg/ALALA_20090203.asx' />
+    #<PARAM NAME="URL" value="http://www.crtvg.es/asfroot/acarta_tvg/ALALA_20090203.asx" />
+    logger.info("[tvg.py] descarga "+url)
+    data = scrapertools.cachePage(url)
+    patron = '<PARAM NAME="URL" value="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
-	title = urllib.unquote_plus( params.get("title") )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[tvg.py] thumbnail="+thumbnail)
+    if len(matches) == 0:
+        logger.info("probando e.r. alternativa")
+        patron = "<param name='url' value='([^']+)'"
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+    
+    url = matches[0]
+    
+    #<ASX VERSION="3.0"><TITLE>TelevisiÂ¾n de Galicia - ALAL-</TITLE><ENTRY><REF HREF="mms://media2.crtvg.es/videos_f/0007/0007_20090203.wmv"/><STARTTIME VALUE="0:00:00" />
+    logger.info("[tvg.py] descarga "+url)
+    data = scrapertools.cachePage(url)
+    patron = 'HREF="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Descargando datos del vídeo...', title )
+    url = matches[0]
+    logger.info("url="+url)
 
-	# --------------------------------------------------------
-	# Descarga pagina detalle
-	# --------------------------------------------------------
-	xbmc.output("[tvg.py] descarga "+url)
-	data = scrapertools.cachePage(url)
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , show = item.show , category = item.category , folder=False) )
 
-	# Primer frame
-	#<frame src="laterali.asp?canal=tele&amp;arquivo=1&amp;Programa=ALALÁ&amp;hora=09/02/2009 21:35:16&amp;fecha=03/02/2009&amp;id_Programa=7" name="pantalla" frameborder="0" scrolling="NO" noresize>
-	patron = '<frame src="(laterali.asp[^"]+)"'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	url = matches[0].replace("&amp;","&")
-	url = url.replace(" ","%20")
-	url = "http://www.crtvg.es/reproductor/"+url
-
-	# Segundo frame
-	#<frame src="ipantalla.asp?canal=tele&amp;arquivo=1&amp;Programa=ALALÁ&amp;hora=09/02/2009 21:35:16&amp;fecha=03/02/2009&amp;opcion=pantalla&amp;id_Programa=7" name="pantalla" frameborder="0" scrolling="NO" noresize>
-	xbmc.output("[tvg.py] descarga "+url)
-	data = scrapertools.cachePage(url)
-	patron = '<frame src="(ipantalla.asp[^"]+)"'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	url = matches[0].replace("&amp;","&")
-	url = url.replace(" ","%20")
-	url = "http://www.crtvg.es/reproductor/"+url
-
-	# Video
-	#<param name='url' value='http://www.crtvg.es/asfroot/acarta_tvg/ALALA_20090203.asx' />
-	#<PARAM NAME="URL" value="http://www.crtvg.es/asfroot/acarta_tvg/ALALA_20090203.asx" />
-	xbmc.output("[tvg.py] descarga "+url)
-	data = scrapertools.cachePage(url)
-	patron = '<PARAM NAME="URL" value="([^"]+)"'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	if len(matches) == 0:
-		logFile.info("probando e.r. alternativa")
-		patron = "<param name='url' value='([^']+)'"
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		scrapertools.printMatches(matches)
-	url = matches[0]
-	
-	#<ASX VERSION="3.0"><TITLE>Televisi¾n de Galicia - ALAL-</TITLE><ENTRY><REF HREF="mms://media2.crtvg.es/videos_f/0007/0007_20090203.wmv"/><STARTTIME VALUE="0:00:00" />
-	xbmc.output("[tvg.py] descarga "+url)
-	data = scrapertools.cachePage(url)
-	patron = 'HREF="([^"]+)"'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-
-	url = matches[0]
-	xbmc.output("url="+url)
-
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
-
-	# Crea la entrada y la añade al playlist
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
-	playlist.add( url, listitem )
-
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
-
-	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_MPLAYER )
-	xbmcPlayer.play(playlist)   
+    return itemlist

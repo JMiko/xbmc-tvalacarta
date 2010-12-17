@@ -16,34 +16,39 @@
 print "Using DEVELOPER config"
 
 import os
+import ConfigParser
 
 DATA_PATH = os.getcwd()
+CONFIG_FILE_PATH = os.path.join(DATA_PATH,'settings.conf')
+print "Config file path "+CONFIG_FILE_PATH
 
-# Un gestor de parámetros artesano para ejecución desde eclipse
-opciones = dict()
-opciones["debug"] ="true"
+configfile = ConfigParser.SafeConfigParser()
+configfile.read( CONFIG_FILE_PATH )
 
 def get_system_platform():
-	return "desktop"
-	
+    return "desktop"
+    
 def open_settings():
-	return
+    return
 
 def get_setting(name):
-	return opciones[name]
-	
+    try:
+        return configfile.get("General",name)
+    except:
+        return ""
+    
 def set_setting(name,value):
-	opciones[name]=value
+    pass
 
 def get_localized_string(code):
-	return code
-	
+    return code
+    
 def get_library_path():
-	# FIXME: Una forma rápida de lanzar un error
-	import noexiste
-	return ""
+    # FIXME: Una forma rápida de lanzar un error
+    import noexiste
+    return ""
 
 def get_temp_file(filename):
-	# FIXME: Una forma rápida de lanzar un error 
-	import noexiste
-	return ""
+    # FIXME: Una forma rápida de lanzar un error 
+    import noexiste
+    return ""
