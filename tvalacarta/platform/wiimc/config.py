@@ -6,12 +6,15 @@
 #------------------------------------------------------------
 
 import os
+
 import ConfigParser
-
-DATA_PATH = os.getcwd()
-
 configfile = ConfigParser.ConfigParser()
 configfile.read('resources/pelisalacarta.conf')
+
+from lib.elementtree import ElementTree as ET
+translationstree = ET.parse( "resources/language/Spanish/strings.xml" )
+
+DATA_PATH = os.getcwd()
 
 def get_system_platform():
     return "wiimc"
@@ -29,7 +32,9 @@ def setSetting(name,value):
     pass
 
 def getLocalizedString(code):
-    return code
+    dev = translationstree.findtext( "//strings/string[@id='30025']" , "30025" )
+    print dev
+    return dev
     
 def getPluginId():
     return "pelisalacarta"
