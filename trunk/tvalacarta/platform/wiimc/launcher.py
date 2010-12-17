@@ -2,7 +2,7 @@
 import os
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
-import config
+from core import config
 
 PORT=int(config.getSetting("server.port"))
 
@@ -28,8 +28,8 @@ class MyHandler(BaseHTTPRequestHandler):
 
         respuesta += "version=7\n"
         #self.wfile.write("background=http://www.mimediacenter.info/xbmc/pelisalacarta/icon.jpg")
-        respuesta += "logo=http://www.mimediacenter.info/xbmc/pelisalacarta/icon.jpg\n"
-        respuesta += "title=pelisalacarta prerelease\n"
+        respuesta += "logo=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg\n"
+        respuesta += "title=tvalacarta 3.0 (WiiMC)\n"
         respuesta += "\n"
 
         if self.path == "/":
@@ -40,12 +40,12 @@ class MyHandler(BaseHTTPRequestHandler):
                 if channel[5]=="generic":
                     respuesta += "type=playlist\n"
                     respuesta += "name="+channel[0]+"\n"
-                    respuesta += "thumb=http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"+channel[1]+".png\n"
+                    respuesta += "thumb=http://www.mimediacenter.info/xbmc/tvalacarta/posters/"+channel[1]+".png\n"
                     respuesta += "URL=http://"+host+"/"+channel[1]+"/mainlist/none/none/playlist.plx\n"
                     respuesta += "\n"
 
         else:
-            import wiitools
+            from platform.wii import wiitools
             itemlist,channel = wiitools.getitems(self.path)
             
             import urllib
