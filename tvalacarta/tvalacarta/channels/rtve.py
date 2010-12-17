@@ -123,7 +123,7 @@ def anyadevideos(matches,itemlist,item):
         #if DEBUG: scrapertools.printMatches(fechahora)
 
         if len(fechahora)>0:
-            scrapedtitle = scrapertools.entityunescape(match[4] + " ("+fechahora[0][0]+") (" + fechahora[0][1]+"'"+fechahora[0][2]+'")')
+            scrapedtitle = scrapertools.entityunescape(match[4] + " ("+fechahora[0][0]+")")# (" + fechahora[0][1]+"'"+fechahora[0][2]+'")')
         else:
             scrapedtitle = scrapertools.entityunescape(match[4])
         scrapedurl = urlparse.urljoin("http://www.rtve.es",match[1])
@@ -137,11 +137,11 @@ def anyadevideos(matches,itemlist,item):
         
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=scrapedplot , server = "directo" , show = item.title , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="getvideo" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=scrapedplot , server = "directo" , show = item.title , folder=True) )
 
 '''
 def play(params,url,category):
-    xbmc.output("[rtve.py] play")
+    logger.info("[rtve.py] play")
 
     title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -164,7 +164,7 @@ def play(params,url,category):
         url = matches[0]
     except:
         url = ""
-    xbmc.output("[rtve.py] url="+url)
+    logger.info("[rtve.py] url="+url)
 
     # Cierra dialogo
     dialogWait.close()
@@ -172,32 +172,24 @@ def play(params,url,category):
 
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 '''
-def play(params,url,category):
-    xbmc.output("[rtve.py] play")
-
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = "Directo"
-
-    # Abre dialogo
-    dialogWait = xbmcgui.DialogProgress()
-    dialogWait.create( 'Descargando datos del vídeo...', title )
+def getvideo(item):
+    logger.info("[rtve.py] play")
 
     # Extrae el código
     #http://www.rtve.es/mediateca/videos/20100410/telediario-edicion/741525.shtml
+    logger.info("url="+item.url)
     patron = 'http://.*?/([0-9]+).shtml'
-    data = url
+    data = item.url
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     codigo = matches[0]
-    xbmc.output("idvideo="+codigo)
+    logger.info("assetid="+codigo)
 
     try:
         # Compone la URL
         #http://www.rtve.es/swf/data/es/videos/alacarta/5/2/5/1/741525.xml
         url = 'http://www.rtve.es/swf/data/es/videos/alacarta/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
-        xbmc.output("[rtvemediateca.py] url=#"+url+"#")
+        logger.info("[rtve.py] url="+url)
 
         # Descarga el XML y busca el vídeo
         #<file>rtmp://stream.rtve.es/stream/resources/alacarta/flv/6/9/1270911975696.flv</file>
@@ -216,7 +208,7 @@ def play(params,url,category):
             # Compone la URL
             #http://www.rtve.es/swf/data/es/videos/video/0/5/8/0/500850.xml
             url = 'http://www.rtve.es/swf/data/es/videos/video/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
-            xbmc.output("[rtvemediateca.py] url=#"+url+"#")
+            logger.info("[rtve.py] url="+url)
 
             # Descarga el XML y busca el vídeo
             #<file>rtmp://stream.rtve.es/stream/resources/alacarta/flv/6/9/1270911975696.flv</file>
@@ -228,75 +220,54 @@ def play(params,url,category):
             url = matches[0]
         except:
             url = ""
-        
-    xbmc.output("[rtve.py] url="+url)
+    
+    if url=="":
 
-    # Cierra dialogo
-    dialogWait.close()
-    del dialogWait
+        try:
+            # Compone la URL
+            #http://www.rtve.es/swf/data/es/videos/video/0/5/8/0/500850.xml
+            url = 'http://www.rtve.es/swf/data/es/videos/video/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
+            logger.info("[rtve.py] url="+url)
 
-    if url.startswith("rtmp"):
-        # Playlist vacia
-        playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-        playlist.clear()
+            # Descarga el XML y busca el assetDataId
+            #<plugin ... assetDataId::576596"/>
+            data = scrapertools.cachePage(url)
+            #logger.info("[rtve.py] data="+data)
+            patron = 'assetDataId\:\:([^"]+)"'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            scrapertools.printMatches(matches)
+            #url = matches[0].replace('rtmp://stream.rtve.es/stream/','http://www.rtve.es/')
+            codigo = matches[0]
+            logger.info("assetDataId="+codigo)
+            
+            #url = http://www.rtve.es/scd/CONTENTS/ASSET_DATA_VIDEO/6/9/5/6/ASSET_DATA_VIDEO-576596.xml
+            url = 'http://www.rtve.es/scd/CONTENTS/ASSET_DATA_VIDEO/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/ASSET_DATA_VIDEO-'+codigo+'.xml'
+            logger.info("[rtve.py] url="+url)
+            
+            data = scrapertools.cachePage(url)
+            #logger.info("[rtve.py] data="+data)
+            patron  = '<field>[^<]+'
+            patron += '<key>ASD_FILE</key>[^<]+'
+            patron += '<value>([^<]+)</value>[^<]+'
+            patron += '</field>'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            scrapertools.printMatches(matches)
+            codigo = matches[0]
+            logger.info("[rtve.py] url="+url)
+            
+            #/deliverty/demo/resources/mp4/4/3/1290960871834.mp4
+            #http://media4.rtve.es/deliverty/demo/resources/mp4/4/3/1290960871834.mp4
+            #http://www.rtve.es/resources/TE_NGVA/mp4/4/3/1290960871834.mp4
+            url = "http://www.rtve.es/resources/TE_NGVA"+codigo[-26:]
 
-        '''
-        flvstreamer  -r "rtmp://stream.rtve.es/stream/resources/alacarta/flv/5/3/1270074791935.flv" -o out.flv
-        FLVStreamer v1.7
-        (c) 2009 Andrej Stepanchuk, license: GPL
-        DEBUG: Parsing...
-        DEBUG: Parsed protocol: 0
-        DEBUG: Parsed host    : stream.rtve.es
-        DEBUG: Parsed app     : stream/resources
-        DEBUG: Parsed playpath: alacarta/flv/5/3/1270074791935
-        DEBUG: Setting buffer time to: 36000000ms
-        Connecting ...
-        DEBUG: Protocol : RTMP
-        DEBUG: Hostname : stream.rtve.es
-        DEBUG: Port     : 1935
-        DEBUG: Playpath : alacarta/flv/5/3/1270074791935
-        DEBUG: tcUrl    : rtmp://stream.rtve.es:1935/stream/resources
-        DEBUG: app      : stream/resources
-        DEBUG: flashVer : LNX 9,0,124,0
-        DEBUG: live     : no
-        DEBUG: timeout  : 300 sec
-        DEBUG: Connect, ... connected, handshaking
-        DEBUG: HandShake: Type Answer   : 03
-        DEBUG: HandShake: Server Uptime : 1463582178
-        DEBUG: HandShake: FMS Version   : 3.5.2.1
-        DEBUG: Connect, handshaked
-        Connected...
-        '''
-        #url=rtmp://stream.rtve.es/stream/resources/alacarta/flv/5/3/1270074791935.flv
-        hostname = "stream.rtve.es"
-        xbmc.output("[rtve.py] hostname="+hostname)
-        portnumber = "1935"
-        xbmc.output("[rtve.py] portnumber="+portnumber)
-        tcurl = "rtmp://stream.rtve.es/stream/resources"
-        xbmc.output("[rtve.py] tcurl="+tcurl)
-        #playpath = "alacarta/flv/5/3/1270074791935"
-        playpath = url[39:-4]
-        xbmc.output("[rtve.py] playpath="+playpath)
-        app = "stream/resources"
-        xbmc.output("[rtve.py] app="+app)
-        
-        listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-        #listitem.setProperty("SWFPlayer", "http://www.plus.es/plustv/carcasa.swf")
-        listitem.setProperty("Hostname",hostname)
-        listitem.setProperty("Port",portnumber)
-        listitem.setProperty("tcUrl",tcurl)
-        listitem.setProperty("Playpath",playpath)
-        listitem.setProperty("app",app)
-        listitem.setProperty("flashVer","LNX 9,0,124,0")
-        listitem.setProperty("pageUrl","LNX 9,0,124,0")
+        except:
+            url = ""
+    logger.info("[rtve.py] url="+url)
 
-        listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
-        playlist.add( url, listitem )
-
-        # Reproduce
-        xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-        xbmcPlayer.play(playlist)   
-    elif url.startswith("http"):
-        xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    itemlist = []
+    if url=="":
+        itemlist.append( Item(channel=CHANNELNAME, title="No disponible" , folder=False) )
     else:
-        xbmctools.alertnodisponible()
+        itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , show = item.title , folder=False) )
+
+    return itemlist

@@ -37,10 +37,11 @@
 	<string id="30022">JDownloader cím:</string>
 	<string id="30024">Ennyi keresést mentsen</string>
 	<string id="30025">Cache mode:</string>
-	<string id="30027">Automatic</string>
-	<string id="30026">Cache all</string>
-	<string id="30027">Cache nothing</string>
-	
+	<string id="30026">Automatic</string>
+	<string id="30027">Cache all</string>
+	<string id="30028">Cache nothing</string>
+    <string id="30029">Cache path:</string>
+
 	<!-- =============================================================== -->
 	<!-- 30050 to 30099: Info / error messages                           -->
 	<!-- =============================================================== -->
@@ -85,7 +86,7 @@
 	<!-- 30150 to 30199: Action menu / contextual menu                   -->
 	<!-- =============================================================== -->
 	<string id="30150">Watch in high quality</string> <!-- Ver en calidad alta -->
-	<string id="30151">Watch in normal quality</string> <!-- Ver en calidad normal -->
+	<string id="30151">Watch the video</string> <!-- Ver en calidad normal -->
 	<string id="30152">Watch in low quality</string> <!-- Ver en calidad baja -->
 	<string id="30153">Download</string> <!-- Descargar -->
 	<string id="30154">Remove from favorites</string> <!-- Quitar de favoritos -->

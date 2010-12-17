@@ -10,14 +10,10 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import downloadtools
-import config
-import logger
+
+from core import xbmctools
+from core import downloadtools
+from core import logger
 
 CHANNELNAME = "descargados"
 

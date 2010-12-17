@@ -41,16 +41,26 @@ def open_settings():
     __settings__.openSettings()
 
 def get_setting(name):
-    return __settings__.getSetting( name )
+    
+    dev = __settings__.getSetting( name )
+    
+    # La cache recibe un valor por defecto la primera vez que se solicita
+    if name=="cache.dir" and dev=="":
+        dev = xbmc.translatePath("special://temp/%s.cache" % PLUGIN_ID)
+        if not os.path.exists(dev):
+            os.mkdir(dev)
+        set_setting(name,dev)
+
+    return dev
 
 def set_setting(name,value):
-    __settings__.setSetting( name,value ) # this will return "foo" setting value
+    __settings__.setSetting( name,value )
 
 def get_localized_string(code):
     dev = __language__(code)
 
     try:
-        dev = dev.encode ("utf-8") #This only aplies to unicode strings. The rest stay as they are.
+        dev = dev.encode("utf-8")
     except:
         pass
     

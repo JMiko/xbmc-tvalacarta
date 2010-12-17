@@ -1,276 +1,273 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta - XBMC Plugin
-# Canal para Turbonick
+# Canal para 7rm
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import scrapertools
-import binascii
-import xbmctools
+import urlparse,re
+import urllib
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
+from core import logger
+from core import scrapertools
+from core.item import Item
 
-xbmc.output("[turbonick.py] init")
+logger.info("[turbonick.py] init")
 
-DEBUG = True
-CHANNELNAME = "Turbonick"
-CHANNELCODE = "turbonick"
+DEBUG = False
+CHANNELNAME = "turbonick"
 
-def mainlist(params,url,category):
-	xbmc.output("[turbonick.py] mainlist")
+def isGeneric():
+    return True
 
-	url = 'http://es.turbonick.nick.com/dynamo/turbonick/locale/common/xml/dyn/getGateways.jhtml'
+def mainlist(item):
+    logger.info("[turbonick.py] mainlist")
+    itemlist = []
 
-	# --------------------------------------------------------
-	# Descarga la p�gina
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+    url = 'http://es.turbonick.nick.com/dynamo/turbonick/locale/common/xml/dyn/getGateways.jhtml'
+    
+    # --------------------------------------------------------
+    # Descarga la página
+    # --------------------------------------------------------
+    data = scrapertools.cachePage(url)
+    #logger.info(data)
 
-	# --------------------------------------------------------
-	# Extrae las categorias (carpetas)
-	# --------------------------------------------------------
-	patron = '<gateway cmsid="([^"]+)"\s+title="([^"]+)"\s+urlAlias="[^"]+"\s+iconurl="[^"]+"\s+iconurljpg="([^"]+)"'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+    # --------------------------------------------------------
+    # Extrae las categorias (carpetas)
+    # --------------------------------------------------------
+    patron = '<gateway cmsid="([^"]+)"\s+title="([^"]+)"\s+urlAlias="[^"]+"\s+iconurl="[^"]+"\s+iconurljpg="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG:
+        scrapertools.printMatches(matches)
 
-	for match in matches:
-		scrapedtitle = match[1]
-		scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/getIntlGatewayByID.jhtml?id='+match[0]
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for match in matches:
+        scrapedtitle = match[1]
+        scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/getIntlGatewayByID.jhtml?id='+match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# A�ade al listado de XBMC
-		#addvideo( scrapedtitle , scrapedurl , category )
-		if scrapedtitle=="EPISODIOS":
-			xbmctools.addnewfolder( CHANNELCODE , "series" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-		else:
-			xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        # Añade al listado de XBMC
+        #addvideo( scrapedtitle , scrapedurl , category )
+        if scrapedtitle=="EPISODIOS":
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="series" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , folder=True) )
+        else:
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , folder=True) )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    return itemlist
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+def series(item):
+    logger.info("[turbonick.py] series")
+    itemlist = []
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    # --------------------------------------------------------
+    # Descarga la página
+    # --------------------------------------------------------
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-def series(params,url,category):
-	xbmc.output("[turbonick.py] series")
+    # --------------------------------------------------------
+    # Extrae los vídeos
+    # --------------------------------------------------------
+    patron  = '<content\s+cmsid="([^"]+)"\s+type="content"\s+contenttype="video"[^>]+>[^<]+<meta(.*?)</meta'
+    bloques = re.compile(patron,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(bloques)
+    
+    dictionaryseries = {}
+    
+    for bloque in bloques:
+        data = bloque[1]
+        patron  = '<title>([^<]+)</title>[^<]+'
+        patron += '<shorttitle>([^<]+)</shorttitle>[^<]+'
+        patron += '<description>([^<]+)</description>.*?'
+        patron += '<iconurl>([^<]+)</iconurl>[^<]+'
+        patron += '<iconurljpg>([^<]+)</iconurljpg>.*?'
+        patron += '<date>([^<]+)</date>.*?'
+        patron += '<showname>([^<]+)</showname>[^<]+'
+        patron += '<shortshowname>([^<]+)</shortshowname>[^<]+'
+        patron += '<showid>([^<]+)</showid>[^<]+'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        #if DEBUG: scrapertools.printMatches(matches)
+        idserie = matches[0][6]
+        #logger.info("[turbonick.py] idserie="+idserie)
 
-	# --------------------------------------------------------
-	# Descarga la p�gina
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+        if not dictionaryseries.has_key(idserie):
+            logger.info("Nueva serie %s" % idserie)
+            
+            scrapedtitle = scrapertools.entityunescape(idserie)
+            if scrapedtitle=="false":
+                scrapedtitle="Otros"
+            
+            itemlist.append( Item(channel=CHANNELNAME, title = scrapedtitle , extra=idserie , action="episodios" , url=item.url, thumbnail="", plot="" , show=scrapedtitle , category=item.category , folder=True) )
 
-	# --------------------------------------------------------
-	# Extrae los v�deos
-	# --------------------------------------------------------
-	patron  = '<content\s+cmsid="([^"]+)"\s+type="content"\s+contenttype="video"[^>]+>[^<]+<meta(.*?)</meta'
-	bloques = re.compile(patron,re.DOTALL).findall(data)
-	#if DEBUG: scrapertools.printMatches(bloques)
-	
-	dictionaryseries = {}
-	
-	for bloque in bloques:
-		data = bloque[1]
-		patron  = '<title>([^<]+)</title>[^<]+'
-		patron += '<shorttitle>([^<]+)</shorttitle>[^<]+'
-		patron += '<description>([^<]+)</description>.*?'
-		patron += '<iconurl>([^<]+)</iconurl>[^<]+'
-		patron += '<iconurljpg>([^<]+)</iconurljpg>.*?'
-		patron += '<date>([^<]+)</date>.*?'
-		patron += '<showname>([^<]+)</showname>[^<]+'
-		patron += '<shortshowname>([^<]+)</shortshowname>[^<]+'
-		patron += '<showid>([^<]+)</showid>[^<]+'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		#if DEBUG: scrapertools.printMatches(matches)
-		idserie = matches[0][6]
-		#xbmc.output("[turbonick.py] idserie="+idserie)
+            dictionaryseries[idserie] = True
 
-		if not dictionaryseries.has_key(idserie):
-			xbmc.output("Nueva serie %s" % idserie)
-			xbmctools.addnewfolder( CHANNELCODE , "episodios" , idserie , idserie , url , "" , "" )
-			dictionaryseries[idserie] = True
+    return itemlist
 
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def episodios(item):
+    logger.info("[turbonick.py] episodios")
+    print item.tostring()
+    itemlist = []
 
-def episodios(params,url,category):
-	xbmc.output("[turbonick.py] episodios")
+    # --------------------------------------------------------
+    # Descarga la página
+    # --------------------------------------------------------
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-	# --------------------------------------------------------
-	# Descarga la p�gina
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+    # --------------------------------------------------------
+    # Extrae los vídeos
+    # --------------------------------------------------------
+    patron  = '<content\s+cmsid="([^"]+)"\s+type="content"\s+contenttype="video"[^>]+>[^<]+<meta(.*?)</meta'
+    bloques = re.compile(patron,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(bloques)
+    
+    for bloque in bloques:
+        data = bloque[1]
+        patron  = '<title>([^<]+)</title>[^<]+'
+        patron += '<shorttitle>([^<]+)</shorttitle>[^<]+'
+        patron += '<description>([^<]+)</description>.*?'
+        patron += '<iconurl>([^<]+)</iconurl>[^<]+'
+        patron += '<iconurljpg>([^<]+)</iconurljpg>.*?'
+        patron += '<date>([^<]+)</date>.*?'
+        patron += '<showname>([^<]+)</showname>[^<]+'
+        patron += '<shortshowname>([^<]+)</shortshowname>[^<]+'
+        patron += '<showid>([^<]+)</showid>[^<]+'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        #if DEBUG: scrapertools.printMatches(matches)
+        match = matches[0]
+        
+        idserie = match[6]
+        if match[1] != "false":
+            scrapedtitle = match[1]+" - "+match[2]
+        else:
+            scrapedtitle = idserie+" - "+match[2]
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        if scrapedtitle.startswith("DRAKE AND JOSH"):
+            scrapedtitle = scrapedtitle.replace("DRAKE AND JOSH","DRAKE & JOSH") 
+        scrapedthumbnail = match[3]
+        if scrapedthumbnail == "false":
+            scrapedthumbnail = ""
+        scrapedplot = match[5]
+        scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/flvgenPT.jhtml?vid='+bloque[0]+'&hiLoPref=hi'
+        
+        #logger.info("[turbonick.py] idserie="+idserie)
 
-	# --------------------------------------------------------
-	# Extrae los v�deos
-	# --------------------------------------------------------
-	patron  = '<content\s+cmsid="([^"]+)"\s+type="content"\s+contenttype="video"[^>]+>[^<]+<meta(.*?)</meta'
-	bloques = re.compile(patron,re.DOTALL).findall(data)
-	#if DEBUG: scrapertools.printMatches(bloques)
-	
-	for bloque in bloques:
-		data = bloque[1]
-		patron  = '<title>([^<]+)</title>[^<]+'
-		patron += '<shorttitle>([^<]+)</shorttitle>[^<]+'
-		patron += '<description>([^<]+)</description>.*?'
-		patron += '<iconurl>([^<]+)</iconurl>[^<]+'
-		patron += '<iconurljpg>([^<]+)</iconurljpg>.*?'
-		patron += '<date>([^<]+)</date>.*?'
-		patron += '<showname>([^<]+)</showname>[^<]+'
-		patron += '<shortshowname>([^<]+)</shortshowname>[^<]+'
-		patron += '<showid>([^<]+)</showid>[^<]+'
-		matches = re.compile(patron,re.DOTALL).findall(data)
-		#if DEBUG: scrapertools.printMatches(matches)
-		match = matches[0]
-		
-		idserie = match[6]
-		if match[1] != "false":
-			scrapedtitle = match[1]+" - "+match[2]
-		else:
-			scrapedtitle = idserie+" - "+match[2]
-		scrapedthumbnail = match[3]
-		scrapedplot = match[5]
-		scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/flvgenPT.jhtml?vid='+bloque[0]+'&hiLoPref=hi'
-		
-		#xbmc.output("[turbonick.py] idserie="+idserie)
+        if idserie==item.extra:
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=False) )
 
-		if idserie==category:
-			xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    return itemlist
 
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def videolist(item):
+    logger.info("[turbonick.py] videolist")
+    itemlist = []
 
-def videolist(params,url,category):
-	xbmc.output("[turbonick.py] videolist")
+    # --------------------------------------------------------
+    # Descarga la página
+    # --------------------------------------------------------
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-	# --------------------------------------------------------
-	# Descarga la p�gina
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	#xbmc.output(data)
+    # --------------------------------------------------------
+    # Extrae los vídeos
+    # --------------------------------------------------------
+    patron  = '<content.*?'
+    patron += 'cmsid="([^"]+)"'
+    patron += '(?:\s+iconurl="([^"]+)")?.*?'
+    patron += '<title>([^<]+)</title>.*?'
+    patron += '<description>([^<]+)</description>.*?'
+    patron += '(?:<iconurl>([^<]+)</iconurl>)?'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG:
+        scrapertools.printMatches(matches)
 
-	# --------------------------------------------------------
-	# Extrae los v�deos
-	# --------------------------------------------------------
-	patron  = '<content.*?'
-	patron += 'cmsid="([^"]+)"'
-	patron += '(?:\s+iconurl="([^"]+)")?.*?'
-	patron += '<title>([^<]+)</title>.*?'
-	patron += '<description>([^<]+)</description>.*?'
-	patron += '(?:<iconurl>([^<]+)</iconurl>)?'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)
+    dictionaryurl = {}
 
-	dictionaryurl = {}
+    for match in matches:
+        try:
+            scrapedtitle = unicode( match[2] + " - " + match[3], "utf-8" ).encode("iso-8859-1")
+        except:
+            scrapedtitle = match[2] + " - " + match[3]
+        scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/flvgenPT.jhtml?vid='+match[0]+'&hiLoPref=hi'
+        scrapedthumbnail = match[1]
+        if scrapedthumbnail == "":
+            scrapedthumbnail = match[4]
+        if scrapedthumbnail == "false":
+            scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	for match in matches:
-		try:
-			scrapedtitle = unicode( match[2] + " - " + match[3], "utf-8" ).encode("iso-8859-1")
-		except:
-			scrapedtitle = match[2] + " - " + match[3]
-		scrapedurl = 'http://es.turbonick.nick.com/dynamo/turbonick/xml/dyn/flvgenPT.jhtml?vid='+match[0]+'&hiLoPref=hi'
-		scrapedthumbnail = match[1]
-		if scrapedthumbnail == "":
-			scrapedthumbnail = match[4]
-		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        # Añade al listado de XBMC
+        if dictionaryurl.has_key(scrapedurl):
+            logger.info("repetido")
+        else:
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=False) )
+            dictionaryurl[scrapedurl] = True
 
-		# A�ade al listado de XBMC
-		if dictionaryurl.has_key(scrapedurl):
-			xbmc.output("repetido")
-		else:
-			xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-			dictionaryurl[scrapedurl] = True
+    return itemlist
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+# URL del capítulo: http://es.turbonick.nick.com/turbonick/?extvideoid=7881
+def play(item):
+    import xbmc
+    import xbmcgui
+    
+    logger.info("[turbonick.py] play")
 
-def play(params,url,category):
-	xbmc.output("[turbonick.py] play")
+    # Abre dialogo
+    dialogWait = xbmcgui.DialogProgress()
+    dialogWait.create( 'Descargando datos del vídeo...', item.title )
 
-	title = urllib.unquote_plus( params.get("title") )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = urllib.unquote_plus( params.get("plot") )
-	xbmc.output("[turbonick.py] thumbnail="+thumbnail)
+    # --------------------------------------------------------
+    # Descarga pagina detalle
+    # --------------------------------------------------------
+    data = scrapertools.cachePage(item.url)
+    patron = '<src>([^<]+)</src>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    url = matches[0]
+    #rtmp://cp35019.edgefcs.net/ondemand/mtviestor/_!/intlnick/es/AVATAR/AVATAR1A_OD_640.flv
+    #DEBUG: Protocol : RTMP
+    #DEBUG: Hostname : cp35019.edgefcs.net
+    #DEBUG: Port     : 1935
+    #DEBUG: Playpath : mtviestor/_!/intlnick/es/AVATAR/AVATAR1A_OD_640
+    #DEBUG: tcUrl    : rtmp://cp35019.edgefcs.net:1935/ondemand
+    #DEBUG: app      : ondemand
+    #DEBUG: flashVer : LNX 9,0,124,0
+    #DEBUG: live     : no
+    #DEBUG: timeout  : 300 sec
+    cabecera = url[:35]
+    logger.info("cabecera="+cabecera)
+    finplaypath = url.rfind(".")
+    playpath = url[35:finplaypath]
+    logger.info("playpath="+playpath)
 
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( 'Descargando datos del v�deo...', title )
+    logger.info("url="+url)
 
-	# --------------------------------------------------------
-	# Descarga pagina detalle
-	# --------------------------------------------------------
-	data = scrapertools.cachePage(url)
-	patron = '<src>([^<]+)</src>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
-	url = matches[0]
-	#rtmp://cp35019.edgefcs.net/ondemand/mtviestor/_!/intlnick/es/AVATAR/AVATAR1A_OD_640.flv
-	#DEBUG: Protocol : RTMP
-	#DEBUG: Hostname : cp35019.edgefcs.net
-	#DEBUG: Port     : 1935
-	#DEBUG: Playpath : mtviestor/_!/intlnick/es/AVATAR/AVATAR1A_OD_640
-	#DEBUG: tcUrl    : rtmp://cp35019.edgefcs.net:1935/ondemand
-	#DEBUG: app      : ondemand
-	#DEBUG: flashVer : LNX 9,0,124,0
-	#DEBUG: live     : no
-	#DEBUG: timeout  : 300 sec
-	cabecera = url[:35]
-	xbmc.output("cabecera="+cabecera)
-	finplaypath = url.rfind(".")
-	playpath = url[35:finplaypath]
-	xbmc.output("playpath="+playpath)
+    # Playlist vacia
+    playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+    playlist.clear()
 
-	xbmc.output("url="+url)
+    # Crea la entrada y la añade al playlist
+    url = cabecera
+    listitem = xbmcgui.ListItem( item.title, iconImage="DefaultVideo.png", thumbnailImage=item.thumbnail )
+    listitem.setProperty("SWFPlayer", "http://es.turbonick.nick.com/global/apps/broadband/swf/bb_flv_player.swf")
+    #listitem.setProperty("Playpath","14314/plus/plustv/PO778395")
+    listitem.setProperty("Playpath",playpath)
+    listitem.setProperty("Hostname","cp35019.edgefcs.net")
+    listitem.setProperty("Port","1935")
+    #listitem.setProperty("tcUrl","rtmp://od.flash.plus.es/ondemand")
+    listitem.setProperty("tcUrl",cabecera)
+    listitem.setProperty("app","ondemand")
+    listitem.setProperty("flashVer","LNX 9,0,124,0")
+    #listitem.setProperty("pageUrl","LNX 9,0,124,0")
+    
+    listitem.setInfo( "video", { "Title": item.title, "Plot" : item.plot , "Studio" : CHANNELNAME , "Genre" : item.category } )
+    playlist.add( url, listitem )
 
-	# Playlist vacia
-	playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-	playlist.clear()
+    # Cierra dialogo
+    dialogWait.close()
+    del dialogWait
 
-	# Crea la entrada y la a�ade al playlist
-	url = cabecera
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-	listitem.setProperty("SWFPlayer", "http://es.turbonick.nick.com/global/apps/broadband/swf/bb_flv_player.swf")
-	#listitem.setProperty("Playpath","14314/plus/plustv/PO778395")
-	listitem.setProperty("Playpath",playpath)
-	listitem.setProperty("Hostname","cp35019.edgefcs.net")
-	listitem.setProperty("Port","1935")
-	#listitem.setProperty("tcUrl","rtmp://od.flash.plus.es/ondemand")
-	listitem.setProperty("tcUrl",cabecera)
-	listitem.setProperty("app","ondemand")
-	listitem.setProperty("flashVer","LNX 9,0,124,0")
-	#listitem.setProperty("pageUrl","LNX 9,0,124,0")
-	
-	listitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : CHANNELNAME , "Genre" : category } )
-	playlist.add( url, listitem )
-
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
-
-	# Reproduce
-	xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-	xbmcPlayer.play(playlist)   
+    # Reproduce
+    xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
+    xbmcPlayer.play(playlist)   

@@ -6,15 +6,14 @@
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
-import os
 import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import binascii
-import xbmctools
-import youtube
+
+from core import scrapertools
+from core import xbmctools
+from servers import youtube
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
