@@ -29,24 +29,13 @@ def mainlist(params,url,category):
         else:
             logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
-    idioma = config.get_setting("languagefilter")
-    logger.info("[channelselector.py] idioma=%s" % idioma)
-    langlistv = [config.getLocalizedString(30025),config.getLocalizedString(30026),config.getLocalizedString(30027),config.getLocalizedString(30028),config.getLocalizedString(30029)]
-    try:
-        idiomav = langlistv[int(idioma)]
-    except:
-        idiomav = langlistv[0]
-    #logger.info("[channelselector.py] idiomav=%s" % idiomav)
-
-    addfolder(config.getLocalizedString(30118)+" ("+idiomav+")","channelselector","channeltypes")
-    #searchwebs=": Cinetube,Peliculasyonkis,Cinegratis,tumejortv.com,Peliculas21,Cine15,Seriesyonkis,Yotix.tv,DocumaniaTV,Discoverymx,Stagevu,tu.tv"
-    #channelslist.append([ config.getLocalizedString(30103)+searchwebs , "buscador" , "Buscador" , "" , "B" ])# Buscador
-    addfolder(config.getLocalizedString(30103),"buscador"       ,"mainlist")
-    addfolder(config.getLocalizedString(30102),"favoritos"      ,"mainlist")
+    addfolder(config.get_localized_string(30118),"channelselector","channeltypes")
+    #addfolder(config.get_localized_string(30103),"buscador"       ,"mainlist")
+    addfolder(config.get_localized_string(30102),"favoritos"      ,"mainlist")
     if (DOWNLOAD_ENABLED):
-        addfolder(config.getLocalizedString(30101),"descargados","mainlist")
-    addfolder(config.getLocalizedString(30100),"configuracion"  ,"mainlist")
-    addfolder(config.getLocalizedString(30104),"ayuda"          ,"mainlist")
+        addfolder(config.get_localized_string(30101),"descargados","mainlist")
+    addfolder(config.get_localized_string(30100),"configuracion"  ,"mainlist")
+    #addfolder(config.get_localized_string(30104),"ayuda"          ,"mainlist")
 
     # Label (top-right)...
     import xbmcplugin
@@ -57,13 +46,12 @@ def mainlist(params,url,category):
 def channeltypes(params,url,category):
     logger.info("[channelselector.py] channeltypes")
 
-    addfolder(config.getLocalizedString(30121),"channelselector","listchannels","*")   # Todos
-    addfolder(config.getLocalizedString(30122),"channelselector","listchannels","F")  # Películas
-    addfolder(config.getLocalizedString(30123),"channelselector","listchannels","S")  # Series
-    addfolder(config.getLocalizedString(30124),"channelselector","listchannels","A")  # Anime
-    addfolder(config.getLocalizedString(30125),"channelselector","listchannels","D")  # Dibujos
-    addfolder(config.getLocalizedString(30126),"channelselector","listchannels","M")  # Música
-    addfolder(config.getLocalizedString(30127),"channelselector","listchannels","G")  # Servidores
+    addfolder(config.get_localized_string(30121),"channelselector","listchannels","*")  # Todos
+    addfolder(config.get_localized_string(30129),"channelselector","listchannels","N")  # Nacionales
+    addfolder(config.get_localized_string(30130),"channelselector","listchannels","A")  # Autonomicos
+    addfolder(config.get_localized_string(30131),"channelselector","listchannels","L")  # Locales
+    addfolder(config.get_localized_string(30132),"channelselector","listchannels","T")  # Temáticos
+    addfolder(config.get_localized_string(30133),"channelselector","listchannels","I")  # Web
 
     # Label (top-right)...
     import xbmcplugin
@@ -74,14 +62,7 @@ def channeltypes(params,url,category):
 def listchannels(params,url,category):
     logger.info("[channelselector.py] listchannels")
 
-    try:
-        idioma = config.getSetting("languagefilter")
-        logger.info("[channelselector.py] idioma=%s" % idioma)
-        langlistv = ["","ES","EN","IT","PT"]
-        idiomav = langlistv[int(idioma)]
-        logger.info("[channelselector.py] idiomav=%s" % idiomav)
-    except:
-        idiomav=""
+    idiomav=""
 
     channelslist = channels_list()
 
@@ -104,81 +85,39 @@ def listchannels(params,url,category):
 
 def channels_list():
     channelslist = []
-    channelslist.append([ "Cinetube"              , "cinetube"             , "" , "ES" , "F" , "generic" ])
-    channelslist.append([ "Peliculasyonkis"       , "peliculasyonkis"      , "" , "ES" , "F" , "xbmc" ])
-    channelslist.append([ "Cinegratis"            , "cinegratis"           , "" , "ES" , "F,S,A,D" , "generic" ])
-    channelslist.append([ "tumejortv.com"         , "tumejortv"            , "" , "ES" , "F,S" , "generic" ])
-    channelslist.append([ "Peliculas21"           , "peliculas21"          , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "Dospuntocerovision"    , "dospuntocerovision"   , "" , "ES" , "F,S" , "xbmc"  ])
-    channelslist.append([ "Cine15"                , "cine15"               , "" , "ES" , "F" , "generic" ])
-    channelslist.append([ "Peliculasid"           , "peliculasid"          , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "Cinegratis24h"         , "cinegratis24h"        , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "Cine-Adicto"           , "cineadicto"           , "" , "ES" , "F,D" , "xbmc"  ])
-    channelslist.append([ "PelisFlv"              , "pelisflv"             , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "NoloMires"             , "nolomires"            , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "NewDivx"               , "newdivx"              , "" , "ES" , "F,D" , "xbmc"  ])
-    channelslist.append([ "Peliculas Online FLV"  , "peliculasonlineflv"   , "" , "ES" , "F,D" , "xbmc"  ])
-    channelslist.append([ "FilmesOnlineBr"        , "filmesonlinebr"       , "" , "PT" , "F" , "xbmc"  ])
-    channelslist.append([ "TVShack.cc (VO)"       , "tvshack"              , "" , "EN" , "F,S,A,D,M" , "xbmc"  ])
-    channelslist.append([ "DeLaTV"                , "delatv"               , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "Pelis24"               , "pelis24"              , "" , "ES" , "F,S" , "xbmc"  ])
-    channelslist.append([ "Veocine"               , "veocine"              , "" , "ES" , "F,A,D" , "xbmc"  ])
-    channelslist.append([ "Pintadibujos"          , "pintadibujos"         , "" , "ES" , "F,A" , "xbmc"  ])
-    channelslist.append([ "Pelis Pekes"           , "pelispekes"           , "" , "ES" , "F,A" , "xbmc"  ])
-    channelslist.append([ "Descarga Cine Clásico" , "descargacineclasico"  , "" , "ES" , "F,S" , "xbmc"  ])
-    channelslist.append([ "Capitan Cinema"        , "capitancinema"        , "" , "ES" , "F" , "generic" ])
-    channelslist.append([ "Film Streaming"        , "filmstreaming"        , "" , "IT" , "F,A" , "xbmc"  ])
-    channelslist.append([ "No Megavideo"          , "nomegavideo"          , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "LetMeWatchThis"        , "letmewatchthis"       , "" , "EN" , "F,S" , "xbmc"  ])
-    channelslist.append([ "Cineblog01"            , "cineblog01"           , "" , "IT" , "F,S,A" , "xbmc"  ])
-    channelslist.append([ "Descargapelis"         , "descargapelis"        , "" , "ES" , "F" , "xbmc"  ])
-    channelslist.append([ "Vagos"                 , "vagos"                , "" , "ES" , "F,S" , "xbmc"  ])
-    channelslist.append([ "Seriesyonkis"          , "seriesyonkis"         , "Series" , "ES" , "S,A" , "xbmc"  ]) #Modificado por JUR para añadir la categoría
-    channelslist.append([ "Seriespepito"          , "seriespepito"         , "" , "ES" , "S" , "generic" ])
-    channelslist.append([ "Series21"              , "series21"             , "" , "ES" , "S" , "xbmc"  ])
-    channelslist.append([ "DeLaTV Series"         , "bancodeseries"        , "" , "ES" , "S" , "xbmc"  ])
-    channelslist.append([ "CastTV"                , "casttv"               , "" , "ES,EN" , "S" , "xbmc"  ])
-    channelslist.append([ "Ver Telenovelas Online", "vertelenovelasonline" , "" , "ES" , "S" , "xbmc"  ])
-    channelslist.append([ "Anime Foros"           , "animeforos"           , "" , "ES", "A" , "xbmc"  ])
-    channelslist.append([ "Yotix.tv"              , "yotix"                , "" , "ES" , "A" , "generic" ])
-    channelslist.append([ "MCAnime"               , "mcanime"              , "" , "ES" , "A" , "xbmc"  ])
-    channelslist.append([ "Animetakus"            , "animetakus"           , "" , "ES" , "A" , "generic" ])
-    channelslist.append([ "Ver-anime"             , "veranime"             , "" , "ES" , "A" , "xbmc"  ])
-    channelslist.append([ "Watchanimeon"          , "watchanimeon"         , "" , "EN" , "A" , "xbmc"  ])
-    channelslist.append([ "Animeid"               , "animeid"              , "" , "ES" , "A" , "xbmc"  ])
-    channelslist.append([ "dibujosanimadosgratis" , "dibujosanimadosgratis", "" , "ES" , "A" , "xbmc"  ])
-    channelslist.append([ "DocumaniaTV"           , "documaniatv"          , "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "DocumentariesTV"       , "documentariestv"      , "" , "EN", "D" , "xbmc"  ])
-    channelslist.append([ "Documentalesyonkis"    , "documentalesyonkis"   , "" , "ES" , "D" , "generic" ])
-    channelslist.append([ "Documentalesatonline"  , "documentalesatonline" , "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "Documentalesatonline2" , "documentalesatonline2", "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "Discoverymx.Wordpress" , "discoverymx"          , "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "Gratisdocumentales"    , "gratisdocumentales"   , "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "Programas TV Online"   , "programastv"          , "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "Redes.tv"              , "redestv"              , "" , "ES" , "D" , "xbmc"  ])
-    channelslist.append([ "Trailers ecartelera"   , "ecarteleratrailers"   , "" , "ES,EN" , "F" , "xbmc"  ])
-    channelslist.append([ config.getLocalizedString(30128), "trailertools" , "" , "" , "F" , "xbmc"  ])
-    channelslist.append([ "Stagevu"               , "stagevusite"          , "" , "" , "G" , "xbmc"  ])
-    channelslist.append([ "tu.tv"                 , "tutvsite"             , "" , "ES", "G" , "xbmc"  ])
-    channelslist.append([ "Megavideo"             , "megavideosite"        , "" , "" , "G" , "xbmc"  ])
-    channelslist.append([ "Megaupload"            , "megauploadsite"       , "" , "" , "G" , "xbmc"  ])
+    channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
+    channelslist.append([ "ADNStream"                  , "adnstream"            , "" , "ES" , "I" , "generic" ])
+    channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
+    channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
+    channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
+    #addfolder("Boing","boing","mainlist")
+    #addfolder("Totlol","totlol","mainlist")
+    channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Extremadura TV"             , "extremaduratv"        , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Hogarutil"                  , "hogarutil"            , "" , "ES" , "T" , "generic"  ])
+    #addfolder("Plus TV","plus","mainlist")
+    channelslist.append([ "RTVA (Andalucia)"           , "rtva"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
+    channelslist.append([ "TVE Programas"              , "rtveprogramas"        , "" , "ES" , "N" , "generic"  ])
+    channelslist.append([ "TVE Mediateca"              , "rtvemediateca"        , "" , "ES" , "N" , "generic"  ])
+    #addfolder("TV Azteca","tva","mainlist")
+    channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
+    channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
+    channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "Euronews"                   , "euronews"             , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "RTVV (Comunidad Valenciana)", "rtvv"                 , "" , "ES" , "A" , "generic"  ])
+    #addfolder("Terra TV","terratv","mainlist")
+    channelslist.append([ "Turbonick"                  , "turbonick"            , "" , "ES" , "T" , "generic"  ])
+    channelslist.append([ "TV3 (Cataluña)"             , "tv3"                  , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "TVG (Galicia)"              , "tvg"                  , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Mallorca TV"                , "tvmallorca"           , "" , "ES" , "L" , "xbmc"  ])
+    channelslist.append([ "Meristation"                , "meristation"          , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "7RM (Murcia)"               , "sieterm"              , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
+    channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
+    #channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])
+    channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])
 
-    if config.getSetting("enableadultmode") == "true":
-        channelslist.append([ "PeliculasEroticas" , "peliculaseroticas" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "MocosoftX"         , "mocosoftx" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "Anifenix.com"      , "anifenix" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "tuporno.tv"        , "tupornotv" , "" , "ES" , "F" , "xbmc"  ])
-
-    #channelslist.append([ "Divx Online" , "divxonline" , "" , "ES" , "F" ]) # added by ermanitu
-    #channelslist.append([ "Eduman Movies" , "edumanmovies" , "" , "ES" , "F" ])
-    #channelslist.append([ "SesionVIP" , "sesionvip" , "" , "ES" , "F" ])
-    #channelslist.append([ "Pelis-Sevillista56" , "sevillista" , "" , "ES" , "F" ])
-    #channelslist.append([ "seriesonline.us" , "seriesonline" , "" , "ES" , "S" ])
-    #channelslist.append([ "Newcineonline" , "newcineonline" , "" , "ES" , "S" ])
-    #channelslist.append([ "PeliculasHD" , "peliculashd" , "" , "ES" , "F" ])
-    #channelslist.append([ "Wuapi" , "wuapisite" , "" , "ES" , "F" ])
-    #channelslist.append([ "Frozen Layer" , "frozenlayer" , "" , "ES" , "A" ])
-    #channelslist.append([ "Ovasid"                , "ovasid"               , "" , "ES" , "A" , "xbmc"  ])
     return channelslist
 
 def addfolder(nombre,channelname,accion,category=""):
@@ -189,15 +128,15 @@ def addfolder(nombre,channelname,accion,category=""):
             pass
     
     import xbmc
-    if config.getSetting("thumbnail_type")=="0":
+    if config.get_setting("thumbnail_type")=="0":
         IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
     else:
         IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
     
-    if config.getSetting("thumbnail_type")=="0":
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
+    if config.get_setting("thumbnail_type")=="0":
+        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
     else:
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
+        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/banners/"
 
     # Preferencia: primero JPG
     thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".jpg")
@@ -215,103 +154,4 @@ def addfolder(nombre,channelname,accion,category=""):
     import xbmcplugin
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
     itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
-    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
-
-
-
-
-
-
-
-# -*- coding: iso-8859-1 -*-
-
-import urllib
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import parametrizacion
-
-from core import logger
-from core import config
-
-logger.info("[channelselector.py] init")
-
-DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
-
-#57=DVD Thumbs
-#xbmc.executebuiltin("Container.SetViewMode(57)")
-#50=full list
-#xbmc.executebuiltin("Container.SetViewMode(50)")
-#51=list
-#xbmc.executebuiltin("Container.SetViewMode(51)")
-#53=icons
-#xbmc.executebuiltin("Container.SetViewMode(53)")
-#54=wide icons
-#xbmc.executebuiltin("Container.SetViewMode(54)")
-
-def listchannels(params,url,category):
-    logger.info("[channelselector.py] listchannels")
-
-    # Verifica actualizaciones solo en el primer nivel
-    try:
-        import updater
-    except ImportError:
-        logger.info("[channelselector.py] No disponible modulo actualizaciones")
-    else:
-        if config.get_setting("updatecheck2") == "true":
-            logger.info("[channelselector.py] Verificar actualizaciones activado")
-            updater.checkforupdates()
-        else:
-            logger.info("[channelselector.py] Verificar actualizaciones desactivado")
-
-    addfolder("Antena3","antena3","mainlist")
-    addfolder("ADNStream","adnstream","mainlist")
-    addfolder("Barcelona TV","barcelonatv","mainlist")
-    addfolder("Clan TV","clantve","mainlist")
-    addfolder("El cine de las 3 mellizas","tresmellizas","mainlist")
-    #addfolder("Boing","boing","mainlist")
-    #addfolder("Totlol","totlol","mainlist")
-    addfolder("EITB","eitb","mainlist")
-    addfolder("Extremadura TV","extremaduratv","mainlist")
-    addfolder("Hogarutil","hogarutil","mainlist")
-    addfolder("Plus TV","plus","mainlist")
-    addfolder("Andalucia TV","rtva","mainlist")
-    addfolder("TVE","rtve","mainlist")
-    addfolder("TVE Programas","rtveprogramas","mainlist")
-    addfolder("TVE Mediateca","rtvemediateca","mainlist")
-    #addfolder("TV Azteca","tva","mainlist")
-    addfolder("Berria TB","berriatb","mainlist")
-    addfolder("Argia Multimedia","argia","mainlist")
-    addfolder("Earth TV","earthtv","mainlist")
-    addfolder("Euronews","euronews","mainlist")
-    addfolder("Comunidad Valenciana","rtvv","mainlist")
-    #addfolder("Terra TV","terratv","mainlist")
-    addfolder("Turbonick","turbonick","mainlist")
-    addfolder("TV3","tv3","mainlist")
-    addfolder("TVG","tvg","mainlist")
-    addfolder("Mallorca TV","tvmallorca","mainlist")
-    addfolder("Meristation","meristation","mainlist")
-    addfolder("7rm","sieterm","mainlist")
-    addfolder("TelevisiÃ³n Canaria","rtvc","mainlist")
-    addfolder("Internautas TV","internautastv","mainlist")
-    addfolder("Publico.tv","publicotv","mainlist")
-    
-    cadena = config.get_localized_string(30100)
-    logger.info("cadena="+cadena)
-    addfolder(cadena,"configuracion","mainlist") # Configuracion
-    if (parametrizacion.DOWNLOAD_ENABLED):
-        addfolder(config.get_localized_string(30101),"descargados","mainlist")   # Descargas
-    addfolder(config.get_localized_string(30102),"favoritos","mainlist")     # Favoritos
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="Canales" )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def addfolder(nombre,channelname,accion):
-    listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png"))
-    itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus(nombre) )
     xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)

@@ -14,6 +14,7 @@ from core import logger
 from core import config
 
 def run():
+    import sys
     logger.info("[tvalacarta.py] run")
     
     # Verifica si el path de usuario del plugin está creado
@@ -62,7 +63,8 @@ def run():
         # Accion por defecto - elegir canal
         if ( action=="selectchannel" ):
             import channelselector as plugin
-            plugin.listchannels(params, url, category)
+            plugin.mainlist(params, url, category)
+
         # Actualizar version
         elif ( action=="update" ):
             try:
@@ -73,6 +75,14 @@ def run():
 
             import channelselector as plugin
             plugin.listchannels(params, url, category)
+
+        elif (action=="channeltypes"):
+            import channelselector as plugin
+            plugin.channeltypes(params,url,category)
+
+        elif (action=="listchannels"):
+            import channelselector as plugin
+            plugin.listchannels(params,url,category)
 
         # El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
         else:
@@ -139,6 +149,9 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
 
     except urllib2.URLError,e:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
         import xbmcgui
         ventana_error = xbmcgui.Dialog()
         # Agarra los errores surgidos localmente enviados por las librerias internas
@@ -151,6 +164,3 @@ def run():
             logger.info("codigo de error HTTP : %d" %e.code)
             texto = (config.get_localized_string(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
             ok = ventana_error.ok ("tvalacarta", texto)    
-        else:
-            pass
-           
