@@ -7,7 +7,7 @@
 
 
 import re, sys, os
-import urlparse, urllib, urllib2
+import urlparse, urllib, urllib2,string
 import os.path
 import sys
 import xbmc
@@ -17,7 +17,7 @@ import config
 import logger
 
 COOKIEFILE               = os.path.join (config.DATA_PATH , "cookies.lwp")
-_VALID_URL               = r'(?:(?:http://)?(?:\w+\.)?megalive\.com/\?(?:s=.+?&(?:amp;)?)?((?:(?:v\=))))?([A-Z0-9]{8})?$'
+_VALID_URL               = r'(?:(?:http://)?(?:\w+\.)?megalive\.com/(?:(?:v/)|\?(?:s=.+?&(?:amp;)?)?((?:(?:v\=))))?)?([A-Z0-9]{8})?$'
 _TEMPLATE_URL            = 'http://www.megalive.com/?v=%s'
 _SWF_URL                 = 'http://www.megalive.com/ml_player.swf'
 _TEMPLATE_LIVE_URL       = "%s/videochat playpath=stream_%s swfurl=%s swfvfy=true pageUrl=%s"
@@ -36,7 +36,8 @@ def getcode(mega):
 	mobj = re.match(_VALID_URL, mega)
 	if mobj is None:
 		xbmc.output("Invalid url: "+mega)
-		return
+		server_response("Invalid url :",mega)
+		return ""
 	mega =mobj.group(2)
 	xbmc.output("[megalive.py] mega="+mega)
 	return mega
@@ -53,6 +54,11 @@ def getLiveUrl(code,thumb=0):
 	xbmc.output("[megalive.py] getLiveUrl")
 	
 	code=getcode(code)
+	if code == "":
+		if thumb == 0:
+			return ""
+		else:
+			return "",""
 
 	image = ""
 	modoPremium = config.getSetting("megavideopremium")

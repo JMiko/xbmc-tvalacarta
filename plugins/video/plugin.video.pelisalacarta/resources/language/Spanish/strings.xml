@@ -123,6 +123,7 @@
 	<string id="30161">Añadir a tiblioteca</string>
 	<string id="30162">Buscar trailer</string>
 	<string id="30163">Elige una opción</string>
+	
 
 	<!-- =============================================================== -->
 	<!-- De 30100 a 30999: Canales individuales                          -->
@@ -130,6 +131,16 @@
 
 	<!-- Context menu strings -->
 	<string id="30300">Eliminar esta busqueda</string>
+	<string id="30301">Guardar este canal en favoritos</string>
+	<string id="30302">Eliminar este canal de favoritos</string>
+	<string id="30303">Renombrar el título de este canal</string>
+	
+	<!-- Megalive menu strings -->
+	<string id="30401">Muralla de canales</string>
+	<string id="30402">Categorias</string>
+	<string id="30403">Canales Favoritos</string>
+	<string id="30404">Ver Canal por Codigo(ID)</string>
+	<string id="30405">Introduce el còdigo del canal</string>
 
 	<!-- LetMeWatchThis -->
 	<string id="40001">Películas - Novedades</string>
