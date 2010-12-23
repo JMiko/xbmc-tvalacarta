@@ -657,6 +657,10 @@ def findurl(code,server):
 		import xmltoplaylist
 		mediaurl = xmltoplaylist.geturl(code)
 
+	if server == "vimeo":
+		import vimeo
+		mediaurl = vimeo.geturl(code)
+		
 	return mediaurl
 
 def getmegavideolow(code):
