@@ -106,6 +106,7 @@ def channels_list():
     channelslist = []
     channelslist.append([ "Cinetube"              , "cinetube"             , "" , "ES" , "F" , "generic" ])
     channelslist.append([ "Peliculasyonkis"       , "peliculasyonkis"      , "" , "ES" , "F" , "xbmc" ])
+    channelslist.append([ "Divx Online"           , "divxonline"           , "" , "ES" , "F" , "xbmc" ]) # added by ermanitu
     channelslist.append([ "Cinegratis"            , "cinegratis"           , "" , "ES" , "F,S,A,D" , "generic" ])
     channelslist.append([ "tumejortv.com"         , "tumejortv"            , "" , "ES" , "F,S" , "generic" ])
     channelslist.append([ "Peliculas21"           , "peliculas21"          , "" , "ES" , "F" , "xbmc"  ])
@@ -133,11 +134,18 @@ def channels_list():
     channelslist.append([ "Cineblog01"            , "cineblog01"           , "" , "IT" , "F,S,A" , "xbmc"  ])
     channelslist.append([ "Descargapelis"         , "descargapelis"        , "" , "ES" , "F" , "xbmc"  ])
     channelslist.append([ "Vagos"                 , "vagos"                , "" , "ES" , "F,S" , "xbmc"  ])
+    channelslist.append([ "Cuevana"               , "cuevana"              , "" , "ES" , "F,S" , "generic"  ])
+    channelslist.append([ "Somosmovies"           , "somosmovies"          , "" , "ES" , "F,S,D,A" , "generic"  ])
+    channelslist.append([ "PeliculasFLV"          , "peliculasflv"         , "" , "ES" , "F" , "generic"  ])
+    channelslist.append([ "Seriematic"            , "seriematic"           , "" , "ES" , "S,D,A" , "generic"  ])
+    channelslist.append([ "Serieonline"           , "serieonline"          , "" , "ES" , "F,S,D" , "generic"  ])
+    #channelslist.append([ "Pelis-Sevillista56"    , "sevillista"           , "" , "ES" , "F" , "xbmc"])
     channelslist.append([ "Seriesyonkis"          , "seriesyonkis"         , "Series" , "ES" , "S,A" , "xbmc"  ]) #Modificado por JUR para añadir la categoría
     channelslist.append([ "Seriespepito"          , "seriespepito"         , "" , "ES" , "S" , "generic" ])
     channelslist.append([ "Series21"              , "series21"             , "" , "ES" , "S" , "xbmc"  ])
     channelslist.append([ "DeLaTV Series"         , "bancodeseries"        , "" , "ES" , "S" , "xbmc"  ])
     #channelslist.append([ "SoloSeries"            , "soloseries"           , "" , "ES" , "S" , "xbmc"  ])
+    #channelslist.append([ "seriesonline.us"       , "seriesonline"         , "" , "ES" , "S" , "xbmc" ])
     channelslist.append([ "CastTV"                , "casttv"               , "" , "ES,EN" , "S" , "xbmc"  ])
     channelslist.append([ "Ver Telenovelas Online", "vertelenovelasonline" , "" , "ES" , "S" , "xbmc"  ])
     channelslist.append([ "Anime Foros"           , "animeforos"           , "" , "ES", "A" , "xbmc"  ])
@@ -165,7 +173,7 @@ def channels_list():
     channelslist.append([ "tu.tv"                 , "tutvsite"             , "" , "ES", "G" , "xbmc"  ])
     channelslist.append([ "Megavideo"             , "megavideosite"        , "" , "" , "G" , "xbmc"  ])
     channelslist.append([ "Megaupload"            , "megauploadsite"       , "" , "" , "G" , "xbmc"  ])
-    channelslist.append([ "Megalive"              , "megalivewall"         , "" , "" , "G" , "generic"  ])
+    channelslist.append([ "Megalive"              , "megalivewall"         , "" , "" , "G" , "xbmc"  ])
 
     if config.getSetting("enableadultmode") == "true":
         channelslist.append([ "PeliculasEroticas" , "peliculaseroticas" , "" , "ES" , "F" , "xbmc"  ])
@@ -176,11 +184,8 @@ def channels_list():
         channelslist.append([ "tubehentai"        , "tubehentai" , "" , "ES" , "F" , "xbmc"  ])
         channelslist.append([ "xhamster"          , "xhamster" , "" , "ES" , "F" , "xbmc"  ])
 
-    #channelslist.append([ "Divx Online" , "divxonline" , "" , "ES" , "F" ]) # added by ermanitu
     #channelslist.append([ "Eduman Movies" , "edumanmovies" , "" , "ES" , "F" ])
     #channelslist.append([ "SesionVIP" , "sesionvip" , "" , "ES" , "F" ])
-    #channelslist.append([ "Pelis-Sevillista56" , "sevillista" , "" , "ES" , "F" ])
-    #channelslist.append([ "seriesonline.us" , "seriesonline" , "" , "ES" , "S" ])
     #channelslist.append([ "Newcineonline" , "newcineonline" , "" , "ES" , "S" ])
     #channelslist.append([ "PeliculasHD" , "peliculashd" , "" , "ES" , "F" ])
     #channelslist.append([ "Wuapi" , "wuapisite" , "" , "ES" , "F" ])
@@ -223,3 +228,4 @@ def addfolder(nombre,channelname,accion,category=""):
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
     itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
     xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
+

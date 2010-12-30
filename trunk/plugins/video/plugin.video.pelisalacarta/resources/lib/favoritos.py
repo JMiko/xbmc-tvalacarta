@@ -19,13 +19,6 @@ import logger
 import samba
 
 CHANNELNAME = "favoritos"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
-
 DEBUG = True
 bookmark_setting = config.getSetting( "bookmarkpath")
 
