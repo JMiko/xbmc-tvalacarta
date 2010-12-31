@@ -10,6 +10,7 @@
     somosmovies (@jesus)
     peliculas-flv (@jesus)
     seriematic (@jesus)
+	serieonline (@jesus)
 
 - New server connectors:
     Yahoo (@bandavi)
