@@ -45,7 +45,7 @@ def mainlist(params,url,category):
 	patronvideos  = '<h3 class=\'post-title entry-title\'>.*?<a href=\'[^\']+\''
         patronvideos += '>(.*?)</a>.*?</h3>.*?'
         patronvideos += '<img style.*?src="([^"]+)" border.*?'
-        patronvideos += '/><br />(.*?)<br /><span.*?'
+        patronvideos += '/><br />(.*?)<br />.*?'
         patronvideos += '<a href="([^"]+)"><span'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
