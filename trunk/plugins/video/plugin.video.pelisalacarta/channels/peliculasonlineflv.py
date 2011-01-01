@@ -350,11 +350,14 @@ def detail(params,url,category):
 	
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
-
+	url1 = url
 	# Descarga la página
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
-
+	patron = 'src="(http://peliculasonlineflvgratis.blogspot.com.+?)"'
+	matches = re.compile(patron,re.DOTALL).findall(data)
+	if len(matches)>0:
+		data = scrapertools.cachePage(matches[0])
 	try:
 		title = re.compile("<title>(.+?)</title>").findall(data)[0]
 	except:
