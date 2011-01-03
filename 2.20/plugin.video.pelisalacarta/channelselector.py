@@ -146,9 +146,7 @@ def channels_list():
     channelslist.append([ "DeLaTV Series"         , "bancodeseries"        , "" , "ES" , "S" , "xbmc"  ])
     #channelslist.append([ "SoloSeries"            , "soloseries"           , "" , "ES" , "S" , "xbmc"  ])
     #channelslist.append([ "seriesonline.us"       , "seriesonline"         , "" , "ES" , "S" , "xbmc" ])
-    channelslist.append([ "CastTV"                , "casttv"               , "" , "ES,EN" , "S" , "xbmc"  ])
     channelslist.append([ "Ver Telenovelas Online", "vertelenovelasonline" , "" , "ES" , "S" , "xbmc"  ])
-    channelslist.append([ "Anime Foros"           , "animeforos"           , "" , "ES", "A" , "xbmc"  ])
     channelslist.append([ "Yotix.tv"              , "yotix"                , "" , "ES" , "A" , "generic" ])
     channelslist.append([ "MCAnime"               , "mcanime"              , "" , "ES" , "A" , "xbmc"  ])
     channelslist.append([ "Animetakus"            , "animetakus"           , "" , "ES" , "A" , "generic" ])
@@ -174,15 +172,6 @@ def channels_list():
     channelslist.append([ "Megavideo"             , "megavideosite"        , "" , "" , "G" , "xbmc"  ])
     channelslist.append([ "Megaupload"            , "megauploadsite"       , "" , "" , "G" , "xbmc"  ])
     channelslist.append([ "Megalive"              , "megalivewall"         , "" , "" , "G" , "xbmc"  ])
-
-    if config.getSetting("enableadultmode") == "true":
-        channelslist.append([ "PeliculasEroticas" , "peliculaseroticas" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "MocosoftX"         , "mocosoftx" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "Anifenix.com"      , "anifenix" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "tuporno.tv"        , "tupornotv" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "myhentaitube"      , "myhentaitube" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "tubehentai"        , "tubehentai" , "" , "ES" , "F" , "xbmc"  ])
-        channelslist.append([ "xhamster"          , "xhamster" , "" , "ES" , "F" , "xbmc"  ])
 
     #channelslist.append([ "Eduman Movies" , "edumanmovies" , "" , "ES" , "F" ])
     #channelslist.append([ "SesionVIP" , "sesionvip" , "" , "ES" , "F" ])
