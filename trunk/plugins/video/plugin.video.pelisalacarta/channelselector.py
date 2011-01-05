@@ -42,6 +42,7 @@ def mainlist(params,url,category):
     #searchwebs=": Cinetube,Peliculasyonkis,Cinegratis,tumejortv.com,Peliculas21,Cine15,Seriesyonkis,Yotix.tv,DocumaniaTV,Discoverymx,Stagevu,tu.tv"
     #channelslist.append([ config.getLocalizedString(30103)+searchwebs , "buscador" , "Buscador" , "" , "B" ])# Buscador
     addfolder(config.getLocalizedString(30103),"buscador"       ,"mainlist")
+    addfolder(config.getLocalizedString(30128),"trailertools"   ,"mainlist")
     addfolder(config.getLocalizedString(30102),"favoritos"      ,"mainlist")
     if (DOWNLOAD_ENABLED):
         addfolder(config.getLocalizedString(30101),"descargados","mainlist")
@@ -104,7 +105,7 @@ def listchannels(params,url,category):
 
 def channels_list():
     channelslist = []
-    channelslist.append([ "Cinetube"              , "cinetube"             , "" , "ES" , "F" , "generic" ])
+    channelslist.append([ "Cinetube"              , "cinetube"             , "" , "ES" , "F,S,A,D" , "generic" ])
     channelslist.append([ "Peliculasyonkis"       , "peliculasyonkis"      , "" , "ES" , "F" , "xbmc" ])
     channelslist.append([ "Divx Online"           , "divxonline"           , "" , "ES" , "F" , "xbmc" ]) # added by ermanitu
     channelslist.append([ "Cinegratis"            , "cinegratis"           , "" , "ES" , "F,S,A,D" , "generic" ])
@@ -128,7 +129,8 @@ def channels_list():
     channelslist.append([ "Pelis Pekes"           , "pelispekes"           , "" , "ES" , "F,A" , "xbmc"  ])
     channelslist.append([ "Descarga Cine Clásico" , "descargacineclasico"  , "" , "ES" , "F,S" , "xbmc"  ])
     channelslist.append([ "Capitan Cinema"        , "capitancinema"        , "" , "ES" , "F" , "generic" ])
-    channelslist.append([ "Film Streaming"        , "filmstreaming"        , "" , "IT" , "F,A" , "xbmc"  ])
+    #channelslist.append([ "Film Streaming"        , "filmstreaming"        , "" , "IT" , "F,A" , "xbmc"  ])
+    channelslist.append([ "Italia film"           , "italiafilm"           , "" , "IT" , "F,S,A" , "xbmc"  ])
     channelslist.append([ "No Megavideo"          , "nomegavideo"          , "" , "ES" , "F" , "xbmc"  ])
     channelslist.append([ "LetMeWatchThis"        , "letmewatchthis"       , "" , "EN" , "F,S" , "xbmc"  ])
     channelslist.append([ "Cineblog01"            , "cineblog01"           , "" , "IT" , "F,S,A" , "xbmc"  ])
@@ -168,7 +170,6 @@ def channels_list():
     #channelslist.append([ "Futbol Virtual"        , "futbolvirtual"        , "" , "ES" , "D" , "xbmc"  ])
     channelslist.append([ "Redes.tv"              , "redestv"              , "" , "ES" , "D" , "xbmc"  ])
     channelslist.append([ "Trailers ecartelera"   , "ecarteleratrailers"   , "" , "ES,EN" , "F" , "xbmc"  ])
-    channelslist.append([ config.getLocalizedString(30128), "trailertools" , "" , "" , "F" , "xbmc"  ])
     channelslist.append([ "Stagevu"               , "stagevusite"          , "" , "" , "G" , "xbmc"  ])
     channelslist.append([ "tu.tv"                 , "tutvsite"             , "" , "ES", "G" , "xbmc"  ])
     channelslist.append([ "Megavideo"             , "megavideosite"        , "" , "" , "G" , "xbmc"  ])
