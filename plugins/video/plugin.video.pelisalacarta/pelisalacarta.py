@@ -102,6 +102,8 @@ def run():
                         advertencia = xbmcgui.Dialog()
                         advertencia.ok("pelisalacarta",params.get("channel"),config.getLocalizedString(30063))
                 except:
+                    for line in sys.exc_info():
+                        logger.error( "%s" % line )
                     logger.info("Actualización de canales desactivada")
 
             # Ejecuta el canal
@@ -136,13 +138,25 @@ def run():
                     server = urllib.unquote_plus( params.get("server") )
                 else:
                     server = "directo"
+                if params.has_key("extradata"):
+                    extradata = urllib.unquote_plus( params.get("extradata") )
+                else:
+                    extradata = ""
+                if params.has_key("category"):
+                    category = urllib.unquote_plus( params.get("category") )
+                else:
+                    category = ""
+                if params.has_key("Serie"):
+                    Serie = urllib.unquote_plus( params.get("Serie") )
+                else:
+                    Serie = ""
             
                 import xbmctools
                 if action=="play":
                     xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
                 else:
                     from item import Item
-                    item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server)
+                    item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extradata)
         
                     if action!="findvideos":
                         exec "itemlist = channel."+action+"(item)"

@@ -41,9 +41,9 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 	#logger.info("pluginhandle=%d" % pluginhandle)
 	if DEBUG:
 		try:
-			logger.info('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
+			logger.info('[xbmctools.py] addnewfolderextra( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'" , "'+Serie+'")"')
 		except:
-			logger.info('[xbmctools.py] addnewfolder(<unicode>)')
+			logger.info('[xbmctools.py] addnewfolderextra(<unicode>)')
 	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
 	#Realzamos un quote sencillo para evitar problemas con títulos unicode
