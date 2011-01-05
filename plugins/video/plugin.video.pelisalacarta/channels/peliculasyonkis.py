@@ -167,10 +167,17 @@ def listnovedades(params,url,category):
 
     # Extrae las entradas (carpetas)
     '''
-    <td align='center'><center><span style='font-size: 0.7em'><a href="http://www.peliculasyonkis.com/pelicula/otra-vez-tu-you-again-2010-/" title="Otra vez tu (You again) (2010 )"><img width='100' height='144' src='http://simages.peliculasyonkis.com/thumbs/otra-vez-tu-you-again-2010-.jpg' alt='Otra vez tu (You again) (2010 )'/><br />Otra vez tu (You again) (2010 )</a></span><br /><img height="30" src="http://simages.seriesyonkis.com/images/f/latino.png" alt="Audio Latino" style="vertical-align: middle;" /><img height="30" src="http://simages.peliculasyonkis.com/images/tdescargar2.png" title="Tiene Descarga Directa" style="vertical-align: middle;"/></center></td>
+    <td align='center'>
+    <center><span style='font-size: 0.7em'>
+    <a href="http://www.peliculasyonkis.com/pelicula/otra-vez-tu-you-again-2010-/" title="Otra vez tu (You again) (2010 )">
+    <img width='100' height='144' src='http://simages.peliculasyonkis.com/thumbs/otra-vez-tu-you-again-2010-.jpg' alt='Otra vez tu (You again) (2010 )'/><br />Otra vez tu (You again) (2010 )</a></span><br />
+    <img height="30" src="http://simages.seriesyonkis.com/images/f/latino.png" alt="Audio Latino" style="vertical-align: middle;" /><img height="30" src="http://simages.peliculasyonkis.com/images/tdescargar2.png" title="Tiene Descarga Directa" style="vertical-align: middle;"/></center></td>
     '''
-    patronvideos  = '<td align=\'center\'><center><span style=\'font-size: 0.7em\'><a href="([^"]+)" title="([^"]+)">'
-    patronvideos += '<img.*?src=\'([^\']+)\'[^>]+>.*?<img src="(http://simages.peliculasyonkis.com/images/[^"]+)"'
+    patronvideos  = '<td align=\'center\'>'
+    patronvideos += '<center><span style=\'font-size: 0.7em\'>'
+    patronvideos += '<a href="([^"]+)" title="([^"]+)">'
+    patronvideos += '<img.*?src=\'([^\']+)\'[^>]+>.*?'
+    patronvideos += '<img.*?src="(http://simages[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
