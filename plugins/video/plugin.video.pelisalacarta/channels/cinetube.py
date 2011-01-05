@@ -23,19 +23,19 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades (con carátula)"  , action="peliculas"      , url="http://www.cinetube.es/peliculas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Todas A-Z (con carátula)"  , action="listalfabetico" , extra="peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Todas A-Z (con carátula)"  , action="listalfabetico" , url="peliculas"))
 
     itemlist.append( Item(channel=CHANNELNAME, title="Series - Novedades (con carátula)"    , action="series" , url="http://www.cinetube.es/series/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - Todas A-Z (con carátula)"    , action="listalfabetico" , extra="series"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - Todas A-Z (con carátula)"    , action="listalfabetico" , url="series"))
 
     itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Novedades" , action="documentales" , url="http://www.cinetube.es/documentales/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Todos A-Z" , action="listalfabetico", extra="documentales"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Todos A-Z" , action="listalfabetico", url="documentales"))
 
     itemlist.append( Item(channel=CHANNELNAME, title="Series anime - Novedades"    , action="series" , url="http://www.cinetube.es/series-anime/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series anime - Todas A-Z"    , action="listalfabetico" , extra="series-anime" ))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series anime - Todas A-Z"    , action="listalfabetico" , url="series-anime" ))
                      
     itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Novedades" , action="documentales" , url="http://www.cinetube.es/peliculas-anime/") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Todas A-Z" , action="listalfabetico" , extra="peliculas-anime" ))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Todas A-Z" , action="listalfabetico" , url="peliculas-anime" ))
 
     #itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
     
@@ -212,15 +212,15 @@ def documentales(item):
     return itemlist
 
 def listalfabetico(item):
-    logger.info("[cinetube.py] listalfabetico("+item.extra+")")
+    logger.info("[cinetube.py] listalfabetico("+item.url+")")
     
-    action = item.extra
-    if item.extra=="series-anime":
+    action = item.url
+    if item.url=="series-anime":
         action="series"
-    if item.extra=="peliculas-anime":
+    if item.url=="peliculas-anime":
         action="documentales"
     
-    baseurl = "http://www.cinetube.es/"+item.extra+"/"
+    baseurl = "http://www.cinetube.es/"+item.url+"/"
     
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action=action , title="0-9", url=baseurl+"0-9/"))
