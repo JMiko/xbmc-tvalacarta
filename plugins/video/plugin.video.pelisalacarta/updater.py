@@ -178,7 +178,7 @@ def updatechannel(channel_name):
         infile.close();
         logger.info("local_data="+data)
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        local_version_path = int(matches[0])
+        local_version = int(matches[0])
     else:
         local_version = 0
     
