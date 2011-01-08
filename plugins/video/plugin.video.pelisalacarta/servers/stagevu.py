@@ -8,7 +8,7 @@
 import urlparse,urllib2,urllib,re
 import config
 
-def Stagevu(url):
+def geturl(url):
     #print "-------------------------------------------------------"
     #print url
     #print "-------------------------------------------------------"

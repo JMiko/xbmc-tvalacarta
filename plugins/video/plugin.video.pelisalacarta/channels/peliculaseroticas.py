@@ -172,7 +172,7 @@ def detail(params,url,category):
                  import movshare
                  mediaurl = "http://www.movshare.net/video/" + videosdirecto[0]
                  logger.info("[peliculaseroticas.py] mediaurl = "+ mediaurl)
-                 mediaurl = movshare.getvideo(mediaurl)
+                 mediaurl = movshare.geturl(mediaurl)
                  xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en movshare"  , mediaurl ,thumbnail, plot )
 
 	      patronvideos = 'file=(http://www.wildscreen.tv.*?)\?'
@@ -188,7 +188,7 @@ def detail(params,url,category):
                  import stagevu
                  mediaurl = "http://stagevu.com/video/" + videosdirecto[0]
                  logger.info("[peliculaseroticas.py] mediaurl = "+ mediaurl)
-                 mediaurl = stagevu.Stagevu(mediaurl)
+                 mediaurl = stagevu.geturl(mediaurl)
                  xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en stagevu"  , mediaurl ,thumbnail, plot ) 
                 
 	# --------------------------------------------------------------------------------             

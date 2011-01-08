@@ -13,7 +13,7 @@ import config
 
 COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
 
-def getvideo(urlpagina):
+def geturl(urlpagina):
     # ---------------------------------------
     #  Inicializa la libreria de las cookies
     # ---------------------------------------
