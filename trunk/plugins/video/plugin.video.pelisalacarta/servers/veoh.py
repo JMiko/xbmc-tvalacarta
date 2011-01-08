@@ -12,7 +12,7 @@ import xbmc
 import scrapertools
 import config
 
-def getvideo(code):
+def geturl(code):
 	xbmc.output("[veoh.py] code="+code)
 	url = 'http://www.flashvideodownloader.org/download.php?u=http://www.veoh.com/browse/videos/category/entertainment/watch/'+code
 	xbmc.output("[veoh.py] url="+url)

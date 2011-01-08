@@ -9,7 +9,7 @@ import urlparse,urllib2,urllib,re
 import xbmc
 import config
 
-def Tutv(url):
+def geturl(url):
 	xbmc.output("[tutv.py] url="+url)
 
 	if url.startswith("http://"):
