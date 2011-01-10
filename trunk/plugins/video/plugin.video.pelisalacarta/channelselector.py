@@ -124,6 +124,7 @@ def channels_list():
     channelslist.append([ "TVShack.cc (VO)"       , "tvshack"              , "" , "EN" , "F,S,A,D,M" , "xbmc"  ])
     channelslist.append([ "DeLaTV"                , "delatv"               , "" , "ES" , "F" , "xbmc"  ])
     channelslist.append([ "Pelis24"               , "pelis24"              , "" , "ES" , "F,S" , "xbmc"  ])
+    channelslist.append([ "Terror y Gore"         , "terrorygore"          , "" , "ES,EN" , "F" , "xbmc"  ])
     channelslist.append([ "Veocine"               , "veocine"              , "" , "ES" , "F,A,D" , "xbmc"  ])
     channelslist.append([ "Pintadibujos"          , "pintadibujos"         , "" , "ES" , "F,A" , "xbmc"  ])
     channelslist.append([ "Pelis Pekes"           , "pelispekes"           , "" , "ES" , "F,A" , "xbmc"  ])
