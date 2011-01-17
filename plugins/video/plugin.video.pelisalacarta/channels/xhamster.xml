@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<version>
+	<name>xhamster</name>
+	<tag>1</tag>
+	<date>17/01/2011</date>
+	<changes>Arreglado un problema con la expresión regular de la paginación. Convertido a canal genérico.</changes>
+</version>
