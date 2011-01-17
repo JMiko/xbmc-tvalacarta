@@ -9,6 +9,7 @@ import xbmcplugin
 import scrapertools
 import megavideo
 import servertools
+import videobb
 import binascii
 import xbmctools
 import config
@@ -52,12 +53,13 @@ def mainlist(params,url,category):
     
     logger.info("[Vagos.py] mainlist")
 
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - Haste el 2008 (Inclusive)","http://www.vagos.es/forumdisplay.php?f=455","","")
+    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - Hasta el 2008 (Inclusive)","http://www.vagos.es/forumdisplay.php?f=455","","")
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - 2009/2010","http://www.vagos.es/forumdisplay.php?f=454","","")
     xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=365","","")
     xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas en transmisión o incompletas","http://www.vagos.es/forumdisplay.php?f=364","","")
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Series - Capítulos sueltos","http://www.vagos.es/forumdisplay.php?f=372","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Trailers","http://www.vagos.es/forumdisplay.php?f=456","","")
+    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Otros Videos","http://www.vagos.es/forumdisplay.php?f=363","","")
+    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Trailers","http://www.vagos.es/forumdisplay.php?f=456","","")
     xbmctools.addnewfolder( CHANNELNAME , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
 
     # Propiedades
@@ -115,7 +117,7 @@ def Foro(params,url,category,parse):
         
         # Extrae las entradas (carpetas)
         patron = '<a href="([^"]+)" '
-        patron += 'id="thread_title_([^"]+)">([^<]+)</a>'
+        patron += 'id="thread_title_([^"]+)".*?>([^<]+)</a>'
         matches = re.compile(patron,re.DOTALL).findall(data)
 
         for match in matches:
@@ -443,15 +445,54 @@ def findvideos(data,parse):
             pass
     
         #findEdletVideos(devuelve,encontrados,data)
-    
-        logger.info ("Estilo Antomio")
-        #patronvideos = '<a href="http://www.megavideo.com/?v=E9CB86L7" target="_blank">Dexter 1x01 - Capitulo 01</a><br />'
-        patronvideos = '<a href="http://www.mega([^"]+)" target="_blank">(.*?)(\d*)x(\d*) - (.*?)</a>'
-        matches = re.compile(patronvideos).findall(data)
-        for match in matches:        
-            title = match[2]+"x"+ match[3] + " - " + match[4]         
-            AddVideoURL(devuelve,encontrados,title,"http://www.mega" + match[0]) 
+        try:
+            logger.info ("Estilo Antomio")
+            #patronvideos = '<a href="http://www.megavideo.com/?v=E9CB86L7" target="_blank">Dexter 1x01 - Capitulo 01</a><br />'
+            patronvideos = '<a href="http://www.mega([^"]+)" target="_blank">(.*?)(\d*)x(\d*) - (.*?)</a>'
+            matches = re.compile(patronvideos).findall(data)
+            for match in matches:        
+                title = match[2]+"x"+ match[3] + " - " + match[4]         
+                AddVideoURL(devuelve,encontrados,title,"http://www.mega" + match[0]) 
+        except:
+            pass
+       
+       
+    #http://www.youtube.com/v/3_ptGFK8vTo&amp;hl=es&amp;fs=1    
+    logger.info ("0) Enlace estricto a Youtube")
+    patronvideos = 'youtube.com\/v\/([^ \t\n\r\f\v]{11})'
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        AddVideoID(devuelve,encontrados,'',match,'youtube')   
         
+    #http://www.youtube.com/watch?v=HjjqZFfVXoU     
+    logger.info ("1) Enlace estricto a Youtube")
+    patronvideos = 'youtube.com\/watch.*?v=([^ \t\n\r\f\v]{11})'
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        AddVideoID(devuelve,encontrados,'',match,'youtube')     
+        
+                
+    #videobb tipo "http://www.videobb.com/f/szIwlZD8ewaH.swf"
+    logger.info ("0) Enlace estricto a VideoBB")
+    patronvideos = 'videobb.com\/f\/([A-Z0-9a-z]{12}).swf'
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        AddVideoID(devuelve,encontrados,'','http://videobb.com/video/'+match,'videobb') 
+  
+    #videobb tipo "http://www.videobb.com/video/ZIeb370iuHE4"
+    logger.info ("1) Enlace estricto a VideoBB")
+    patronvideos = 'videobb.com\/video\/([A-Z0-9a-z]{12})'
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        AddVideoID(devuelve,encontrados,'','http://videobb.com/video/'+match,'videobb')
+         
+    #videobb tipo "http://videobb.com/e/LLqVzhw5ft7T"
+    logger.info ("2) Enlace estricto a VideoBB")
+    patronvideos = 'videobb.com\/e\/([A-Z0-9a-z]{12})'
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        AddVideoID(devuelve,encontrados,'','http://videobb.com/video/'+match,'videobb') 
+    
     
     #Megavideo tipo "http://www.megavideo.com/?v=CN7DWZ8S"
     logger.info ("0) Enlace estricto a megavideo")
@@ -487,7 +528,11 @@ def findvideos(data,parse):
     matches = re.compile(patronvideos).findall(data)
     for match in matches:
         AddVideoID(devuelve,encontrados,'',match,'Megavideo')
-                  
+
+    videosarray = servertools.findvideos(data)
+    for videoa in videosarray:
+        AddVideoID(devuelve,encontrados,videoa[0],videoa[1],videoa[2])
+                      
     return devuelve
 
 
@@ -529,10 +574,13 @@ def AddVideoURL(devuelve,encontrados,title,url):
     for match in matches:
         AddVideoID(devuelve,encontrados,title,match,'Megavideo')
     
+    videosarray = servertools.findvideos(url)
+    for videoa in videosarray:
+        AddVideoID(devuelve,encontrados,title,videoa[1],videoa[2])
+    
     return 
 
 def AddVideoID(devuelve,encontrados,title,id,servidor):  
-    id=str(id).upper()  
     if id not in encontrados:
         devuelve.append( [title, id , servidor] )
         encontrados.add(id)
