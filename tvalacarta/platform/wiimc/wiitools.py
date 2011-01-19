@@ -4,10 +4,10 @@ import os
 import binascii
 import md5
 
-from item import Item
-import logger
+from core.item import Item
+from core import logger
 
-import cerealizer
+from lib import cerealizer
 cerealizer.register(Item)
 
 def getitems(requestpath):
@@ -32,7 +32,7 @@ def getitems(requestpath):
 
     # Obtiene un nombre válido para la cache
     hashed_url = binascii.hexlify(md5.new(requestpath).digest())
-    cached_file = os.path.join( os.getcwd() , "cache" , hashed_url )
+    cached_file = os.path.join( os.getcwd() , "tmp" , "cache" , hashed_url )
     print cached_file
     
     if os.path.exists(cached_file):
@@ -47,7 +47,7 @@ def getitems(requestpath):
         # Parametros
         senderitem = Item( title="" , url=url , server=server )
     
-        exec "import "+channel
+        exec "from tvalacarta.channels import "+channel
         itemlist = []
     
         if accion=="play":
@@ -59,6 +59,8 @@ def getitems(requestpath):
             except:
                 itemlist = findvideos(senderitem,channel)
         else:
+            if senderitem.url=="none":
+                senderitem.url=""
             exec "itemlist = "+channel+"."+accion+"(senderitem)"
         
         # Lo almacena en cache
@@ -73,7 +75,8 @@ def play(item):
     logger.info("[wiitools.py] play")
     logger.info("url="+item.url)
     
-    import servertools
+    # Va a megavideo
+    from servers import servertools
     if item.server.lower()=="megavideo":
         mediaurl = servertools.getmegavideolow(item.url)
         logger.info("mediaurl="+mediaurl)
@@ -81,7 +84,7 @@ def play(item):
         itemlist.append( videoitem )
         
         import config
-        if config.getSetting("megavideopremium")=="true":
+        if config.get_setting("megavideopremium")=="true":
             mediaurl = servertools.getmegavideohigh(item.url)
             logger.info("mediaurl="+mediaurl)
             videoitem = Item( title="Ver en calidad alta (Megavideo)" , url = mediaurl , folder = False )
@@ -92,8 +95,8 @@ def play(item):
         videoitem = Item( title="Ver en calidad baja (Megavideo)" , url = mediaurl , folder = False )
         itemlist.append( videoitem )
         
-        import config
-        if config.getSetting("megavideopremium")=="true":
+        from core import config
+        if config.get_setting("megavideopremium")=="true":
             mediaurl = servertools.getmegauploadhigh(item.url)
             logger.info("mediaurl="+mediaurl)
             videoitem = Item( title="Ver en calidad alta (Megaupload)" , url = mediaurl , folder = False )

@@ -4,7 +4,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from core import config
 
-PORT=int(config.getSetting("server.port"))
+PORT=int(config.get_setting("server.port"))
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -45,7 +45,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     respuesta += "\n"
 
         else:
-            from platform.wii import wiitools
+            from platform.wiimc import wiitools
             itemlist,channel = wiitools.getitems(self.path)
             
             import urllib
@@ -78,7 +78,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
         return
 
-def main():
+def run():
     # IP
     try:
         import socket
@@ -87,10 +87,16 @@ def main():
         myip = s.getsockname()[0]
     except:
         myip = "0.0.0.0"
-    
+
+    # Crea el directorio cache si no existe    
+    cachedir = os.path.join( os.getcwd() , "tmp" , "cache" )
+    if not os.path.exists(cachedir):
+        os.mkdir(os.path.join( os.getcwd() , "tmp" ))
+        os.mkdir(os.path.join( os.getcwd() , "tmp" , "cache" ))
+
     # Borra la cache de la sesion anterior
-    for fichero in os.listdir( os.path.join( os.getcwd() , "cache" ) ):
-        os.remove( os.path.join( os.getcwd() , "cache" , fichero ) )
+    for fichero in os.listdir( cachedir ):
+        os.remove( os.path.join( cachedir , fichero ) )
     
     # Levanta el servidor
     try:
@@ -109,4 +115,4 @@ def main():
         print "Sigo aqui"
 
 if __name__ == '__main__':
-    main()
+    run()

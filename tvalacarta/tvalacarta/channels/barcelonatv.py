@@ -67,7 +67,7 @@ def videolist(item):
         scrapedplot = match[4]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="getvideo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     # Extrae el enlace a la siguiente página
     patron  = "<a href='([^']+)'><img src='([^']+)' alt='Mes' title='Mes' id='botomes' /></a>"
@@ -86,7 +86,7 @@ def videolist(item):
 
     return itemlist
 
-def getvideo(item):
+def play(item):
     logger.info("[barcelonatv.py] play")
 
     # Averigua la URL y la descripcion

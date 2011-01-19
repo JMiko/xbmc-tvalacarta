@@ -1,11 +1,10 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
-# pelisalacarta - XBMC Plugin
+# tvalacarta - XBMC Plugin
 # Utilidades para detectar vídeos de los diferentes conectores
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+# http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 import re
-
 from core import scrapertools
 from core import logger
 
@@ -101,58 +100,33 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # KOCHIKAME - Megaupload - Vídeos con título
-    logger.info("1k) Megaupload con titulo...")
-    patronvideos  = '<a href\="http\:\/\/www.megaupload.com/\?d\=([^"]+)".*?>([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    # Megaupload con título
+    logger.info("1k1) Megaupload...")
+    patronvideos  = '<a.*?href="http://www.megaupload.com/\?d=([A-Z0-9a-z]{8})".*?>(.*?)</a>'
+    matches = re.compile(patronvideos).findall(data)
     for match in matches:
-        titulo = match[1].strip()+" - [Megaupload]"
-        if titulo[0:3] == "Cap":
-            titulo = titulo[9:]
+        titulo = scrapertools.htmlclean(match[1].strip())+" - [Megaupload]"
         url = match[0]
-        if url == "3P78ET7H":
-            titulo = "012 - "+titulo
-        if url == "99D5HEEY":
-            titulo = "000 - (muestra <1min)"
-            titulo = titulo.replace('&#33;' , '!') 
-
         if url not in encontrados:
+            logger.info("  titulo="+titulo)
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'Megaupload' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-
-    logger.info("1d) Megaupload sin titulo...")
-    #http://www.megavideo.com/?v=OYGXMZBM
-    patronvideos  = 'http\:\/\/www.megaupload.com/\?d\=([A-Z0-9a-z]{8})'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
+    
+    #2/12/2010 Megaupload
+    logger.info("1k) Megaupload...")
+    patronvideos  = 'http\://www.megaupload.com/(?:es/)?\?.*?d\=([A-Z0-9a-z]{8})(?:[^>]*>([^<]+)</a>)?'
+    matches = re.compile(patronvideos).findall(data)
     for match in matches:
-        titulo = ""
-        if titulo == "":
-            titulo = "[Megaupload]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
-            encontrados.add(url)
+        if match[1]<>"":
+            titulo = match[1].strip()+" - [Megaupload]"
         else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("13) Megaupload sin titulo...")
-    #http://www.megaupload.com/?s=tumejortv&confirmed=1&d=6FQOWHTI
-    patronvideos  = 'http\:\/\/www.megaupload.com/.*?d\=([A-Z0-9a-z]{8})'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        titulo = ""
-        if titulo == "":
             titulo = "[Megaupload]"
-        url = match
+        url = match[0]
         if url not in encontrados:
+            logger.info("  titulo="+titulo)
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'Megaupload' ] )
             encontrados.add(url)
@@ -208,38 +182,6 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    '''
-    # WUAPI
-    logger.info("5) wuapi sin título")
-    patronvideos  = '<a href\="(http://wuapi.com[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "Sin título ("+match[23:]+")"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Wuapi' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    # WUAPI
-    logger.info("6) wuapi sin título...")
-    patronvideos  = '(http://wuapi.com[^<]+)<'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "Sin título ("+match[23:]+")"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Wuapi' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-    '''
-    
     # STAGEVU
     logger.info("7) Stagevu sin título...")
     patronvideos  = '"(http://stagevu.com[^"]+)"'
@@ -652,6 +594,36 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
+
+    logger.info("videobb...")
+    patronvideos  = "(http\:\/\/videobb.com\/video\/[a-zA-Z0-9]+)"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[videobb]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videobb' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    logger.info("blip.tv")
+    patron = '<embed src="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[blip.tv]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'bliptv' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
     
     return devuelve
 
@@ -663,72 +635,34 @@ def findurl(code,server):
         import megavideo
         mediaurl = megavideo.Megavideo(code)
 
-    if server == "megaupload":
+    elif server == "megaupload":
         import megaupload
         mediaurl = megaupload.getvideo(code)
         
-    if server == "vreel":
-        import vreel
-        mediaurl = vreel.Vreel(code)
-
-    if server == "stagevu":
-        import stagevu
-        mediaurl = stagevu.Stagevu(code)
-    
-    if server == "tu.tv":
-        import tutv
-        mediaurl = tutv.Tutv(code)
-    
-    if server == "movshare":
-        import movshare
-        mediaurl = movshare.getvideo(code)
-    
-    if server == "veoh":
-        import veoh
-        mediaurl = veoh.getvideo(code)
-    
-    if server == "directo":
+    elif server == "directo":
         mediaurl = code
-        
-    if server == "metadivx":
-        import metadivx
-        mediaurl = metadivx.geturl(code)
 
-    if server == "divxden":
-        import divxden
-        mediaurl = divxden.geturl(code)
-
-    if server == "divxlink":
-        import divxlink
-        mediaurl = divxlink.geturl(code)
-
-    if server == "videoweed":
-        import videoweed
-        mediaurl = videoweed.geturl(code)
-    
-    if server == "youtube":
-        import youtube
-        mediaurl = youtube.geturl(code)
-    
-    if server == "zshare":
-        import zshare
-        mediaurl = zshare.geturl(code)
-
-    if server == "4shared":
+    elif server == "4shared":
         import fourshared
         mediaurl = fourshared.geturl(code)
-    
-    if server == "cinshare":
-        import cinshare
-        mediaurl = cinshare.geturl(code)
         
-    if server == "facebook":
+    elif server == "facebook":
         mediaurl = code
         
-    if server == "xml":
+    elif server == "xml":
         import xmltoplaylist
         mediaurl = xmltoplaylist.geturl(code)
 
+    else:
+        try:
+            exec "import "+server+" as serverconnector"
+            mediaurl = serverconnector.geturl(code)
+        except:
+            mediaurl = "ERROR"
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
+        
     return mediaurl
 
 def getmegavideolow(code):

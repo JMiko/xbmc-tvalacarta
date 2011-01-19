@@ -117,6 +117,8 @@ def channels_list():
     channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
     #channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])
     channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])
+    channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])
+    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])
 
     return channelslist
 

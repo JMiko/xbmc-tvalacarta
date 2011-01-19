@@ -22,16 +22,19 @@ import ConfigParser
 DATA_PATH = os.getcwd()
 
 # Fichero de configuración global
-CONFIG_FILE_PATH = os.path.join(DATA_PATH,'settings.conf')
+CONFIG_FILE_PATH = os.path.join(DATA_PATH,'resources','settings.conf')
 print "Config file path "+CONFIG_FILE_PATH
 
 configfile = ConfigParser.SafeConfigParser()
 configfile.read( CONFIG_FILE_PATH )
 
-TRANSLATION_FILE_PATH = "resources/language/Spanish/strings.xml"
-translationsfile = open(TRANSLATION_FILE_PATH,"r")
-translations = translationsfile.read()
-translationsfile.close()
+TRANSLATION_FILE_PATH = os.path.join(DATA_PATH,"resources","language","Spanish","strings.xml")
+try:
+    translationsfile = open(TRANSLATION_FILE_PATH,"r")
+    translations = translationsfile.read()
+    translationsfile.close()
+except:
+    translations = ""
 print "Config file path "+TRANSLATION_FILE_PATH
 
 def get_system_platform():

@@ -14,7 +14,7 @@
 # 18-12-2010 Implementa lector cadenas internacionales con strings.xml de xbmc
 #-------------------------------------------------------------------------------
 
-print "Using DEVELOPER config"
+print "Using WIIMC config"
 
 import os,re
 import ConfigParser
@@ -22,17 +22,17 @@ import ConfigParser
 DATA_PATH = os.getcwd()
 
 # Fichero de configuración global
-CONFIG_FILE_PATH = os.path.join(DATA_PATH,'settings.conf')
+CONFIG_FILE_PATH = os.path.join(DATA_PATH,'resources','settings.conf')
 print "Config file path "+CONFIG_FILE_PATH
 
 configfile = ConfigParser.SafeConfigParser()
 configfile.read( CONFIG_FILE_PATH )
 
-TRANSLATION_FILE_PATH = "resources/language/Spanish/strings.xml"
+TRANSLATION_FILE_PATH = os.path.join(DATA_PATH,"resources","language","Spanish","strings.xml")
 translationsfile = open(TRANSLATION_FILE_PATH,"r")
 translations = translationsfile.read()
 translationsfile.close()
-print "Config file path "+TRANSLATION_FILE_PATH
+print "Language file path "+TRANSLATION_FILE_PATH
 
 def get_system_platform():
     return "desktop"

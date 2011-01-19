@@ -62,13 +62,23 @@ def run():
     try:
         # Accion por defecto - elegir canal
         if ( action=="selectchannel" ):
+            
+            if config.get_setting("updatechannels")=="true":
+                from core import updater
+                actualizado = updater.updatechannel("channelselector")
+
+                if actualizado:
+                    import xbmcgui
+                    advertencia = xbmcgui.Dialog()
+                    advertencia.ok("tvalacarta",config.get_localized_string(30064))
+
             import channelselector as plugin
             plugin.mainlist(params, url, category)
 
         # Actualizar version
         elif ( action=="update" ):
             try:
-                import updater
+                from core import updater
                 updater.update(params)
             except ImportError:
                 logger.info("[pelisalacarta.py] Actualizacion automática desactivada")
@@ -134,18 +144,33 @@ def run():
                 else:
                     extra = ""
             
+                from core.item import Item
+                item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra)
+
                 from core import xbmctools
                 if action=="play":
                     # Si el canal tiene una acción "play" tiene prioridad
                     try:
                         itemlist = channel.play(item)
+                        if len(itemlist)>0:
+                            item = itemlist[0]
+                        xbmctools.playvideo(params.get("channel"),item.server,item.url,item.category,item.title,item.thumbnail,item.plot)
                     except:
+                        import sys
+                        for line in sys.exc_info():
+                            logger.error( "%s" % line )
                         xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
                 else:
-                    from core.item import Item
-                    item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, extra=extra)
-        
-                    exec "itemlist = channel."+action+"(item)"
+                    if action!="findvideos":
+                        exec "itemlist = channel."+action+"(item)"
+                    else:
+                        # Intenta ejecutar una posible funcion "findvideos" del canal
+                        try:
+                            exec "itemlist = channel."+action+"(item)"
+                        # Si no funciona, lanza el método genérico para detectar vídeos
+                        except:
+                            itemlist = findvideos(item)
+
                     xbmctools.renderItems(itemlist, params, url, category)
 
     except urllib2.URLError,e:
@@ -164,3 +189,27 @@ def run():
             logger.info("codigo de error HTTP : %d" %e.code)
             texto = (config.get_localized_string(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
             ok = ventana_error.ok ("tvalacarta", texto)    
+
+# Función genérica para encontrar vídeos en una página
+def findvideos(item):
+    logger.info("[pelisalacarta.py] findvideos")
+
+    # Descarga la página
+    from core import scrapertools
+    data = scrapertools.cache_page(item.url)
+    #logger.info(data)
+
+    # Busca los enlaces a los videos
+    from core.item import Item
+    from servers import servertools
+    listavideos = servertools.findvideos(data)
+
+    itemlist = []
+    for video in listavideos:
+        scrapedtitle = item.title.strip() + " - " + video[0]
+        scrapedurl = video[1]
+        server = video[2]
+        
+        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=server, page=item.page, url=scrapedurl, thumbnail=item.thumbnail, show=item.show , plot=item.plot , folder=False) )
+
+    return itemlist
