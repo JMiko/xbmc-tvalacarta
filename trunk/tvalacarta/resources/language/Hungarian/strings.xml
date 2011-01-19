@@ -58,6 +58,8 @@
 	<string id="30060">Loading canceled due to an error on website</string> <!-- No se puede acceder por un error en el sitio web -->
 	<string id="30061">Quality not available or video removed</string> <!-- La calidad elegida no esta disponible o el video ha sido borrado -->
 	<string id="30062">Try another quality</string> <!-- Prueba a reproducir en otra calidad -->
+    <string id="30063">Channel downloaded and updated!</string>
+    <string id="30064">¡Channel list has been updated!</string>
 
 	<!-- =============================================================== -->
 	<!-- 30100 to 30149: Generic channels (Search, downloads, etc.)      -->
