@@ -40,8 +40,8 @@ def mainlist(params,url,category):
 	logger.info("[peliculasid.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimas Películas Subidas"    ,"http://www.peliculasid.net/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://www.peliculasid.net/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimas Películas Subidas"    ,"http://peliculasid.net/","","")
+	xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://peliculasid.net/","","")
 	
 
 	# Label (top-right)...
@@ -91,7 +91,7 @@ def listvideos(params,url,category):
 		url = "http://www.peliculasid.net/"
                 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 
 	# Extrae las entradas (carpetas)
@@ -154,7 +154,7 @@ def detail(params,url,category):
 	plot = urllib.unquote_plus( params.get("plot") )
 
 	# Descarga la página
-	data = scrapertools.cachePage(url)
+	data = scrapertools.downloadpageGzip(url)
 	#logger.info(data)
 	patrondescrip = '<strong>Sinopsis:</strong><br />(.*?)</p>'
 	matches = re.compile(patrondescrip,re.DOTALL).findall(data)
@@ -182,7 +182,7 @@ def detail(params,url,category):
 			
 			if ("xml" in matches[0]):  
 				xbmctools.addnewvideo( CHANNELNAME , "play" , category , "xml" , "Reproducir todas las partes a la vez" , matches[0] , thumbnail , plot )
-				#data = scrapertools.cachePage(matches[0])
+				#data = scrapertools.downloadpageGzip(matches[0])
 				req = urllib2.Request(matches[0])
 				try:
 					response = urllib2.urlopen(req)
@@ -231,7 +231,7 @@ def detail(params,url,category):
 				urllists = match[0]
 			else:	
 				urllists = urllists + "|" + match[0] 
-			#data2 = scrapertools.cachePage(match[0])
+			#data2 = scrapertools.downloadpageGzip(match[0])
 			#matches2 = re.compile(patronvideos2,re.DOTALL).findall(data2)
 			xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - "+match[1], match[0] , thumbnail , plot )
 		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "(Reproducir todas las partes a la vez...)", urllists , thumbnail , plot )
@@ -251,7 +251,7 @@ def detail(params,url,category):
 	if len(matches)>0:
 		print " encontro VKontakte.ru :%s" %matches[0]
  		
-		data2 = scrapertools.cachePage(matches[0])
+		data2 = scrapertools.downloadpageGzip(matches[0])
 		print data2
 		patron  = "var video_host = '([^']+)'.*?"
 		patron += "var video_uid = '([^']+)'.*?"
@@ -308,20 +308,20 @@ def play(params,url,category):
 		for match in matches:
 			c += 1
 			print match
-			data = scrapertools.cachePage(match)
+			data = scrapertools.downloadpageGzip(match)
 			matches2 = re.compile(patronvideos,re.DOTALL).findall(data)
 			listdata.append(["Parte %d" %c,matches2[0]])
 		
 		url = xmltoplaylist.MakePlaylistFromList(listdata)	
 	elif "iframeplayer.php" in url:      #"http://peliculasid.net/iframeplayer.php?url=aHR0cDovL3ZpZGVvLmFrLmZhY2Vib29rLmNvbS9jZnMtYWstc25jNC80MjIxNi82MS8xMjgxMTI4ODgxOTUwXzM5NTAwLm1wNA=="
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpageGzip(url)
 		patronvideos = 'file=([^\&]+)\&'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
 		if len(matches)>0:
 			url = matches[0]
 			
 	elif "iframevk.php" in url:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpageGzip(url)
 		patronvideos = '<iframe src="(http://vk[^/]+/video_ext.php[^"]+)"'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
 		if len(matches)>0:
@@ -329,7 +329,7 @@ def play(params,url,category):
 			server = "Directo"
 			url = 	vk.geturl(matches[0])
 	elif "iframemv.php" in url:
-		data = scrapertools.cachePage(url)
+		data = scrapertools.downloadpageGzip(url)
 		patronvideos  = 'src="http://www.megavideo.com/mv_player.swf\?v\=([^"]+)"'
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)	
 		if len(matches)>0:
@@ -366,7 +366,7 @@ def MakePlaylistFromXML(xmlurl,title="default"):
 		nombrefichero = FULL_FILENAME_PATH_XML
 	else:
 		nombrefichero = os.path.join( downloadtools.getDownloadPath(),title + ".pls")
-	xmldata = scrapertools.cachePage(xmlurl)
+	xmldata = scrapertools.downloadpageGzip(xmlurl)
 	patron = '<title>([^<]+)</title>.*?<location>([^<]+)</location>'
 	matches = re.compile(patron,re.DOTALL).findall(xmldata)
 	if len(matches)>0:
