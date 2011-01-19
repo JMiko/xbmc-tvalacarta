@@ -68,7 +68,7 @@ def mainlist(item):
         scrapedurl = match[4]
         scrapedthumbnail = match[5]
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     if primera:
         itemlist.append( Item(channel=CHANNELNAME, title="Los más valorados" , thumbnail=os.path.join(IMAGES_PATH, "masvalorados.jpg"), url="http://www.adnstream.tv/canal_magico.new.php?i=0&n=30&c=masvalorados" , action="mainlist" , folder=True) )

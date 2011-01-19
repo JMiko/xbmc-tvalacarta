@@ -9,13 +9,13 @@ class Item(object):
     fanart = ""
     folder = ""
     action = ""
-    server = ""
+    server = "directo"
     extra = ""
     show = ""
     category = ""
     childcount = 0
 
-    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="", extra="", show="", category = "" , folder=True):
+    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , folder=True):
         self.channel = channel
         self.title = title
         self.url = url

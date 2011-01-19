@@ -866,41 +866,6 @@ def sec_to_hms(seconds):
     h,m = divmod(m, 60)
     return ("%02d:%02d:%02d" % ( h , m ,s ))
 
-def updatechannel(channelName):
-    logger.info("Buscando actualizacion del canal " + channelName)
-    
-    # URL de descarga desde subversion
-    channelURL = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/plugins/video/plugin.video.pelisalacarta/channels/"+channelName+".py"
-    logger.info("channelURL="+channelURL)
-    
-    # Obtiene la fecha del fichero
-    import xbmc
-    channelFileSource = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".py" ) )
-    logger.info("channelFileSource="+channelFileSource)
-    
-    if not os.path.exists(channelFileSource):
-        return False;
-
-    channelFileCompiled = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channelName+".pyo" ) )
-    logger.info("channelFileCompiled="+channelFileCompiled)
-        
-    fechaFichero = os.path.getmtime(channelFileSource)
-    logger.info("fechaFichero=%s"% time.ctime(fechaFichero))
-
-    updated , data = downloadIfNotModifiedSince(channelURL,fechaFichero)
-
-    if updated:
-        outfile = open(channelFileSource,"w")
-        outfile.write(data)
-        outfile.flush()
-        outfile.close()
-        logger.info("Grabado a " + channelFileSource)
-        
-        if os.path.exists(channelFileCompiled):
-            os.remove(channelFileCompiled)
-
-    return updated
-
 def downloadIfNotModifiedSince(url,timestamp):
 
     logger.info("[downloadtools.py] downloadIfNotModifiedSince("+url+","+time.ctime(timestamp)+")")
