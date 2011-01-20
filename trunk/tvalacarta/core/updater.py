@@ -21,19 +21,19 @@ PLUGIN_NAME = "pelisalacarta"
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 ROOT_DIR = os.getcwd()
 
-REMOTE_VERSION_FILE = "http://www.mimediacenter.info/xbmc/tvalacarta/version.xml"
+REMOTE_VERSION_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-version.xml"
 LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "tvalacarta-" ) )
 
 try:
     if config.DHARMA:
-        REMOTE_FILE = "http://www.mimediacenter.info/xbmc/tvalacarta/dharma/tvalacarta-"
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-xbmc-addon-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     else:
-        REMOTE_FILE = "http://www.mimediacenter.info/xbmc/tvalacarta/nodharma/tvalacarta-"
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-xbmc-plugin-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
 except:
-    REMOTE_FILE = "http://www.mimediacenter.info/xbmc/tvalacarta/nodharma/tvalacarta-"
+    REMOTE_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-xbmc-plugin-"
     DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
 def checkforupdates():
@@ -125,7 +125,11 @@ def update(params):
     xbmc.output("[updater.py] localfilename=%s" % localfilename)
     xbmc.output("[updater.py] descarga fichero...")
     inicio = time.clock()
-    urllib.urlretrieve(remotefilename,localfilename)
+    
+    #urllib.urlretrieve(remotefilename,localfilename)
+    from core import downloadtools
+    downloadtools.downloadfile(remotefilename, localfilename)
+    
     fin = time.clock()
     xbmc.output("[updater.py] Descargado en %d segundos " % (fin-inicio+1))
     

@@ -110,6 +110,9 @@ def run():
                 exec "import tvalacarta.channels."+params.get("channel")+" as channel"
             # Luego intenta cargarlo como canal del core
             except:
+                import sys
+                for line in sys.exc_info():
+                    logger.error( "%s" % line )
                 exec "from core import "+params.get("channel")+" as channel"
 
             generico = False

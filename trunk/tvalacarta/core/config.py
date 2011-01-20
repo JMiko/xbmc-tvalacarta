@@ -65,7 +65,17 @@ def get_setting(name):
         set_setting(name,dev)
     '''
 
-    if name=="cookies.dir":
+    if name=="download.enabled" and dev=="":
+        try:
+            from core import descargadoslist
+            dev="true"
+        except:
+            dev="false"
+    
+    elif name=="plugin.name" and dev=="":
+        dev="tvalacarta"
+    
+    elif name=="cookies.dir":
         dev=get_data_path()
     elif name=="cache.mode":
         dev="2"

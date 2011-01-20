@@ -542,7 +542,7 @@ def downloadfile(url,nombrefichero):
     try:
         import xbmcgui
         progreso = xbmcgui.DialogProgress()
-        progreso.create( config.get_plugin_id() , "Descargando vídeo..." , url , nombrefichero )
+        progreso.create( config.get_setting("plugin.name") , "Descargando..." , url , nombrefichero )
     except:
         progreso = ""
 
