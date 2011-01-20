@@ -11,10 +11,10 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
+from core import scrapertools
 import binascii
-import xbmctools
-import youtube
+from core import xbmctools
+from servers import youtube
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )

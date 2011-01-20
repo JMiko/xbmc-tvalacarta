@@ -46,6 +46,16 @@ def get_setting(name):
     
     dev = __settings__.getSetting( name )
     
+    if name=="download.enabled" and dev=="":
+        try:
+            from core import descargadoslist
+            dev="true"
+        except:
+            dev="false"
+    
+    if name=="plugin.name" and dev=="":
+        dev="tvalacarta"
+    
     return dev
 
 def set_setting(name,value):

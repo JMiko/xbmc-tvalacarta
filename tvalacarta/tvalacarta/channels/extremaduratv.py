@@ -167,6 +167,13 @@ def getvideo(item):
     descripcioncompleta = unicode( descripcioncompleta, "utf-8" ).encode("iso-8859-1")
     plot = descripcioncompleta
 
+    data = scrapertools.cache_page(url)
+    print data
+    patron = "(http[^\?]+)\?"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    url = matches[0]
+
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=plot , show=item.show , folder=False) )
 
