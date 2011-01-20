@@ -412,7 +412,7 @@ def downloadpagewithcookies(url):
     # ---------------------------------
 
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.DATA_PATH, 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
     logger.info("[scrapertools.py] Cookiefile="+ficherocookies)
 
     cj = None
@@ -502,7 +502,7 @@ def downloadpagewithcookies(url):
 def downloadpageGzip(url):
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.DATA_PATH, 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
     print "Cookiefile="+ficherocookies
     inicio = time.clock()
     

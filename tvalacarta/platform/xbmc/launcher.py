@@ -97,8 +97,8 @@ def run():
         # El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
         else:
             if action=="mainlist" and config.get_setting("updatechannels")=="true":
-                from core import downloadtools
-                actualizado = downloadtools.updatechannel(params.get("channel"))
+                from core import updater
+                actualizado = updater.updatechannel(params.get("channel"))
 
                 if actualizado:
                     import xbmcgui
@@ -107,12 +107,14 @@ def run():
 
             # Primero intenta cargarlo como canal normal
             try:
+                logger.info("[channelselector.py] canal normal")
                 exec "import tvalacarta.channels."+params.get("channel")+" as channel"
             # Luego intenta cargarlo como canal del core
             except:
                 import sys
                 for line in sys.exc_info():
                     logger.error( "%s" % line )
+                logger.info("[channelselector.py] canal core")
                 exec "from core import "+params.get("channel")+" as channel"
 
             generico = False

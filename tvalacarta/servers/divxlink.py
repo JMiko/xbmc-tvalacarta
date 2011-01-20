@@ -14,7 +14,7 @@ import scrapertools
 import unpackerjs
 import config
 
-COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
+COOKIEFILE = os.path.join (config.get_data_path() , "cookies.lwp")
 
 def geturl(urlvideo):
 	xbmc.output("[divxlink.py] url="+urlvideo)

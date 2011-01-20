@@ -14,10 +14,10 @@ import sys
 import xbmc
 import xbmcplugin
 import xbmcgui
-import config
-import logger
+from core import config
+from core import logger
 
-COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
+COOKIEFILE = os.path.join (config.get_data_path() , "cookies.lwp")
 
 logger.debug("[megavideo.py] Cookiefile="+COOKIEFILE) 
 

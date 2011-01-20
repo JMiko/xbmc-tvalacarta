@@ -21,9 +21,7 @@ import os
 import xbmcaddon
 import xbmc
 
-PLUGIN_ID = "plugin.video.tvalacarta"
-
-__settings__ = xbmcaddon.Addon(id=PLUGIN_ID)
+__settings__ = xbmcaddon.Addon(id="plugin.video.tvalacarta")
 __language__ = __settings__.getLocalizedString
 
 def get_system_platform():
@@ -43,18 +41,10 @@ def open_settings():
     __settings__.openSettings()
 
 def get_setting(name):
-    
     dev = __settings__.getSetting( name )
     
-    if name=="download.enabled" and dev=="":
-        try:
-            from core import descargadoslist
-            dev="true"
-        except:
-            dev="false"
-    
-    if name=="plugin.name" and dev=="":
-        dev="tvalacarta"
+    if name=="plugin.name":
+        dev="plugin.video.tvalacarta"
     
     return dev
 
@@ -72,13 +62,16 @@ def get_localized_string(code):
     return dev
 
 def get_library_path():
-    return xbmc.translatePath("special://profile/addon_data/%s/library" % PLUGIN_ID)
+    return xbmc.translatePath("special://profile/addon_data/plugin.video.tvalacarta/library")
 
 def get_temp_file(filename):
     return xbmc.translatePath( os.path.join( "special://temp/", filename ))
 
 def get_runtime_path():
-    return __settings__.getAddonInfo('Path')
+    return xbmc.translatePath( __settings__.getAddonInfo('Path') )
 
 def get_data_path():
-    return __settings__.getAddonInfo('Profile')
+    return xbmc.translatePath( __settings__.getAddonInfo('Profile') )
+
+print "[config.py] runtime path = "+get_runtime_path()
+print "[config.py] data path = "+get_data_path()

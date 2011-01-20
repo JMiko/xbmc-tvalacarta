@@ -346,7 +346,7 @@ def getDownloadPath():
             
             # No es Telebision, fuerza el directorio home de XBMC
             if downloadpath == "":
-                downloadpath = os.path.join (config.DATA_PATH,"downloads")
+                downloadpath = os.path.join (config.get_data_path(),"downloads")
                 logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
                 if not os.path.exists(downloadpath):
                     logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
@@ -391,7 +391,7 @@ def getDownloadListPath():
             
             # No es Telebision, fuerza el directorio home de XBMC
             if downloadpath == "":
-                downloadpath = os.path.join (config.DATA_PATH,"downloads","list")
+                downloadpath = os.path.join (config.get_data_path(),"downloads","list")
                 logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
                 if not os.path.exists(downloadpath):
                     logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
@@ -702,7 +702,7 @@ def downloadfileGzipped(url,pathfichero):
     # Crea el diálogo de progreso
     import xbmcgui
     progreso = xbmcgui.DialogProgress()
-    progreso.create( config.get_plugin_id() , "Descargando file..." , url , nombrefichero )
+    progreso.create( "addon" , "Descargando..." , url , nombrefichero )
 
     # Timeout del socket a 60 segundos
     socket.setdefaulttimeout(10)

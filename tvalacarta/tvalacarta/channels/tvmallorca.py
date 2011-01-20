@@ -11,10 +11,10 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
 import binascii
-import xbmctools
-import logger
+from core import scrapertools
+from core import xbmctools
+from core import logger
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )

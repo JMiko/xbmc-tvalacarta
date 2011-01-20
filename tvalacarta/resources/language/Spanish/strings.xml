@@ -121,6 +121,7 @@
     <string id="30131">Locales</string>
     <string id="30132">Temáticos</string>
     <string id="30133">Internet</string>
+    <string id="30134">Los nuevos</string>
 
 	<!-- =============================================================== -->
 	<!-- De 30150 a 30199: Menú acción / contextual                      -->
@@ -143,60 +144,4 @@
 	<!-- =============================================================== -->
 	<!-- De 30100 a 30999: Canales individuales                          -->
 	<!-- =============================================================== -->
-
-	<!-- Context menu strings -->
-	<string id="30300">Eliminar esta busqueda</string>
-
-	<!-- LetMeWatchThis -->
-	<string id="40001">Películas - Novedades</string>
-	<string id="40002">Series - Novedades</string>
-	<string id="40003">!Página siguiente</string>
-
-	<!-- TVShack strings -->
-	<string id="30900">TVShack</string>
-	<string id="30901">Series TV (VO)</string>
-	<string id="30902">Películas (VO)</string>
-	<string id="30903">Documentales (VO)</string>
-	<string id="30904">Anime (VO)</string>
-	<string id="30905">Música</string>
-	<string id="30906">Busqueda Global en TVShack</string>
-	<string id="30907">No se produjeron resultados de búsqueda</string>
-	<string id="30908">Serie - %s (%s episodios)</string>
-	<string id="30909">Serie - </string>
-
-	<string id="30910">Cine - %s (%s)</string>
-	<string id="30911">"Música - "</string>
-	<string id="30912">Leyendo %s...</string>
-	<string id="30913">No se encontró nada que listar</string>
-	<string id="30914">episodio</string>
-	<string id="30915">episodios</string>
-	<string id="30916">canción</string>
-	<string id="30917">canciones</string>
-	<string id="30918"> (Nuevo)</string>
-	<string id="30919"> (Nuevos contenidos)</string>
-
-	<string id="30920">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
-	<string id="30921"></string>
-	<string id="30922"></string>
-	<string id="30923"></string>
-	<string id="30924"></string>
-	<string id="30925"></string>
-	<string id="30926"></string>
-	<string id="30927"></string>
-	<string id="30928"></string>
-	<string id="30929"></string>
-
-	<string id="30930"></string>
-	<string id="30931"></string>
-	<string id="30932"></string>
-	<string id="30933"></string>
-	<string id="30934"></string>
-	<string id="30935"></string>
-	<string id="30936"></string>
-	<string id="30937"></string>
-	<string id="30938"></string>
-	<string id="30939"></string>
-
-
-
 </strings>

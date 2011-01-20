@@ -19,16 +19,14 @@ print "Using DEVELOPER config"
 import os,re
 import ConfigParser
 
-DATA_PATH = os.getcwd()
-
 # Fichero de configuración global
-CONFIG_FILE_PATH = os.path.join(DATA_PATH,'resources','settings.conf')
+CONFIG_FILE_PATH = os.path.join( os.getcwd(),'resources','settings.conf')
 print "Config file path "+CONFIG_FILE_PATH
 
 configfile = ConfigParser.SafeConfigParser()
 configfile.read( CONFIG_FILE_PATH )
 
-TRANSLATION_FILE_PATH = os.path.join(DATA_PATH,"resources","language","Spanish","strings.xml")
+TRANSLATION_FILE_PATH = os.path.join(os.getcwd(),"resources","language","Spanish","strings.xml")
 try:
     translationsfile = open(TRANSLATION_FILE_PATH,"r")
     translations = translationsfile.read()

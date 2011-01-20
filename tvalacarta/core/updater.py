@@ -18,7 +18,11 @@ import config
 import logger
 
 PLUGIN_NAME = "pelisalacarta"
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
+if config.get_setting("thumbnail_type")=="0":
+    IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
+else:
+    IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
+
 ROOT_DIR = os.getcwd()
 
 REMOTE_VERSION_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-version.xml"
@@ -26,7 +30,7 @@ LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" 
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "tvalacarta-" ) )
 
 try:
-    if config.DHARMA:
+    if config.get_platform()=="xbmcdharma":
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-xbmc-addon-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     else:
@@ -100,7 +104,7 @@ def checkforupdates():
         xbmc.output("[updater.py] actualizacion disponible")
         
         # Añade al listado de XBMC
-        listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
+        listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "poster" , "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
         itemurl = '%s?action=update&version=%s' % ( sys.argv[ 0 ] , versiondescargada )
         xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
         

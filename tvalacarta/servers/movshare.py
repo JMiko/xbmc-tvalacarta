@@ -11,7 +11,7 @@ import sys
 import xbmc
 import config
 
-COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
+COOKIEFILE = os.path.join (config.get_data_path() , "cookies.lwp")
 
 def getvideo(urlpagina):
     # ---------------------------------------
