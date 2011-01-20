@@ -2,8 +2,8 @@
 #------------------------------------------------------------
 # Gestión de parámetros de configuración - xbmc dharma
 #------------------------------------------------------------
-# pelisalacarta
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+# tvalacarta
+# http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 # Creado por: 
 # Jesús (tvalacarta@gmail.com)
@@ -12,6 +12,8 @@
 #------------------------------------------------------------
 # Historial de cambios:
 #------------------------------------------------------------
+
+print "[config.py] xbmcdharma config"
 
 import sys
 import os
@@ -44,13 +46,6 @@ def get_setting(name):
     
     dev = __settings__.getSetting( name )
     
-    # La cache recibe un valor por defecto la primera vez que se solicita
-    if name=="cache.dir" and dev=="":
-        dev = xbmc.translatePath("special://temp/%s.cache" % PLUGIN_ID)
-        if not os.path.exists(dev):
-            os.mkdir(dev)
-        set_setting(name,dev)
-
     return dev
 
 def set_setting(name,value):
@@ -71,3 +66,9 @@ def get_library_path():
 
 def get_temp_file(filename):
     return xbmc.translatePath( os.path.join( "special://temp/", filename ))
+
+def get_runtime_path():
+    return __settings__.getAddonInfo('Path')
+
+def get_data_path():
+    return __settings__.getAddonInfo('Profile')

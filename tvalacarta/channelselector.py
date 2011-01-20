@@ -19,7 +19,7 @@ def mainlist(params,url,category):
 
     # Verifica actualizaciones solo en el primer nivel
     try:
-        import updater
+        from core import updater
     except ImportError:
         logger.info("[channelselector.py] No disponible modulo actualizaciones")
     else:

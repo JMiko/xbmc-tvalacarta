@@ -286,7 +286,7 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
 
     #  Inicializa la librería de las cookies
     ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
-    logger.info("[scrapertools.py] Cookiefile="+ficherocookies)
+    logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
     ClientCookie = None

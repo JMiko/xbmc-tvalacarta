@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
-# tvalacarta - XBMC Plugin
-# Main
+# tvalacarta
+# XBMC Launcher (dharma / pre-dharma)
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
@@ -18,9 +18,9 @@ def run():
     logger.info("[tvalacarta.py] run")
     
     # Verifica si el path de usuario del plugin está creado
-    if not os.path.exists(config.DATA_PATH):
-        logger.debug("[tvalacarta.py] Path de usuario no existe, se crea: "+config.DATA_PATH)
-        os.mkdir(config.DATA_PATH)
+    if not os.path.exists(config.get_data_path()):
+        logger.debug("[tvalacarta.py] Path de usuario no existe, se crea: "+config.get_data_path())
+        os.mkdir(config.get_data_path())
 
     # Imprime en el log los parámetros de entrada
     logger.info("[tvalacarta.py] sys.argv=%s" % str(sys.argv))
