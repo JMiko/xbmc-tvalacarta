@@ -52,6 +52,7 @@ def channeltypes(params,url,category):
     addfolder(config.get_localized_string(30131),"channelselector","listchannels","L")  # Locales
     addfolder(config.get_localized_string(30132),"channelselector","listchannels","T")  # Temáticos
     addfolder(config.get_localized_string(30133),"channelselector","listchannels","I")  # Web
+    addfolder(config.get_localized_string(30134),"channelselector","listchannels","NEW")  # Web
 
     # Label (top-right)...
     import xbmcplugin
@@ -64,24 +65,40 @@ def listchannels(params,url,category):
 
     idiomav=""
 
-    channelslist = channels_list()
-
-    for channel in channelslist:
-        # Pasa si no ha elegido "todos" y no está en la categoría elegida
-        if category<>"*" and category not in channel[4]:
-            #logger.info(channel[0]+" no entra por tipo #"+channel[4]+"#, el usuario ha elegido #"+category+"#")
-            continue
-        # Pasa si no ha elegido "todos" y no está en el idioma elegido
-        if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
-            #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
-            continue
-        addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
+    if category=="NEW":
+        channelslist = channels_history_list()
+        for channel in channelslist:
+            # Pasa si no ha elegido "todos" y no está en el idioma elegido
+            if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
+                #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
+                continue
+            addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
+    else:
+        channelslist = channels_list()
+    
+        for channel in channelslist:
+            # Pasa si no ha elegido "todos" y no está en la categoría elegida
+            if category<>"*" and category not in channel[4]:
+                #logger.info(channel[0]+" no entra por tipo #"+channel[4]+"#, el usuario ha elegido #"+category+"#")
+                continue
+            # Pasa si no ha elegido "todos" y no está en el idioma elegido
+            if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
+                #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
+                continue
+            addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
 
     # Label (top-right)...
     import xbmcplugin
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def channels_history_list():
+    channelslist = []
+    channelslist.append([ "IB3 (Islas Baleares) (20/01/2011)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Giralda TV (Sevilla) (20/01/2011)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])
+    channelslist.append([ "Solidaria TV (20/01/2011)"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])
+    return channelslist
 
 def channels_list():
     channelslist = []
@@ -116,9 +133,9 @@ def channels_list():
     channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
     channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
     #channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])
-    channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])
-    channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])
-    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
 
     return channelslist
 

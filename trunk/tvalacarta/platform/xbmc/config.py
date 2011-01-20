@@ -19,8 +19,6 @@ import os
 import xbmcplugin
 import xbmc
 
-PLUGIN_ID = "plugin.video.tvalacarta"
-
 def get_system_platform():
     """ fonction: pour recuperer la platform que xbmc tourne """
     import xbmc
@@ -53,9 +51,6 @@ def get_localized_string(code):
         pass
     
     return dev
-    
-def get_plugin_id():
-    return "tvalacarta"
     
 def get_library_path():
     return os.path.join( get_data_path(), 'library' )

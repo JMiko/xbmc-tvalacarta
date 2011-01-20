@@ -31,7 +31,7 @@ logger.info("[descargadoslist.py] init")
 
 DEBUG = True
 
-DOWNLOAD_PATH = os.path.join( downloadtools.getDownloadListPath() )
+DOWNLOAD_PATH = downloadtools.getDownloadListPath()
 IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 ERROR_PATH = os.path.join( downloadtools.getDownloadListPath(), 'error' )
 

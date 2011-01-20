@@ -33,9 +33,13 @@ BOOKMARK_PATH = config.get_setting( "bookmarkpath" )
 usingsamba=BOOKMARK_PATH.upper().startswith("SMB://")
 
 if not usingsamba:
+    if BOOKMARK_PATH=="":
+        BOOKMARK_PATH = os.path.join( config.get_data_path() , "bookmarks" )
     if not os.path.exists(BOOKMARK_PATH):
         logger.debug("[favoritos.py] Path de bookmarks no existe, se crea: "+BOOKMARK_PATH)
         os.mkdir(BOOKMARK_PATH)
+
+logger.info("[favoritos.py] path="+BOOKMARK_PATH)
 
 def mainlist(params,url,category):
     logger.info("[favoritos.py] mainlist")
