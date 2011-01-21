@@ -610,7 +610,22 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
+           
+    logger.info("0) megaporn...")
+    patronvideos = 'http\:\/\/www.mega(?:(?:porn)|(?:rotic)?)?\.com/(?:(?:e/)?|\?(?:s=.+?&(?:amp;)?)?(?:(?:v\=)|)?)?([A-Z0-9]{8})'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
+    for match in matches:
+        titulo = "[megaporn]"
+        url = match
+        print url
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megaporn' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
     return devuelve
 
 def findurl(code,server):
@@ -624,7 +639,7 @@ def findurl(code,server):
     elif server == "megaupload":
         import megaupload
         mediaurl = megaupload.getvideo(code)
-        
+    
     elif server == "directo":
         mediaurl = code
 

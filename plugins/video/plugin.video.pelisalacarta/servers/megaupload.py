@@ -227,20 +227,36 @@ def getmegauploadvideo(code,user):
 		#logger.info(response)
 		#logger.info(response.info() + " es el info")
 		data=response.read()
-    		response.close()
-  		#if DEBUG:
-    		#    xbmc.output("[megaupload.py] data=#"+data+"#")
-    
-    		patronvideos  = '<div class="down_ad_pad1">[^<]+<a href="([^"]+)"'
-    		matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    		scrapertools.printMatches(matches)
-    
-    		mediaurl = ""
-    		if len(matches)>0:
-        		mediaurl = matches[0]
-	
+		response.close()
+		#if DEBUG:
+		#    xbmc.output("[megaupload.py] data=#"+data+"#")
+
+		patronvideos  = '<div class="down_ad_pad1">[^<]+<a href="([^"]+)"'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)
+		scrapertools.printMatches(matches)
+
+		mediaurl = ""
+		if len(matches)>0:
+			mediaurl = matches[0]
+			# Timeout del socket a 60 segundos
+			socket.setdefaulttimeout(10)
+
+			h=urllib2.HTTPHandler(debuglevel=0)
+			request = urllib2.Request(mediaurl)
+
+			opener = urllib2.build_opener(h)
+			urllib2.install_opener(opener)
+			try:
 			
-	return mediaurl
+				connexion = opener.open(request)
+				mediaurl= connexion.geturl()
+			
+			except urllib2.HTTPError,e:
+				print ("[megaupload.py]  error %d (%s) al abrir la url %s" % (e.code,e.msg,mediaurl))
+			
+				print e.read()	
+			
+	return mediaurl.replace(" ","%20")
 
 def getvideo(code):
     return megavideo.Megavideo(convertcode(code))

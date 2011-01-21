@@ -16,7 +16,7 @@ try:
 	DHARMA = True
 	__settings__ = xbmcaddon.Addon(id=PLUGIN_ID)
 	__language__ = __settings__.getLocalizedString
-	DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % PLUGIN_ID)
+	DATA_PATH = xbmc.translatePath(__settings__.getAddonInfo( "profile" ))
 except ImportError:
 	DHARMA = False
 	DATA_PATH = os.getcwd()
@@ -105,7 +105,7 @@ def getLibraryPath():
 	if DHARMA:
 		try:
 			import xbmc
-			LIBRARY_PATH = xbmc.translatePath("special://profile/addon_data/%s/library" % getPluginId())
+			LIBRARY_PATH = xbmc.translatePath(os.path.join(__settings__.getAddonInfo( "profile" ), 'library' ))
 		except:
 			LIBRARY_PATH = os.path.join( os.getcwd(), 'library' )
 			

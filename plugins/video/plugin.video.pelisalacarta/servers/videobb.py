@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para videobb
@@ -17,6 +17,7 @@ def geturl(url):
     # http://s.videobb.com/s2?v=zFFw8n8w1r1s&r=1&t=1294503726&u=&c=ad60cbaec0af97d5d911d5a236841b42&start=0
     
     devuelve = url.replace("http://videobb.com/video/","http://s.videobb.com/s2?v=")
+    devuelve = devuelve.replace("http://www.videobb.com/video/","http://s.videobb.com/s2?v=")
     import random
     devuelve = "%s&r=1&t=%d&u=&c=12&start=0" % (devuelve,random.randint(1000000000,9999999999))
 
