@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<project name="tvalacarta" default="package">
+	<description>tvalacarta</description>
+
+	<property name="version" value="3.0.0"/>
+	
+	<!-- init ===================================================================== -->
+	<target name="init" description="Inicializa el timestamp">
+		<!-- Create the time stamp -->
+		<tstamp>
+			<format property="hoy" pattern="yyyyMMdd" locale="es,ES"/>
+		</tstamp>
+	</target>
+
+	<!-- prepare ================================================================== -->
+	<target name="prepare" depends="init">
+		<delete dir="target"/>
+        <mkdir dir="target/boxee/info.mimediacenter.tvalacarta"/>
+        <mkdir dir="target/xbmc-addon/plugin.video.tvalacarta"/>
+        <mkdir dir="target/xbmc-plugin/tvalacarta"/>
+	</target>
+	
+	<!-- copy ===================================================================== -->
+	<target name="copy" depends="prepare">
+		<!-- xbmc-addon -->
+        <copy todir="target/xbmc-addon/plugin.video.tvalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+				<exclude name="descriptor.xml"/>
+			</fileset>
+        </copy>
+		
+		<!-- xbmc-plugin -->
+        <copy todir="target/xbmc-plugin/tvalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+				<exclude name="descriptor.xml"/>
+			</fileset>
+        </copy>
+		
+		<!-- boxee -->
+        <copy todir="target/boxee/info.mimediacenter.tvalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+			</fileset>
+        </copy>
+	</target>
+
+    <!-- package =============================================== -->
+    <target name="package" depends="copy">
+		<zip destfile="target/boxee/info.mimediacenter.tvalacarta-${version}.zip" basedir="target/boxee"/>
+		<zip destfile="target/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="target/xbmc-addon"/>
+		<zip destfile="target/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="target/xbmc-plugin"/>
+    </target>
+</project>
