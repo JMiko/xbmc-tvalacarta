@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para yotix
@@ -23,7 +23,7 @@ def mainlist(item):
 
 	itemlist = []
 	itemlist.append( Item(channel=CHANNELNAME, action="videolist"      , title="Novedades", url="http://yotix.tv/"))
-	itemlist.append( Item(channel=CHANNELNAME, action="listcategorias" , title="Listado por categorÌas", url="http://yotix.tv/"))
+	itemlist.append( Item(channel=CHANNELNAME, action="listcategorias" , title="Listado por categor√≠as", url="http://yotix.tv/"))
 	itemlist.append( Item(channel=CHANNELNAME, action="search"         , title="Buscador", url="http://yotix.tv/"))
 
 	return itemlist
@@ -47,7 +47,7 @@ def performsearch(texto):
 	logger.info("[yotix.py] performsearch")
 	url = "http://yotix.tv/?s="+texto
 
-	# Descarga la p·gina
+	# Descarga la p√°gina
 	data = scrapertools.cachePage(url)
 
 	# Extrae las entradas (carpetas)
@@ -68,7 +68,7 @@ def performsearch(texto):
 
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# AÒade al listado de XBMC
+		# A√±ade al listado de XBMC
 		resultados.append( [CHANNELNAME , "listmirrors" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
 		
 	return resultados
@@ -76,7 +76,7 @@ def performsearch(texto):
 def listcategorias(item):
 	logger.info("[yotix.py] listcategorias")
 
-	# Descarga la p·gina
+	# Descarga la p√°gina
 	data = scrapertools.cachePage(item.url)
 	#logger.info(data)
 
@@ -100,7 +100,7 @@ def listcategorias(item):
 def videolist(item):
 	logger.info("[yotix.py] videolist")
 
-	# Descarga la p·gina
+	# Descarga la p√°gina
 	data = scrapertools.cachePage(item.url)
 	#logger.info(data)
 
@@ -122,7 +122,7 @@ def videolist(item):
 
 		itemlist.append( Item(channel=CHANNELNAME, action="listmirrors" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-	# Extrae la p·gina siguiente
+	# Extrae la p√°gina siguiente
 	patron = '<a href="([^"]+)" >&raquo;</a>'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if DEBUG: scrapertools.printMatches(matches)
@@ -147,7 +147,7 @@ def listmirrors(item):
 	plot = item.plot
 	itemlist = []
 
-	# Descarga la p·gina de detalle
+	# Descarga la p√°gina de detalle
 	data = scrapertools.cachePage(url)
 	#logger.info(data)
 	
@@ -158,7 +158,7 @@ def listmirrors(item):
 	if len(matches)>0:
 		plot = scrapertools.htmlclean(matches[0].strip())
 
-	# Extrae los enlaces si el video est· en la misma p·gina
+	# Extrae los enlaces si el video est√° en la misma p√°gina
 	patron = 'so.addParam\(\'flashvars\',\'.*?file\=([^\&]+)\&'
 	matches = re.compile(patron,re.DOTALL).findall(data)
 	if len(matches)>0:
@@ -168,18 +168,18 @@ def listmirrors(item):
 			url = newurl
 		itemlist.append( Item(channel=CHANNELNAME, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Directo", folder=False))
 
-	# Extrae los enlaces a los vÌdeos (MegavÌdeo)
+	# Extrae los enlaces a los v√≠deos (Megav√≠deo)
 	patronvideos  = '<a.*?href="(http://yotix.tv/flash/[^"]+)"[^>]*>(.*?)</a>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)		
 
 	for match in matches:
-		# AÒade al listado de XBMC
+		# A√±ade al listado de XBMC
 		scrapedtitle = scrapertools.htmlclean(match[1].replace("&#8211;","-")).strip()
 		scrapedurl = match[0]
 		itemlist.append( Item(channel=CHANNELNAME, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Megavideo", folder=False))
 
-	# Extrae los enlaces a los vÌdeos (Directo)
+	# Extrae los enlaces a los v√≠deos (Directo)
 	buscamirrors(itemlist,'<a.*?href="(http://yotix.tv/sitio/[^"]+)"[^>]*>(.*?)</a>',data,thumbnail,plot)
 	buscamirrors(itemlist,'<a.*?href="(http://yotix.tv/media/[^"]+)"[^>]*>(.*?)</a>',data,thumbnail,plot)
 	buscamirrors(itemlist,'<a.*?href="(http://yotix.tv/video/[^"]+)"[^>]*>(.*?)</a>',data,thumbnail,plot)
