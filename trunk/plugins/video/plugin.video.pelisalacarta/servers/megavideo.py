@@ -1,19 +1,16 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para Megavideo
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-# A partir del c骴igo de Voinage y Coolblaze
+# A partir del c贸digo de Voinage y Coolblaze
 #------------------------------------------------------------
 
 import re, sys, os
 import urlparse, urllib, urllib2
 import os.path
 import sys
-import xbmc
-import xbmcplugin
-import xbmcgui
 import config
 import logger
 
@@ -199,32 +196,33 @@ def decrypt(str1, key1, key2):
 # Paste this into your Default.py
 # To activate it just call Megavideo(url) - where url is your megavideo url.
 def getcode(mega):
-    xbmc.output("[megavideo.py] mega="+mega)
+    logger.info("[megavideo.py] mega="+mega)
     if mega.startswith('http://www.megavideo.com/?v='):
+    	# FIXME: Esto no funciona con url que tienen distintos par谩metros, hay que usar ER para extraer el c贸digo
         mega = mega[-8:]
-    xbmc.output("[megavideo.py] mega="+mega)
+    logger.info("[megavideo.py] mega="+mega)
     return mega
 
 def Megavideo(mega):
 
     mega = getcode(mega)
 
-    xbmc.output("[megavideo.py] Megavideo")
+    logger.info("[megavideo.py] Megavideo")
     modoPremium = config.getSetting("megavideopremium")
-    xbmc.output("[megavideo.py] modoPremium="+modoPremium)
+    logger.info("[megavideo.py] modoPremium="+modoPremium)
     
     if modoPremium == "false":
         movielink = getlowurl(mega)
     else:
         movielink = gethighurl(mega)
 
-    xbmc.output("[megavideo.py] movielink="+movielink)
+    logger.info("[megavideo.py] movielink="+movielink)
         
     return movielink
 #####END of part 2
 
 def getlowurl(code):
-    xbmc.output("[megavideo.py] Baja calidad")
+    logger.info("[megavideo.py] Baja calidad")
     
     code=getcode(code)
     try:
@@ -233,23 +231,23 @@ def getlowurl(code):
         quality = "0"
     
     modoPremium = config.getSetting("megavideopremium")
-    xbmc.output("[megavideo.py] modoPremium="+modoPremium)
+    logger.info("[megavideo.py] modoPremium="+modoPremium)
     if modoPremium == "false":
-        xbmc.output("[megavideo.py] usando modo normal para baja calidad")
+        logger.info("[megavideo.py] usando modo normal para baja calidad")
         req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         req.add_header('Referer', 'http://www.megavideo.com/')
         page = urllib2.urlopen(req);response=page.read();page.close()
         '''
-        xbmc.output("response="+response)
+        logger.info("response="+response)
         hd = re.compile(' hd="(.+?)"').findall(response)
         if len(hd)>0 and hd[0]=="1":
-            xbmc.output("hd="+hd[0])
+            logger.info("hd="+hd[0])
             movielink = re.compile(' hd_url="(.+?)"').findall(response)[0]
             movielink = movielink.replace("%3A",":")
             movielink = movielink.replace("%2F","/")
             movielink = movielink + "?.flv"
-            xbmc.output("movielink="+movielink)
+            logger.info("movielink="+movielink)
         else:
         '''
         errort = re.compile(' errortext="(.+?)"').findall(response)
@@ -273,23 +271,26 @@ def getlowurl(code):
             movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
             #addLink(name, movielink+'?.flv','')
     else:
-        xbmc.output("[megavideo.py] usando modo premium para baja calidad")
+        logger.info("[megavideo.py] usando modo premium para baja calidad")
         megavideocookie = config.getSetting("megavideocookie")
-        if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+        if DEBUG: logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 
-        xbmc.output("[megavideo.py] Averiguando cookie...")
+        logger.info("[megavideo.py] Averiguando cookie...")
         megavideologin = config.getSetting("megavideouser")
-        if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
+        if DEBUG: logger.info("[megavideo.py] megavideouser=#"+megavideologin+"#")
 
         megavideopassword = config.getSetting("megavideopassword")
-        if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
+        if DEBUG: logger.info("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
 
         megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-        if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+        if DEBUG: logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 
         if len(megavideocookie) == 0:
-            advertencia = xbmcgui.Dialog()
-            resultado = advertencia.ok('Cuenta de Megavideo err髇ea' , 'La cuenta de Megavideo que usas no es v醠ida' , 'Comprueba el login y password en la configuraci髇')
+            try:
+                advertencia = xbmcgui.Dialog()
+                resultado = advertencia.ok('Cuenta de Megavideo err贸nea' , 'La cuenta de Megavideo que usas no es v谩lida' , 'Comprueba el login y password en la configuraci贸n')
+            except:
+                pass
             return ""
 
         req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code+"&u="+megavideocookie)
@@ -320,25 +321,28 @@ def getlowurl(code):
     return movielink
 
 def gethighurl(code):
-    xbmc.output("[megavideo.py] Usa modo premium")
+    logger.info("[megavideo.py] Usa modo premium")
     
     code = getcode(code)
 
     megavideocookie = config.getSetting("megavideocookie")
     if DEBUG:
-        xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+        logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
     #if megavideocookie=="":
-    xbmc.output("[megavideo.py] Averiguando cookie...")
+    logger.info("[megavideo.py] Averiguando cookie...")
     megavideologin = config.getSetting("megavideouser")
-    if DEBUG: xbmc.output("[megavideo.py] megavideouser=#"+megavideologin+"#")
+    if DEBUG: logger.info("[megavideo.py] megavideouser=#"+megavideologin+"#")
     megavideopassword = config.getSetting("megavideopassword")
-    if DEBUG: xbmc.output("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
+    if DEBUG: logger.info("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
     megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-    if DEBUG: xbmc.output("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+    if DEBUG: logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
 
     if len(megavideocookie) == 0:
-        advertencia = xbmcgui.Dialog()
-        resultado = advertencia.ok('Cuenta de Megavideo err髇ea' , 'La cuenta de Megavideo que usas no es v醠ida' , 'Comprueba el login y password en la configuraci髇')
+        try:
+            advertencia = xbmcgui.Dialog()
+            resultado = advertencia.ok('Cuenta de Megavideo err贸nea' , 'La cuenta de Megavideo que usas no es v谩lida' , 'Comprueba el login y password en la configuraci贸n')
+        except:
+            pass
         return ""
 
     req = urllib2.Request("http://www.megavideo.com/xml/player_login.php?u="+megavideocookie+"&v="+code)
@@ -358,9 +362,9 @@ def gethighurl(code):
     return movielink
 
 def GetMegavideoUser(login, password):
-    xbmc.output("GetMegavideoUser")
+    logger.info("GetMegavideoUser")
     # ---------------------------------------
-    #  Inicializa la librer韆 de las cookies
+    #  Inicializa la librer铆a de las cookies
     # ---------------------------------------
     ficherocookies = COOKIEFILE
     # Borra el fichero de cookies para evitar errores
@@ -454,11 +458,11 @@ def GetMegavideoUser(login, password):
 
     data=handle.read()
     '''
-    xbmc.output("----------------------")
-    xbmc.output("Respuesta de Megavideo")
-    xbmc.output("----------------------")
-    xbmc.output(data)
-    xbmc.output("----------------------")
+    logger.info("----------------------")
+    logger.info("Respuesta de Megavideo")
+    logger.info("----------------------")
+    logger.info(data)
+    logger.info("----------------------")
     '''
     handle.close()
 
@@ -467,11 +471,11 @@ def GetMegavideoUser(login, password):
     cookiedatafile.close();
 
     '''
-    xbmc.output("----------------------")
-    xbmc.output("Cookies despues")
-    xbmc.output("----------------------")
-    xbmc.output(cookiedata)
-    xbmc.output("----------------------")
+    logger.info("----------------------")
+    logger.info("Cookies despues")
+    logger.info("----------------------")
+    logger.info(cookiedata)
+    logger.info("----------------------")
     '''
 
     patronvideos  = 'user="([^"]+)"'
@@ -481,17 +485,17 @@ def GetMegavideoUser(login, password):
         matches = re.compile(patronvideos,re.DOTALL).findall(cookiedata)
     
     if len(matches)==0:
-        xbmc.output("No se ha encontrado la cookie de Megavideo")
-        xbmc.output("----------------------")
-        xbmc.output("Respuesta de Megavideo")
-        xbmc.output("----------------------")
-        xbmc.output(data)
-        xbmc.output("----------------------")
-        xbmc.output("----------------------")
-        xbmc.output("Cookies despues")
-        xbmc.output("----------------------")
-        xbmc.output(cookiedata)
-        xbmc.output("----------------------")
+        logger.info("No se ha encontrado la cookie de Megavideo")
+        logger.info("----------------------")
+        logger.info("Respuesta de Megavideo")
+        logger.info("----------------------")
+        logger.info(data)
+        logger.info("----------------------")
+        logger.info("----------------------")
+        logger.info("Cookies despues")
+        logger.info("----------------------")
+        logger.info(cookiedata)
+        logger.info("----------------------")
         return ""
     else:
         return matches[0]

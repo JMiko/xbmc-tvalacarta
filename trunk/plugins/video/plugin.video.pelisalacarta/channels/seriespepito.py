@@ -226,18 +226,3 @@ def episodelist(item):
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
 
     return itemlist
-
-if __name__ == "__main__":
-
-    itemsletra = listalfabetico(None)
-
-    for itemletra in itemsletra:
-        itemsprogramas = alphaserieslist(itemletra)
-        for itemprograma in itemsprogramas:
-            print itemprograma.tostring()+" plot=["+itemprograma.plot+"]"
-            if itemprograma.title == "5 Días para Morir":
-                itemsepisodios = episodelist(itemprograma)
-                for itemepisodio in itemsepisodios:
-                    print itemepisodio.tostring()+" plot=["+itemepisodio.plot+"]"
-                break
-        break

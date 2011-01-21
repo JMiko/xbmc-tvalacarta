@@ -68,7 +68,7 @@ def mainlist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 	
 def searchmovie(params,url,category):
-	xbmc.output("[cineblog01.py] searchmovie")
+	xbmc.output("[italiafilm.py] searchmovie")
 
 	keyboard = xbmc.Keyboard('')
 	keyboard.doModal()
@@ -131,6 +131,7 @@ def detalle(params,url,category):
 	title = urllib.unquote_plus( params.get("title") )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
 	plot = urllib.unquote_plus( params.get("plot") )
+	title = to_ita(title)
 	title = title.title()
 	title = title.replace('Serie Tv', '', 1)
 	title = title.replace('Streaming', '', 1)
@@ -138,40 +139,102 @@ def detalle(params,url,category):
 	
 	# Descarga la página
 	data = scrapertools.cachePage(url)
+	data_next = ""
+
 	patronvideos  = '<td class="news">.*?<div id=[^>]+>([^<]+)'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
-	plot = matches[0]
-	plot = plot.replace('&#224;', 'a\'')
-	plot = plot.replace('&#232;', 'e\'')
-	plot = plot.replace('&#233;', 'e\'')
-	plot = plot.replace('&#236;', 'i\'')
-	plot = plot.replace('&#242;', 'o\'')
-	plot = plot.replace('&#249;', 'u\'')
-   
-	# ------------------------------------------------------------------------------------
-	# Busca los enlaces a los videos
-	# ------------------------------------------------------------------------------------
-	listavideos = servertools.findvideos(data)
+	if (matches): 
+		plot = matches[0]
+		plot = to_ita(plot)
 
-	for video in listavideos:
-		videotitle = video[0]
-		url = video[1]
-		server = video[2]
-		out_file = open("test.txt","w")
-		patronvideos  = url+'[^>]+>([^<]+)'
-		matches = re.compile(patronvideos,re.DOTALL).findall(data)
-		scrapertools.printMatches(matches)
-		videotitle = matches[0]
-		out_file.write(videotitle)
-		out_file.close()
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
 	# ------------------------------------------------------------------------------------
+	# looking for seasons
+	# ------------------------------------------------------------------------------------
+	
+	data = to_ita(data)
 
+	sep_season = '<br /><br />'
+	patronseason  = '>([^ ]+) ([s|S])tagione([^<]*)' + sep_season
+	matches_season = re.compile(patronseason,re.DOTALL).findall(data)
+	scrapertools.printMatches(matches_season)
+
+	if (matches_season):
+		logger.info("[italiafilm.py] season list match ok")
+		
+		i = 0 #counter for while
+		while i < len(matches_season)-1:
+			seasontitle = matches_season[i][0] + " " + matches_season[i][1] + "tagione" + matches_season[i][2]
+			seasontitle_next = matches_season[i+1][0] + " " + matches_season[i+1][1] + "tagione" + matches_season[i+1][2]
+			seasonlabel = xbmcgui.ListItem(seasontitle)
+			seasonlabel.setInfo( type="Video", infoLabels={ "Title": seasontitle } )
+			xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url="",listitem=seasonlabel,isFolder=False)
+			i_season = data.find(seasontitle+sep_season) + len(seasontitle)+len(sep_season)
+			data = data[i_season:]
+			f_season = data.find(seasontitle_next+sep_season)
+			data_next = data[f_season:]
+			data = data[:f_season]
+			
+			loadvideo(params,data,category,title,thumbnail,plot)
+
+			data = data_next
+			data_next = ""
+			i = i + 1
+			#end while
+		
+		if (matches_season[i]):
+			seasontitle = matches_season[i][0] + " " + matches_season[i][1] + "tagione" + matches_season[i][2]
+			seasonlabel = xbmcgui.ListItem(seasontitle)
+			seasonlabel.setInfo( type="Video", infoLabels={ "Title": seasontitle } )
+			xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url="",listitem=seasonlabel,isFolder=False)
+			i_season = data.find(seasontitle+sep_season) + len(seasontitle)+len(sep_season)
+			data = data[i_season:]
+			
+	#end if matches_season
+	# ------------------------------------------------------------------------------------
+		
+	loadvideo(params,data,category,title,thumbnail,plot)
+		
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def loadvideo(params,data,category,title,thumbnail,plot):
+	# ----------------------------------------------------------
+	# the loading of series with a lot of seasons is very slow
+	# this system prevents freeze everytime in loading screen
+	# ----------------------------------------------------------
+	max_len = 3000
+	while (len(data) > max_len): 
+		data_all = data
+		data_trunc = data[:max_len].rfind('<a ')
+		if(data_trunc <= 0):
+			data = data = data_all[max_len:]
+		else:
+			data = data[:data_trunc]
+			listavideos = servertools.findvideos(data)
+			for video in listavideos:
+				videotitle = video[0]
+				url = video[1]
+				server = video[2]
+				patronvideos  = url+'[^>]+>([^<]+)'
+				matches = re.compile(patronvideos,re.DOTALL).findall(data)
+				scrapertools.printMatches(matches)
+				if (matches): videotitle = matches[0]
+				xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
+			data = data_all[data_trunc:]
+	#end while
+	listavideos = servertools.findvideos(data)
+	for video in listavideos:
+		videotitle = video[0]
+		url = video[1]
+		server = video[2]
+		patronvideos  = url+'[^>]+>([^<]+)'
+		matches = re.compile(patronvideos,re.DOTALL).findall(data)
+		scrapertools.printMatches(matches)
+		if (matches): videotitle = matches[0]
+		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
 
 def play(params,url,category):
 	logger.info("[italiafilm.py] play")
@@ -182,3 +245,15 @@ def play(params,url,category):
 	server = params["server"]
 	
 	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	
+def to_ita(text):
+	text = text.replace('&amp;', '&')
+	text = text.replace('&#224;', 'a\'')
+	text = text.replace('&#232;', 'e\'')
+	text = text.replace('&#233;', 'e\'')
+	text = text.replace('&#236;', 'i\'')
+	text = text.replace('&#242;', 'o\'')
+	text = text.replace('&#249;', 'u\'')
+	text = text.replace('&#215;', 'x')
+	text = text.replace('&#39;','\'')
+	return text

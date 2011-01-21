@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 #------------------------------------------------------------
 # pelisalacarta
@@ -39,7 +39,7 @@ except:
 def checkforupdates():
     xbmc.output("[updater.py] checkforupdates")
     try:
-        # Descarga el fichero con la versi髇 en la web
+        # Descarga el fichero con la versi贸n en la web
         xbmc.output("[updater.py] Verificando actualizaciones...")
         xbmc.output("[updater.py] Version remota: "+REMOTE_VERSION_FILE)
         data = scrapertools.cachePage( REMOTE_VERSION_FILE )
@@ -50,7 +50,7 @@ def checkforupdates():
         versiondescargada = matches[0]
         xbmc.output("[updater.py] version descargada="+versiondescargada)
         
-        # Lee el fichero con la versi髇 instalada
+        # Lee el fichero con la versi贸n instalada
         localFileName = LOCAL_VERSION_FILE
         xbmc.output("[updater.py] Version local: "+localFileName)
         infile = open( localFileName )
@@ -99,14 +99,14 @@ def checkforupdates():
         if (hayqueactualizar):
             xbmc.output("[updater.py] actualizacion disponible")
             
-            # A馻de al listado de XBMC
+            # A帽ade al listado de XBMC
             listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
             itemurl = '%s?action=update&version=%s' % ( sys.argv[ 0 ] , versiondescargada )
             xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
             
             # Avisa con un popup
             dialog = xbmcgui.Dialog()
-            dialog.ok("Versi髇 "+versiondescargada+" disponible","Ya puedes descargar la nueva versi髇 del plugin\ndesde el listado principal")
+            dialog.ok("Versi贸n "+versiondescargada+" disponible","Ya puedes descargar la nueva versi贸n del plugin\ndesde el listado principal")
 
     except:
         xbmc.output("No se han podido verificar actualizaciones...")
