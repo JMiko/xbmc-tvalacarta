@@ -6,6 +6,14 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re,httplib
 from core import config
+from core import logger
+
+from core import scrapertools
+
+import gdata.youtube
+import gdata.youtube.service
+
+from core.item import Item
 
 _VALID_URL = r'^((?:http://)?(?:\w+\.)?youtube\.com/(?:(?:v/)|(?:(?:watch(?:\.php)?)?\?(?:.+&)?v=)))?([0-9A-Za-z_-]+)(?(1).+)?$'
 AVAILABLE_FORMATS  = ['13','17','5','34','18','35','22','37']
@@ -17,6 +25,83 @@ std_headers = {
     'Accept-Language': 'en-us,en;q=0.5',
 }
 
+def getuploads(user,startindex,maxresults):
+    logger.info("[youtube.py] getuploads")
+
+    # Obtiene el feed según el API de YouTube
+    url = "http://gdata.youtube.com/feeds/api/users/%s/uploads?orderby=updated&start-index=%d&max-results=%d" % (user,startindex,maxresults)
+    logger.info("[youtube.py] url="+url)
+    yt_service = gdata.youtube.service.YouTubeService()
+    feed = yt_service.GetYouTubeVideoFeed(url)
+    
+    itemlist = []
+    for entry in feed.entry:
+        '''
+        print 'Video title: %s' % entry.media.title.text
+        print 'Video published on: %s ' % entry.published.text
+        print 'Video description: %s' % entry.media.description.text
+        print 'Video category: %s' % entry.media.category[0].text
+        print 'Video tags: %s' % entry.media.keywords.text
+        print 'Video watch page: %s' % entry.media.player.url
+        print 'Video flash player URL: %s' % entry.GetSwfUrl()
+        print 'Video duration: %s' % entry.media.duration.seconds
+        
+        # non entry.media attributes
+        #print 'Video geo location: %s' % entry.geo.location()
+        #print 'Video view count: %s' % entry.statistics.view_count
+        #print 'Video rating: %s' % entry.rating.average
+        
+        # show alternate formats
+        #for alternate_format in entry.media.content:
+        #    if 'isDefault' not in alternate_format.extension_attributes:
+        #        print 'Alternate format: %s | url: %s ' % (alternate_format.type, alternate_format.url)
+        
+        # show thumbnails
+        for thumbnail in entry.media.thumbnail:
+            print 'Thumbnail url: %s' % thumbnail.url
+        '''
+        
+        item = Item(title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
+        itemlist.append( item )
+    
+    return itemlist
+
+def getplaylists(user,startindex,maxresults):
+    logger.info("[youtube.py] getplaylists")
+
+    # Obtiene el feed segun el API de YouTube
+    url = "http://gdata.youtube.com/feeds/api/users/%s/playlists?start-index=%d&max-results=%d" % (user,startindex,maxresults)
+    logger.info("[youtube.py] url="+url)
+    yt_service = gdata.youtube.service.YouTubeService()
+    playlist_feed = yt_service.GetYouTubePlaylistFeed(uri=url)
+
+    itemlist = []
+    for entry in playlist_feed.entry:
+        item = Item(title=entry.title.text, url=entry.id.text, thumbnail = "" , plot = "" )
+        itemlist.append( item )
+
+    return itemlist
+
+def getplaylistvideos(url,startindex,maxresults):
+    logger.info("[youtube.py] getplaylistvideos")
+    # Extrae el ID de la playlist
+    patron = 'http://.*?/([^/]+)/$'
+    matches = re.compile(patron,re.DOTALL).findall(url+"/")
+    idplaylist = matches[0]
+    print idplaylist
+    
+    # Obtiene el feed segun el API de YouTube
+    url = "http://gdata.youtube.com/feeds/api/playlists/%s?start-index=%d&max-results=%d" % (idplaylist,startindex,maxresults)
+    logger.info("[youtube.py] url="+url)
+    yt_service = gdata.youtube.service.YouTubeService()
+    playlist_video_feed = yt_service.GetYouTubePlaylistVideoFeed(uri=url)
+
+    itemlist = []
+    for entry in playlist_video_feed.entry:
+        item = Item(title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
+        itemlist.append( item )
+    
+    return itemlist
 
 #### Busca las Urls originales de los formatos de calidad del video
 def geturls(id,data):
@@ -43,7 +128,7 @@ def geturls(id,data):
         import xbmcgui,xbmc                
         dia = xbmcgui.Dialog()
         seleccion = dia.select("Elige una Calidad", opciones)
-        xbmc.output("seleccion=%d calidad : (%s) %s " % (seleccion,format[seleccion],AVAILABLE_FORMATS2[format[seleccion]]))
+        logger.info("seleccion=%d calidad : (%s) %s " % (seleccion,format[seleccion],AVAILABLE_FORMATS2[format[seleccion]]))
         if seleccion == -1:
             return "Esc"
         return links[seleccion]

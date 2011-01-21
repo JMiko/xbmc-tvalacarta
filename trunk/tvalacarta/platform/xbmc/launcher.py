@@ -110,7 +110,7 @@ def run():
                 logger.info("[channelselector.py] canal normal")
                 exec "import tvalacarta.channels."+params.get("channel")+" as channel"
             # Luego intenta cargarlo como canal del core
-            except:
+            except ImportError:
                 import sys
                 for line in sys.exc_info():
                     logger.error( "%s" % line )

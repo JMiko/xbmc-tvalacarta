@@ -11,8 +11,8 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-from core import scrapertools
 import binascii
+from core import scrapertools
 from core import xbmctools
 from servers import youtube
 

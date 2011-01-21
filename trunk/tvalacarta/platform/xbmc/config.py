@@ -59,7 +59,7 @@ def get_temp_file(filename):
     return xbmc.translatePath( os.path.join( "special://temp/", filename ))
 
 def get_runtime_path():
-    return xbmc.translatePath("special://xbmc/")
+    return os.getcwd()
 
 def get_data_path():
     return xbmc.translatePath( os.path.join("special://xbmc/","userdata","plugin_data","video","tvalacarta") )
