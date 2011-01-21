@@ -149,34 +149,45 @@ def update(params):
     xbmc.output("[updater.py] borra fichero...")
     os.remove(localfilename)
 
+def get_channel_remote_url(channel_name):
+    if channel_name<>"channelselector":
+        remote_channel_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/tvalacarta/channels/"+channel_name+".py"
+        remote_version_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/tvalacarta/channels/"+channel_name+".xml"
+    else:
+        remote_channel_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/"+channel_name+".py"
+        remote_version_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/"+channel_name+".xml"
+
+    logger.info("remote_channel_url="+remote_channel_url)
+    logger.info("remote_version_url="+remote_version_url)
+    
+    return remote_channel_url , remote_version_url
+
+def get_channel_local_path(channel_name):
+    import xbmc
+    # TODO: El XML debería escribirse en el userdata, de forma que se leerán dos ficheros locales: el del userdata y el que está junto al py (vendrá con el plugin). El mayor de los 2 es la versión actual, y si no existe fichero se asume versión 0
+    if channel_name<>"channelselector":
+        local_channel_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'tvalacarta' , 'channels' , channel_name+".py" ) )
+        local_version_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'tvalacarta' , 'channels' , channel_name+".xml" ) )
+        local_compiled_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'tvalacarta' , 'channels' , channel_name+".pyo" ) )
+    else:
+        local_channel_path = xbmc.translatePath( os.path.join( config.get_runtime_path() , channel_name+".py" ) )
+        local_version_path = xbmc.translatePath( os.path.join( config.get_runtime_path() , channel_name+".xml" ) )
+        local_compiled_path = xbmc.translatePath( os.path.join( config.get_runtime_path() , channel_name+".pyo" ) )
+
+    logger.info("local_channel_path="+local_channel_path)
+    logger.info("local_version_path="+local_version_path)
+    logger.info("local_compiled_path="+local_compiled_path)
+    
+    return local_channel_path , local_version_path , local_compiled_path
+
 def updatechannel(channel_name):
     logger.info("Buscando actualizacion del canal " + channel_name)
     
     # Canal remoto
-    if channel_name<>"channelselector":
-        remote_channel_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/channels/"+channel_name+".py"
-        remote_version_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/channels/"+channel_name+".xml"
-    else:
-        remote_channel_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/"+channel_name+".py"
-        remote_version_url = "http://xbmc-tvalacarta.googlecode.com/svn/trunk/tvalacarta/"+channel_name+".xml"
+    remote_channel_url , remote_version_url = get_channel_remote_url(channel_name)
     
-    logger.info("remote_channel_url="+remote_channel_url)
-    logger.info("remote_version_url="+remote_version_url)
-
     # Canal local
-    import xbmc
-    if channel_name<>"channelselector":
-        local_channel_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".py" ) )
-        local_version_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".xml" ) )
-        local_compiled_path = xbmc.translatePath( os.path.join( os.getcwd(), 'channels' , channel_name+".pyo" ) )
-    else:
-        local_channel_path = xbmc.translatePath( os.path.join( os.getcwd() , channel_name+".py" ) )
-        local_version_path = xbmc.translatePath( os.path.join( os.getcwd() , channel_name+".xml" ) )
-        local_compiled_path = xbmc.translatePath( os.path.join( os.getcwd() , channel_name+".pyo" ) )
-    
-    logger.info("local_channel_path="+local_channel_path)
-    logger.info("local_version_path="+local_version_path)
-    logger.info("local_compiled_path="+local_compiled_path)
+    local_channel_path , local_version_path , local_compiled_path = get_channel_local_path(channel_name)
     
     if not os.path.exists(local_channel_path):
         return False;
@@ -199,6 +210,7 @@ def updatechannel(channel_name):
         data = infile.read()
         infile.close();
         logger.info("local_data="+data)
+        patronvideos  = '<tag>([^<]+)</tag>'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         local_version = int(matches[0])
     else:
@@ -210,23 +222,38 @@ def updatechannel(channel_name):
     updated = remote_version > local_version
 
     if updated:
-        # Descarga el canal
-        updated_channel_data = scrapertools.cachePage( remote_channel_url )
-        outfile = open(local_channel_path,"w")
-        outfile.write(updated_channel_data)
-        outfile.flush()
-        outfile.close()
-        logger.info("Grabado a " + local_channel_path)
+        download_channel(channel_name)
 
-        # Descarga la version
+    return updated
+
+def download_channel(channel_name):
+    # Canal remoto
+    remote_channel_url , remote_version_url = get_channel_remote_url(channel_name)
+    
+    # Canal local
+    local_channel_path , local_version_path , local_compiled_path = get_channel_local_path(channel_name)
+
+    # Descarga el canal
+    updated_channel_data = scrapertools.cachePage( remote_channel_url )
+    outfile = open(local_channel_path,"w")
+    outfile.write(updated_channel_data)
+    outfile.flush()
+    outfile.close()
+    logger.info("Grabado a " + local_channel_path)
+
+    # Descarga la version (puede no estar)
+    try:
         updated_version_data = scrapertools.cachePage( remote_version_url )
         outfile = open(local_version_path,"w")
         outfile.write(updated_version_data)
         outfile.flush()
         outfile.close()
         logger.info("Grabado a " + local_version_path)
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
 
-        if os.path.exists(local_compiled_path):
-            os.remove(local_compiled_path)
-
-    return updated
+    if os.path.exists(local_compiled_path):
+        os.remove(local_compiled_path)
+    
