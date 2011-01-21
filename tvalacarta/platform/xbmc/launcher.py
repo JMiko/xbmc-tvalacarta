@@ -103,20 +103,26 @@ def run():
                 if actualizado:
                     import xbmcgui
                     advertencia = xbmcgui.Dialog()
-                    advertencia.ok("pelisalacarta",params.get("channel"),config.get_localized_string(30063))
+                    advertencia.ok("plugin",params.get("channel"),config.get_localized_string(30063))
 
             # Primero intenta cargarlo como canal normal
             try:
                 logger.info("[channelselector.py] canal normal")
                 exec "import tvalacarta.channels."+params.get("channel")+" as channel"
-            # Luego intenta cargarlo como canal del core
             except ImportError:
                 import sys
                 for line in sys.exc_info():
                     logger.error( "%s" % line )
-                logger.info("[channelselector.py] canal core")
-                exec "from core import "+params.get("channel")+" as channel"
-
+                
+                # Luego intenta cargarlo como canal del core
+                try:
+                    logger.info("[channelselector.py] canal core")
+                    exec "from core import "+params.get("channel")+" as channel"
+                except:
+                    # Como último recurso, intenta descargar el canal para ver si es nuevo
+                    from core import updater
+                    updater.download_channel(params.get("channel"))
+                    exec "import tvalacarta.channels."+params.get("channel")+" as channel"
             generico = False
             try:
                 generico = channel.isGeneric()
