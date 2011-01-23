@@ -16,6 +16,7 @@ import megavideo
 import scrapertools
 import config
 import logger
+import socket
 
 DEBUG = False
 
