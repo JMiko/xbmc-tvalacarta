@@ -120,10 +120,10 @@ def findvideos(item,channel):
     # ------------------------------------------------------------------------------------
     # Descarga la pagina
     # ------------------------------------------------------------------------------------
-    import scrapertools
+    from core import scrapertools
     data = scrapertools.cachePage(url)
     
-    import servertools
+    from servers import servertools
     listavideos = servertools.findvideos(data)
     
     itemlist = []

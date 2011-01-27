@@ -23,7 +23,7 @@ if config.get_setting("thumbnail_type")=="0":
 else:
     IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
 
-ROOT_DIR = os.getcwd()
+ROOT_DIR = config.get_runtime_path()
 
 REMOTE_VERSION_FILE = "http://blog.tvalacarta.info/descargas/tvalacarta-version.xml"
 LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
@@ -122,7 +122,6 @@ def checkforupdates():
 def update(params):
     # Descarga el ZIP
     xbmc.output("[updater.py] update")
-    xbmc.output("[updater.py] cwd="+os.getcwd())
     remotefilename = REMOTE_FILE+params.get("version")+".zip"
     localfilename = LOCAL_FILE+params.get("version")+".zip"
     xbmc.output("[updater.py] remotefilename=%s" % remotefilename)

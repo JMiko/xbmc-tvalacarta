@@ -6,36 +6,13 @@
 #------------------------------------------------------------
 
 # TODO:3.1: Log en fichero
+print "Using WiiMC logger"
 
 def info(texto):
-	try:
-		texto = unicode(texto,"utf-8")
-	except:
-		try:
-			texto = unicode(texto,"iso-8859-1")
-		except:
-			pass
-
-	#print texto
+    print texto
 
 def debug(texto):
-	try:
-		texto = unicode(texto,"utf-8")
-	except:
-		try:
-			texto = unicode(texto,"iso-8859-1")
-		except:
-			pass
-
-	#print texto
+    print texto
 
 def error(texto):
-	try:
-		texto = unicode(texto,"utf-8")
-	except:
-		try:
-			texto = unicode(texto,"iso-8859-1")
-		except:
-			pass
-
-	#print texto
+    print texto
