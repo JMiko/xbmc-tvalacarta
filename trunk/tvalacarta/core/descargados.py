@@ -7,21 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 
-from core import xbmctools
 from core import downloadtools
 from core import logger
 
 CHANNELNAME = "descargados"
-
-# Esto permite su ejecución en modo emulado
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
 
 # Traza el inicio del canal
 logger.info("[descargados.py] init")
@@ -29,30 +19,35 @@ logger.info("[descargados.py] init")
 DEBUG = True
 
 def mainlist(params,url,category):
-	logger.info("[descargados.py] mainlist")
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    from core import xbmctools
 
-	# Verifica ruta de descargas
-	downloadpath = downloadtools.getDownloadPath()
+    logger.info("[descargados.py] mainlist")
 
-	xbmctools.addnewfolder( "descargadoslist" , "mainlist"  , category , "Descargas pendientes","","","")
-	xbmctools.addnewfolder( "descargadoslist" , "errorlist"  , category , "Descargas con error","","","")
+    # Verifica ruta de descargas
+    downloadpath = downloadtools.getDownloadPath()
 
-	# Añade al listado de XBMC
-	try:
-		ficheros = os.listdir(downloadpath)
-		for fichero in ficheros:
-			if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=downloadtools.getDownloadListPath():
-				url = os.path.join( downloadpath , fichero )
-				listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
-				xbmcplugin.addDirectoryItem( handle = pluginhandle, url = url, listitem=listitem, isFolder=False)
-	except:
-		pass
-	
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    xbmctools.addnewfolder( "descargadoslist" , "mainlist"  , category , "Descargas pendientes","","","")
+    xbmctools.addnewfolder( "descargadoslist" , "errorlist"  , category , "Descargas con error","","","")
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    # Añade al listado de XBMC
+    try:
+        ficheros = os.listdir(downloadpath)
+        for fichero in ficheros:
+            if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=downloadtools.getDownloadListPath():
+                url = os.path.join( downloadpath , fichero )
+                listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
+                xbmcplugin.addDirectoryItem( handle = pluginhandle, url = url, listitem=listitem, isFolder=False)
+    except:
+        pass
+    
+    # Label (top-right)...
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    # Disable sorting...
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+
+    # End of directory...
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )

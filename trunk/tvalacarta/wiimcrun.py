@@ -8,6 +8,8 @@
 import os
 import sys
 from core import config
+config.force_platform("wiimc")
+
 from core import logger
 
 logger.info("[wiimcrun.py] tvalacarta init...")

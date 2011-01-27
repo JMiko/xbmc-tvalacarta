@@ -109,7 +109,7 @@ def write_file(filename,filecontent,url):
 		import xbmc
 		localfilename = xbmc.translatePath( "special://temp" )
 	except:
-		localfilename = os.getcwd()
+		localfilename = config.get_data_path()
 	logger.info("localfilename="+localfilename)
 	
 	localfilename = os.path.join(localfilename,"bookmark.tmp")
@@ -169,7 +169,7 @@ def get_file_handle_for_reading(filename,url):
 		import xbmc
 		localfilename = xbmc.translatePath( "special://temp" )
 	except:
-		localfilename = os.getcwd()
+		localfilename = config.get_data_path()
 	logger.info("localfilename="+localfilename)
 
 	localfilename = os.path.join(localfilename,"bookmark.tmp")

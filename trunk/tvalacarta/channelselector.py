@@ -5,14 +5,20 @@ import sys
 from core import scrapertools
 from core import config
 from core import logger
-try:
-    from core import descargadoslist
-    DOWNLOAD_ENABLED = True
-except:
-    DOWNLOAD_ENABLED = False
 
 DEBUG = True
 CHANNELNAME = "channelselector"
+
+def getmainlist():
+    channelslist = []
+    channelslist.append( [ config.get_localized_string(30118) , "channelselector" , "channeltypes" ])
+    #channelslist.append( [ config.get_localized_string(30103) , "buscador"       , "mainlist" ])
+    channelslist.append( [ config.get_localized_string(30102) , "favoritos"        , "mainlist" ])
+    if config.get_setting("download.enabled")=="true":
+        channelslist.append( [ config.get_localized_string(30101) , "descargados" , "mainlist" ])
+    channelslist.append( [ config.get_localized_string(30100) , "configuracion"   , "mainlist" ])
+    #channelslist.append( [ config.get_localized_string(30104) , "ayuda" , "mainlist" ])
+    return channelslist
 
 def mainlist(params,url,category):
     logger.info("[channelselector.py] mainlist")
@@ -29,13 +35,9 @@ def mainlist(params,url,category):
         else:
             logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
-    addfolder(config.get_localized_string(30118),"channelselector","channeltypes")
-    #addfolder(config.get_localized_string(30103),"buscador"       ,"mainlist")
-    addfolder(config.get_localized_string(30102),"favoritos"      ,"mainlist")
-    if (DOWNLOAD_ENABLED):
-        addfolder(config.get_localized_string(30101),"descargados","mainlist")
-    addfolder(config.get_localized_string(30100),"configuracion"  ,"mainlist")
-    #addfolder(config.get_localized_string(30104),"ayuda"          ,"mainlist")
+    lista = getmainlist()
+    for elemento in lista:
+        addfolder(elemento[0],elemento[1],elemento[2])
 
     # Label (top-right)...
     import xbmcplugin
@@ -43,16 +45,23 @@ def mainlist(params,url,category):
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
+def getchanneltypes():
+    channelslist = []
+    channelslist.append( [ config.get_localized_string(30121) , "channelselector" , "listchannels" , "*" ])
+    channelslist.append( [ config.get_localized_string(30129) , "channelselector" , "listchannels" , "N" ])
+    channelslist.append( [ config.get_localized_string(30130) , "channelselector" , "listchannels" , "A" ])
+    channelslist.append( [ config.get_localized_string(30131) , "channelselector" , "listchannels" , "L" ])
+    channelslist.append( [ config.get_localized_string(30132) , "channelselector" , "listchannels" , "T" ])
+    channelslist.append( [ config.get_localized_string(30133) , "channelselector" , "listchannels" , "I" ])
+    channelslist.append( [ config.get_localized_string(30134) , "channelselector" , "listchannels" , "NEW" ])
+    return channelslist
+    
 def channeltypes(params,url,category):
     logger.info("[channelselector.py] channeltypes")
 
-    addfolder(config.get_localized_string(30121),"channelselector","listchannels","*")  # Todos
-    addfolder(config.get_localized_string(30129),"channelselector","listchannels","N")  # Nacionales
-    addfolder(config.get_localized_string(30130),"channelselector","listchannels","A")  # Autonomicos
-    addfolder(config.get_localized_string(30131),"channelselector","listchannels","L")  # Locales
-    addfolder(config.get_localized_string(30132),"channelselector","listchannels","T")  # Temáticos
-    addfolder(config.get_localized_string(30133),"channelselector","listchannels","I")  # Web
-    addfolder(config.get_localized_string(30134),"channelselector","listchannels","NEW")  # Web
+    lista = getchanneltypes()
+    for elemento in lista:
+        addfolder(elemento[0],elemento[1],elemento[2],elemento[3])
 
     # Label (top-right)...
     import xbmcplugin
@@ -63,6 +72,19 @@ def channeltypes(params,url,category):
 def listchannels(params,url,category):
     logger.info("[channelselector.py] listchannels")
 
+    lista = filterchannels(category)
+    for channel in lista:
+        addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
+
+    # Label (top-right)...
+    import xbmcplugin
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def filterchannels(category):
+    returnlist = []
+
     idiomav=""
 
     if category=="NEW":
@@ -72,7 +94,7 @@ def listchannels(params,url,category):
             if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
                 #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
                 continue
-            addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
+            returnlist.append(channel)
     else:
         channelslist = channels_list()
     
@@ -85,13 +107,9 @@ def listchannels(params,url,category):
             if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
                 #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
                 continue
-            addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
+            returnlist.append(channel)
 
-    # Label (top-right)...
-    import xbmcplugin
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return returnlist
 
 def channels_history_list():
     channelslist = []

@@ -30,7 +30,6 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 #   queramos que tengan opción de añadir a la biblioteca.
 #   (SÓLO VERSIONES XBMC COMPILADAS CON BUGFIX INCLUIDO)
 
-#IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
 DEBUG = True
 
 # TODO: Esto es un lío, hay que unificar

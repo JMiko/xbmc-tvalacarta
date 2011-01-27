@@ -32,7 +32,7 @@ logger.info("[descargadoslist.py] init")
 DEBUG = True
 
 DOWNLOAD_PATH = downloadtools.getDownloadListPath()
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' ) )
 ERROR_PATH = os.path.join( downloadtools.getDownloadListPath(), 'error' )
 
 def mainlist(params,url,category):

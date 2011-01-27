@@ -29,12 +29,39 @@ class MyHandler(BaseHTTPRequestHandler):
         respuesta += "version=7\n"
         #self.wfile.write("background=http://www.mimediacenter.info/xbmc/pelisalacarta/icon.jpg")
         respuesta += "logo=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg\n"
-        respuesta += "title=tvalacarta 3.0 (WiiMC)\n"
+        respuesta += "title=tvalacarta 3.0.0 (WiiMC)\n"
         respuesta += "\n"
 
         if self.path == "/":
             import channelselector
-            channelslist = channelselector.channels_list()
+            channelslist = channelselector.getmainlist()
+
+            for channel in channelslist:
+                respuesta += "type=playlist\n"
+                respuesta += "name="+channel[0]+"\n"
+                respuesta += "thumb=http://www.mimediacenter.info/xbmc/tvalacarta/posters/"+channel[1]+".png\n"
+                respuesta += "URL=http://"+host+"/"+channel[1]+"/"+channel[2]+"/none/none/playlist.plx\n"
+                respuesta += "\n"
+        
+        elif self.path.startswith("/channelselector/channeltypes"):
+            
+            import channelselector
+            channelslist = channelselector.getchanneltypes()
+            
+            for channel in channelslist:
+                respuesta += "type=playlist\n"
+                respuesta += "name="+channel[0]+"\n"
+                respuesta += "thumb=http://www.mimediacenter.info/xbmc/tvalacarta/posters/channelselector.png\n"
+                respuesta += "URL=http://"+host+"/"+channel[1]+"/"+channel[2]+"/"+channel[3]+"/none/playlist.plx\n"
+                respuesta += "\n"
+        
+        elif self.path.startswith("/channelselector/listchannels"):
+            
+            category = self.path.split("/")[3]
+            print "##category="+category
+
+            import channelselector
+            channelslist = channelselector.filterchannels(category)
             
             for channel in channelslist:
                 if channel[5]=="generic":
@@ -89,10 +116,10 @@ def run():
         myip = "0.0.0.0"
 
     # Crea el directorio cache si no existe    
-    cachedir = os.path.join( os.getcwd() , "tmp" , "cache" )
+    cachedir = os.path.join( config.get_data_path() , "tmp" , "cache" )
     if not os.path.exists(cachedir):
-        os.mkdir(os.path.join( os.getcwd() , "tmp" ))
-        os.mkdir(os.path.join( os.getcwd() , "tmp" , "cache" ))
+        os.mkdir(os.path.join( config.get_data_path() , "tmp" ))
+        os.mkdir(os.path.join( config.get_data_path() , "tmp" , "cache" ))
 
     # Borra la cache de la sesion anterior
     for fichero in os.listdir( cachedir ):
@@ -116,3 +143,16 @@ def run():
 
 if __name__ == '__main__':
     run()
+
+
+
+
+
+
+
+
+
+
+
+
+
