@@ -93,6 +93,6 @@
 		<zip destfile="target/boxee/info.mimediacenter.tvalacarta-${version}.zip" basedir="target/boxee"/>
 		<zip destfile="target/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="target/xbmc-addon"/>
 		<zip destfile="target/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="target/xbmc-plugin"/>
-		<zip destfile="target/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="target/xbmc-plugin"/>
+		<zip destfile="target/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="target/wiimc"/>
     </target>
 </project>
