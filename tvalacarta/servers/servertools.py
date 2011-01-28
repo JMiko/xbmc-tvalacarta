@@ -656,12 +656,12 @@ def findurl(code,server):
     else:
         try:
             exec "import "+server+" as serverconnector"
-            mediaurl = serverconnector.geturl(code)
         except:
             mediaurl = "ERROR"
             import sys
             for line in sys.exc_info():
                 logger.error( "%s" % line )
+        mediaurl = serverconnector.geturl(code)
         
     return mediaurl
 
