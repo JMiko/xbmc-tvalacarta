@@ -18,6 +18,7 @@
         <mkdir dir="target/boxee/info.mimediacenter.tvalacarta"/>
         <mkdir dir="target/xbmc-addon/plugin.video.tvalacarta"/>
         <mkdir dir="target/xbmc-plugin/tvalacarta"/>
+        <mkdir dir="target/wiimc/tvalacarta"/>
 	</target>
 	
 	<!-- copy ===================================================================== -->
@@ -68,6 +69,23 @@
 				<exclude name="**/parametrizacion*.*"/>
 			</fileset>
         </copy>
+
+		<!-- wiimc -->
+        <copy todir="target/wiimc/tvalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+				<exclude name="descriptor.xml"/>
+			</fileset>
+        </copy>
+		
 	</target>
 
     <!-- package =============================================== -->
@@ -75,5 +93,6 @@
 		<zip destfile="target/boxee/info.mimediacenter.tvalacarta-${version}.zip" basedir="target/boxee"/>
 		<zip destfile="target/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="target/xbmc-addon"/>
 		<zip destfile="target/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="target/xbmc-plugin"/>
+		<zip destfile="target/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="target/xbmc-plugin"/>
     </target>
 </project>
