@@ -80,6 +80,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 if item.folder or item.action=="play":
                     if item.server=="": item.server="none"
                     if item.url=="": item.url="none"
+                    if item.title=="": item.title="Ver el video-"
 
                     url = "http://%s/%s/%s/%s/%s/playlist.plx" % ( host , channel , item.action , urllib.quote_plus(item.url) , item.server )
                     respuesta += "type=playlist\n"
