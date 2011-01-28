@@ -52,7 +52,7 @@ def get_temp_file(filename):
     return ""
 
 def get_data_path():
-    return os.path.join( os.path.expanduser("~") , ".pelisalacarta" )
+    return os.path.join( os.path.expanduser("~") , ".tvalacarta" )
 
 def get_runtime_path():
     return os.getcwd()
@@ -62,7 +62,7 @@ if not os.path.exists(get_data_path()):
     os.mkdir(get_data_path())
 
 # Fichero de configuración
-configfilepath = os.path.join( get_data_path() , 'pelisalacarta.conf')
+configfilepath = os.path.join( get_data_path() , 'tvalacarta.conf')
 if not os.path.exists(configfilepath):
     import shutil
     shutil.copyfile( os.path.join(get_runtime_path(),"resources","settings.conf") , configfilepath )

@@ -27,7 +27,7 @@ class MyHandler(BaseHTTPRequestHandler):
         respuesta = ""
 
         respuesta += "version=7\n"
-        #self.wfile.write("background=http://www.mimediacenter.info/xbmc/pelisalacarta/icon.jpg")
+        #self.wfile.write("background=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg")
         respuesta += "logo=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg\n"
         respuesta += "title=tvalacarta 3.0.0 (WiiMC)\n"
         respuesta += "\n"
