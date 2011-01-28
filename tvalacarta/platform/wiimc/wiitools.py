@@ -6,6 +6,7 @@ import md5
 
 from core.item import Item
 from core import logger
+from core import config
 
 from lib import cerealizer
 cerealizer.register(Item)
