@@ -92,13 +92,17 @@ def checkforupdates():
     # local 2.8 - descargada 2.8.8 -> descargar
     # local 2.9 - descargada 2.8.8 -> no descargar
     # local 2.10 - descargada 2.9.9 -> no descargar
+    # local 2.5 - descargada 3.0.0
     if len(arraylocal) < len(arraydescargada):
         #xbmc.output("caso 3")
         hayqueactualizar = True
         for i in range(0, len(arraylocal)):
             #print arraylocal[i], arraydescargada[i], int(arraylocal[i])>int(arraydescargada[i])
             if int(arraylocal[i]) > int(arraydescargada[i]):
-                hayqueactualizar = False
+                hayqueactualizar =  False
+            elif int(arraylocal[i]) < int(arraydescargada[i]):
+                hayqueactualizar =  True
+                break
 
     if (hayqueactualizar):
         xbmc.output("[updater.py] actualizacion disponible")
