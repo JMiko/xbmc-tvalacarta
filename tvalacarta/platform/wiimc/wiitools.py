@@ -32,7 +32,7 @@ def getitems(requestpath):
 
     # Obtiene un nombre válido para la cache
     hashed_url = binascii.hexlify(md5.new(requestpath).digest())
-    cached_file = os.path.join( os.getcwd() , "tmp" , "cache" , hashed_url )
+    cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , hashed_url )
     print cached_file
     
     if os.path.exists(cached_file):
