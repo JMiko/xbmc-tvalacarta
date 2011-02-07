@@ -8,9 +8,7 @@ from core.item import Item
 logger.info("[lasexta.py] init")
 
 DEBUG = False
-CHANNELNAME = "lasexta3"
-
-
+CHANNELNAME = "lasexta"
 
 def isGeneric():
     return True
@@ -24,7 +22,7 @@ def mainlist(item):
     return itemlist
 
 def getAllPrograms(pageNo, itemlist):
-    logger.info("[lasexta.py] programs")
+    logger.info("[lasexta.py] getAllPrograms")
     ##function reload_programs(page)
     ##{
     ##     // inicializamos las variables
@@ -118,6 +116,7 @@ def getAllPrograms(pageNo, itemlist):
 
     for match in matches:
                     scrapedtitle = urllib.unquote_plus(match[4])
+                    scrapedtitle = scrapertools.entityunescape(scrapedtitle)
                     scrapedurl = match[0]
                     scrapedthumbnail = match[1] 
                     if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -128,6 +127,7 @@ def getAllPrograms(pageNo, itemlist):
     return itemlist
 
 def getProgramsCategories(item):
+    logger.info("[lasexta.py] getProgramsCategories")
     url = item.url
     req = urllib2.Request(url)
     req.add_header('User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3 Gecko/2008092417 Firefox/3.0.3')
@@ -155,83 +155,84 @@ def getProgramsCategories(item):
     return itemlist
 
 def getProgramCagetoryVideos(item):
+    logger.info("[lasexta.py] getProgramCagetoryVideos")
     url = "http://www.lasexta.com/sextatv/change_videos/" + item.extra + "/" + item.title
     req = urllib2.Request(url)
 
     #Quick workaround we can use the ajax request to get all videos
-##    function reload(valor)
-##6{
-##7
-##8 if(valor)
-##9 {
-##10 // inicializamos las variables
-##11 var url = APP_URL+'sextatv/reload';
-##12 var section = false;
-##13 var type = false;
-##14 var page = 0;
-##15 var section_id = false;
-##16
-##17 if(temp = valor.split('_'))
-##18 {
-##19
-##20 if(temp[0]){ var section = temp[0];}
-##21 if(temp[1]){ var type = temp[1];}
-##22 if(temp[2]){ var page = temp[2];}
-##23 if(temp[2]){ var section_id = temp[3];}
-##24
-##25 new Ajax.Request(url , {
-##26 method: 'post',
-##27 asynchronous: true,
-##28 encoding: 'utf-8',
-##29 parameters: {seccion: section, pagina: page, tipo:type, section_id:section_id },
-##30 onCreate: function(){
-##31
-##32 if( !$('contenedor_videos').hasClassName('lsv_listado_videos_cargando') )
-##33 {
-##34 $('contenedor_videos').addClassName('lsv_listado_videos_cargando');
-##35 }
-##36
-##37 },
-##38 onSuccess: function(transport) {
-##39
-##40 var response = transport.responseText;
-##41
-##42 if( $('contenedor_videos').hasClassName('lsv_listado_videos_cargando') )
-##43 {
-##44 $('contenedor_videos').removeClassName('lsv_listado_videos_cargando');
-##45 }
-##46
-##47 $('contenedor_videos').innerHTML = response;
-##48
-##49 },
-##50 onComplete: function(transport) {
-##51 width_pagination('paginacion_normal_contenedor');
-##52 }
-##53 });
-##54
-##55 }// fin del split
-##56
-##57 }
-##58
-##59}// fin de reload
-##60 
+    ##    function reload(valor)
+    ##6{
+    ##7
+    ##8 if(valor)
+    ##9 {
+    ##10 // inicializamos las variables
+    ##11 var url = APP_URL+'sextatv/reload';
+    ##12 var section = false;
+    ##13 var type = false;
+    ##14 var page = 0;
+    ##15 var section_id = false;
+    ##16
+    ##17 if(temp = valor.split('_'))
+    ##18 {
+    ##19
+    ##20 if(temp[0]){ var section = temp[0];}
+    ##21 if(temp[1]){ var type = temp[1];}
+    ##22 if(temp[2]){ var page = temp[2];}
+    ##23 if(temp[2]){ var section_id = temp[3];}
+    ##24
+    ##25 new Ajax.Request(url , {
+    ##26 method: 'post',
+    ##27 asynchronous: true,
+    ##28 encoding: 'utf-8',
+    ##29 parameters: {seccion: section, pagina: page, tipo:type, section_id:section_id },
+    ##30 onCreate: function(){
+    ##31
+    ##32 if( !$('contenedor_videos').hasClassName('lsv_listado_videos_cargando') )
+    ##33 {
+    ##34 $('contenedor_videos').addClassName('lsv_listado_videos_cargando');
+    ##35 }
+    ##36
+    ##37 },
+    ##38 onSuccess: function(transport) {
+    ##39
+    ##40 var response = transport.responseText;
+    ##41
+    ##42 if( $('contenedor_videos').hasClassName('lsv_listado_videos_cargando') )
+    ##43 {
+    ##44 $('contenedor_videos').removeClassName('lsv_listado_videos_cargando');
+    ##45 }
+    ##46
+    ##47 $('contenedor_videos').innerHTML = response;
+    ##48
+    ##49 },
+    ##50 onComplete: function(transport) {
+    ##51 width_pagination('paginacion_normal_contenedor');
+    ##52 }
+    ##53 });
+    ##54
+    ##55 }// fin del split
+    ##56
+    ##57 }
+    ##58
+    ##59}// fin de reload
+    ##60 
 
     req.add_header('User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3 Gecko/2008092417 Firefox/3.0.3')
     response = urllib2.urlopen(req)
     page = response.read()
     response.close()
-##     <div class="player_programas">
-##			            <a href="http://www.lasexta.com/sextatv/supercasas/completos/supercasas__domingo__23_de_enero/358061/1"><img src="http://www.sitios.lasexta.com/pictures/239201/pictures_20110120_2106239201_crop1.jpg" width="170" height="127" title="supercasas__domingo__23_de_enero" alt="supercasas__domingo__23_de_enero" /></a>
-##			            <a href="http://www.lasexta.com/sextatv/supercasas/completos/supercasas__domingo__23_de_enero/358061/1" class="item_cortina">
-##							<img src="http://www.lasexta.com/media/common/img/1pxtrans.gif" width="170" height="127" title="supercasas__domingo__23_de_enero" alt="supercasas__domingo__23_de_enero" />
-##							<label class="item_cortina_text">Un programa de SUPERCASAS dedicado a futbolistas. En este capítulo se mostrará la impresionante casa&#8230;</label>
-##							<label class="item_cortina_play">PLAY</label>
-##						</a>
-##
-##			            			        </div>
-##			        <h6 class="fecha">24/01/2011 </h6>
-##			        <h5 class="titulo"><a href="http://www.lasexta.com/sextatv/supercasas/completos/supercasas__domingo__23_de_enero/358061/1" title="supercasas__domingo__23_de_enero">Supercasas. Domingo, 23 de enero</a></h5>
-##			        			    </div>
+    ##     <div class="player_programas">
+    ##			            <a href="http://www.lasexta.com/sextatv/supercasas/completos/supercasas__domingo__23_de_enero/358061/1"><img src="http://www.sitios.lasexta.com/pictures/239201/pictures_20110120_2106239201_crop1.jpg" width="170" height="127" title="supercasas__domingo__23_de_enero" alt="supercasas__domingo__23_de_enero" /></a>
+    ##			            <a href="http://www.lasexta.com/sextatv/supercasas/completos/supercasas__domingo__23_de_enero/358061/1" class="item_cortina">
+    ##							<img src="http://www.lasexta.com/media/common/img/1pxtrans.gif" width="170" height="127" title="supercasas__domingo__23_de_enero" alt="supercasas__domingo__23_de_enero" />
+    ##							<label class="item_cortina_text">Un programa de SUPERCASAS dedicado a futbolistas. En este capítulo se mostrará la impresionante casa&#8230;</label>
+    ##							<label class="item_cortina_play">PLAY</label>
+    ##						</a>
+    ##
+    ##			            			        </div>
+    ##			        <h6 class="fecha">24/01/2011 </h6>
+    ##			        <h5 class="titulo"><a href="http://www.lasexta.com/sextatv/supercasas/completos/supercasas__domingo__23_de_enero/358061/1" title="supercasas__domingo__23_de_enero">Supercasas. Domingo, 23 de enero</a></h5>
+    ##			        			    </div>
 
 
     
@@ -253,8 +254,9 @@ def getProgramCagetoryVideos(item):
     return itemlist
 
 def getVideos(item):
+    logger.info("[lasexta.py] getVideos")
     urlGeneral = item.url
-    print urlGeneral
+    logger.info("url1="+urlGeneral)
   
     #http://www.lasexta.com/sextatv/seloquehicisteis/completos/se_lo_que_hicisteis____viernes__4_de_febrero/366561/1
     patron = 'http://www.lasexta.com/sextatv/.+?/.+?/.+?/(.+?)/1'
@@ -264,20 +266,20 @@ def getVideos(item):
     for matchId in matchedIds:
         videoId = matchId
         videosUrl = 'http://www.lasexta.com/sextatv/playlist/' + videoId
-        print videosUrl
+        logger.info("url2="+videosUrl)
         req = urllib2.Request(videosUrl)
         req.add_header('User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3 Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         page = response.read()
         response.close()
 
-##        	<video>
-##				<id>357881</id>
-##				<title>1 FLV 23 enero</title>
-##				<description><![CDATA[]]></description>
-##				<url>6a77ec0772d81456186cf91ab66e3384c993462e934320aa89a44a5b7eb636bde26211e0e96a9709b1809864c83da59ee90669280e2999643efca0377eb7eaf60807ad12a89a209d5e9a9b82535db4f8ca95a04e02989ca9547fee742735dda33c5bfad3583e7f629c6db861828e503f87b308</url>
-##				<urlHD>http://lasexta.edgeboss.net/flash/lasexta/supercasas/hd/ppd0001564000601_supercasas_6_23_01_2011_23_19_57_h264.mp4</urlHD>
-##			</video>
+        ##        	<video>
+        ##				<id>357881</id>
+        ##				<title>1 FLV 23 enero</title>
+        ##				<description><![CDATA[]]></description>
+        ##				<url>6a77ec0772d81456186cf91ab66e3384c993462e934320aa89a44a5b7eb636bde26211e0e96a9709b1809864c83da59ee90669280e2999643efca0377eb7eaf60807ad12a89a209d5e9a9b82535db4f8ca95a04e02989ca9547fee742735dda33c5bfad3583e7f629c6db861828e503f87b308</url>
+        ##				<urlHD>http://lasexta.edgeboss.net/flash/lasexta/supercasas/hd/ppd0001564000601_supercasas_6_23_01_2011_23_19_57_h264.mp4</urlHD>
+        ##			</video>
         
         patron = '<urlHD>(.+?)</urlHD>[^<]'
         matchedVideoParts = re.compile(patron,re.DOTALL).findall(page)
@@ -290,32 +292,40 @@ def getVideos(item):
             scrapedthumbnail = item.thumbnail
             scrapedplot = ''
 
-            req = urllib2.Request(scrapedVideoUrl)
-            req.add_header('User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3 Gecko/2008092417 Firefox/3.0.3')
-            response = urllib2.urlopen(req)
-            page = response.read()
-            
-            response.close()
-##            <FLVPlayerConfig>
-##  <serverName>cp61776.edgefcs.net</serverName>
-##  <fallbackServerName>cp61776.edgefcs.net</fallbackServerName>
-##  <appName>ondemand</appName>
-##  <streamName>mp4:flash/supercasas/hd/.uid.MVHxAABEEE97k1ZrBw7c64b8c2bb7e83b937ce470f33f64c08.ppd0001564000601_supercasas_6_23_01_2011_23_19_57_h264.mp4</streamName>
-##  <isLive>false</isLive>
-##  <bufferTime>2</bufferTime>
-##</FLVPlayerConfig>
+            logger.info("url3="+scrapedVideoUrl)
 
-            patron = '<serverName>([^<]+)</serverName>[^<]+'
-            patron += '<fallbackServerName>([^<]+)</fallbackServerName>[^<]+'
-            patron += '<appName><!\[CDATA\[(.+?)]]></appName>[^<]+'
-            patron +='<streamName><!\[CDATA\[(.+?)]]></streamName>[^<]'
-            matches = re.compile(patron,re.DOTALL).findall(page)
-            for match in matches:
-                serverName = match[0]
+            if (scrapedVideoUrl.startswith("rtmp")):
+                itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedVideoUrl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
+            else:
+    
+                req = urllib2.Request(scrapedVideoUrl)
+                req.add_header('User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3 Gecko/2008092417 Firefox/3.0.3')
+                response = urllib2.urlopen(req)
+                page = response.read()
                 
-                appName = match[2]
-                streamName = match[3]
-                scrapedUrl = 'rtmp://' + serverName + '/' + appName + '/' + streamName
-                # Añade al listado
-                itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedUrl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
+                response.close()
+                ##            <FLVPlayerConfig>
+                ##  <serverName>cp61776.edgefcs.net</serverName>
+                ##  <fallbackServerName>cp61776.edgefcs.net</fallbackServerName>
+                ##  <appName>ondemand</appName>
+                ##  <streamName>mp4:flash/supercasas/hd/.uid.MVHxAABEEE97k1ZrBw7c64b8c2bb7e83b937ce470f33f64c08.ppd0001564000601_supercasas_6_23_01_2011_23_19_57_h264.mp4</streamName>
+                ##  <isLive>false</isLive>
+                ##  <bufferTime>2</bufferTime>
+                ##</FLVPlayerConfig>
+    
+                patron = '<serverName>([^<]+)</serverName>[^<]+'
+                patron += '<fallbackServerName>([^<]+)</fallbackServerName>[^<]+'
+                patron += '<appName><!\[CDATA\[(.+?)]]></appName>[^<]+'
+                patron +='<streamName><!\[CDATA\[(.+?)]]></streamName>[^<]'
+                matches = re.compile(patron,re.DOTALL).findall(page)
+                for match in matches:
+                    serverName = match[0]
+                    
+                    appName = match[2]
+                    streamName = match[3]
+                    scrapedUrl = 'rtmp://' + serverName + '/' + appName + '/' + streamName
+                    logger.info("scrapedurl="+scrapedUrl)
+                    # Añade al listado
+                    itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedUrl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
+        
     return itemlist 
