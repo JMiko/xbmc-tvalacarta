@@ -5,9 +5,11 @@
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 import urlparse,re
-import logger
-import scrapertools
-from item import Item
+import urllib
+
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 logger.info("[boing.py] init")
 
@@ -20,48 +22,35 @@ def isGeneric():
 def mainlist(item):
 	logger.info("[boing.py] mainlist")
 
-	# Descarga la página
-	data = scrapertools.cachePage("http://www.boing.es/videos")
-	#xbmc.output(data)
-
-	# Extrae las entradas (series)
-	patronvideos = 'so.addVariable\("xcode"\, "([^\"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
-	code = matches[0]
-
 	itemlist = []
-	itemlist.append( Item(channel=CHANNELNAME, extra=code, title="Novedades" , action="novedades" , url="http://www.boing.es/videos/"+code+".xml", folder=True) )
-	itemlist.append( Item(channel=CHANNELNAME, extra=code, title="Series"    , action="series"    , url="http://www.boing.es/videos/"+code+".xml", folder=True) )
+	#itemlist.append( Item(channel=CHANNELNAME, extra=code, title="Novedades" , action="novedades" , url="http://www.boing.es/videos/"+code+".xml", folder=True) )
+	itemlist.append( Item(channel=CHANNELNAME, title="Series"    , action="series"    , url="http://www.boing.es/videos/videos_desencriptado2.xml", folder=True) )
 
 	return itemlist
 
 def series(item):
 	logger.info("[boing.py] series")
 
-	print item.tostring()
-	print "extra="+item.extra
-	
 	# Descarga la página
 	data = scrapertools.cachePage(item.url)
-	#logger.info(data)
+	logger.info(data)
 
 	# Extrae el bloque donde están las series
 	patronvideos = '<series>(.*?)</series>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	#if DEBUG: scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 	data = matches[0]
 	
 	# Extrae las series
-	patronvideos = '<item id="([^"]+)" nombre="([^"]+)"/>'
+	patronvideos = '<item id="([^"]+)" nombre="([^"]+)"[^<]+<imagen>([^<]+)<'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	#if DEBUG: scrapertools.printMatches(matches)
+	if DEBUG: scrapertools.printMatches(matches)
 
 	itemlist = []
 	for match in matches:
 		scrapedtitle = match[1]
 		code = match[0]
-		scrapedthumbnail = "http://www.boing.es/videos/1clips/"+code+"/videos/imagen.jpg"
+		scrapedthumbnail = match[2]
 		scrapedplot = ""
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], code=["+code+"], thumbnail=["+scrapedthumbnail+"]")
 
@@ -96,7 +85,7 @@ def episodios(item):
 	patronvideos  = '<video id="[^"]+" series="'+item.extra+'"[^>]+>[^<]+'
 	patronvideos += '<titulo>([^<]+)</titulo>[^<]+'
 	patronvideos += '<imagen>([^<]+)</imagen>[^<]+'
-	patronvideos += '<url>([^<]+)</url>[^<]+'
+	patronvideos += '<secuencias><item>([^<]+)</item></secuencias>[^<]+'
 	patronvideos += '<stats>[^<]+</stats>[^<]+'
 	patronvideos += '<descripcion>(.*?)</descripcion>[^<]+'
 	patronvideos += '</video>'
