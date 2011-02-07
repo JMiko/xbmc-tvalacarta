@@ -169,6 +169,8 @@ def addfolder(nombre,channelname,accion,category=""):
     
     import xbmc
     
+    # TODO: (3.0.1) Probar dharma con imágenes en web, para aligerar el ZIP
+    
     print "thumbnail_type="+config.get_setting("thumbnail_type")
     if config.get_setting("thumbnail_type")=="0":
         IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )

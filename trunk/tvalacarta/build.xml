@@ -2,29 +2,18 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-	<property name="version" value="3.0.0"/>
+    <property name="version" value="3.0.1"/>
 	
 	<!-- init ===================================================================== -->
 	<target name="init" description="Inicializa el timestamp">
-		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="hoy" pattern="yyyyMMdd" locale="es,ES"/>
 		</tstamp>
 	</target>
 
-	<!-- prepare ================================================================== -->
-	<target name="prepare" depends="init">
-		<delete dir="target"/>
-        <mkdir dir="target/boxee/info.mimediacenter.tvalacarta"/>
-        <mkdir dir="target/xbmc-addon/plugin.video.tvalacarta"/>
-        <mkdir dir="target/xbmc-plugin/tvalacarta"/>
-        <mkdir dir="target/wiimc/tvalacarta"/>
-	</target>
-	
-	<!-- copy ===================================================================== -->
-	<target name="copy" depends="prepare">
-		<!-- xbmc-addon -->
-        <copy todir="target/xbmc-addon/plugin.video.tvalacarta">
+	<!-- copy-xbmc-addon ============================================================ -->
+	<target name="copy-xbmc-addon">
+        <copy todir="${target}/xbmc-addon/plugin.video.tvalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
@@ -36,11 +25,13 @@
 				<exclude name="**/*.pyc"/>
 				<exclude name="**/parametrizacion*.*"/>
 				<exclude name="descriptor.xml"/>
+                <exclude name="default.tbn"/>
 			</fileset>
         </copy>
+    </target>
 		
-		<!-- xbmc-plugin -->
-        <copy todir="target/xbmc-plugin/tvalacarta">
+    <target name="copy-xbmc-plugin">
+        <copy todir="${target}/xbmc-plugin/tvalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
@@ -52,11 +43,14 @@
 				<exclude name="**/*.pyc"/>
 				<exclude name="**/parametrizacion*.*"/>
 				<exclude name="descriptor.xml"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
 			</fileset>
         </copy>
+    </target>
 		
-		<!-- boxee -->
-        <copy todir="target/boxee/info.mimediacenter.tvalacarta">
+    <target name="copy-boxee">
+        <copy todir="${target}/boxee/info.mimediacenter.tvalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
@@ -66,33 +60,98 @@
 				<exclude name="**/library/**"/>
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
+                <exclude name="**/parametrizacion*.*"/>
+                <exclude name="resources/images/**"/>
+                <exclude name="default.tbn"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+                <exclude name="tester.py"/>
 			</fileset>
         </copy>
+    </target>
 
-		<!-- wiimc -->
-        <copy todir="target/wiimc/tvalacarta">
+    <target name="copy-wiimc">
+        <copy todir="${target}/wiimc/tvalacarta">
             <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="build.xml"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-				<exclude name="descriptor.xml"/>
-			</fileset>
+                <exclude name="target/**"/>
+                <exclude name="build.xml"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/bookmarks/**"/>
+                <exclude name="**/library/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+                <exclude name="**/parametrizacion*.*"/>
+                <exclude name="descriptor.xml"/>
+            	<!-- TODO: Probar wiimc sin imagenes -->
+                <!--exclude name="resources/images/**"/ -->
+                <exclude name="default.tbn"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="copy-plexmediaserver">
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Code"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Libraries"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Resources"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Strings"/>
+
+		<copy todir="${target}/plexmediaserver/tvalacarta.bundle/Code">
+            <fileset dir=".">
+                <include name="channelselector.*"/>
+                <exclude name="build.xml"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/bookmarks/**"/>
+                <exclude name="**/library/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+                <exclude name="**/parametrizacion*.*"/>
+                <exclude name="descriptor.xml"/>
+                <!-- TODO: Probar plexmediaserver sin imagenes -->
+                <!--exclude name="resources/images/**"/-->
+                <exclude name="default.tbn"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+            </fileset>
         </copy>
 		
 	</target>
 
     <!-- package =============================================== -->
-    <target name="package" depends="copy">
-		<zip destfile="target/boxee/info.mimediacenter.tvalacarta-${version}.zip" basedir="target/boxee"/>
-		<zip destfile="target/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="target/xbmc-addon"/>
-		<zip destfile="target/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="target/xbmc-plugin"/>
-		<zip destfile="target/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="target/wiimc"/>
+    <target name="package">
+        <!-- Declara un target comun -->
+        <property name="target" value="/Users/jesus/Desktop/tvalacarta-${version}"/>
+    	<echo message="target=${target}"/>
+
+    	<!-- Crea los directorios -->
+        <delete dir="${target}"/>
+        <mkdir dir="${target}/boxee/info.mimediacenter.tvalacarta"/>
+        <mkdir dir="${target}/xbmc-addon/plugin.video.tvalacarta"/>
+        <mkdir dir="${target}/xbmc-plugin/tvalacarta"/>
+        <mkdir dir="${target}/wiimc/tvalacarta"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle"/>
+
+        <!-- Copia los ficheros -->
+        <antcall target="copy-xbmc-addon"/>
+        <antcall target="copy-xbmc-plugin"/>
+        <antcall target="copy-boxee"/>
+        <antcall target="copy-wiimc"/>
+        <antcall target="copy-plexmediaserver"/>
+    	
+    	<zip destfile="${target}/boxee/info.mimediacenter.tvalacarta-${version}.zip" basedir="${target}/boxee"/>
+		<zip destfile="${target}/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="${target}/xbmc-addon"/>
+		<zip destfile="${target}/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
+        <zip destfile="${target}/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
+        <zip destfile="${target}/plexmediaserver/tvalacarta-plexmediaserver-${version}-python.zip" basedir="${target}/wiimc"/>
+    	
+    	<!-- TODO Empaquetar py2exe innosetup en wiimc -->
     </target>
+	
+	<target name="deploy">
+	    <!-- Sube zip al ftp -->
+		<!-- Sube imágenes al ftp -->
+	</target>
 </project>

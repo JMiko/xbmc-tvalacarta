@@ -10,7 +10,7 @@ __plugin__  = "tvalacarta"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/"
 __date__    = "20 Enero 2011"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 
 import os
 import sys

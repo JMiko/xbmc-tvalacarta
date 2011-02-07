@@ -62,7 +62,17 @@ def get_runtime_path():
     return os.getcwd()
 
 def get_data_path():
-    return xbmc.translatePath( os.path.join("special://home/","userdata","plugin_data","video","tvalacarta") )
+    devuelve = xbmc.translatePath( os.path.join("special://home/","userdata","plugin_data","video","tvalacarta") )
+    
+    # XBMC en modo portable
+    if devuelve.startswith("special:"):
+        devuelve = xbmc.translatePath( os.path.join("special://xbmc/","userdata","plugin_data","video","tvalacarta") )
+
+    # Plex 8
+    if devuelve.startswith("special:"):
+        devuelve = os.getcwd()
+
+    return devuelve
 
 print "[config.py] runtime path = "+get_runtime_path()
 print "[config.py] data path = "+get_data_path()
