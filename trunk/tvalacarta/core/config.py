@@ -26,17 +26,21 @@ PLATFORM = ""
 
 # XBMC Dharma
 try:
-    import xbmcaddon
-    PLATFORM = "xbmcdharma"
-except ImportError:
-    # XBMC
+    import mc
+    PLATFORM="boxee"
+except:
     try:
-        import xbmc
-        PLATFORM = "xbmc"
+        import xbmcaddon
+        PLATFORM = "xbmcdharma"
     except ImportError:
-        print "Platform=DEVELOPER"
-        # Eclipse
-        PLATFORM = "developer"
+        # XBMC
+        try:
+            import xbmc
+            PLATFORM = "xbmc"
+        except ImportError:
+            print "Platform=DEVELOPER"
+            # Eclipse
+            PLATFORM = "developer"
 
 def force_platform(platform):
     global PLATFORM
