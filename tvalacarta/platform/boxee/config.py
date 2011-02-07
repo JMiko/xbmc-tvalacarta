@@ -70,6 +70,9 @@ def get_data_path():
 def get_boxee_plugin_path():
     return os.path.abspath(os.path.join(get_runtime_path(),"..","..","plugins","video","info.mimediacenter.tvalacarta"))
 
+def get_version():
+    return "3.0.1"
+
 # Literales
 TRANSLATION_FILE_PATH = os.path.join(get_runtime_path(),"resources","language","Spanish","strings.xml")
 translationsfile = open(TRANSLATION_FILE_PATH,"r")
@@ -81,7 +84,21 @@ print "[config.py] data path = "+get_data_path()
 print "[config.py] language file path "+TRANSLATION_FILE_PATH
 print "[config.py] temp path = "+get_temp_file("test")
 print "[config.py] plugin path = "+get_boxee_plugin_path()
+print "[config.py] version = "+get_version()
 
+# Si no existe la versión, borra el directorio de plugin/video/info.mimediacenter.tvalacarta (copia del apps/info.mimediacenter.tvalacarta)
+if not os.path.exists( os.path.join(get_boxee_plugin_path(),get_version()) ):
+    print "[config.py] borra el directorio "+get_boxee_plugin_path()
+    import shutil
+    shutil.rmtree(get_boxee_plugin_path())
+    
+# Clona el directorio de apps a plugin/video
 if not os.path.exists( get_boxee_plugin_path() ):
+    print "[config.py] clona el directorio de "+get_runtime_path()+" a "+get_boxee_plugin_path()
     import shutil
     shutil.copytree( get_runtime_path() , get_boxee_plugin_path() )
+    
+    # Crea el fichero de la versión para no volver a clonarlo más
+    f = open( os.path.join(get_boxee_plugin_path(),get_version()), 'w')
+    f.write("done")
+    f.close()
