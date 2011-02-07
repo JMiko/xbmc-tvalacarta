@@ -113,9 +113,11 @@ def filterchannels(category):
 
 def channels_history_list():
     channelslist = []
-    channelslist.append([ "IB3 (Islas Baleares) (20/01/2011)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])
-    channelslist.append([ "Giralda TV (Sevilla) (20/01/2011)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])
-    channelslist.append([ "Solidaria TV (20/01/2011)"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])
+    channelslist.append([ "La Sexta (07/02/2011)"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "Boing (07/02/2011)"                      , "boing"                , "" , "ES" , "T" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "IB3 (Islas Baleares) (20/01/2011)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Giralda TV (Sevilla) (20/01/2011)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Solidaria TV (20/01/2011)"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
     return channelslist
 
 def channels_list():
@@ -125,6 +127,7 @@ def channels_list():
     channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
     channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
     channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
+    channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
     #addfolder("Boing","boing","mainlist")
     #addfolder("Totlol","totlol","mainlist")
     channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
@@ -150,7 +153,7 @@ def channels_list():
     channelslist.append([ "7RM (Murcia)"               , "sieterm"              , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
     channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
-    #channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])
+    channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
