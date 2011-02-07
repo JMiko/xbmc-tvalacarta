@@ -168,6 +168,8 @@ def addfolder(nombre,channelname,accion,category=""):
             pass
     
     import xbmc
+    
+    print "thumbnail_type="+config.get_setting("thumbnail_type")
     if config.get_setting("thumbnail_type")=="0":
         IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
     else:
@@ -177,6 +179,9 @@ def addfolder(nombre,channelname,accion,category=""):
         WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
     else:
         WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/banners/"
+
+    if config.get_platform()=="boxee":
+        IMAGES_PATH="http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
 
     # Preferencia: primero JPG
     thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".jpg")

@@ -75,3 +75,4 @@ def get_data_path():
 
 print "[config.py] runtime path = "+get_runtime_path()
 print "[config.py] data path = "+get_data_path()
+print "[config.py] temp path = "+get_temp_file("test")

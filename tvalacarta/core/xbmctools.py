@@ -117,32 +117,42 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
     logger.info("[xbmctools.py] playvideo url="+url)
     logger.info("[xbmctools.py] playvideo category="+category)
     logger.info("[xbmctools.py] playvideo serie="+Serie)
+    logger.info("[xbmctools.py] a")
     
     # Abre el diálogo de selección
     opciones = []
     default_action = config.get_setting("default_action")
+    logger.info("default_action="+default_action)
     # Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
     # Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
     if (server=="Megavideo" or server=="Megaupload") and config.get_setting("megavideopremium")=="true":
-        opciones.append(config.get_localized_string(30150)+" ["+server+"]") # "Ver en calidad alta"
+        opcion = config.get_localized_string(30150)+" ["+server+"]"
+        logger.info(opcion)
+        opciones.append(opcion) # "Ver en calidad alta"
         # Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
         if default_action=="2":
             seleccion = len(opciones)-1
 
     # Los vídeos de Megavídeo o Megaupload se pueden ver en calidad baja sin cuenta premium, aunque con el límite
     if (server=="Megavideo" or server=="Megaupload"):
-        opciones.append(config.get_localized_string(30152)+" [Megavideo]") # "Ver en calidad baja"
+        opcion = config.get_localized_string(30152)+" [Megavideo]"
+        logger.info(opcion)
+        opciones.append(opcion) # "Ver en calidad baja"
         # Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
         if default_action=="1":
             seleccion = len(opciones)-1
     else:
-        opciones.append(config.get_localized_string(30151)+" ["+server+"]") # "Ver en calidad normal"
+        opcion = config.get_localized_string(30151)+" ["+server+"]"
+        logger.info(opcion)
+        opciones.append(opcion) # "Ver en calidad normal"
         # Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
         if default_action<>"0":  #Si hay alguna calidad elegida (alta o baja) seleccionarmos esta para los no megavideo
             seleccion = len(opciones)-1
 
     if config.get_setting("download.enabled")=="true":
-        opciones.append(config.get_localized_string(30153)) # "Descargar"
+        opcion = config.get_localized_string(30153)
+        logger.info(opcion)
+        opciones.append(opcion) # "Descargar"
 
     if desdefavoritos: 
         opciones.append(config.get_localized_string(30154)) # "Quitar de favoritos"

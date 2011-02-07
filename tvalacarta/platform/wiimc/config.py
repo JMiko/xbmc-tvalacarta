@@ -80,3 +80,4 @@ print "[config.py] runtime path = "+get_runtime_path()
 print "[config.py] data path = "+get_data_path()
 print "[config.py] language file path "+TRANSLATION_FILE_PATH
 print "[config.py] config file "+configfilepath
+print "[config.py] temp path = "+get_temp_file("test")
