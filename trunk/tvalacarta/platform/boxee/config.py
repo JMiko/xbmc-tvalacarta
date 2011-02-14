@@ -90,7 +90,10 @@ print "[config.py] version = "+get_version()
 if not os.path.exists( os.path.join(get_boxee_plugin_path(),get_version()) ):
     print "[config.py] borra el directorio "+get_boxee_plugin_path()
     import shutil
-    shutil.rmtree(get_boxee_plugin_path())
+    try:
+        shutil.rmtree(get_boxee_plugin_path())
+    except:
+        pass
     
 # Clona el directorio de apps a plugin/video
 if not os.path.exists( get_boxee_plugin_path() ):

@@ -25,7 +25,7 @@ std_headers = {
     'Accept-Language': 'en-us,en;q=0.5',
 }
 
-def getuploads(user,startindex,maxresults):
+def getuploads(user,startindex,maxresults,channel="",action="play"):
     logger.info("[youtube.py] getuploads")
 
     # Obtiene el feed según el API de YouTube
@@ -61,12 +61,12 @@ def getuploads(user,startindex,maxresults):
             print 'Thumbnail url: %s' % thumbnail.url
         '''
         
-        item = Item(title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
+        item = Item(channel=channel, action=action, title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
         itemlist.append( item )
     
     return itemlist
 
-def getplaylists(user,startindex,maxresults):
+def getplaylists(user,startindex,maxresults,channel="",action="playlist"):
     logger.info("[youtube.py] getplaylists")
 
     # Obtiene el feed segun el API de YouTube
@@ -77,12 +77,12 @@ def getplaylists(user,startindex,maxresults):
 
     itemlist = []
     for entry in playlist_feed.entry:
-        item = Item(title=entry.title.text, url=entry.id.text, thumbnail = "" , plot = "" )
+        item = Item(channel=channel, action=action, title=entry.title.text, url=entry.id.text, thumbnail = "" , plot = "" )
         itemlist.append( item )
 
     return itemlist
 
-def getplaylistvideos(url,startindex,maxresults):
+def getplaylistvideos(url,startindex,maxresults,channel="",action="play"):
     logger.info("[youtube.py] getplaylistvideos")
     # Extrae el ID de la playlist
     patron = 'http://.*?/([^/]+)/$'
@@ -98,7 +98,7 @@ def getplaylistvideos(url,startindex,maxresults):
 
     itemlist = []
     for entry in playlist_video_feed.entry:
-        item = Item(title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
+        item = Item(channel=channel, action=action, title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
         itemlist.append( item )
     
     return itemlist

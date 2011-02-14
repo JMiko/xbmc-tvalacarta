@@ -47,9 +47,7 @@ def get_library_path():
     return ""
 
 def get_temp_file(filename):
-    # Una forma rápida de lanzar un error 
-    import noexiste
-    return ""
+    return os.path.join(get_data_path(),filename)
 
 def get_data_path():
     return os.path.join( os.path.expanduser("~") , ".tvalacarta" )
