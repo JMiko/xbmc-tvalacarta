@@ -42,8 +42,8 @@ DEBUG = False
 def cache_page(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modo_cache=CACHE_ACTIVA):
     return cachePage(url,post,headers,modo_cache)
 
-# TODO: Quitar el parámetro modoCache (ahora se hace por configuración)
-# TODO: Usar notación minusculas_con_underscores para funciones y variables como recomienda Python http://www.python.org/dev/peps/pep-0008/
+# TODO: (3.1) Quitar el parámetro modoCache (ahora se hace por configuración)
+# TODO: (3.2) Usar notación minusculas_con_underscores para funciones y variables como recomienda Python http://www.python.org/dev/peps/pep-0008/
 def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modoCache=CACHE_ACTIVA):
 
     logger.info("[scrapertools.py] cachePage url="+url)
@@ -741,7 +741,6 @@ def htmlclean(cadena):
 def getRandom(str):
     return binascii.hexlify(md5.new(str).digest())
 
-# TODO: Ver ejemplo más limpio en dive into python
 def getLocationHeaderFromResponse(url):
     logger.info("[scrapertools.py] getLocationHeaderFromResponse")
 

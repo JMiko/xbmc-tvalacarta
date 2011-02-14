@@ -14,7 +14,7 @@
 # 18-12-2010 Implementa lector cadenas internacionales con strings.xml de xbmc
 #-------------------------------------------------------------------------------
 
-print "Using DEVELOPER config"
+print "Using DEVELOPER config 3.0.1"
 
 import os,re
 import ConfigParser
@@ -58,11 +58,11 @@ def get_localized_string(code):
         return "%d" % code
     
 def get_library_path():
-    # FIXME: Una forma rápida de lanzar un error
+    # Una forma rápida de lanzar un error
     import noexiste
     return ""
 
 def get_temp_file(filename):
-    # FIXME: Una forma rápida de lanzar un error 
+    # Una forma rápida de lanzar un error 
     import noexiste
     return ""

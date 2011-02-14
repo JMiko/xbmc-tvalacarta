@@ -5,7 +5,7 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
-# TODO:3.1: Log en fichero
+# TODO: (3.1) Log en fichero
 print "Using WiiMC logger"
 
 def info(texto):

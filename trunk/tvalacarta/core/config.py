@@ -79,7 +79,7 @@ def get_setting(name):
     elif name=="cookies.dir":
         dev=get_data_path()
     
-    # TODO: De momento la cache está desactivada...
+    # TODO: (3.1) De momento la cache está desactivada...
     elif name=="cache.mode":
         dev="2"
     

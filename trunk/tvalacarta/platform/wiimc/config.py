@@ -14,7 +14,7 @@
 # 20-01-2010 Fichero de configuración en el directorio de usuario
 #-------------------------------------------------------------------------------
 
-print "[config.py] wiimc config"
+print "[config.py] wiimc config 3.0.1"
 
 import os,re
 import ConfigParser
@@ -42,12 +42,12 @@ def get_localized_string(code):
         return "%d" % code
     
 def get_library_path():
-    # FIXME: Una forma rápida de lanzar un error
+    # Una forma rápida de lanzar un error
     import noexiste
     return ""
 
 def get_temp_file(filename):
-    # FIXME: Una forma rápida de lanzar un error 
+    # Una forma rápida de lanzar un error 
     import noexiste
     return ""
 

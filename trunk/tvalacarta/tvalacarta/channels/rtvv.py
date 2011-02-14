@@ -65,7 +65,6 @@ def videolist(item):
 
     for match in matches:
         scrapedtitle = scrapertools.entityunescape(match[1])
-        # TODO: Sacar la fecha de la descripcion
         patronfechas = "<p>Emissi&oacute;: ([^<]+)<"
         matchesfechas = re.compile(patronfechas,re.DOTALL).findall(match[2])
         if len(matchesfechas)>0:

@@ -47,13 +47,13 @@ def mainlist(params,url,category):
 
 def getchanneltypes():
     channelslist = []
-    channelslist.append( [ config.get_localized_string(30121) , "channelselector" , "listchannels" , "*" ])
-    channelslist.append( [ config.get_localized_string(30129) , "channelselector" , "listchannels" , "N" ])
-    channelslist.append( [ config.get_localized_string(30130) , "channelselector" , "listchannels" , "A" ])
-    channelslist.append( [ config.get_localized_string(30131) , "channelselector" , "listchannels" , "L" ])
-    channelslist.append( [ config.get_localized_string(30132) , "channelselector" , "listchannels" , "T" ])
-    channelslist.append( [ config.get_localized_string(30133) , "channelselector" , "listchannels" , "I" ])
-    channelslist.append( [ config.get_localized_string(30134) , "channelselector" , "listchannels" , "NEW" ])
+    channelslist.append( [ config.get_localized_string(30121) , "channelselector" , "listchannels" , "*"   , "channelselector"])
+    channelslist.append( [ config.get_localized_string(30129) , "channelselector" , "listchannels" , "N"   , "nacionales"])
+    channelslist.append( [ config.get_localized_string(30130) , "channelselector" , "listchannels" , "A"   , "autonomicos"])
+    channelslist.append( [ config.get_localized_string(30131) , "channelselector" , "listchannels" , "L"   , "locales"])
+    channelslist.append( [ config.get_localized_string(30132) , "channelselector" , "listchannels" , "T"   , "tematicos"])
+    channelslist.append( [ config.get_localized_string(30133) , "channelselector" , "listchannels" , "I"   , "internet"])
+    channelslist.append( [ config.get_localized_string(30134) , "channelselector" , "listchannels" , "NEW" , "novedades"])
     return channelslist
     
 def channeltypes(params,url,category):
@@ -160,7 +160,7 @@ def channels_list():
 
     return channelslist
 
-def addfolder(nombre,channelname,accion,category=""):
+def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     if category == "":
         try:
             category = unicode( nombre, "utf-8" ).encode("iso-8859-1")
@@ -168,8 +168,6 @@ def addfolder(nombre,channelname,accion,category=""):
             pass
     
     import xbmc
-    
-    # TODO: (3.0.1) Probar dharma con imágenes en web, para aligerar el ZIP
     
     print "thumbnail_type="+config.get_setting("thumbnail_type")
     if config.get_setting("thumbnail_type")=="0":
@@ -185,14 +183,17 @@ def addfolder(nombre,channelname,accion,category=""):
     if config.get_platform()=="boxee":
         IMAGES_PATH="http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
 
+    if thumbnailname=="":
+        thumbnailname = channelname
+
     # Preferencia: primero JPG
-    thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".jpg")
+    thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, thumbnailname+".jpg")
     # Preferencia: segundo PNG
     if not os.path.exists(thumbnail):
-        thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, channelname+".png")
+        thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, thumbnailname+".png")
     # Preferencia: tercero WEB
     if not os.path.exists(thumbnail):
-        thumbnail = thumbnailImage=WEB_PATH+channelname+".png"
+        thumbnail = thumbnailImage=WEB_PATH+thumbnailname+".png"
     #Si no existe se usa el logo del plugin
     #if not os.path.exists(thumbnail):
     #    thumbnail = thumbnailImage=WEB_PATH+"ayuda.png" #Check: ruta del logo
