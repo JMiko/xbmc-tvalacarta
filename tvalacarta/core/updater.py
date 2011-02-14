@@ -167,7 +167,7 @@ def get_channel_remote_url(channel_name):
 
 def get_channel_local_path(channel_name):
     import xbmc
-    # TODO: El XML debería escribirse en el userdata, de forma que se leerán dos ficheros locales: el del userdata y el que está junto al py (vendrá con el plugin). El mayor de los 2 es la versión actual, y si no existe fichero se asume versión 0
+    # TODO: (3.2) El XML debería escribirse en el userdata, de forma que se leerán dos ficheros locales: el del userdata y el que está junto al py (vendrá con el plugin). El mayor de los 2 es la versión actual, y si no existe fichero se asume versión 0
     if channel_name<>"channelselector":
         local_channel_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'tvalacarta' , 'channels' , channel_name+".py" ) )
         local_version_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'tvalacarta' , 'channels' , channel_name+".xml" ) )

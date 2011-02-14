@@ -105,6 +105,10 @@ class MyHandler(BaseHTTPRequestHandler):
         self.wfile.close()
 
         return
+    
+    def address_string(self):
+        # Disable reverse name lookups
+        return self.client_address[:2][0] 
 
 def run():
     # IP

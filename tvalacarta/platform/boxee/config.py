@@ -11,7 +11,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] boxee config"
+print "[config.py] boxee config 3.0.1"
 
 import os,re
 

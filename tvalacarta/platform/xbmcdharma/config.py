@@ -13,7 +13,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] xbmcdharma config"
+print "[config.py] xbmcdharma config 3.0.1"
 
 import sys
 import os
@@ -71,7 +71,13 @@ def get_runtime_path():
     return xbmc.translatePath( __settings__.getAddonInfo('Path') )
 
 def get_data_path():
-    return xbmc.translatePath( __settings__.getAddonInfo('Profile') )
+    dev = xbmc.translatePath( __settings__.getAddonInfo('Profile') )
+    
+    # Parche para XBMC4XBOX
+    if not os.path.exists(dev):
+        os.makedirs(dev)
+    
+    return dev
 
 print "[config.py] runtime path = "+get_runtime_path()
 print "[config.py] data path = "+get_data_path()

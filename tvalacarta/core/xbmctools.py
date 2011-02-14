@@ -32,7 +32,7 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 
 DEBUG = True
 
-# TODO: Esto es un lío, hay que unificar
+# TODO: (3.2) Esto es un lío, hay que unificar
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0):
     addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
 
@@ -266,7 +266,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         xbmc.executebuiltin( "Container.Refresh" )
         return
 
-    # TODO: Mover a modulo descargadoslist
+    # TODO: (3.1) Mover a modulo descargadoslist
     elif opciones[seleccion]==config.get_localized_string(30159): #"Borrar descarga definitivamente"
         # La categoría es el nombre del fichero en favoritos
         os.remove(urllib.unquote_plus( category ))
@@ -274,7 +274,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30106)) # 'Se ha quitado de la lista'
         return
 
-    # TODO: Mover a modulo descargadoslist
+    # TODO: (3.1) Mover a modulo descargadoslist
     elif opciones[seleccion]==config.get_localized_string(30160): #"Pasar de nuevo a lista de descargas":
         from core import descargadoslist
         # La categoría es el nombre del fichero en favoritos, así que lee el fichero
@@ -287,7 +287,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30107)) # 'Ha pasado de nuevo a la lista de descargas'
         return
 
-    # TODO: Mover a modulo favoritos
+    # TODO: (3.1) Mover a modulo favoritos
     elif opciones[seleccion]==config.get_localized_string(30155): #"Añadir a favoritos":
         from core import favoritos
         from core import downloadtools
@@ -300,7 +300,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
             resultado = advertencia.ok(config.get_localized_string(30102) , title , config.get_localized_string(30108)) # 'se ha añadido a favoritos'
         return
 
-    # TODO: Mover a modulo descargadoslist
+    # TODO: (3.1) Mover a modulo descargadoslist
     elif opciones[seleccion]==config.get_localized_string(30156): #"Quitar de lista de descargas":
         # La categoría es el nombre del fichero en la lista de descargas
         os.remove(urllib.unquote_plus( category ))
@@ -308,7 +308,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30106)) # 'Se ha quitado de lista de descargas'
         return
 
-    # TODO: Mover a modulo descargadoslist
+    # TODO: (3.1) Mover a modulo descargadoslist
     elif opciones[seleccion]==config.get_localized_string(30157): #"Añadir a lista de descargas":
         from core import descargadoslist
         from core import downloadtools
