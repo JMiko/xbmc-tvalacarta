@@ -4,96 +4,59 @@
 # Canal EARTH TV en YouTube
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
-
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import binascii
+from core import logger
 from core import scrapertools
-from core import xbmctools
+from core.item import Item
 from servers import youtube
 
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
-
-xbmc.output("[earthtv.py] init")
+logger.info("[clantv.py] init")
 
 DEBUG = True
-CHANNELNAME = "Earth TV"
-CHANNELCODE = "earthtv"
+CHANNELNAME = "earthtv"
+MODO_CACHE=0
 
-def mainlist(params,url,category):
-	xbmc.output("[earthtv.py] mainlist")
+def isGeneric():
+    return True
 
-	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELCODE , "novedades" , CHANNELNAME , "Novedades" , "" , "" , "" )
+def mainlist(item):
+    logger.info("[earthtv.py] mainlist")
 
-	# Playlists
-	itemlist = youtube.getplaylists("earthTV",1,13)
-	for item in itemlist:
-		xbmctools.addnewfolder( CHANNELCODE , "playlist" , CHANNELNAME , item.title , item.url , item.thumbnail , item.plot )
+    itemlist = []
 
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    # Añade al listado de XBMC
+    itemlist.append( Item(channel=CHANNELNAME, title="Novedades" , action="novedades" , folder=True) )
 
-def novedades(params,url,category):
-	xbmc.output("[earthtv.py] novedades")
-	itemlist = youtube.getuploads("earthTV",1,10)
-	videos(params,url,category,itemlist)
+    # Playlists
+    itemlist.extend(youtube.getplaylists("earthTV",1,13,CHANNELNAME,"playlist"))
 
-def playlist(params,url,category):
-	xbmc.output("[earthtv.py] playlist")
-	itemlist = youtube.getplaylistvideos(url,1,10)
-	videos(params,url,category,itemlist)
+    return itemlist
 
-def videos(params,url,category,itemlist):
-	xbmc.output("[earthtv.py] videos")
+def novedades(item):
+    logger.info("[earthtv.py] novedades")
+    itemlist = youtube.getuploads("earthTV",1,10,CHANNELNAME,"play")
 
-	for item in itemlist:
-		xbmctools.addnewvideo( CHANNELCODE , "play" , category , "Directo" , item.title , item.url , item.thumbnail , item.plot )
+    return itemlist
 
-	# Cierra el directorio
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def playlist(item):
+    logger.info("[earthtv.py] playlist")
+    itemlist = youtube.getplaylistvideos(item.url,1,10,CHANNELNAME,"play")
+    return itemlist
 
-def play(params,url,category):
-	xbmc.output("[earthtv.py] play")
+def play(item):
+    logger.info("[earthtv.py] play")
 
-	# Extrae el ID
-	id = youtube.Extract_id(url)
-	xbmc.output("[earthtv.py] id="+id)
-	
-	# Descarga la página
-	data = scrapertools.cachePage(url)
-	
-	# Obtiene la URL
-	url = youtube.geturls(id,data)
-	print url
-	
-	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = "Directo"
+    itemlist = []
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    # Extrae el ID
+    id = youtube.Extract_id(item.url)
+    logger.info("[earthtv.py] id="+id)
+    
+    # Descarga la página
+    data = scrapertools.cache_page(item.url)
+    
+    # Obtiene la URL
+    url = youtube.geturls(id,data)
 
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="Directo", url=url, thumbnail=item.thumbnail , folder=False) )
 
-def addnewfolder( canal , accion , category , title , url , thumbnail , plot , startindex, maxresults ):
-	#xbmc.output("pluginhandle=%d" % pluginhandle)
-	try:
-		xbmc.output('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")"')
-	except:
-		xbmc.output('[xbmctools.py] addnewfolder(<unicode>)')
-	listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
-	listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
-	itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&startindex=%d&maxresults=%d' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , startindex , maxresults )
-	xbmc.output("[xbmctools.py] itemurl=%s" % itemurl)
-	xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+    return itemlist

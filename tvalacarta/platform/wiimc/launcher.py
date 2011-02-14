@@ -29,7 +29,7 @@ class MyHandler(BaseHTTPRequestHandler):
         respuesta += "version=7\n"
         #self.wfile.write("background=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg")
         respuesta += "logo=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg\n"
-        respuesta += "title=tvalacarta 3.0.0 (WiiMC)\n"
+        respuesta += "title=tvalacarta 3.0.1 (WiiMC)\n"
         respuesta += "\n"
 
         if self.path == "/":
@@ -51,7 +51,7 @@ class MyHandler(BaseHTTPRequestHandler):
             for channel in channelslist:
                 respuesta += "type=playlist\n"
                 respuesta += "name="+channel[0]+"\n"
-                respuesta += "thumb=http://www.mimediacenter.info/xbmc/tvalacarta/posters/channelselector.png\n"
+                respuesta += "thumb=http://www.mimediacenter.info/xbmc/tvalacarta/posters/"+channel[4]+".png\n"
                 respuesta += "URL=http://"+host+"/"+channel[1]+"/"+channel[2]+"/"+channel[3]+"/none/playlist.plx\n"
                 respuesta += "\n"
         

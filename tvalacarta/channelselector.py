@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import urlparse,urllib2,urllib,re
 import os
 import sys
@@ -61,7 +61,7 @@ def channeltypes(params,url,category):
 
     lista = getchanneltypes()
     for elemento in lista:
-        addfolder(elemento[0],elemento[1],elemento[2],elemento[3])
+        addfolder(elemento[0],elemento[1],elemento[2],elemento[3],elemento[4])
 
     # Label (top-right)...
     import xbmcplugin
@@ -169,7 +169,7 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     
     import xbmc
     
-    print "thumbnail_type="+config.get_setting("thumbnail_type")
+    #print "thumbnail_type="+config.get_setting("thumbnail_type")
     if config.get_setting("thumbnail_type")=="0":
         IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
     else:
