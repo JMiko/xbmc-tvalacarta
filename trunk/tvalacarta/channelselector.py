@@ -10,6 +10,7 @@ DEBUG = True
 CHANNELNAME = "channelselector"
 
 def getmainlist():
+    # TODO: (3.1) PMS no acepta arrays, hay que usar itemlists para que los coja el cerealizer
     channelslist = []
     channelslist.append( [ config.get_localized_string(30118) , "channelselector" , "channeltypes" ])
     #channelslist.append( [ config.get_localized_string(30103) , "buscador"       , "mainlist" ])

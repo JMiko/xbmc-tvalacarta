@@ -43,6 +43,7 @@
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
 				<exclude name="**/parametrizacion*.*"/>
+                <exclude name="resources/plexmediaserver/**"/>
 				<exclude name="descriptor.xml"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
@@ -63,6 +64,7 @@
 				<exclude name="**/*.pyc"/>
                 <exclude name="**/parametrizacion*.*"/>
                 <exclude name="resources/images/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="default.tbn"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
@@ -86,6 +88,7 @@
                 <exclude name="descriptor.xml"/>
             	<!-- TODO: Probar wiimc sin imagenes -->
                 <!--exclude name="resources/images/**"/ -->
+                <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="default.tbn"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
@@ -94,14 +97,32 @@
     </target>
 
     <target name="copy-plexmediaserver">
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Code"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Libraries"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Resources"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Strings"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Libraries"/>
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources"/>
+        <!--mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources/images"/-->
+        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Strings"/>
 
-		<copy todir="${target}/plexmediaserver/tvalacarta.bundle/Code">
+        <copy file="resources/plexmediaserver/info.plist" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents"/>
+        <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Strings"/>
+        <copy file="resources/plexmediaserver/art-default.jpg" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources"/>
+        <copy file="resources/plexmediaserver/icon-default.png" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources"/>
+        <!--copy todir="${target}/plexmediaserver/tvalacarta.bundle/Content/Resources/images">
+            <fileset dir="resources/images"/>
+        </copy-->
+        <copy todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Libraries">
+            <fileset dir="lib">
+                <exclude name="cerealizer/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code">
             <fileset dir=".">
-                <include name="channelselector.*"/>
+                <exclude name="target/**"/>
+                <exclude name="**/*.xml"/>
+                <exclude name="**/*.txt"/>
+                <exclude name="tester.py"/>
+                <exclude name="COPYING"/>
                 <exclude name="build.xml"/>
                 <exclude name="**/.*"/>
                 <exclude name="**/.*/**"/>
@@ -111,13 +132,20 @@
                 <exclude name="**/*.pyc"/>
                 <exclude name="**/parametrizacion*.*"/>
                 <exclude name="descriptor.xml"/>
-                <!-- TODO: Probar plexmediaserver sin imagenes -->
-                <!--exclude name="resources/images/**"/-->
+                <exclude name="resources/**"/>
                 <exclude name="default.tbn"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
+                <exclude name="lib/**"/>
+                <exclude name="platform/**"/>
+                <exclude name="__init__.py"/>
+                <exclude name="core/logger.py"/>
+                <exclude name="core/config.py"/>
             </fileset>
         </copy>
+        <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code"/>
+        <copy file="platform/plex/config.py" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code/core"/>
+        <copy file="platform/plex/logger.py" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code/core"/>
 		
 	</target>
 
@@ -146,7 +174,7 @@
 		<zip destfile="${target}/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="${target}/xbmc-addon"/>
 		<zip destfile="${target}/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
         <zip destfile="${target}/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
-        <zip destfile="${target}/plexmediaserver/tvalacarta-plexmediaserver-${version}-python.zip" basedir="${target}/wiimc"/>
+        <zip destfile="${target}/plexmediaserver/tvalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
     	
     	<!-- TODO Empaquetar py2exe innosetup en wiimc -->
     </target>
