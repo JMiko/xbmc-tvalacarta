@@ -1,0 +1,55 @@
+3.0
+
+- New internal multiplafrom structure
+- Fixed channels
+
+2.20
+
+- New channels:
+    tubehentai (@dreamlomax),
+    myhentaitube (@dreamlomax)
+    xhamster (@dreamlomax)
+    sonolatino (@bandavi)
+    megalive (@bandavi)
+    cuevana (@jesus)
+    somosmovies (@jesus)
+    peliculas-flv (@jesus)
+    seriematic (@jesus)
+	serieonline (@jesus)
+
+- New server connectors:
+    Yahoo (@bandavi)
+    Vimeo (@bandavi)
+    
+    
+2.19
+
+- New channels vagos (@truenon), documentalesatonline2 (@blablableble), descargapelis (@blablableble)
+- Megavideo fixed, now with hd support
+- Hidden password in settings
+- Removed ovasid channel
+- Login for private pages (vagos, mocosoftx)
+- Fanart added
+- And many fixes...
+
+
+2.18
+
+- Fixed bugs in channels
+- 5 new channels: programastvonline, cineblog01, peliculasonlineflv, pelis pekesdelatv series
+- Main menu now filter by type and language
+- 1 new server: vkontakte.ru
+- Favorites now can be stored on a samba folder
+
+2.17.1
+
+- Removed download option
+- Updated and fixed channels
+
+2.17.0
+
+- First addon repository version (Dharma)
+
+For more info visit http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta
+
+__________________
