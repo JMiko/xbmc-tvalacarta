@@ -56,7 +56,7 @@ def mainlist(params,url,category):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( DOWNLOAD_LIST_PATH, fichero ) , server , titulo , url , thumbnail, plot )
+            xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( DOWNLOAD_LIST_PATH, fichero ) , server , titulo , url , thumbnail, plot  , fanart=thumbnail)
         except:
             pass
             logger.info("[downloadall.py] error al leer bookmark")
@@ -67,6 +67,7 @@ def mainlist(params,url,category):
 
     # Label (top-right)...
     import xbmcplugin
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -92,7 +93,7 @@ def errorlist(params,url,category):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            xbmctools.addnewvideo( CHANNELNAME , "playerror" , os.path.join( ERROR_PATH, fichero ) , server , titulo , url , thumbnail, plot )
+            xbmctools.addnewvideo( CHANNELNAME , "playerror" , os.path.join( ERROR_PATH, fichero ) , server , titulo , url , thumbnail, plot  , fanart=thumbnail)
         except:
             pass
             logger.info("[downloadall.py] error al leer bookmark")
@@ -101,6 +102,7 @@ def errorlist(params,url,category):
 
     # Label (top-right)...
     import xbmcplugin
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -114,7 +116,7 @@ def downloadall(params,url,category):
     else:
         ficheros = os.listdir(DOWNLOAD_LIST_PATH)
 
-    logger.info("[downloadall.py] numero de ficheros=%d" % len(lista))
+    logger.info("[downloadall.py] numero de ficheros=%d" % len(ficheros))
 
     # La ordena
     ficheros.sort()
@@ -233,6 +235,7 @@ def downloadall(params,url,category):
 def play(params,url,category):
     logger.info("[descargadoslist.py] play")
 
+    import xbmc
     title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
     thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
@@ -243,6 +246,7 @@ def play(params,url,category):
 def playerror(params,url,category):
     logger.info("[descargadoslist.py] play")
 
+    import xbmc
     title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
     thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )

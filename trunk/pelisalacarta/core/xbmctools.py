@@ -67,13 +67,15 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     else:
         xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie=""):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",fanart=""):
     if DEBUG:
         try:
             logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
         except:
             logger.info('[xbmctools.py] addnewvideo(<unicode>)')
     listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
+    if fanart!="":
+        listitem.setProperty('fanart_image',fanart) 
     listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
     #listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
     itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)

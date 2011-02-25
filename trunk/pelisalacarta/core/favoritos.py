@@ -50,11 +50,13 @@ def mainlist(params,url,category):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( BOOKMARK_PATH, fichero ) , server , titulo , url , thumbnail, plot )
+            xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( BOOKMARK_PATH, fichero ) , server , titulo , url , thumbnail, plot , fanart=thumbnail )
         except:
             pass
 
     # Label (top-right)...
+    import xbmcplugin
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -62,6 +64,7 @@ def mainlist(params,url,category):
 def play(params,url,category):
     logger.info("[favoritos.py] play")
 
+    import xbmc
     title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
     thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
