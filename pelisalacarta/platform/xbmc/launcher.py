@@ -13,6 +13,8 @@ import sys
 from core import logger
 from core import config
 
+PLUGIN_NAME = "pelisalacarta"
+
 def run():
     import sys
     logger.info("[tvalacarta.py] run")
@@ -105,38 +107,17 @@ def run():
                     advertencia = xbmcgui.Dialog()
                     advertencia.ok("plugin",params.get("channel"),config.get_localized_string(30063))
 
-            # Primero intenta cargarlo como canal del core
-            # FIXME: 3.0 Esto es para conseguir que se vea la excepcion por el log
-            try:
-                logger.info("[launcher.py] intenta cargarlo como core")
+            # La acción puede estar en el core, o ser un canal regular. El buscador es un canal especial que está en pelisalacarta
+            regular_channel_path = os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , params.get("channel")+".py" )
+            core_channel_path = os.path.join( config.get_runtime_path(), 'core' , params.get("channel")+".py" )
+
+            if params.get("channel")=="buscador":
+                import pelisalacarta.buscador as channel
+            elif os.path.exists( regular_channel_path ):
+                exec "import pelisalacarta.channels."+params.get("channel")+" as channel"
+            elif os.path.exists( core_channel_path ):
                 exec "from core import "+params.get("channel")+" as channel"
-            except:
-                import sys
-                for line in sys.exc_info():
-                    logger.error( "%s" % line )
-                logger.error( "-----------------------------------------------------" )
-                logger.info("[launcher.py] intenta cargarlo como canal normal")
-                exec "import pelisalacarta.channels."+params.get("channel")+" as channel"
-            '''
-            try:
-                logger.info("[launcher.py] canal normal")
-                exec "import pelisalacarta.channels."+params.get("channel")+" as channel"
-            except ImportError:
-                import sys
-                for line in sys.exc_info():
-                    logger.error( "%s" % line )
-                logger.error( "-----------------------------------------------------" )
-                
-                # Luego intenta cargarlo como canal del core
-                try:
-                    logger.info("[launcher.py] canal core")
-                    exec "from core import "+params.get("channel")+" as channel"
-                except:
-                    # Como último recurso, intenta descargar el canal para ver si es nuevo
-                    from core import updater
-                    updater.download_channel(params.get("channel"))
-                    exec "import pelisalacarta.channels."+params.get("channel")+" as channel"
-            '''
+
             generico = False
             try:
                 generico = channel.isGeneric()

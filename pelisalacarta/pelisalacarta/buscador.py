@@ -25,6 +25,7 @@ def mainlist(params,url,category):
     listar_busquedas(params,url,category)
 
 def searchresults(params,url,category):
+    logger.info("[buscador.py] searchresults")
     salvar_busquedas(params,url,category)
     tecleado = url
     tecleado = tecleado.replace(" ", "+")
@@ -120,9 +121,9 @@ def searchresults(params,url,category):
         xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_TITLE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_TITLE )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 
 def salvar_busquedas(params,url,category):
@@ -223,6 +224,7 @@ def borrar_busqueda(params,url,category):
     xbmc.executebuiltin( "Container.Refresh" )
 
 def teclado(default="", heading="", hidden=False):
+    logger.info("[buscador.py] teclado")
     tecleado = ""
     keyboard = xbmc.Keyboard(default)
     keyboard.doModal()
@@ -234,6 +236,7 @@ def teclado(default="", heading="", hidden=False):
     return tecleado
     
 def por_teclado(params,url,category):
+    logger.info("[buscador.py] por_teclado")
     channel2 = params.get("channel2")
     tecleado = teclado(url)
     if len(tecleado)<=0:
@@ -243,9 +246,9 @@ def por_teclado(params,url,category):
     #tecleado = tecleado.replace(" ", "+")
     url = tecleado
     if channel2 == "":
-        exec "import "+params.get("channel")+" as plugin"
+        exec "import pelisalacarta.channels."+params.get("channel")+" as plugin"
     else:
-        exec "import "+channel2+" as plugin"
+        exec "import pelisalacarta.channels."+channel2+" as plugin"
     exec "plugin.searchresults(params, url, category)"
 
 def addfolder( canal , nombre , url , accion , channel2 = "" ):
@@ -260,6 +263,4 @@ def addfolder( canal , nombre , url , accion , channel2 = "" ):
         contextCommands.append((config.get_localized_string( 30300 ),DeleteCommand))
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
         
-    xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
-    
-    
+    xbmcplugin.addDirectoryItem( handle = int( sys.argv[ 1 ] ), url = itemurl , listitem=listitem, isFolder=True)
