@@ -7,18 +7,23 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+
+from core import descargadoslist
+import time
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import downloadtools
-import descargadoslist
-import time
-import xbmctools
-import config
-import logger
+
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+from servers import vk
+
+from pelisalacarta import buscador
 
 CHANNELNAME = "mcanime"
 

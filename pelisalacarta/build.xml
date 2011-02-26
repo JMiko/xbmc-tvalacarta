@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
-<project name="tvalacarta" default="package">
-	<description>tvalacarta</description>
+<project name="pelisalacarta" default="package">
+	<description>pelisalacarta</description>
 
-    <property name="version" value="3.0.1"/>
+    <property name="version" value="3.0.0"/>
 	
 	<!-- init ===================================================================== -->
 	<target name="init" description="Inicializa el timestamp">
@@ -13,7 +13,7 @@
 
 	<!-- copy-xbmc-addon ============================================================ -->
 	<target name="copy-xbmc-addon">
-        <copy todir="${target}/xbmc-addon/plugin.video.tvalacarta">
+        <copy todir="${target}/xbmc-addon/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
@@ -32,7 +32,7 @@
     </target>
 		
     <target name="copy-xbmc-plugin">
-        <copy todir="${target}/xbmc-plugin/tvalacarta">
+        <copy todir="${target}/xbmc-plugin/pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
@@ -52,7 +52,7 @@
     </target>
 		
     <target name="copy-boxee">
-        <copy todir="${target}/boxee/info.mimediacenter.tvalacarta">
+        <copy todir="${target}/boxee/info.mimediacenter.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
@@ -74,7 +74,7 @@
     </target>
 
     <target name="copy-wiimc">
-        <copy todir="${target}/wiimc/tvalacarta">
+        <copy todir="${target}/wiimc/pelisalacarta">
             <fileset dir=".">
                 <exclude name="target/**"/>
                 <exclude name="build.xml"/>
@@ -97,26 +97,26 @@
     </target>
 
     <target name="copy-plexmediaserver">
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Libraries"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources"/>
-        <!--mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources/images"/-->
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Strings"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
+        <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images"/-->
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
 
-        <copy file="resources/plexmediaserver/info.plist" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents"/>
-        <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Strings"/>
-        <copy file="resources/plexmediaserver/art-default.jpg" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources"/>
-        <copy file="resources/plexmediaserver/icon-default.png" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Resources"/>
-        <!--copy todir="${target}/plexmediaserver/tvalacarta.bundle/Content/Resources/images">
+        <copy file="resources/plexmediaserver/info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
+        <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
+        <copy file="resources/plexmediaserver/art-default.jpg" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
+        <copy file="resources/plexmediaserver/icon-default.png" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
+        <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Content/Resources/images">
             <fileset dir="resources/images"/>
         </copy-->
-        <copy todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Libraries">
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries">
             <fileset dir="lib">
                 <exclude name="cerealizer/**"/>
             </fileset>
         </copy>
-        <copy todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code">
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code">
             <fileset dir=".">
                 <exclude name="target/**"/>
                 <exclude name="**/*.xml"/>
@@ -143,25 +143,25 @@
                 <exclude name="core/config.py"/>
             </fileset>
         </copy>
-        <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code"/>
-        <copy file="platform/plex/config.py" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code/core"/>
-        <copy file="platform/plex/logger.py" todir="${target}/plexmediaserver/tvalacarta.bundle/Contents/Code/core"/>
+        <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
+        <copy file="platform/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+        <copy file="platform/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
 		
 	</target>
 
     <!-- package =============================================== -->
     <target name="package">
         <!-- Declara un target comun -->
-        <property name="target" value="/Users/jesus/Desktop/tvalacarta-${version}"/>
+        <property name="target" value="/Users/jesus/Desktop/pelisalacarta-${version}"/>
     	<echo message="target=${target}"/>
 
     	<!-- Crea los directorios -->
         <delete dir="${target}"/>
-        <mkdir dir="${target}/boxee/info.mimediacenter.tvalacarta"/>
-        <mkdir dir="${target}/xbmc-addon/plugin.video.tvalacarta"/>
-        <mkdir dir="${target}/xbmc-plugin/tvalacarta"/>
-        <mkdir dir="${target}/wiimc/tvalacarta"/>
-        <mkdir dir="${target}/plexmediaserver/tvalacarta.bundle"/>
+        <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-plugin/pelisalacarta"/>
+        <mkdir dir="${target}/wiimc/pelisalacarta"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
 
         <!-- Copia los ficheros -->
         <antcall target="copy-xbmc-addon"/>
@@ -170,11 +170,11 @@
         <antcall target="copy-wiimc"/>
         <antcall target="copy-plexmediaserver"/>
     	
-    	<zip destfile="${target}/boxee/info.mimediacenter.tvalacarta-${version}.zip" basedir="${target}/boxee"/>
-		<zip destfile="${target}/xbmc-addon/tvalacarta-xbmc-addon-${version}.zip" basedir="${target}/xbmc-addon"/>
-		<zip destfile="${target}/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
-        <zip destfile="${target}/wiimc/tvalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
-        <zip destfile="${target}/plexmediaserver/tvalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
+    	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
+		<zip destfile="${target}/xbmc-addon/pelisalacarta-xbmc-addon-${version}.zip" basedir="${target}/xbmc-addon"/>
+		<zip destfile="${target}/xbmc-plugin/pelisalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
+        <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
+        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
     	
     	<!-- TODO Empaquetar py2exe innosetup en wiimc -->
     </target>

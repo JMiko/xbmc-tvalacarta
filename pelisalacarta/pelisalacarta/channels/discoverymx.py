@@ -10,14 +10,16 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import youtube
-import config
-import logger
+
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+from servers import youtube
+
+from pelisalacarta import buscador
 
 CHANNELNAME = "discoverymx"
 
@@ -390,7 +392,7 @@ def play(params,url,category):
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
-        logger.info("[dospuntocerovision.py] youtubeplay")
+    logger.info("[dospuntocerovision.py] youtubeplay")
     if "www.youtube" not in url:
         url  = 'http://www.youtube.com'+url
  

@@ -3,18 +3,19 @@ import cookielib
 import urlparse,urllib2,urllib,re
 import os
 import sys
+
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
+from core import xbmctools
+from pelisalacarta import buscador
+
+from servers import servertools
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import config
-import logger
-import megavideo
-import megaupload
 
 CHANNELNAME = "vagos"
 BASEURL = "http://www.vagos.es/"
@@ -23,9 +24,7 @@ USER = config.get_setting("privateuser")
 PASSWORD = config.get_setting("privatepassword")
 
 #La cookie se ha de ubicar en un sitio con permiso de lectura/escritura
-COOKIEFILE = os.path.join(config.DATA_PATH,"vagos.cookies")
-
-
+COOKIEFILE = os.path.join(config.get_data_path(),"vagos.cookies")
 
 ####################################################
 # COKIES
@@ -57,10 +56,26 @@ def mainlist(params,url,category):
     xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=365","","")
     xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas en transmisión o incompletas","http://www.vagos.es/forumdisplay.php?f=364","","")
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Series - Capítulos sueltos","http://www.vagos.es/forumdisplay.php?f=372","","")
+
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Otros Videos","http://www.vagos.es/forumdisplay.php?f=363","","")
     xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Trailers","http://www.vagos.es/forumdisplay.php?f=456","","")
     xbmctools.addnewfolder( CHANNELNAME , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
 
+    '''
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Castellano" ,"http://www.vagos.es/forumdisplay.php?f=289","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Castellano - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=309","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Latino" ,"http://www.vagos.es/forumdisplay.php?f=288","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Latino - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=310","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Otros Idiomas" ,"http://www.vagos.es/forumdisplay.php?f=290","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Otros Idiomas - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=307","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Castellano" ,"http://www.vagos.es/forumdisplay.php?f=292","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Castellano - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=303","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Latino" ,"http://www.vagos.es/forumdisplay.php?f=291","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Latino - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=305","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Otros Idiomas" ,"http://www.vagos.es/forumdisplay.php?f=293","","")
+    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Otros Idiomas - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=312","","")
+    '''
+    
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )

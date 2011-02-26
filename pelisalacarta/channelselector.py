@@ -133,6 +133,8 @@ def getlistchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Italia film"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
+    itemlist.append( Item( title="Terror y Gore"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     return itemlist
 
 def channels_list():
@@ -154,19 +156,19 @@ def channels_list():
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES" , category="F,D" , type="xbmc"  ))
     itemlist.append( Item( title="Peliculas Online FLV"  , channel="peliculasonlineflv"   , language="ES" , category="F,D" , type="xbmc"  ))
     itemlist.append( Item( title="FilmesOnlineBr"        , channel="filmesonlinebr"       , language="PT" , category="F" , type="xbmc"  ))
-    itemlist.append( Item( title="TVShack.cc (VO)"       , channel="tvshack"              , language="EN" , category="F,S,A,D,M" , type="xbmc"  ))
+    itemlist.append( Item( title="TVShack"               , channel="tvshack"              , language="EN" , category="F,S,A,D,M" , type="xbmc"  ))
     itemlist.append( Item( title="DeLaTV"                , channel="delatv"               , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S" , type="xbmc"  ))
     itemlist.append( Item( title="Terror y Gore"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Veocine"               , channel="veocine"              , language="ES" , category="F,A,D" , type="xbmc"  ))
-    itemlist.append( Item( title="Pintadibujos"          , channel="pintadibujos"         , language="ES" , category="F,A" , type="xbmc"  ))
+    #itemlist.append( Item( title="Pintadibujos"          , channel="pintadibujos"         , language="ES" , category="F,A" , type="xbmc"  ))
     itemlist.append( Item( title="Pelis Pekes"           , channel="pelispekes"           , language="ES" , category="F,A" , type="xbmc"  ))
-    itemlist.append( Item( title="Descarga Cine Cl·sico" , channel="descargacineclasico"  , language="ES" , category="F,S" , type="xbmc"  ))
+    itemlist.append( Item( title="Descarga Cine Clásico" , channel="descargacineclasico"  , language="ES" , category="F,S" , type="xbmc"  ))
     itemlist.append( Item( title="Capitan Cinema"        , channel="capitancinema"        , language="ES" , category="F" , type="generic" ))
     #itemlist.append( Item( title="Film Streaming"        , "filmstreaming"        , language="IT" , "F,A" , type="xbmc"  ))
     itemlist.append( Item( title="Italia film"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="No Megavideo"          , channel="nomegavideo"          , language="ES" , category="F" , type="xbmc"  ))
-    itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN" , category="F,S" , type="xbmc"  ))
+    itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN" , category="F,S" , type="generic"  ))
     itemlist.append( Item( title="Cineblog01"            , channel="cineblog01"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Descargapelis"         , channel="descargapelis"        , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Vagos"                 , channel="vagos"                , language="ES" , category="F,S" , type="xbmc"  ))
@@ -219,7 +221,7 @@ def channels_list():
         itemlist.append( Item( title="tubehentai"        , channel="tubehentai"           , language="ES" , category="F" , type="xbmc"  ))
         itemlist.append( Item( title="xhamster"          , channel="xhamster"             , language="ES" , category="F" , type="xbmc"  ))
 
-    itemlist.append( Item( title="Filmdblink"            , channel="filmfab"              , language="IT" , category="F" , type="generic"  ))
+    #itemlist.append( Item( title="Filmdblink"            , channel="filmfab"              , language="IT" , category="F" , type="generic"  ))
     #itemlist.append( Item( title="chachimovies"           , channel="chachimovies"              , "" , "IT" , "F" , "generic"  ])
 
     #channelslist.append([ "Eduman Movies" , "edumanmovies" , "" , "ES" , "F" ])

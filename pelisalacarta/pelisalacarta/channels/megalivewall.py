@@ -7,18 +7,21 @@
 import urlparse,urllib2,urllib,re,string
 import os
 import sys
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import config
-import logger
-import megalive
-from item import Item
+
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+
+from pelisalacarta import buscador
+from servers import megalive
+
 import simplejson as json
 
 __plugin__ = "plugin.video.pelisalacarta"

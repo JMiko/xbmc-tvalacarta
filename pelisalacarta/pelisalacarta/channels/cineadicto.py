@@ -48,11 +48,7 @@ def mainlist(params,url,category):
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def search(params,url,category):
@@ -227,44 +223,36 @@ def listvideos(params,url,category):
     if url=="":
         url = "http://www.cine-adicto.com/"
                 
-    # Descarga la p·gina
     data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    #<div class="feature-image">
-    #<a href="http://www.cine-adicto.com/the-last-airbender.html" title="The Last Airbender"><img src="http://www.cine-adicto.com/wp-content/uploads/2010/07/airbenderposter.jpg" title="The Last Airbender" alt="The Last Airbender" width="12
 
     # Extrae las entradas (carpetas)
-    patronvideos  =  '<div class="feature-image">[^<]+<a href="([^"]+)"'     # URL
-    patronvideos +=  ' title="([^"]+)"'                                        # TITULO
-    patronvideos +=  '><img src="([^"]+)" '                                  # TUMBNAIL
-    patronvideos += '.*?<p><p>(.+?)</p>'                                     # DESCRIPCION
-    #patronvideos += 'style=.*?src="([^"]+)".*?alt=.*?bold.*?>(.*?)</div>'                  
-    #patronvideos += '.*?flashvars="file=(.*?flv)\&amp'                                      # VIDEO FLV 
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    '''
+    <div class="box-pelicula-contenido">
+    <div class="imagen"><a title="Frankie & Alice" href="http://www.cine-adicto.com/frankie-alice.html"><img alt="imagen de Frankie & Alice"  src="http://www.cine-adicto.com/images/Frankie_and_Alice.jpg" width="166" height="250" alt="Frankie & Alice" /></a></div>
+    <div class="tituloh1"><h1><a title="Frankie & Alice" href="http://www.cine-adicto.com/frankie-alice.html">Frankie & Alice</a></h1></div>
+    
+    <div class="sinopsis"><p>Drama centrado en la vida de una mujer (Halle Berry) que lucha contra el  trastorno de personalidad m˙ltiple, una enfermedad en la que su propio  ser es invadido por una mente racista que se est· apoderando de ella,  alterando su personalidad como Frankie y como Alice.</p></div>
+    <a class="boton-pelicula linkFader" title="Frankie & Alice" href="http://www.cine-adicto.com/frankie-alice.html"></a> </div> <div class="box-pelicula-abajo">
+    '''
+    patron = '<div class="box-pelicula-contenido">(.*?)<div class="box-pelicula-abajo">'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    logger.info("hay %d matches" % len(matches))
 
     for match in matches:
-        # Titulo
-        
-        scrapedtitle = match[1]
-        # URL
-        scrapedurl = match[0]
-        # Thumbnail
-        scrapedthumbnail = match[2]
-        # Argumento
-        scrapedplot = match[3]
-        
+        data = match
+        patron  = '<div class="imagen"><a.*?href="([^"]+)"><img.*?src="([^"]+)".*?'
+        patron += '<div class="tituloh1"><h1><a[^>]+>([^<]+)</a></h1></div>.*?'
+        patron += '<div class="sinopsis">(.*?)</div>'
+        matches2 = re.compile(patron,re.DOTALL).findall(data)
+        logger.info("hay %d matches2" % len(matches2))
 
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-
-        
-            # AÒade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        for match2 in matches2:
+            scrapedtitle = match2[2]
+            scrapedurl = match2[0]
+            scrapedthumbnail = match2[1]
+            scrapedplot = match2[3]
+            
+            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart=scrapedthumbnail )
 
     #Extrae la marca de siguiente p·gina
     patronvideos  = "<span class='current'>[^<]+</span><a href='([^']+)'" #"</span><a href='(http://www.cine-adicto.com/page/[^']+)'"
@@ -280,11 +268,7 @@ def listvideos(params,url,category):
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category,cLose="true"):
@@ -412,8 +396,8 @@ def detail(params,url,category,cLose="true"):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         print " encontro VK.COM :%s" %matches[0]
-         videourl =     vk.geturl(matches[0])
-         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
+        videourl = vk.geturl(matches[0])
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
          
     '''
     patronvideos = 'name="Pelicula" src="([^"]+)"'
@@ -426,14 +410,8 @@ def detail(params,url,category,cLose="true"):
     '''
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-        
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-
 
 def play(params,url,category):
     logger.info("[cineadicto.py] play")
@@ -463,26 +441,24 @@ def play2(params,url,category):
 
 
 def acentos(title):
-
-        title = title.replace("√Ç¬", "")
-        title = title.replace("√É¬©","È")
-        title = title.replace("√É¬°","·")
-        title = title.replace("√É¬≥","Û")
-        title = title.replace("√É¬∫","˙")
-        title = title.replace("√É¬≠","Ì")
-        title = title.replace("√É¬±","Ò")
-        title = title.replace("√¢‚Ç¨¬ù", "")
-        title = title.replace("√¢‚Ç¨≈ì√Ç¬", "")
-        title = title.replace("√¢‚Ç¨≈ì","")
-        title = title.replace("√©","È")
-        title = title.replace("√°","·")
-        title = title.replace("√≥","Û")
-        title = title.replace("√∫","˙")
-        title = title.replace("√≠","Ì")
-        title = title.replace("√±","Ò")
-        title = title.replace("√É‚Äú","”")
-        return(title)
-        
+    title = title.replace("√Ç¬", "")
+    title = title.replace("√É¬©","È")
+    title = title.replace("√É¬°","·")
+    title = title.replace("√É¬≥","Û")
+    title = title.replace("√É¬∫","˙")
+    title = title.replace("√É¬≠","Ì")
+    title = title.replace("√É¬±","Ò")
+    title = title.replace("√¢‚Ç¨¬ù", "")
+    title = title.replace("√¢‚Ç¨≈ì√Ç¬", "")
+    title = title.replace("√¢‚Ç¨≈ì","")
+    title = title.replace("√©","È")
+    title = title.replace("√°","·")
+    title = title.replace("√≥","Û")
+    title = title.replace("√∫","˙")
+    title = title.replace("√≠","Ì")
+    title = title.replace("√±","Ò")
+    title = title.replace("√É‚Äú","”")
+    return(title)
         
 def downloadstr(urlsub):
     

@@ -9,6 +9,8 @@
 import os
 import string
 
+from core import config
+
 _char_simple = "aeiou"
 _char_lower  = "αινσϊ"
 _char_trans_simple = string.maketrans(_char_lower, _char_simple)
@@ -20,22 +22,26 @@ def normalize(v):
 db = dict()
 
 def builddict():
-    f = open(os.getcwd()+"/channels/notas.tab","r")
-    # f = open(os.getcwd()+"/fa.tab","r")
-
-    for line in f:
-    l = line.split("\t")
-    if (len(l) > 1):
-        db[normalize(l[0])] = l[1].rstrip('\n') # to lower case y quitar acentos
-        # print(normalize(l[0]+":"+db[l[0]]))
-
-    f.close()
+    try:
+        f = open( os.path.join( config.get_data_path() , "notas.tab" , "r" ) )
+        # f = open(os.getcwd()+"/fa.tab","r")
+    
+        for line in f:
+            l = line.split("\t")
+    
+            if (len(l) > 1):
+                db[normalize(l[0])] = l[1].rstrip('\n') # to lower case y quitar acentos
+                # print(normalize(l[0]+":"+db[l[0]]))
+    
+        f.close()
+    except:
+        pass
 
 def getscore(name):
     try:
-    res = db[normalize(name)]
+        res = db[normalize(name)]
     except:
-    res = ""
+        res = ""
     return res
 
 builddict()

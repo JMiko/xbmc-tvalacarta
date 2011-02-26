@@ -6,13 +6,17 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os, sys
-import DecryptYonkis as Yonkis
+from core import DecryptYonkis as Yonkis
 
-import scrapertools
-import servertools
-import logger
-import buscador
-from item import Item
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+from servers import vk
+
+from pelisalacarta import buscador
 
 CHANNELNAME = "documentalesyonkis"
 DEBUG = True

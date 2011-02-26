@@ -184,7 +184,8 @@ def listmirrors(params,url,category):
     scrapertools.printMatches(matches)
     scrapedtitle = title
     scrapedthumbnail = thumbnail
-    scrapedplot = plot
+    from core import downloadtools
+    scrapedplot = downloadtools.limpia_nombre_excepto_1(plot)
     
     if len(matches)>0:
         data = matches[0]
@@ -201,10 +202,9 @@ def listmirrors(params,url,category):
                     #patron = "http\:\/\/delatv.com\/vk\/([^\/]+)\/([^\/]+)\/([^\/]+)\/[^\.]+\.html"
                     #matchesvk = re.compile(patron).findall(match[0].strip())
                     scrapedurl = match[0].strip() #"http://delatv.com/modulos/embed/vkontakteX.php?oid=%s&id=%s&hash=%s" %(matchesvk[0][0],matchesvk[0][1],matchesvk[0][2])
+                    print "scrapedurl=["+scrapedplot+"]"
                     server = "Directo"
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - %s [VK]" %match[1] , scrapedurl , scrapedthumbnail, scrapedplot )
-                              
-            
+                    xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - %s [VK]" %match[1] , scrapedurl , scrapedthumbnail, scrapedplot )
             
                 patron   = "http://delatv.com/([^/]+)/([^/]+)/[^\.]+.html"    #http://delatv.com/playlist/6917/el-equipo-a-online.html
                 matches2 = re.compile(patron,re.DOTALL).findall(match[0].strip())
@@ -282,7 +282,7 @@ def play(params,url,category):
             url =     vk.geturl(matches[0])
             
             
-         '''
+            '''
             data2 = scrapertools.cachePage(matches[0])
             print data2
             patron  = "var video_host = '([^']+)'.*?"
@@ -301,7 +301,7 @@ def play(params,url,category):
                         tipo = "360.mp4"
                         url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
                         
-        '''
+            '''
     
     
     # Cierra dialogo
