@@ -7,17 +7,20 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import config
-import logger
-import vk
+
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+from servers import vk
+
+from pelisalacarta import buscador
 
 CHANNELNAME = "bancodeseries"
 
@@ -303,7 +306,9 @@ def listmirrors(params,url,category):
                     videotitle = video[0]
                     url = video[1]
                     server = video[2]
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle + " - " + videotitle , url , thumbnail , plot )    
+                    
+                    from core import downloadtools
+                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle + " - " + videotitle , url , thumbnail , downloadtools.limpia_nombre_excepto_1(plot) )    
                 
         elif "vk.php" in match[0]:
             scrapedurl = "http://bancodeseries.com/modulos/embed/vkontakteX.php?%s" %match[0].split("?")[1]
@@ -354,29 +359,7 @@ def play(params,url,category):
         if len(matches)>0:
             print " encontro VKontakte.ru :%s" %matches[0]
             url =     vk.geturl(matches[0])
-            
-            
-         '''
-            data2 = scrapertools.cachePage(matches[0])
-            print data2
-            patron  = "var video_host = '([^']+)'.*?"
-            patron += "var video_uid = '([^']+)'.*?"
-            patron += "var video_vtag = '([^']+)'.*?"
-            patron += "var video_no_flv = ([^;]+);.*?"
-            patron += "var video_max_hd = '([^']+)'"
-            matches2 = re.compile(patron,re.DOTALL).findall(data2)
-            if len(matches2)>0:    #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
-                for match in matches2:
-                    if match[3].strip() == "0":
-                        tipo = "flv"
-                        url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    
-                    else:
-                        tipo = "360.mp4"
-                        url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                        
-        '''
-    
+
     # Cierra dialogo
     dialogWait.close()
     del dialogWait

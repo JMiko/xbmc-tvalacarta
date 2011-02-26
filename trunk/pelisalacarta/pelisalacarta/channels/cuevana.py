@@ -7,11 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-import scrapertools
-import servertools
-import logger
-import buscador
-from item import Item
+from core import scrapertools
+from servers import servertools
+from core import logger
+from pelisalacarta import buscador
+from core.item import Item
 
 CHANNELNAME = "cuevana"
 DEBUG = True

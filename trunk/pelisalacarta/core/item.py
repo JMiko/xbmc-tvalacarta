@@ -16,8 +16,9 @@ class Item(object):
     childcount = 0
     language = ""
     type = ""
+    context = 0
 
-    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language="" , type = "" , folder=True):
+    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language="" , type = "" , folder=True, context = 0):
         self.channel = channel
         self.title = title
         self.url = url
@@ -38,6 +39,7 @@ class Item(object):
         self.childcount = 0
         self.language = language
         self.type = type
+        self.context = context
 
     def tostring(self):
         return "title=["+self.title+"], url=["+self.url+"], thumbnail=["+self.thumbnail+"], action=["+self.action+"], show=["+self.show+"], category=["+self.category+"]"

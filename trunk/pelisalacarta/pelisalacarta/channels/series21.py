@@ -7,19 +7,22 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+import string
+from core import decrypt21
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import string
-import youtube
-import config
-import logger
-import decrypt21
+
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+from servers import youtube
+
+from pelisalacarta import buscador
 
 CHANNELNAME = "series21"
 
@@ -291,9 +294,9 @@ def listsimple(params,url,category):
 
         # Añade al listado de XBMC
         if solo_capitulo:
-            xbmctools.addnewfolder( CHANNELNAME , "ListarVideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( CHANNELNAME , "ListarVideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart=scrapedthumbnail )
         else:
-            xbmctools.addnewfolder( CHANNELNAME , "listarTemporada" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( CHANNELNAME , "listarTemporada" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart=scrapedthumbnail )
         #<div class="pagination" align="center" ><p><span  class='current'>1</span><a  href='/estrenos/2/'>2</a><a  href='/estrenos/2/'>Siguiente &raquo;</a><a  href='/estrenos/2/'></a>
     # Extrae la marca de siguiente página
     if title == "Series - Novedades" or "http://www.series21.com/nuevo" in url:
@@ -309,13 +312,11 @@ def listsimple(params,url,category):
             scrapedthumbnail = ""
             scrapedplot = ""
             xbmctools.addnewfolderextra( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot,extra )
+
     # Label (top-right)...
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def listarTemporada(params,url,category):
@@ -401,7 +402,7 @@ def listarTemporada(params,url,category):
                     subt = " (VOS)"
                     
                 titulo = titulo_serie+" - "+match1[1]+ esp + subt
-                xbmctools.addnewfolder( CHANNELNAME , "ListarVideos" , category , titulo , url , thumbnail, plot+temporada )
+                xbmctools.addnewfolder( CHANNELNAME , "ListarVideos" , category , titulo , url , thumbnail, plot+temporada , fanart=thumbnail )
                 
     else:
         thumbnail = urlparse.urljoin(url1,matches[seleccion-1][1])
@@ -420,15 +421,12 @@ def listarTemporada(params,url,category):
     # Busca Series relacionadas con los actores
     if len(matchesactores)>0:
         titulo = "Lista Series relacionadas con los actores"
-        xbmctools.addnewfolderextra( CHANNELNAME , "listaractores" , category , titulo , url , thumbnail, actores,matchesactor[0] )    
+        xbmctools.addnewfolderextra( CHANNELNAME , "listaractores" , category , titulo , url , thumbnail, actores,matchesactor[0] , fanart=thumbnail )    
                 
     # Label (top-right)...
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
     
 def ListarVideos(params,url,category):
@@ -595,16 +593,10 @@ def ListarVideos(params,url,category):
             break    
         
     # Label (top-right)...
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-
-
 
 def play(params,url,category):
     logger.info("[series21.py] play")
@@ -617,7 +609,7 @@ def play(params,url,category):
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
-        logger.info("[series21.py] youtubeplay")
+    logger.info("[series21.py] youtubeplay")
 
     title = urllib.unquote_plus( params.get("title") )
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )

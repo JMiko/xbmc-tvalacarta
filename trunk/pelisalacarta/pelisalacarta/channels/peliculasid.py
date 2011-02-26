@@ -48,33 +48,28 @@ def mainlist(params,url,category):
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listcategorias(params,url,category):
-        logger.info("[peliculas.py] listcategorias")
-        
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2008"    ,"http://peliculasid.net/2008-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2009"    ,"http://peliculasid.net/2009-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2010"    ,"http://peliculasid.net/2010-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Acción"    ,"http://www.peliculasid.net/accion-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Animación"    ,"http://www.peliculasid.net/animacion-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Aventura"    ,"http://www.peliculasid.net/aventura-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ciencia Ficción"    ,"http://www.peliculasid.net/ciencia_ficcion-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Cine Indio"    ,"http://www.peliculasid.net/cine_indio-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comedia"    ,"http://www.peliculasid.net/comedia-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Crimen"    ,"http://www.peliculasid.net/crimen-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales y mas"    ,"http://www.peliculasid.net/documentales-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Drama"    ,"http://www.peliculasid.net/drama-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Fantasia"    ,"http://www.peliculasid.net/fantasia-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Horror"    ,"http://www.peliculasid.net/horror-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Misterio"    ,"http://www.peliculasid.net/misterio-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Romance"    ,"http://www.peliculasid.net/romance-1.html","","")
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Thriller"    ,"http://www.peliculasid.net/thriller-1.html","","")
-        
-        # Label (top-right)...
+    logger.info("[peliculas.py] listcategorias")
+    
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2008"    ,"http://peliculasid.net/2008-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2009"    ,"http://peliculasid.net/2009-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "2010"    ,"http://peliculasid.net/2010-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Acción"    ,"http://www.peliculasid.net/accion-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Animación"    ,"http://www.peliculasid.net/animacion-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Aventura"    ,"http://www.peliculasid.net/aventura-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ciencia Ficción"    ,"http://www.peliculasid.net/ciencia_ficcion-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Cine Indio"    ,"http://www.peliculasid.net/cine_indio-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comedia"    ,"http://www.peliculasid.net/comedia-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Crimen"    ,"http://www.peliculasid.net/crimen-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales y mas"    ,"http://www.peliculasid.net/documentales-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Drama"    ,"http://www.peliculasid.net/drama-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Fantasia"    ,"http://www.peliculasid.net/fantasia-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Horror"    ,"http://www.peliculasid.net/horror-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Misterio"    ,"http://www.peliculasid.net/misterio-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Romance"    ,"http://www.peliculasid.net/romance-1.html","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Thriller"    ,"http://www.peliculasid.net/thriller-1.html","","")
+
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
         
 
@@ -132,13 +127,9 @@ def listvideos(params,url,category):
         xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def detail(params,url,category):
     logger.info("[peliculasid.py] detail")
@@ -279,9 +270,9 @@ def detail(params,url,category):
         print " encontro Megavideo :%s" %matches[0]    
         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title+" - [Megavideo]", matches[0] , thumbnail , plot )        
     # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
     logger.info("[peliculasid.py] play")
@@ -319,7 +310,7 @@ def play(params,url,category):
         patronvideos = '<iframe src="(http://vk[^/]+/video_ext.php[^"]+)"'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         if len(matches)>0:
-            import vk
+            from servers import vk
             server = "Directo"
             url =     vk.geturl(matches[0])
     elif "iframemv.php" in url:

@@ -7,17 +7,20 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+import string
+
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
+from core import xbmctools
+from pelisalacarta import buscador
+
+from servers import servertools
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import string
-import config
-import logger
 
 CHANNELNAME = "pintadibujos"
 
@@ -44,11 +47,7 @@ def mainlist(params,url,category):
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def movielist(params,url,category):

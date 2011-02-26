@@ -6,9 +6,9 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
-import logger
-import scrapertools
-from item import Item
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 CHANNELNAME = "seriespepito"
 DEBUG = True
@@ -20,129 +20,8 @@ def mainlist(item):
     logger.info("[seriespepito.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="updatedserieslist", title="Series actualizadas", url="http://www.seriespepito.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodelist"  , title="Nuevos capítulos"   , url="http://www.seriespepito.com/nuevos-capitulos/"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"   , title="Listado alfabético"))
-    itemlist.append( Item(channel=CHANNELNAME, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
-
-    return itemlist
-
-def updatedserieslist(item):
-    logger.info("[seriespepito.py] lastepisodeslist")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Extrae las entradas (carpetas)
-    patron  = '<td valign="top" align="center" width="20%">[^<]+'
-    patron += '<a class="azulverde" href="([^"]+)" title="">[^<]+'
-    patron += "<img src='([^']+)'.*?/><br>([^<]+)</a>"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-
-        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-def alphaserieslist(item):
-    logger.info("[seriespepito.py] alphaserieslist")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Extrae las entradas (carpetas)
-    patron  = '<td valign="top" align="center" width="33%">[^<]+'
-    patron += '<a class="azulverde" href="([^"]+)" title="[^"]+">[^<]+'
-    patron += "<img src='([^']+)'.*?/><br />([^<]+)</a>[^<]+"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-
-        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
-
-    return itemlist
-
-def lastepisodelist(item):
-    logger.info("[seriespepito.py] lastepisodeslist")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Extrae las entradas (carpetas)
-    patron  = '<td valign="top" align="center" width="33%">[^<]+'
-    patron += '<a href="([^"]+)"[^>]+>[^<]+'
-    patron += "<img src='([^']+)'.*?<br />[^<]+"
-    patron += '<a.*?title="([^"]+).*?'
-    patron += '<a.*?title="([^"]+).*?'
-    patron += '<a.*?title="([^"]+)'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]+" - "+match[3]+" - "+match[4]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
-        scrapedplot = ""
-
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-def allserieslist(item):
-    logger.info("[seriespepito.py] lastepisodeslist")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Extrae las entradas (carpetas)
-    patron  = '<b><a class="azulverde" href="([^"]+)">([^<]+)</a></b><br />'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    itemlist = []
-
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-
-        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+    #itemlist.append( Item(channel=CHANNELNAME, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
 
     return itemlist
 
@@ -179,6 +58,58 @@ def listalfabetico(item):
 
     return itemlist
 
+def alphaserieslist(item):
+    logger.info("[seriespepito.py] alphaserieslist")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+
+    # Extrae las entradas (carpetas)
+    '''
+    <div class='lista-series'>    
+    <div class="imagen">
+    <a href="http://abducidos.seriespepito.com" title="Abducidos online">
+    <img src='http://www.midatacenter.com/seriespepito/imagenes-serie/abducidos498.jpg' width='90' height='124' border='0' alt='Abducidos online'   />                  </a>
+    </div>
+    <div class="nombre">
+    <a href="http://abducidos.seriespepito.com" title="Abducidos online">Abducidos</a>
+    </div>
+    <div class="sinopsis">
+    Abducidos es una Mini-Serie Estadounidense que consta de 10 capítulos, los cuales los podrás ver online o descargar en SeriesPepito.
+    Es una miniserie de ciencia ficción emitida por primera vez en el ...                  </div>
+    <div class="enlace">
+    '''
+    patron  = "<div class='lista-series'>[^<]+"
+    patron += '<div class="imagen">[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += "<img src='([^']+)'[^<]+</a>[^<]+"
+    patron += '</div>[^<]+'
+    patron += '<div class="nombre">[^<]+'
+    patron += '<a[^>]+>([^<]+)</a>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '<div class="sinopsis">(.*?)</div>[^<]+'
+    patron += '<div class="enlace">'
+
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        scrapedtitle = match[2]
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
+        scrapedplot = match[3]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Ajusta el encoding a UTF-8
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+
+        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+
+    return itemlist
+
 def episodelist(item):
     logger.info("[seriespepito.py] list")
 
@@ -186,42 +117,18 @@ def episodelist(item):
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    # Extrae el argumento
-    patron  = '<div class="contenido" id="noticia">.*?<span[^>]+>(.*?)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        scrapedplot = matches[0]
-        scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
-        
-        # Unas series están en utf-8, otras en iso-8859-1. Esta doble conversión funciona :)
-        try:
-            intermedia = unicode( scrapedplot, "utf-8" , errors="replace" ).encode("iso-8859-1")
-            intermedia = unicode( intermedia, "iso-8859-1" , errors="replace" ).encode("utf-8")
-            #print item.title+" encoding 1"
-            scrapedplot = intermedia
-        except:
-            #print item.title+" encoding 2"
-            scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
-            
-        item.plot = scrapedplot
-    else:
-        scrapedplot = ""
-
     # Extrae los capítulos
-    patron = "<li class='li_capitulo'><a class='capitulo1' href='([^']+)' title='[^']+'>([^<]+)</a>&nbsp;<img src='([^']+)'[^>]+></li>"
+    patron  = "<li><a  href='(http://.*?.seriespepito.com.*?)'[^>]+><span>([^<]+)</span></a>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[1] + " ["+match[2][49:-4]+"]"
+        scrapedtitle = match[1]
         scrapedurl = match[0]
         scrapedthumbnail = item.thumbnail
-        #scrapedplot = ""
+        scrapedplot = item.plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
 

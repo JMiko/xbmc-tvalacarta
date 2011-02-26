@@ -165,7 +165,7 @@ def listalfabetico(params, url, category):
 
 def getlistalfabetico():
     logger.info("[seriesyonkis.py] getlistalfabetico")
-    from item import Item
+    from core.item import Item
         
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="listseriesthumbnails" , title="0-9", url="http://www.seriesyonkis.com/lista-series/listaSeriesNumeric.php"))
@@ -203,7 +203,7 @@ def listseriesthumbnails(params,url,category):
     
     title = urllib.unquote_plus( params.get("title") )
 
-    from item import Item
+    from core.item import Item
 
     item = Item(channel=CHANNELNAME, title=title , url=url )
     itemlist = getlistseriesthumbnails(item)
@@ -218,7 +218,7 @@ def listseriesthumbnails(params,url,category):
 def getlistseriesthumbnails(item):
     logger.info("[seriesyonkis.py] listseriesthumbnails")
     
-    from item import Item
+    from core.item import Item
 
     itemlist = []
 
@@ -326,7 +326,7 @@ def allserieslist(params,url,category,clave):
 
     title = urllib.unquote_plus( params.get("title") )
 
-    from item import Item
+    from core.item import Item
 
     item = Item(channel=CHANNELNAME, title=title , url=url , extra=clave )
     itemlist = getallserieslist(item)
@@ -341,7 +341,7 @@ def allserieslist(params,url,category,clave):
 def getallserieslist(item):
     logger.info("[seriesyonkis.py] getallserieslist")
 
-    from item import Item
+    from core.item import Item
 
     itemlist = []
 
@@ -353,9 +353,10 @@ def getallserieslist(item):
     patronvideos = '<h4><a.*?id="'+item.extra+'".*?<ul>(.*?)</ul>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     data = matches[0]
+    scrapertools.printMatches(matches)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<li class="page_item"><a href="(http://www.seriesyonkis.com/serie[^"]+)"[^>]+>([^<]+)</a></li>'
+    patronvideos  = '<li class="page_item_"><a href="(http://www.seriesyonkis.com/serie[^"]+)"[^>]+>([^<]+)</a></li>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -387,7 +388,7 @@ def list(params,url,category):
     else:
         thumbnail = ""
 
-    from item import Item
+    from core.item import Item
 
     item = Item(channel=CHANNELNAME, title=title , url=url , thumbnail=thumbnail )
     itemlist = getlist(item)
@@ -405,7 +406,7 @@ def list(params,url,category):
 def getlist(item):
     logger.info("[seriesyonkis.py] getlist")
     
-    from item import Item
+    from core.item import Item
     itemlist = []
     
     # Descarga la página

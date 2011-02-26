@@ -400,9 +400,9 @@ def detail(params,url,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         print " encontro VKServer :%s" %matches[0]
-         videourl =     vk.geturl(matches[0])
-         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKServer]", videourl , thumbnail , plot )
-     """    
+        videourl =     vk.geturl(matches[0])
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKServer]", videourl , thumbnail , plot )
+        """    
         data2 = scrapertools.cachePage(matches[0])
         print data2
         
@@ -425,7 +425,7 @@ def detail(params,url,category):
                     tipo = "240.mp4"
                     videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
                     xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
-    """    
+        """    
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )

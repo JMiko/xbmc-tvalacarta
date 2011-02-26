@@ -446,19 +446,13 @@ def detail(params,url,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         print " encontro VK.COM :%s" %matches[0]
-         videourl =     vk.geturl(scrapertools.unescape(matches[0]))
-         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
+        videourl =     vk.geturl(scrapertools.unescape(matches[0]))
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-        
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-
 
 def play(params,url,category):
     logger.info("[nolomires.py] play")

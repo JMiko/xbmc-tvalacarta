@@ -28,7 +28,7 @@ CHANNELNAME = "peliculas21"
 logger.info("[peliculas21.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( config.DATA_PATH, 'resources' , 'images','posters' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
     logger.info("[peliculas21.py] mainlist")
@@ -52,11 +52,7 @@ def mainlist(params,url,category):
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def pelisalfa(params, url, category):
@@ -221,11 +217,7 @@ def peliscat(params,url,category):
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listsimple(params,url,category):
@@ -341,14 +333,12 @@ def listsimple(params,url,category):
         scrapedurl = urlparse.urljoin(url1,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart = scrapedthumbnail )
+
     # Label (top-right)...
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listsimpleMirror(params,url,category):
@@ -463,17 +453,13 @@ def listsimpleMirror(params,url,category):
             scrapedurl   = urlparse.urljoin(url1,matches[0])
             scrapedthumbnail = ""
             scrapedplot  = ""
-            xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart = scrapedthumbnail)
             
     # Label (top-right)...
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
 
 def listvideos(params,url,category):
     logger.info("[peliculas21.py] listvideos")
@@ -666,19 +652,13 @@ def listvideos(params,url,category):
     plot2 = "PELICULAS RELACIONADAS :\n\n"
     for match in matches:
         plot2 = plot2 + "-"+match[1]+"\n"
-    xbmctools.addnewfolder( CHANNELNAME , "listarelacionados" , category , titulo , matchesBK , thumbnail, plot2 )
+    xbmctools.addnewfolder( CHANNELNAME , "listarelacionados" , category , titulo , matchesBK , thumbnail, plot2 , fanart = scrapedthumbnail )
     
     # Label (top-right)...
+    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-
-
 
 def play(params,url,category):
     logger.info("[peliculas21.py] play")
@@ -691,7 +671,7 @@ def play(params,url,category):
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
-        logger.info("[peliculas21.py] youtubeplay")
+    logger.info("[peliculas21.py] youtubeplay")
 
     title = urllib.unquote_plus( params.get("title") )
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )

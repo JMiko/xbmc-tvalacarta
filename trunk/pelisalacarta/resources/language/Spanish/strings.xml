@@ -145,4 +145,47 @@
 	<!-- =============================================================== -->
 	<!-- De 30100 a 30999: Canales individuales                          -->
 	<!-- =============================================================== -->
+
+    <!-- Context menu strings -->
+    <string id="30300">Eliminar esta busqueda</string>
+    <string id="30301">Guardar este canal en favoritos</string>
+    <string id="30302">Eliminar este canal de favoritos</string>
+    <string id="30303">Renombrar el título de este canal</string>
+    
+    <!-- Megalive menu strings -->
+    <string id="30401">Muralla de canales</string>
+    <string id="30402">Categorias</string>
+    <string id="30403">Canales Favoritos</string>
+    <string id="30404">Ver Canal por Codigo(ID)</string>
+    <string id="30405">Introduce el còdigo del canal</string>
+
+    <!-- LetMeWatchThis -->
+    <string id="40001">Películas - Novedades</string>
+    <string id="40002">Series - Novedades</string>
+    <string id="40003">!Página siguiente</string>
+
+    <!-- TVShack strings -->
+    <string id="30900">TVShack</string>
+    <string id="30901">Series TV (VO)</string>
+    <string id="30902">Películas (VO)</string>
+    <string id="30903">Documentales (VO)</string>
+    <string id="30904">Anime (VO)</string>
+    <string id="30905">Música</string>
+    <string id="30906">Busqueda Global en TVShack</string>
+    <string id="30907">No se produjeron resultados de búsqueda</string>
+    <string id="30908">Serie - %s (%s episodios)</string>
+    <string id="30909">Serie - </string>
+
+    <string id="30910">Cine - %s (%s)</string>
+    <string id="30911">"Música - "</string>
+    <string id="30912">Leyendo %s...</string>
+    <string id="30913">No se encontró nada que listar</string>
+    <string id="30914">episodio</string>
+    <string id="30915">episodios</string>
+    <string id="30916">canción</string>
+    <string id="30917">canciones</string>
+    <string id="30918"> (Nuevo)</string>
+    <string id="30919"> (Nuevos contenidos)</string>
+
+    <string id="30920">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
 </strings>

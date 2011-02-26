@@ -5,30 +5,22 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os
-import sys
+import os, sys
+
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
+from core import xbmctools
+from pelisalacarta import buscador
+
+from servers import servertools
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import config
-import logger
 
 CHANNELNAME = "veocine"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
-
-# Traza el inicio del canal
-logger.info("[veocine.py] init")
-
 DEBUG = True
 
 def mainlist(params,url,category):
@@ -132,13 +124,13 @@ def videolist(params,url,category):
         xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
 
     # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
     # Disable sorting...
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
     # End of directory...
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def listmirrors(params,url,category):
     logger.info("[veocine.py] listmirrors")
@@ -179,13 +171,13 @@ def listmirrors(params,url,category):
         xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle , scrapedurl , thumbnail , plot )
 
     # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
         
     # Disable sorting...
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
     # End of directory...
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def play(params,url,category):
     logger.info("[veocine.py] play")

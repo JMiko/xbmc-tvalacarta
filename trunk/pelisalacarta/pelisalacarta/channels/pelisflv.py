@@ -564,9 +564,9 @@ def detail(params,url,category):
         ok = True
         print " encontro VK.COM :%s" %matches[0]
 
-         videourl =     vk.geturl(matches[0])
-         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )        
-     """    
+        videourl =     vk.geturl(matches[0])
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )        
+        """    
         data2 = scrapertools.downloadpageGzip(matches[0].replace("amp;",""))
         print data2
         regexp =re.compile(r'vkid=([^\&]+)\&')
@@ -611,7 +611,7 @@ def detail(params,url,category):
                     videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
                     xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
         
-    """
+        """
     if not ok:
         patron = "SeriesPage"
         matches = re.compile(patron,re.DOTALL).findall(datafull)
@@ -679,9 +679,9 @@ def acentos(title):
         
 def downloadstr(urlsub):
     
-    import downloadtools
+    from core import downloadtools
     
-    fullpath = os.path.join( config.DATA_PATH , 'subtitulo.srt' )
+    fullpath = os.path.join( config.get_data_path() , 'subtitulo.srt' )
     if os.path.exists(fullpath):
         try:
             subtitfile = open(fullpath,"w")

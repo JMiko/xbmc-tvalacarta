@@ -145,4 +145,47 @@
 	<!-- =============================================================== -->
 	<!-- 30100 to 30999: Individual channels                             -->
 	<!-- =============================================================== -->
+
+    <!-- Context menu strings -->
+    <string id="30300">Delete saved search</string>
+    <string id="30301">Add channel live to favorites</string>
+    <string id="30302">Remove from favorites channel live</string>
+    <string id="30303">Rename title channel live</string>
+
+    <!-- Megalive menu strings -->
+    <string id="30401">channels wall</string>
+    <string id="30402">Categories</string>
+    <string id="30403">Favorites channels </string>
+    <string id="30404">Play channel Live by ID</string>
+    <string id="30405">Input channel ID code</string>
+
+    <!-- LetMeWatchThis -->
+    <string id="40001">Movies - Just added</string>
+    <string id="40002">TV Shows - Just added</string>
+    <string id="40003">!Next page</string>
+    
+    <!-- TVShack strings -->
+    <string id="30900">TVShack</string>
+    <string id="30901">Series TV (VO)</string>
+    <string id="30902">Películas (VO)</string>
+    <string id="30903">Documentales (VO)</string>
+    <string id="30904">Anime (VO)</string>
+    <string id="30905">Música</string>
+    <string id="30906">Busqueda Global en TVShack</string>
+    <string id="30907">No se produjeron resultados de búsqueda</string>
+    <string id="30908">Serie - %s (%s episodios)</string>
+    <string id="30909">Serie - </string>
+
+    <string id="30910">Cine - %s (%s)</string>
+    <string id="30911">"Música - "</string>
+    <string id="30912">Leyendo %s...</string>
+    <string id="30913">No se encontró nada que listar</string>
+    <string id="30914">episodio</string>
+    <string id="30915">episodios</string>
+    <string id="30916">canción</string>
+    <string id="30917">canciones</string>
+    <string id="30918"> (Nuevo)</string>
+    <string id="30919"> (Nuevos contenidos)</string>
+
+    <string id="30920">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
 </strings>

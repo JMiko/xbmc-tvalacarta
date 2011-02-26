@@ -8,17 +8,21 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+import anotador
+
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
+from core import xbmctools
+from pelisalacarta import buscador
+
+from servers import servertools
+from servers import vk
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import anotador
-import config
-import logger
 
 CHANNELNAME = "descargacineclasico"
 

@@ -7,17 +7,20 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
+from core import xbmctools
+from pelisalacarta import buscador
+
+from servers import servertools
+from servers import vk
+
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
-import config
-import logger
-import vk
 
 CHANNELNAME = "pelispekes"
 
@@ -244,6 +247,8 @@ def listmirrors(params,url,category):
         videotitle = video[0]
         url = video[1]
         server = video[2]
+        from core import downloadtools
+        scrapedplot = downloadtools.limpia_nombre_excepto_1(scrapedplot)
         xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle + " - " + videotitle , url , scrapedthumbnail , scrapedplot )
         
     # Cierra el directorio
@@ -292,28 +297,6 @@ def play(params,url,category):
             print " encontro VKontakte.ru :%s" %matches[0]
             url =     vk.geturl(matches[0])
             
-            
-         '''
-            data2 = scrapertools.cachePage(matches[0])
-            print data2
-            patron  = "var video_host = '([^']+)'.*?"
-            patron += "var video_uid = '([^']+)'.*?"
-            patron += "var video_vtag = '([^']+)'.*?"
-            patron += "var video_no_flv = ([^;]+);.*?"
-            patron += "var video_max_hd = '([^']+)'"
-            matches2 = re.compile(patron,re.DOTALL).findall(data2)
-            if len(matches2)>0:    #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
-                for match in matches2:
-                    if match[3].strip() == "0":
-                        tipo = "flv"
-                        url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    
-                    else:
-                        tipo = "360.mp4"
-                        url = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                        
-        '''
-    
     
     # Cierra dialogo
     dialogWait.close()

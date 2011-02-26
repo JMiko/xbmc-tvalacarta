@@ -7,11 +7,12 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-import scrapertools
-import servertools
-import logger
-import buscador
-from item import Item
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
+
+from servers import servertools
 
 CHANNELNAME = "capitancinema"
 DEBUG = True

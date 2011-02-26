@@ -10,12 +10,16 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import tutv
-import servertools
-import xbmctools
-import config
-import logger
+
+from core import scrapertools
+from core import config
+from core import logger
+from core import xbmctools
+from core.item import Item
+from servers import servertools
+from servers import vk
+
+from pelisalacarta import buscador
 
 CHANNELNAME = "tutvsite"
 
@@ -148,7 +152,7 @@ def list(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        addthumbnailvideo(scrapedtitle,scrapedurl,scrapedthumbnail,scrapeddescription,category,"tu.tv")
+        addthumbnailvideo(scrapedtitle,scrapedurl,scrapedthumbnail,scrapeddescription,category,"tutv")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -162,7 +166,7 @@ def playfolder(params,url,category):
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )
     plot = urllib.unquote_plus( params.get("plot") )
     
-    addthumbnailvideo(title,url,thumbnail,plot,category,"tu.tv")
+    addthumbnailvideo(title,url,thumbnail,plot,category,"tutv")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )

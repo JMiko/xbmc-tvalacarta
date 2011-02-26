@@ -7,11 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-import scrapertools
-import servertools
-import logger
-import buscador
-from item import Item
+from core import scrapertools
+from servers import servertools
+from core import logger
+import pelisalacarta.buscador
+from core.item import Item
 
 CHANNELNAME = "seriematic"
 DEBUG = True
@@ -95,16 +95,16 @@ def videos(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-    patronvideos  = '<tr><td>[^<]+<a href="javascript:recomendar\(\'1\',\'([^\']+)\'[^<]+<img[^>]+>([^<]+)<img[^>]+>([^<]+)</a>.</td></tr>'
+    patronvideos  = '<tr><td>([^<]+)<script type="text/javascript">p1.\'([^\']+)\'\,\'V\'\)\;</script><img src="[^"]+" alt="[^"]+"[^>]+/>([^<]+)<'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[1]+" "+match[2]
+        scrapedtitle = match[0]+" "+match[2]
         scrapedplot = ""
-        scrapedurl = match[0]
+        scrapedurl = match[1]
         scrapedthumbnail = ""
         server="Megavideo"
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
