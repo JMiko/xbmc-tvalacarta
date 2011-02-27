@@ -10,7 +10,6 @@ import os, sys
 from core import scrapertools
 from servers import servertools
 from core import logger
-from pelisalacarta import buscador
 from core.item import Item
 
 CHANNELNAME = "somosmovies"

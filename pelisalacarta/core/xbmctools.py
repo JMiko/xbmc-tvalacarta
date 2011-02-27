@@ -67,7 +67,7 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     else:
         xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle=""):
     contextCommands = []
     if DEBUG:
         try:
@@ -98,7 +98,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     except:
         pass
     
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle))
     #logger.info("[xbmctools.py] itemurl=%s" % itemurl)
     xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
@@ -121,8 +121,8 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
     itemurl = '%s?channel=%s&action=play&category=%s&url=%s&server=%s&title=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , category , urllib.quote_plus(url) , server , urllib.quote_plus( nombre ) , Serie)
     xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
-def playvideo(canal,server,url,category,title,thumbnail,plot,strmfile=False,Serie=""):
-    playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,False,strmfile,Serie)
+def playvideo(canal,server,url,category,title,thumbnail,plot,strmfile=False,Serie="",subtitle=""):
+    playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,False,strmfile,Serie,subtitle)
 
 def playvideo2(canal,server,url,category,title,thumbnail,plot):
     playvideoEx(canal,server,url,category,title,thumbnail,plot,True,False,False)
@@ -133,7 +133,7 @@ def playvideo3(canal,server,url,category,title,thumbnail,plot):
 def playvideo4(canal,server,url,category,title,thumbnail,plot):
     playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,True)
 
-def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile=False,Serie=""):
+def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile=False,Serie="",subtitle=""):
 
     try:
         server = server.lower()
@@ -146,7 +146,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
     logger.info("[xbmctools.py] playvideo url="+url)
     logger.info("[xbmctools.py] playvideo category="+category)
     logger.info("[xbmctools.py] playvideo serie="+Serie)
-    logger.info("[xbmctools.py] a")
+    logger.info("[xbmctools.py] playvideo subtitle="+config.get_setting("subtitulo")+" "+subtitle)
     
     # Abre el diálogo de selección
     opciones = []
@@ -390,6 +390,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         launchplayer(mediaurl, listitem)
         
     if (config.get_setting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
+        logger.info("Con subtitulos")
         xbmc.Player().setSubtitles(os.path.join( config.get_data_path(), 'subtitulo.srt' ) )
         config.set_setting("subtitulo", "false")
 
@@ -494,6 +495,12 @@ def getLibraryInfo (mediaurl):
 # Lanza el reproductor
 def launchplayer(mediaurl, listitem):
 
+    # TODO: (3.1) Ver compatibilidad de este cambio para sustituir todo lo demás (a mí no me funciona)
+    '''
+    listitem.setPath(mediaurl)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+    '''
+
     # Añadimos el listitem a una lista de reproducción (playlist)
     logger.info("[xbmctools.py] 5")
     playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
@@ -592,9 +599,9 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
                 addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot )
         else:
             if item.duration:
-                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration,IsPlayable=isPlayable,context = item.context )
+                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle )
             else:    
-                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot,IsPlayable=isPlayable,context = item.context )
+                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle )
 
     # Cierra el directorio
     xbmcplugin.setContent(pluginhandle,"movies")

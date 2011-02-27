@@ -13,7 +13,6 @@ from core import DecryptYonkis as Yonkis
 from core import config
 from core import logger
 from core.item import Item
-from pelisalacarta import buscador
 
 CHANNELNAME = "peliculasyonkis_generico"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -114,10 +113,6 @@ def listservidor(item):
 
 def search(item):
     logger.info("[peliculasyonkis_generico.py] search")
-    
-    #import buscador
-    #texto = buscador.teclado()
-    #print item.extra
     
     if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
         from pelisalacarta import buscador

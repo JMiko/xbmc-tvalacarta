@@ -7,22 +7,20 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-import scrapertools
-import servertools
-import logger
-import buscador
-from item import Item
 import os.path
 import fnmatch
-import DecryptYonkis as Yonkis
-import config
+from core import DecryptYonkis as Yonkis
 import sqlite3
 
+from core import scrapertools
+from core import logger
+from core import config
+from core.item import Item
 
 CHANNELNAME = "LibreriaXBMC"
 DEBUG = True
-DIRNAME = config.getSetting("LIBRARY_PATH")
-BD = config.getSetting("LIBRARY_BD")
+DIRNAME = config.get_setting("LIBRARY_PATH")
+BD = config.get_setting("LIBRARY_BD")
 
 conn = sqlite3.connect(BD)
 

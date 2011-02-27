@@ -12,8 +12,6 @@ from core.item import Item
 
 from servers import servertools
 
-from pelisalacarta import buscador
-
 CHANNELNAME = "tumejortv"
 DEBUG = True
 
@@ -39,12 +37,14 @@ def mainlist(item):
 def search(item):
     logger.info("[tumejortv.py] search")
 
+    from pelisalacarta import buscador
     buscador.listar_busquedas(params,url,category)
     
 # TODO: Esto no funciona en canales genéricos
 def searchresults(params,tecleado,category):
     logger.info("[tumejortv.py] searchresults")
     
+    from pelisalacarta import buscador
     buscador.salvar_busquedas(params,tecleado,category)
     resultados = performsearch(tecleado)
 
