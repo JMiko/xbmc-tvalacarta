@@ -215,7 +215,7 @@ def channels_list():
     itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""   , category="G" , type="xbmc"  ))
-    itemlist.append( Item( title="Biblioteca XBMC"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
+    itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""   , category="F,S,D,A" , type="wiimc"  ))
 
     if config.get_setting("enableadultmode") == "true":
         itemlist.append( Item( title="PeliculasEroticas" , channel="peliculaseroticas"    , language="ES" , category="F" , type="xbmc"  ))

@@ -108,12 +108,15 @@ def findvideos(item):
         if "&" in id:
             ids = id.split("&")
             id = ids[0]
+
         dec = Yonkis.DecryptYonkis()
         id = dec.decryptALT(dec.charting(dec.unescape(id)))
         logger.info("[documentalesyonkis.py] detail id="+id)
         url=id
+        if (item.title == "") :
+            item.title = "Megavideo"
         itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="Megavideo", folder=False))
     else:
         itemlist.append( Item(channel=CHANNELNAME, action="" , title="VIDEO NO DISPONIBLE" , url="", thumbnail="", plot=""))
-    
+
     return itemlist
