@@ -8,6 +8,7 @@ import urlparse,urllib2,urllib,re
 
 from core import scrapertools
 from core import logger
+from core import config
 from core.item import Item
 
 from servers import servertools
@@ -37,39 +38,35 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Novedades" , action="documentales" , url="http://www.cinetube.es/peliculas-anime/") )
     itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Todas A-Z" , action="listalfabetico" , url="peliculas-anime" ))
 
-    #itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
     
     return itemlist
 
 def search(item):
     logger.info("[cinetube.py] search")
+    
+    #import buscador
+    #texto = buscador.teclado()
+    #print item.extra
+    
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        from pelisalacarta import buscador
+        texto = buscador.teclado()
+        item.extra = texto
 
-    import buscador
-    texto = buscador.teclado()
-
-    itemlist = searchresults(texto)
+    itemlist = searchresults(item)
     
     return itemlist
-
-# TODO: No compatible con canal genérico aún
-def searchresults(params,tecleado,category):
+    
+def searchresults(item):
     logger.info("[cinetube.py] searchresults")
     
-    buscador.salvar_busquedas(params,tecleado,category)
-    tecleado = tecleado.replace(" ", "+")
-    url = "http://www.cinetube.es/buscar/peliculas/?palabra="+tecleado+"&categoria=&valoracion="
-    itemlist = getsearchresults(params,url,category)
-    xbmctools.renderItems(itemlist, params, url, category)
+    #buscador.salvar_busquedas(params,tecleado,category)
+    tecleado = item.extra.replace(" ", "+")
+    item.url = "http://www.cinetube.es/buscar/peliculas/?palabra="+tecleado+"&categoria=&valoracion="
 
-# TODO: No compatible con canal genérico aún
-def getsearchresults(params,url,category):
-    logger.info("[cinetube.py] getsearchresults")
-
-    if (not url.startswith("http://")):
-        url = "http://www.cinetube.es/buscar/peliculas/?palabra="+url+"&categoria=&valoracion="
-
-    return getlistpeliconcaratula(params,url,category)
-
+    return peliculas(item)
+    
 def peliculas(item):
     logger.info("[cinetube.py] peliculas")
 

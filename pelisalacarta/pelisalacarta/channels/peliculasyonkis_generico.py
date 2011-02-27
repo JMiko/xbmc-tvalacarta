@@ -113,14 +113,21 @@ def listservidor(item):
     return itemlist
 
 def search(item):
-    logger.info("[peliculasyonkis_generico.py] search")   
-    #buscador.listar_busquedas(params,url,category)
-    tecleado = item.extra.replace(" ", "+")
-    print "Buscando ... " + tecleado
-    item.url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+tecleado
-    itemlist = listvideos(item)
-    #xbmctools.renderItems(itemlist, params, url, category)
-    return itemlist
+    logger.info("[peliculasyonkis_generico.py] search")
+    
+    #import buscador
+    #texto = buscador.teclado()
+    #print item.extra
+    
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        from pelisalacarta import buscador
+        texto = buscador.teclado()
+    else:
+        texto = item.extra
+
+    item.url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
+    
+    return listvideos(item)
     
 def listalfabetico(item):
 
@@ -384,10 +391,6 @@ def detail(item):
       itemlist = ChoiceOneVideo(matches,title)
 
    return itemlist
-
-
-
-
 
 def choiceOnePart(item, opciones):
     logger.info("[peliculasyonkis_generico.py] ChoiceOneVideo")

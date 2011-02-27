@@ -50,10 +50,16 @@ def getitems(requestpath):
     
         exec "from pelisalacarta.channels import "+channel
         itemlist = []
-    
+
+
         if accion=="play":
             itemlist = play(senderitem)
     
+        elif accion=="search":
+            extra = requestpath.split("plx")[1]
+            senderitem.extra = extra
+            exec "itemlist = "+channel+"."+accion+"(senderitem)"
+
         elif accion=="findvideos":
             try:
                 exec "itemlist = "+channel+"."+accion+"(senderitem)"
