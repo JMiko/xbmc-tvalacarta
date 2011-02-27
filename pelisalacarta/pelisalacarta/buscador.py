@@ -245,7 +245,9 @@ def por_teclado(params,url,category):
     #salvar_busquedas(params,tecleado,category)
     #tecleado = tecleado.replace(" ", "+")
     url = tecleado
-    if channel2 == "":
+    if params.get("channel") == "buscador":
+        exec "import pelisalacarta.buscador as plugin"
+    elif channel2 == "":
         exec "import pelisalacarta.channels."+params.get("channel")+" as plugin"
     else:
         exec "import pelisalacarta.channels."+channel2+" as plugin"
