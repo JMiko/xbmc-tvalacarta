@@ -10,7 +10,6 @@ import os, sys
 from core import scrapertools
 from servers import servertools
 from core import logger
-from pelisalacarta import buscador
 from core.item import Item
 
 CHANNELNAME = "cuevana"
@@ -183,7 +182,7 @@ def findvideos(item):
     code =""
     if (item.url.startswith("http://www.cuevana.tv/list_search_info.php")):
         data = scrapertools.cachePage(item.url)
-        logger.info("data="+data)
+        #logger.info("data="+data)
         patron = "window.location\='/series/([0-9]+)/"
         matches = re.compile(patron,re.DOTALL).findall(data)
         if len(matches)>0:
@@ -198,11 +197,11 @@ def findvideos(item):
         if len(matches)>0:
             code = matches[0]
         logger.info("code="+code)
-        url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&sub_pre=ES#" % matches[0]
+        url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&sub_pre=ES#" % code
     
     logger.info("url2="+url)
     data = scrapertools.cachePage(url)
-    logger.info("data="+data)
+    #logger.info("data="+data)
 
     # goSource('ee5533f50eab1ef355661eef3b9b90ec','megaupload')
     patron = "goSource\('([^']+)','megaupload'\)"
@@ -210,6 +209,10 @@ def findvideos(item):
     if len(matches)>0:
         data = scrapertools.cachePagePost("http://www.cuevana.tv/player/source_get","key=%s&host=megaupload&vars=&id=2933&subs=,ES&tipo=&amp;sub_pre=ES" % matches[0])
     logger.info("data="+data)
+
+    # Subtitulos
+    suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
+    logger.info("suburl="+suburl)
 
     listavideos = servertools.findvideos(data)
     
@@ -220,6 +223,6 @@ def findvideos(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=False))
 
     return itemlist

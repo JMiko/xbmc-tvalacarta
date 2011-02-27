@@ -10,8 +10,6 @@ from core import scrapertools
 from core import logger
 from core.item import Item
 
-from pelisalacarta import buscador
-
 CHANNELNAME = "cinegratis"
 DEBUG = True
 
@@ -76,12 +74,14 @@ def pelisalfa(item):
 def search(params,url,category):
     logger.info("[cinegratis.py] search")
 
+    from pelisalacarta import buscador
     buscador.listar_busquedas(params,url,category)
 
 # TODO: La búsqueda no funciona en canales genéricos aún
 def searchresults(params,tecleado,category):
     logger.info("[cinegratis.py] search")
 
+    from pelisalacarta import buscador
     buscador.salvar_busquedas(params,tecleado,category)
     tecleado = tecleado.replace(" ", "+")
     searchUrl = "http://www.cinegratis.net/index.php?module=search&title="+tecleado

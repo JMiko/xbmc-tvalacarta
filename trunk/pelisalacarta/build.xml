@@ -24,7 +24,7 @@
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
 				<exclude name="**/parametrizacion*.*"/>
-                <exclude name="resources/images/**"/>
+                <!--exclude name="resources/images/**"/-->
 				<exclude name="descriptor.xml"/>
                 <exclude name="default.tbn"/>
 			</fileset>
@@ -63,7 +63,7 @@
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
                 <exclude name="**/parametrizacion*.*"/>
-                <exclude name="resources/images/**"/>
+                <!--exclude name="resources/images/**"/-->
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="default.tbn"/>
                 <exclude name="fanart.jpg"/>

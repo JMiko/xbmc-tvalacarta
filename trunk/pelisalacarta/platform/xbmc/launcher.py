@@ -149,9 +149,21 @@ def run():
                     extra = urllib.unquote_plus( params.get("extradata") )
                 else:
                     extra = ""
+                if params.has_key("subtitle"):
+                    subtitle = urllib.unquote_plus( params.get("subtitle") )
+                else:
+                    subtitle = ""
             
                 from core.item import Item
-                item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra)
+                item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle)
+
+                if item.subtitle!="":
+                    logger.info("Descargando subtítulos de "+item.subtitle)
+                    from core import downloadtools
+                    downloadtools.downloadfile(item.subtitle, os.path.join( config.get_data_path() , "subtitulo.srt" ) )
+                    config.set_setting("subtitulo","true")
+                else:
+                    logger.info("Sin subtitulos")
 
                 from core import xbmctools
                 if action=="play":
@@ -160,13 +172,12 @@ def run():
                         itemlist = channel.play(item)
                         if len(itemlist)>0:
                             item = itemlist[0]
-                        
-                        xbmctools.playvideo(params.get("channel"),item.server,item.url,item.category,item.title,item.thumbnail,item.plot)
                     except:
                         import sys
                         for line in sys.exc_info():
                             logger.error( "%s" % line )
-                        xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
+                   
+                    xbmctools.playvideo(params.get("channel"),item.server,item.url,item.category,item.title,item.thumbnail,item.plot,subtitle=item.subtitle)
                 else:
                     if action!="findvideos":
                         exec "itemlist = channel."+action+"(item)"

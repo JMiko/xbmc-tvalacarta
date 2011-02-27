@@ -12,8 +12,6 @@ from core import scrapertools
 from core import logger
 from core.item import Item
 
-from pelisalacarta import buscador
-
 CHANNELNAME = "cine15"
 DEBUG = True
 
@@ -31,11 +29,13 @@ def mainlist(item):
     return itemlist
 
 def search(item):
+    from pelisalacarta import buscador
     buscador.listar_busquedas(params,url,category)
 
 def searchresults(item):
     logger.info("[cine15.py] search")
 
+    from pelisalacarta import buscador
     buscador.salvar_busquedas(params,url,category)
     tecleado = url.replace(" ", "+")
     searchUrl = "http://www.cine15.com/?s="+tecleado+"&x=0&y=0"
