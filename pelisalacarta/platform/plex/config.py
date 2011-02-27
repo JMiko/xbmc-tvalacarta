@@ -32,6 +32,9 @@ def get_setting(name):
     if name=="download.enabled":
         return "false"
     
+    if name=="cookies.dir":
+        return os.getcwd()
+    
     if name=="quality_youtube":
         return "8"
     return valor

@@ -49,93 +49,110 @@ def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; 
     logger.info("[scrapertools.py] cachePage url="+url)
     modoCache = config.get_setting("cache.mode")
     
-    # CACHE_NUNCA: Siempre va a la URL a descargar
-    # obligatorio para peticiones POST
-    if modoCache == CACHE_NUNCA or post is not None:
-        logger.info("[scrapertools.py] MODO_CACHE=2 (no cachear)")
+    if config.get_platform()=="plex":
+        from PMS import HTTP
+        try:
+            logger.info("url="+url)
+            data = HTTP.Request(url)
+            logger.info("descargada")
+        except:
+            data = ""
+            logger.error("Error descargando "+url)
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
         
-        data = downloadpage(url,post,headers)
+        return data
 
-    # CACHE_SIEMPRE: Siempre descarga de cache, sin comprobar fechas, excepto cuando no está
-    elif modoCache == CACHE_SIEMPRE:
-        logger.info("[scrapertools.py] MODO_CACHE=1 (cachear todo)")
-        
-        # Obtiene los handlers del fichero en la cache
-        cachedFile, newFile = getCacheFileNames(url)
-
-        # Si no hay ninguno, descarga
-        if cachedFile == "":
-            logger.debug("[scrapertools.py] No está en cache")
-
-            # Lo descarga
-            data = downloadpage(url,post,headers)
-
-            # Lo graba en cache
-            outfile = open(newFile,"w")
-            outfile.write(data)
-            outfile.flush()
-            outfile.close()
-            logger.info("[scrapertools.py] Grabado a " + newFile)
-        else:
-            logger.info("[scrapertools.py] Leyendo de cache " + cachedFile)
-            infile = open( cachedFile )
-            data = infile.read()
-            infile.close()
-
-    # CACHE_ACTIVA: Descarga de la cache si no ha cambiado
     else:
-        logger.info("[scrapertools.py] MODO_CACHE=0 (automática)")
-        
-        # Datos descargados
-        data = ""
-        
-        # Obtiene los handlers del fichero en la cache
-        cachedFile, newFile = getCacheFileNames(url)
-
-        # Si no hay ninguno, descarga
-        if cachedFile == "":
-            logger.debug("[scrapertools.py] No está en cache")
-
-            # Lo descarga
+    
+        # CACHE_NUNCA: Siempre va a la URL a descargar
+        # obligatorio para peticiones POST
+        if modoCache == CACHE_NUNCA or post is not None:
+            logger.info("[scrapertools.py] MODO_CACHE=2 (no cachear)")
+            
             data = downloadpage(url,post,headers)
+        
+        # CACHE_SIEMPRE: Siempre descarga de cache, sin comprobar fechas, excepto cuando no está
+        elif modoCache == CACHE_SIEMPRE:
+            logger.info("[scrapertools.py] MODO_CACHE=1 (cachear todo)")
             
-            # Lo graba en cache
-            outfile = open(newFile,"w")
-            outfile.write(data)
-            outfile.flush()
-            outfile.close()
-            logger.info("[scrapertools.py] Grabado a " + newFile)
-
-        # Si sólo hay uno comprueba el timestamp (hace una petición if-modified-since)
-        else:
-            # Extrae el timestamp antiguo del nombre del fichero
-            oldtimestamp = time.mktime( time.strptime(cachedFile[-20:-6], "%Y%m%d%H%M%S") )
-
-            logger.info("[scrapertools.py] oldtimestamp="+cachedFile[-20:-6])
-            logger.info("[scrapertools.py] oldtimestamp="+time.ctime(oldtimestamp))
-            
-            # Hace la petición
-            updated,data = downloadtools.downloadIfNotModifiedSince(url,oldtimestamp)
-            
-            # Si ha cambiado
-            if updated:
-                # Borra el viejo
-                logger.debug("[scrapertools.py] Borrando "+cachedFile)
-                os.remove(cachedFile)
-                
-                # Graba en cache el nuevo
+            # Obtiene los handlers del fichero en la cache
+            cachedFile, newFile = getCacheFileNames(url)
+        
+            # Si no hay ninguno, descarga
+            if cachedFile == "":
+                logger.debug("[scrapertools.py] No está en cache")
+        
+                # Lo descarga
+                data = downloadpage(url,post,headers)
+        
+                # Lo graba en cache
                 outfile = open(newFile,"w")
                 outfile.write(data)
                 outfile.flush()
                 outfile.close()
                 logger.info("[scrapertools.py] Grabado a " + newFile)
-            # Devuelve el contenido del fichero de la cache
             else:
                 logger.info("[scrapertools.py] Leyendo de cache " + cachedFile)
                 infile = open( cachedFile )
                 data = infile.read()
                 infile.close()
-    
+        
+        # CACHE_ACTIVA: Descarga de la cache si no ha cambiado
+        else:
+            logger.info("[scrapertools.py] MODO_CACHE=0 (automática)")
+            
+            # Datos descargados
+            data = ""
+            
+            # Obtiene los handlers del fichero en la cache
+            cachedFile, newFile = getCacheFileNames(url)
+        
+            # Si no hay ninguno, descarga
+            if cachedFile == "":
+                logger.debug("[scrapertools.py] No está en cache")
+        
+                # Lo descarga
+                data = downloadpage(url,post,headers)
+                
+                # Lo graba en cache
+                outfile = open(newFile,"w")
+                outfile.write(data)
+                outfile.flush()
+                outfile.close()
+                logger.info("[scrapertools.py] Grabado a " + newFile)
+        
+            # Si sólo hay uno comprueba el timestamp (hace una petición if-modified-since)
+            else:
+                # Extrae el timestamp antiguo del nombre del fichero
+                oldtimestamp = time.mktime( time.strptime(cachedFile[-20:-6], "%Y%m%d%H%M%S") )
+        
+                logger.info("[scrapertools.py] oldtimestamp="+cachedFile[-20:-6])
+                logger.info("[scrapertools.py] oldtimestamp="+time.ctime(oldtimestamp))
+                
+                # Hace la petición
+                updated,data = downloadtools.downloadIfNotModifiedSince(url,oldtimestamp)
+                
+                # Si ha cambiado
+                if updated:
+                    # Borra el viejo
+                    logger.debug("[scrapertools.py] Borrando "+cachedFile)
+                    os.remove(cachedFile)
+                    
+                    # Graba en cache el nuevo
+                    outfile = open(newFile,"w")
+                    outfile.write(data)
+                    outfile.flush()
+                    outfile.close()
+                    logger.info("[scrapertools.py] Grabado a " + newFile)
+                # Devuelve el contenido del fichero de la cache
+                else:
+                    logger.info("[scrapertools.py] Leyendo de cache " + cachedFile)
+                    infile = open( cachedFile )
+                    data = infile.read()
+                    infile.close()
+
     return data
 
 def getCacheFileNames(url):

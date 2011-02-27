@@ -196,7 +196,7 @@ def channels_list():
     itemlist.append( Item( title="Animetakus"            , channel="animetakus"           , language="ES" , category="A" , type="generic" ))
     itemlist.append( Item( title="Ver-anime"             , channel="veranime"             , language="ES" , category="A" , type="xbmc"  ))
     itemlist.append( Item( title="Watchanimeon"          , channel="watchanimeon"         , language="EN" , category="A" , type="xbmc"  ))
-    itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES" , category="A" , type="xbmc"  ))
+    itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES" , category="A" , type="generic"  ))
     itemlist.append( Item( title="dibujosanimadosgratis" , channel="dibujosanimadosgratis", language="ES" , category="A" , type="xbmc"  ))
     itemlist.append( Item( title="Sonolatino"            , channel="sonolatino"           , language=""   , category="M" , type="xbmc"  ))
     itemlist.append( Item( title="DocumaniaTV"           , channel="documaniatv"          , language="ES" , category="D" , type="xbmc"  ))
@@ -254,12 +254,12 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
         IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
     
     if config.get_setting("thumbnail_type")=="0":
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
+        WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
     else:
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/banners/"
+        WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
 
     if config.get_platform()=="boxee":
-        IMAGES_PATH="http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
+        IMAGES_PATH="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
 
     if thumbnailname=="":
         thumbnailname = channelname

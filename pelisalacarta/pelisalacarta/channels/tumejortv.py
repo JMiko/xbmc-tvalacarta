@@ -6,11 +6,18 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
-from core import scrapertools
-from core import logger
-from core.item import Item
-
-from servers import servertools
+try:
+    from core import logger
+    from core import config
+    from core import scrapertools
+    from core.item import Item
+    from servers import servertools
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import config
+    from Code.core import scrapertools
+    from Code.core.item import Item
 
 CHANNELNAME = "tumejortv"
 DEBUG = True

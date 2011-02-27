@@ -7,12 +7,19 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
-from servers import servertools
 
-from core import scrapertools
-from core import config
-from core import logger
-from core.item import Item
+try:
+    from core import logger
+    from core import config
+    from core import scrapertools
+    from core.item import Item
+    from servers import servertools
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import config
+    from Code.core import scrapertools
+    from Code.core.item import Item
 
 CHANNELNAME = "mocosoftx"
 USER = config.get_setting("privateuser")
@@ -108,7 +115,6 @@ def FullList(item):
     #patronvideos += '<\!\[CDATA\[<a href="[^"]+" target="_blank"><img src="([^"]+)".*?'
     for match in matchesITEM:
         matches = re.compile(patronvideos,re.DOTALL).findall(match)
-        #print len(matches)
         scrapertools.printMatches(matches)
         
         for match2 in matches:

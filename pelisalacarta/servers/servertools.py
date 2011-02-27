@@ -5,11 +5,16 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import re
-from core import scrapertools
-from core import config
-from core import logger
 
-logger.info("[servertools.py] init")
+try:
+    from core import scrapertools
+    from core import config
+    from core import logger
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import config
+    from Code.core import scrapertools
 
 def findvideos(data):
     logger.info("[servertools.py] findvideos")
