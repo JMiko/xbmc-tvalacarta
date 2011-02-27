@@ -2,7 +2,7 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.0.0"/>
+    <property name="version" value="3.0.1"/>
 	
 	<!-- init ===================================================================== -->
 	<target name="init" description="Inicializa el timestamp">
@@ -63,7 +63,7 @@
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
                 <exclude name="**/parametrizacion*.*"/>
-                <!--exclude name="resources/images/**"/-->
+                <exclude name="resources/images/**"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="default.tbn"/>
                 <exclude name="fanart.jpg"/>
@@ -108,9 +108,9 @@
         <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
         <copy file="resources/plexmediaserver/art-default.jpg" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
         <copy file="resources/plexmediaserver/icon-default.png" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
-        <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Content/Resources/images">
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
             <fileset dir="resources/images"/>
-        </copy-->
+        </copy>
         <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries">
             <fileset dir="lib">
                 <exclude name="cerealizer/**"/>
@@ -146,7 +146,6 @@
         <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
         <copy file="platform/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
         <copy file="platform/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
-		
 	</target>
 
     <!-- package =============================================== -->

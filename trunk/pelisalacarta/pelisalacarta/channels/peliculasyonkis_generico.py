@@ -7,12 +7,21 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
-from servers import servertools
-from core import scrapertools
-from core import DecryptYonkis as Yonkis
-from core import config
-from core import logger
-from core.item import Item
+
+try:
+    from core import logger
+    from core import config
+    from core import scrapertools
+    from core.item import Item
+    from servers import servertools
+    from core import DecryptYonkis as Yonkis
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import config
+    from Code.core import scrapertools
+    from Code.core.item import Item
+    from Code.core import DecryptYonkis as Yonkis
 
 CHANNELNAME = "peliculasyonkis_generico"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -24,9 +33,6 @@ SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo',
           'pfflano'   :'Directo'   ,
           }
 CALIDAD = {'f-1':u'\u2776','f-2':u'\u2777','f-3':u'\u2778','f-4':u'\u0002\u2779\u0002','f-5':u'\u277A'}
-
-# Traza el inicio del canal
-logger.info("[peliculasyonkis_generico.py] init")
 DEBUG = True
 
 def isGeneric():
@@ -382,7 +388,7 @@ def detail(item):
 
    
    if len(matches)>0:
-      print "MATCHES %d" % len(matches)
+      logger.info("MATCHES %d" % len(matches))
       itemlist = ChoiceOneVideo(matches,title)
 
    return itemlist
@@ -392,9 +398,9 @@ def choiceOnePart(item, opciones):
 
     Nro = 0
     matches = item.url.split(":")
-    print "Elige bien %02d " % len(matches)
+    logger.info("Elige bien %02d " % len(matches))
     for url in matches:
-      print " URL " + url
+      logger.info(" URL " + url)
       Nro = Nro + 1
       titulo = item.title  + "Parte %s " % Nro
       opciones.append(Item (channel=CHANNELNAME, title=titulo, server=item.server, url=url, action=item.action, folder=False))
@@ -409,11 +415,11 @@ def ChoiceOneVideo(matches,title):
     fmt=duracion=id=""
    
     for server,codigo,audio,data in matches:
-        print "SERVER="+server
+        logger.info("SERVER="+server)
         try:
             ql= ""
             servidor = SERVER[server]
-            print "SERVER="+servidor
+            logger.info("SERVER="+servidor)
             Nro = Nro + 1
             regexp = re.compile(r"title='([^']+)'")
             match = regexp.search(data)
@@ -431,14 +437,14 @@ def ChoiceOneVideo(matches,title):
             data2 =  re.sub("<[^>]+>",">",data)
             data2 = data2.replace(">>>","").replace(">>","<")
             data2 = re.sub("[0-9:.]+","",data2)
-            print data2
+            logger.info(data2)
             Video_info = ""
             regexp = re.compile(r"<(.+?)<")
             match = regexp.search(data2)
             if match is not None:
                
                 Video_info = match.group(1)
-                print Video_info
+                logger.info(Video_info)
                 Video_info = "-%s" %Video_info.replace("Duraci\xc3\xb3n","").strip()
             else:
                 regexp = re.compile(r">(.+?)<")
@@ -446,23 +452,23 @@ def ChoiceOneVideo(matches,title):
                 if match is not None:
                
                     Video_info = match.group(1)
-                    print Video_info
+                    logger.info(Video_info)
                     Video_info = "-%s" %Video_info.replace("Duraci\xc3\xb3n","").strip()               
             #opciones.append("%02d) [%s] - [%s] %s (%s%s)" % (Nro , audio,servidor,duracion,fmt,Video_info))
             title = "%02d) [%s] - [%s] %s (%s%s)" % (Nro , audio,servidor,duracion,fmt,Video_info)
            
-            print "Codigo " + codigo
+            logger.info("Codigo " + codigo)
             if '&al=' in codigo:
                 codigos = codigo.split('&al=')         
                 url = Decrypt_Server(codigos[0],server)
-                print "url="+url
+                logger.info("url="+url)
                 if ":" in url:
-                    print "partes"
+                    logger.info("partes")
                     itemPartes = Item (title=title, url=url, server=servidor, action="play",folder=False)
                     opciones = choiceOnePart(itemPartes, opciones)
                     #opciones.append(listaPartes)
             else:
-                print "1link"
+                logger.info("1link")
                 url = Decrypt_Server(codigo,server)
                 opciones.append(Item (channel=CHANNELNAME, title=title, server=servidor, url=url, action="play",folder=False) )
 
@@ -475,7 +481,7 @@ def ChoiceOneVideo(matches,title):
 def Decrypt_Server(id_encoded,servidor):
     id = id_encoded
     DEC = Yonkis.DecryptYonkis()
-    print "Recibimos " + servidor + " y " + id_encoded
+    logger.info("Recibimos " + servidor + " y " + id_encoded)
    
     if   'pymeno2'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
     elif 'pymeno3'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
@@ -510,7 +516,7 @@ def Decrypt_Server(id_encoded,servidor):
        
     elif 'pfflano'   == servidor:
         idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
-        print idd
+        logger.info(idd)
         ids = idd.split()
         idd = choiceOnePart(ids).strip()
         return idd
@@ -528,9 +534,8 @@ def Activar_Novedades(params,activar,category):
         config.setSetting("activar","true")
     else:
         config.setSetting("activar","false")
-    print "opcion menu novedades :%s" %config.getSetting("activar")
+    logger.info("opcion menu novedades :%s" %config.getSetting("activar"))
    
     #xbmc.executebuiltin('Container.Update')   
     xbmc.executebuiltin('Container.Refresh')
    
-

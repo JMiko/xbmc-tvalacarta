@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import logger
+
 class DecryptPYTelebision:
     __module__ = __name__
 
@@ -13,7 +15,7 @@ class DecryptPYTelebision:
 
 
     def unescape(self, str):
-        print ('decode %s' % str)
+        logger.info('decode %s' % str)
         strdcd = ''
         letras = str.split('%')
         letras.pop(0)

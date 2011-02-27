@@ -33,7 +33,7 @@ def Start():
 def CreatePrefs():
     Prefs.Add(id="updatecheck2"      , type='bool', default = 'true' , label='Verificar actualizaciones')
     #Prefs.Add(id="updatechannels"    , type="boolean" label="30004" default="true"/>
-    #Prefs.Add(id="enableadultmode"   , type="boolean" label="30002" default="false"/>
+    Prefs.Add(id="enableadultmode"   , type="bool", default = 'false' , label = 'Modo adulto')
     Prefs.Add(id="debug"             , type="bool", default = 'true' , label = 'Usar log completo')
     #Prefs.Add(id="default_action"    , type="enum" lvalues="30006|30007|30008|30009" label="30005" default="0"/>
     #Prefs.Add(id="thumbnail_type"    , type="enum" lvalues="30011|30012" label="30010" default="0"/>
@@ -42,6 +42,8 @@ def CreatePrefs():
     Prefs.Add(id="megavideopremium"  , type="bool", default='', label='Usar Megavideo premium')
     Prefs.Add(id="megavideouser"     , type="text", default='', label="Usuario Megavideo")
     Prefs.Add(id="megavideopassword" , type="text", default='', label="Contraseña Megavideo")
+    Prefs.Add(id="privateuser"     , type="text", default='', label="Usuario páginas privadas")
+    Prefs.Add(id="privatepassword" , type="text", default='', label="Contraseña páginas privadas")
 
     #Prefs.Add(id="downloadpath"      , type="text" source="video" option="writeable" label="30017" default=""/>
     #Prefs.Add(id="downloadlistpath"  , type="text" source="video" option="writeable" label="30018" default=""/>
@@ -64,7 +66,10 @@ def mainlist():
     Log(canales)
 
     for canal in canales:
-        dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = R('images/posters/'+canal.channel+'.png'), art=R(ART) ) , channel=canal.channel , action = canal.action ))
+        if canal.channel=="configuracion":
+            dir.Append(PrefsItem(title="Configuración", thumb=R('images/posters/'+canal.channel+'.png')))
+        else:
+            dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = R('images/posters/'+canal.channel+'.png'), art=R(ART) ) , channel=canal.channel , action = canal.action ))
 
     return dir
 
@@ -85,27 +90,32 @@ def runchannel(sender,channel,action="mainlist",category=""):
         except:
             exec "import "+channel
         
-    
     if channel!="channelselector":
         exec "itemlist = "+channel+"."+action+"(None)"
-    else:
-        exec "itemlist = "+channel+".get"+action+"(category)"
-    
+    elif action=="channeltypes":
+        itemlist = channelselector.getchanneltypes()
+    elif action=="listchannels":
+        itemlist = channelselector.filterchannels(category)
+
     Log("itemlist %d items" % len(itemlist))
 
     for item in itemlist:    
         Log("item="+item.tostring()+" channel=["+item.channel+"]")
 
-        if item.category=="A":
-            category = "Autonómico"
-        elif item.category=="N":
-            category = "Nacional"
-        elif item.category=="L":
-            category = "Local"
-        elif item.category=="T":
-            category = "Temático"
-        elif item.category=="I":
-            category = "Internet"
+        if item.category=="F":
+            category = "Películas"
+        elif item.category=="S":
+            category = "Series"
+        elif item.category=="D":
+            category = "Documentales"
+        elif item.category=="A":
+            category = "Anime"
+        elif item.category=="M":
+            category = "Música"
+        elif item.category=="G":
+            category = "Servidores"
+        elif item.category=="NEW":
+            category = "Los nuevos"
         else:
             category=""
         #Log("category=%s" % category)
@@ -232,6 +242,25 @@ def playvideonormal(sender,item):
     elif item.server.lower() == "megaupload":
         from server import servertools
         url = servertools.getmegauploadlow(item.url)
+    else:
+        from servers import servertools
+        url = servertools.findurl(item.url,item.server)
+
+    Log("url="+url)
+    return Redirect(url)
+
+def playvideohigh(sender,item):
+    Log("[__init__.py] playvideohigh")
+    Log("url="+item.url)
+
+    if item.server.lower() == "directo":
+        url = item.url
+    elif item.server.lower() == "megavideo":
+        from servers import servertools
+        url = servertools.getmegavideohigh(item.url)
+    elif item.server.lower() == "megaupload":
+        from server import servertools
+        url = servertools.getmegauploadhigh(item.url)
     else:
         from servers import servertools
         url = servertools.findurl(item.url,item.server)

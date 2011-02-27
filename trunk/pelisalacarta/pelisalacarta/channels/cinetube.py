@@ -6,12 +6,18 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
-from core import scrapertools
-from core import logger
-from core import config
-from core.item import Item
-
-from servers import servertools
+try:
+    from core import logger
+    from core import config
+    from core import scrapertools
+    from core.item import Item
+    from servers import servertools
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import config
+    from Code.core import scrapertools
+    from Code.core.item import Item
 
 CHANNELNAME = "cinetube"
 DEBUG = True
@@ -44,10 +50,6 @@ def mainlist(item):
 
 def search(item):
     logger.info("[cinetube.py] search")
-    
-    #import buscador
-    #texto = buscador.teclado()
-    #print item.extra
     
     if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
         from pelisalacarta import buscador

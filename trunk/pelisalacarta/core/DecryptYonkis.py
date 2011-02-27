@@ -5,6 +5,8 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
+import logger
+
 class DecryptYonkis:
     def decryptALT(self, str):
         strdcd = ''
@@ -13,7 +15,7 @@ class DecryptYonkis:
         return strdcd
 
     def unescape(self, str):
-        print ('decode %s' % str)
+        logger.info('decode %s' % str)
         strdcd = ''
         letras = str.split('%')
         letras.pop(0)

@@ -23,7 +23,9 @@ def get_system_platform():
     return "boxee"
     
 def open_settings():
-    return
+    import xbmcplugin
+    import sys
+    xbmcplugin.openSettings( sys.argv[ 0 ] )
 
 def get_setting(name):
     if name=="cache.dir":
@@ -43,7 +45,8 @@ def get_setting(name):
     elif name=="player_type":
         return "0"
     else:
-        return ""
+        import xbmcplugin
+        return xbmcplugin.getSetting(name)
 
 def set_setting(name,value):
     return
