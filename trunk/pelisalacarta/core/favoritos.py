@@ -16,9 +16,7 @@ CHANNELNAME = "favoritos"
 DEBUG = True
 BOOKMARK_PATH = config.get_setting( "bookmarkpath" )
 
-usingsamba=BOOKMARK_PATH.upper().startswith("SMB://")
-
-if not usingsamba:
+if not BOOKMARK_PATH.upper().startswith("SMB://"):
     if BOOKMARK_PATH=="":
         BOOKMARK_PATH = os.path.join( config.get_data_path() , "bookmarks" )
     if not os.path.exists(BOOKMARK_PATH):
@@ -33,7 +31,7 @@ def mainlist(params,url,category):
     import xbmctools
 
     # Crea un listado con las entradas de favoritos
-    if usingsamba:
+    if usingsamba(BOOKMARK_PATH):
         ficheros = samba.get_files(BOOKMARK_PATH)
     else:
         ficheros = os.listdir(BOOKMARK_PATH)
@@ -76,7 +74,7 @@ def play(params,url,category):
 def readbookmark(filename,readpath=BOOKMARK_PATH):
     logger.info("[favoritos.py] readbookmark")
 
-    if usingsamba:
+    if usingsamba(readpath):
         bookmarkfile = samba.get_file_handle_for_reading(filename, readpath)
     else:
         filepath = os.path.join( readpath , filename )
@@ -116,20 +114,17 @@ def readbookmark(filename,readpath=BOOKMARK_PATH):
     return titulo,thumbnail,plot,server,url
 
 def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
-    logger.info("[favoritos.py] savebookmark")
-
-    # No va bien más que en Windows
-    #bookmarkfiledescriptor,bookmarkfilepath = tempfile.mkstemp(suffix=".txt",prefix="",dir=BOOKMARK_PATH)
+    logger.info("[favoritos.py] savebookmark(path="+savepath+")")
 
     # Crea el directorio de favoritos si no existe
-    if not usingsamba:
+    if not usingsamba(savepath):
         try:
             os.mkdir(savepath)
         except:
             pass
 
     # Lee todos los ficheros
-    if usingsamba:
+    if usingsamba(savepath):
         ficheros = samba.get_files(savepath)
     else:
         ficheros = os.listdir(savepath)
@@ -154,21 +149,24 @@ def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
     logger.info("[favoritos.py] savebookmark filename="+filename)
 
     # Graba el fichero
-    if not usingsamba:
-        fullfilename = os.path.join(BOOKMARK_PATH,filename)
+    if not usingsamba(savepath):
+        fullfilename = os.path.join(savepath,filename)
         bookmarkfile = open(fullfilename,"w")
         bookmarkfile.write(filecontent)
         bookmarkfile.flush();
         bookmarkfile.close()
     else:
-        samba.write_file(filename, filecontent, BOOKMARK_PATH)
+        samba.write_file(filename, filecontent, savepath)
 
 def deletebookmark(fullfilename,deletepath=BOOKMARK_PATH):
     
-    if not usingsamba:
+    if not usingsamba(deletepath):
         os.remove(urllib.unquote_plus( fullfilename ))
     else:
         fullfilename = fullfilename.replace("\\","/")
         partes = fullfilename.split("/")
         filename = partes[len(partes)-1]
         samba.remove_file(filename,deletepath)
+
+def usingsamba(path):
+    return path.upper().startswith("SMB://")

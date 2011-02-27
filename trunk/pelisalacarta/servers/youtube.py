@@ -7,7 +7,7 @@
 import urlparse,urllib2,urllib,re,httplib
 from core import config
 from core import logger
-
+
 import gdata.youtube
 import gdata.youtube.service
 
@@ -232,22 +232,25 @@ def Extract_id(url):
 
 def verify_url( url ):
     # Extract real URL to video
-        request = urllib2.Request(url, None, std_headers)
-        data = urllib2.urlopen(request)
-        data.read(1)
-        url = data.geturl()
-        data.close()
-        return url
+    request = urllib2.Request(url, None, std_headers)
+    data = urllib2.urlopen(request)
+    data.read(1)
+    url = data.geturl()
+    data.close()
+    return url
         
 
 def alertaCalidad():
+    import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "La calidad elegida en configuracion",'no esta disponible o es muy baja',"elija otra calidad distinta y vuelva a probar")
     
 def alertaNone():
+    import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "!Aviso¡","El video no se encuentra disponible",'es posible que haya sido removido')
     
 def alertaIDerror(url):
+    import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID de la URL"," %s" %url,'la URL es invalida ')

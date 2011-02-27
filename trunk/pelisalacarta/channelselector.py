@@ -34,6 +34,7 @@ def getmainlist():
     itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
     return itemlist
 
+# TODO: (3.1) Pasar el código específico de XBMC al laucher
 def mainlist(params,url,category):
     logger.info("[channelselector.py] mainlist")
 
@@ -69,8 +70,8 @@ def getchanneltypes():
     itemlist.append( Item( title=config.get_localized_string(30124) , channel="channelselector" , action="listchannels" , category="A"   , thumbnail="anime"))
     itemlist.append( Item( title=config.get_localized_string(30125) , channel="channelselector" , action="listchannels" , category="D"   , thumbnail="documentales"))
     itemlist.append( Item( title=config.get_localized_string(30126) , channel="channelselector" , action="listchannels" , category="M"   , thumbnail="musica"))
-    itemlist.append( Item( title=config.get_localized_string(30126) , channel="channelselector" , action="listchannels" , category="G"   , thumbnail="servidores"))
-    itemlist.append( Item( title=config.get_localized_string(30127) , channel="channelselector" , action="listchannels" , category="NEW" , thumbnail="novedades"))
+    itemlist.append( Item( title=config.get_localized_string(30127) , channel="channelselector" , action="listchannels" , category="G"   , thumbnail="servidores"))
+    itemlist.append( Item( title=config.get_localized_string(30134) , channel="channelselector" , action="listchannels" , category="NEW" , thumbnail="novedades"))
     return itemlist
     
 def channeltypes(params,url,category):
@@ -89,9 +90,10 @@ def channeltypes(params,url,category):
 def listchannels(params,url,category):
     logger.info("[channelselector.py] listchannels")
 
-    lista = getlistchannels(category)
+    lista = filterchannels(category)
     for channel in lista:
-        addfolder(channel.title , channel.channel , "mainlist" , channel.channel)
+        if channel.type=="xbmc" or channel.type=="generic":
+            addfolder(channel.title , channel.channel , "mainlist" , channel.channel)
 
     # Label (top-right)...
     import xbmcplugin
@@ -99,7 +101,7 @@ def listchannels(params,url,category):
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-def getlistchannels(category):
+def filterchannels(category):
     returnlist = []
 
     if category=="NEW":
@@ -133,8 +135,9 @@ def getlistchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="Italia film"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
-    itemlist.append( Item( title="Terror y Gore"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
+    itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
+    itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
+    itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
     return itemlist
 
 def channels_list():
@@ -142,6 +145,7 @@ def channels_list():
 
     itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES" , category="F,S,A,D" , type="generic" ))
     itemlist.append( Item( title="Peliculasyonkis"       , channel="peliculasyonkis"      , language="ES" , category="F" , type="xbmc" ))
+    itemlist.append( Item( title="Peliculasyonkis (Multiplataforma)", channel="peliculasyonkis_generico", language="ES" , category="F" , type="generic" ))
     itemlist.append( Item( title="Divx Online"           , channel="divxonline"           , language="ES" , category="F" , type="xbmc" ))
     itemlist.append( Item( title="Cinegratis"            , channel="cinegratis"           , language="ES" , category="F,S,A,D" , type="generic" ))
     itemlist.append( Item( title="tumejortv.com"         , channel="tumejortv"            , language="ES" , category="F,S" , type="generic" ))
@@ -211,6 +215,7 @@ def channels_list():
     itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""   , category="G" , type="xbmc"  ))
+    itemlist.append( Item( title="Biblioteca XBMC"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
 
     if config.get_setting("enableadultmode") == "true":
         itemlist.append( Item( title="PeliculasEroticas" , channel="peliculaseroticas"    , language="ES" , category="F" , type="xbmc"  ))

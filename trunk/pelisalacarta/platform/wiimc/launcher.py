@@ -38,9 +38,9 @@ class MyHandler(BaseHTTPRequestHandler):
 
             for channel in channelslist:
                 respuesta += "type=playlist\n"
-                respuesta += "name="+channel[0]+"\n"
-                respuesta += "thumb=http://www.mimediacenter.info/xbmc/"+PLUGIN_NAME+"/posters/"+channel[1]+".png\n"
-                respuesta += "URL=http://"+host+"/"+channel[1]+"/"+channel[2]+"/none/none/playlist.plx\n"
+                respuesta += "name="+channel.title+"\n"
+                respuesta += "thumb=http://www.mimediacenter.info/xbmc/"+PLUGIN_NAME+"/posters/"+channel.channel+".png\n"
+                respuesta += "URL=http://"+host+"/"+channel.channel+"/"+channel.action+"/none/none/playlist.plx\n"
                 respuesta += "\n"
         
         elif self.path.startswith("/channelselector/channeltypes"):
@@ -50,9 +50,9 @@ class MyHandler(BaseHTTPRequestHandler):
             
             for channel in channelslist:
                 respuesta += "type=playlist\n"
-                respuesta += "name="+channel[0]+"\n"
-                respuesta += "thumb=http://www.mimediacenter.info/xbmc/"+PLUGIN_NAME+"/posters/"+channel[4]+".png\n"
-                respuesta += "URL=http://"+host+"/"+channel[1]+"/"+channel[2]+"/"+channel[3]+"/none/playlist.plx\n"
+                respuesta += "name="+channel.title+"\n"
+                respuesta += "thumb=http://www.mimediacenter.info/xbmc/"+PLUGIN_NAME+"/posters/"+channel.channel+".png\n"
+                respuesta += "URL=http://"+host+"/"+channel.channel+"/"+channel.action+"/"+channel.category+"/none/playlist.plx\n"
                 respuesta += "\n"
         
         elif self.path.startswith("/channelselector/listchannels"):
@@ -64,11 +64,11 @@ class MyHandler(BaseHTTPRequestHandler):
             channelslist = channelselector.filterchannels(category)
             
             for channel in channelslist:
-                if channel[5]=="generic":
+                if channel.type=="generic" or channel.type=="wiimc":
                     respuesta += "type=playlist\n"
-                    respuesta += "name="+channel[0]+"\n"
-                    respuesta += "thumb=http://www.mimediacenter.info/xbmc/"+PLUGIN_NAME+"/posters/"+channel[1]+".png\n"
-                    respuesta += "URL=http://"+host+"/"+channel[1]+"/mainlist/none/none/playlist.plx\n"
+                    respuesta += "name="+channel.title+"\n"
+                    respuesta += "thumb=http://www.mimediacenter.info/xbmc/"+PLUGIN_NAME+"/posters/"+channel.channel+".png\n"
+                    respuesta += "URL=http://"+host+"/"+channel.channel+"/mainlist/none/none/playlist.plx\n"
                     respuesta += "\n"
 
         else:

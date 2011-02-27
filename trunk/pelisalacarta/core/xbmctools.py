@@ -329,12 +329,15 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
             resultado = advertencia.ok(config.get_localized_string(30102) , title , config.get_localized_string(30108)) # 'se ha añadido a favoritos'
         return
 
-    # TODO: (3.1) Mover a modulo descargadoslist
     elif opciones[seleccion]==config.get_localized_string(30156): #"Quitar de lista de descargas":
+        from core import descargadoslist
         # La categoría es el nombre del fichero en la lista de descargas
-        os.remove(urllib.unquote_plus( category ))
+        descargadoslist.deletebookmark(category)
+                
         advertencia = xbmcgui.Dialog()
         resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30106)) # 'Se ha quitado de lista de descargas'
+        
+        xbmc.executebuiltin( "Container.Refresh" )
         return
 
     # TODO: (3.1) Mover a modulo descargadoslist

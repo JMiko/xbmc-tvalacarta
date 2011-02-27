@@ -253,3 +253,9 @@ def playerror(params,url,category):
     server = params["server"]
     
     xbmctools.playvideo4(CHANNELNAME,server,url,category,title,thumbnail,plot)
+
+def savebookmark(titulo,url,thumbnail,server,plot,savepath=DOWNLOAD_LIST_PATH):
+    favoritos.savebookmark(titulo,url,thumbnail,server,plot,savepath)
+
+def deletebookmark(fullfilename,deletepath=DOWNLOAD_LIST_PATH):
+    favoritos.deletebookmark(fullfilename,deletepath)

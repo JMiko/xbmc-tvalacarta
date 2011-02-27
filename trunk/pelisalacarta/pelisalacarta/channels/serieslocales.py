@@ -8,19 +8,18 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-import scrapertools
-import servertools
-import logger
-import buscador
-from item import Item
+from core import scrapertools
+from servers import servertools
+from core import logger
+from core import buscador
+from core.item import Item
 import os.path
 import fnmatch
-import DecryptYonkis as Yonkis
-
+from core import DecryptYonkis as Yonkis
 
 CHANNELNAME = "Series"
 DEBUG = True
-DIRNAME = "/home/chumy/.xbmc/userdata/addon_data/plugin.video.pelisalacarta/library/SERIES/"
+DIRNAME = config.get_setting("xbmc.library.path")
 EXT = '*.strm'
 
 def isGeneric():
@@ -54,11 +53,7 @@ def listpelisincaratula(item):
 
     url = item.url
 
-    # ------------------------------------------------------
     # Extrae las entradas
-    # ------------------------------------------------------
-
-
     itemlist = []
     seriepath = os.path.join(DIRNAME,url)
     logger.info(seriepath);
@@ -77,9 +72,9 @@ def listpelisincaratula(item):
           nombre = getParam(contenido,"title").replace("+"," ")
           # Arreglamos la codificacion del titulo
           try:
-          scrapedtitle = unicode( nombre, "utf-8" ).encode("iso-8859-1")
+              scrapedtitle = unicode( nombre, "utf-8" ).encode("iso-8859-1")
           except:
-          scrapedtitle = nombre
+              scrapedtitle = nombre
           canal = getParam(contenido,"channel")
           urlFile = getParam(contenido,"url")
           servidor = getParam(contenido,"server")
@@ -87,8 +82,6 @@ def listpelisincaratula(item):
           #Anexamos el capitulo
           itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle    , action=canal, url=urlFile, server=servidor, folder=True ) )
     return itemlist
-
-
     
 def seriesyonkis(item):
     logger.info("[series.py] findvideos")
@@ -109,17 +102,14 @@ def seriesyonkis(item):
     else:
         #Solo lo pruebo con megavideo
         for match in matches:
-      if match[0] in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
-          id = match[2]
-          print "original " + id
-          logger.info("[seriesyonkis.py]  id="+id)
-          dec = Yonkis.DecryptYonkis()
-          id = dec.decryptID_series(dec.unescape(id))
-          print "decodificada " + id
-          #Anexamos el capitulo
-          itemlist.append( Item(channel=item.channel, title=item.server   , action="play", url=id , server=item.server, folder=True ) )
-          print itemlist
-      else:
-        pass
-    
+            if match[0] in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
+              id = match[2]
+              print "original " + id
+              logger.info("[seriesyonkis.py]  id="+id)
+              dec = Yonkis.DecryptYonkis()
+              id = dec.decryptID_series(dec.unescape(id))
+              print "decodificada " + id
+              #Anexamos el capitulo
+              itemlist.append( Item(channel=item.channel, title=item.server   , action="play", url=id , server=item.server, folder=True ) )
+
     return itemlist
