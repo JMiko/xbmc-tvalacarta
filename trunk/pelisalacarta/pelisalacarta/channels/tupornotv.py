@@ -8,11 +8,11 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 from servers import servertools
-from core import xbmctools
+#from core import xbmctools
 from core import config
 from core.item import Item
 from core import logger
-from pelisalacarta import buscador
+#from pelisalacarta import buscador
 
 from core import scrapertools
 
