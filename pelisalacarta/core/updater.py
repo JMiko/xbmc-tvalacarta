@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 #------------------------------------------------------------
 # pelisalacarta
@@ -15,6 +15,7 @@ import xbmcplugin
 import scrapertools
 import time
 import config
+from platform.xbmc import config as platform
 import logger
 
 PLUGIN_NAME = "pelisalacarta"
@@ -31,7 +32,9 @@ LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" 
 LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , PLUGIN_NAME+"-" ) )
 
 try:
-    if config.get_platform()=="xbmcdharma":
+    # Añadida a la opcion : si plataforma xbmcdharma es "True", no debe ser con la plataforma de la xbox
+    # porque seria un falso "True", ya que el xbmc en las xbox no son dharma por lo tanto no existen los addons   
+    if config.get_platform()=="xbmcdharma" and not platform.get_system_platform() == "xbox":
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     else:

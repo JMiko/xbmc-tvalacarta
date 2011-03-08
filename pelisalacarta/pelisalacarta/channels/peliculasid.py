@@ -268,7 +268,14 @@ def detail(params,url,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         print " encontro Megavideo :%s" %matches[0]    
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title+" - [Megavideo]", matches[0] , thumbnail , plot )        
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , title+" - [Megavideo]", matches[0] , thumbnail , plot )
+
+    patronvideos = '"(http://peliculasid.net/modulos/iframebb.php[^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        print " encontro Videobb :%s" %matches[0]    
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "videobb" , title+" - [Videobb]", matches[0] , thumbnail , plot )
+                
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -320,7 +327,14 @@ def play(params,url,category):
         if len(matches)>0:
             server = "Megavideo"
             url = matches[0]
-    
+    elif "iframebb.php" in url:
+        data = scrapertools.cachePage(url)
+        patronvideos  = 'src="http://www.videobb.com/e/([^"]+)"'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)    
+        if len(matches)>0:
+            server = "videobb"
+            url = "http://www.videobb.com/video/" + matches[0]
+
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def acentos(title):

@@ -34,7 +34,7 @@ except ImportError:
     PLUGIN_PATH = os.getcwd()
 
 _VALID_URL = r'http\:\/\/www.megalive\.com/(?:(?:v/)|\?(?:s=.+?&(?:amp;)?)?((?:(?:v\=)))?)?([A-Z0-9]{8})'
-file_path = xbmc.translatePath( os.path.join( PLUGIN_PATH, 'channels' , "megalive.json" ) )
+file_path = xbmc.translatePath( os.path.join( PLUGIN_PATH,"pelisalacarta", 'channels' , "megalive.json" ) )
 
 # Esto permite su ejecuci€n en modo emulado
 try:
@@ -290,7 +290,7 @@ def saveChannelFavorites(params,url,category):
     json.dump(datadict,outfile,separators=(',',':'))
     outfile.flush()
     outfile.close()
-    logger.info("Salvado y Grabado a " + file_path)
+    logger.info("Salvado y Grabado en " + file_path)
     
 def deleteSavedChannel(params,url,category):
     logger.info("[megalivewall.py] deleteSavedChannel")
@@ -363,7 +363,7 @@ def renameChannelTitle(params,url,category):
             json.dump(datadict,outfile,separators=(',',':'))
             outfile.flush()
             outfile.close()
-            logger.info("Renombrado y Grabado a " + file_path)
+            logger.info("Renombrado y Grabado en " + file_path)
             # refresh container so item is renamed
             xbmc.executebuiltin( "Container.Refresh" )
         

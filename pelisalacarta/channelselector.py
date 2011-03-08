@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import urlparse,urllib2,urllib,re
 import os
 import sys
@@ -184,6 +184,7 @@ def channels_list():
     #itemlist.append( Item( title="Pelis-Sevillista56"    , "sevillista"           , language="ES" , "F" , type="xbmc"))
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A" , type="xbmc" , extra="Series" ))
     itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S" , type="generic" ))
+    itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S" , type="generic" ))
     itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S" , type="xbmc"  ))
     itemlist.append( Item( title="DeLaTV Series"         , channel="bancodeseries"        , language="ES" , category="S" , type="xbmc"  ))
     #itemlist.append( Item( title="SoloSeries"            , "soloseries"           , language="ES" , "S" , type="xbmc"  ))
