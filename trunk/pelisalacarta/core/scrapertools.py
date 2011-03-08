@@ -1,4 +1,4 @@
-#------------------------------------------------------------
+﻿#------------------------------------------------------------
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # Download Tools
@@ -514,7 +514,26 @@ def downloadpagewithcookies(url):
     handle.close()
 
     return data
+    
+def downloadpageWithoutCookies(url):
+    logger.info("[scrapertools.py] Descargando " + url)
+    inicio = time.clock()
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
+    req.add_header('X-Requested-With','XMLHttpRequest')
+    try:
+        response = urllib2.urlopen(req)
+    except:
+        req = urllib2.Request(url.replace(" ","%20"))
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; es-ES; rv:1.9.0.14) Gecko/2009082707 Firefox/3.0.14')
 
+        response = urllib2.urlopen(req)
+    data=response.read()
+    response.close()
+    fin = time.clock()
+    logger.info("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
+    return data
+    
 
 def downloadpageGzip(url):
     

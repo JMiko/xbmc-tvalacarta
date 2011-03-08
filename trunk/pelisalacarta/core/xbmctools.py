@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # XBMC Tools
@@ -34,10 +34,12 @@ DEBUG = True
 
 # TODO: (3.2) Esto es un lío, hay que unificar
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart=""):
-    addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
+    ok = addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
+    return ok
 
 def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart=""):
     contextCommands = []
+    ok = False
     #logger.info("pluginhandle=%d" % pluginhandle)
     if DEBUG:
         try:
@@ -63,12 +65,14 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     if len (contextCommands) > 0:
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
     if totalItems == 0:
-        xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+        ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
     else:
-        xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
+        ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
+    return ok
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle=""):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle="", totalItems = 0):
     contextCommands = []
+    ok = False
     if DEBUG:
         try:
             logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
@@ -100,7 +104,11 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     
     itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle))
     #logger.info("[xbmctools.py] itemurl=%s" % itemurl)
-    xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
+    if totalItems == 0:
+        ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
+    else:
+        ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False, totalItems=totalItems)
+    return ok
 
 def addthumbnailfolder( canal , scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
     logger.info('[xbmctools.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
@@ -594,17 +602,17 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
     for item in itemlist:
         if item.folder:
             if len(item.extra)>0:
-                addnewfolderextra( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , item.extra )
+                addnewfolderextra( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , item.extra , totalItems = item.totalItems )
             else:
-                addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot )
+                addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems )
         else:
             if item.duration:
-                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle )
+                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )
             else:    
-                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle )
+                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems )
 
     # Cierra el directorio
-    xbmcplugin.setContent(pluginhandle,"movies")
+    xbmcplugin.setContent(pluginhandle,"Movies")
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )

@@ -522,7 +522,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
     logger.info("0) YouTube...")
-    patronvideos  = '"http://www.youtube.com/v/([^"]+)"'
+    patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
@@ -602,7 +602,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
     logger.info("videobb...")
-    patronvideos  = "(http\:\/\/videobb.com\/video\/[a-zA-Z0-9]+)"
+    patronvideos  = "(http\:\/\/(?:www.)videobb.com\/video\/[a-zA-Z0-9]+)"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
