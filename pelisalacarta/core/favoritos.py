@@ -132,7 +132,17 @@ def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
     
     # Averigua el último número
     if len(ficheros)>0:
-        filenumber = int( ficheros[len(ficheros)-1][0:-4] )+1
+        # XRJ: Linea problemática, sustituida por el bucle siguiente
+        #filenumber = int( ficheros[len(ficheros)-1][0:-4] )+1
+        filenumber = 1
+        for fichero in ficheros:
+            logger.info("fichero="+fichero)
+            try:
+                tmpfilenumber = int( fichero[0:-4] )+1
+                if tmpfilenumber > filenumber:
+                    filenumber = tmpfilenumber
+            except:
+                pass
     else:
         filenumber=1
 
