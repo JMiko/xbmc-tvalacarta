@@ -73,7 +73,7 @@ def videosportada(item,id):
     patron += '<a title="([^"]+)" href="([^"]+)">[^<]+'
     patron += '<img.*?src="([^"]+)"[^<]+'
     patron += '<strong>([^<]+)</strong>[^<]+'
-    patron += '<p>([^<]+)</p>'
+    patron += '<h2><p>([^<]+)</p></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
@@ -155,9 +155,9 @@ def series(item):
     <a title="Vídeos de Share - Capítulos Completos" href="/videos/share.html">
     <img title="Vídeos de Share - Capítulos Completos" href="/videos/share.html"
     src="/clipping/2010/08/06/00246/10.jpg"
-    alt="Share"
+    alt="Share"	
     />
-    <a title="Vídeos de Share - Capítulos Completos" href="/videos/share.html"><p>Share</p></a>                    
+    <a title="Vídeos de Share - Capítulos Completos" href="/videos/share.html"><h2><p>Share</p></h2></a>                    
     </a>
     </div>
     </li>
@@ -165,7 +165,7 @@ def series(item):
     patron  = '<div>[^<]+'
     patron += '<a\W+title="[^"]+" href="([^"]+)"[^<]+'
     patron += '<img.*?src="([^"]+)"[^<]+'
-    patron += '<a[^<]+<p>([^<]+)</p>'
+    patron += '<a[^<]+<h2><p>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
@@ -213,7 +213,7 @@ def capitulos(item):
     patron += '<a.*?href="([^"]+)"[^<]+'
     patron += '<img.*?src="([^"]+)".*?'
     patron += '<strong>([^<]+)</strong>[^<]+'
-    patron += '<p>([^<]+)</p>'
+    patron += '<h2><p>([^<]+)</p></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
@@ -262,7 +262,8 @@ def capitulos(item):
 
 def noticias(item):
     logger.info("[antena3.py] noticias")
-    
+    return series(item)
+    '''
     print item.tostring()
     
     # Descarga la página
@@ -270,6 +271,7 @@ def noticias(item):
     #logger.info(data)
 
     # Extrae las entradas (series)
+    '''
     '''
     <div>
     <a title="Vídeos de Noticias Fin de Semana - 22 de Agosto de 2.010" 
@@ -288,11 +290,12 @@ def noticias(item):
     <p>22 de agosto 15.00h</p>
     </a>                    
     '''
+    '''
     patron  = '<div>[^<]+'
     patron += '<a.*?href="([^"]+)">[^<]+'
     patron += '<img.*?src="([^"]+)"[^>]+>.*?'
     patron += '<strong>([^<]+)</strong>[^<]+'
-    patron += '<p>([^<]+)</p>'
+    patron += '<h2><p>([^<]+)</p></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
@@ -308,7 +311,7 @@ def noticias(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="detalle" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
 
     return itemlist
-    
+    '''
 def programas(item):
     logger.info("[antena3.py] programas")
     return series(item)
