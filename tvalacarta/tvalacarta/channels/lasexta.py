@@ -16,9 +16,12 @@ def isGeneric():
 def mainlist(item):
     logger.info("[lasexta.py] mainlist")
     itemlist = []
+    logger.info("[lasexta.py] 1")
     getAllPrograms(1, itemlist)
-    getAllPrograms(8, itemlist)
-    getAllPrograms(16, itemlist)
+    logger.info("[lasexta.py] 15")
+    getAllPrograms(15, itemlist)
+    logger.info("[lasexta.py] 30")
+    getAllPrograms(30, itemlist)
     return itemlist
 
 def getAllPrograms(pageNo, itemlist):
@@ -69,20 +72,31 @@ def getAllPrograms(pageNo, itemlist):
     ##
     ##}// fin de reload
 
+	'''
     url= 'http://www.lasexta.com/sextatv/reload_programs'
     #if the page numer is 1 ignore json request to get the first page
+    logger.info("url="+url)
     if pageNo > 1:
-            params = urllib.urlencode({"item_id": 1, "show_id": 1, "bd_id": 1 , "pagina": pageNo, "limit": 1 })
+            params = urllib.urlencode({"item_id": 1, "show_id": 1, "bd_id": 1 , "pagina": pageNo, "limit": 3 })
+            logger.info("params="+params)
             req = urllib2.Request(url, params)
     else:
             req = urllib2.Request(url)
 
     req.add_header('User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3 Gecko/2008092417 Firefox/3.0.3')
     req.add_header('Content-type', 'application/x-www-form-urlencoded')
+    req.add_header('Referer','http://www.lasexta.com/sextatv')
+    
     response = urllib2.urlopen(req)
     page = response.read()
     response.close()
-    
+    '''
+	if pageNo > 1:
+			params = urllib.urlencode({"item_id": 1, "show_id": 1, "bd_id": 1 , "pagina": pageNo, "limit": 3 })
+			logger.info("params="+params)
+	else:
+			params = None
+    page = scrapertools.cache_page(url, post, headers, modo_cache)
 
 
     ##        	<div class="capaseccionl item_vip">
@@ -295,6 +309,9 @@ def getVideos(item):
             logger.info("url3="+scrapedVideoUrl)
 
             if (scrapedVideoUrl.startswith("rtmp")):
+                scrapedVideoUrl = scrapedVideoUrl.replace("mp4:", " playpath=mp4:")
+                scrapedVideoUrl = scrapedVideoUrl + " swfvfy=true swfurl=http://www.lasexta.com/media/swf/reproductor_sextatv/player_overlay.swf"
+           
                 itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedVideoUrl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
             else:
     
