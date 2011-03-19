@@ -137,8 +137,6 @@ def channels_list():
     #addfolder("Plus TV","plus","mainlist")
     channelslist.append([ "RTVA (Andalucia)"           , "rtva"                 , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
-    channelslist.append([ "TVE Programas"              , "rtveprogramas"        , "" , "ES" , "N" , "generic"  ])
-    channelslist.append([ "TVE Mediateca"              , "rtvemediateca"        , "" , "ES" , "N" , "generic"  ])
     #addfolder("TV Azteca","tva","mainlist")
     channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
     channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
