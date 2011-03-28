@@ -7,9 +7,15 @@
 import urlparse,re
 import urllib
 
-from core import logger
-from core import scrapertools
-from core.item import Item
+try:
+    from core import logger
+    from core import scrapertools
+    from core.item import Item
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import scrapertools
+    from Code.core.item import Item
 
 logger.info("[antena3.py] init")
 
@@ -44,7 +50,7 @@ def ultimosvideos(item):
 def videosportada(item,id):
     logger.info("[antena3.py] videosportada")
     
-    print item.tostring()
+    #print item.tostring()
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -93,7 +99,7 @@ def videosportada(item,id):
 def ultimasemana(item):
     logger.info("[antena3.py] ultimasemana")
     
-    print item.tostring()
+    #print item.tostring()
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -143,7 +149,7 @@ def ultimasemana(item):
 def series(item):
     logger.info("[antena3.py] series")
     
-    print item.tostring()
+    #print item.tostring()
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -322,7 +328,7 @@ def tvmovies(item):
 
 def detalle(item):
     logger.info("[antena3.py] detalle")
-    print item.tostring()
+    #print item.tostring()
 
     itemlist = []
     '''
@@ -341,7 +347,7 @@ def detalle(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae el xml
-    patron = 'so.addVariable\("xml","([^"]+)"'
+    patron = "player_capitulo.xml='([^']+)';"
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     scrapedurl = urlparse.urljoin(item.url,matches[0])
@@ -351,7 +357,7 @@ def detalle(item):
     data = scrapertools.cachePage(scrapedurl)
 
     # Extrae las entradas del video y el thumbnail
-    patron = '<urlHttpVideo><\!\[CDATA\[([^\]]+)\]\]>'
+    patron = '<urlVideoMp4><\!\[CDATA\[([^\]]+)\]\]>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     baseurlvideo = matches[0]
     logger.info("baseurlvideo="+baseurlvideo)
@@ -374,7 +380,7 @@ def detalle(item):
     itemlist = []
     i = 1
     for match in matches:
-        scrapedurl = urlparse.urljoin(baseurlvideo,match)
+        scrapedurl = baseurlvideo+match
         logger.info("scrapedurl="+scrapedurl)
         itemlist.append( Item(channel=CHANNELNAME, title="(%d) %s" % (i,item.title) , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=item.plot , server = "directo" , folder=False) )
         i=i+1
