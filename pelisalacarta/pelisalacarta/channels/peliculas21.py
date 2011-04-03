@@ -524,7 +524,7 @@ def listvideos(params,url,category):
         # Añade al listado de XBMC
             xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category ,"Directo", "Ver El Trailer de : "+title , match , thumbnail, plot )
     else:
-        import trailertools
+        #import core.trailertools
         print title
         s = unicode( title, "latin-1" )
         # Añade al listado de XBMC
@@ -652,7 +652,7 @@ def listvideos(params,url,category):
     plot2 = "PELICULAS RELACIONADAS :\n\n"
     for match in matches:
         plot2 = plot2 + "-"+match[1]+"\n"
-    xbmctools.addnewfolder( CHANNELNAME , "listarelacionados" , category , titulo , matchesBK , thumbnail, plot2 , fanart = scrapedthumbnail )
+    xbmctools.addnewfolder( CHANNELNAME , "listarelacionados" , category , titulo , matchesBK , thumbnail, plot2 , fanart = thumbnail )
     
     # Label (top-right)...
     xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
