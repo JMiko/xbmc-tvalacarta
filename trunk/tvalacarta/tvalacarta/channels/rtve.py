@@ -366,7 +366,7 @@ def videos(item):
     # Extrae los vídeos
     patron  = '<li class="[^"]+">.*?'
     patron += '<span class="col_tit">[^<]+'
-    patron += '<a href="([^"]+)">([^<]+)</a>[^<]+'
+    patron += '<a href="([^"]+)">(.*?)</a>[^<]+'
     patron += '</span>[^<]+'
     patron += '<span class="col_tip">([^<]+)</span>[^<]+'
     patron += '<span class="col_dur">([^<]+)</span>.*?'
@@ -379,6 +379,7 @@ def videos(item):
     # Crea una lista con las entradas
     for match in matches:
         scrapedtitle = match[1]+" ("+match[2]+") ("+match[3]+") ("+match[4]+")"
+        scrapedtitle = scrapedtitle.replace("<em>Nuevo</em>&nbsp;","")
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
         scrapedplot = match[0]
