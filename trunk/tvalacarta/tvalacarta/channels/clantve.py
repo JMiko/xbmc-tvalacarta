@@ -27,22 +27,26 @@ def mainlist(item):
 def programas(item):
     logger.info("[clantv.py] programas")
 
+    itemlist = []
+
     # Descarga la página
     data = scrapertools.cachePage(item.url,modoCache=MODO_CACHE)
 
     # Extrae los programas
     patron  = '<div class="informacion-serie">[^<]+'
-    patron += '<h3><a href="([^"]+)">([^<]+)</a></h3><a[^>]+>[^<]+</a><img.*?src="([^"]+)"><div>(.*?)</div>.*?'
-    patron += '<div class="videos">.*?'
-    patron += '<p class="vertodos"><a href="([^"]+)"'
+    patron += '<h3>[^<]+'
+    patron += '<a href="([^"]+)">([^<]+)</a>[^<]+'
+    patron += '</h3>[^<]+'
+    patron += '<a[^>]+>[^<]+</a><img.*?src="([^"]+)"><div>(.*?)</div>'
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    itemlist = []
     for match in matches:
         scrapedtitle = match[1]
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        scrapedurl = urlparse.urljoin(item.url,match[4])
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedurl = urlparse.urljoin(scrapedurl,"videos")
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = match[3]
         scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
@@ -56,7 +60,7 @@ def programas(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , page=scrapedpage, show=scrapedtitle , folder=True) )
 
     # Añade el resto de páginas
-    patron = '<li class="siguiente"><a rel="next" title="Ir a la p&aacute;gina siguiente" href="([^"]+)">Siguiente</a></li>'
+    patron = '<li class="siguiente">[^<]+<a rel="next" title="Ir a la p&aacute;gina siguiente" href="([^"]+)">Siguiente'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -78,15 +82,12 @@ def episodios(item):
     # Extrae los capítulos
     patron = '<div class="contenido-serie">(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
+    logger.info("[clantv.py] encontrados %d episodios" % len(matches) )
     if len(matches)==0:
         return itemlist
     data2 = matches[0]
 
-    patron = '<ul class="videos">[^<]+'
-    patron = '<li>[^<]+'
-    patron = '<dl>[^<]+'
-    patron = '<dt>[^<]+</dt>[^<]+'
-    patron = '<dd><a rel="([^"]+)".*?href="([^"]+)"><img src="([^"]+)"[^>]+>(.*?)</a>'
+    patron = '<a rel="([^"]+)".*?href="([^"]+)"><img src="([^"]+)"[^>]+>(.*?)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data2)
     
     # Extrae los items
