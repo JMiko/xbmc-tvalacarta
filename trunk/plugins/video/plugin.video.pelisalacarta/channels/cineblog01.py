@@ -71,8 +71,8 @@ def mainlist(params,url,category):
     xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Film - Novità"              ,"http://cineblog01.com/film/","","")
     xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"   , category , "Film - Per Lettera"    ,"","","")
     xbmctools.addnewfolder( CHANNELNAME , "searchmovie" , category , "   Cerca Film"                           ,"","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Serie"   ,"http://cineblog01.com/serietv/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Anime"   ,"http://cineblog01.com/anime/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listserie"  , category , "Serie"   ,"http://cineblog01.info/serietv/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listanime"  , category , "Anime"   ,"http://cineblog01.info/anime/","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -325,6 +325,136 @@ def listvideos(params,url,category):
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+def listanime(params,url,category):
+    xbmc.output("[cineblog01.py] mainlist")
+
+    if url =="":
+        url = "http://cineblog01.com/film/"
+
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    #xbmc.output(data)
+
+    # Extrae las entradas (carpetas)
+    patronvideos  = '<div id="covershot".*?<a.*?<img src="(.*?)".*?'
+    patronvideos += '<div id="post-title"><a href="(.*?)".*?'
+    patronvideos += '<h3>(.*?)</h3>'
+    patronvideos += '(.*?)</p>'
+    #patronvideos += '<div id="description"><p>(.?*)</div>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for match in matches:
+        # Titulo
+        UnicodeDecodedTitle = match[2].decode("utf-8")
+        unescapedTitle = unescape (UnicodeDecodedTitle)
+        scrapedtitle = unescapedTitle.encode("latin1","ignore") 
+        # URL
+        scrapedurl = urlparse.urljoin(url,match[1])
+        # Thumbnail
+        scrapedthumbnail = urlparse.urljoin(url,match[0])
+        # Argumento
+        UnicodeDecodedTitle = match[3].decode("utf-8")
+        unescapedTitle = unescape (UnicodeDecodedTitle)
+        scrapedplot = unescapedTitle.encode("latin1","ignore") 
+        #scrapedplot = match[3]
+        # Depuracion
+        if (DEBUG):
+            xbmc.output("scrapedtitle="+scrapedtitle)
+            xbmc.output("scrapedurl="+scrapedurl)
+            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+#            xbmc.output("scrapeddescription="+scrapeddescription)
+
+        # Añade al listado de XBMC
+        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+    # Remove the next page mark
+    patronvideos = '<a href="(http://www.cineblog01.info/anime/page/[0-9]+)">&gt;'
+    matches = re.compile (patronvideos, re.DOTALL).findall (data)
+    scrapertools.printMatches (matches)
+
+    if len(matches)>0:
+        scrapedtitle = "Pagina seguente"
+        scrapedurl = matches[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG):
+            xbmc.output("scrapedtitle="+scrapedtitle)
+            xbmc.output("scrapedurl="+scrapedurl)
+            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+        xbmctools.addnewfolder( CHANNELNAME , "listanime" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+    # Label (top-right)...
+    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
+
+def listserie(params,url,category):
+    xbmc.output("[cineblog01.py] mainlist")
+
+    if url =="":
+        url = "http://cineblog01.com/film/"
+
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    #xbmc.output(data)
+
+    # Extrae las entradas (carpetas)
+    patronvideos  = '<div id="covershot".*?<a.*?<img src="(.*?)".*?'
+    patronvideos += '<div id="post-title"><a href="(.*?)".*?'
+    patronvideos += '<h3>(.*?)</h3>'
+    patronvideos += '(.*?)</p>'
+    #patronvideos += '<div id="description"><p>(.?*)</div>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for match in matches:
+        # Titulo
+        UnicodeDecodedTitle = match[2].decode("utf-8")
+        unescapedTitle = unescape (UnicodeDecodedTitle)
+        scrapedtitle = unescapedTitle.encode("latin1","ignore") 
+        # URL
+        scrapedurl = urlparse.urljoin(url,match[1])
+        # Thumbnail
+        scrapedthumbnail = urlparse.urljoin(url,match[0])
+        # Argumento
+        UnicodeDecodedTitle = match[3].decode("utf-8")
+        unescapedTitle = unescape (UnicodeDecodedTitle)
+        scrapedplot = unescapedTitle.encode("latin1","ignore") 
+        #scrapedplot = match[3]
+        # Depuracion
+        if (DEBUG):
+            xbmc.output("scrapedtitle="+scrapedtitle)
+            xbmc.output("scrapedurl="+scrapedurl)
+            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+#            xbmc.output("scrapeddescription="+scrapeddescription)
+
+        # Añade al listado de XBMC
+        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+    # Remove the next page mark
+    patronvideos = '<a href="(http://www.cineblog01.info/serietv/page/[0-9]+)">&gt;'
+    matches = re.compile (patronvideos, re.DOTALL).findall (data)
+    scrapertools.printMatches (matches)
+
+    if len(matches)>0:
+        scrapedtitle = "Pagina seguente"
+        scrapedurl = matches[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG):
+            xbmc.output("scrapedtitle="+scrapedtitle)
+            xbmc.output("scrapedurl="+scrapedurl)
+            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+        xbmctools.addnewfolder( CHANNELNAME , "listserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+
+    # Label (top-right)...
+    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+
 
 def detail(params,url,category):
     xbmc.output("[cineblog01.py] detail")
