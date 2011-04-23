@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para animeid
@@ -32,13 +32,13 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="destacados" , title="Destacados"               , url="http://animeid.com/" ))
     
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist"   , title="Últimas series agregadas" , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="chaplist"  , title="Últimos capítulos"        , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="animelist" , title="Últimos animes agregados" , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="airlist"   , title="Series en emisión"        , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="newlist"   , title="ï¿½ltimas series agregadas" , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="chaplist"  , title="ï¿½ltimos capï¿½tulos"        , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="animelist" , title="ï¿½ltimos animes agregados" , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="airlist"   , title="Series en emisiï¿½n"        , url="http://animeid.com/" ))
     itemlist.append( Item(channel=CHANNELNAME, action="fulllist"  , title="Lista completa de animes" , url="http://animeid.com/" ))
-    #itemlist.append( Item(channel=CHANNELNAME, action="genrelist" , title="Listado por género"       , url="http://animeid.com/" ))
-    #itemlist.append( Item(channel=CHANNELNAME, action="alphalist" , title="Listado alfabético"       , url="http://animeid.com/" ))
+    #itemlist.append( Item(channel=CHANNELNAME, action="genrelist" , title="Listado por gï¿½nero"       , url="http://animeid.com/" ))
+    #itemlist.append( Item(channel=CHANNELNAME, action="alphalist" , title="Listado alfabï¿½tico"       , url="http://animeid.com/" ))
 
     return itemlist
 
@@ -51,7 +51,7 @@ def fulllist(item):
         # Confluence: 50,51,550,560,500,501,508,505
         #xbmc.executebuiltin("Container.SetViewMode(550)")  #53=mediainfo
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  <a class="accion linkFader" href="../accion-1.html"></a>
@@ -85,7 +85,7 @@ def airlist(item):
         # Confluence: 50,51,550,560,500,501,508,505
         #xbmc.executebuiltin("Container.SetViewMode(550)")  #53=mediainfo
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  <a class="accion linkFader" href="../accion-1.html"></a>
@@ -119,7 +119,7 @@ def animelist(item):
         # Confluence: 50,51,550,560,500,501,508,505
         #xbmc.executebuiltin("Container.SetViewMode(550)")  #53=mediainfo
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  <a class="accion linkFader" href="../accion-1.html"></a>
@@ -153,11 +153,11 @@ def chaplist(item):
         # Confluence: 50,51,550,560,500,501,508,505
         #xbmc.executebuiltin("Container.SetViewMode(550)")  #53=mediainfo
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  <a class="accion linkFader" href="../accion-1.html"></a>
-    #<div class="a"> <a href="/ver/dragon-ball-kai-94.html" title="Dragon Ball Kai 94"><img src="http://img.animeid.com/dbk.jpg" alt="Dragon Ball Kai" width="49" height="71" border="0" /></a> <div class="at"><a href="/ver/dragon-ball-kai-94.html" title="Dragon Ball Kai 94">Dragon Ball Kai 94</a></div> <div class="at" style="margin-top:0px"><span>Publicado: 21/02/2011</span></div> <div class="ad">Después de los rumores que llevaban tiempo apuntando a que se realizaría una nueva serie de Dra&hellip;</div> </div>
+    #<div class="a"> <a href="/ver/dragon-ball-kai-94.html" title="Dragon Ball Kai 94"><img src="http://img.animeid.com/dbk.jpg" alt="Dragon Ball Kai" width="49" height="71" border="0" /></a> <div class="at"><a href="/ver/dragon-ball-kai-94.html" title="Dragon Ball Kai 94">Dragon Ball Kai 94</a></div> <div class="at" style="margin-top:0px"><span>Publicado: 21/02/2011</span></div> <div class="ad">Despuï¿½s de los rumores que llevaban tiempo apuntando a que se realizarï¿½a una nueva serie de Dra&hellip;</div> </div>
     patronvideos  = '<div class="a"> <a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     itemlist = []
@@ -183,7 +183,7 @@ def newlist(item):
         # Confluence: 50,51,550,560,500,501,508,505
         #xbmc.executebuiltin("Container.SetViewMode(550)")  #53=mediainfo
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  <a class="accion linkFader" href="../accion-1.html"></a>
@@ -212,7 +212,7 @@ def destacados(item):
         # Confluence: 50,51,550,560,500,501,508,505
         #xbmc.executebuiltin("Container.SetViewMode(550)")  #53=mediainfo
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  <a class="accion linkFader" href="../accion-1.html"></a>
@@ -242,7 +242,7 @@ def destacados(item):
 def serie(item):
     logger.info("[animeid.py] serie")
 
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Saca el argumento
