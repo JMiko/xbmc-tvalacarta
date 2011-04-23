@@ -4,6 +4,7 @@
 # Canal para anifenix
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+# Nota: Este canal ya no existe, la web ha desaparecido
 import urlparse,urllib2,urllib,re
 
 from core import scrapertools

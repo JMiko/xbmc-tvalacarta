@@ -4,6 +4,7 @@
 # Canal para animetakus
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+# Nota: Este canal se ha eliminado, enlaza a animeflv.com y actualmente la web no es funcional
 import urlparse,urllib2,urllib,re
 import os, sys
 
