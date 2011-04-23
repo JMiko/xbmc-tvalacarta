@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para bancodeseries
@@ -8,61 +8,46 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 
-import xbmc
-import xbmcgui
-import xbmcplugin
-
-from core import scrapertools
-from core import config
-from core import logger
-from core import xbmctools
-from core.item import Item
-from servers import servertools
-from servers import vk
-
-from pelisalacarta import buscador
+try:
+    from core import logger
+    from core import config
+    from core import scrapertools
+    from core.item import Item
+    from servers import servertools
+    from servers import vk
+except:
+    # En Plex Media server lo anterior no funciona...
+    from Code.core import logger
+    from Code.core import config
+    from Code.core import scrapertools
+    from Code.core.item import Item
+    from Code.servers import servertools
+    from Code.servers import vk
 
 CHANNELNAME = "bancodeseries"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
-
-# Traza el inicio del canal
-logger.info("[bancodeseries.py] init")
-
 DEBUG = True
 
-def mainlist(params,url,category):
+def isGeneric():
+    return True
+
+def mainlist(item):
     logger.info("[bancodeseries.py] mainlist")
 
-    # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Novedades" ,"http://bancodeseries.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "Estrenos" ,"http://bancodeseries.com/taquilla/estrenos/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListaCat" , category , "Categorias" ,"http://bancodeseries.com/taquilla/estrenos/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "FullSeriesList" , category , "Listado Completo de Series" ,"http://bancodeseries.com/","","")
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Novedades" , url="http://bancodeseries.com/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Estrenos" , url="http://bancodeseries.com/taquilla/estrenos/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="ListaCat"       , title="Categorias" , url="http://bancodeseries.com/taquilla/estrenos/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="FullSeriesList" , title="Listado Completo de Series" , url="http://bancodeseries.com/"))
 
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
+    return itemlist
     
-def novedades(params,url,category):
+def novedades(item):
     logger.info("[bancodeseries.py] novedades")
 
-    # ------------------------------------------------------
-    # Descarga la página
-    # ------------------------------------------------------
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # ------------------------------------------------------
-    # Extrae las películas
-    # ------------------------------------------------------
-    #patron  = '<div class="thumb">[^<]+<a href="([^"]+)"><img src="([^"]+)".*?alt="([^"]+)"/></a>'
+    itemlist = []
+    
+    # Extrae las entradas
+    data = scrapertools.cachePage(item.url)
     patron  = '<div class="galleryitem">[^<]+'
     patron += '<h1>[^<]+</h1>[^<]+'
     patron += '<a href="([^"]+)">[^<]+<img src="([^"]+)" '
@@ -78,124 +63,80 @@ def novedades(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         try:
             print scrapedtitle
-            scrapedtitle = scrapedtitle.replace("Ã±","ñ")
+            scrapedtitle = scrapedtitle.replace("Ã±","ï¿½")
             #scrapedtitle = unicode(scrapedtitle, "utf-8" )
-            
         except:
             pass
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listcapitulos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME, action="listcapitulos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # ------------------------------------------------------
-    # Extrae la página siguiente
-    # ------------------------------------------------------
-    #patron = '<a href="([^"]+)" >\&raquo\;</a>'
+    # Extrae la pagina siguiente
     patron  = 'class="current">[^<]+</span><a href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG:
-        scrapertools.printMatches(matches)
+    if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
         scrapedtitle = "!Pagina siguiente"
         scrapedurl = match
         scrapedthumbnail = ""
-        scrapeddescription = ""
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-        # Añade al listado de XBMC
-        xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "novedades" )
+    return itemlist
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def FullSeriesList(params,url,category):
+def FullSeriesList(item):
     logger.info("[bancodeseries.py] FullSeriesList")
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-
-    # Patron de las entradas
+    itemlist = []
+    
+    # Extrae las entradas
+    data = scrapertools.cachePage(item.url)
     patronvideos  = "<a href='([^']+)' class='[^']+' title='[^']+' style='[^']+'"          # URL
     patronvideos += ">([^<]+)</a>"                                                         # TITULO
-      
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    if DEBUG: scrapertools.printMatches(matches)
 
-    # Añade las entradas encontradas
     for match in matches:
-        # Atributos
         scrapedtitle = match[1]
         scrapedurl = match[0]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    return itemlist
 
-
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-
-def ListaCat(params,url,category):
+def ListaCat(item):
     logger.info("[bancodeseries.py] ListaCat")
-    
-    
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Acción"        ,"http://bancodeseries.com/taquilla/accion/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Animacion"       ,"http://bancodeseries.com/taquilla/animacion/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Anime"         ,"http://bancodeseries.com/taquilla/anime/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Aventura"      ,"http://bancodeseries.com/taquilla/aventura/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Bèlico Guerra ","http://bancodeseries.com/taquilla/guerra/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Ciencia-Ficción","http://bancodeseries.com/taquilla/ciencia-ficcion/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedadesMirror", category , "Clásicos","http://bancodeseries.com/taquilla/peliculasclasicos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Comedia"        ,"http://bancodeseries.com/taquilla/comedia/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Dibujos"   ,"http://bancodeseries.com/taquilla/dibujos/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedadesMirror", category , "Destacado","http://bancodeseries.com/taquilla/peliculasdestacado/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Documentales Online","http://bancodeseries.com/taquilla/documentales-online-completos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Drama"          ,"http://bancodeseries.com/taquilla/drama/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Entretenimiento","http://bancodeseries.com/taquilla/entretenimiento/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Estrenos"       ,"http://bancodeseries.com/taquilla/ultimos-extrenos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Fantastico"        ,"http://bancodeseries.com/taquilla/fantastico/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Intriga"        ,"http://bancodeseries.com/taquilla/intriga/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Misterio"      ,"http://bancodeseries.com/taquilla/misterio/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Peliculas HD"  ,"http://bancodeseries.com/taquilla/peliculaspeliculas-hd-categorias/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Romance"        ,"http://bancodeseries.com/taquilla/peliculas-sobre-romance/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Suspenso"       ,"http://bancodeseries.com/taquilla/suspenso/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Terror"         ,"http://bancodeseries.com/taquilla/terror/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"novedades", category , "Thriller"       ,"http://bancodeseries.com/taquilla/thriller/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"FullSeriesList", category , "Todas las Series","http://bancodeseries.com/","","")
-    
-    
-    
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="AcciÃ³n"          , url="http://bancodeseries.com/taquilla/accion"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Ciencia-FicciÃ³n" , url="http://bancodeseries.com/taquilla/ciencia-ficcion"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Comedia"         , url="http://bancodeseries.com/taquilla/comedia"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Dibujos"         , url="http://bancodeseries.com/taquilla/dibujos"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Drama"           , url="http://bancodeseries.com/taquilla/drama"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Entretenimiento" , url="http://bancodeseries.com/taquilla/entretenimiento"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Estrenos"        , url="http://bancodeseries.com/taquilla/ultimos-extrenos"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Fantastico"      , url="http://bancodeseries.com/taquilla/fantastico"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Misterio"        , url="http://bancodeseries.com/taquilla/misterio"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Suspenso"        , url="http://bancodeseries.com/taquilla/suspenso"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Terror"          , url="http://bancodeseries.com/taquilla/terror"))
+    itemlist.append( Item(channel=CHANNELNAME, action="novedades"      , title="Thriller"        , url="http://bancodeseries.com/taquilla/thriller"))
+    itemlist.append( Item(channel=CHANNELNAME, action="FullSeriesList" , title="Todas las Series" , url="http://bancodeseries.com/"))
+    return itemlist
 
-
-
-def listcapitulos(params,url,category):
+def listcapitulos(item):
     logger.info("[bancodeseries.py] listcapitulos")
 
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-
-        
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-    
+    itemlist = []
+    thumbnail = item.thumbnail
+    # Extrae el argumento
+    data = scrapertools.cachePage(item.url)
     patron = '<div class="sinopsis">.*?<p><p>(.*?)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
         plot = matches[0]
-    else:plot=""    
+    else:
+        plot=""    
+
     # Patron de las entradas
     patron = 'post_id="([^"]+)'
     matchesid = re.compile(patron,re.DOTALL).findall(data)
@@ -210,10 +151,7 @@ def listcapitulos(params,url,category):
     patron += '<h2><a class="title-capitulo">([^<]+)</a></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    
-
-    # Añade las entradas encontradas
-    for match in matches:
+    for match in matches:
         # Atributos
         scrapedtitle = match[1]
         #http://bancodeseries.com/capitulo.php?action=load_capitulo&id=Capitulo-1&post_id=1078&_=1285004415408
@@ -222,27 +160,21 @@ def listcapitulos(params,url,category):
         scrapedplot = plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME, action="listmirrors" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-        
-    
-    
+    return itemlist
 
-def listmirrors(params,url,category):
+def listmirrors(item):
     logger.info("[bancodeseries.py] listmirrors")
+    itemlist = []
 
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+    title = item.title
+    thumbnail = item.thumbnail
+    plot = item.plot
 
-    # Descarga la página de detalle
+    # Descarga la pagina de detalle
     # http://bancodeseries.com/sorority-row/
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     logger.info(data)
     
     # Extrae el argumento
@@ -252,14 +184,9 @@ def listmirrors(params,url,category):
     if len(matches)>0:
         plot = matches[0]
     '''
-    # Extrae los enlaces a los vídeos (Megavídeo)
-    
-    
-    
+    # Extrae los enlaces a los videos (MV)
     scrapedthumbnail = thumbnail
     scrapedplot = plot
-    
-    
     patron  = '<a href="([^"]+)".+?>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -267,17 +194,14 @@ def listmirrors(params,url,category):
     for match in matches:
         scrapedtitle = title
         
-        
         if match[0].endswith(".html"):
             if "/vk/" in match[0]:  #http://bancodeseries.com/vk/11223192/674072850/ml3mp2pm9v00nmp2/predators-online.html
                 patron = "http\:\/\/bancodeseries.com\/vk\/([^\/]+)\/([^\/]+)\/([^\/]+)\/[^\.]+\.html"
                 matchesvk = re.compile(patron).findall(match[0])
                 scrapedurl = "http://bancodeseries.com/modulos/embed/vkontakteX.php?oid=%s&id=%s&hash=%s" %(matchesvk[0][0],matchesvk[0][1],matchesvk[0][2])
                 server = "Directo"
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - %s [VK]" %match[1] , scrapedurl , scrapedthumbnail, scrapedplot )
-                          
-        
-        
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [VK]" %match[1] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+
             patron   = "http://bancodeseries.com/([^/]+)/([^/]+)/[^/]+/([^\.]+).html"    #http://bancodeseries.com/playlist/6917/el-equipo-a-online.html
             matches2 = re.compile(patron,re.DOTALL).findall(match[0])
                             
@@ -295,7 +219,8 @@ def listmirrors(params,url,category):
                     scrapedurl = xmlmatch[1]
                     #xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , (title.strip() + " (%d) " + videotitle) % j , url , thumbnail , plot )
                     server = "Directo"
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - %s [Directo]" %xmlmatch[0] , scrapedurl , scrapedthumbnail, scrapedplot )
+                    itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [Directo]" %xmlmatch[0] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+
             elif matches2[0][0] == "flash":
                 url = "http://bancodeseries.com/megaembed/%s/%s.html" %(matches2[0][1],matches2[0][2])
                 data1 = scrapertools.cachePage(url)
@@ -308,45 +233,21 @@ def listmirrors(params,url,category):
                     server = video[2]
                     
                     from core import downloadtools
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle + " - " + videotitle , url , thumbnail , downloadtools.limpia_nombre_excepto_1(plot) )    
-                
+                    itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle + " - " + videotitle , url=url, thumbnail=scrapedthumbnail, plot=downloadtools.limpia_nombre_excepto_1(plot)))
+
         elif "vk.php" in match[0]:
             scrapedurl = "http://bancodeseries.com/modulos/embed/vkontakteX.php?%s" %match[0].split("?")[1]
             server = "Directo"
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - %s [VK]" %match[1] , scrapedurl , scrapedthumbnail, scrapedplot )
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [VK]" %match[1] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-def play(params,url,category):
-    logger.info("[bancodeseries.py] play")
-    try:
-        title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    except:
-        title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params.get("server")
+    return itemlist
 
-    # Abre dialogo
-    dialogWait = xbmcgui.DialogProgress()
-    dialogWait.create( 'Accediendo al video...', title , plot )
-
-    # Descarga la página del reproductor
-    # http://bancodeseries.com/modulos/player.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMjM2LzY4NS8xMDU1NTcxNDYxNjI3MjNfMzQ5ODk=
-    # http://bancodeseries.com/modulos/embed/playerembed.php?url=dmlkZW8uYWsuZmFjZWJvb2suY29tL2Nmcy1hay1hc2gyLzMzMjM2LzY4NS8xMDU1NTcxNDYxNjI3MjNfMzQ5ODk=
-    logger.info("[bancodeseries.py] url="+url)
-    
-    ## --------------------------------------------------------------------------------------##
-    #            Busca enlaces de videos para el servidor vkontakte.ru                        #
-    ## --------------------------------------------------------------------------------------##
+def play(item):
+    logger.info("[bancodeseries.py] play url="+item.url)
+    itemlist = []
+    # Busca enlaces de videos para el servidor vkontakte.ru
     #"http://vkontakte.ru/video_ext.php?oid=89710542&id=147003951&hash=28845bd3be717e11&hd=1
-    
-    
-    if "vkontakteX.php" in url:
-        data = scrapertools.cachePage(url)
-        server = "Directo"
+    if "vkontakteX.php" in item.url:
         '''
         var video_host = 'http://cs12916.vkontakte.ru/';
         var video_uid = '87155741';
@@ -354,19 +255,13 @@ def play(params,url,category):
         var video_no_flv = 1;
         var video_max_hd = '1'
         '''
+        data = scrapertools.cachePage(item.url)
         patronvideos = '<iframe src="(http://vk[^/]+/video_ext.php[^"]+)"'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         if len(matches)>0:
-            print " encontro VKontakte.ru :%s" %matches[0]
-            url =     vk.geturl(matches[0])
+            #print " encontro VKontakte.ru :%s" %matches[0]
+            item.server = "Directo"
+            item.url = vk.geturl(matches[0])
 
-    # Cierra dialogo
-    dialogWait.close()
-    del dialogWait
-
-    if len(url)>0:
-        
-        logger.info("url="+url)
-        xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-    else:
-        xbmctools.alertnodisponible()
+    itemlist.append( item )
+    return itemlist
