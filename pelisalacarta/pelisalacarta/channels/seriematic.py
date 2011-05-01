@@ -30,10 +30,14 @@ def mainlist(item):
     logger.info("[seriematic.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"       , action="series", url="http://www.seriematic.com/series.php"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Miniseries"   , action="series", url="http://www.seriematic.com/miniseries.php"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Dibujos"      , action="series", url="http://www.seriematic.com/dibujos.php"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Anime"        , action="series", url="http://www.seriematic.com/manga.php"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series"       , 
+        action="series", url="http://www.seriematic.com/series.php"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Miniseries"   , 
+        action="series", url="http://www.seriematic.com/miniseries.php"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Dibujos"      , 
+        action="series", url="http://www.seriematic.com/dibujos.php"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Anime"        , 
+        action="series", url="http://www.seriematic.com/manga.php"))
     
     return itemlist
 
@@ -109,11 +113,27 @@ def videos(item):
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[0]+" "+match[2]
+        scrapedtitle = match[0]+" "+match[2]+" [Megavideo]"
         scrapedplot = ""
         scrapedurl = match[1]
         scrapedthumbnail = ""
         server="Megavideo"
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , server=server , folder=False) )
+
+
+    patronvideos  = '<tr><td>[^<]+<script[^>]+>p1\(\'([^\']+)\',\'M\'\).</script><img[^>]+>([^<]+)<'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for match in matches:
+        scrapedtitle = match[1]+" [Megaupload]"
+        scrapedplot = ""
+        scrapedurl = match[0]
+        scrapedthumbnail = ""
+        server="Megaupload"
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
