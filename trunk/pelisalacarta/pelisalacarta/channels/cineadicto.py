@@ -33,54 +33,54 @@ except:
 logger.info("[cineadicto.py] init")
 
 DEBUG = True
+def isGeneric():
+    return True
 
-def mainlist(params,url,category):
+def mainlist(item):
     logger.info("[cineadicto.py] mainlist")
 
-    # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.cine-adicto.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListaCat"         , category , "Listado por Genero"    ,"http://www.cine-adicto.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListaAlfa"         , category , "Listado Alfanumerico"    ,"http://www.cine-adicto.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Estrenos","http://www.cine-adicto.com/category/categorias/estrenos","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales","http://www.cine-adicto.com/category/categorias/documentales/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Peliculas en HD","http://www.cine-adicto.com/category/categorias/peliculas-hd-categorias","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search" , category , "Buscar","http://www.cine-adicto.com/","","")
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos"        , title="Ultimas Películas Añadidas"    , url="http://www.cine-adicto.com/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="ListaCat"          , title="Listado por Genero"            , url="http://www.cine-adicto.com/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="ListaAlfa"         , title="Listado Alfanumerico"          , url="http://www.cine-adicto.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"  , title="Estrenos"                      , url="http://www.cine-adicto.com/category/2010/" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos"        , title="Documentales"                  , url="http://www.cine-adicto.com/category/documentales/" ))
+    #itemlist.append( Item(channel=CHANNELNAME , action="listvideos"        , title="Peliculas en HD"              , url="http://www.cine-adicto.com/category/peliculas-hd-categorias" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="search"            , title="Buscar"                        , url="http://www.cine-adicto.com/" ))
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def search(params,url,category):
+    return itemlist
+    
+def search(item):
     logger.info("[cineadicto.py] search")
 
-    buscador.listar_busquedas(params,url,category)
+    return buscador.listar_busquedas(item)
 
-def searchresults(params,url,category):
+def searchresults(item):
     logger.info("[cineadicto.py] searchresults")
 
-    buscador.salvar_busquedas(params,url,category)
+    buscador.salvar_busquedas(item)
 
     #convert to HTML
-    tecleado = url.replace(" ", "+")
-    searchUrl = "http://www.cine-adicto.com/?s="+tecleado
-    searchresults2(params,searchUrl,category)
+    tecleado = item.url.replace(" ", "+")
+    item.url = "http://www.cine-adicto.com/?s="+tecleado
+    itemlist = searchresults2(item)
+    return itemlist
 
-def searchresults2(params,url,category):
+def searchresults2(item):
     logger.info("[cineadicto.py] SearchResult")
     
     
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     #print data
     # Extrae las entradas (carpetas)
     patronvideos  = '<div class="poster">[^<]+<a href="([^"]+)"'                          # URL
     patronvideos += '><img src="([^"]+)" width=[^\/]+\/>'                                 # TUMBNAIL
     patronvideos += '</a>[^<]+<[^>]+>[^<]+<[^>]+>[^<]+<a href="[^"]+">([^<]+)</a>'        # TITULO 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-
+    
+    itemlist = []
     for match in matches:
         # Atributos
         scrapedurl = match[0]
@@ -93,114 +93,113 @@ def searchresults2(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-            
+    
+    return itemlist
 
-def ListaCat(params,url,category):
+def ListaCat(item):
     logger.info("[cineadicto.py] ListaCat")
+
     
     
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Acción","http://www.cine-adicto.com/category/categorias/accion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Animado","http://www.cine-adicto.com/category/categorias/animado/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Anime","http://www.cine-adicto.com/category/categorias/anime/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Asiáticas","http://www.cine-adicto.com/category/categorias/asiaticas/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Aventuras","http://www.cine-adicto.com/category/categorias/aventura/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Ciencia-Ficción","http://www.cine-adicto.com/category/categorias/ciencia-ficcion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Clásicos","http://www.cine-adicto.com/category/categorias/clasicos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Comedia","http://www.cine-adicto.com/category/categorias/comedia/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Comedias Romanticas","http://www.cine-adicto.com/category/categorias/comedias-romanticas/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Destacado","http://www.cine-adicto.com/category/categorias/destacado/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Documentales","http://www.cine-adicto.com/category/categorias/documentales/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Drama","http://www.cine-adicto.com/category/categorias/drama/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Español Latino","http://www.cine-adicto.com/category/categorias/espanol-latino/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Estreno","http://www.cine-adicto.com/category/categorias/estreno/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Infantil","http://www.cine-adicto.com/category/categorias/infantil/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Intriga","http://www.cine-adicto.com/category/categorias/intriga/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Musicales","http://www.cine-adicto.com/category/categorias/musicales/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Peliculas HD","http://www.cine-adicto.com/category/categorias/peliculas-hd-categorias/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Romance","http://www.cine-adicto.com/category/categorias/romance/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Suspenso","http://www.cine-adicto.com/category/categorias/suspenso/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Terror","http://www.cine-adicto.com/category/categorias/terror/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Thriller","http://www.cine-adicto.com/category/categorias/thriller/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Western","http://www.cine-adicto.com/category/categorias/western/","","")
-    
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def ListaAlfa(params, url, category):
-
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "0-9","http://www.cine-adicto.com/tag/9/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "A","http://www.cine-adicto.com/tag/a/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "B","http://www.cine-adicto.com/tag/b/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "C","http://www.cine-adicto.com/tag/c/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "D","http://www.cine-adicto.com/tag/d/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "E","http://www.cine-adicto.com/tag/e/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "F","http://www.cine-adicto.com/tag/f/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "G","http://www.cine-adicto.com/tag/g/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "H","http://www.cine-adicto.com/tag/h/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "I","http://www.cine-adicto.com/tag/i/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "J","http://www.cine-adicto.com/tag/j/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "K","http://www.cine-adicto.com/tag/k/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "L","http://www.cine-adicto.com/tag/l/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "M","http://www.cine-adicto.com/tag/m/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "N","http://www.cine-adicto.com/tag/n/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "O","http://www.cine-adicto.com/tag/o/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "P","http://www.cine-adicto.com/tag/p/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Q","http://www.cine-adicto.com/tag/q/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "R","http://www.cine-adicto.com/tag/r/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "S","http://www.cine-adicto.com/tag/s/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "T","http://www.cine-adicto.com/tag/t/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "U","http://www.cine-adicto.com/tag/u/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "V","http://www.cine-adicto.com/tag/v/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "W","http://www.cine-adicto.com/tag/w/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "X","http://www.cine-adicto.com/tag/x/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Y","http://www.cine-adicto.com/tag/y/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Z","http://www.cine-adicto.com/tag/z/","","")
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-
-
-        
-def ListvideosMirror(params,url,category):
-    logger.info("[cineadicto.py] ListvideosMirror")
-
     # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-
-    # Patron de las entradas
-    patronvideos  = '<div class="poster">[^<]+<a href="([^"]+)"'                          # URL
-    patronvideos += '><img src="([^"]+)" width=[^\/]+\/>'                                # TUMBNAIL
-    patronvideos += '</a>[^<]+<[^>]+>[^<]+<[^>]+>[^<]+<a href="[^"]+">([^<]+)</a>'        # TITULO 
+    data = scrapertools.cachePage(item.url)
+    #print data
+    # Extrae las entradas (carpetas)
+    patronvideos  = '<a href="([^"]+)" title="[^<]+" class="generos">([^<]+)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
     scrapertools.printMatches(matches)
 
-    # Añade las entradas encontradas
+    itemlist = []
     for match in matches:
         # Atributos
-        scrapedtitle = match[2]
         scrapedurl = match[0]
-        scrapedthumbnail = match[1]
+        
+        scrapedtitle =match[1]
+        scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME , action="listvideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+    
+    return itemlist
+    
+ 
+
+def ListaAlfa(item):
+
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="0-9",url="http://www.cine-adicto.com/alphabet/9/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="A",url="http://www.cine-adicto.com/alphabet/a/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="B",url="http://www.cine-adicto.com/alphabet/b/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="C",url="http://www.cine-adicto.com/alphabet/c/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="D",url="http://www.cine-adicto.com/alphabet/d/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="E",url="http://www.cine-adicto.com/alphabet/e/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="F",url="http://www.cine-adicto.com/alphabet/f/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="G",url="http://www.cine-adicto.com/alphabet/g/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="H",url="http://www.cine-adicto.com/alphabet/h/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="I",url="http://www.cine-adicto.com/alphabet/i/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="J",url="http://www.cine-adicto.com/alphabet/j/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="K",url="http://www.cine-adicto.com/alphabet/k/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="L",url="http://www.cine-adicto.com/alphabet/l/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="M",url="http://www.cine-adicto.com/alphabet/m/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="N",url="http://www.cine-adicto.com/alphabet/n/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="O",url="http://www.cine-adicto.com/alphabet/o/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="P",url="http://www.cine-adicto.com/alphabet/p/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="Q",url="http://www.cine-adicto.com/alphabet/q/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="R",url="http://www.cine-adicto.com/alphabet/r/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="S",url="http://www.cine-adicto.com/alphabet/s/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="T",url="http://www.cine-adicto.com/alphabet/t/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="U",url="http://www.cine-adicto.com/alphabet/u/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="V",url="http://www.cine-adicto.com/alphabet/v/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="W",url="http://www.cine-adicto.com/alphabet/w/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="X",url="http://www.cine-adicto.com/alphabet/x/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="Y",url="http://www.cine-adicto.com/alphabet/y/"))
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos" , title="Z",url="http://www.cine-adicto.com/alphabet/z/"))
+
+    return itemlist
+
+
+        
+def ListvideosMirror(item):
+    logger.info("[cineadicto.py] ListvideosMirror")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+
+
+    # Patron de las entradas
+    #<!-- empieza pelicula-left --> <div class="pelicula-left"> <div class="box-pelicula-titulo"></div> <div class="box-pelicula-contenido">
+
+#<div class="imagen"><a title="Resident Evil Afterlife (Resident Evil 4)" href="http://www.cine-adicto.com/resident-evil-afterlife.html"><img alt="imagen de Resident Evil Afterlife (Resident Evil 4)"  src="http://www.cine-adicto.com/images/Resident-Evil-Afterlife-Resident-Evil-4.jpg" width="166" height="250" alt="Resident Evil Afterlife (Resident Evil 4)" /></a></div>
+
+#    <div class="tituloh1"><h1><a title="Resident Evil Afterlife (Resident Evil 4)" href="http://www.cine-adicto.com/resident-evil-afterlife.html">Resident Evil Afterlife (Resident Evil 4)</a></h1></div>
+#<div class="sinopsis"><p>
+    patronvideos  = '<div class="pelicula-left">.*?<div class="imagen"><a title="([^"]+)"'           # TITULO
+    patronvideos += ' href="([^"]+)"'                                                             # URL
+    patronvideos += '><img alt="[^"]+"  src="([^"]+)" width=[^\/]+\/>.*?'                            # TUMBNAIL
+    patronvideos += '<div class="sinopsis"><p>([^<]+)</p>'                                           # SINOPSIS
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        # Atributos
+        scrapedtitle = match[0]
+        scrapedurl = match[1]
+        scrapedthumbnail = match[2]
+        scrapedplot = match[3]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
     #Extrae la marca de siguiente página
-    patronvideos  = '</span><a href="(http://www.cine-adicto.com/.*?page/[^"]+)"'
+    patronvideos  = '<span class="current">[^<]+</span>[^<]+<a title="[^"]+" href="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -209,17 +208,15 @@ def ListvideosMirror(params,url,category):
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "ListvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
         
 
-def listvideos(params,url,category):
+def listvideos(item):
     logger.info("[cineadicto.py] listvideos")
 
+    url = item.url
     if url=="":
         url = "http://www.cine-adicto.com/"
                 
@@ -238,12 +235,13 @@ def listvideos(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     logger.info("hay %d matches" % len(matches))
 
+    itemlist = []
     for match in matches:
-        data = match
+        data2 = match
         patron  = '<div class="imagen"><a.*?href="([^"]+)"><img.*?src="([^"]+)".*?'
         patron += '<div class="tituloh1"><h1><a[^>]+>([^<]+)</a></h1></div>.*?'
         patron += '<div class="sinopsis">(.*?)</div>'
-        matches2 = re.compile(patron,re.DOTALL).findall(data)
+        matches2 = re.compile(patron,re.DOTALL).findall(data2)
         logger.info("hay %d matches2" % len(matches2))
 
         for match2 in matches2:
@@ -252,10 +250,10 @@ def listvideos(params,url,category):
             scrapedthumbnail = match2[1]
             scrapedplot = match2[3]
             
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart=scrapedthumbnail )
+            itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
 
     #Extrae la marca de siguiente página
-    patronvideos  = "<span class='current'>[^<]+</span><a href='([^']+)'" #"</span><a href='(http://www.cine-adicto.com/page/[^']+)'"
+    patronvideos  = '<span class="current">[^<]+</span>[^<]+<a title="[^"]+" href="([^"]+)"' #"</span><a href='(http://www.cine-adicto.com/page/[^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -264,20 +262,18 @@ def listvideos(params,url,category):
         scrapedurl = urlparse.urljoin(url,matches[0])#matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=CHANNELNAME , action="listvideos"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def detail(params,url,category,cLose="true"):
+    return itemlist
+    
+def detail(item):
     logger.info("[cineadicto.py] detail")
 
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
+    title = item.title
+    thumbnail = item.thumbnail
+    plot = item.plot
     scrapedurl = ""
+    url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
     #logger.info(data)
@@ -305,6 +301,7 @@ def detail(params,url,category,cLose="true"):
     scrapertools.printMatches(matches)
     playWithSubt = "play"
     c = 0
+    itemlist = []
     if len(matches)>0:
         for match in matches:
             subtitle = "[FLV-Directo]"
@@ -342,19 +339,19 @@ def detail(params,url,category,cLose="true"):
                     if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
                             
                     # Añade al listado de XBMC
-                    xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
+                    itemlist.append( Item(channel=CHANNELNAME , action=playWithSubt  , title=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, server= "Directo" , folder = False ))
                 
             else:
                 c +=1
                 scrapedurl = match
                 if match.endswith(".srt") and not (((c / 2) * 2 - c) == 0) :
                     scrapedurl = scrapedurl + "|" + match 
-                    xbmctools.addnewvideo( CHANNELNAME ,"play2"  , category , "Directo" , title + " (V.O.S) - "+subtitle, scrapedurl , thumbnail , plot )
+                    itemlist.append( Item(channel=CHANNELNAME , action="play2"  , server="Directo" , title=title + " (V.O.S) - "+subtitle, url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False))
                 elif     match.endswith(".xml") and not (((c / 2) * 2 - c) == 0):
                     sub = "[Subtitulo incompatible con xbmc]"
-                    xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Directo" , title + " (V.O) - %s %s" %(subtitle,sub), scrapedurl , thumbnail , plot )
+                    itemlist.append( Item(channel=CHANNELNAME , action="play"  , server="Directo" , title=title + " (V.O) - %s %s" %(subtitle,sub), url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
                 elif not match.endswith("srt" or "xml") :
-                    xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Directo" , title + " - [Directo]" , scrapedurl , thumbnail , plot )
+                    itemlist.append( Item(channel=CHANNELNAME , action="play"  , server="Directo" , title=title + " - [Directo]" , url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
                 
                 print scrapedurl
     
@@ -373,9 +370,9 @@ def detail(params,url,category,cLose="true"):
                 server = video[2]
                 if "facebook" in url:
                     c += 1
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - Parte %d %s" %(c,videotitle) , url , thumbnail , plot )
+                    itemlist.append( Item(channel=CHANNELNAME , action="play"   , server=server , title=title.strip() + " - Parte %d %s" %(c,videotitle) , url=url , thumbnail=thumbnail , plot=plot , folder=False))
                 else:
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+                    itemlist.append( Item(channel=CHANNELNAME , action="play"   , server=server , title=title.strip() + " - " + videotitle , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
     except:
         pass
 
@@ -397,21 +394,38 @@ def detail(params,url,category,cLose="true"):
     if len(matches)>0:
         print " encontro VK.COM :%s" %matches[0]
         videourl = vk.geturl(matches[0])
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
-         
-    '''
-    patronvideos = 'name="Pelicula" src="([^"]+)"'
+        itemlist.append( Item(channel=CHANNELNAME , action="play"  , server="Directo" , title=title + " - "+"[VK]", url=videourl , thumbnail=thumbnail , plot=plot , folder=False ))
+
+    patronvideos = '(http://cine-adicto.com/(?:(?:vk|vb)|(?:mg|bb))?/[^\.]+.html)'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    if cLose == "false":return
     if len(matches)>0:
         for match in matches:
-            detail(params,match,category,"false")
-    '''
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+            
+            listavideos = servertools.findvideos(scrapertools.cachePage(match))
+            for video in listavideos:
+                if "stagevu.com/embed" not in video[1]:
+                    videotitle = video[0]
+                    url = video[1]
+                    server = video[2]
+                if "facebook" in url:
+                    c += 1
+                    itemlist.append( Item(channel=CHANNELNAME , action="play"  , server=server , title=title.strip() + " - Parte %d %s" %(c,videotitle) , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
+                else:
+                    itemlist.append( Item(channel=CHANNELNAME , action="play"  , server=server , title=title.strip() + " - " + videotitle , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
+ 
+    listavideos = servertools.findvideos(data)
+    for video in listavideos:
+        if "stagevu.com/embed" not in video[1]:
+            videotitle = video[0]
+            url = video[1]
+            server = video[2]
+            if "facebook" in url:
+                c += 1
+                itemlist.append( Item(channel=CHANNELNAME , action="play"  , server=server , title=title.strip() + " - Parte %d %s" %(c,videotitle) , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
+            else:
+                itemlist.append( Item(channel=CHANNELNAME , action="play"  , server=server , title=title.strip() + " - " + videotitle , url=url , thumbnail=thumbnail , plot=plot ,folder=False ))
+ 
+    return itemlist
 
 def play(params,url,category):
     logger.info("[cineadicto.py] play")

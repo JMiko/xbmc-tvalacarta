@@ -12,6 +12,7 @@ import xbmcplugin
 from core import config
 from core import logger
 from core import xbmctools
+from core.item import Item
 
 CHANNELNAME = "buscador"
 
@@ -19,7 +20,7 @@ logger.info("[buscador.py] init")
 
 DEBUG = True
 
-def mainlist(params,url,category):
+def mainlist(params,url="",category=""):
     logger.info("[buscador.py] mainlist")
 
     listar_busquedas(params,url,category)
@@ -27,7 +28,10 @@ def mainlist(params,url,category):
 def searchresults(params,url,category):
     logger.info("[buscador.py] searchresults")
     salvar_busquedas(params,url,category)
-    tecleado = url
+    if url == "" and category == "":
+        tecleado = params.url
+    else:
+        tecleado = url
     tecleado = tecleado.replace(" ", "+")
     
     # Lanza las búsquedas
@@ -126,8 +130,12 @@ def searchresults(params,url,category):
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 
-def salvar_busquedas(params,url,category):
-    channel = params.get("channel")
+def salvar_busquedas(params,url="",category=""):
+    if url == "" and category == "":
+        channel = params.channel
+        url = params.url
+    else:
+        channel = params.get("channel")
     limite_busquedas = ( 10, 20, 30, 40, )[ int( config.get_setting( "limite_busquedas" ) ) ]
     matches = []
     try:
@@ -156,43 +164,73 @@ def salvar_busquedas(params,url,category):
     # refresh container so items is changed
     #xbmc.executebuiltin( "Container.Refresh" )
         
-def listar_busquedas(params,url,category):
+def listar_busquedas(params,url="",category=""):
+    if url == "" and category == "":
+        channel_preset = params.channel
+        accion = params.action
+    else:
+        channel_preset = params.get("channel")
+        accion = params.get("action")
     print "listar_busquedas()"
-    channel2 = ""
+    channel2 = "**"
+    itemlist=[]
     # Despliega las busquedas anteriormente guardadas
     try:
         presets = config.get_setting("presets_buscados")
-        channel_preset  = params.get("channel")
+        
         if channel_preset != CHANNELNAME:
             channel2 = channel_preset
         print "channel_preset :%s" %channel_preset
-        accion = params.get("action")
+        
         matches = ""
         if "|" in presets:
             matches = presets.split("|")
-            addfolder( "buscador"   , config.get_localized_string(30103)+"..." , matches[0] , "por_teclado", channel2 ) # Buscar
+            itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." , url=matches[0] ,thumbnail="" , plot="", extra = channel2 , context = 1 ))
+            #addfolder( "buscador"   , config.get_localized_string(30103)+"..." , matches[0] , "por_teclado", channel2 ) # Buscar
         else:
-            addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado", channel2 )
+            itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." , url="" ,thumbnail="" , plot="" , extra = channel2 ,context = 0 ))
+            #addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado", channel2 )
         if len(matches)>0:    
             for match in matches:
                 
                 title=scrapedurl = match
-        
-                addfolder( channel_preset , title , scrapedurl , "searchresults" )
+                itemlist.append( Item(channel=channel_preset , action="searchresults"  , title=title , url=scrapedurl, thumbnail="" , plot="" , extra = channel2, context=1 ))
+                #addfolder( channel_preset , title , scrapedurl , "searchresults" )
         elif presets != "":
         
             title = scrapedurl = presets
-            addfolder( channel_preset , title , scrapedurl , "searchresults" )
+            itemlist.append( Item(channel=channel_preset , action="searchresults"  , title=title , url=scrapedurl, thumbnail= "" , plot="" , extra=channel2, context = 1 ))
+            #addfolder( channel_preset , title , scrapedurl , "searchresults" )
     except:
-        addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado" , channel2 )
-        
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+         itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." , url="", thumbnail="" , plot="" , extra = channel2 , context = 0  ))
+        #addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado" , channel2 )
+    if url=="" and category=="":
+        return itemlist
+    else:
+        for item in itemlist:
+            channel = item.channel
+            action = item.action
+            category = category
+            scrapedtitle = item.title
+            scrapedurl = item.url
+            scrapedthumbnail = item.thumbnail
+            scrapedplot = item.plot
+            extra=item.extra
+            context = item.context
+            xbmctools.addnewfolderextra( channel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , extradata = extra , context = context)
+            
+        # Cierra el directorio
+        xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+        xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
     
-def borrar_busqueda(params,url,category):
-    channel = params.get("channel")
+def borrar_busqueda(params,url="",category=""):
+    if url == "" and category == "":
+        channel = params.channel
+        url = params.url
+    else:
+        channel = params.get("channel")
+    
     matches = []
     try:
         presets = config.get_setting("presets_buscados")
@@ -235,23 +273,33 @@ def teclado(default="", heading="", hidden=False):
     
     return tecleado
     
-def por_teclado(params,url,category):
+def por_teclado(params,url="",category=""):
     logger.info("[buscador.py] por_teclado")
-    channel2 = params.get("channel2")
-    tecleado = teclado(url)
-    if len(tecleado)<=0:
-        return
-    #borrar_busqueda(params,tecleado,category)
-    #salvar_busquedas(params,tecleado,category)
-    #tecleado = tecleado.replace(" ", "+")
-    url = tecleado
-    #if params.get("channel") == "buscador":
-    #    exec "import pelisalacarta.buscador as plugin" # lo siento, esto hace que las busquedas dentro de un canal sean siempre globales 
-    if channel2 == "":
-        exec "import pelisalacarta."+params.get("channel")+" as plugin"
+    if url == "" and category == "":
+        channel2 = item.extra
+        channel  = item.channel
+        tecleado = teclado(item.url)
+        if len(tecleado)<=0:
+            return
+        if channel2 == "":
+            exec "import pelisalacarta."+channel+" as plugin"
+        else:
+            exec "import pelisalacarta.channels."+channel2+" as plugin"
+        item.url = tecleado
+        exec "plugin.searchresults(item)"
     else:
-        exec "import pelisalacarta.channels."+channel2+" as plugin"
-    exec "plugin.searchresults(params, url, category)"
+        channel2 = params.get("extradata")
+        channel  = params.get("channel")
+        tecleado = teclado(url)
+        if len(tecleado)<=0:
+            return
+        if channel2 == "":
+            exec "import pelisalacarta."+channel+" as plugin"
+        else:
+            exec "import pelisalacarta.channels."+channel2+" as plugin"
+        url = tecleado
+        exec "plugin.searchresults(params, url, category)"
+
 
 def addfolder( canal , nombre , url , accion , channel2 = "" ):
     logger.info('[buscador.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

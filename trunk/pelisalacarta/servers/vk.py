@@ -94,7 +94,7 @@ def geturl(urlvideo):
             ClientCookie.install_opener(opener)
 
     #print "-------------------------------------------------------"
-    url=urlvideo.replace("&amp;","&")
+    url=urlvideo.replace("amp;","")
     #print url
     #print "-------------------------------------------------------"
     theurl = url
@@ -119,7 +119,9 @@ def geturl(urlvideo):
     
     # Extrae la URL
 
-    print data
+    #print data
+    videourl = ""
+    quality = config.get_setting("quality_flv")
     regexp =re.compile(r'vkid=([^\&]+)\&')
     match = regexp.search(data)
     vkid = ""
@@ -152,7 +154,14 @@ def geturl(urlvideo):
                     videourl = "http://%s/assets/videos/%s%s.vk.%s" % (match[0],match[2],vkid,tipo)
                 
             else:                                   #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
-                tipo = "360.mp4"
+                if match[4]=="1":
+                    tipo = "360.mp4"
+                elif match[4]== "2" and quality == "1":
+                    tipo = "480.mp4"
+                elif match[4]=="3" and quality == "1":
+                    tipo = "720.mp4"
+                else:
+                    tipo = "360.mp4"
                 if match[0].endswith("/"):
                     videourl = "%su%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
                 else:

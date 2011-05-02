@@ -215,7 +215,7 @@ def listvideos(params,url,category):
 
 
     # Extrae las entradas (carpetas)
-    patronvideos  = "<h3 class='post-title entry-title'.+?>[^<]+<a href='([^']+)'"  # URL
+    patronvideos  = "<h3 class='post-title entry-title'>[^<]+<a href='([^']+)'"  # URL
     patronvideos += ">([^<]+)</a>.*?"                                            # Titulo   
     patronvideos += '<img style="[^"]+" src="([^"]+).*?'           # TUMBNAIL               
     patronvideos += 'border=[^>]+>.*?<span[^>]+>(.*?)</span></div>'        # Argumento    
@@ -286,6 +286,7 @@ def listvideofeeds(params,url,category):
     #print xmldoc.toxml().encode('utf-8')
     xmldata.close()
     c = 0
+    plot = ""
     for entry in xmldoc.getElementsByTagNameNS(ATOM_NS, u'entry'):
     #First title element in doc order within the entry is the title
         entrytitle = entry.getElementsByTagNameNS(ATOM_NS, u'title')[0]
@@ -302,7 +303,7 @@ def listvideofeeds(params,url,category):
         match = regexp.search(ethumbnailtext)
         if match is not None:
             plot = match.group(1)
-        
+        print ethumbnailtext
         # Depuracion
         if (DEBUG):
             logger.info("scrapedtitle="+etitletext)
@@ -359,7 +360,7 @@ def detail(params,url,category):
     #logger.info(data)
     patron = "google_ad_section_start(.*?)google_ad_section_end -->"
     matches = re.compile(patron,re.DOTALL).findall(datafull)
-
+    data2 = ""
     if len(matches)>0:
         data = matches[0]
     else:
@@ -368,6 +369,11 @@ def detail(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
         data = scrapertools.cachePage(matches[0])
+    patron = 'href="(http://gamezinepelisflv.webcindario.com/[^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(datafull)
+    if len(matches)>0:
+        data2 = scrapertools.cachePage(matches[0])
+        data = data + data2
     ok = False               
           
     # ------------------------------------------------------------------------------------
@@ -385,7 +391,7 @@ def detail(params,url,category):
     
     # Busca enlaces en el servidor Stagevu - "el modulo servertools.findvideos() no los encuentra"
     
-    patronvideos  = "'(http://stagevu.com[^']+)'"
+    patronvideos  = "(http://stagevu.com[^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         logger.info(" Servidor Stagevu")
@@ -396,7 +402,7 @@ def detail(params,url,category):
 
     # Busca enlaces en el servidor Movshare - "el modulo servertools.findvideos() no los encuentra"
     
-    patronvideos  = "'(http://www.movshare.net[^']+)'"
+    patronvideos  = "(http://www.movshare.net[^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         logger.info(" Servidor Movshare")
@@ -557,8 +563,8 @@ def detail(params,url,category):
     var video_max_hd = '0';
     var video_title = 'newCine.NET+-+neWG.Es+%7C+Chicken+Little';
 
-    '''
-    patronvideos = '<iframe src="(http://[^\/]+\/video_ext.php[^"]+)"'
+    
+    patronvideos = 'src="(http://[^\/]+\/video_ext.php[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         ok = True
@@ -566,52 +572,47 @@ def detail(params,url,category):
 
         videourl =     vk.geturl(matches[0])
         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )        
-        """    
-        data2 = scrapertools.downloadpageGzip(matches[0].replace("amp;",""))
-        print data2
-        regexp =re.compile(r'vkid=([^\&]+)\&')
-        match = regexp.search(data2)
-        vkid = ""
-        print 'match %s'%str(match)
-        if match is not None:
-            vkid = match.group(1)
-        else:
-            print "no encontro vkid"
-            
-        patron  = "var video_host = '([^']+)'.*?"
-        patron += "var video_uid = '([^']+)'.*?"
-        patron += "var video_vtag = '([^']+)'.*?"
-        patron += "var video_no_flv = ([^;]+);.*?"
-        patron += "var video_max_hd = '([^']+)'"
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        if len(matches2)>0:    
-            for match in matches2:
-                if match[3].strip() == "0" and match[1] != "0":
-                    tipo = "flv"
-
-                    if "http://" in match[0]:
-                        videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    else:
-                        videourl = "http://%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
-
-                elif match[1]== "0" and vkid != "":     #http://447.gt3.vkadre.ru/assets/videos/2638f17ddd39-75081019.vk.flv 
-                    tipo = "flv"
-
-                    if "http://" in match[0]:
-                        videourl = "%s/assets/videos/%s%s.vk.%s" % (match[0],match[2],vkid,tipo)
-                    else:
-                        videourl = "http://%s/assets/videos/%s%s.vk.%s" % (match[0],match[2],vkid,tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
-                else:
-                    tipo = "360.mp4"
-                    videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
-                    tipo = "240.mp4"
-                    videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+    '''
+    ## --------------------------------------------------------------------------------------##
+    #            Busca enlaces a video en el servidor Dailymotion                             #
+    ## --------------------------------------------------------------------------------------##
+    patronvideos = 'http://www.dailymotion.com/swf/video/([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    playWithSubt = "play"
+    subtit = ""
+    if len(matches)>0:
+        daily = 'http://www.dailymotion.com/video/%s'%matches[0]
+        data2 = scrapertools.cachePage(daily)
         
-        """
+        # Busca los subtitulos en español 
+        subtitulo = re.compile('%22es%22%3A%22(.+?)%22').findall(data2)
+        if len(subtitulo)>0:
+            subtit = urllib.unquote(subtitulo[0])
+            subtit = subtit.replace("\/","/")
+        
+                
+        # Busca el enlace al video con formato FLV     
+        Lowres=re.compile('%22sdURL%22%3A%22(.+?)%22').findall(data2)
+        if len(Lowres)>0:
+            videourl = urllib.unquote(Lowres[0])
+            videourl = videourl.replace("\/","/")
+            if len(subtit)>0:
+                videourl = videourl + "|" + subtit
+                playWithSubt = "play2"
+            subtitle = "[FLV-Directo-Dailymotion]"
+            xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+        
+        # Busca el enlace al video con formato HQ (H264)        
+        Highres=re.compile('%22hqURL%22%3A%22(.+?)%22').findall(data2)
+        if len(Highres)>0:
+            videourl = urllib.unquote(Highres[0])
+            videourl = videourl.replace("\/","/")
+            if len(subtit)>0:
+                videourl = videourl + "|" + subtit
+                playWithSubt = "play2"            
+            subtitle = "[h264-Directo-Dailymotion-este video no es soportado en versiones antiguas o xbox plataforma]"
+            xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+
     if not ok:
         patron = "SeriesPage"
         matches = re.compile(patron,re.DOTALL).findall(datafull)

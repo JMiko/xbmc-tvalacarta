@@ -350,15 +350,20 @@ def detail(params,url,category):
     url1 = url
     # Descarga la página
     data = scrapertools.cachePage(url)
-    #logger.info(data)
-    patron = 'src="(http://peliculasonlineflvgratis.blogspot.com.+?)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        data = scrapertools.cachePage(matches[0])
     try:
         title = re.compile("<title>(.+?)</title>").findall(data)[0]
     except:
         title = urllib.unquote_plus( params.get("title") )
+    #logger.info(data)
+    patron = 'src="(http://wwwpeliculasonlineflvorghost.blogspot.com.+?)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        data = scrapertools.cachePage(matches[0])
+        patron = 'src="(http://wwwpeliculasonlineflvorghost.blogspot.com.+?)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if len(matches)>0:
+            data = data + scrapertools.cachePage(matches[0])
+
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
     # ------------------------------------------------------------------------------------
@@ -419,7 +424,7 @@ def detail(params,url,category):
     
     if long>0:
         for match in matches:
-            print " encontro VKontakte.ru :%s" %match[0]
+            #print " encontro VKontakte.ru :%s" %match[0]
             scrapedurl =     vk.geturl(match.replace("&amp;","&"))
             scrapedtitle = title
             server = "Directo"
@@ -450,6 +455,21 @@ def detail(params,url,category):
             
             xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - [YAFLIX]" , scrapedurl , thumbnail, plot )
                 
+    patronvideos = 'http://www.videoinet.ru/incs/incplaylist.html\?lkn=([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    print data
+    
+    
+    
+    if len(matches)>0:
+        
+        
+        scrapedurl = "http://fileserver2.videoinet.ru//get/" + matches[0] + ".flv"
+ 
+        scrapedtitle = title
+        server = "Directo"
+        
+        xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - [videoinet]" , scrapedurl , thumbnail, plot )
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

@@ -44,8 +44,7 @@ def mainlist(item):
 
 def listvideofeeds(item):
 	logger.info("[seriesdanko.py] listvideosfeeds")
-	if config.get_setting("forceview")=="true":
-		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
+
 	url = item.url
 	data = None
 	thumbnail = ""
@@ -115,7 +114,9 @@ def listvideofeeds(item):
 		scrapedplot = ""
 		#xbmctools.addnewfolder( CHANNELNAME , "listvideofeeds" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 		itemlist.append( Item(channel=CHANNELNAME, action="listvideofeeds", title=scrapedtitle , url=scrapedurl , folder=True, totalItems = totalitems + 1) )
-	
+
+	if config.get_setting("forceview")=="true":
+		xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons	
 	return itemlist
 
 
