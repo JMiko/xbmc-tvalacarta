@@ -33,11 +33,11 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 DEBUG = True
 
 # TODO: (3.2) Esto es un lío, hay que unificar
-def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart=""):
-    ok = addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems)
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context=0):
+    ok = addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems,fanart,context)
     return ok
 
-def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart=""):
+def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart="",context=0):
     contextCommands = []
     ok = False
     #logger.info("pluginhandle=%d" % pluginhandle)
@@ -61,6 +61,10 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     if Serie != "": #Añadimos opción contextual para Añadir la serie completa a la biblioteca
         addSerieCommand = "XBMC.RunPlugin(%s?channel=%s&action=addlist2Library&category=%s&title=%s&url=%s&extradata=%s&Serie=%s)" % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( extradata ) , Serie)
         contextCommands.append(("Añadir Serie a Biblioteca",addSerieCommand))
+        
+    if context == 1 and accion != "por_teclado":
+        DeleteCommand = "XBMC.RunPlugin(%s?channel=buscador&action=borrar_busqueda&title=%s&url=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( title ) , urllib.quote_plus( url ) )
+        contextCommands.append((config.get_localized_string( 30300 ),DeleteCommand))
         
     if len (contextCommands) > 0:
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
@@ -599,12 +603,17 @@ def playstrm(params,url,category):
     playvideo("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
 
 def renderItems(itemlist, params, url, category,isPlayable='false'):
+    print "paso 0"
+    print itemlist
     for item in itemlist:
-        if item.folder:
+        print "paso 1"
+        if item.folder :
             if len(item.extra)>0:
-                addnewfolderextra( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , item.extra , totalItems = item.totalItems )
+                print "paso 2"
+                addnewfolderextra( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context )
             else:
-                addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems )
+                print "paso 3"
+                addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context  )
         else:
             if item.duration:
                 addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )

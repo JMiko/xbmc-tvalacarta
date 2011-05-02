@@ -597,12 +597,17 @@ def strm_detail (params,url,category):
 
 def scrapvideoURL(urlSY):
     data = scrapertools.cachePage(urlSY)
-    patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_([^\.]+).php.*?id=([^"]+)".*?alt="([^"]+)".*?'
+    patronvideos  = 'href="http://www.seriesyonkis.com/go/(mv)\/([^"]+)".*?alt="([^"]+)".*?'
     patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
     patronvideos += '<td><div[^>]+><[^>]+>(.*?)</tr>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
-    patronvideos1  = 'http://www.seriesyonkis.com/lista-series/(descargar)/n/(.+?)/.*?alt="([^"]+)".*?'
+    patronvideos  = 'href="http://www.seriesyonkis.com/player/visor_([^\.]+).php.*?id=([^"]+)".*?alt="([^"]+)".*?'
+    patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
+    patronvideos += '<td><div[^>]+><[^>]+>(.*?)</tr>'
+    matches0 = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = matches + matches0
+    patronvideos1  = 'http://www.seriesyonkis.com/go/(d)/(.+?)".*?alt="([^"]+)".*?'
     patronvideos1 += 'Durac.+?:\s?([^>]+?)>'
     matches1 = re.compile(patronvideos1,re.DOTALL).findall(data)
     if (len(matches1) > 0):
@@ -616,26 +621,48 @@ def scrapvideoURL(urlSY):
     if len(matches)==0:
         xbmctools.alertnodisponible()
         return "",""
+        
     elif len(matches)==1:
-        server = SERVER[matches[0][0]]
+        if  matches[0][0] == "d":
+            player = "descargar"
+            url = "http://www.seriesyonkis.com/go/%s/%s" % (matches[0][0],matches[0][1])
+            id = getId(url)
+        elif matches[0][0] == "mv":
+            player = "pymeno2"
+            url = "http://www.seriesyonkis.com/go/%s/%s" % (matches[0][0],matches[0][1])
+            id = getId(url)
+        else:
+            player = matches[0][0]
+            id = matches[0][1]
+        server = SERVER[player]
         #print matches[0][1]
-        if matches[0][0] == "svueno":
+        if player == "svueno":
             id = matches[0][1]
             logger.info("[seriesyonkis.py]  id="+id)
             dec = Yonkis.DecryptYonkis()
             id = dec.decryptALT(dec.charting(dec.unescape(id)))
             id = "http://stagevu.com/video/" + id
-        elif matches[0][0] in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
+        elif player in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
             cortar = matches[0][1].split("&")
             id = cortar[0]
             logger.info("[seriesyonkis.py]  id="+id)
             dec = Yonkis.DecryptYonkis()
             id = dec.decryptID_series(dec.unescape(id))
+        
+        elif player == "descargar":
+            cortar = matches[0][1].split("&")
+            id = cortar[0]
+            logger.info("[seriesyonkis.py]  id="+id)
+            dec = Yonkis.DecryptYonkis()
+            id = dec.ccM(dec.unescape(id))
+
         else:pass
-        print 'codigo :%s' %id
+        #print 'codigo :%s' %id
         return server,id        
     else:
         
+        
+            
         server,id = choiceOne(matches)
         if len(id)==0:return "",""
         print 'codigo :%s' %id
@@ -651,10 +678,26 @@ def choiceOne(matches):
     
     for server,codigo,audio,data in matches:
         try:
+            print server
             if server in SERVER:
                 servidor = SERVER[server]
+                player = server
+                id = codigo
             else:
-                servidor = "desconocido ("+server+")"
+                if server == "d":
+                    player = "descargar"
+                    id = "http://www.seriesyonkis.com/go/%s/%s" % (server,codigo)
+                    
+                    servidor = "Megaupload"
+                    Server = "megaupload"
+                elif server == "mv":
+                    player = "pymeno2"
+                    id = "http://www.seriesyonkis.com/go/%s/%s" % (server,codigo)
+                    
+                    servidor = "Megavideo"
+                    Server = "megavideo"
+                else:
+                    servidor = "desconocido ("+server+")"
             Nro = Nro + 1
             
             regexp = re.compile(r"title='([^']+)'")
@@ -669,8 +712,8 @@ def choiceOne(matches):
             audio = audio.replace("Subt\xc3\xadtulos en Espa\xc3\xb1ol","Subtitulado") 
             audio = audio.replace("Audio","").strip()
             opciones.append("%02d) [%s] - (%s) - %s  [%s] " % (Nro , audio,fmt,duracion,servidor))
-            IDlist.append(codigo)
-            servlist.append(server)
+            IDlist.append(id)
+            servlist.append(player)
         except:
             logger.info("[seriesyonkis.py] error (%s)" % server)
     dia = xbmcgui.Dialog()
@@ -679,7 +722,11 @@ def choiceOne(matches):
     if seleccion == -1 : return "",""
     
     if servlist[seleccion]  in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
-        cortar = IDlist[seleccion].split("&")
+        if "http" in IDlist[seleccion]:
+            id = getId(IDlist[seleccion])
+        else:
+            id = IDlist[seleccion]
+        cortar = id.split("&")
         id = cortar[0]
         logger.info("[seriesyonkis.py]  id="+id)
         dec = Yonkis.DecryptYonkis()
@@ -688,7 +735,11 @@ def choiceOne(matches):
         else:
             id = dec.decryptID_series(dec.unescape(id))
     elif servlist[seleccion] == "descargar":
-        cortar = IDlist[seleccion].split("&")
+        if "http" in IDlist[seleccion]:
+            id = getId(IDlist[seleccion])
+        else:
+            id = IDlist[seleccion]
+        cortar = id.split("&")
         id = cortar[0]
         logger.info("[seriesyonkis.py]  id="+id)
         dec = Yonkis.DecryptYonkis()
@@ -727,3 +778,30 @@ def choiceOnePart(matches):
     if seleccion == -1 : return ""
     id = matches[seleccion]
     return id
+    
+def getId(url):
+
+
+    
+    #print url
+    try:
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        opener = urllib2.build_opener(SmartRedirectHandler())
+        response = opener.open(req)
+    except ImportError, inst:    
+        status,location=inst
+        logger.info(str(status) + " " + location)    
+        movielink = location
+    #print movielink
+
+    try:
+        id = re.compile(r'id=([A-Z0-9%]{0,})').findall(movielink)[0]
+    except:
+        id = ""
+    
+    return id
+    
+class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_302(self, req, fp, code, msg, headers):
+        raise ImportError(302,headers.getheader("Location"))

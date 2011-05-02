@@ -341,16 +341,17 @@ def detail(params,url,category):
     patronvideos = '<param name="movie" value="http://www.dailymotion.com/swf/video/([^\_]+)\_[^"]+"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     playWithSubt = "play"
+    subtit = ""
     if len(matches)>0:
         daily = 'http://www.dailymotion.com/video/%s'%matches[0]
         data2 = scrapertools.cachePage(daily)
         
         # Busca los subtitulos en español 
         subtitulo = re.compile('%22es%22%3A%22(.+?)%22').findall(data2)
-        subtit = urllib.unquote(subtitulo[0])
-        subtit = subtit.replace("\/","/")
-        #subt_ok = downloadstr(subtit,title)
-        #print "subtitulo subt_ok = %s" % str(subt_ok)
+        if len(subtitulo)>0:
+            subtit = urllib.unquote(subtitulo[0])
+            subtit = subtit.replace("\/","/")
+        
                 
         # Busca el enlace al video con formato FLV     
         Lowres=re.compile('%22sdURL%22%3A%22(.+?)%22').findall(data2)
@@ -395,14 +396,14 @@ def detail(params,url,category):
     var video_vtag = 'fc697084d3';
     var video_no_flv = 1;
     var video_max_hd = '1'
-    '''
+    
     patronvideos = '<iframe src="(http:\/\/vk[^\/]+\/video_ext.php[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         print " encontro VKServer :%s" %matches[0]
         videourl =     vk.geturl(matches[0])
         xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKServer]", videourl , thumbnail , plot )
-        """    
+            
         data2 = scrapertools.cachePage(matches[0])
         print data2
         
@@ -425,7 +426,7 @@ def detail(params,url,category):
                     tipo = "240.mp4"
                     videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
                     xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
-        """    
+        '''    
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )

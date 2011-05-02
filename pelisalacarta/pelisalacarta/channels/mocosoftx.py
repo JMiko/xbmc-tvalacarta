@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para mocosoftx
@@ -51,9 +51,9 @@ def mainlist(item):
     #xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php"+sid,"","")
     itemlist.append( Item( channel=CHANNELNAME , title="Novedades" , action="Novedades" , url="http://mocosoftx.com/foro/index.php"+sid , folder=True ) )
     if sid=='':
-        itemlist.append( Item( channel=CHANNELNAME , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14" , folder=True ) )
+        itemlist.append( Item( channel=CHANNELNAME , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
     else:
-        itemlist.append( Item( channel=CHANNELNAME , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php"+sid+";action=.xml;type=rss2;limit=500;board=14" , folder=True ) )
+        itemlist.append( Item( channel=CHANNELNAME , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php"+sid+";action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
     
     return itemlist
 
@@ -121,8 +121,11 @@ def FullList(item):
             scrapedtitle = match2[0]
             scrapedtitle = scrapedtitle.replace("<![CDATA[","")
             scrapedtitle = scrapedtitle.replace("]]>","")
-            scrapedurl = match
-            scrapedthumbnail = match2[1]
+            scrapedurl = match2[1]
+            try:
+                scrapedthumbnail = re.compile('<img src="(.+?)"').findall(match)[0]
+            except:
+                scrapedthumbnail = ""
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             
@@ -149,7 +152,7 @@ def detail(item):
         patronthumb = '<img src="([^"]+)" alt="" border="0" />[</a>|<br />]+'
         matches = re.compile(patronthumb,re.DOTALL).findall(data)
         scrapertools.printMatches(matches)
-    #logger.info(data)
+    logger.info(data)
     #addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
@@ -162,7 +165,7 @@ def detail(item):
             imagen = matches[c]
         except:
             imagen = thumbnail
-        itemlist.append( Item( channel=CHANNELNAME , title=title+" - ["+video[2]+"]" , action="play" ,  server= video[2], url=video[1] , plot=item.plot, folder=True ) )
+        itemlist.append( Item( channel=CHANNELNAME , title=title+" - ["+video[2]+"]" , action="play" ,  server= video[2], url=video[1] ,thumbnail=imagen, plot=item.plot, folder=False ) )
     # ------------------------------------------------------------------------------------
     
     return itemlist

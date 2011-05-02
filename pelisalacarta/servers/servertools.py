@@ -602,9 +602,9 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
     logger.info("videobb...")
-    patronvideos  = "(http\:\/\/(?:www.)videobb.com\/video\/[a-zA-Z0-9]+)"
+    patronvideos  = "(http\:\/\/(?:www\.)?videobb.com\/(?:(?:e/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{12})"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
+    #print data
     for match in matches:
         titulo = "[videobb]"
         url = match
@@ -615,9 +615,56 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-    
-    return devuelve
 
+    logger.info("videozer...")
+    patronvideos  = "(http\:\/\/(?:www\.)?videozer.com\/(?:(?:e/|flash/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{4,8})"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #print data
+    for match in matches:
+        titulo = "[videozer]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videozer' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+    
+
+    logger.info("VKserver...")
+    patronvideos  = '(http\:\/\/vk.+?\/video_ext\.php[^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #print data
+    for match in matches:
+        titulo = "[VKserver]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vk' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
+
+    logger.info("userporn...")
+    patronvideos  = "(http\:\/\/(?:www\.)?userporn.com\/(?:(?:e/|flash/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{0,12})"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #print data
+    for match in matches:
+        titulo = "[Userporn]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'userporn' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
+    return devuelve
+    
 def findurl(code,server):
     mediaurl = "ERROR"
     server = server.lower() #Para hacer el procedimiento case insensitive

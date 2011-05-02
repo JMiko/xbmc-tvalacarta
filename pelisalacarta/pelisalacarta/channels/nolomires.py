@@ -441,14 +441,15 @@ def detail(params,url,category):
     #            Busca enlaces de videos para el servidor vk.com                             #
     ## --------------------------------------------------------------------------------------##
     #http://vkontakte.ru/video_ext.php?oid=93103247&id=149051583&hash=793cde84b05681fa&hd=1
-    
-    patronvideos = '<iframe src="(http://[^\/]+\/video_ext.php[^"]+)"'
+    '''
+    patronvideos = '(http\:\/\/vk.+?\/video_ext\.php[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
-        print " encontro VK.COM :%s" %matches[0]
-        videourl =     vk.geturl(scrapertools.unescape(matches[0]))
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )
-    
+        for match in matches:
+            print " encontro VK.COM :%s" %match
+            videourl =    scrapertools.unescape(match)
+            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "vk" , title + " - "+"[VK]", videourl , thumbnail , plot )
+    '''
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
