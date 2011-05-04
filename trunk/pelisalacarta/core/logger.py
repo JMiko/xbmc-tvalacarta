@@ -11,9 +11,15 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-from core import config
+try:
+    from core import config
+except:
+    import config
 
-exec "import platform."+config.get_platform()+".logger as platformlogger"
+try:
+    exec "import platform."+config.get_platform()+".logger as platformlogger"
+except:
+    exec "import dreamboxlogger as platformlogger"
 
 loggeractive = (config.get_setting("debug")=="true")
 

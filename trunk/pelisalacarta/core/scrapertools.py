@@ -18,14 +18,11 @@
 
 import urlparse,urllib2,urllib
 import time
-import binascii
 import md5
 import os
 import config
 import logger
-import gzip,StringIO
-import re, htmlentitydefs
-import glob
+import re
 import downloadtools
 
 logger.info("[scrapertools.py] init")
@@ -65,7 +62,6 @@ def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; 
         return data
 
     else:
-    
         # CACHE_NUNCA: Siempre va a la URL a descargar
         # obligatorio para peticiones POST
         if modoCache == CACHE_NUNCA or post is not None:
@@ -161,6 +157,7 @@ def getCacheFileNames(url):
     siteCachePath = getSiteCachePath(url)
         
     # Obtiene el ID de la cache (md5 de la URL)
+    import binascii
     cacheId = binascii.hexlify(md5.new(url).digest())
     logger.debug("[scrapertools.py] cacheId="+cacheId)
 
@@ -181,6 +178,7 @@ def getCacheFileNames(url):
 def getCachedFile(siteCachePath,cacheId):
     mascara = os.path.join(siteCachePath,cacheId+".*.cache")
     logger.debug("[scrapertools.py] mascara="+mascara)
+    import glob
     ficheros = glob.glob( mascara )
     logger.debug("[scrapertools.py] Hay %d ficheros con ese id" % len(ficheros))
 
@@ -640,7 +638,9 @@ def downloadpageGzip(url):
     # Descomprime el archivo de datos Gzip
     try:
         fin = inicio
+        import StringIO
         compressedstream = StringIO.StringIO(data)
+        import gzip
         gzipper = gzip.GzipFile(fileobj=compressedstream)
         data1 = gzipper.read()
         gzipper.close()
@@ -657,6 +657,10 @@ def printMatches(matches):
         i = i + 1
 
 def entityunescape(cadena):
+    from xml.sax.saxutils import unescape
+    cadena = unescape(cadena)
+
+    '''
     cadena = cadena.replace('&amp;','&')
     cadena = cadena.replace('&Agrave;','À')
     cadena = cadena.replace('&Aacute;','Á')
@@ -680,6 +684,7 @@ def entityunescape(cadena):
     cadena = cadena.replace('&#39;','\'')
     cadena = cadena.replace('&Ccedil;','Ç')
     cadena = cadena.replace('&ccedil;','ç')
+    '''
     return cadena
 
 def unescape(text):
@@ -713,6 +718,7 @@ def unescape(text):
                     text = "&amp;lt;"
                 else:
                     print text[1:-1]
+                    import htmlentitydefs
                     text = unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode("utf-8")
             except KeyError:
                 print "keyerror"
@@ -762,6 +768,11 @@ def htmlclean(cadena):
     
     cadena = re.compile("<h2[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</h2>","")
+
+    cadena = re.compile("<h3[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</h3>","")
+
+    cadena = re.compile("<!--[^-]+-->",re.DOTALL).sub("",cadena)
     
     cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
     cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
@@ -771,6 +782,12 @@ def htmlclean(cadena):
     cadena = cadena.replace("</param>","")
     cadena = re.compile("<embed[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</embed>","")
+
+    cadena = re.compile("<title[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</title>","")
+
+    cadena = re.compile("<link[^>]*>",re.DOTALL).sub("",cadena)
+
     cadena = cadena.replace("\t","")
     cadena = entityunescape(cadena)
     return cadena

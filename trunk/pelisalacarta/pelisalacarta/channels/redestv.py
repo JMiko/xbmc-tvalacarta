@@ -162,13 +162,16 @@ def buscavideos(params,url,category):
     if DEBUG:
         scrapertools.printMatches(matches)    
     #<embed src="http://blip.tv/play/+3KB0rYcAg" type="application/x-shockwave-flash"    
-    patronvideos  = '<embed src="http://blip.tv/play/(\+.*?)" type="application/x-shockwave-flash"'
+    patronvideos  = '<embed src="(http://blip.tv/play/\+.*?)" type="application/x-shockwave-flash"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG:
         scrapertools.printMatches(matches)
     #bliptv.bliptv("3011527")
-    bliptv.video(matches[0])
- 
+    #mediaurl = bliptv.geturl(matches[0])
+    #logger.info("mediaurl="+mediaurl)
+    
+    xbmctools.playvideo(CHANNELNAME,"bliptv",matches[0],"","","","")
+
 def novedades(params,url,category):
     logger.info("[redestv.py] parseweb")
  

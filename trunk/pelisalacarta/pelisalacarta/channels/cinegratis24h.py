@@ -4,6 +4,7 @@
 # Canal para cinegratis24h.com by Bandavi
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+# Nota: Este canal se elimina porque la página ha dejado de estar operativa
 import urlparse,urllib2,urllib,re
 import os
 import sys

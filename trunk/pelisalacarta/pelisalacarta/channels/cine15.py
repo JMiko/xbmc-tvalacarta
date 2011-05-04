@@ -4,6 +4,7 @@
 # Canal para cine15
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+# Nota: Esta web sigue existiendo, pero ha dejado de actualizarse. Se elimina el canal.
 import urlparse,urllib2,urllib,re
 
 try:

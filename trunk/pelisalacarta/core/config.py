@@ -25,42 +25,59 @@ PLATFORM = ""
 # windowsmediacenter
 
 try:
-    import mc
-    PLATFORM="boxee"
+    from enigma import iPlayableService
+    PLATFORM="dreambox"
 except:
     try:
-        import xbmcaddon
-        PLATFORM = "xbmcdharma"
-    except ImportError:
-        # XBMC
+        import mc
+        PLATFORM="boxee"
+    except:
         try:
-            import xbmc
-            PLATFORM = "xbmc"
+            import xbmcaddon
+            PLATFORM = "xbmcdharma"
         except ImportError:
-            print "Platform=DEVELOPER"
-            # Eclipse
-            PLATFORM = "developer"
+            # XBMC
+            try:
+                import xbmc
+                PLATFORM = "xbmc"
+            except ImportError:
+                print "Platform=DEVELOPER"
+                # Eclipse
+                PLATFORM = "developer"
 
 def force_platform(platform):
     global PLATFORM
     
     PLATFORM = platform
     # En PLATFORM debería estar el módulo a importar
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
+        
 
 def get_platform():
     return PLATFORM
 
 def get_system_platform():
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_system_platform()
 
 def open_settings():
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.open_settings()
 
 def get_setting(name):
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     # La cache recibe un valor por defecto la primera vez que se solicita
 
     dev=platformconfig.get_setting(name)
@@ -79,31 +96,49 @@ def get_setting(name):
         dev=get_data_path()
     
     # TODO: (3.1) De momento la cache está desactivada...
-    elif name=="cache.mode":
+    elif name=="cache.mode" and PLATFORM!="developer":
         dev="2"
     
     return dev
 
 def set_setting(name,value):
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     platformconfig.set_setting(name,value)
 
 def get_localized_string(code):
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_localized_string(code)
 
 def get_library_path():
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_library_path()
 
 def get_temp_file(filename):
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_temp_file()
 
 def get_runtime_path():
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_runtime_path()
 
 def get_data_path():
-    exec "import platform."+PLATFORM+".config as platformconfig"
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_data_path()

@@ -21,7 +21,7 @@ class Item(object):
     totalItems =0
     overlay = None
 
-    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language="" , type = "" , subtitle = "", folder=True, context = 0,totalItems = 0, overlay = None):
+    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = 0,totalItems = 0, overlay = None, type="" ):
         self.channel = channel
         self.title = title
         self.url = url

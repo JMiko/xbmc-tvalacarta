@@ -32,13 +32,13 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="destacados" , title="Destacados"               , url="http://animeid.com/" ))
     
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist"   , title="�ltimas series agregadas" , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="chaplist"  , title="�ltimos cap�tulos"        , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="animelist" , title="�ltimos animes agregados" , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="airlist"   , title="Series en emisi�n"        , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="newlist"   , title="Últimas series agregadas" , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="chaplist"  , title="Últimos capítulos"        , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="animelist" , title="Últimos animes agregados" , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME, action="airlist"   , title="Series en emisión"        , url="http://animeid.com/" ))
     itemlist.append( Item(channel=CHANNELNAME, action="fulllist"  , title="Lista completa de animes" , url="http://animeid.com/" ))
-    #itemlist.append( Item(channel=CHANNELNAME, action="genrelist" , title="Listado por g�nero"       , url="http://animeid.com/" ))
-    #itemlist.append( Item(channel=CHANNELNAME, action="alphalist" , title="Listado alfab�tico"       , url="http://animeid.com/" ))
+    #itemlist.append( Item(channel=CHANNELNAME, action="genrelist" , title="Listado por genero"       , url="http://animeid.com/" ))
+    #itemlist.append( Item(channel=CHANNELNAME, action="alphalist" , title="Listado alfabetico"       , url="http://animeid.com/" ))
 
     return itemlist
 

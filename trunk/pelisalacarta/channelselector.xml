@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<version>
+	<name>channelselector</name>
+	<tag>5</tag>
+	<date>04/04/2011</date>
+	<changes>Canales reordenados alfabéticamente, borrado de los que no funcionan</changes>
+</version>
