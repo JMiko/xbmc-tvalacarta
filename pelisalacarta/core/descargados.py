@@ -42,8 +42,7 @@ def mainlist(params,url,category):
             if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=downloadtools.getDownloadListPath():
                 url = os.path.join( downloadpath , fichero )
                 listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
-                #xbmcplugin.addDirectoryItem( handle = pluginhandle, url = url, listitem=listitem, isFolder=False)
-                xbmcplugin.addDirectoryItem( handle = int( sys.argv[ 1 ] ), url = url, listitem=listitem, isFolder=False)
+                xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url = url, listitem=listitem, isFolder=False)
     except:
         logger.info("[descargados.py] exception on mainlist")
         pass

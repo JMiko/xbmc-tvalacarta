@@ -4,6 +4,7 @@
 # Canal para documentalesatonline
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+# Nota: Esta web ha dejado de actualizarse, ahora está en el canal documentalesatonline2
 import urlparse,urllib2,urllib,re
 import os, sys
 

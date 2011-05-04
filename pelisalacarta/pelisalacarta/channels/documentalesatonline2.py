@@ -22,6 +22,8 @@ from servers import vk
 
 from pelisalacarta import buscador
 
+import xml.dom.minidom
+
 CHANNELNAME = "documentalesatonline2"
 
 # Esto permite su ejecución en modo emulado

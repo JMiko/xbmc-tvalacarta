@@ -21,7 +21,6 @@ import re
 import urllib,urllib2
 import time
 import socket
-import gzip,StringIO
 import config
 import logger
 
@@ -763,7 +762,9 @@ def downloadfileGzipped(url,pathfichero):
     bloqueleido = connexion.read(blocksize)
     
     try:
+        import StringIO
         compressedstream = StringIO.StringIO(bloqueleido)
+        import gzip
         gzipper = gzip.GzipFile(fileobj=compressedstream)
         bloquedata = gzipper.read()
         gzipper.close()
@@ -793,6 +794,8 @@ def downloadfileGzipped(url,pathfichero):
                     before = time.time()
                     bloqueleido = connexion.read(blocksize)
                     
+                    import gzip
+                    import StringIO
                     compressedstream = StringIO.StringIO(bloqueleido)
                     gzipper = gzip.GzipFile(fileobj=compressedstream)
                     bloquedata = gzipper.read()
