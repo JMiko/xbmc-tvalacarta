@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para peliculasyonkis
@@ -15,6 +15,7 @@ try:
     from core.item import Item
     from servers import servertools
     from core import DecryptYonkis as Yonkis
+    from pelisalacarta import buscador
 except:
     # En Plex Media server lo anterior no funciona...
     from Code.core import logger
@@ -22,6 +23,7 @@ except:
     from Code.core import scrapertools
     from Code.core.item import Item
     from Code.core import DecryptYonkis as Yonkis
+    from pelisalacarta import buscador
 
 CHANNELNAME = "peliculasyonkis_generico"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -31,6 +33,7 @@ SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo',
           'veoh2'     :'Veoh'      ,
           'megaupload':'Megaupload',
           'pfflano'   :'Directo'   ,
+          'pya'       :'adnstream' ,
           }
 CALIDAD = {'f-1':u'\u2776','f-2':u'\u2777','f-3':u'\u2778','f-4':u'\u0002\u2779\u0002','f-5':u'\u277A'}
 DEBUG = True
@@ -54,7 +57,7 @@ def mainlist(item):
     itemlist.append( Item ( channel=CHANNELNAME , action="listidiomas"    , title="Listado por Idiomas"   ,url="http://www.peliculasyonkis.com/") )
     
     itemlist.append( Item ( channel=CHANNELNAME , action="buscaporanyo"   , title="Busqueda por Año",url="http://www.peliculasyonkis.com/") )
-    itemlist.append( Item ( channel=CHANNELNAME , action="search"         , title="Buscar"          ,url="http://www.peliculasyonkis.com/buscarPelicula.php?s=",thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png") )
+    itemlist.append( Item ( channel=CHANNELNAME , action="search"         , title="Buscar"          ,url="http://www.peliculasyonkis.com/buscarPelicula.php?s=", category="Buscador_Generico",thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png") )
     
     return itemlist
     
@@ -116,16 +119,14 @@ def listservidor(item):
         itemlist.append( Item ( channel=CHANNELNAME , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
     
     return itemlist
-
 def search(item):
     logger.info("[peliculasyonkis_generico.py] search")
+    return buscador.listar_busquedas(item)
     
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        from pelisalacarta import buscador
-        texto = buscador.teclado()
-    else:
-        texto = item.extra
-
+def searchresults(item):
+    logger.info("[peliculasyonkis_generico.py] searchresults")
+    buscador.salvar_busquedas(item)
+    texto = item.url.replace(" ", "+")
     item.url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
     
     return listvideos(item)
@@ -182,7 +183,7 @@ def listnovedades(item):
    patronvideos += '<center><span style=\'font-size: 0.7em\'>'
    patronvideos += '<a href="([^"]+)" title="([^"]+)">'
    patronvideos += '<img.*?src=\'([^\']+)\'[^>]+>.*?'
-   patronvideos += '<img.*?src="(http://simages[^"]+)"'
+   patronvideos += '<img.*?src="(http://s.staticyonkis.com[^"]+)"'
    matches = re.compile(patronvideos,re.DOTALL).findall(data)
    scrapertools.printMatches(matches)
 
@@ -255,7 +256,7 @@ def buscaporanyo(item):
     logger.info("[peliculasyonkis_generico.py] buscaporanyo")
     itemlist = []
     for i in range(111):
-        scrapedtitle=str(2010-i)
+        scrapedtitle=str(2011-i)
         scrapedurl="http://www.peliculasyonkis.com/estreno/"+scrapedtitle+"/"+scrapedtitle+"/0/"
         itemlist.append( Item ( channel=CHANNELNAME , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail="" , plot="" ) )
     return itemlist
@@ -363,47 +364,54 @@ def detailfolder(item):
    return itemlist
 
 def detail(item):
-   logger.info("[peliculasyonkis_generico.py] detail")
+    logger.info("[peliculasyonkis_generico.py] detail")
 
    
-   listafinal = []
-   itemlist=[] # Lista de videos
-   listapartes=[] # Lista para las partes
-   title = item.title
-   thumbnail = item.thumbnail
-   plot = item.plot
+    listafinal = []
+    itemlist=[] # Lista de videos
+    listapartes=[] # Lista para las partes
+    title = item.title
+    thumbnail = item.thumbnail
+    plot = item.plot
 
-   # Descarga la página
-   data = scrapertools.cachePage(item.url)
-   #logger.info(data)
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-   # ------------------------------------------------------------------------------------
-   # Busca los enlaces a los videos
-   # ------------------------------------------------------------------------------------
-   patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_([^\.]+).php.*?'
-   patronvideos += 'id=([^"]+)".*?'
-   patronvideos += 'alt="([^"]+)"'
-   patronvideos += '(.*?)</tr>'
-   matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    # ------------------------------------------------------------------------------------
+    # Busca los enlaces a los videos
+    # ------------------------------------------------------------------------------------
+    patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_([^\.]+).php.*?'
+    patronvideos += 'id=([^"]+)".*?'
+    patronvideos += 'alt="([^"]+)"'
+    patronvideos += '(.*?)</tr>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-   
-   if len(matches)>0:
-      logger.info("MATCHES %d" % len(matches))
-      itemlist = ChoiceOneVideo(matches,title)
+    patronvideos1  = 'http://www.peliculasyonkis.com/go/(d)/(.+?)".*?alt="([^"]+)"'
+    patronvideos1 += "(.+?)<br /></span></div></td>"
+    matches1 = re.compile(patronvideos1,re.DOTALL).findall(data)
+    if (len(matches1) > 0):
+        for j in matches1:
+            matches.append(j)
+            
+    if len(matches)>0:
+        #scrapertools.printMatches(matches)
+        logger.info("MATCHES %d" % len(matches))
+        itemlist = ChoiceOneVideo(matches,title)
 
-   return itemlist
+    return itemlist
 
 def choiceOnePart(item, opciones):
     logger.info("[peliculasyonkis_generico.py] ChoiceOneVideo")
 
     Nro = 0
-    matches = item.url.split(":")
+    matches = item.url.split("|")
     logger.info("Elige bien %02d " % len(matches))
     for url in matches:
-      logger.info(" URL " + url)
-      Nro = Nro + 1
-      titulo = item.title  + "Parte %s " % Nro
-      opciones.append(Item (channel=CHANNELNAME, title=titulo, server=item.server, url=url, action=item.action, folder=False))
+        logger.info(" URL " + url)
+        Nro = Nro + 1
+        titulo = item.title  + "Parte %s " % Nro
+        opciones.append(Item (channel=CHANNELNAME, title=titulo, server=item.server, url=url.strip(), action=item.action, folder=False))
    
     return opciones
    
@@ -418,7 +426,28 @@ def ChoiceOneVideo(matches,title):
         logger.info("SERVER="+server)
         try:
             ql= ""
-            servidor = SERVER[server]
+            if server in SERVER:
+                servidor = SERVER[server]
+                player = server
+                id = codigo
+                Server = servidor
+            else:
+                if server == "d":
+                    player = "megaupload"
+                    id = "http://www.peliculasyonkis.com/go/%s/%s" % (server,codigo)
+                    
+                    servidor = "Descarga"
+                    Server = "megaupload"
+                elif server == "mv":
+                    player = "pymeno2"
+                    id = "http://www.peliculasyonkis.com/go/%s/%s" % (server,codigo)
+                    
+                    servidor = "Megavideo"
+                    Server = "megavideo"
+                else:
+                    servidor = "desconocido ("+server+")"
+                    logger.info("[peliculasyonkis.py] SERVIDOR DESCONOCIDO ["+server+"]")
+                    player=Server = server
             logger.info("SERVER="+servidor)
             Nro = Nro + 1
             regexp = re.compile(r"title='([^']+)'")
@@ -457,32 +486,88 @@ def ChoiceOneVideo(matches,title):
             #opciones.append("%02d) [%s] - [%s] %s (%s%s)" % (Nro , audio,servidor,duracion,fmt,Video_info))
             title = "%02d) [%s] - [%s] %s (%s%s)" % (Nro , audio,servidor,duracion,fmt,Video_info)
            
-            logger.info("Codigo " + codigo)
-            if '&al=' in codigo:
-                codigos = codigo.split('&al=')         
+            logger.info("Codigo " + id)
+            if '&al=' in id:
+                codigos = id.split('&al=')         
                 url = Decrypt_Server(codigos[0],server)
                 logger.info("url="+url)
-                if ":" in url:
+                if "|" in url:
                     logger.info("partes")
                     itemPartes = Item (title=title, url=url, server=servidor, action="play",folder=False)
                     opciones = choiceOnePart(itemPartes, opciones)
                     #opciones.append(listaPartes)
             else:
                 logger.info("1link")
-                url = Decrypt_Server(codigo,server)
-                opciones.append(Item (channel=CHANNELNAME, title=title, server=servidor, url=url, action="play",folder=False) )
+                if "http" in id:
+                    
+                    opciones.append(Item (channel=CHANNELNAME, title=title, server=player, url=id, action="play2",folder=False) )
+                else:
+                    url = Decrypt_Server(id,player)
+                    if "|" in url:
+                        logger.info("1link con dos partes")
+                        itemPartes = Item (title=title, url=url, server=Server, action="play",folder=False)
+                        opciones = choiceOnePart(itemPartes, opciones)
+                    else:                   
+                        opciones.append(Item (channel=CHANNELNAME, title=title, server=Server, url=url, action="play",folder=False) )
 
         except urllib2.URLError,e:
             logger.info("[peliculasyonkis_generico.py] error:%s (%s)" % (e.code,server))
            
     return opciones
-   
-   
+
+def play2(item):
+
+    opciones = []
+    if item.server in SERVER:
+        servidor = SERVER[item.server]
+        url = Decrypt_Server(item.url,item.server)
+        if url == "":
+            from core import xbmctools
+            xbmctools.alertUnsopportedServer()
+            servidor = "unknown"
+            return []
+    else:
+        servidor = "desconocido ("+item.server+")"
+        logger.info("[peliculasyonkis.py] SERVIDOR DESCONOCIDO ["+item.server+"]")
+        url = ""
+    if "|" in url:
+        
+        logger.info("1link con dos partes")
+        itemPartes = Item (title=title, url=url, server=servidor, action="play",folder=False)
+        opciones = choiceOnePart(itemPartes, opciones)
+        
+    else:
+        #opciones.append(Item (channel=CHANNELNAME, title=item.title, server=servidor, url=url, action="play",folder=False) )
+        from core import xbmctools
+        xbmctools.playvideo(CHANNELNAME,servidor,url,item.category,item.title,item.thumbnail,item.plot,subtitle=item.subtitle)
+    return opciones
+def getId(url):
+    logger.info("[peliculasyonkis.py] getId")
+    #print url
+    movielink = url
+    try:
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        opener = urllib2.build_opener(SmartRedirectHandler())
+        response = opener.open(req)
+    except ImportError, inst:    
+        status,location=inst
+        logger.info(str(status) + " " + location)    
+        movielink = location
+    #print movielink
+
+    try:
+        id = re.compile(r'id=([A-Z0-9%]{0,})').findall(movielink)[0]
+    except:
+        id = ""
+    
+    return id
 def Decrypt_Server(id_encoded,servidor):
     id = id_encoded
     DEC = Yonkis.DecryptYonkis()
     logger.info("Recibimos " + servidor + " y " + id_encoded)
-   
+    if "http" in id:
+        id = getId(id_encoded)
     if   'pymeno2'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
     elif 'pymeno3'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
     elif 'pymeno4'   == servidor: idd=DEC.decryptID(DEC.charting(DEC.unescape(id)))   
@@ -492,35 +577,38 @@ def Decrypt_Server(id_encoded,servidor):
         idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
         if ":" in idd:
             ids = idd.split(":")
-            idd = "http://stagevu.com/video/%s" %choiceOnePart(ids).strip()
+            idd = "http://stagevu.com/video/%s|http://stagevu.com/video/%s" %(ids[0].strip(),ids[1].strip())
+            
         else:
             idd = "http://stagevu.com/video/%s" %idd
     elif 'manueno'   == servidor:
         idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
         if len(idd)>50:
-            ids = idd.split()
-            idd = choiceOnePart(ids).strip()
+            
+            idd = idd.replace("\n","|")
        
     elif 'videoweed' == servidor:
         idd= DEC.decryptID(DEC.charting(DEC.unescape(id)))
         if ":" in idd:
             ids = idd.split(":")
-            idd = "http://www.videoweed.com/file/%s" %choiceOnePart(ids).strip()       
+            idd = "http://www.videoweed.com/file/%s|http://www.videoweed.com/file/%s" %(ids[0].strip(),ids[1].strip())       
         else:
             idd = "http://www.videoweed.com/file/%s" %idd
     elif 'veoh2'     == servidor: idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
     elif 'megaupload'== servidor:
         idd=DEC.ccM(DEC.unescape(id))
         if ":" in idd:
-            idd = choiceOnePart(idd.split(":"))
+            idd = idd.replace(":","|")
        
     elif 'pfflano'   == servidor:
         idd=DEC.decryptALT(DEC.charting(DEC.unescape(id)))
         logger.info(idd)
-        ids = idd.split()
-        idd = choiceOnePart(ids).strip()
+        idd = idd.replace("\n","|")
+        
         return idd
        
+    elif 'pya'  == servidor:
+        return id
     else:
         return ""
    
@@ -529,13 +617,7 @@ def Decrypt_Server(id_encoded,servidor):
    
    
    
-def Activar_Novedades(params,activar,category):
-    if activar == "false":
-        config.setSetting("activar","true")
-    else:
-        config.setSetting("activar","false")
-    logger.info("opcion menu novedades :%s" %config.getSetting("activar"))
-   
-    #xbmc.executebuiltin('Container.Update')   
-    xbmc.executebuiltin('Container.Refresh')
+class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_302(self, req, fp, code, msg, headers):
+        raise ImportError(302,headers.getheader("Location"))
    

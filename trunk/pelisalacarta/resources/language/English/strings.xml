@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<!-- Available id from 30000 to 30999 -->
 
@@ -82,6 +82,7 @@
     <string id="30062">Try another quality</string> <!-- Prueba a reproducir en otra calidad -->
     <string id="30063">This channel has been downloaded and updated!</string>
     <string id="30064">¡Channel list has been updated!</string>
+    <string id="30065">Unsopported Server</string>
 
 	<!-- =============================================================== -->
 	<!-- 30100 to 30149: Generic channels (Search, downloads, etc.)      -->

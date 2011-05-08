@@ -46,7 +46,7 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"  , title="Estrenos"                      , url="http://www.cine-adicto.com/category/2010/" ))
     itemlist.append( Item(channel=CHANNELNAME , action="listvideos"        , title="Documentales"                  , url="http://www.cine-adicto.com/category/documentales/" ))
     #itemlist.append( Item(channel=CHANNELNAME , action="listvideos"        , title="Peliculas en HD"              , url="http://www.cine-adicto.com/category/peliculas-hd-categorias" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="search"            , title="Buscar"                        , url="http://www.cine-adicto.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="search"            , title="Buscar"                        , url="http://www.cine-adicto.com/" , category = "Buscador_Generico"))
 
     return itemlist
     

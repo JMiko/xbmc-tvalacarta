@@ -378,8 +378,12 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
     # Si no hay mediaurl es porque el vídeo no está :)
     logger.info("[xbmctools.py] mediaurl="+mediaurl)
     if mediaurl=="":
-        alertnodisponibleserver(server)
+        if server == "unknown":
+            alertUnsopportedServer()
+        else:
+            alertnodisponibleserver(server)
         return
+    
 
     # Crea un listitem para pasárselo al reproductor
 
@@ -558,6 +562,11 @@ def alertnodisponibleserver(server):
     # 'El vídeo ya no está en %s' , 'Prueba en otro servidor o en otro canal'
     resultado = advertencia.ok( config.get_localized_string(30055),(config.get_localized_string(30057)%server),config.get_localized_string(30058))
 
+def alertUnsopportedServer():
+    advertencia = xbmcgui.Dialog()
+    # 'Servidor no soportado o desconocido' , 'Prueba en otro servidor o en otro canal'
+    resultado = advertencia.ok( config.get_localized_string(30065),config.get_localized_string(30058))
+
 def alerterrorpagina():
     advertencia = xbmcgui.Dialog()
     #'Error en el sitio web'
@@ -603,22 +612,19 @@ def playstrm(params,url,category):
     playvideo("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
 
 def renderItems(itemlist, params, url, category,isPlayable='false'):
-    print "paso 0"
-    print itemlist
     for item in itemlist:
-        print "paso 1"
+        if item.category == "":
+            item.category = category
         if item.folder :
             if len(item.extra)>0:
-                print "paso 2"
-                addnewfolderextra( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context )
+                addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context )
             else:
-                print "paso 3"
-                addnewfolder( item.channel , item.action , category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context  )
+                addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context  )
         else:
             if item.duration:
-                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )
+                addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )
             else:    
-                addnewvideo( item.channel , item.action , category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems )
+                addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems )
 
     # Cierra el directorio
     xbmcplugin.setContent(pluginhandle,"Movies")

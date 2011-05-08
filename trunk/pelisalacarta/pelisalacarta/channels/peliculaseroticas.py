@@ -4,13 +4,14 @@
 # Canal para peliculaseroticas
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
+import urlparse,urllib2,urllib,re,time
 import os
 import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
 import binascii
+
 
 from servers import megavideo
 from servers import servertools
@@ -24,7 +25,7 @@ from core.item import Item
 from xml.dom import minidom
 from xml.dom import EMPTY_NAMESPACE
 
-
+CACHE_PATH = xbmc.translatePath('special://profile/addon_data/plugin.video.pelisalacarta/cache/')
 CHANNELNAME = "peliculaseroticas"
 ATOM_NS = 'http://www.w3.org/2005/Atom'
 
@@ -214,17 +215,11 @@ def detail(item):
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	#logger.info("[peliculaseroticas.py] matches="+matches[0])
 	if len(matches)>0:
-		mediaurl = "http://www.adnstream.tv/get_playlist.php?lista=video&param="+matches[0]+"&c=463"
-		logger.info(" mediaurl -------"+mediaurl)
-		data1 = scrapertools.cachePage(mediaurl)
-		#logger.info("[peliculaseroticas.py] data="+data)
-		patronvideos = '</description>.*?<enclosure type="video/x-flv" url="(.*?)"'
-		matchvideo = re.compile(patronvideos,re.DOTALL).findall(data1)
-		if len(matchvideo)>0:
-			logger.info("[peliculaseroticas.py] videoflv = "+ matchvideo[0])
-			scrapedtitle = item.title +" - Video en adnstream.tv"
-			#xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en adnstream.tv"  , matchvideo[0] ,thumbnail, plot )
-			itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=matchvideo[0], thumbnail=item.thumbnail, plot=item.plot, server="Directo", folder=False))
+
+		logger.info("[peliculaseroticas.py] videocode = "+ matches[0])
+		crapedtitle = item.title +" - Video en adnstream.tv"
+		#xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title+" - Video en adnstream.tv"  , matchvideo[0] ,thumbnail, plot )
+		itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=matches[0], thumbnail=item.thumbnail, plot=item.plot, server="adnstream", folder=False))
 
 	patronvideos = 'src="(http://vk[^\/]+\/video_ext.php[^"]+)"'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -253,4 +248,3 @@ def detail(item):
 	'''
 		
 	return itemlist
-
