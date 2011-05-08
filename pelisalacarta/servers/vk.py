@@ -154,7 +154,10 @@ def geturl(urlvideo):
                     videourl = "http://%s/assets/videos/%s%s.vk.%s" % (match[0],match[2],vkid,tipo)
                 
             else:                                   #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
-                if match[4]=="1":
+                #Si la calidad elegida en el setting es HD se reproducira a 480 o 720, caso contrario solo 360, este control es por la xbox
+                if   match[4]=="0":
+                    tipo = "240.mp4"
+                elif match[4]=="1":
                     tipo = "360.mp4"
                 elif match[4]== "2" and quality == "1":
                     tipo = "480.mp4"

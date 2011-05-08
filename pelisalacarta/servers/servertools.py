@@ -146,7 +146,10 @@ def findvideos(data):
 
     for match in matches:
         titulo = "[Megavideo]"
-        url = match
+        if "&" in match:
+            url = match.split("&")[0]
+        else:
+            url = match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'Megavideo' ] )

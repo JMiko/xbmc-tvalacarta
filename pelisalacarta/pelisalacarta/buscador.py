@@ -25,7 +25,7 @@ def mainlist(params,url="",category=""):
 
     listar_busquedas(params,url,category)
 
-def searchresults(params,url,category):
+def searchresults(params,url="",category=""):
     logger.info("[buscador.py] searchresults")
     salvar_busquedas(params,url,category)
     if url == "" and category == "":
@@ -165,13 +165,16 @@ def salvar_busquedas(params,url="",category=""):
     #xbmc.executebuiltin( "Container.Refresh" )
         
 def listar_busquedas(params,url="",category=""):
+    #print "category :" +category
     if url == "" and category == "":
         channel_preset = params.channel
         accion = params.action
+        category = "Buscador_Generico"
     else:
         channel_preset = params.get("channel")
         accion = params.get("action")
-    print "listar_busquedas()"
+        category = "Buscador_Normal"
+    #print "listar_busquedas()"
     channel2 = "**"
     itemlist=[]
     # Despliega las busquedas anteriormente guardadas
@@ -185,26 +188,28 @@ def listar_busquedas(params,url="",category=""):
         matches = ""
         if "|" in presets:
             matches = presets.split("|")
-            itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." , url=matches[0] ,thumbnail="" , plot="", extra = channel2 , context = 1 ))
+            itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..."  , url=matches[0] ,thumbnail="" , plot=channel2, category = category , context = 1 ))
             #addfolder( "buscador"   , config.get_localized_string(30103)+"..." , matches[0] , "por_teclado", channel2 ) # Buscar
         else:
-            itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." , url="" ,thumbnail="" , plot="" , extra = channel2 ,context = 0 ))
+            itemlist.append( Item(channel="buscador" , action="por_teclado"  ,  title=config.get_localized_string(30103)+"..." ,   url="" ,thumbnail="" , plot=channel2 , category = category , context = 0 ))
             #addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado", channel2 )
         if len(matches)>0:    
             for match in matches:
                 
                 title=scrapedurl = match
-                itemlist.append( Item(channel=channel_preset , action="searchresults"  , title=title , url=scrapedurl, thumbnail="" , plot="" , extra = channel2, context=1 ))
+                itemlist.append( Item(channel=channel_preset , action="searchresults"  , title=title ,  url=scrapedurl, thumbnail="" , plot="" , category = category ,  context=1 ))
                 #addfolder( channel_preset , title , scrapedurl , "searchresults" )
         elif presets != "":
         
             title = scrapedurl = presets
-            itemlist.append( Item(channel=channel_preset , action="searchresults"  , title=title , url=scrapedurl, thumbnail= "" , plot="" , extra=channel2, context = 1 ))
+            itemlist.append( Item(channel=channel_preset , action="searchresults"  , title=title ,  url=scrapedurl, thumbnail= "" , plot="" , category = category , context = 1 ))
             #addfolder( channel_preset , title , scrapedurl , "searchresults" )
     except:
-         itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." , url="", thumbnail="" , plot="" , extra = channel2 , context = 0  ))
+         itemlist.append( Item(channel="buscador" , action="por_teclado"  , title=config.get_localized_string(30103)+"..." ,  url="", thumbnail="" , plot=channel2 , category = category ,  context = 0  ))
         #addfolder( "buscador"   , config.get_localized_string(30103)+"..." , "" , "por_teclado" , channel2 )
-    if url=="" and category=="":
+    
+    if url=="" and category=="Buscador_Generico":
+
         return itemlist
     else:
         for item in itemlist:
@@ -275,30 +280,36 @@ def teclado(default="", heading="", hidden=False):
     
 def por_teclado(params,url="",category=""):
     logger.info("[buscador.py] por_teclado")
-    if url == "" and category == "":
-        channel2 = item.extra
-        channel  = item.channel
-        tecleado = teclado(item.url)
+    print "category :"+category,"url :"+url
+    if category == "" or category == "Buscador_Generico":
+
+        channel  = params.channel
+        tecleado = teclado(params.url)
         if len(tecleado)<=0:
             return
-        if channel2 == "":
-            exec "import pelisalacarta."+channel+" as plugin"
+        if params.plot:
+            channel = params.plot
+            exec "import pelisalacarta.channels."+channel+" as plugin"
         else:
-            exec "import pelisalacarta.channels."+channel2+" as plugin"
-        item.url = tecleado
-        exec "plugin.searchresults(item)"
+            exec "import pelisalacarta."+channel+" as plugin"
+
+
+        params.url = tecleado
+        itemlist = plugin.searchresults(params)
+        return itemlist
     else:
-        channel2 = params.get("extradata")
         channel  = params.get("channel")
         tecleado = teclado(url)
         if len(tecleado)<=0:
             return
-        if channel2 == "":
-            exec "import pelisalacarta."+channel+" as plugin"
+        if params.get("plot"):
+            channel = params.get("plot")
+            exec "import pelisalacarta.channels."+channel+" as plugin"
         else:
-            exec "import pelisalacarta.channels."+channel2+" as plugin"
+            exec "import pelisalacarta."+channel+" as plugin"
+
         url = tecleado
-        exec "plugin.searchresults(params, url, category)"
+        plugin.searchresults(params, url, category)
 
 
 def addfolder( canal , nombre , url , accion , channel2 = "" ):

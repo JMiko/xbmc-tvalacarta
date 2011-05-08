@@ -119,10 +119,14 @@ def run():
                 exec "from core import "+params.get("channel")+" as channel"
 
             generico = False
-            try:
-                generico = channel.isGeneric()
-            except:
-                generico = False
+            # Esto lo he puesto asi porque el buscador puede ser generico o normal, esto estará asi hasta que todos los canales sean genericos 
+            if category == "Buscador_Generico":
+                generico = True
+            else:
+                try:
+                    generico = channel.isGeneric()
+                except:
+                    generico = False
 
             print "generico=" , generico 
             

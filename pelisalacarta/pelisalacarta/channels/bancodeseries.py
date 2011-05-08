@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para bancodeseries
@@ -63,7 +63,7 @@ def novedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         try:
             print scrapedtitle
-            scrapedtitle = scrapedtitle.replace("ñ","�")
+            scrapedtitle = scrapedtitle.replace("ñ","?")
             #scrapedtitle = unicode(scrapedtitle, "utf-8" )
         except:
             pass
@@ -200,7 +200,7 @@ def listmirrors(item):
                 matchesvk = re.compile(patron).findall(match[0])
                 scrapedurl = "http://bancodeseries.com/modulos/embed/vkontakteX.php?oid=%s&id=%s&hash=%s" %(matchesvk[0][0],matchesvk[0][1],matchesvk[0][2])
                 server = "Directo"
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [VK]" %match[1] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [VK]" %match[1] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, folder=False))
 
             patron   = "http://bancodeseries.com/([^/]+)/([^/]+)/[^/]+/([^\.]+).html"    #http://bancodeseries.com/playlist/6917/el-equipo-a-online.html
             matches2 = re.compile(patron,re.DOTALL).findall(match[0])
@@ -219,7 +219,7 @@ def listmirrors(item):
                     scrapedurl = xmlmatch[1]
                     #xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , (title.strip() + " (%d) " + videotitle) % j , url , thumbnail , plot )
                     server = "Directo"
-                    itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [Directo]" %xmlmatch[0] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+                    itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [Directo]" %xmlmatch[0] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, folder=False))
 
             elif matches2[0][0] == "flash":
                 url = "http://bancodeseries.com/megaembed/%s/%s.html" %(matches2[0][1],matches2[0][2])
@@ -233,12 +233,12 @@ def listmirrors(item):
                     server = video[2]
                     
                     from core import downloadtools
-                    itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle + " - " + videotitle , url=url, thumbnail=scrapedthumbnail, plot=downloadtools.limpia_nombre_excepto_1(plot)))
+                    itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle + " - " + videotitle , url=url, thumbnail=scrapedthumbnail, plot=downloadtools.limpia_nombre_excepto_1(plot), folder=False))
 
         elif "vk.php" in match[0]:
             scrapedurl = "http://bancodeseries.com/modulos/embed/vkontakteX.php?%s" %match[0].split("?")[1]
             server = "Directo"
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [VK]" %match[1] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , server=server , title=scrapedtitle+" - %s [VK]" %match[1] , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, folder=False  ))
 
     return itemlist
 
