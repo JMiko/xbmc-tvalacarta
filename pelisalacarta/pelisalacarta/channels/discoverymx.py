@@ -38,12 +38,12 @@ def mainlist(params,url,category):
     logger.info("[discoverymx.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales - Novedades"            ,"http://discoverymx.wordpress.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "DocuCat"    , category , "Documentales - Lista por categorías" ,"http://discoverymx.wordpress.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "DocuSeries" , category , "Documentales - Series Disponibles" ,"http://discoverymx.wordpress.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "DocuTag"    , category , "Documentales - Tag" ,"http://discoverymx.wordpress.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "DocuARCHIVO", category , "Documentales - Archivo" ,"http://discoverymx.wordpress.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentales - Novedades"            ,"http://discoverymx.blogspot.com/","","")
+    #xbmctools.addnewfolder( CHANNELNAME , "DocuCat"    , category , "Documentales - Lista por categorías" ,"http://discoverymx.blogspot.com/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "DocuSeries" , category , "Documentales - Series Disponibles" ,"http://discoverymx.blogspot.com/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "DocuTag"    , category , "Documentales - Tag" ,"http://discoverymx.blogspot.com/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "DocuARCHIVO", category , "Documentales - Archivo" ,"http://discoverymx.blogspot.com/","","")
+    #xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -60,7 +60,7 @@ def search(params,url,category):
         if len(tecleado)>0:
             #convert to HTML
             tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://discoverymx.wordpress.com/index.php?s="+tecleado
+            searchUrl = "http://discoverymx.blogspot.com/index.php?s="+tecleado
             SearchResult(params,searchUrl,category)
             
 def SearchResult(params,url,category):
@@ -96,7 +96,7 @@ def SearchResult(params,url,category):
 
 def performsearch(texto):
     logger.info("[discoverymx.py] performsearch")
-    url = "http://discoverymx.wordpress.com/index.php?s="+texto
+    url = "http://discoverymx.blogspot.com/index.php?s="+texto
 
     # Descarga la página
     data = scrapertools.cachePage(url)
@@ -129,18 +129,17 @@ def DocuSeries(params,url,category):
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="([^"]+)" target="_blank"><img src="([^"]+)"></a><br>'
+    patronvideos  = '<li><b><a href="([^"]+)" target="_blank">([^<]+)</a></b></li>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
         # Atributos
         scrapedurl = match[0]
-        mobj = re.search(r"http://discoverymx.wordpress.com/tag/([^/]+)/", scrapedurl)
-        scrapedtitle = mobj.group(1)
-        scrapedtitle = scrapedtitle.replace("-"," ")
         
-        scrapedthumbnail = match[1]
+        scrapedtitle = match[1]
+        
+        scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
@@ -160,14 +159,14 @@ def DocuTag(params,url,category):
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas (carpetas)
-    patronvideos  =    "<a href='([^']+)' class='tag-link-[^']+' title='[^']+' style='[^']+'>([^<]+)</a>"
+    patronvideos  =    "<a dir='ltr' href='([^']+)'>([^<]+)</a>[^<]+<span class='label-count' dir='ltr'>(.+?)</span>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
         # Atributos
         scrapedurl = match[0]
-        scrapedtitle = match[1]
+        scrapedtitle = match[1] + " " + match[2]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -187,14 +186,15 @@ def DocuARCHIVO(params,url,category):
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas (carpetas)
-    patronvideos  =    "<li><a href='([^']+)' title='[^']+'>([^<]+)</a></li>"
+    patronvideos  =    "<a class='post-count-link' href='([^']+)'>([^<]+)</a>[^<]+"
+    patronvideos +=    "<span class='post-count' dir='ltr'>(.+?)</span>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
         # Atributos
         scrapedurl = match[0]
-        scrapedtitle = match[1]
+        scrapedtitle = match[1] + " " + match[2]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -245,8 +245,9 @@ def listvideos(params,url,category):
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<h3 class="entry-title"><a href="([^"]+)"[^>]+>([^<]+)</a></h3>.*?'
-    patronvideos += '<div class="entry-content">(.*?)</div> <!-- #post-ID -->'
+    patronvideos  = "<h3 class='post-title entry-title'>[^<]+"
+    patronvideos += "<a href='([^']+)'>([^<]+)</a>.*?"
+    patronvideos += "<div class='post-body entry-content'>(.*?)<div class='post-footer'>"
     
     
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -255,26 +256,22 @@ def listvideos(params,url,category):
     for match in matches:
         scrapedtitle = match[1]
         scrapedtitle = re.sub("<[^>]+>"," ",scrapedtitle)
-        scrapedtitle = scrapedtitle.replace("&#8211;","-")
-        scrapedtitle = scrapedtitle.replace("&nbsp;"," ")
-        scrapedtitle = scrapedtitle.replace("&amp;;","&")
+        scrapedtitle = scrapertools.unescape(scrapedtitle)
         scrapedurl = match[0]
-        regexp = re.compile(r'src="([^"]+)"')
+        regexp = re.compile(r'src="(http[^"]+)"')
         matchthumb = regexp.search(match[2])
         if matchthumb is not None:
             scrapedthumbnail = matchthumb.group(1)
-        scrapedplot = match[2]
+        matchplot = re.compile('<div align="center">(<img.*?)</span></div>',re.DOTALL).findall(match[2])
+        if len(matchplot)>0:
+            scrapedplot = matchplot[0]
+            #print matchplot
+        else:
+            scrapedplot = ""
         scrapedplot = re.sub("<[^>]+>"," ",scrapedplot)
-        scrapedplot = scrapedplot.replace("&#215;","*")
-        scrapedplot = scrapedplot.replace("&amp;","&")
-        scrapedplot = scrapedplot.replace("&#8211;","-")
-        scrapedplot = scrapedplot.replace("\n","")
-        scrapedplot = scrapedplot.replace("\t","")
-        scrapedplot = scrapedplot.replace("\:\:","")
-        scrapedplot = scrapedplot.replace("â€¦","")
-        scrapedplot = scrapedplot.replace("Uploading","")
-        scrapedplot = scrapedplot.replace("DepositFiles","")
-        scrapedplot = scrapedplot.replace("HotFile","")
+        scrapedplot = scrapertools.unescape(scrapedplot)
+
+
         #scrapedplot = scrapedplot.replace("â€¦","")
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
@@ -282,7 +279,7 @@ def listvideos(params,url,category):
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Extrae la marca de siguiente página
-    patronvideos = '<div class="left"><a href="([^"]+)" ><span>&laquo;</span> Entradas Anteriores</a></div>'
+    patronvideos = "<a class='blog-pager-older-link' href='([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -326,7 +323,7 @@ def detail(params,url,category):
                     scrapedtitle     = match2[2]
                     scrapedurl       = match2[0]
                     if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-                    xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" , scrapedtitle +" - "+"(youtube) ", scrapedurl , scrapedthumbnail , plot )
+                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "youtube" , scrapedtitle +" - "+"(youtube) ", scrapedurl , scrapedthumbnail , plot )
                 logger.info(" lista de links encontrados U "+str(len(matchnewyoutube)))
 #-------------------------------------------------------------------------------
 #<a href="http://www.youtube.com/watch?v=je-692ngMY0" target="_blank">parte 1</a>
@@ -339,7 +336,7 @@ def detail(params,url,category):
                 scrapedtitle = re.sub("<[^>]+>"," ",scrapedtitle)
                 scrapedurl   = match[0]
                 if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-                xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" , scrapedtitle +" - "+"(youtube) ", scrapedurl , thumbnail , plot )
+                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "youtube" , scrapedtitle +" - "+"(youtube) ", scrapedurl , thumbnail , plot )
     else:
         patronyoutube = "<param name='movie' value='(http://www.youtube.com/v/[^']+)'"
         matchyoutube  = re.compile(patronyoutube,re.DOTALL).findall(data)
@@ -350,14 +347,14 @@ def detail(params,url,category):
             scrapedtitle = title
             scrapedthumbnail = thumbnail
             re.compile(patronyoutube,re.DOTALL).findall(data)
-            xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category , "Directo" , scrapedtitle +" - "+str(parte)+" (youtube) ", scrapedurl , scrapedthumbnail , plot )
+            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "youtube" , scrapedtitle +" - "+str(parte)+" (youtube) ", scrapedurl , scrapedthumbnail , plot )
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
     # ------------------------------------------------------------------------------------
     listavideos = servertools.findvideos(data)
 
     for video in listavideos:
-        videotitle = video[0]
+        videotitle = scrapertools.unescape(video[0])
         url = video[1]
         server = video[2]
         xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )

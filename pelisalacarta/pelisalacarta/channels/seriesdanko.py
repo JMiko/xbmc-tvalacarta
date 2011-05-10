@@ -263,18 +263,29 @@ def ListVideos(item):
 	datadict = eval( "(" + data + ")" )	
 	data = urllib.unquote_plus(datadict["feed"]["entry"][0]["content"]["$t"].replace("\\u00","%"))
 	data = data.replace("'",'"')
-	#print data
-	patronvideos = '<a.+?href="([^"]+)".+?src="([^"]+)".+?alt="([^"]+)"'
+	print data
+	patronvideos = '<a.+?href="([^"]+)"(.+?</a>)'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	itemlist = []
-	for url,thumbnail,title in matches:
-		scrapedtitle = title
+	for url,info in matches:
+		try:
+			scrapedtitle = re.compile('alt="(.+?)"').findall(info)[0]
+		except:
+			try:
+				scrapedtitle = re.compile('<br />(.+?)</a>').findall(info)[0]
+			except:
+				scrapedtitle = ""
+		try:
+			scrapedthumbnail = re.compile('src="(.+?)"').findall(info)[0]
+		except:
+			scrapedthumbnail = ""
+
 		scrapedplot = ""
-		title = title.replace(",","")
-		title = title.replace("online","")
-		title = title.replace("Csi","CSI")
-		scrapedurl = "http://www.blogger.com/feeds/5090863330072217342/posts/default/-/%s?alt=json|%s" % (title.strip(),url)
-		scrapedthumbnail = thumbnail
+		scrapedtitle = scrapedtitle.replace(",","")
+		scrapedtitle = scrapedtitle.replace("online","")
+		scrapedtitle = scrapedtitle.replace("Csi","CSI")
+		scrapedurl = "http://www.blogger.com/feeds/5090863330072217342/posts/default/-/%s?alt=json|%s" % (scrapedtitle.strip(),url)
+		
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
@@ -335,7 +346,7 @@ def capitulos(item):
 					contenidos = matches[0]
 				
 	patronvideos  = '<a href="([^"]+)">([^<]+)</a>.*?src="([^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(contenidos)
+	matches = re.compile(patronvideos,re.DOTALL).findall(contenidos.replace("'",'"'))
 	#print contenidos		
 	try:
 		plot = re.compile(r'(Informac.*?/>)</div>').findall(contenidos)[0]

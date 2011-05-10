@@ -531,13 +531,13 @@ def findvideos(data):
     for match in matches:
         titulo = "[YouTube]"
         url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'youtube' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
+        if url != "":
+            if url not in encontrados:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'youtube' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
     #http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
     logger.info("0) Facebook...")
