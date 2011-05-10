@@ -370,7 +370,7 @@ def getallserieslist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="list" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = Serie , show = scrapedtitle )#, totalItems = totalItems))
+        itemlist.append( Item(channel=CHANNELNAME, action="list" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = Serie , show = scrapedtitle ))#, totalItems = totalItems))
 
     return itemlist
 
