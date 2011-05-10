@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesyonkis</name>
-	<tag>1</tag>
-	<date>02/05/2011</date>
-	<changes>Arreglado un problema con la expresión regular de los listados de pelis. Ahora salen muchas más :)</changes>
+	<tag>2</tag>
+	<date>10/05/2011</date>
+	<changes>Arreglado un problema con totalitems en el listado completo de series, opcion nueva que necesita otros archivos actualizados :)</changes>
 </version>

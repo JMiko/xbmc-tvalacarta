@@ -332,7 +332,7 @@ def allserieslist(params,url,category,clave):
     itemlist = getallserieslist(item)
     
     for item in itemlist:
-        xbmctools.addnewfolder(item.channel , item.action , category , item.title , item.url , item.thumbnail, item.plot , item.extra , totalItems = item.totalItems)
+        xbmctools.addnewfolder(item.channel , item.action , category , item.title , item.url , item.thumbnail, item.plot , item.extra )#, totalItems = item.totalItems)
 
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
