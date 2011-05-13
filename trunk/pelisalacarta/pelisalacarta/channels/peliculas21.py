@@ -575,7 +575,7 @@ def listvideos(params,url,category):
     <span class="bloque-link">Opción 8: <a href="javascript:goTo('aHR0cDovL3d3dy5tZWdhdmlkZW8uY29tLz92PTVOM0JYOVMx', 'megavideo.com')" rel="nofollow">Ver película</a></span>
     '''
     patronvideos = '<span class="bloque-doblaje">(.+?)</span>[^<]+'
-    patronvideos +='<span class="bloque-link">[^<]+<a href="javascript\:goTo\(\'([^\']+)\'\, \'([^\']+)\'\)"(.+?)</span>'
+    patronvideos +='<span class="bloque-link">[^<]+<a href="#" onclick="goTo\(\'([^\']+)\'\, \'([^\']+)\'\).+?"(.+?)</span>'
     #patronvideos +='(?:\| <a href="javascript\:goTo\(\'([^\']+)\'\, \'([^\']+)\'\)".*?)</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -593,7 +593,7 @@ def listvideos(params,url,category):
             doblaje = match[0].strip()            
         base64 = decrypt21.Base64()
         try:
-            url2 = re.compile("javascript\:goTo\(\'([^\']+)\'\, \'([^\']+)\'\)").findall(match[3])[0]
+            url2 = re.compile("onclick=\"goTo\(\'([^\']+)\'\, \'([^\']+)\'\)").findall(match[3])[0]
             scrapedurl2 = base64._extract_code(base64.decode(url2[0]))
             scrapedurl = base64._extract_code(base64.decode(match[1]))
             part1 = " Parte 1 "
