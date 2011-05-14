@@ -135,8 +135,9 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" ))
-    itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" ))
+    itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" )) # xextil 09/05/2011
+    itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" )) # xextil 09/05/2011
+    itemlist.append( Item( title="NewHD (05/05/2011)"                 , channel="newhd"                , language="ES" , category="F" , type="generic" )) # xextil 05/05/2011
     itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
@@ -179,6 +180,7 @@ def channels_list():
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"         , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"      , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES" , category="F,D" , type="xbmc"  ))
+    itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES" , category="F" , type="generic" )) # xextil 05/05/2011
     itemlist.append( Item( title="No Megavideo"          , channel="nomegavideo"          , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="NoloMires"             , channel="nolomires"            , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Peliculas Online FLV"  , channel="peliculasonlineflv"   , language="ES" , category="F,D" , type="xbmc"  ))
