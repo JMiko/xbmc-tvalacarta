@@ -571,7 +571,6 @@ def findvideos(data):
                 encontrados.add(url)
             else:
                 logger.info("  url duplicada="+url)
-			
     
     logger.info(") YouTube formato buenaisla")  #www.youtube.com%2Fwatch%3Fv%3DKXpGe0ds5r4
     patronvideos  = 'www.youtube.*?v(?:=|%3D)([0-9A-Za-z_-]{11})'
@@ -587,7 +586,6 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-		
 
     #http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
     logger.info("0) Facebook...")
@@ -618,7 +616,7 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)			
-			
+
     #http://www.4shared.com/embed/392975628/ff297d3f
     logger.info("0) 4shared...")
     patronvideos  = '"(http://www.4shared.com.*?)"'
@@ -668,6 +666,20 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    logger.info("videobb...")
+    patronvideos  = "(http\:\/\/videobb.com\/e\/[a-zA-Z0-9]+)"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[videobb]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videobb' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
     logger.info("videobb...")
     patronvideos  = "(http\:\/\/(?:www\.)?videobb.com\/(?:(?:e/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{12})"
@@ -699,6 +711,21 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
     
+    logger.info ("vk...")
+    #userporn tipo "http://vk.com/video_ext.php?oid=70712020&amp;id=159787030&amp;hash=88899d94685174af&amp;hd=3"
+    patronvideos = '<iframe src="(http://[^\/]+\/video_ext.php[^"]+)"'
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[vk]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vk' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
     logger.info("VKserver...")
     patronvideos  = '(http\:\/\/vk.+?\/video_ext\.php[^"]+)"'
@@ -715,6 +742,53 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
             
+    logger.info ("0) Enlace estricto a userporn")
+    #userporn tipo "http://www.userporn.com/f/szIwlZD8ewaH.swf"
+    patronvideos = 'userporn.com\/f\/([A-Z0-9a-z]{12}).swf'
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[userporn]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'userporn' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+           
+    logger.info ("1) Enlace estricto a userporn")
+    #userporn tipo "http://www.userporn.com/video/ZIeb370iuHE4"
+    patronvideos = 'userporn.com\/video\/([A-Z0-9a-z]{12})'
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[userporn]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'userporn' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+           
+    logger.info ("2) Enlace estricto a userporn")
+    #userporn tipo "http://www.userporn.com/e/LLqVzhw5ft7T"
+    patronvideos = 'userporn.com\/e\/([A-Z0-9a-z]{12})'
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[userporn]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'userporn' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
     logger.info("userporn...")
     patronvideos  = "(http\:\/\/(?:www\.)?userporn.com\/(?:(?:e/|flash/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{0,12})"
@@ -746,6 +820,9 @@ def findurl(code,server):
         mediaurl = megaupload.getvideo(code)
         
     elif server == "directo":
+        mediaurl = code
+
+    elif server == "facebook":
         mediaurl = code
 
     elif server == "4shared":
