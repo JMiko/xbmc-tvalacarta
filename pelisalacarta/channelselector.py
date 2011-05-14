@@ -135,6 +135,8 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" ))
+    itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" ))
     itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
@@ -146,6 +148,7 @@ def channels_list():
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES" , category="A" , type="generic"  ))
     itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES" , category="A" , type="xbmc"  ))
     itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""   , category="F,S,D,A" , type="wiimc"  ))
+    itemlist.append( Item( title="Buena Isla"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" ))
     itemlist.append( Item( title="Capitan Cinema"        , channel="capitancinema"        , language="ES" , category="F" , type="generic" ))
     itemlist.append( Item( title="CastTV"                , channel="casttv"               , language="ES,EN" , category="S" , type="xbmc"  ))
     itemlist.append( Item( title="Cine-Adicto"           , channel="cineadicto"           , language="ES" , category="F,D" , type="xbmc"  ))
@@ -166,6 +169,7 @@ def channels_list():
     itemlist.append( Item( title="FilmesOnlineBr"        , channel="filmesonlinebr"       , language="PT" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Gratisdocumentales"    , channel="gratisdocumentales"   , language="ES" , category="D" , type="xbmc"  ))
     itemlist.append( Item( title="Italia film"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
+    itemlist.append( Item( title="IslaPelículas"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" ))
     itemlist.append( Item( title="La Guarida de bizzente" , channel="documentalesatonline2", language="ES" , category="D" , type="xbmc"  ))
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN" , category="F,S" , type="generic"  ))
     itemlist.append( Item( title="MCAnime"               , channel="mcanime"              , language="ES" , category="A" , type="xbmc"  ))
