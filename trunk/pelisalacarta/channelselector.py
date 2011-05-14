@@ -138,6 +138,7 @@ def channels_history_list():
     itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="NewHD (05/05/2011)"                 , channel="newhd"                , language="ES" , category="F" , type="generic" )) # xextil 05/05/2011
+    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai (10/04/2011)"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
@@ -194,6 +195,7 @@ def channels_list():
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S" , type="xbmc"  ))
     itemlist.append( Item( title="PelisFlv"              , channel="pelisflv"             , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Redes.tv"              , channel="redestv"              , language="ES" , category="D" , type="xbmc"  ))
+    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Serieonline"           , channel="serieonline"          , language="ES" , category="F,S,D" , type="generic"  ))
     itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S" , type="xbmc"  ))
