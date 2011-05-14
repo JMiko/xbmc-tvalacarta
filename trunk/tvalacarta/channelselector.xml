@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>channelselector</name>
-	<tag>3</tag>
-	<date>19/03/2011</date>
-	<changes>Suprimidos TVE Mediateca y TVE Programas</changes>
+	<tag>4</tag>
+	<date>14/05/2011</date>
+	<changes>Nuevo canal UPV-TV por beesop</changes>
 </version>

@@ -114,6 +114,7 @@ def filterchannels(category):
 
 def channels_history_list():
     channelslist = []
+    channelslist.append([ "UPV TV (29/03/2011)"                     , "upvtv"                , "" , "ES" , "T" , "xbmc"  ])  # beesop 29/03/2011
     channelslist.append([ "La Sexta (07/02/2011)"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "Boing (07/02/2011)"                      , "boing"                , "" , "ES" , "T" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "IB3 (Islas Baleares) (20/01/2011)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
@@ -123,39 +124,38 @@ def channels_history_list():
 
 def channels_list():
     channelslist = []
-    channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
+    channelslist.append([ "7RM (Murcia)"               , "sieterm"              , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "ADNStream"                  , "adnstream"            , "" , "ES" , "I" , "generic" ])
+    channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
+    channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
     channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
-    channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
-    channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
+    channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
     channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
-    #addfolder("Boing","boing","mainlist")
-    #addfolder("Totlol","totlol","mainlist")
+    channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
     channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
+    channelslist.append([ "Euronews"                   , "euronews"             , "" , "ES" , "T" , "xbmc"  ])
     channelslist.append([ "Extremadura TV"             , "extremaduratv"        , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "Hogarutil"                  , "hogarutil"            , "" , "ES" , "T" , "generic"  ])
+    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
+    channelslist.append([ "Mallorca TV"                , "tvmallorca"           , "" , "ES" , "L" , "xbmc"  ])
+    channelslist.append([ "Meristation"                , "meristation"          , "" , "ES" , "T" , "xbmc"  ])
     #addfolder("Plus TV","plus","mainlist")
+    channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
     channelslist.append([ "RTVA (Andalucia)"           , "rtva"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "RTVV (Comunidad Valenciana)", "rtvv"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
     #addfolder("TV Azteca","tva","mainlist")
-    channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
-    channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
-    channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
-    channelslist.append([ "Euronews"                   , "euronews"             , "" , "ES" , "T" , "xbmc"  ])
-    channelslist.append([ "RTVV (Comunidad Valenciana)", "rtvv"                 , "" , "ES" , "A" , "generic"  ])
     #addfolder("Terra TV","terratv","mainlist")
     channelslist.append([ "Turbonick"                  , "turbonick"            , "" , "ES" , "T" , "generic"  ])
     channelslist.append([ "TV3 (Cataluña)"             , "tv3"                  , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "TVG (Galicia)"              , "tvg"                  , "" , "ES" , "A" , "generic"  ])
-    channelslist.append([ "Mallorca TV"                , "tvmallorca"           , "" , "ES" , "L" , "xbmc"  ])
-    channelslist.append([ "Meristation"                , "meristation"          , "" , "ES" , "T" , "xbmc"  ])
-    channelslist.append([ "7RM (Murcia)"               , "sieterm"              , "" , "ES" , "A" , "generic"  ])
-    channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
-    channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
-    channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
-    channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
-    channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
-    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "UPV TV (29/03/2011)"        , "upvtv"                , "" , "ES" , "T" , "xbmc"  ])  # beesop 29/03/2011
 
     return channelslist
 

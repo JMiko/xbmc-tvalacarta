@@ -8,12 +8,13 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+import binascii
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
-import binascii
-import xbmctools
+
+from core import scrapertools
+from core import xbmctools
 
 # Esto permite su ejecución en modo emulado
 try:
