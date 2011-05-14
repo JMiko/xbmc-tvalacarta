@@ -157,6 +157,23 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
+
+    # Megavideo - Vídeos sin título
+    logger.info("3) Megavideo formato islapeliculas") #http://www.megavideo.com/mv_player.swf?image=imagenes/mBa.jpg&amp;v=RV4GBJYS
+    patronvideos  = "www.megavideo.com.*?mv_player.swf.*?v(?:=|%3D)(\w{8})"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'Megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+
     # Vreel - Vídeos con título
     logger.info( "3) Vreel con título...")
     patronvideos  = '<div align="center"><b>([^<]+)</b>.*?<a href\="(http://beta.vreel.net[^"]+)"'
@@ -524,6 +541,21 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    logger.info("1) Videoweed formato islapeliculas") #http://embed.videoweed.com/embed.php?v=h56ts9bh1vat8
+    patronvideos  = "(http://embed.videoweed.*?)&"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[Videoweed]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videoweed' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     logger.info("0) YouTube...")
     patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -531,13 +563,31 @@ def findvideos(data):
     for match in matches:
         titulo = "[YouTube]"
         url = match
-        if url != "":
+        
+        if url!='':
             if url not in encontrados:
                 logger.info("  url="+url)
                 devuelve.append( [ titulo , url , 'youtube' ] )
                 encontrados.add(url)
             else:
                 logger.info("  url duplicada="+url)
+			
+    
+    logger.info(") YouTube formato buenaisla")  #www.youtube.com%2Fwatch%3Fv%3DKXpGe0ds5r4
+    patronvideos  = 'www.youtube.*?v(?:=|%3D)([0-9A-Za-z_-]{11})'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[YouTube]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+		
 
     #http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
     logger.info("0) Facebook...")
@@ -555,6 +605,20 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    logger.info("0) Facebook para buenaisla...") #http%3A%2F%2Fwww.facebook.com%2Fv%2F139377799432141_23545.mp4
+    patronvideos  = "www.facebook.com(?:/|%2F)v(?:/|%2F)(.*?)(?:&|%26)"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[Facebook]"
+        url = "http://www.facebook.com/video/external_video.php?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'facebook' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)			
+			
     #http://www.4shared.com/embed/392975628/ff297d3f
     logger.info("0) 4shared...")
     patronvideos  = '"(http://www.4shared.com.*?)"'
@@ -603,6 +667,7 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
+
 
     logger.info("videobb...")
     patronvideos  = "(http\:\/\/(?:www\.)?videobb.com\/(?:(?:e/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{12})"
@@ -686,9 +751,6 @@ def findurl(code,server):
     elif server == "4shared":
         import fourshared
         mediaurl = fourshared.geturl(code)
-        
-    elif server == "facebook":
-        mediaurl = code
         
     elif server == "xml":
         import xmltoplaylist
