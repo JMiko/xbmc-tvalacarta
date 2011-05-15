@@ -36,7 +36,7 @@ def programas(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url,modoCache=MODO_CACHE)
+    data = scrapertools.cache_page(item.url,modo_cache=MODO_CACHE)
 
     # Extrae los programas
     patron  = '<div class="informacion-serie">[^<]+'
@@ -50,13 +50,12 @@ def programas(item):
 
     for match in matches:
         scrapedtitle = match[1]
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        scrapedtitle = scrapertools.unescape(scrapedtitle)
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedurl = urlparse.urljoin(scrapedurl,"videos")
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = match[3]
-        scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
-        scrapedplot = scrapertools.entityunescape(scrapedplot)
+        scrapedplot = scrapertools.unescape(scrapedplot).strip()
 
         scrapedpage = urlparse.urljoin(item.url,match[0])
         if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] plot=["+scrapedplot+"]")
@@ -83,7 +82,7 @@ def episodios(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url,modoCache=MODO_CACHE)
+    data = scrapertools.cache_page(item.url,modo_cache=MODO_CACHE)
 
     # Extrae los capítulos
     patron = '<div class="contenido-serie">(.*?)</div>'
@@ -99,8 +98,8 @@ def episodios(item):
     # Extrae los items
     for match in matches:
         scrapedtitle = match[3]
-        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        scrapedtitle = scrapertools.unescape(scrapedtitle)
+        scrapedtitle = scrapertools.unescape(scrapedtitle)
         
         # La página del vídeo
         scrapedpage = urlparse.urljoin(item.url,match[1])
