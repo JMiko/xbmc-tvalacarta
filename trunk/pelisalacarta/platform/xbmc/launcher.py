@@ -164,7 +164,12 @@ def run():
                 if item.subtitle!="":
                     logger.info("Descargando subtítulos de "+item.subtitle)
                     from core import downloadtools
-                    downloadtools.downloadfile(item.subtitle, os.path.join( config.get_data_path() , "subtitulo.srt" ) )
+                    
+                    ficherosubtitulo = os.path.join( config.get_data_path() , "subtitulo.srt" )
+                    if os.path.exists(ficherosubtitulo):
+                        os.remove(ficherosubtitulo)
+
+                    downloadtools.downloadfile(item.subtitle, ficherosubtitulo )
                     config.set_setting("subtitulo","true")
                 else:
                     logger.info("Sin subtitulos")
