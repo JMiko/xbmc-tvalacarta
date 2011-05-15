@@ -114,6 +114,7 @@ def filterchannels(category):
 
 def channels_history_list():
     channelslist = []
+    channelslist.append([ "Telecinco (15/05/2011)"                  , "telecinco"            , "" , "ES" , "N" , "xbmc"  ])  # beesop 29/03/2011
     channelslist.append([ "UPV TV (29/03/2011)"                     , "upvtv"                , "" , "ES" , "T" , "xbmc"  ])  # beesop 29/03/2011
     channelslist.append([ "La Sexta (07/02/2011)"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "Boing (07/02/2011)"                      , "boing"                , "" , "ES" , "T" , "generic"  ])  # juanfran 07/02/2011
@@ -149,6 +150,7 @@ def channels_list():
     channelslist.append([ "RTVV (Comunidad Valenciana)", "rtvv"                 , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Telecinco"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
     channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
     #addfolder("TV Azteca","tva","mainlist")
     #addfolder("Terra TV","terratv","mainlist")
