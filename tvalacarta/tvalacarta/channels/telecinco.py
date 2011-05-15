@@ -30,8 +30,8 @@ def mainlist(item):
     itemlist = []
     
     # El primer nivel de menú es un listado por canales
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"    , action="series"    , thumbnail = "" , url="http://www.telecinco.es/indiceSite/indiceSite6.shtml"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Programas" , action="programas" , thumbnail = "" , url="http://www.telecinco.es/indiceSite/indiceSite1887.shtml"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series"    , action="series"    , thumbnail = "" , url="http://www.telecinco.es/indiceSite/indiceSite6.shtml",category="series"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Programas" , action="programas" , thumbnail = "" , url="http://www.telecinco.es/indiceSite/indiceSite1887.shtml", category="programas"))
 
     return itemlist
 
@@ -103,7 +103,7 @@ def programas_principales(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
         if scrapedurl!="":
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, show=scrapedtitle, category = item.title) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, show=scrapedtitle, category = item.category) )
 
     return itemlist
 
@@ -113,7 +113,7 @@ def programas_secundarios(item):
     itemlist = []
     data = scrapertools.cachePage(item.url)
     
-     # Extrae más programas
+    # Extrae más programas
     patron  = '<div class="temassecundarios">(.*?)</ul>'
     matches = re.findall(patron,data,re.DOTALL)
     if DEBUG: scrapertools.printMatches(matches)
@@ -141,7 +141,7 @@ def programas_secundarios(item):
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         if scrapedurl!="":
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, show=scrapedtitle, category = item.title) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, show=scrapedtitle, category = item.category) )
 
     return itemlist
 
@@ -180,7 +180,7 @@ def videos(item):
         scrapedplot = ""
         scrapedextra = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, show=scrapedtitle, category = item.title, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, extra = scrapedextra, category = item.title, folder=False) )
 
     return itemlist
 
