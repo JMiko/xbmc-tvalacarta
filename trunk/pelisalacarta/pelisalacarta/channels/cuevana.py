@@ -32,12 +32,21 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/peliculas/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.cuevana.tv/series/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
     
     return itemlist
 
 def peliculas(item):
     logger.info("[cuevana.py] peliculas")
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="alfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))
 
+    return itemlist
+
+def novedades(item):
+    logger.info("[cuevana.py] novedades")
+    
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
@@ -76,13 +85,59 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="Página siguiente" , url=scrapedurl , folder=True) )
+
+    return itemlist
+
+	
+def alfabetico(item):
+    logger.info("[cuevana.py] alfabetico")
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    # Extrae las entradas
+    '''
+    <tr class='row2'>
+    <td valign='top'><a href='/peliculas/2933/alpha-and-omega/'><img src='/box/2933.jpg' border='0' height='90' /></a></td>
+    <td valign='top'><div class='tit'><a href='/peliculas/2933/alpha-and-omega/'>Alpha and Omega</a></div>
+    <div class='font11'>Dos pequeños carrochos de lobo se ven obligados a convivir por determinadas circunstancias.
+    <div class='reparto'><b>Reparto:</b> <a href='/buscar/?q=Animación&cat=actor'>Animación</a></div>
+    </div></td>
+    '''
+    patronvideos  = "<tr class='row[^<]+"
+    patronvideos += "<td valign='top'><a href='([^']+)'><img src='([^']+)'[^>]+></a></td>[^<]+"
+    patronvideos += "<td valign='top'><div class='tit'><a[^>]+>([^<]+)</a></div>[^<]+"
+    patronvideos += "<div class='font11'>([^<]+)<"
+
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        scrapedtitle = match[2]
+        scrapedplot = match[3]
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    # Extrae el paginador
+    patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    if len(matches)>0:
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
 def series(item):
     logger.info("[cuevana.py] series")
-
+    
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
@@ -187,6 +242,8 @@ def listalfabetico(item):
 def findvideos(item):
     logger.info("[cuevana.py] findvideos")
 
+    # True es Serie, False es Pelicula
+    serieOpelicula = True
     code =""
     if (item.url.startswith("http://www.cuevana.tv/list_search_info.php")):
         data = scrapertools.cachePage(item.url)
@@ -197,6 +254,7 @@ def findvideos(item):
             code = matches[0]
         logger.info("code="+code)
         url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&tipo=s&sub_pre=ES" % matches[0]
+        serieOpelicula = True
     else:
         # http://www.cuevana.tv/peliculas/2553/la-cienaga/
         logger.info("url1="+item.url)
@@ -206,6 +264,7 @@ def findvideos(item):
             code = matches[0]
         logger.info("code="+code)
         url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&sub_pre=ES#" % code
+        serieOpelicula = False
     
     logger.info("url2="+url)
     data = scrapertools.cachePage(url)
@@ -219,8 +278,21 @@ def findvideos(item):
     logger.info("data="+data)
 
     # Subtitulos
-    suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
+    if serieOpelicula:
+	    suburl = "http://www.cuevana.tv/files/s/sub/"+code+"_ES.srt"
+    else:
+            suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
     logger.info("suburl="+suburl)
+    
+    # Elimina el archivo subtitulo.srt de alguna reproduccion anterior
+    fullpath = os.path.join( config.get_data_path(), 'subtitulo.srt' )
+    if os.path.exists(fullpath):
+        try:
+          os.remove(fullpath)
+        except IOError:
+          xbmc.output("Error al eliminar el archivo subtitulo.srt "+fullpath)
+          raise
+
 
     listavideos = servertools.findvideos(data)
     
@@ -232,5 +304,77 @@ def findvideos(item):
         scrapedurl = video[1]
         
         itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=False))
+
+    return itemlist
+
+def search(item):
+    logger.info("[cuevana.py] search")
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Titulo"  , action="search2"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Episodio"     , action="search2"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Actor"  , action="search2"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Director"     , action="search2"))
+    
+    return itemlist
+	
+def search2(item):
+	logger.info("[cuevana.py] search2")
+    
+	if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+		from pelisalacarta import buscador
+		texto = buscador.teclado()
+		texto = texto.replace(' ','+')
+		item.extra = texto
+		title= item.title
+		title = title.lower()
+
+	itemlist = searchresults(item,title)
+
+	return itemlist
+    
+def searchresults(item,title):
+    logger.info("[cuevana.py] searchresults")
+    
+    teclado = item.extra.replace(" ", "+")
+    logger.info("[newhd.py] " + teclado)
+    item.url = "http://www.cuevana.tv/buscar/?q="+ teclado+ "&cat=" + title
+
+    return listar(item)
+
+def listar(item):
+    logger.info("[cuevana.py] listar")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    patronvideos  = "<div class='result'>[^<]+"
+    patronvideos += "<div class='right'><div class='tit'><a href='([^']+)'>([^<]+)</a>"
+    patronvideos += ".*?<div class='txt'>([^<]+)<div class='reparto'>.*?"
+    patronvideos += "<div class='img'>.*?<img src='([^']+)'[^>]+></a>"
+
+
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        scrapedtitle = match[1]
+        scrapedplot = match[2]
+        scrapedurl = urlparse.urljoin("http://www.cuevana.tv/peliculas/",match[0])
+        scrapedthumbnail = urlparse.urljoin("http://www.cuevana.tv/peliculas/",match[3])
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+			  
+    # Extrae el paginador
+    patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    if len(matches)>0:
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
+        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
