@@ -68,11 +68,11 @@ def mainlist(params,url,category):
     xbmc.output("[cineblog01.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Film - Novità"              ,"http://cineblog01.com/film/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"   , category , "Film - Per Lettera"    ,"","","")
-    xbmctools.addnewfolder( CHANNELNAME , "searchmovie" , category , "   Cerca Film"                           ,"","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Serie"   ,"http://cineblog01.com/serietv/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Anime"   ,"http://cineblog01.com/anime/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Film - Novità"     ,"http://www.cineblog01.com/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"   , category , "Film - Per Lettera","","","")
+    xbmctools.addnewfolder( CHANNELNAME , "searchmovie" , category , "   Cerca Film"     ,"","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Serie"             ,"http://www.cineblog01.info/serietv/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listvideos"  , category , "Anime"             ,"http://www.cineblog01.info/anime/","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
