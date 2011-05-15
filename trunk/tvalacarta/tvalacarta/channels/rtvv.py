@@ -22,103 +22,107 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[rtvv.py] mainlist")
+    item.url = "http://www.rtvv.es/va/noualacarta/"
+    itemlist = programas(item)
+    return itemlist
 
+def programas(item):
+    logger.info("[rtvv.py] programas")
     itemlist=[]
-    url = "http://www.rtvv.es/alacarta/princiv.asp"
-
+    
     # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las categorias (carpetas)
-    patron = '<li><span><a href="(secciones.asp[^"]+)">([^<]+)<'
+    data = scrapertools.cachePage(item.url)
+    '''
+    <div class="md-promo skin2 md">
+    <div class="mg"><a href="/programa/10055/L-Alqueria_Blanca/capitulos.html" target="_self" title="Alqueria Blanca"><img alt="Alqueria Blanca" src="/bbtfile/5003_20110215PIjlzt.jpg" /></a></div>
+    '''
+    patron  = '<div class="md-promo skin2 md">[^<]+'
+    patron += '<div class="mg"><a href="([^"]+)".*?title="([^"]+)"><img.*?src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
         scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0].replace("&amp;","&"))
-        scrapedthumbnail = ""
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" ).encode("utf-8")
-
-        # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , category=scrapedtitle , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , category=scrapedtitle , show=scrapedtitle, page=scrapedurl) )
 
     return itemlist
 
-def videolist(item):
-    logger.info("[rtvv.py] videolist")
+def videos(item):
+    logger.info("[rtvv.py] videos")
 
     itemlist = []
 
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
     # Extrae los videos
-    patron = '<div class="texto">.*?<a href="([^"]+)">([^<]+)(.*?)</div>.*?<img src="([^"]+)"'
+    data = scrapertools.cachePage(item.url)
+    '''
+    <div class="mg fl">
+    <a title="Tornar al niu" href="/va/alqueriablanca/LAlqueria-Blanca-Tornar-niu-Cap_13_477082294.html">
+    <img src="/alqueriablanca/LAlqueria-Blanca-Tornar-niu-Cap_RTVVID20110508_0069_3.jpg" width="145" height="109" alt="L&acute;Alqueria Blanca - Tornar al niu - Cap. 152" />
+    </a>
+    </div>    
+    <div clasS="mt">
+    <h3 class="title"><a href="/va/alqueriablanca/LAlqueria-Blanca-Tornar-niu-Cap_13_477082294.html">Cap. 152 - Tornar al niu</a></h3>
+    <p class="section"><a href="/alqueriablanca/">L'Alqueria Blanca </a><span class="date">08.05.2011 / 22h14</span></p>
+    <p class="body">
+    Elena ix en llibertat, per&ograve; el pas pel calab&oacute;s deixa en ella una empremta profunda que la duu a prendre decisions dr&agrave;stiques. Don Mauro s&acute;enfronta al bisbe per defendre el seu suport a Elena i Robert. Sanitat tanca cautelarment la f&agrave;brica de calcer. Davant l&acute;actitud de Bali, &eacute;s Narc&iacute;s el qui mou els fils per tal que es re&ograve;briga. Jaume i Asun avancen la tornada i aix&ograve; porta Teresa a accelerar els preparatius de la boda.
+    </p>
+    '''
+    patron  = '<div class="mg fl">[^<]+'
+    patron += '<a[^>]+>[^<]+'
+    patron += '<img src="([^"]+)"[^<]+>[^<]+'
+    patron += '</a>[^<]+'
+    patron += '</div>[^<]+'    
+    patron += '<div clasS="mt">[^<]+'
+    patron += '<h3 class="title"><a href="([^"]+)">([^<]+)</a></h3>[^<]+'
+    patron += '<p class="section"><a[^>]+>[^<]+</a><span class="date">([^<]+)</span></p>[^<]+'
+    patron += '<p class="body">([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = scrapertools.entityunescape(match[1])
-        patronfechas = "<p>Emissi&oacute;: ([^<]+)<"
-        matchesfechas = re.compile(patronfechas,re.DOTALL).findall(match[2])
-        if len(matchesfechas)>0:
-            scrapedtitle = scrapedtitle + " (" + matchesfechas[0] + ")"
-
-        scrapedurl = "http://www.rtvv.es/alacarta/secciones.asp"+match[0].replace("&amp;","&")
-        scrapedthumbnail = urlparse.urljoin(item.url,match[3]).replace(" ","%20")
-        
-        scrapedplot = "%s" % match[2]
-        scrapedplot = scrapedplot.strip()
-        scrapedplot = scrapedplot.replace("</a>","")
-        scrapedplot = scrapedplot.replace("</p>","")
-        scrapedplot = scrapedplot.replace("<p>","")
-        scrapedplot = scrapertools.entityunescape(scrapedplot)
-
+        scrapedtitle = match[2]+" ("+match[3]+")"
+        scrapedurl = urlparse.urljoin(item.url,match[1])
+        scrapedthumbnail = urlparse.urljoin(item.url,match[0])
+        scrapedplot = match[4]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , page=scrapedurl, category=item.category, folder=False) )
 
-        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" ).encode("utf-8")
-        scrapedplot = unicode( scrapedplot , "iso-8859-1" ).encode("utf-8")
-        scrapedplot = scrapedplot.replace("EmissiÃ³","Emissió")
-
-        # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="getvideo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show="" , category=item.category , folder=True) )
-
+    patron = '<span class="next"><a.*?href="([^"]+)">Siguiente</a></span>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        logger.info("Página siguiente "+matches[0])
+        itemlist.extend(videos(Item(url=urlparse.urljoin(item.url,matches[0]),show=item.show)))
+        
     return itemlist
 
-def getvideo(item):
+def play(item):
     logger.info("[rtvv.py] play")
 
+    url = item.url
+    
     # Descarga pagina detalle
-    data = scrapertools.cachePage(item.url)
-    patron = '<div id="reproductor">.*?<script.*?>.*?j_url="([^"]+)";.*?flashControl\("([^"]+)"'
+    #file: "/bbtcontent/playlist/RTVVID20110207_0082/",
+    #http://www.rtvv.es/bbtcontent/playlist/RTVVID20110207_0082/
+    data = scrapertools.cachePage(url)
+    patron = 'file: "(/bbtcontent/playlist/[^"]+)",'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    try:
-        url =  matches[0][1]+matches[0][0]
-    except:
-        url = ""
-    logger.info("[rtvv.py] url="+url)
-    
-    # Amplia el argumento
-    patron = '<div id="encuesta">\s*<div class="cab">.*?</div>(.*?)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
     if len(matches)>0:
-        plot = "%s" % matches[0]
-        plot = plot.replace("<p>","")
-        plot = plot.replace("</p>"," ")
-        plot = plot.replace("<strong>","")
-        plot = plot.replace("</strong>","")
-        plot = plot.replace("<br />"," ")
-        plot = plot.strip()
-    
+        url = urlparse.urljoin(url,matches[0])
+    logger.info("[rtvv.py] url="+url)
+
+    # Extrae la URL del video
+    #<media:content url="http://rtvv.ondemand.flumotion.com/rtvv/ondemand/pro/RTVVID20110207_0082-0.mp4"/>
+    data = scrapertools.cachePage(url)
+    patron = '<media.content url="([^"]+)"/>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        url = matches[0]
+
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=plot , show=item.show , folder=False) )
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=item.plot , show=item.show , folder=False) )
 
     return itemlist
