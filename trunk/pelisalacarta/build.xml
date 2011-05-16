@@ -2,8 +2,8 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.0.1"/>
-	
+    <property name="version" value="3.1.0"/>
+
 	<!-- init ===================================================================== -->
 	<target name="init" description="Inicializa el timestamp">
 		<tstamp>
@@ -27,10 +27,42 @@
                 <!--exclude name="resources/images/**"/-->
 				<exclude name="descriptor.xml"/>
                 <exclude name="default.tbn"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="tester.py"/>
 			</fileset>
         </copy>
     </target>
-		
+
+	<target name="copy-xbmc-addon-oficial">
+        <copy todir="${target}/xbmc-addon-oficial/plugin.video.pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+                <!--exclude name="resources/images/**"/-->
+				<exclude name="descriptor.xml"/>
+                <exclude name="default.tbn"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/wiimc/**"/>
+                <exclude name="lib/elementtree/**"/>
+                <exclude name="lib/simplejson/**"/>
+                <exclude name="tester.py"/>
+			</fileset>
+        </copy>
+    </target>
+
     <target name="copy-xbmc-plugin">
         <copy todir="${target}/xbmc-plugin/pelisalacarta">
             <fileset dir=".">
@@ -47,6 +79,9 @@
 				<exclude name="descriptor.xml"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="tester.py"/>
 			</fileset>
         </copy>
     </target>
@@ -151,19 +186,21 @@
     <!-- package =============================================== -->
     <target name="package">
         <!-- Declara un target comun -->
-        <property name="target" value="/Users/jesus/Desktop/pelisalacarta-${version}"/>
+        <property name="target" value="target"/>
     	<echo message="target=${target}"/>
 
     	<!-- Crea los directorios -->
         <delete dir="${target}"/>
         <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
         <mkdir dir="${target}/xbmc-addon/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon-oficial/plugin.video.pelisalacarta"/>
         <mkdir dir="${target}/xbmc-plugin/pelisalacarta"/>
         <mkdir dir="${target}/wiimc/pelisalacarta"/>
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
 
         <!-- Copia los ficheros -->
         <antcall target="copy-xbmc-addon"/>
+        <antcall target="copy-xbmc-addon-oficial"/>
         <antcall target="copy-xbmc-plugin"/>
         <antcall target="copy-boxee"/>
         <antcall target="copy-wiimc"/>
