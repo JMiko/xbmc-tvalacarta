@@ -44,6 +44,7 @@ def mainlist(params,url,category):
 
 	# Añade al listado de XBMC
 	xbmctools.addnewfolder( CHANNELNAME , "searchmovie" , category , "Cerca Film","","","")
+        xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Novità" , "http://italia-film.com/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Anime" , "http://italia-film.com/anime-e-cartoon/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Telefilm" , "http://italia-film.com/telefilm/","","")
 	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Animazione" , "http://italia-film.com/film-animazione/","","")
@@ -281,5 +282,5 @@ def to_ita(text):
 	text = text.replace('&#242;', 'o\'')
 	text = text.replace('&#249;', 'u\'')
 	text = text.replace('&#215;', 'x')
-	text = text.replace('&#39;','\'')
+	text = text.replace('&#039;', '\'')
 	return text
