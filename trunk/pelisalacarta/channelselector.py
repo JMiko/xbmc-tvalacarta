@@ -135,6 +135,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Internapoli City (16/05/2011)"      , channel="internapoli"          , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Robinfilm (16/05/2011)"             , channel="robinfilm"            , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Liberateca (15/05/2011)"            , channel="liberateca"           , language="ES" , category="S" , type="generic"  )) # jesus 15/05/2011
     itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" )) # xextil 09/05/2011
@@ -172,6 +173,7 @@ def channels_list():
     itemlist.append( Item( title="Documentalesyonkis"    , channel="documentalesyonkis"   , language="ES" , category="D" , type="generic" ))
     itemlist.append( Item( title="FilmesOnlineBr"        , channel="filmesonlinebr"       , language="PT" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Gratisdocumentales"    , channel="gratisdocumentales"   , language="ES" , category="D" , type="xbmc"  ))
+    itemlist.append( Item( title="Internapoli City"      , channel="internapoli"          , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Italia film"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="IslaPelículas"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" ))
     itemlist.append( Item( title="La Guarida de bizzente" , channel="documentalesatonline2", language="ES" , category="D" , type="xbmc"  ))
