@@ -306,8 +306,8 @@ def getlowurl(code):
         page = urllib2.urlopen(req);response=page.read();page.close()
         errort = re.compile(' errortext="(.+?)"').findall(response)
         movielink = ""
+
         if len(errort) <= 0:
-            
             if quality == "1":
                 hd = re.compile(' hd="(.+?)"').findall(response)
                 if len(hd)>0 and hd[0]=="1":
@@ -317,7 +317,7 @@ def getlowurl(code):
                     un = re.compile(' hd_un="(.+?)"').findall(response)
                     movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
                     return movielink
-                
+
             s = re.compile(' s="(.+?)"').findall(response)
             k1 = re.compile(' k1="(.+?)"').findall(response)
             k2 = re.compile(' k2="(.+?)"').findall(response)
@@ -451,7 +451,9 @@ def GetMegavideoUser(login, password):
     # an example url that sets a cookie,
     # try different urls here and see the cookie collection you can make !
 
-    passwordesc=password.replace("&","%26")
+    #passwordesc=password.replace("&","%26")
+    passwordesc = urllib.quote(password)
+    
     txdata = "login=1&redir=1&username="+login+"&password="+passwordesc
     # if we were making a POST type request,
     # we could encode a dictionary of values here,
