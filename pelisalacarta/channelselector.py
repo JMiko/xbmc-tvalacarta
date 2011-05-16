@@ -135,6 +135,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Liberateca (15/05/2011)"            , channel="liberateca"           , language="ES" , category="S" , type="generic"  )) # jesus 15/05/2011
     itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="NewHD (05/05/2011)"                 , channel="newhd"                , language="ES" , category="F" , type="generic" )) # xextil 05/05/2011
@@ -174,6 +175,7 @@ def channels_list():
     itemlist.append( Item( title="IslaPelículas"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" ))
     itemlist.append( Item( title="La Guarida de bizzente" , channel="documentalesatonline2", language="ES" , category="D" , type="xbmc"  ))
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN" , category="F,S" , type="generic"  ))
+    itemlist.append( Item( title="Liberateca"            , channel="liberateca"           , language="ES" , category="S" , type="generic"  ))
     itemlist.append( Item( title="MCAnime"               , channel="mcanime"              , language="ES" , category="A" , type="xbmc"  ))
     itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""   , category="G" , type="xbmc"  ))

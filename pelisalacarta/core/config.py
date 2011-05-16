@@ -73,7 +73,7 @@ def open_settings():
         exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.open_settings()
 
-def get_setting(name):
+def get_setting(name,channel=""):
     try:
         exec "import platform."+PLATFORM+".config as platformconfig"
     except:
@@ -98,6 +98,23 @@ def get_setting(name):
     # TODO: (3.1) De momento la cache está desactivada...
     elif name=="cache.mode" and PLATFORM!="developer":
         dev="2"
+    
+    if channel!="":
+        import os,re
+        nombre_fichero_config_canal = os.path.join( get_data_path() , channel+".xml" )
+        if os.path.exists( nombre_fichero_config_canal ):
+            config_canal = open( nombre_fichero_config_canal )
+            data = config_canal.read()
+            config_canal.close();
+        
+            patron = "<"+name+">([^<]+)</"+name+">"
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            if len(matches)>0:
+                dev = matches[0]
+            else:
+                dev = ""
+        else:
+            dev = ""
     
     return dev
 
