@@ -135,6 +135,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Robinfilm (16/05/2011)"             , channel="robinfilm"            , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Liberateca (15/05/2011)"            , channel="liberateca"           , language="ES" , category="S" , type="generic"  )) # jesus 15/05/2011
     itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" )) # xextil 09/05/2011
@@ -198,6 +199,7 @@ def channels_list():
     itemlist.append( Item( title="PelisFlv"              , channel="pelisflv"             , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Redes.tv"              , channel="redestv"              , language="ES" , category="D" , type="xbmc"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
+    itemlist.append( Item( title="Robinfilm"             , channel="robinfilm"            , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Serieonline"           , channel="serieonline"          , language="ES" , category="F,S,D" , type="generic"  ))
     itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S" , type="xbmc"  ))
