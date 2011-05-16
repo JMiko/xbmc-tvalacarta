@@ -1,3 +1,23 @@
+3.1
+
+- New channels
+    internapoli (@jesus)
+    robinfilm (@jesus)
+    liberateca (@jesus)
+    serieshentai (@kira)
+    newhd (@xextil)
+    buenaisla (@xextil)
+    islapeliculas (@xextil)
+    seriesdanko (@bandavi)
+
+- New server connectors
+    facebook
+    userporn
+    adnstream
+
+- Fixed existing website channels and server connectors
+- Several minor bugfixes
+
 3.0
 
 - New internal multiplafrom structure
