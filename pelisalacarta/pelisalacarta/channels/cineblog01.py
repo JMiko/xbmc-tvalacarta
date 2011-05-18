@@ -279,8 +279,8 @@ def listcat(params,url,category):
         # Añade al listado de XBMC
         xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
     # Remove the next page mark
-    patronvideos = '<a href="(http://www.cineblog01.com/category/[a-z]+'
-    patronvideos += '/page/[0-9]+)">Avanti >'
+    patronvideos = '<a href="(http://cineblog01.com/category/[a-z]+'
+    patronvideos += '/page/[0-9]+/)">Avanti'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
 
@@ -347,8 +347,8 @@ def listvideos(params,url,category):
         # Añade al listado de XBMC
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Remove the next page mark
-    patronvideos = '<a href="(http://www.cineblog01.com/page/[0-9]+)">Avanti >'
+    # Remove the next page mark <a href="http://cineblog01.com/page/2/">Avanti
+    patronvideos = '<a href="(http://cineblog01.com/page/[0-9]+/)">Avanti'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
 
