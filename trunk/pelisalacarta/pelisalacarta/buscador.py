@@ -175,7 +175,7 @@ def listar_busquedas(params,url="",category=""):
         accion = params.get("action")
         category = "Buscador_Normal"
     #print "listar_busquedas()"
-    channel2 = "**"
+    channel2 = ""
     itemlist=[]
     # Despliega las busquedas anteriormente guardadas
     try:
