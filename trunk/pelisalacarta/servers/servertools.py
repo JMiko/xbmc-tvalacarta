@@ -712,7 +712,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
     
     logger.info ("vk...")
-    #userporn tipo "http://vk.com/video_ext.php?oid=70712020&amp;id=159787030&amp;hash=88899d94685174af&amp;hd=3"
+    #vk tipo "http://vk.com/video_ext.php?oid=70712020&amp;id=159787030&amp;hash=88899d94685174af&amp;hd=3"
     patronvideos = '<iframe src="(http://[^\/]+\/video_ext.php[^"]+)"'
     matches = re.compile(patronvideos).findall(data)
 
@@ -817,7 +817,7 @@ def findurl(code,server):
 
     elif server == "megaupload":
         import megaupload
-        mediaurl = megaupload.getvideo(code)
+        mediaurl = megaupload.gethighurl(code)
         
     elif server == "directo":
         mediaurl = code
@@ -845,18 +845,27 @@ def findurl(code,server):
         
     return mediaurl
 
-def getmegavideolow(code):
+def getmegavideolow(code, password=None):
     import megavideo
-    return megavideo.getlowurl(code)
+    if password is not None:
+	    return megavideo.getlowurl(code,password)
+    else:
+        return megavideo.getlowurl(code,password)
 
 def getmegavideohigh(code):
     import megavideo
     return megavideo.gethighurl(code)
 
-def getmegauploadhigh(code):
+def getmegauploadhigh(code, password=None):
     import megaupload
-    return megaupload.gethighurl(code)
-
-def getmegauploadlow(code):
+    if password is not None:
+	    return megaupload.gethighurl(code,password)
+    else:
+        return megaupload.gethighurl(code)
+	
+def getmegauploadlow(code, password=None):
     import megaupload
-    return megaupload.getlowurl(code)
+    if password is not None:
+	    return megaupload.getlowurl(code,password)
+    else:
+        return megaupload.getlowurl(code)

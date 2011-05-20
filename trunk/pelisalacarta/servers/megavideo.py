@@ -7,7 +7,7 @@
 # A partir del código de Voinage y Coolblaze
 #------------------------------------------------------------
 
-import re
+import re, xbmc
 import urlparse, urllib, urllib2
 
 try:
@@ -227,7 +227,7 @@ def Megavideo(mega):
     return movielink
 #####END of part 2
 
-def getlowurl(code):
+def getlowurl(code,password=None):
     logger.info("[megavideo.py] Baja calidad")
     
     code=getcode(code)
@@ -244,6 +244,28 @@ def getlowurl(code):
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         req.add_header('Referer', 'http://www.megavideo.com/')
         page = urllib2.urlopen(req);response=page.read();page.close()
+        logger.info("response="+response)	
+        errort = re.compile(' errortext="(.+?)"').findall(response)	
+        if len(errort) <= 0:
+            password_data = re.compile('password_required="(.*?)"').findall(response)
+            if len(password_data) > 0:
+                if password_data[0]=="1":
+                    if password is not None:
+                        keyboard = xbmc.Keyboard(password,"Contraseña:")
+                        keyboard.doModal()
+                    else:
+                        keyboard = xbmc.Keyboard("","Contraseña:")
+                        keyboard.doModal()
+                    if (keyboard.isConfirmed()):
+                        tecleado = keyboard.getText()
+                        if len(tecleado)<=0:
+                            return
+                        logger.info("Teclado : "+tecleado)						
+                        req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code+"&password="+tecleado)
+                        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+                        req.add_header('Referer', 'http://www.megavideo.com/')
+                        page = urllib2.urlopen(req);response=page.read();page.close()
+                        logger.info("Data URL : "+response)			
         '''
         logger.info("response="+response)
         hd = re.compile(' hd="(.+?)"').findall(response)

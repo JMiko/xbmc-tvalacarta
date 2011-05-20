@@ -135,6 +135,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Asia-Team (20/05/2011)"             , channel="asiateam"             , language="ES" , category="F,S" , type="generic" ))	# xextil 20/05/2011
     itemlist.append( Item( title="Internapoli City (16/05/2011)"      , channel="internapoli"          , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Robinfilm (16/05/2011)"             , channel="robinfilm"            , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Liberateca (15/05/2011)"            , channel="liberateca"           , language="ES" , category="S" , type="generic"  )) # jesus 15/05/2011
@@ -153,6 +154,7 @@ def channels_list():
 
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES" , category="A" , type="generic"  ))
     itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES" , category="A" , type="xbmc"  ))
+    itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES" , category="F,S" , type="generic" ))	
     itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""   , category="F,S,D,A" , type="wiimc"  ))
     itemlist.append( Item( title="Buena Isla"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" ))
     itemlist.append( Item( title="Capitan Cinema"        , channel="capitancinema"        , language="ES" , category="F" , type="generic" ))
