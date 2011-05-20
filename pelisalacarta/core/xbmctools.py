@@ -166,7 +166,15 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
     logger.info("default_action="+default_action)
     # Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
     # Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
-    if (server=="megavideo" or server=="megaupload") and config.get_setting("megavideopremium")=="true":
+    if (server=="megavideo") and config.get_setting("megavideopremium")=="true":
+        opcion = config.get_localized_string(30150)+" ["+server+"]"
+        logger.info(opcion)
+        opciones.append(opcion) # "Ver en calidad alta"
+        # Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
+        if default_action=="2":
+            seleccion = len(opciones)-1
+    elif (server=="megaupload"):
+
         opcion = config.get_localized_string(30150)+" ["+server+"]"
         logger.info(opcion)
         opciones.append(opcion) # "Ver en calidad alta"
@@ -241,7 +249,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         return
 
     if opciones[seleccion]==config.get_localized_string(30158): # "Enviar a JDownloader"
-        if server=="megaupload":
+        if server=="Megaupload":
             d = {"web": "http://www.megaupload.com/?d=" + url}
         else:
             d = {"web": "http://www.megavideo.com/?v=" + url}
@@ -253,36 +261,46 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
     # Ver en calidad alta
     if opciones[seleccion].startswith(config.get_localized_string(30150)): # "Ver en calidad alta"
         if server=="megaupload":
-            mediaurl = servertools.getmegauploadhigh(url)
+            if canal == 'asiateam':
+                mediaurl = servertools.getmegauploadhigh(url, password='www.Asia-Team.net')
+            else:
+                mediaurl = servertools.getmegauploadhigh(url)
         else:
             mediaurl = servertools.getmegavideohigh(url)
     
     # Ver (calidad baja megavideo o resto servidores)
     elif opciones[seleccion].startswith(config.get_localized_string(30151)) or opciones[seleccion].startswith(config.get_localized_string(30152)): # Ver en calidad (normal o baja)
-        if server=="megaupload":
-            mediaurl = servertools.getmegauploadlow(url)
-            if mediaurl == "":
-                alertanomegauploadlow(server)
-                return
-        elif server=="megavideo":
+        if server=="megavideo" or server=="megaupload":
             # Advertencia límite 72 minutos megavideo
             if config.get_setting("megavideopremium")=="false":
                 advertencia = xbmcgui.Dialog()
                 resultado = advertencia.ok(config.get_localized_string(30052) , config.get_localized_string(30053) , config.get_localized_string(30054))            
-            mediaurl = servertools.getmegavideolow(url)
+            if server == "megavideo":
+                if canal == 'asiateam':
+                    mediaurl = servertools.getmegavideolow(url, password='www.Asia-Team.net')
+                else:
+                    mediaurl = servertools.getmegavideolow(url)
+            else:
+                if canal == 'asiateam':
+                    mediaurl = servertools.getmegauploadlow(url, password='www.Asia-Team.net')
+                else:
+                    mediaurl = servertools.getmegauploadlow(url)
         else:
             mediaurl = servertools.findurl(url,server)
 
     # Descargar
     elif opciones[seleccion]==config.get_localized_string(30153): # "Descargar"
         if server=="megaupload":
-            if config.get_setting("megavideopremium")=="false":
-                mediaurl = servertools.getmegauploadlow(url)
+            if canal == 'asiateam':
+                mediaurl = servertools.getmegauploadhigh(url, password='www.Asia-Team.net')
             else:
                 mediaurl = servertools.getmegauploadhigh(url)
         elif server=="megavideo":
             if config.get_setting("megavideopremium")=="false":
-                mediaurl = servertools.getmegavideolow(url)
+                if canal == 'asiateam':
+                    mediaurl = servertools.getmegavideolow(url, password='www.Asia-Team.net')
+                else:
+                    mediaurl = servertools.getmegavideolow(url)
             else:
                 mediaurl = servertools.getmegavideohigh(url)
         else:

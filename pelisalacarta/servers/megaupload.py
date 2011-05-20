@@ -5,7 +5,7 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
-import re
+import re,xbmcgui,xbmc
 import urlparse, urllib, urllib2,socket
 import megavideo
 
@@ -24,23 +24,24 @@ COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
 
 DEBUG = False
 
+
 # Convierte el código de megaupload a megavideo
 def convertcode(megauploadcode):
-	# Descarga la página de megavideo pasándole el código de megaupload
-	url = "http://www.megavideo.com/?d="+megauploadcode
-	data = scrapertools.cachePage(url)
-	#logger.info(data)
+        # Descarga la página de megavideo pasándole el código de megaupload
+        url = "http://www.megavideo.com/?d="+megauploadcode
+        data = scrapertools.cachePage(url)
+        #logger.info(data)
 
-	# Extrae las entradas (carpetas)
-	patronvideos  = 'flashvars.v = "([^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	#scrapertools.printMatches(matches)
-	
-	megavideocode = ""
-	if len(matches)>0:
-		megavideocode = matches[0]
+        # Extrae las entradas (carpetas)
+        patronvideos  = 'flashvars.v = "([^"]+)"'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        #scrapertools.printMatches(matches)
+        
+        megavideocode = ""
+        if len(matches)>0:
+                megavideocode = matches[0]
 
-	return megavideocode
+        return megavideocode
 
 # Extrae directamente la URL del vídeo de Megaupload
 def getmegauploaduser(login,password):
@@ -152,29 +153,16 @@ def getmegauploaduser(login,password):
 	logger.info("----------------------")
 	'''
 
-	patronvideos  = 'user="([^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(cookiedata)
-	if len(matches)==0:
-		patronvideos  = 'user=([^\;]+);'
-		matches = re.compile(patronvideos,re.DOTALL).findall(cookiedata)
+	login = re.search('Welcome', data)
+	premium = re.search('flashvars.status = "premium";', data)		
 
-	if len(matches)==0 and DEBUG:
-		logger.info("No se ha encontrado la cookie de Megaupload")
-		logger.info("----------------------")
-		logger.info("Respuesta de Megaupload")
-		logger.info("----------------------")
-		logger.info(data)
-		logger.info("----------------------")
-		logger.info("----------------------")
-		logger.info("Cookies despues")
-		logger.info("----------------------")
-		logger.info(cookiedata)
-		logger.info("----------------------")
-		devuelve = ""
-	else:
-		devuelve = matches[0]
-
-	return devuelve
+	if login is not None:
+		if premium is not None:
+			return 'premium'
+		elif premium is None:
+			return 'gratis'
+	elif login is None:
+		return None
 
 import exceptions
 
@@ -182,71 +170,110 @@ class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
 	def http_error_302(self, req, fp, code, msg, headers):
 		raise ImportError(302,headers.getheader("Location"))
 
-def getmegauploadvideo(code,user):
-	logger.info("getmegauploadvideo0")
-	req = urllib2.Request("http://www.megaupload.com/?d="+code)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	req.add_header('Cookie', 'l=es; user='+user)
-	try:
-		opener = urllib2.build_opener(SmartRedirectHandler())
-		response = opener.open(req)
-	except ImportError, inst:	
-		status,location=inst
-		logger.info(str(status) + " " + location)	
-		mediaurl = location
-	else:
-		#logger.info(response)
-		#logger.info(response.info() + " es el info")
-		data=response.read()
-		response.close()
-
-		patronvideos  = '<div class="down_ad_pad1">[^<]+<a href="([^"]+)"'
-		matches = re.compile(patronvideos,re.DOTALL).findall(data)
-		scrapertools.printMatches(matches)
-		mediaurl = ""
-		if len(matches)>0:
-			mediaurl = matches[0]
-			# Timeout del socket a 60 segundos
-			socket.setdefaulttimeout(10)
-
-			h=urllib2.HTTPHandler(debuglevel=0)
-			request = urllib2.Request(mediaurl)
-
-			opener = urllib2.build_opener(h)
-			urllib2.install_opener(opener)
-			try:
-			
-				connexion = opener.open(request)
-				mediaurl= connexion.geturl()
-			
-			except urllib2.HTTPError,e:
-				print ("[megaupload.py]  error %d (%s) al abrir la url %s" % (e.code,e.msg,mediaurl))
-			
-				print e.read()	
-			
-	return mediaurl
-
-def getvideo(code):
-	return megavideo.Megavideo(convertcode(code))
-
-def gethighurl(code):
+def gethighurl(code , password=None):
 	megavideologin = config.get_setting("megavideouser")
 	if DEBUG:
 		logger.info("[megaupload.py] megavideouser=#"+megavideologin+"#")
 	megavideopassword = config.get_setting("megavideopassword")
+	if megavideologin == '' or megavideopassword == '':
+		login = None
+	else:
+		login = getmegauploaduser(megavideologin,megavideopassword)
 	if DEBUG:
 		logger.info("[megaupload.py] megavideopassword=#"+megavideopassword+"#")
-	cookie = getmegauploaduser(megavideologin,megavideopassword)
-	if DEBUG:
-		logger.info("[megaupload.py] cookie=#"+cookie+"#")
 
-	if len(cookie) == 0:
-		import xbmcgui
+
+	video = resuelve("http://www.megaupload.com/?d="+code,login,password)
+
+	if video is not None:
+		return video
+	else:
 		advertencia = xbmcgui.Dialog()
-		resultado = advertencia.ok('Cuenta de Megaupload errónea' , 'La cuenta de Megaupload que usas no es válida' , 'Comprueba el login y password en la configuración')
+		resultado = advertencia.ok('pelisalacarta','Se canceló la reproducción')
 		return ""
+	
+	
+def resuelve(url,login, password=None):
 
-	return getmegauploadvideo(code,cookie)
+	data=scrapertools.cachePage(url)
+	password_data = re.search('filepassword',data)
+	if password_data is not None:
+		teclado = password_mega(password)
+		if teclado is not None:
+			data = scrapertools.cachePage(url, post="filepassword="+teclado)
+		else:
+			return None
+	enlace = get_filelink(data)
+	
+	if login == 'premium':
+		espera = handle_wait(1,'Megaupload','Cargando video.')	
+	elif login == 'gratis':
+		espera = handle_wait(26,'Megaupload','Cargando video.')	
+	else:
+		espera = handle_wait(46,'Megaupload','Cargando video.')
+	
+	if espera == True:
+	   return enlace
+	else:
+	   return None
+	
 
-def getlowurl(code):
-	return megavideo.getlowurl(convertcode(code))
+def get_filelink(data):
+
+	#Comprueba si es un enlace premium
+	match1=re.compile('<a href="(.+?)" class="down_ad_butt1">').findall(data)
+	if str(match1)=='[]':
+		match2=re.compile('id="downloadlink"><a href="(.+?)" class=').findall(data)
+		url=match2[0]
+	else:
+		url=match1[0]
+
+
+	#Si es un archivo .divx lo sustituye por .avi
+	if url.endswith('divx'):
+		return url[:-4]+'avi'
+	else:          
+		return url
+		
+def handle_wait(time_to_wait,title,text):
+
+    print 'Esperando '+str(time_to_wait)+' segundos'    
+
+    espera = xbmcgui.DialogProgress()
+    ret = espera.create(' '+title)
+
+    secs=0
+    percent=0
+    increment = int(100 / time_to_wait)
+
+    cancelled = False
+    while secs < time_to_wait:
+        secs = secs + 1
+        percent = increment*secs
+        secs_left = str((time_to_wait - secs))
+        remaining_display = ' Espera '+secs_left+' segundos para que comience el vídeo...'
+        espera.update(percent,' '+text,remaining_display)
+        xbmc.sleep(1000)
+        if (espera.iscanceled()):
+             cancelled = True
+             break
+    if cancelled == True:     
+         print 'Espera cancelada'
+         return False
+    else:
+         print 'Espera finalizada'
+         return True
+		 
+def password_mega(password):
+
+	keyboard = xbmc.Keyboard(password,"Contraseña:")
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+		tecleado = keyboard.getText()
+		if len(tecleado)<=0:
+			return
+		else:
+			return tecleado
+			
+def getlowurl(code,password=None):
+        return megavideo.getlowurl(convertcode(code),password)
