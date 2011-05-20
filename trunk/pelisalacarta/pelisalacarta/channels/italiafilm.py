@@ -148,7 +148,6 @@ def detalle(params,url,category):
 	sep_data = '<br /><br />'
 
 	# Delimits the links area
-	test = open('xbmc_test.txt','w')
 	i_data = data.find('<td class="news">')
 	data = data[i_data:]
 	f_data = data.find('</td>')
