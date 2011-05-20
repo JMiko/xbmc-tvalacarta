@@ -145,7 +145,7 @@ def channels_history_list():
     itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
-    itemlist.append( Item( title="Actualizar Buscador"                , channel="updater4buscador"     , language="" ,   category="F,S" , type="xbmc"  )) # esto estara solo hasta que haya nueva actualizacion
+    itemlist.append( Item( title="Actualizar Buscador"                , channel="updater4buscador"     , language="ES" ,   category="S" , type="xbmc"  )) # esto estara solo hasta que haya nueva actualizacion
     return itemlist
 
 def channels_list():
@@ -184,6 +184,7 @@ def channels_list():
     itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""   , category="G" , type="xbmc"  ))
+    itemlist.append( Item( title="Actualizar Buscador"   , channel="updater4buscador"     , language="" ,   category="S" , type="xbmc"  )) # esto estara solo hasta que haya nueva actualizacion
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"         , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"      , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES" , category="F,D" , type="xbmc"  ))
