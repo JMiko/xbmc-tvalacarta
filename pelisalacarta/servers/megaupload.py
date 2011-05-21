@@ -10,6 +10,7 @@ import urlparse, urllib, urllib2,socket
 import megavideo
 
 
+
 try:
 	from core import scrapertools
 	from core import logger
@@ -171,6 +172,7 @@ class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
 		raise ImportError(302,headers.getheader("Location"))
 
 def gethighurl(code , password=None):
+
 	megavideologin = config.get_setting("megavideouser")
 	if DEBUG:
 		logger.info("[megaupload.py] megavideouser=#"+megavideologin+"#")
@@ -182,14 +184,11 @@ def gethighurl(code , password=None):
 	if DEBUG:
 		logger.info("[megaupload.py] megavideopassword=#"+megavideopassword+"#")
 
-
 	video = resuelve("http://www.megaupload.com/?d="+code,login,password)
 
 	if video is not None:
 		return video
 	else:
-		advertencia = xbmcgui.Dialog()
-		resultado = advertencia.ok('pelisalacarta','Se canceló la reproducción')
 		return ""
 	
 	
@@ -205,17 +204,23 @@ def resuelve(url,login, password=None):
 			return None
 	enlace = get_filelink(data)
 	
-	if login == 'premium':
-		espera = handle_wait(1,'Megaupload','Cargando video.')	
-	elif login == 'gratis':
-		espera = handle_wait(26,'Megaupload','Cargando video.')	
+
+	if enlace is None:
+		return None
 	else:
-		espera = handle_wait(46,'Megaupload','Cargando video.')
+		if login == 'premium':
+			espera = handle_wait(1,'Megaupload','Cargando video.')	
+		elif login == 'gratis':
+			espera = handle_wait(26,'Megaupload','Cargando video.')	
+		else:
+			espera = handle_wait(46,'Megaupload','Cargando video.')
 	
-	if espera == True:
-	   return enlace
-	else:
-	   return None
+		if espera == True:
+			return enlace
+		else:
+			advertencia = xbmcgui.Dialog()
+			resultado = advertencia.ok('pelisalacarta','Se canceló la reproducción')		
+			return None
 	
 
 def get_filelink(data):
@@ -224,7 +229,10 @@ def get_filelink(data):
 	match1=re.compile('<a href="(.+?)" class="down_ad_butt1">').findall(data)
 	if str(match1)=='[]':
 		match2=re.compile('id="downloadlink"><a href="(.+?)" class=').findall(data)
-		url=match2[0]
+		try:
+			url=match2[0]
+		except:
+			return None
 	else:
 		url=match1[0]
 
@@ -263,10 +271,13 @@ def handle_wait(time_to_wait,title,text):
     else:
          print 'Espera finalizada'
          return True
-		 
+
 def password_mega(password):
 
-	keyboard = xbmc.Keyboard(password,"Contraseña:")
+	if password is not None:
+		keyboard = xbmc.Keyboard(password,"Contraseña:")
+	else:
+		keyboard = xbmc.Keyboard("","Contraseña:")
 	keyboard.doModal()
 	if (keyboard.isConfirmed()):
 		tecleado = keyboard.getText()
@@ -275,5 +286,5 @@ def password_mega(password):
 		else:
 			return tecleado
 			
-def getlowurl(code,password=None):
+def getlowurl(code , password=None):
         return megavideo.getlowurl(convertcode(code),password)
