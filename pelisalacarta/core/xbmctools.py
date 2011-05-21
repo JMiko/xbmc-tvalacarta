@@ -423,10 +423,9 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         logger.info("[xbmctools.py] 4")
         launchplayer(mediaurl, listitem)
         
-    if (config.get_setting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver")):
+    if (config.get_setting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
         logger.info("Con subtitulos")
-        xbmc.Player().setSubtitles(os.path.join( config.get_data_path(), 'subtitulo.srt' ) )
-        config.set_setting("subtitulo", "false")
+        setSubtitles()
 
 
 def getLibraryInfo (mediaurl):
@@ -630,22 +629,35 @@ def playstrm(params,url,category):
     playvideo("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
 
 def renderItems(itemlist, params, url, category,isPlayable='false'):
-    for item in itemlist:
-        if item.category == "":
-            item.category = category
-        if item.folder :
-            if len(item.extra)>0:
-                addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context )
+    if itemlist <> None:
+        for item in itemlist:
+            if item.category == "":
+                item.category = category
+            if item.folder :
+                if len(item.extra)>0:
+                    addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context )
+                else:
+                    addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context  )
             else:
-                addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context  )
-        else:
-            if item.duration:
-                addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )
-            else:    
-                addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems )
-
-    # Cierra el directorio
-    xbmcplugin.setContent(pluginhandle,"Movies")
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+                if item.duration:
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )
+                else:    
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems )
+    
+        # Cierra el directorio
+        xbmcplugin.setContent(pluginhandle,"Movies")
+        xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+        xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    
+def setSubtitles():
+    logger.info("[xbmctools.py] setSubtitles: start")
+    import time
+    while xbmc.Player().isPlayingVideo()==False:
+        logger.info("[xbmctools.py] setSubtitles: Waiting 2 seconds for video to start before setting subtitles")
+        time.sleep(2)
+    logger.info("[xbmctools.py] setSubtitles: Setting subtitles now that the video start")
+    xbmc.Player().setSubtitles(os.path.join( config.get_data_path(), 'subtitulo.srt' ))
+    config.set_setting("subtitulo", "false")
+    logger.info("[xbmctools.py] setSubtitles: end")
+    return
