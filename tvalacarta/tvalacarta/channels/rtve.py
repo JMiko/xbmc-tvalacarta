@@ -240,49 +240,6 @@ def programas(item):
         item.url = "http://www.rtve.es/alacarta/programas/"+item.extra+"/?pageSize=100&order=1&criteria=asc&emissionFilter=all"
     logger.info("[rtve.py] programas url="+item.url) 
 
-    '''
-    <li class="odd">
-    <span class="col_fav">
-    <input type="hidden" id="urlAddFav43930" value="/alacarta/videos/buscamundos/"/>
-    <input type="hidden" id="titleAddFav43930" value="Buscamundos"/>
-    <a class="favoritos" name="43930" title="Añadir a favoritos" href="/usuarios/addToFavorite.shtml?programPermLink=43930" target="_blank"></a>
-    </span>
-    <span class="col_tit" id="43930" name="progname">
-    <a href="/alacarta/videos/buscamundos/" title="Ver programa seleccionado">Buscamundos</a>
-    </span>
-    <span class="col_fec">pasado martes</span>
-    <span class="col_med">
-    <a href="/alacarta/tve/la1/" title="Ir a portada de 'La 1'" />
-    <img src="/css/alacarta20/i/iconos/mini-cadenas/la1.png"> 
-    </a>        
-    </span>
-    <span class="col_cat">Viajes</span>
-    <!--EMPIEZA TOOL-TIP-->
-    <div id="popup43930" style="display: none" class="tultip"> 
-    <span id="progToolTip" class="tooltip curved">
-    <span class="pointer"></span>
-    <span class="cerrar" id="close43930"></span>
-    <span class="titulo-tooltip"><a href="/alacarta/videos/buscamundos/" title="Ver programa seleccionado">Buscamundos</a></span>
-    <span class="fecha">pasado martes</span>
-    <span class="detalle">Buscamundos es un programa muy distinto de los tradicionales documentales de viajes. Pretende incitar a los espectadores a viajar más allá de los límites del turismo o la aventura, adentrándose en la vida de las ...</span>
-    <span class="miga">
-    <ul>
-    <li>
-    <a href="/alacarta/tve/" title="Televisión">Televisión</a>
-    </li>
-    <li>
-    <span> &rsaquo; </span>
-    <a href="/alacarta/tve/la1/" title="La 1">La 1</a>
-    </li>
-    <li>
-    <span> &rsaquo; </span>
-    <a href="/alacarta/videos/buscamundos/" title="Buscamundos">Buscamundos</a>
-    </li>
-    </ul></span>
-    </span>
-    </div>
-    <!--FIN TOOL-TIP--></li>
-    '''
     itemlist = []
     data = scrapertools.cachePage(item.url)
     itemlist.extend(addprogramas(item,data))
@@ -350,39 +307,30 @@ def videos(item):
     data = scrapertools.cachePage(item.url)
     itemlist = []
 
-    '''
-    <li class="odd">
-    <!--<span class="col_est partially-played"><em>parcialmente reproducido</em></span>-->
-    <span class="col_tit">
-    <a href="/alacarta/videos/paisajes-de-la-historia/paisajes-de-la-historia-figuras-femeninas-de-los-anos-veinte-a-la-posguerra/639842/">Figuras femeninas</a>
-    </span>
-    <span class="col_tip">Completo</span>
-    <span class="col_dur">58:43</span>
-    <span class="col_pop"><span title="8% popularidad" class="pc8"><em><strong><span>8%</span></strong></em></span></span>
-    <span class="col_fec">30 nov 2009</span>
-    </li>
-    '''
-    
     # Extrae los vídeos
     patron  = '<li class="[^"]+">.*?'
-    patron += '<span class="col_tit">[^<]+'
+    patron += '<span class="col_tit"[^>]+>[^<]+'
     patron += '<a href="([^"]+)">(.*?)</a>[^<]+'
     patron += '</span>[^<]+'
     patron += '<span class="col_tip">([^<]+)</span>[^<]+'
     patron += '<span class="col_dur">([^<]+)</span>.*?'
-    patron += '<span class="col_fec">([^<]+)</span>[^<]+'
-    patron += '</li>'
+    patron += '<span class="col_fec">([^<]+)</span>.*?'
+    patron += '<span class="detalle">([^>]+)</span>'
     
     matches = re.findall(patron,data,re.DOTALL)
     if DEBUG: scrapertools.printMatches(matches)
 
     # Crea una lista con las entradas
     for match in matches:
-        scrapedtitle = match[1]+" ("+match[2]+") ("+match[3]+") ("+match[4]+")"
+        if config.get_setting("rtve.programa.extendido")=="true":
+            scrapedtitle = match[1]+" ("+match[2]+") ("+match[3]+") ("+match[4]+")"
+        else:
+            scrapedtitle = match[1]
         scrapedtitle = scrapedtitle.replace("<em>Nuevo</em>&nbsp;","")
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
-        scrapedplot = match[0]
+        scrapedplot = scrapertools.unescape(match[5].strip())
+        scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
         scrapedextra = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, category = item.category, folder=False) )
