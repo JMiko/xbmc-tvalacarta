@@ -26,6 +26,8 @@ print "Config file path "+CONFIG_FILE_PATH
 configfile = ConfigParser.SafeConfigParser()
 configfile.read( CONFIG_FILE_PATH )
 
+overrides = dict()
+
 TRANSLATION_FILE_PATH = os.path.join(os.getcwd(),"resources","language","Spanish","strings.xml")
 try:
     translationsfile = open(TRANSLATION_FILE_PATH,"r")
@@ -43,12 +45,21 @@ def open_settings():
 
 def get_setting(name):
     try:
-        return configfile.get("General",name)
+        if name in overrides:
+            dev = overrides[name]
+            #print "Overrides: ",name,"=",dev
+        else:
+            dev=configfile.get("General",name)
+            #print "Config file: ",name,"=",dev
+        #print "get_setting",name,dev
+        return dev
     except:
+        #print "get_setting",name,"(vacío)"
         return ""
     
 def set_setting(name,value):
-    pass
+    #print "set_setting",name,value
+    overrides[name]=value
 
 def get_localized_string(code):
     cadenas = re.findall('<string id="%d">([^<]+)<' % code,translations)
@@ -63,6 +74,13 @@ def get_library_path():
     return ""
 
 def get_temp_file(filename):
-    # Una forma rápida de lanzar un error 
-    import noexiste
-    return ""
+    return os.path.join(get_data_path(),filename)
+
+def get_data_path():
+    data_path = os.path.join( os.path.expanduser("~") , ".developer" )
+    if not os.path.exists(data_path):
+        os.mkdir(data_path)
+    return data_path
+
+def get_runtime_path():
+    return os.getcwd()
