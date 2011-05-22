@@ -146,7 +146,6 @@ def channels_history_list():
     itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
-    itemlist.append( Item( title="Actualizar Buscador"                , channel="updater4buscador"     , language="ES" ,   category="S" , type="xbmc"  )) # esto estara solo hasta que haya nueva actualizacion
     return itemlist
 
 def channels_list():

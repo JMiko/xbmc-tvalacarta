@@ -23,6 +23,10 @@ except:
 
 loggeractive = (config.get_setting("debug")=="true")
 
+def log_enable(active):
+    global loggeractive
+    loggeractive = active
+
 def info(texto):
     if loggeractive: platformlogger.info(texto)
 

@@ -22,7 +22,7 @@ import md5
 import os
 import config
 import logger
-import re
+import re, htmlentitydefs
 import downloadtools
 
 logger.info("[scrapertools.py] init")
@@ -166,8 +166,12 @@ def getCacheFileNames(url):
     logger.debug("[scrapertools.py] nowtimestamp="+nowtimestamp)
 
     # Nombre del fichero
-    newFile = os.path.join( siteCachePath , cacheId + "." + nowtimestamp + ".cache" )
+    # La cache se almacena en una estructura CACHE + URL
+    ruta = os.path.join( siteCachePath , cacheId[:2] , cacheId[2:] )
+    newFile = os.path.join( ruta , nowtimestamp + ".cache" )
     logger.debug("[scrapertools.py] newFile="+newFile)
+    if not os.path.exists(ruta):
+        os.makedirs( ruta )
 
     # Busca ese fichero en la cache
     cachedFile = getCachedFile(siteCachePath,cacheId)
@@ -176,7 +180,7 @@ def getCacheFileNames(url):
 
 # Busca ese fichero en la cache
 def getCachedFile(siteCachePath,cacheId):
-    mascara = os.path.join(siteCachePath,cacheId+".*.cache")
+    mascara = os.path.join(siteCachePath,cacheId[:2],cacheId[2:],"*.cache")
     logger.debug("[scrapertools.py] mascara="+mascara)
     import glob
     ficheros = glob.glob( mascara )
@@ -192,11 +196,11 @@ def getCachedFile(siteCachePath,cacheId):
             os.remove(fichero)
         
         cachedFile = ""
-    
+
     # Hay uno: fichero cacheado
     elif len(ficheros)==1:
         cachedFile = ficheros[0]
-    
+
     return cachedFile
 
 def getSiteCachePath(url):
@@ -710,6 +714,7 @@ def unescape(text):
         else:
             # named entity
             try:
+                '''
                 if text[1:-1] == "amp":
                     text = "&amp;amp;"
                 elif text[1:-1] == "gt":
@@ -718,8 +723,9 @@ def unescape(text):
                     text = "&amp;lt;"
                 else:
                     print text[1:-1]
-                    import htmlentitydefs
                     text = unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode("utf-8")
+                '''
+                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode("utf-8")
             except KeyError:
                 print "keyerror"
                 pass
