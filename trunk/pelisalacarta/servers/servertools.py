@@ -598,7 +598,7 @@ def findvideos(data):
 
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'facebook' ] )
+            devuelve.append( [ titulo , url , 'directo' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -615,7 +615,7 @@ def findvideos(data):
             devuelve.append( [ titulo , url , 'facebook' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url)			
+            logger.info("  url duplicada="+url)		
 
     #http://www.4shared.com/embed/392975628/ff297d3f
     logger.info("0) 4shared...")
@@ -804,6 +804,22 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
+			
+    logger.info("0) Videos animeid...") #http%3A%2F%2Fmangaid.com%2Ff.php%3Fh3eqiGdkh3akY2GaZJ6KpqyDaWmJ%23.mp4
+    patronvideos  = "file=http.*?mangaid.com(.*?)&amp;backcolor="
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    cont = 0
+    for match in matches:
+        cont = cont + 1 
+        titulo = " Parte %s [Directo]" % (cont)
+        url = "http://mangaid.com"+match
+        url = url.replace('%2F','/').replace('%3F','?').replace('%23','#')
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)	
             
     return devuelve
     
@@ -820,9 +836,6 @@ def findurl(code,server):
         mediaurl = megaupload.gethighurl(code)
         
     elif server == "directo":
-        mediaurl = code
-
-    elif server == "facebook":
         mediaurl = code
 
     elif server == "4shared":
