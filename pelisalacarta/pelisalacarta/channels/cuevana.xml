@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<version>
-	<name>cuevana</name>
-	<tag>3</tag>
-	<date>21/05/2011</date>
-	<changes>Fix para que baje los subtitulos si el XBMC esta en ingles o castellano, Fix para que espere a que este haciendo play la pelicula antes de setear el subtitulo, Te permite agregar los episodios de las series a la biblioteca, Te permite listar alfabeticamente las peliculas por letra, Te permite ver las peliculas mas populares, mejor puntuadas y novedades. </changes>
-</version>
