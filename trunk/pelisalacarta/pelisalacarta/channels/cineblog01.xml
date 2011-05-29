@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cineblog01</name>
-	<tag>3</tag>
-	<date>19/05/2011</date>
-	<changes>Fixed pagination</changes>
+	<tag>4</tag>
+	<date>29/05/2011</date>
+	<changes>Fixed due to channel changes</changes>
 </version>

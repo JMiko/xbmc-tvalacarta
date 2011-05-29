@@ -164,8 +164,6 @@ def peliscat(params, url, category):
 
     ########################################
 
-  
-    
 def searchmovie(params,url,category):
     xbmc.output("[cineblog01.py] searchmovie")
 
@@ -176,72 +174,8 @@ def searchmovie(params,url,category):
         if len(tecleado)>0:
             #convert to HTML
             tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://cineblog01.com/?s="+tecleado
+            searchUrl = "http://www.cineblog01.com/?s="+tecleado
             listvideos(params,searchUrl,category)
-
-def performsearch(texto):
-    xbmc.output("[cineblog01.py] performsearch")
-    url = "http://cineblog01.com/?s="+texto
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #xbmc.output(data)
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<div id="covershot".*?<a.*?<img src="(.*?)".*?'
-    patronvideos += '<div id="post-title"><a href="(.*?)".*?'
-    patronvideos += '<h3>(.*?)</h3>.*?&#160;'
-    patronvideos += '&#160;(.*?)</p>'
-    #patronvideos += '<div id="description"><p>(.?*)</div>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        # Titulo
-        UnicodeDecodedTitle = match[2].decode("utf-8")
-        unescapedTitle = unescape (UnicodeDecodedTitle)
-        scrapedtitle = unescapedTitle.encode("latin1","ignore") 
-        # URL
-        scrapedurl = urlparse.urljoin(url,match[1])
-        # Thumbnail
-        scrapedthumbnail = urlparse.urljoin(url,match[0])
-        # Argumento
-        UnicodeDecodedTitle = match[3].decode("utf-8")
-        unescapedTitle = unescape (UnicodeDecodedTitle)
-        scrapedplot = unescapedTitle.encode("latin1","ignore") 
-        #scrapedplot = match[3]
-        # Depuracion
-        if (DEBUG):
-            xbmc.output("scrapedtitle="+scrapedtitle)
-            xbmc.output("scrapedurl="+scrapedurl)
-            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-#            xbmc.output("scrapeddescription="+scrapeddescription)
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-    # Remove the next page mark
-    patronvideos = '<a href="(http://cineblog01.com/page/[0-9]+)">Avanti >'
-    matches = re.compile (patronvideos, re.DOTALL).findall (data)
-    scrapertools.printMatches (matches)
-
-    if len(matches)>0:
-        scrapedtitle = "Pagina seguente"
-        scrapedurl = matches[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG):
-            xbmc.output("scrapedtitle="+scrapedtitle)
-            xbmc.output("scrapedurl="+scrapedurl)
-            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-    
-    return resultados
 
 def listcat(params,url,category):
     xbmc.output("[cineblog01.py] mainlist")
@@ -280,12 +214,12 @@ def listcat(params,url,category):
         xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
     # Remove the next page mark
     patronvideos = '<a href="(http://cineblog01.com/category/[a-z]+'
-    patronvideos += '/page/[0-9]+/)">Avanti'
+    patronvideos += '/page/[0-9]+/)">Avanti >'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "Pagina seguente"
+        scrapedtitle = "(Avanti ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -348,12 +282,12 @@ def listvideos(params,url,category):
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Remove the next page mark <a href="http://cineblog01.com/page/2/">Avanti
-    patronvideos = '<a href="(http://cineblog01.com/page/[0-9]+/)">Avanti'
+    patronvideos = '<a href="(http://www.cineblog01.com/page/[0-9]+[^"]+)">Avanti >'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "Pagina seguente"
+        scrapedtitle = "(Avanti ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -402,11 +336,7 @@ def listanime(params,url,category):
         scrapedplot = unescapedTitle.encode("latin1","ignore") 
         #scrapedplot = match[3]
         # Depuracion
-        if (DEBUG):
-            xbmc.output("scrapedtitle="+scrapedtitle)
-            xbmc.output("scrapedurl="+scrapedurl)
-            xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-#            xbmc.output("scrapeddescription="+scrapeddescription)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -417,7 +347,7 @@ def listanime(params,url,category):
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "Pagina seguente"
+        scrapedtitle = "(Avanti ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -482,7 +412,7 @@ def listserie(params,url,category):
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "Pagina seguente"
+        scrapedtitle = "(Avanti ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
