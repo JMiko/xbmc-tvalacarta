@@ -1,3 +1,11 @@
+3.1.1
+
+- Global search fixed
+- Cuevana channel subtitles and issues fixed (thanks to xextil, arormoser and esevece)
+- Megaupload support without premium account (thanks to icefilms addon author and xextil)
+- Added new channel asiateam
+- Added new channel sofacine
+
 3.1
 
 - New channels
