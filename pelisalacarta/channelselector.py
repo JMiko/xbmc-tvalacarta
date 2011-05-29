@@ -211,6 +211,7 @@ def channels_list():
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S" , type="generic" ))
     itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S" , type="generic" ))
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A" , type="xbmc" , extra="Series" ))
+    itemlist.append( Item( title="Sofacine"              , channel="sofacine"             , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Somosmovies"           , channel="somosmovies"          , language="ES" , category="F,S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Sonolatino"            , channel="sonolatino"           , language=""   , category="M" , type="xbmc"  ))
     itemlist.append( Item( title="Stagevu"               , channel="stagevusite"          , language=""   , category="G" , type="xbmc"  ))

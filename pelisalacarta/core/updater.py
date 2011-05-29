@@ -244,11 +244,17 @@ def download_channel(channel_name):
 
     # Descarga el canal
     updated_channel_data = scrapertools.cachePage( remote_channel_url )
-    outfile = open(local_channel_path,"w")
-    outfile.write(updated_channel_data)
-    outfile.flush()
-    outfile.close()
-    logger.info("Grabado a " + local_channel_path)
+    try:
+        outfile = open(local_channel_path,"w")
+        outfile.write(updated_channel_data)
+        outfile.flush()
+        outfile.close()
+        logger.info("Grabado a " + local_channel_path)
+    except:
+        logger.info("Error al grabar " + local_channel_path)
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
 
     # Descarga la version (puede no estar)
     try:
@@ -265,4 +271,3 @@ def download_channel(channel_name):
 
     if os.path.exists(local_compiled_path):
         os.remove(local_compiled_path)
-    

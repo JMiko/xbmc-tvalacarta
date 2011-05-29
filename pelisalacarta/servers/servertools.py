@@ -122,7 +122,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
     
     #2/12/2010 Megaupload
-    logger.info("1k) Megaupload...")
+    logger.info("1k) Megaupload (...")
     patronvideos  = 'http\://www.megaupload.com/(?:es/)?\?.*?d\=([A-Z0-9a-z]{8})(?:[^>]*>([^<]+)</a>)?'
     matches = re.compile(patronvideos).findall(data)
     for match in matches:
@@ -131,6 +131,22 @@ def findvideos(data):
         else:
             titulo = "[Megaupload]"
         url = match[0]
+        if url not in encontrados:
+            logger.info("  titulo="+titulo)
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'Megaupload' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+    
+    # Código especial cinetube
+    #xrxa("BLYT2ZC9=d?/moc.daolpuagem.www//:ptth")
+    logger.info("1k) Megaupload reverse")
+    patronvideos  = 'xrxa\("([A-Z0-9a-z]{8})=d\?/moc.daolpuagem.www//\:ptth"\)'
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        titulo = "[Megaupload]"
+        url = match[::-1]
         if url not in encontrados:
             logger.info("  titulo="+titulo)
             logger.info("  url="+url)

@@ -165,9 +165,8 @@ def play(params,url,category):
     title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
     thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
     logger.info("[stagevusite.py] thumbnail="+thumbnail)
-    logger.info("[stagevusite.py] server="+server)
+    server="stagevu"
 
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
