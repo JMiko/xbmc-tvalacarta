@@ -66,13 +66,16 @@ def run():
         if ( action=="selectchannel" ):
             
             if config.get_setting("updatechannels")=="true":
-                from core import updater
-                actualizado = updater.updatechannel("channelselector")
+                try:
+                    from core import updater
+                    actualizado = updater.updatechannel("channelselector")
 
-                if actualizado:
-                    import xbmcgui
-                    advertencia = xbmcgui.Dialog()
-                    advertencia.ok("tvalacarta",config.get_localized_string(30064))
+                    if actualizado:
+                        import xbmcgui
+                        advertencia = xbmcgui.Dialog()
+                        advertencia.ok("tvalacarta",config.get_localized_string(30064))
+                except:
+                    pass
 
             import channelselector as plugin
             plugin.mainlist(params, url, category)
@@ -99,13 +102,16 @@ def run():
         # El resto de acciones vienen en el parámetro "action", y el canal en el parámetro "channel"
         else:
             if action=="mainlist" and config.get_setting("updatechannels")=="true":
-                from core import updater
-                actualizado = updater.updatechannel(params.get("channel"))
+                try:
+                    from core import updater
+                    actualizado = updater.updatechannel(params.get("channel"))
 
-                if actualizado:
-                    import xbmcgui
-                    advertencia = xbmcgui.Dialog()
-                    advertencia.ok("plugin",params.get("channel"),config.get_localized_string(30063))
+                    if actualizado:
+                        import xbmcgui
+                        advertencia = xbmcgui.Dialog()
+                        advertencia.ok("plugin",params.get("channel"),config.get_localized_string(30063))
+                except:
+                    pass
 
             # La acción puede estar en el core, o ser un canal regular. El buscador es un canal especial que está en pelisalacarta
             regular_channel_path = os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , params.get("channel")+".py" )
