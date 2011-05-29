@@ -59,6 +59,17 @@
                 <exclude name="lib/elementtree/**"/>
                 <exclude name="lib/simplejson/**"/>
                 <exclude name="tester.py"/>
+                <exclude name="version.xml"/>
+                <exclude name="pelisalacarta.py"/>
+                <exclude name="channelselector.xml"/>
+                <exclude name="core/updater.py"/>
+                <exclude name="core/descargados.py"/>
+                <exclude name="core/descargadoslist.py"/>
+                <exclude name="pelisalacarta/channels/*.xml"/>
+                <exclude name="pelisalacarta/channels/casttv.py"/>
+                <exclude name="pelisalacarta/channels/animeforos.py"/>
+                <exclude name="resources/images/casttv/**"/>
+                <exclude name="resources/settings.conf"/>
 			</fileset>
         </copy>
     </target>
