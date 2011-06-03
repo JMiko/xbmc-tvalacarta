@@ -138,6 +138,7 @@ def run():
             
             if not generico:
                 if (action=="strm"):
+                    from core import xbmctools
                     xbmctools.playstrm(params, url, category)
                 else:
                     exec "channel."+action+"(params, url, category)"
