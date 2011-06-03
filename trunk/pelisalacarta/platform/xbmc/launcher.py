@@ -137,7 +137,10 @@ def run():
             print "generico=" , generico 
             
             if not generico:
-                exec "channel."+action+"(params, url, category)"
+                if (action=="strm"):
+                    xbmctools.playstrm(params, url, category)
+                else:
+                    exec "channel."+action+"(params, url, category)"
             else:
                 if params.has_key("title"):
                     title = urllib.unquote_plus( params.get("title") )
