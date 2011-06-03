@@ -174,7 +174,7 @@ def searchmovie(params,url,category):
         if len(tecleado)>0:
             #convert to HTML
             tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://www.cineblog01.com/?s="+tecleado
+            searchUrl = "http://cineblog01.com/?s="+tecleado
             listvideos(params,searchUrl,category)
 
 def listcat(params,url,category):
@@ -213,13 +213,13 @@ def listcat(params,url,category):
         # Añade al listado de XBMC
         xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "detail" )
     # Remove the next page mark
-    patronvideos = '<a href="(http://cineblog01.com/category/[a-z]+'
+    patronvideos = '<a href="(http://[www/.]*cineblog01.com/category/[a-z]+'
     patronvideos += '/page/[0-9]+/)">Avanti >'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "(Avanti ->)"
+        scrapedtitle = "(Next Page ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -282,12 +282,12 @@ def listvideos(params,url,category):
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Remove the next page mark <a href="http://cineblog01.com/page/2/">Avanti
-    patronvideos = '<a href="(http://www.cineblog01.com/page/[0-9]+[^"]+)">Avanti >'
+    patronvideos = '<a href="(http://[www/.]*cineblog01.com/page/[0-9]+)/">Avanti >'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "(Avanti ->)"
+        scrapedtitle = "(Next Page ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -347,7 +347,7 @@ def listanime(params,url,category):
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "(Avanti ->)"
+        scrapedtitle = "(Next Page ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -412,7 +412,7 @@ def listserie(params,url,category):
     scrapertools.printMatches (matches)
 
     if len(matches)>0:
-        scrapedtitle = "(Avanti ->)"
+        scrapedtitle = "(Next Page ->)"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
