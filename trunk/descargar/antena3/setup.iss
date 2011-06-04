@@ -5,7 +5,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{250CC799-6AA0-4F58-8F08-14498F6868FD}
+AppId={{B58E7A36-09A3-4514-9020-EA8D5AE2F92F}
 AppName=Descargar de Antena 3
 AppVersion=1.0
 ;AppVerName=Descargar de Antena 3 1.0
@@ -15,7 +15,7 @@ AppSupportURL=http://blog.tvalacarta.info/
 AppUpdatesURL=http://blog.tvalacarta.info/
 DefaultDirName={pf}\Televisión a la carta\Descargar de Antena 3
 DefaultGroupName=Televisión a la carta
-LicenseFile=C:\Documents and Settings\Administrador\Mis documentos\My Dropbox\antena3\src\LICENSE.txt
+LicenseFile=C:\workspaces\komodo\descargar\antena3\LICENSE.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -29,8 +29,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\antena3\dist\descargar.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\antena3\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\workspaces\komodo\descargar\antena3\dist\descargar.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\workspaces\komodo\descargar\antena3\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

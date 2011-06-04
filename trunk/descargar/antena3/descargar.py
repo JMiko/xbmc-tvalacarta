@@ -70,7 +70,7 @@ class MyDialog:
 
             # Invoca a rtmpdump
             import shlex, subprocess
-            args = shlex.split('./rtmpdump -r "'+item.url+'" -o "'+salida+'"')
+            args = shlex.split('./rtmpdump.exe -r "'+item.url+'" -o "'+salida+'"')
             p = subprocess.call(args) # Success!
 
     def clean_title(self,title):
