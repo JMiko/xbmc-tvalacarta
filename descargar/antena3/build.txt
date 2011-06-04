@@ -1,0 +1,5 @@
+#Crea la distribución en ./dist
+python setup.py py2exe
+
+#Crea el .MSI
+(copiar primero rtmpdump.exe a ./dist)
