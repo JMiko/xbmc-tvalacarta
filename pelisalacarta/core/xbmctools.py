@@ -249,7 +249,7 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         return
 
     if opciones[seleccion]==config.get_localized_string(30158): # "Enviar a JDownloader"
-        if server=="Megaupload":
+        if server.lower()=="megaupload":
             d = {"web": "http://www.megaupload.com/?d=" + url}
         else:
             d = {"web": "http://www.megavideo.com/?v=" + url}
