@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>rtve</name>
-	<tag>5</tag>
-	<date>22/05/2011</date>
-	<changes>Actualizado por cambios en la web</changes>
+	<tag>7</tag>
+	<date>06/06/2011</date>
+	<changes>Arreglados algunos programas que no salían, y fallos en los acentos</changes>
 </version>
