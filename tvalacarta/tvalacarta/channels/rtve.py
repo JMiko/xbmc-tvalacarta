@@ -270,13 +270,33 @@ def addprogramas(item,data):
     itemlist = []
     
     # Extrae los programas
+    '''
+    <li class="odd">
+    <span class="col_tit" id="1589" name="progname">
+    <a href="/alacarta/videos/el-escarabajo-verde/" title="Ver programa seleccionado">El escarabajo verde</a>
+    </span>
+    <span class="col_fec">pasado viernes</span>
+    <span class="col_med">
+    <a href="/alacarta/tve/la2/" title="Ir a portada de 'La 2'" />
+    <img src="/css/alacarta20/i/iconos/mini-cadenas/la2.png"> 
+    </a>		
+    </span>
+    <span class="col_cat">Ciencia y Tecnología</span>
+    <!--EMPIEZA TOOL-TIP-->
+    <div id="popup1589" style="display: none" class="tultip"> 
+    <span id="progToolTip" class="tooltip curved">
+    <span class="pointer"></span>
+    <span class="cerrar" id="close1589"></span>    
+    <span class="titulo-tooltip"><a href="/alacarta/videos/el-escarabajo-verde/" title="Ver programa seleccionado">El escarabajo verde</a></span>
+    <span class="fecha">pasado viernes</span>
+    <span class="detalle">Magazine sobre ecología y medio ambiente, que se centra en las relaciones que el hombre establece con su entorno. Desde una perspectiva divulgativa, el programa analiza un tema de actualidad del medio ambiente y ...</span>
+    '''
     patron  = '<li class="[^"]+">.*?'
     patron += '<span class="col_tit" id="([^"]+)" name="progname">[^<]+'
     patron += '<a href="([^"]+)" title="Ver programa seleccionado">([^<]+)</a>[^<]+'
     patron += '</span>[^<]+'
     patron += '<span class="col_fec">([^<]+)</span>.*?'
-    patron += '<span class="col_cat">([^<]+)</span>.*?'
-    patron += '<span class="detalle">([^<]+)</span>'
+    patron += '<span class="col_cat">([^<]+)</span>'
     matches = re.findall(patron,data,re.DOTALL)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -288,7 +308,7 @@ def addprogramas(item,data):
             scrapedtitle = match[2]
         scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = ""
-        scrapedplot = match[5]
+        scrapedplot = ""#match[5]
         scrapedextra = match[0]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, show=scrapedtitle, category = item.category) )
@@ -327,6 +347,7 @@ def videos(item):
         else:
             scrapedtitle = match[1]
         scrapedtitle = scrapedtitle.replace("<em>Nuevo</em>&nbsp;","")
+        scrapedtitle = scrapertools.unescape(scrapedtitle)
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
         scrapedplot = scrapertools.unescape(match[5].strip())
