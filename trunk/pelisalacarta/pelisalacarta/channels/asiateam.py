@@ -26,7 +26,7 @@ except:
 
 CHANNELNAME = "asiateam"
 DEBUG = True
-SUB_PATH = xbmc.translatePath( os.path.join( downloadtools.getDownloadPath() , 'Subtitulos\AsiaTeam' ) )
+SUB_PATH = xbmc.translatePath( os.path.join( downloadtools.getDownloadPath() , 'subtitulos','asiateam' ) )
 if not os.path.exists(SUB_PATH):
     os.mkdir(SUB_PATH)
 
