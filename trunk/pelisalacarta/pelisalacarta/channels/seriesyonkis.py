@@ -12,6 +12,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
+from unicodedata import normalize
+
 from core import DecryptYonkis as Yonkis
 from core import config
 from core import logger
@@ -519,6 +521,26 @@ def addlist2Library(params,url,category):
     for match in matches:
         # Titulo
         scrapedtitle = match[1]
+
+        # PARTE NUEVA 
+
+        # Nos quedamos por un lado con el nombre de la serie y 
+        # por otro con el num capitulo
+
+        mo = re.match("^(.*) ([\d]{1,2}[x|X][\d]{1,3}) (.*)$", scrapedtitle)
+
+        if mo == None:
+                errores = errores + 1
+                continue		
+
+        if (DEBUG):
+                xbmc.output("CAPITULO="+ mo.group(2))	            
+	
+	
+        scrapedtitle = mo.group(2)
+
+        # FIN PARTE NUEVA
+
         i = i + 1
         pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',scrapedtitle)
         if (pDialog.iscanceled()):
