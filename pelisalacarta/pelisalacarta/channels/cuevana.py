@@ -45,7 +45,7 @@ def mainlist(item):
 def peliculas(item):
     logger.info("[cuevana.py] peliculas")
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/?orderby=ano&reverse=true"))
     itemlist.append( Item(channel=CHANNELNAME, title="M·s Populares"  , action="novedades", url="http://www.cuevana.tv/peliculas/populares/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Mejor Puntuadas"  , action="novedades", url="http://www.cuevana.tv/peliculas/mejorpuntuadas/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfab√©tico"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))
