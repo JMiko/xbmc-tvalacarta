@@ -19,7 +19,7 @@ from core import downloadtools
 
 CHANNELNAME = "library"
 allchars = string.maketrans('', '')
-deletechars = '\\/:*"<>|?\t' #Caracteres no válidos en nombres de archivo
+deletechars = '\\/:*"<>|?' #Caracteres no válidos en nombres de archivo
 # Esto permite su ejecución en modo emulado (preguntar a jesus por esto)
 # seguro que viene bien para debuguear
 try:
