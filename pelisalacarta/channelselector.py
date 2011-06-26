@@ -31,7 +31,9 @@ def getmainlist():
     if config.get_setting("download.enabled")=="true":
         itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargados" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
-    itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
+    
+    if config.get_library_support():
+        itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
     return itemlist
 
 # TODO: (3.1) Pasar el código específico de XBMC al laucher
@@ -185,7 +187,7 @@ def channels_list():
     itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""   , category="G" , type="xbmc"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""   , category="G" , type="xbmc"  ))
-    itemlist.append( Item( title="Actualizar Buscador"   , channel="updater4buscador"     , language="" ,   category="S" , type="xbmc"  )) # esto estara solo hasta que haya nueva actualizacion
+    #itemlist.append( Item( title="Actualizar Buscador"   , channel="updater4buscador"     , language="" ,   category="S" , type="xbmc"  )) # esto estara solo hasta que haya nueva actualizacion
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"         , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"      , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES" , category="F,D" , type="xbmc"  ))
@@ -203,10 +205,10 @@ def channels_list():
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S" , type="xbmc"  ))
     itemlist.append( Item( title="PelisFlv"              , channel="pelisflv"             , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="Redes.tv"              , channel="redestv"              , language="ES" , category="D" , type="xbmc"  ))
-    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     itemlist.append( Item( title="Robinfilm"             , channel="robinfilm"            , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Serieonline"           , channel="serieonline"          , language="ES" , category="F,S,D" , type="generic"  ))
+    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S" , type="xbmc"  ))
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S" , type="generic" ))
     itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S" , type="generic" ))
