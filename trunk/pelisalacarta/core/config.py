@@ -59,6 +59,9 @@ def force_platform(platform):
 def get_platform():
     return PLATFORM
 
+def get_library_support():
+    return (PLATFORM=="xbmc" or PLATFORM=="xbmcdharma")
+
 def get_system_platform():
     try:
         exec "import platform."+PLATFORM+".config as platformconfig"
@@ -159,3 +162,13 @@ def get_data_path():
     except:
         exec "import "+PLATFORM+"config as platformconfig"
     return platformconfig.get_data_path()
+
+def get_cookie_data():
+    import os
+    ficherocookies = os.path.join( get_data_path(), 'cookies.lwp' )
+
+    cookiedatafile = open(ficherocookies,'r')
+    cookiedata = cookiedatafile.read()
+    cookiedatafile.close();
+
+    return cookiedata
