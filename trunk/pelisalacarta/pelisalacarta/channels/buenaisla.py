@@ -33,8 +33,8 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="novedades", url="http://www.buenaisla.com/modules.php?name=Anime-Online"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Últimas Series Agregadas" , action="ultimas", url="http://www.buenaisla.com/modules.php?name=Anime-Online"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado por Géneros", action="cat", url="http://www.buenaisla.com/modules.php?name=Anime-Online"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Ãšltimas Series Agregadas" , action="ultimas", url="http://www.buenaisla.com/modules.php?name=Anime-Online"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Listado por GÃ©neros", action="cat", url="http://www.buenaisla.com/modules.php?name=Anime-Online"))
     itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa" , action="listacompleta", url="http://www.buenaisla.com/modules.php?name=Anime-Online"))
     itemlist.append( Item(channel=CHANNELNAME, title="Buscar" , action="busqueda") )
 
@@ -43,7 +43,7 @@ def mainlist(item):
 def novedades(item):
     logger.info("[buenaisla.py] novedades")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -63,7 +63,7 @@ def novedades(item):
             scrapedplot = ""
             logger.info(scrapedtitle)
 
-            # Añade al listado
+            # AÃ±ade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
@@ -72,7 +72,7 @@ def novedades(item):
 def videos(item):
 
 	logger.info("[islapeliculas.py] videos")
-	# Descarga la página
+	# Descarga la pÃ¡gina
 	data = scrapertools.cachePage(item.url)
 	patron = '(modules.php\?name=Anime-Online&func=JokeView&jokeid=.*?&amp;Es=\d)'
 	matches = re.compile(patron,re.DOTALL).findall(data)
@@ -97,7 +97,7 @@ def videos(item):
 			server = video[2]
 			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
-			# Añade al listado de XBMC
+			# AÃ±ade al listado de XBMC
 			itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
 
 	return itemlist
@@ -107,7 +107,7 @@ def cat(item):
 
 	logger.info("[islapeliculas.py] categorias")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
 	data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -121,7 +121,7 @@ def cat(item):
 		scrapedplot = ""
 		logger.info(scrapedtitle)
 
-		# Añade al listado
+		# AÃ±ade al listado
 		itemlist.append( Item(channel=CHANNELNAME, action="listaseries", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 		
 	return itemlist
@@ -129,7 +129,7 @@ def cat(item):
 def listaseries(item):
     logger.info("[islapeliculas.py] listaseries")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -149,7 +149,7 @@ def listaseries(item):
             scrapedplot = ""
             logger.info(scrapedtitle)
 
-            # Añade al listado
+            # AÃ±ade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
@@ -157,7 +157,7 @@ def listaseries(item):
 def ultimas(item):
     logger.info("[islapeliculas.py] ultimas")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -177,7 +177,7 @@ def ultimas(item):
             scrapedplot = ""
             logger.info(scrapedtitle)
 
-            # Añade al listado
+            # AÃ±ade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
@@ -185,7 +185,7 @@ def ultimas(item):
 def listacapitulos(item):
 	logger.info("[islapeliculas.py] listacapitulos")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
 	data = scrapertools.cachePage(item.url)
     # Extrae las entradas
 	patronvideos  = '<a.*?alt="Capitulos de.*?".*?>.*?<img.*?src="(.*?)".*?SINOPSIS: </strong>(.*?)<b>'
@@ -208,10 +208,10 @@ def listacapitulos(item):
 			scrapedtitle = match[1]
 			logger.info(scrapedtitle)
 
-			# Añade al listado
+			# AÃ±ade al listado
 			itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=imagen , plot=sinopsis , folder=True) )
 			
-	# Extrae la marca de siguiente página
+	# Extrae la marca de siguiente pÃ¡gina
 	patronvideos = 'Chistes Encontrados(.*?)<b>'
 	matches = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(matches)
@@ -224,7 +224,7 @@ def listacapitulos(item):
 			paginas= matches2[0][0]
 			pagina= scrapedurl[-2:]
 			pagina = pagina.replace('=','')
-			scrapedtitle = "Página " + pagina + " de "+ paginas[1:]
+			scrapedtitle = "PÃ¡gina " + pagina + " de "+ paginas[1:]
 			if pagina=="1":break
 			itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="listacapitulos" , url=scrapedurl , thumbnail="", plot="" , folder=True ) )
 
@@ -233,7 +233,7 @@ def listacapitulos(item):
 def listacompleta(item):
     logger.info("[islapeliculas.py] lista")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -253,7 +253,7 @@ def listacompleta(item):
             scrapedplot = ""
             logger.info(scrapedtitle)
 
-            # Añade al listado
+            # AÃ±ade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
@@ -280,7 +280,7 @@ def resultados(item):
     teclado = teclado.capitalize()
     logger.info("[islapeliculas.py] " + teclado)
     item.url = "http://www.buenaisla.com/modules.php?name=Anime-Online"
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -300,7 +300,7 @@ def resultados(item):
             scrapedplot = ""
             logger.info(scrapedtitle)
 
-            # Añade al listado
+            # AÃ±ade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 		
     return itemlist
