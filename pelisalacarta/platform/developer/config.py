@@ -37,6 +37,10 @@ except:
     translations = ""
 print "Config file path "+TRANSLATION_FILE_PATH
 
+def get_platform():
+    # TODO: Debería ser windows, mac, linux, ...
+    return "developer"
+
 def get_system_platform():
     return "desktop"
     

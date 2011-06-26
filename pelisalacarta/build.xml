@@ -3,6 +3,7 @@
 	<description>pelisalacarta</description>
 
     <property name="version" value="3.1.1"/>
+    <property name="target" value="target"/>
 
 	<!-- init ===================================================================== -->
 	<target name="init" description="Inicializa el timestamp">
@@ -97,28 +98,6 @@
         </copy>
     </target>
 		
-    <target name="copy-boxee">
-        <copy todir="${target}/boxee/info.mimediacenter.pelisalacarta">
-            <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="build.xml"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-                <exclude name="**/parametrizacion*.*"/>
-                <exclude name="resources/images/**"/>
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="default.tbn"/>
-                <exclude name="fanart.jpg"/>
-                <exclude name="icon.png"/>
-                <exclude name="tester.py"/>
-			</fileset>
-        </copy>
-    </target>
-
     <target name="copy-wiimc">
         <copy todir="${target}/wiimc/pelisalacarta">
             <fileset dir=".">
@@ -194,15 +173,76 @@
         <copy file="platform/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
 	</target>
 
-    <!-- package =============================================== -->
-    <target name="package">
+    <!-- clean =============================================== -->
+    <target name="clean" description="Erases target directory">
         <!-- Declara un target comun -->
-        <property name="target" value="target"/>
     	<echo message="target=${target}"/>
-
-    	<!-- Crea los directorios -->
         <delete dir="${target}"/>
+    </target>
+
+    <!-- BOXEE =============================================== -->
+    <target name="copy-boxee" depends="clean" description="Copy Boxee files for packaging">
+        <!-- Create directory -->
         <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
+        
+        <!-- Copy files -->
+        <copy todir="${target}/boxee/info.mimediacenter.pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+                <exclude name="**/parametrizacion*.*"/>
+                <exclude name="resources/images/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="default.tbn"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+                <exclude name="tester.py"/>
+			</fileset>
+        </copy>
+    </target>
+
+    <target name="package-boxee" depends="copy-boxee" description="Builds a package for Boxee">
+    	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
+    </target>
+    
+    <target name="test-boxee" description="Deploys the Boxee app for devel testing">
+
+        <!-- TODO: Use build.properties for make this more generic -->
+        <delete dir="/Users/jesus/Library/Application Support/BOXEE/UserData/plugins/video/info.mimediacenter.pelisalacarta"/>
+        <!-- FIXME: Duplicated from copy-boxee -->
+        
+        <!-- Copy files -->
+        <!-- TODO: Use build.properties for make this more generic -->
+        <copy todir="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+                <exclude name="**/parametrizacion*.*"/>
+                <exclude name="resources/images/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="default.tbn"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+                <exclude name="tester.py"/>
+			</fileset>
+        </copy>
+    </target>
+	
+    <!-- package =============================================== -->
+    <target name="package" depends="clean,package-boxee" description="Builds a package for each platform">
+    	<!-- Crea los directorios -->
         <mkdir dir="${target}/xbmc-addon/plugin.video.pelisalacarta"/>
         <mkdir dir="${target}/xbmc-addon-oficial/plugin.video.pelisalacarta"/>
         <mkdir dir="${target}/xbmc-plugin/pelisalacarta"/>
@@ -213,11 +253,9 @@
         <antcall target="copy-xbmc-addon"/>
         <antcall target="copy-xbmc-addon-oficial"/>
         <antcall target="copy-xbmc-plugin"/>
-        <antcall target="copy-boxee"/>
         <antcall target="copy-wiimc"/>
         <antcall target="copy-plexmediaserver"/>
     	
-    	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
 		<zip destfile="${target}/xbmc-addon/pelisalacarta-xbmc-addon-${version}.zip" basedir="${target}/xbmc-addon"/>
 		<zip destfile="${target}/xbmc-plugin/pelisalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
         <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
@@ -225,7 +263,7 @@
     	
     	<!-- TODO Empaquetar py2exe innosetup en wiimc -->
     </target>
-	
+    
 	<target name="deploy">
 	    <!-- Sube zip al ftp -->
 		<!-- Sube imágenes al ftp -->
