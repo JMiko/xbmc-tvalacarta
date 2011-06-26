@@ -26,9 +26,9 @@
 	<string id="30012">Banner (horitzontal)</string>
  
 	<!-- Cuenta Megavideo -->
-	<string id="30013">Mode premium Megavideo:</string>
-	<string id="30014">Usuari Megavideo:</string>
-	<string id="30015">Password Megavideo:</string>
+	<string id="30013">Mode premium Megavideo/Megaupload:</string>
+	<string id="30014">Usuari:</string>
+	<string id="30015">Password:</string>
     <string id="30031">Calidad de videos (FLV)</string>
     <string id="30032">Calidad Normal (SD)</string>
     <string id="30033">Calidad Alta (HD)(si existe)</string>
