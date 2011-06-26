@@ -276,6 +276,3 @@ def acentos(title):
         title = title.replace("Ã±","ñ")
         title = title.replace("Ãƒâ€œ","Ó")
         return(title)
-        
-        
-        

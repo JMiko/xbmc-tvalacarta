@@ -18,6 +18,8 @@ try:
     from core import library
     from core import xbmctools
 except:
+    for line in sys.exc_info():
+    	logger.error( "%s" % line )
     # En Plex Media server lo anterior no funciona...
     from Code.core import logger
     from Code.core import config
@@ -46,7 +48,7 @@ def peliculas(item):
     logger.info("[cuevana.py] peliculas")
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/?orderby=ano&reverse=true"))
-    itemlist.append( Item(channel=CHANNELNAME, title="M�s Populares"  , action="novedades", url="http://www.cuevana.tv/peliculas/populares/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Más Populares"  , action="novedades", url="http://www.cuevana.tv/peliculas/populares/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Mejor Puntuadas"  , action="novedades", url="http://www.cuevana.tv/peliculas/mejorpuntuadas/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))
 
@@ -95,8 +97,8 @@ def novedades(item):
     <tr class='row2'>
     <td valign='top'><a href='/peliculas/2933/alpha-and-omega/'><img src='/box/2933.jpg' border='0' height='90' /></a></td>
     <td valign='top'><div class='tit'><a href='/peliculas/2933/alpha-and-omega/'>Alpha and Omega</a></div>
-    <div class='font11'>Dos pequeños carrochos de lobo se ven obligados a convivir por determinadas circunstancias.
-    <div class='reparto'><b>Reparto:</b> <a href='/buscar/?q=Animación&cat=actor'>Animación</a></div>
+    <div class='font11'>Dos pequeÃ±os carrochos de lobo se ven obligados a convivir por determinadas circunstancias.
+    <div class='reparto'><b>Reparto:</b> <a href='/buscar/?q=AnimaciÃ³n&cat=actor'>AnimaciÃ³n</a></div>
     </div></td>
     '''
     patronvideos  = "<tr class='row[^<]+"
@@ -115,7 +117,7 @@ def novedades(item):
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
@@ -125,14 +127,14 @@ def novedades(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
 def series(item):
     logger.info("[cuevana.py] series")
     
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -155,7 +157,7 @@ def series(item):
 def temporadas(item):
     logger.info("[cuevana.py] temporadas")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -179,7 +181,7 @@ def temporadas(item):
 def episodios(item):
     logger.info("[cuevana.py] episodios")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -189,8 +191,8 @@ def episodios(item):
     scrapertools.printMatches(matches)
     itemlist = []
     logger.info("[cuevana.py] agregar todos los episodios a la biblioteca")
-    # A�ade "Agregar todos a la librer�a"
-    itemlist.append( Item(channel=CHANNELNAME, action="addlist2Library", title="A�ADIR TODOS LOS EPISODIOS A LA BIBLIOTECA", url=item.url, thumbnail="", show = item.show , folder=True, extra=item.extra, plot="") )
+    # Añade "Agregar todos a la librería"
+    itemlist.append( Item(channel=CHANNELNAME, action="addlist2Library", title="AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA", url=item.url, thumbnail="", show = item.show , folder=True, extra=item.extra, plot="") )
 
     for match in matches:
         code = match[0]
@@ -308,7 +310,7 @@ def searchresults(item,title):
 def listar(item):
     logger.info("[cuevana.py] listar")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
 
     patronvideos  = "<div class='result'>[^<]+"
@@ -328,7 +330,7 @@ def listar(item):
         scrapedthumbnail = urlparse.urljoin("http://www.cuevana.tv/peliculas/",match[3])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
@@ -338,7 +340,7 @@ def listar(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -412,7 +414,7 @@ def strm_detail(item):
 def addlist2Library(item):
     logger.info("[cuevana.py] addlist2Library")
     itemlist = []
-    # Descarga la p�gina
+    # Descarga la página
     data = scrapertools.cachePage(item.url)
     extra = item.extra.split("|")
 
@@ -422,8 +424,8 @@ def addlist2Library(item):
     scrapertools.printMatches(matches)
 
     pDialog = xbmcgui.DialogProgress()
-    ret = pDialog.create('pelisalacarta', 'A�adiendo episodios...')
-    pDialog.update(0, 'A�adiendo episodio...')
+    ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
+    pDialog.update(0, 'Añadiendo episodio...')
     totalepisodes = len(matches)
     logger.info ("[cuevana.py - addlist2Library] Total Episodios:"+str(totalepisodes))
     i = 0
@@ -434,7 +436,7 @@ def addlist2Library(item):
         Serie = extra[0]
         server = "Megaupload"
         i = i + 1
-        pDialog.update(i*100/totalepisodes, 'A�adiendo episodio...',scrapedtitle)
+        pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',scrapedtitle)
         if (pDialog.iscanceled()):
             return
         url = "http://www.cuevana.tv/list_search_info.php?episodio="+match[0]
@@ -451,5 +453,5 @@ def addlist2Library(item):
             logger.info("Error al grabar el archivo "+scrapedtitle)
             errores = errores + 1
     if errores > 0:
-        logger.info ("[cuevana.py - addlist2Library] No se pudo a�adir "+str(errores)+" episodios") 
+        logger.info ("[cuevana.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
     library.update(totalepisodes,errores,nuevos)

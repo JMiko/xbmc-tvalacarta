@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para cinegratis
@@ -6,18 +6,11 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "cinegratis"
 DEBUG = True
@@ -29,12 +22,12 @@ def mainlist(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="PelÌculas - Novedades"            , url="http://www.cinegratis.net/index.php?module=peliculas"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="PelÌculas - Estrenos"             , url="http://www.cinegratis.net/index.php?module=estrenos"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliscat"   , title="PelÌculas - Lista por categorÌas" , url="http://www.cinegratis.net/index.php?module=generos"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisalfa"  , title="PelÌculas - Lista alfabÈtica"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="PelÌculas - Alojadas en Veoh"     , url="http://www.cinegratis.net/index.php?module=servers&varserver=veoh"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="PelÌculas - Alojadas en Megavideo", url="http://www.cinegratis.net/index.php?module=servers&varserver=megavideo"))
+    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Pel√≠culas - Novedades"            , url="http://www.cinegratis.net/index.php?module=peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Pel√≠culas - Estrenos"             , url="http://www.cinegratis.net/index.php?module=estrenos"))
+    itemlist.append( Item(channel=CHANNELNAME, action="peliscat"   , title="Pel√≠culas - Lista por categor√≠as" , url="http://www.cinegratis.net/index.php?module=generos"))
+    itemlist.append( Item(channel=CHANNELNAME, action="pelisalfa"  , title="Pel√≠culas - Lista alfab√©tica"))
+    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Pel√≠culas - Alojadas en Veoh"     , url="http://www.cinegratis.net/index.php?module=servers&varserver=veoh"))
+    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Pel√≠culas - Alojadas en Megavideo", url="http://www.cinegratis.net/index.php?module=servers&varserver=megavideo"))
     itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title="Series - Novedades"               , url="http://www.cinegratis.net/index.php?module=series"))
     itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Series - Todas"                   , url="http://www.cinegratis.net/index.php?module=serieslist"))
     itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title="Dibujos - Novedades"              , url="http://www.cinegratis.net/index.php?module=anime"))
@@ -79,14 +72,14 @@ def pelisalfa(item):
 
     return itemlist
 
-# TODO: La b˙squeda no funciona en canales genÈricos a˙n
+# TODO: La b√∫squeda no funciona en canales gen√©ricos a√∫n
 def search(params,url,category):
     logger.info("[cinegratis.py] search")
 
     from pelisalacarta import buscador
     buscador.listar_busquedas(params,url,category)
 
-# TODO: La b˙squeda no funciona en canales genÈricos a˙n
+# TODO: La b√∫squeda no funciona en canales gen√©ricos a√∫n
 def searchresults(params,tecleado,category):
     logger.info("[cinegratis.py] search")
 
@@ -96,12 +89,12 @@ def searchresults(params,tecleado,category):
     searchUrl = "http://www.cinegratis.net/index.php?module=search&title="+tecleado
     listsimple(params,searchUrl,category)
 
-# TODO: La b˙squeda no funciona en canales genÈricos a˙n
+# TODO: La b√∫squeda no funciona en canales gen√©ricos a√∫n
 def performsearch(texto):
     logger.info("[cinegratis.py] performsearch")
     url = "http://www.cinegratis.net/index.php?module=search&title="+texto
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
 
     # Extrae los items
@@ -122,7 +115,7 @@ def performsearch(texto):
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # A√±ade al listado de XBMC
         resultados.append( [CHANNELNAME , "findvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
@@ -133,10 +126,10 @@ def peliscat(item):
     url = item.url
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="VersiÛn original" , url="http://www.cinegratis.net/index.php?module=search&title=subtitulado"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="VersiÛn latina"   , url="http://www.cinegratis.net/index.php?module=search&title=latino"))
+    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Versi√≥n original" , url="http://www.cinegratis.net/index.php?module=search&title=subtitulado"))
+    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Versi√≥n latina"   , url="http://www.cinegratis.net/index.php?module=search&title=latino"))
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
 
     # Extrae los items
@@ -165,7 +158,7 @@ def listsimple(item):
 
     url = item.url
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
 
     # Extrae los items
@@ -193,7 +186,7 @@ def listvideos(item):
 
     url = item.url
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -217,13 +210,13 @@ def listvideos(item):
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Extrae la marca de siguiente p·gina
+    # Extrae la marca de siguiente p√°gina
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "P·gina siguiente"
+        scrapedtitle = "P√°gina siguiente"
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -236,7 +229,7 @@ def listseries(item):
 
     url = item.url
     
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
 
     # Extrae los items
@@ -257,13 +250,13 @@ def listseries(item):
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Extrae la marca de siguiente p·gina
+    # Extrae la marca de siguiente p√°gina
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "P·gina siguiente"
+        scrapedtitle = "P√°gina siguiente"
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
