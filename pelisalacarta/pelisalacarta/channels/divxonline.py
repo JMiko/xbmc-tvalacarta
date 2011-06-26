@@ -11,7 +11,7 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import anotador
+from core import anotador
 import base64
 import datetime
 
