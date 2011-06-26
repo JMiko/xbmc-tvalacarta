@@ -1,14 +1,12 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta
-# XBMC Launcher (dharma / pre-dharma)
-# http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
+# XBMC Launcher (xbmc / xbmc-dharma / boxee)
+# http://blog.tvalacarta.info/plugin-xbmc/
 #------------------------------------------------------------
 
-import urllib
-import urllib2
-import os
-import sys
+import urllib, urllib2
+import os,sys
 
 from core import logger
 from core import config
@@ -16,50 +14,13 @@ from core import config
 PLUGIN_NAME = "pelisalacarta"
 
 def run():
-    import sys
-    logger.info("[tvalacarta.py] run")
+    logger.info("[launcher.py] run")
     
-    # Verifica si el path de usuario del plugin est· creado
-    if not os.path.exists(config.get_data_path()):
-        logger.debug("[tvalacarta.py] Path de usuario no existe, se crea: "+config.get_data_path())
-        os.mkdir(config.get_data_path())
-
-    # Imprime en el log los par·metros de entrada
-    logger.info("[tvalacarta.py] sys.argv=%s" % str(sys.argv))
+    # Test if all the required directories are created
+    verify_directories_created()
     
-    # Crea el diccionario de parametros
-    params = dict()
-    if len(sys.argv)>=2 and len(sys.argv[2])>0:
-        params = dict(part.split('=') for part in sys.argv[ 2 ][ 1: ].split('&'))
-    logger.info("[tvalacarta.py] params=%s" % str(params))
-    
-    # Extrae la url de la p·gina
-    if (params.has_key("url")):
-        url = urllib.unquote_plus( params.get("url") )
-    else:
-        url=''
-
-    # Extrae la accion
-    if (params.has_key("action")):
-        action = params.get("action")
-    else:
-        action = "selectchannel"
-
-    # Extrae el server
-    if (params.has_key("server")):
-        server = params.get("server")
-    else:
-        server = ""
-
-    # Extrae la categoria
-    if (params.has_key("category")):
-        category = urllib.unquote_plus( params.get("category") )
-    else:
-        if params.has_key("channel"):
-            category = params.get("channel")
-        else:
-            category = ""
-
+    # Extract parameters from sys.argv
+    params, url, action, server, category = extract_parameters()
 
     try:
         # Accion por defecto - elegir canal
@@ -86,7 +47,7 @@ def run():
                 from core import updater
                 updater.update(params)
             except ImportError:
-                logger.info("[pelisalacarta.py] Actualizacion autom·tica desactivada")
+                logger.info("[launcher.py] Actualizacion autom√°tica desactivada")
 
             import channelselector as plugin
             plugin.listchannels(params, url, category)
@@ -99,7 +60,7 @@ def run():
             import channelselector as plugin
             plugin.listchannels(params,url,category)
 
-        # El resto de acciones vienen en el par·metro "action", y el canal en el par·metro "channel"
+        # El resto de acciones vienen en el par√°metro "action", y el canal en el par√°metro "channel"
         else:
             if action=="mainlist" and config.get_setting("updatechannels")=="true":
                 try:
@@ -113,7 +74,7 @@ def run():
                 except:
                     pass
 
-            # La acciÛn puede estar en el core, o ser un canal regular. El buscador es un canal especial que est· en pelisalacarta
+            # La acci√≥n puede estar en el core, o ser un canal regular. El buscador es un canal especial que est√° en pelisalacarta
             regular_channel_path = os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , params.get("channel")+".py" )
             core_channel_path = os.path.join( config.get_runtime_path(), 'core' , params.get("channel")+".py" )
 
@@ -125,7 +86,7 @@ def run():
                 exec "from core import "+params.get("channel")+" as channel"
 
             generico = False
-            # Esto lo he puesto asi porque el buscador puede ser generico o normal, esto estar· asi hasta que todos los canales sean genericos 
+            # Esto lo he puesto asi porque el buscador puede ser generico o normal, esto estar√° asi hasta que todos los canales sean genericos 
             if category == "Buscador_Generico":
                 generico = True
             else:
@@ -172,7 +133,7 @@ def run():
                 item = Item(channel=params.get("channel"), title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle)
 
                 if item.subtitle!="":
-                    logger.info("Descargando subtÌtulos de "+item.subtitle)
+                    logger.info("Descargando subt√≠tulos de "+item.subtitle)
                     from core import downloadtools
                     
                     ficherosubtitulo = os.path.join( config.get_data_path() , "subtitulo.srt" )
@@ -186,7 +147,7 @@ def run():
 
                 from core import xbmctools
                 if action=="play":
-                    # Si el canal tiene una acciÛn "play" tiene prioridad
+                    # Si el canal tiene una acci√≥n "play" tiene prioridad
                     try:
                         itemlist = channel.play(item)
                         if len(itemlist)>0:
@@ -204,9 +165,9 @@ def run():
                         # Intenta ejecutar una posible funcion "findvideos" del canal
                         try:
                             exec "itemlist = channel."+action+"(item)"
-                        # Si no funciona, lanza el mÈtodo genÈrico para detectar vÌdeos
+                        # Si no funciona, lanza el m√©todo gen√©rico para detectar v√≠deos
                         except:
-                            itemlist = findvideos(item)
+                            itemlist = find_videos(item)
 
                     xbmctools.renderItems(itemlist, params, url, category)
 
@@ -227,11 +188,98 @@ def run():
             texto = (config.get_localized_string(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
             ok = ventana_error.ok ("plugin", texto)    
 
-# FunciÛn genÈrica para encontrar vÌdeos en una p·gina
-def findvideos(item):
-    logger.info("[pelisalacarta.py] findvideos")
+# Test if all the required directories are created
+def verify_directories_created():
 
-    # Descarga la p·gina
+    # Force download path if empty
+    download_path = config.get_setting("downloadpath")
+    if download_path=="":
+        download_path = os.path.join( config.get_data_path() , "downloads")
+        config.set_setting("downloadpath" , download_path)
+
+    # Force download list path if empty
+    download_list_path = config.get_setting("downloadlistpath")
+    if download_list_path=="":
+        download_list_path = os.path.join( config.get_data_path() , "downloads" , "list")
+        config.set_setting("downloadlistpath" , download_list_path)
+
+    # Force bookmark path if empty
+    bookmark_path = config.get_setting("bookmarkpath")
+    if bookmark_path=="":
+        bookmark_path = os.path.join( config.get_data_path() , "bookmarks")
+        config.set_setting("bookmarkpath" , bookmark_path)
+
+    # Create data_path if not exists
+    if not os.path.exists(config.get_data_path()):
+        logger.debug("[launcher.py] Creating data_path "+config.get_data_path())
+        os.mkdir(config.get_data_path())
+
+    # Create download_path if not exists
+    if not download_path.lower().startswith("smb") and not os.path.exists(download_path):
+        logger.debug("[launcher.py] Creating download_path "+download_path)
+        os.mkdir(download_path)
+
+    # Create download_list_path if not exists
+    if not download_list_path.lower().startswith("smb") and not os.path.exists(download_list_path):
+        logger.debug("[launcher.py] Creating download_list_path "+download_list_path)
+        os.mkdir(download_list_path)
+
+    # Create bookmark_path if not exists
+    if not bookmark_path.lower().startswith("smb") and not os.path.exists(bookmark_path):
+        logger.debug("[launcher.py] Creating bookmark_path "+bookmark_path)
+        os.mkdir(bookmark_path)
+
+    # Create library_path if not exists
+    if not config.get_library_path().lower().startswith("smb") and not os.path.exists(config.get_library_path()):
+        logger.debug("[launcher.py] Creating library_path "+config.get_library_path())
+        os.mkdir(config.get_library_path())
+
+# Extract parameters from sys.argv
+def extract_parameters():
+
+    #Imprime en el log los par√°metros de entrada
+    logger.info("[launcher.py] sys.argv=%s" % str(sys.argv))
+    
+    # Crea el diccionario de parametros
+    params = dict()
+    if len(sys.argv)>=2 and len(sys.argv[2])>0:
+        params = dict(part.split('=') for part in sys.argv[ 2 ][ 1: ].split('&'))
+    logger.info("[launcher.py] params=%s" % str(params))
+    
+    # Extrae la url de la p√°gina
+    if (params.has_key("url")):
+        url = urllib.unquote_plus( params.get("url") )
+    else:
+        url=''
+
+    # Extrae la accion
+    if (params.has_key("action")):
+        action = params.get("action")
+    else:
+        action = "selectchannel"
+
+    # Extrae el server
+    if (params.has_key("server")):
+        server = params.get("server")
+    else:
+        server = ""
+
+    # Extrae la categoria
+    if (params.has_key("category")):
+        category = urllib.unquote_plus( params.get("category") )
+    else:
+        if params.has_key("channel"):
+            category = params.get("channel")
+        else:
+            category = ""
+            
+    return params, url, action, server, category
+
+# Funci√≥n gen√©rica para encontrar v√≠deos en una p√°gina
+def find_videos(item):
+    logger.info("[launcher.py] findvideos")
+
+    # Descarga la p√°gina
     from core import scrapertools
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
