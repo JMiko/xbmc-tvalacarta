@@ -1,25 +1,23 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Utilidades para detectar vídeos de los diferentes conectores
+# Utilidades para detectar vÃ­deos de los diferentes conectores
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import re
 
-try:
-    from core import scrapertools
-    from core import config
-    from core import logger
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
+from core import scrapertools
+from core import config
+from core import logger
 
 def findvideos(data):
     logger.info("[servertools.py] findvideos")
     encontrados = set()
     devuelve = []
+    
+    # Megaupload
+    import megaupload
+    devuelve.extend(megaupload.find_videos(data))
     
     #Megavideo con partes para cinetube
     logger.info ("0) Megavideo con partes para cinetube")
@@ -36,7 +34,7 @@ def findvideos(data):
         else:
             logger.info(" url duplicada="+url)
 
-    # Megavideo - Vídeos con título
+    # Megavideo - VÃ­deos con tÃ­tulo
     logger.info("1) Megavideo con titulo...")
     patronvideos  = '<div align="center">([^<]+)<.*?<param name="movie" value="http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -53,7 +51,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Megavideo - Vídeos con título
+    # Megavideo - VÃ­deos con tÃ­tulo
     logger.info("1b) Megavideo con titulo...")
     patronvideos  = '<a href\="http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})".*?>([^<]+)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -106,56 +104,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Megaupload con título
-    logger.info("1k1) Megaupload...")
-    patronvideos  = '<a.*?href="http://www.megaupload.com/\?d=([A-Z0-9a-z]{8})".*?>(.*?)</a>'
-    matches = re.compile(patronvideos).findall(data)
-    for match in matches:
-        titulo = scrapertools.htmlclean(match[1].strip())+" - [Megaupload]"
-        url = match[0]
-        if url not in encontrados:
-            logger.info("  titulo="+titulo)
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-    
-    #2/12/2010 Megaupload
-    logger.info("1k) Megaupload (...")
-    patronvideos  = 'http\://www.megaupload.com/(?:es/)?\?.*?d\=([A-Z0-9a-z]{8})(?:[^>]*>([^<]+)</a>)?'
-    matches = re.compile(patronvideos).findall(data)
-    for match in matches:
-        if match[1]<>"":
-            titulo = match[1].strip()+" - [Megaupload]"
-        else:
-            titulo = "[Megaupload]"
-        url = match[0]
-        if url not in encontrados:
-            logger.info("  titulo="+titulo)
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-    
-    # Código especial cinetube
-    #xrxa("BLYT2ZC9=d?/moc.daolpuagem.www//:ptth")
-    logger.info("1k) Megaupload reverse")
-    patronvideos  = 'xrxa\("([A-Z0-9a-z]{8})=d\?/moc.daolpuagem.www//\:ptth"\)'
-    matches = re.compile(patronvideos).findall(data)
-    for match in matches:
-        titulo = "[Megaupload]"
-        url = match[::-1]
-        if url not in encontrados:
-            logger.info("  titulo="+titulo)
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    # Megavideo - Vídeos sin título
+    # Megavideo - VÃ­deos sin tÃ­tulo
     logger.info("2) Megavideo sin titulo...")
     patronvideos  = '<param name="movie" value="http://wwwstatic.megavideo.com/mv_player.swf\?v=([^"]+)">'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -174,7 +123,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
 
-    # Megavideo - Vídeos sin título
+    # Megavideo - VÃ­deos sin tÃ­tulo
     logger.info("3) Megavideo formato islapeliculas") #http://www.megavideo.com/mv_player.swf?image=imagenes/mBa.jpg&amp;v=RV4GBJYS
     patronvideos  = "www.megavideo.com.*?mv_player.swf.*?v(?:=|%3D)(\w{8})"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -190,8 +139,8 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
 
-    # Vreel - Vídeos con título
-    logger.info( "3) Vreel con título...")
+    # Vreel - VÃ­deos con tÃ­tulo
+    logger.info( "3) Vreel con tÃ­tulo...")
     patronvideos  = '<div align="center"><b>([^<]+)</b>.*?<a href\="(http://beta.vreel.net[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -207,7 +156,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Vreel - Vídeos con título
+    # Vreel - VÃ­deos con tÃ­tulo
     logger.info("4) Vreel con titulo...")
     patronvideos  = '<div align="center">([^<]+)<.*?<a href\="(http://beta.vreel.net[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -225,7 +174,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
     # STAGEVU
-    logger.info("7) Stagevu sin título...")
+    logger.info("7) Stagevu sin tÃ­tulo...")
     patronvideos  = '"(http://stagevu.com[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -240,7 +189,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
     # TU.TV
-    logger.info("8) Tu.tv sin título...")
+    logger.info("8) Tu.tv sin tÃ­tulo...")
     patronvideos  = '<param name="movie" value="(http://tu.tv[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -255,7 +204,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
 
     # TU.TV
-    logger.info("9) Tu.tv sin título...")
+    logger.info("9) Tu.tv sin tÃ­tulo...")
     #<param name="movie" value="http://www.tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aWRlb3Njb2RpL24vYS9uYXppcy11bi1hdmlzby1kZS1sYS1oaXN0b3JpYS0xLTYtbGEtbC5mbHY=&xtp=669149_VIDEO"
     patronvideos  = '<param name="movie" value="(http://www.tu.tv[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -270,7 +219,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    logger.info("9b) Tu.tv sin título...")
+    logger.info("9b) Tu.tv sin tÃ­tulo...")
     #<embed src="http://tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aW
     patronvideos  = '<embed src="(http://tu.tv/[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -285,7 +234,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Megavideo - Vídeos sin título
+    # Megavideo - VÃ­deos sin tÃ­tulo
     logger.info("10 ) Megavideo sin titulo...")
 
     patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
@@ -301,7 +250,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Megavideo - Vídeos sin título
+    # Megavideo - VÃ­deos sin tÃ­tulo
     logger.info("11) Megavideo sin titulo...")
     patronvideos  = '"http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -323,7 +272,7 @@ def findvideos(data):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "Ver el vídeo en Stagevu"
+        titulo = "Ver el vÃ­deo en Stagevu"
         url = match
         if url not in encontrados:
             logger.info("  url="+url)
@@ -333,7 +282,7 @@ def findvideos(data):
             logger.info("  url duplicada="+url)
     '''
         
-    # Vreel - Vídeos sin título
+    # Vreel - VÃ­deos sin tÃ­tulo
     logger.info("13) Vreel sin titulo...")
     patronvideos  = '(http://beta.vreel.net[^<]+)<'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -348,7 +297,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Megavideo - Vídeos con título
+    # Megavideo - VÃ­deos con tÃ­tulo
     logger.info("14) Megavideo con titulo...")
     patronvideos  = '<a href="http://www.megavideo.com/\?v\=([^"]+)".*?>(.*?)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -365,7 +314,7 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # Megavideo - Vídeos con título
+    # Megavideo - VÃ­deos con tÃ­tulo
     logger.info("14b) Megavideo con titulo...")
     patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9]{8})" />'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -432,20 +381,6 @@ def findvideos(data):
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'Megavideo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Megaupload... formato megavideo con d=XXXXXXX")
-    patronvideos  = 'http://www.megavideo.com/\?d\=([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Megavideo]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -631,7 +566,7 @@ def findvideos(data):
             devuelve.append( [ titulo , url , 'facebook' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url)		
+            logger.info("  url duplicada="+url)        
 
     #http://www.4shared.com/embed/392975628/ff297d3f
     logger.info("0) 4shared...")
@@ -820,7 +755,7 @@ def findvideos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-			
+            
     logger.info("0) Videos animeid...") #http%3A%2F%2Fmangaid.com%2Ff.php%3Fh3eqiGdkh3akY2GaZJ6KpqyDaWmJ%23.mp4
     patronvideos  = "file=http.*?mangaid.com(.*?)&amp;backcolor="
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -835,7 +770,7 @@ def findvideos(data):
             devuelve.append( [ titulo , url , 'directo' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url)	
+            logger.info("  url duplicada="+url)    
             
     return devuelve
     
@@ -877,7 +812,7 @@ def findurl(code,server):
 def getmegavideolow(code, password=None):
     import megavideo
     if password is not None:
-	    return megavideo.getlowurl(code,password)
+        return megavideo.getlowurl(code,password)
     else:
         return megavideo.getlowurl(code,password)
 
@@ -885,16 +820,19 @@ def getmegavideohigh(code):
     import megavideo
     return megavideo.gethighurl(code)
 
-def getmegauploadhigh(code, password=None):
+def getmegauploadhigh(page_url, video_password=""):
+    logger.info("getmegauploadhigh "+page_url)
     import megaupload
-    if password is not None:
-	    return megaupload.gethighurl(code,password)
+    if config.get_setting("megavideopremium")=="true":
+        logger.info("modo premium")
+        return megaupload.get_video_url( page_url , config.get_setting("megavideouser") , config.get_setting("megavideopassword") , video_password )
     else:
-        return megaupload.gethighurl(code)
-	
+        logger.info("modo no premium")
+        return megaupload.get_video_url( page_url , "" , "" , video_password )
+
 def getmegauploadlow(code, password=None):
     import megaupload
     if password is not None:
-	    return megaupload.getlowurl(code,password)
+        return megaupload.getlowurl(code,password)
     else:
         return megaupload.getlowurl(code)
