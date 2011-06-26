@@ -11,13 +11,16 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] boxee config 3.0.1"
+print "[config.py] boxee config 3.1.1"
 
 import os,re
 import xbmc
 import mc
 
 PLUGIN_NAME = "pelisalacarta"
+
+def get_version():
+    return "3.1.1"
 
 def get_system_platform():
     return "boxee"
@@ -59,7 +62,7 @@ def get_localized_string(code):
         return "%d" % code
     
 def get_library_path():
-    return ""
+    return os.path.join(get_data_path(),"library")
 
 def get_temp_file(filename):
     return os.path.join( mc.GetTempDir(), filename )
@@ -73,9 +76,6 @@ def get_data_path():
 
 def get_boxee_plugin_path():
     return os.path.abspath(os.path.join(get_runtime_path(),"..","..","plugins","video","info.mimediacenter."+PLUGIN_NAME))
-
-def get_version():
-    return "3.0.1"
 
 # Literales
 TRANSLATION_FILE_PATH = os.path.join(get_runtime_path(),"resources","language","Spanish","strings.xml")
