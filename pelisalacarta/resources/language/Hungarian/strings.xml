@@ -27,9 +27,9 @@
 	<string id="30012">Hírdetéssáv (vízszintes)</string>
 
 	<!-- Megavideo account -->
-	<string id="30013">Megavideo prémium mód:</string>
-	<string id="30014">Megavideo felhasználó:</string>
-	<string id="30015">Megavideo jelszó:</string>
+	<string id="30013">Megavideo/Megaupload prémium mód:</string>
+	<string id="30014">Felhasználó:</string>
+	<string id="30015">Jelszó:</string>
 
 	<!-- Other -->
 	<string id="30017">Letöltési hely:</string>
