@@ -23,6 +23,10 @@ def get_video_url( page_url , user="" , password="" , video_password="" ):
         logger.info("[megaupload.py] get_video_url( page_url='%s' , user='%s' , password='%s')" % (page_url , user , password) )
     else:
         logger.info("[megaupload.py] get_video_url(page_url='%s')" % page_url)
+    
+    # Si sólo viene el código, se convierte a URL completa
+    if len(page_url)==8:
+        page_url = "http://www.megaupload.com/?d="+page_url
 
     # page_url es del tipo "http://www.megaupload.com/?d="+code
     # Si el usuario es premium utiliza el método antiguo
@@ -147,7 +151,7 @@ def get_free_video_url(page_url , tipo_usuario , video_password=None):
         
         # Vuelve a descargar la página con password
         if teclado is not None:
-            data = scrapertools.cache_page(page_url, post="filepassword="+teclado)
+            data = scrapertools.cache_page(page_url, post="filepassword="+teclado,modo_cache=scrapertools.CACHE_NUNCA)
         else:
             return None
 
@@ -236,6 +240,11 @@ def password_mega(password):
 # Convierte el código de megaupload a megavideo
 def convertcode(megaupload_page_url):
     logger.info("[megaupload.py] convertcode "+megaupload_page_url)
+
+    # Si sólo viene el código, convierte a URL completa
+    if len(megaupload_page_url)==8:
+        megaupload_page_url = "http://www.megaupload.com/?d="+megaupload_page_url
+
     # Descarga la página de megavideo pasándole el código de megaupload
     url = megaupload_page_url.replace("megaupload","megavideo")
     data = scrapertools.cache_page(url,modo_cache=scrapertools.CACHE_NUNCA)

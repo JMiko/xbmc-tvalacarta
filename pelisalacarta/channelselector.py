@@ -41,16 +41,17 @@ def mainlist(params,url,category):
     logger.info("[channelselector.py] mainlist")
 
     # Verifica actualizaciones solo en el primer nivel
-    try:
-        from core import updater
-    except ImportError:
-        logger.info("[channelselector.py] No disponible modulo actualizaciones")
-    else:
-        if config.get_setting("updatecheck2") == "true":
-            logger.info("[channelselector.py] Verificar actualizaciones activado")
-            updater.checkforupdates()
+    if config.get_platform()!="boxee":
+        try:
+            from core import updater
+        except ImportError:
+            logger.info("[channelselector.py] No disponible modulo actualizaciones")
         else:
-            logger.info("[channelselector.py] Verificar actualizaciones desactivado")
+            if config.get_setting("updatecheck2") == "true":
+                logger.info("[channelselector.py] Verificar actualizaciones activado")
+                updater.checkforupdates()
+            else:
+                logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
     itemlist = getmainlist()
     for elemento in itemlist:
