@@ -32,8 +32,8 @@ def getmainlist():
         itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargados" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
     
-    if config.get_library_support():
-        itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
+    #if config.get_library_support():
+    itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
     return itemlist
 
 # TODO: (3.1) Pasar el código específico de XBMC al laucher
@@ -154,11 +154,12 @@ def channels_history_list():
 def channels_list():
     itemlist = []
 
-    itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES" , category="A" , type="generic"  ))
     itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES" , category="A" , type="xbmc"  ))
-    itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES" , category="F,S" , type="generic" ))	
+    itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES" , category="A" , type="generic"  ))
+    itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES" , category="F,S" , type="xbmc" ))
     itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""   , category="F,S,D,A" , type="wiimc"  ))
     itemlist.append( Item( title="Buena Isla"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" ))
+
     itemlist.append( Item( title="Capitan Cinema"        , channel="capitancinema"        , language="ES" , category="F" , type="generic" ))
     itemlist.append( Item( title="CastTV"                , channel="casttv"               , language="ES,EN" , category="S" , type="xbmc"  ))
     itemlist.append( Item( title="Cine-Adicto"           , channel="cineadicto"           , language="ES" , category="F,D" , type="xbmc"  ))
@@ -167,7 +168,7 @@ def channels_list():
     itemlist.append( Item( title="Cineblog01"            , channel="cineblog01"           , language="IT" , category="F,S,A" , type="xbmc"  ))
     itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES" , category="F,S" , type="generic"  ))
     itemlist.append( Item( title="DeLaTV"                , channel="delatv"               , language="ES" , category="F" , type="xbmc"  ))
-    itemlist.append( Item( title="DeLaTV Series"         , channel="bancodeseries"        , language="ES" , category="S" , type="xbmc"  ))
+    #itemlist.append( Item( title="DeLaTV Series"         , channel="bancodeseries"        , language="ES" , category="S" , type="xbmc"  ))
     itemlist.append( Item( title="Descarga Cine Clásico" , channel="descargacineclasico"  , language="ES" , category="F,S" , type="xbmc"  ))
     itemlist.append( Item( title="Descargapelis"         , channel="descargapelis"        , language="ES" , category="F" , type="xbmc"  ))
     itemlist.append( Item( title="dibujosanimadosgratis" , channel="dibujosanimadosgratis", language="ES" , category="A" , type="xbmc"  ))
