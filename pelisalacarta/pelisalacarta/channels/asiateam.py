@@ -25,7 +25,7 @@ if not os.path.exists(SUB_PATH):
 SUBTEMP_PATH = xbmc.translatePath( os.path.join( config.get_data_path() , 'subtitulo.srt' ) )
 
 def isGeneric():
-    return True
+    return False
 
 def mainlist(item):
     logger.info("[asiateam.py] mainlist")
