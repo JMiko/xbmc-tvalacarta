@@ -42,7 +42,7 @@ def mainlist(params,url,category):
     #xbmctools.addnewfolder( CHANNELNAME , "DocuSeries" , category , "Documentales - Series Disponibles" ,"http://peliculasonlineflv.wordpress.com/","","")
     xbmctools.addnewfolder( CHANNELNAME , "DocuTag"    , category , "Peliculas - Tag" ,"http://peliculasonlineflv.org/","","")
     xbmctools.addnewfolder( CHANNELNAME , "DocuARCHIVO", category , "Peliculas - Archivo" ,"http://peliculasonlineflv.org/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
+    xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar..."                           ,"","","")
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
