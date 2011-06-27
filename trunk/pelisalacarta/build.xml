@@ -203,6 +203,8 @@
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
                 <exclude name="tester.py"/>
+                <exclude name="addon.xml"/>
+                <exclude name="changelog.txt"/>
 			</fileset>
         </copy>
     </target>

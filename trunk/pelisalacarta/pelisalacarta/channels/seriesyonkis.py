@@ -461,6 +461,7 @@ def getlist(item):
 
 def detail(params,url,category):
     logger.info("[seriesyonkis.py] detail")
+    logger.info("[seriesyonkis.py] detail url="+url)
 
     title = urllib.unquote_plus( params.get("title") )
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -471,14 +472,17 @@ def detail(params,url,category):
     # ------------------------------------------------------------------------------------
     #server = "Megavideo"
     server,url = scrapvideoURL(url) 
+    logger.info("[seriesyonkis.py] detail url="+url)
    
     if (":" in url):
         match = url.split(":")
-        url = choiceOnePart(match)
-   
+        if match[0]!="http":
+            url = choiceOnePart(match)
+    logger.info("[seriesyonkis.py] detail url="+url)
+
     if url == "":return
    
-    logger.info("[seriesyonkis - detail] url="+url)
+    logger.info("[seriesyonkis.py] url="+url)
    
     xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot,Serie=Serie)
     # ------------------------------------------------------------------------------------
@@ -618,6 +622,7 @@ def strm_detail (params,url,category):
  
 
 def scrapvideoURL(urlSY):
+    logger.info("[seriesyonkis.py] scrapvideoURL")
     data = scrapertools.cachePage(urlSY)
     patronvideos  = 'href="http://www.seriesyonkis.com/go/(mv)\/([^"]+)".*?alt="([^"]+)".*?'
     patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
@@ -692,6 +697,7 @@ def scrapvideoURL(urlSY):
         
         
 def choiceOne(matches):
+    logger.info("[seriesyonkis.py] choiceOne")
     opciones = []
     IDlist = []
     servlist = []
@@ -788,6 +794,7 @@ def choiceOne(matches):
     return SERVER[servlist[seleccion]],id
 
 def choiceOnePart(matches):
+    logger.info("[seriesyonkis.py] choiceOnePart")
     opciones = []
     Nro = 0
     for codigo in matches:
@@ -802,9 +809,8 @@ def choiceOnePart(matches):
     return id
     
 def getId(url):
+    logger.info("[seriesyonkis.py] getId")
 
-
-    
     #print url
     try:
         req = urllib2.Request(url)

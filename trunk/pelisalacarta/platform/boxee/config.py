@@ -24,7 +24,7 @@ def get_version():
 
 def get_system_platform():
     return "boxee"
-    
+
 def open_settings():
     import xbmcplugin
     import sys

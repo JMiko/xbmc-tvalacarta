@@ -533,7 +533,7 @@ def play2(item):
     if "|" in url:
         
         logger.info("1link con dos partes")
-        itemPartes = Item (title=title, url=url, server=servidor, action="play",folder=False)
+        itemPartes = Item (title="", url=url, server=servidor, action="play",folder=False)
         opciones = choiceOnePart(itemPartes, opciones)
         
     else:
