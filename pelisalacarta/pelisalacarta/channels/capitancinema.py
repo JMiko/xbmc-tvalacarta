@@ -7,18 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "capitancinema"
 DEBUG = True
@@ -28,64 +21,115 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[capitancinema.py] mainlist")
-
-    itemlist=[]
-    itemlist.append( Item(channel=CHANNELNAME, action="novedades" , title="Películas - Novedades" , url="http://www.capitancinema.com/peliculas-online-novedades.htm"))
-
-    return itemlist
-
-def novedades(item):
-    logger.info("[capitancinema.py] novedades")
+    itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.cachePage("http://www.capitancinema.com/foro/")
 
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<td width="23\%"><a href="([^"]+)"[^>]+><img style="[^"]+" src="([^"]+)" border="0" alt="([^"]+)"[^>]+></a></td>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    # Extrae los títulos de los subforos
+    '''
+    <div class="forabg">
+    <div class="inner"><span class="corners-top"><span></span></span>
+    <ul class="topiclist">
+    <li class="header">
+    <dl class="icon">
+    <dt><a href="http://www.capitancinema.com/foro/descargas-series/">Series TV en Descarga Directa</a></dt>
+    '''
+    patron  = '<div class="forabg">[^<]+'
+    patron += '<div class="inner"><span class="corners-top"><span></span></span>[^<]+'
+    patron += '<ul class="topiclist">[^<]+'
+    patron += '<li class="header">[^<]+'
+    patron += '<dl class="icon">[^<]+'
+    patron += '<dt><a href="([^"]+)">([^<]+)</a></dt>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist=[]
     for match in matches:
         # Atributos
-        scrapedtitle = match[2]
-        scrapedtitle = scrapedtitle.replace("&quot;","")
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
+        scrapedtitle = match[1]
+        scrapedurl = match[0]
+        scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="mirrors", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="subforos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
-def mirrors(item):
-    logger.info("[capitancinema.py] mirrors")
-
-    title = item.title
-    thumbnail = item.thumbnail
-    plot = item.plot
+def subforos(item):
+    logger.info("[capitancinema.py] subforos")
+    itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    patronvideos  = '<li><strong>DISPONIBLE EN EL FORO</strong>[^<]+<a href="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    itemlist = []
-    if len(matches)>0:
-        url = matches[0]
-        data = scrapertools.cachePage(url)
 
-        # ------------------------------------------------------------------------------------
-        # Busca los enlaces a los videos
-        # ------------------------------------------------------------------------------------
-        listavideos = servertools.findvideos(data)
+    # De la página del foro, extrae primero los subforos
+    '''
+    <div class="forabg">
+    <div class="inner"><span class="corners-top"><span></span></span>
+    <ul class="topiclist">
+    <li class="header">
+    <dl class="icon">
+    <dt>Foro</dt>
+    '''
+    patron  = '<div class="forabg">[^<]+'
+    patron += '<div class="inner"><span class="corners-top"><span></span></span>[^<]+'
+    patron += '<ul class="topiclist">[^<]+'
+    patron += '<li class="header">[^<]+'
+    patron += '<dl class="icon">[^<]+'
+    patron += '<dt>Foro</dt>(.*?)</div>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #scrapertools.printMatches(matches)
+    
+    data2 = matches[0]
+    patron  = '<li class="row">[^<]+'
+    patron += '<dl[^>]+>[^<]+'
+    patron += '<dt[^>]+>[^<]+'
+    patron += '<a href="([^"]+)" class="forumtitle">([^<]+)</a><br />'
+    matches = re.compile(patron,re.DOTALL).findall(data2)
 
-        for video in listavideos:
-            scrapedtitle = title.strip() + " - " + video[0]
-            scrapedurl = video[1]
-            server = video[2]
-            
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+    for match in matches:
+        # Atributos
+        scrapedtitle = "["+match[1]+"]"
+        scrapedurl = match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=CHANNELNAME, action="temas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    # De la página del foro, extrae ahora las entradas directas a los temas
+    itemlist.extend(temas(item))
+    return itemlist
+
+def temas(item):
+    logger.info("[capitancinema.py] temas")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    # Extrae las entradas (carpetas)
+    '''
+    <li class="row bg2">
+    <dl class="icon" style="background-image: url(http://www.capitancinema.com/foro/styles/buziness_board/imageset/topic_read.png); background-repeat: no-repeat;">
+    <dt title="No hay nuevos mensajes"><a href="http://www.capitancinema.com/foro/brrip/red-t4370.html" class="topictitle">Red [1080p AC3 2010][Accion]</a>
+    '''
+    patron  = '<li class="row bg.">[^<]+'
+    patron += '<dl[^>]+>[^<]+'
+    patron += '<dt[^>]+><a href="([^"]+)" class="topictitle">([^<]+)</a>[^<]+'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    
+    itemlist=[]
+    for match in matches:
+        # Atributos
+        scrapedtitle = match[1]
+        scrapedurl = match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
