@@ -6,27 +6,13 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os, sys
-import xbmcgui
-import xbmc
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-    from core import library
-    from core import xbmctools
-except:
-    for line in sys.exc_info():
-    	logger.error( "%s" % line )
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
-    from Code.core import library
-    from Code.core import xbmctools
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
+from core import library
 
 CHANNELNAME = "cuevana"
 DEBUG = True
@@ -88,8 +74,11 @@ def listadoAlfabetico(item):
 
 def novedades(item):
     if (DEBUG): logger.info("[cuevana.py] novedades login")
-    p = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
-    data = scrapertools.downloadpage("http://www.cuevana.tv/login_get.php",p)
+    try:
+        p = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
+        data = scrapertools.downloadpage("http://www.cuevana.tv/login_get.php",p)
+    except:
+        pass
     data = scrapertools.downloadpagewithcookies(item.url)
 
     # Extrae las entradas
@@ -117,7 +106,7 @@ def novedades(item):
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÃ±ade al listado de XBMC
+        # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
@@ -134,7 +123,7 @@ def novedades(item):
 def series(item):
     logger.info("[cuevana.py] series")
     
-    # Descarga la pÃ¡gina
+    # Descarga la pagina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -157,7 +146,7 @@ def series(item):
 def temporadas(item):
     logger.info("[cuevana.py] temporadas")
 
-    # Descarga la pÃ¡gina
+    # Descarga la pagina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -181,7 +170,7 @@ def temporadas(item):
 def episodios(item):
     logger.info("[cuevana.py] episodios")
 
-    # Descarga la pÃ¡gina
+    # Descarga la pagina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -191,8 +180,10 @@ def episodios(item):
     scrapertools.printMatches(matches)
     itemlist = []
     logger.info("[cuevana.py] agregar todos los episodios a la biblioteca")
+    
     # Añade "Agregar todos a la librería"
-    itemlist.append( Item(channel=CHANNELNAME, action="addlist2Library", title="AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA", url=item.url, thumbnail="", show = item.show , folder=True, extra=item.extra, plot="") )
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        itemlist.append( Item(channel=CHANNELNAME, action="addlist2Library", title="AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA", url=item.url, thumbnail="", show = item.show , folder=True, extra=item.extra, plot="") )
 
     for match in matches:
         code = match[0]
@@ -246,9 +237,9 @@ def findvideos(item):
 
     # Subtitulos
     if serieOpelicula:
-	    suburl = "http://www.cuevana.tv/files/s/sub/"+code+"_ES.srt"
+        suburl = "http://www.cuevana.tv/files/s/sub/"+code+"_ES.srt"
     else:
-            suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
+        suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
     logger.info("suburl="+suburl)
     
     # Elimina el archivo subtitulo.srt de alguna reproduccion anterior
@@ -257,7 +248,7 @@ def findvideos(item):
         try:
           os.remove(ficherosubtitulo)
         except IOError:
-          xbmc.output("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
+          logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
           raise
 
     listavideos = servertools.findvideos(data)
@@ -282,21 +273,21 @@ def search(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Director"     , action="search2"))
     
     return itemlist
-	
+
 def search2(item):
-	logger.info("[cuevana.py] search2")
-    
-	if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-		from pelisalacarta import buscador
-		texto = buscador.teclado()
-		texto = texto.replace(' ','+')
-		item.extra = texto
-		title= item.title
-		title = title.lower()
+    logger.info("[cuevana.py] search2")
 
-	itemlist = searchresults(item,title)
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        from pelisalacarta import buscador
+        texto = buscador.teclado()
+        texto = texto.replace(' ','+')
+        item.extra = texto
+        title= item.title
+        title = title.lower()
 
-	return itemlist
+    itemlist = searchresults(item,title)
+
+    return itemlist
     
 def searchresults(item,title):
     logger.info("[cuevana.py] searchresults")
@@ -310,7 +301,7 @@ def searchresults(item,title):
 def listar(item):
     logger.info("[cuevana.py] listar")
 
-    # Descarga la pÃ¡gina
+    # Descarga la pagina
     data = scrapertools.cachePage(item.url)
 
     patronvideos  = "<div class='result'>[^<]+"
@@ -330,7 +321,7 @@ def listar(item):
         scrapedthumbnail = urlparse.urljoin("http://www.cuevana.tv/peliculas/",match[3])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÃ±ade al listado de XBMC
+        # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
@@ -340,7 +331,7 @@ def listar(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 

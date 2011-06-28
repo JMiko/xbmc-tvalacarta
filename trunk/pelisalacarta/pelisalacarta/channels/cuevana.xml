@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>4</tag>
-	<date>19/06/2011</date>
-	<changes>Se cambio el orden de las peliculas novedades para que muestre primero las del 2011</changes>
+	<tag>5</tag>
+	<date>28/06/2011</date>
+	<changes>Vuelve a ser genérico</changes>
 </version>
