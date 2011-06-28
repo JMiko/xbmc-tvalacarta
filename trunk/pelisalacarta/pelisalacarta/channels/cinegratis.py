@@ -26,8 +26,6 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Películas - Estrenos"             , url="http://www.cinegratis.net/index.php?module=estrenos"))
     itemlist.append( Item(channel=CHANNELNAME, action="peliscat"   , title="Películas - Lista por categorías" , url="http://www.cinegratis.net/index.php?module=generos"))
     itemlist.append( Item(channel=CHANNELNAME, action="pelisalfa"  , title="Películas - Lista alfabética"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Películas - Alojadas en Veoh"     , url="http://www.cinegratis.net/index.php?module=servers&varserver=veoh"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Películas - Alojadas en Megavideo", url="http://www.cinegratis.net/index.php?module=servers&varserver=megavideo"))
     itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title="Series - Novedades"               , url="http://www.cinegratis.net/index.php?module=series"))
     itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Series - Todas"                   , url="http://www.cinegratis.net/index.php?module=serieslist"))
     itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title="Dibujos - Novedades"              , url="http://www.cinegratis.net/index.php?module=anime"))
