@@ -227,8 +227,10 @@ def listmirrors(params,url,category):
                 elif matches2[0][0] == "flash":
                     scrapedurl = matches2[0][1]
                     server = "Megavideo"
-                    scrapedtitle = scrapedtitle+" - %s" %match[1]
-                    scrapedtitle = scrapedtitle.replace("&ntilde;","ñ")
+                    scrapedtitle = scrapedtitle+" - %s" % match[1]
+                    scrapedtitle = downloadtools.limpia_nombre_excepto_1(scrapedtitle)
+                    #scrapedtitle = unicode( scrapedtitle , "utf-8" , errors='ignore').encode("utf-8",errors="ignore")
+                    scrapedtitle = scrapedtitle.replace("&ntilde","ñ")
                     xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
             elif "vk.php" in match[0].strip():
                 scrapedurl = "http://delatv.com/modulos/embed/vkontakteX.php?%s" %match[0].split("?")[1]

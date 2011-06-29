@@ -4,25 +4,17 @@
 # Canal para bancodeseries
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+# AVISO: El sitio web de este canal ha desaparecido ¿?
 import urlparse,urllib2,urllib,re
 import os
 import sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-    from servers import vk
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
-    from Code.servers import servertools
-    from Code.servers import vk
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
+from servers import vk
 
 CHANNELNAME = "bancodeseries"
 DEBUG = True
@@ -127,7 +119,8 @@ def listcapitulos(item):
     logger.info("[bancodeseries.py] listcapitulos")
 
     itemlist = []
-    thumbnail = item.thumbnail
+    thumbnail = item.thumbnail
+
     # Extrae el argumento
     data = scrapertools.cachePage(item.url)
     patron = '<div class="sinopsis">.*?<p><p>(.*?)</p>'
@@ -151,7 +144,8 @@ def listcapitulos(item):
     patron += '<h2><a class="title-capitulo">([^<]+)</a></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    for match in matches:
+
+    for match in matches:
         # Atributos
         scrapedtitle = match[1]
         #http://bancodeseries.com/capitulo.php?action=load_capitulo&id=Capitulo-1&post_id=1078&_=1285004415408
