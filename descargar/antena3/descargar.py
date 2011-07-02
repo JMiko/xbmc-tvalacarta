@@ -2,6 +2,8 @@
 from Tkinter import *
 import re
 
+from core import config
+
 class MyDialog:
 
     def __init__(self, parent):
@@ -21,14 +23,14 @@ class MyDialog:
         self.e2.config(width="75")
 
         import os
-        confpath = os.path.join( os.path.expanduser('~') , "descargar-antena3.conf" )
+        confpath = os.path.join( config.get_data_path() , "descargar-antena3.conf" )
         if os.path.exists( confpath ):
             print "Leyendo ruta anterior "+confpath
             fichero = open(confpath,"r")
             ruta = fichero.read()
             fichero.close()
         else:
-            ruta=os.path.expanduser('~')
+            ruta=config.get_data_path()
 
         self.e2.insert(0, ruta)
         self.e2.pack(padx=5)
@@ -44,7 +46,7 @@ class MyDialog:
         print "Descargar en", output
 
         import os
-        confpath = os.path.join( os.path.expanduser('~') , "descargar-antena3.conf" )
+        confpath = os.path.join( config.get_data_path() , "descargar-antena3.conf" )
         try:
             fichero = open(confpath,"w")
             fichero.write(output)
@@ -55,6 +57,9 @@ class MyDialog:
         
         # Cierra el gui
         self.top.destroy()
+
+        # Desactiva la cache
+        config.set_setting("cache.mode","2")
 
         # Obtiene el código del vídeo
         from servers import antena3
@@ -69,6 +74,7 @@ class MyDialog:
             contador = contador + 1
 
             # Invoca a rtmpdump
+            print "Comando: "+'./rtmpdump.exe -r "'+item.url+'" -o "'+salida+'"'
             import shlex, subprocess
             args = shlex.split('./rtmpdump.exe -r "'+item.url+'" -o "'+salida+'"')
             p = subprocess.call(args) # Success!
