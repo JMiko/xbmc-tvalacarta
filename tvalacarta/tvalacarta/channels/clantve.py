@@ -20,7 +20,6 @@ logger.info("[clantv.py] init")
 
 DEBUG = True
 CHANNELNAME = "clantve"
-MODO_CACHE=0
 
 def isGeneric():
     return True
@@ -36,7 +35,7 @@ def programas(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cache_page(item.url,modo_cache=MODO_CACHE)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae los programas
     patron  = '<div class="informacion-serie">[^<]+'
@@ -56,6 +55,7 @@ def programas(item):
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = match[3]
         scrapedplot = scrapertools.unescape(scrapedplot).strip()
+        scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
 
         scrapedpage = urlparse.urljoin(item.url,match[0])
         if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] plot=["+scrapedplot+"]")
@@ -82,7 +82,7 @@ def episodios(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cache_page(item.url,modo_cache=MODO_CACHE)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae los capítulos
     patron = '<div class="contenido-serie">(.*?)</div>'
@@ -99,7 +99,7 @@ def episodios(item):
     for match in matches:
         scrapedtitle = match[3]
         scrapedtitle = scrapertools.unescape(scrapedtitle)
-        scrapedtitle = scrapertools.unescape(scrapedtitle)
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
         
         # La página del vídeo
         scrapedpage = urlparse.urljoin(item.url,match[1])
@@ -117,7 +117,7 @@ def episodios(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo", page=scrapedpage, url=scrapedurl, thumbnail=scrapedthumbnail, show=item.show , plot=scrapedplot , folder=False) )
 
     # Ahora extrae el argumento y la url del vídeo
-    dataplaylist = scrapertools.cachePage(scrapedurl,modoCache=MODO_CACHE)
+    dataplaylist = scrapertools.cachePage(scrapedurl)
     
     for episodeitem in itemlist:
         partes = episodeitem.page.split("/")
