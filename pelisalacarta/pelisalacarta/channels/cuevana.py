@@ -6,6 +6,7 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os, sys
+import xbmcgui, xbmc
 
 from core import logger
 from core import config
@@ -380,7 +381,7 @@ def strm_detail(item):
         try:
           os.remove(ficherosubtitulo)
         except IOError:
-          xbmc.output("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
+          logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
           raise
 
     from core import downloadtools
