@@ -6,12 +6,14 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os, sys
-import xbmcgui, xbmc
+import xbmc
+import xbmcgui
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
+from core import xbmctools
 from servers import servertools
 from core import library
 
