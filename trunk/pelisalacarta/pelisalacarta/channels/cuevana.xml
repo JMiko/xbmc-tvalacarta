@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>5</tag>
-	<date>28/06/2011</date>
-	<changes>Vuelve a ser genérico</changes>
+	<tag>6</tag>
+	<date>16/07/2011</date>
+	<changes>Se arreglo que no andaba el tema de agregar episodios a la biblioteca porque se habia removido el import xbmcgui, xbmc del header</changes>
 </version>
