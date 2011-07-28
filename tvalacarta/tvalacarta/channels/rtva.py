@@ -27,152 +27,149 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[rtva.py] mainlist")
+    
+    item.url="http://www.canalsuralacarta.es/television/listado/todos/0"
+    itemlist = programas(item)
+    return itemlist
 
-    url = "http://www.radiotelevisionandalucia.es/tvcarta/impe/web/portada"
-    itemlist = []
+def programas(item):
+    logger.info("[rtva.py] programas")
+    
+    itemlist=[]
 
-    # --------------------------------------------------------
-    # Descarga la página
-    # --------------------------------------------------------
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # --------------------------------------------------------
     # Extrae los programas
-    # --------------------------------------------------------
-    patron = '<div class="infoPrograma"><h3 class="h3TituloProgramaCarta"><a href="([^"]+)" title="[^"]+">([^<]+)</a></h3><p>([^<]+)</p>(?:<p>([^<]+)</p>)?(?:<p>([^<]+)</p>)?(?:<p>([^<]+)</p>)?</div><div class="enlacePrograma"><a href="[^"]+" title="[^"]+"><img class="imgLista" src="([^"]+)"'
+    '''
+    <li>
+    <div class="programs_list_az_item capaseccionl">
+    <div class="programs_list_az_item_media">
+    <a href="http://www.canalsuralacarta.es/television/programa/a-caballo/56" class="programs_list_az_item_media_link capaseccionl" title="A caballo">
+    <img src="http://www.canalsuralacarta.es/pictures/246/picture246_20110114_131605_crop1sub2.jpg" alt="A caballo" title="A caballo" class="no_foto" width="138" height="77" />
+    </a>
+    </div>
+    <h5 class="programs_list_az_item_name">
+    <a href="http://www.canalsuralacarta.es/television/programa/a-caballo/56" class="programs_list_az_item_name_link capaseccionl" title="A caballo">
+    A caballo                </a>
+    </h5>
+    <p class="programs_list_az_item_description">A caballo es el programa de canalSur 2 que se ocupa del mundo de la equitaci&oacute;n y la...</p>
+    </div>
+    </li>
+    '''
+    data = scrapertools.cache_page(item.url)
+    patron  = '<li>[^<]+'
+    patron += '<div class="programs_list_az_item capaseccionl">[^<]+'
+    patron += '<div class="programs_list_az_item_media">[^<]+'
+    patron += '<a href="([^"]+)"[^>]+>[^<]+'
+    patron += '<img src="([^"]+)"[^>]+>[^<]+'
+    patron += '</a>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '<h5 class="programs_list_az_item_name">[^<]+'
+    patron += '<a[^>]+>(.*?)</a>[^<]+'
+    patron += '</h5>[^<]+'
+    patron += '<p class="programs_list_az_item_description">([^<]+)</p>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '</li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    dictionaryurl = {}
-
     for match in matches:
-        titulo = match[1].replace("á","Á")
-        titulo = titulo.replace("é","É")
-        titulo = titulo.replace("í","Í")
-        titulo = titulo.replace("ó","Ó")
-        titulo = titulo.replace("ú","Ú")
-        titulo = titulo.replace("ñ","Ñ")
-        titulo = titulo.replace('&Aacute;','Á')
-        titulo = titulo.replace('&Eacute;','É')
-        titulo = titulo.replace('&Iacute;','Í')
-        titulo = titulo.replace('&Oacute;','Ó')
-        titulo = titulo.replace('&Uacute;','Ú')
-        titulo = titulo.replace('&ntilde;','ñ')
-        titulo = titulo.replace('&Ntilde;','Ñ')
-        scrapedtitle = titulo
-        scrapedurl = 'http://www.radiotelevisionandalucia.es/tvcarta/impe/web/portada'
-        scrapedthumbnail = ""
-        scrapedplot = ""
+        scrapedtitle = match[2].strip()
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
+        scrapedplot = match[3].strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle) )
 
-        # Añade al listado de XBMC
-        if dictionaryurl.has_key(scrapedtitle):
-            if DEBUG: logger.info("%s ya existe" % scrapedtitle)
-        else:
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , folder=True) )
-            dictionaryurl[scrapedtitle] = True
+    patron = '<a href="([^"]+)"  class="enlace siguiente"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        logger.info("[rtva.py] Página siguiente: "+matches[0])
+        item = Item(url=matches[0])
+        itemlist.extend(programas(item))
 
     return itemlist
 
-def videolist(item):
-    logger.info("[rtva.py] videolist")
+def videos(item):
+    logger.info("[rtva.py] videos")
 
-    # --------------------------------------------------------
     # Descarga la página
-    # --------------------------------------------------------
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
+    '''
+    <div class="video_item capaseccionl">
+    <div class="media capaseccionl">
+    <span class="">
+    <a href="http://www.canalsuralacarta.es/television/video/jamaica/2590/12" title="Jamaica">
+    <img class="no_foto" src="http://www.canalsuralacarta.es/pictures/2829/picture2829_20110511_093437_crop1sub1.jpg" width="212" height="119" alt="Jamaica" />
+    </a>
+    </span>
+    <span class="video_mosca">
+    <a href="http://www.canalsuralacarta.es/television/video/jamaica/2590/12" title="Jamaica">
+    <img src="./img/1pxtrans.gif" width="212" height="119" alt="Jamaica" />
+    </a>
+    </span>
+    </div>
+    <div class="text_content capaseccionl">
+    <h5 class="media_name"><a href="http://www.canalsuralacarta.es/television/video/jamaica/2590/12" title="Jamaica">Jamaica</a></h5>
+    <h6 style="position: absolute; right: 2pt; bottom: 2pt; color: #000;">10/05/2011</h6>
+    </div>
+    '''
+    patron  = '<div class="video_item capaseccionl">[^<]+'
+    patron += '<div class="media capaseccionl">[^<]+'
+    patron += '<span class="">[^<]+'
+    patron += '<a href="([^"]+)"[^>]+>[^<]+'
+    patron += '<img class="no_foto" src="([^"]+)"[^>]+>.*?'
+    patron += '<h5 class="media_name"><a[^>]+>([^<]+)</a></h5>[^<]+'
+    patron += '<h6[^>]+>([^<]+)</h6>[^<]+'
+    patron += '</div>'
 
-    # --------------------------------------------------------
-    # Extrae los programas
-    # --------------------------------------------------------
-    patron  = '<div class="infoPrograma"><h3 class="h3TituloProgramaCarta"><a href="([^"]+)" title="[^"]+">([^<]+)</a></h3><p>([^<]+)</p>(?:<p>([^<]+)</p>)?(?:<p>([^<]+)</p>)?(?:<p>([^<]+)</p>)?</div><div class="enlacePrograma"><a href="[^"]+" title="[^"]+"><img class="imgLista" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
         # Datos
-        titulo = match[1].replace("á","Á")
-        titulo = titulo.replace("é","É")
-        titulo = titulo.replace("í","Í")
-        titulo = titulo.replace("ó","Ó")
-        titulo = titulo.replace("ú","Ú")
-        titulo = titulo.replace("ñ","Ñ")
-        titulo = titulo.replace('&Aacute;','Á')
-        titulo = titulo.replace('&Eacute;','É')
-        titulo = titulo.replace('&Iacute;','Í')
-        titulo = titulo.replace('&Oacute;','Ó')
-        titulo = titulo.replace('&Uacute;','Ú')
-        titulo = titulo.replace('&ntilde;','ñ')
-        titulo = titulo.replace('&Ntilde;','Ñ')
-        scrapedtitle = titulo
-        scrapedurl = urlparse.urljoin(item.url, match[0])
-        scrapedthumbnail = match[6].replace(' ','%20')
-        titulocapitulo =  ( "%s %s %s %s" % (match[2],match[3],match[4],match[5]))
-        titulocapitulo = titulocapitulo.replace('&Aacute;','Á')
-        titulocapitulo = titulocapitulo.replace('&Eacute;','É')
-        titulocapitulo = titulocapitulo.replace('&Iacute;','Í')
-        titulocapitulo = titulocapitulo.replace('&Oacute;','Ó')
-        titulocapitulo = titulocapitulo.replace('&Uacute;','Ú')
-        titulocapitulo = titulocapitulo.replace('&ntilde;','ñ')
-        titulocapitulo = titulocapitulo.replace('&Ntilde;','Ñ')
-        titulocapitulo = titulocapitulo.replace('&aacute;','á')
-        titulocapitulo = titulocapitulo.replace('&eacute;','é')
-        titulocapitulo = titulocapitulo.replace('&iacute;','í')
-        titulocapitulo = titulocapitulo.replace('&oacute;','ó')
-        titulocapitulo = titulocapitulo.replace('&uacute;','ú')
-        scrapedplot = titulocapitulo
-
-        # Depuracion
+        scrapedtitle = match[2] + " (" + match[3] + ")"
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle + " " + scrapedplot , action="play" , url=scrapedurl, page = scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=False) )
 
-        # Añade al listado de XBMC
-        if scrapedtitle == item.title:
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle + " " + scrapedplot , action="getvideo" , url=scrapedurl, page = scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=True) )
+    patron = '<a href="([^"]+)"  class="enlace siguiente"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        logger.info("[rtva.py] Página siguiente: "+matches[0])
+        item = Item(url=matches[0], show=item.show)
+        itemlist.extend(videos(item))
 
     return itemlist
 
-def getvideo(item):
-    logger.info("[rtva.py] getvideo")
+def play(item):
+    logger.info("[rtva.py] play")
 
-    # --------------------------------------------------------
+    url = item.url
+
     # Descarga pagina detalle
-    # --------------------------------------------------------
-    data = scrapertools.cachePage(item.url)
-    patron = '<param name="flashvars" value="&amp;video=(http://[^"]+)"'
+    #http://www.canalsuralacarta.es/television/video/jamaica/2590/12
+    #_url_xml_datos=http://www.canalsuralacarta.es/webservice/video/2590"
+    data = scrapertools.cachePage(url)
+    patron = '_url_xml_datos=([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    try:
-        url = matches[0].replace(' ','%20')
-    except:
-        url = ""
+    if len(matches)>0:
+        url = urlparse.urljoin(url,matches[0])
     logger.info("[rtva.py] url="+url)
-    if url.find("&") != -1:
-        url = url.split("&")[0]
-        logger.info("[rtva.py] url="+url)
 
-    # --------------------------------------------------------
-    # Argumento detallado
-    # --------------------------------------------------------
-    patron = '<div class="zonaContenido"><p>([^<]+)</p>(?:<p>([^<]+)</p>)?(?:<p>([^<]+)</p>)?(?:<p>([^<]+)</p>)?</div>'
-    argumento = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(argumento)
-    argumentofull = ""
-    if len(argumento) > 0:
-        if len(argumento[0]) >= 4:
-            argumentofull = ("%s\n%s\n%s\n%s\n%s" % (item.title , argumento[0][0] , argumento[0][1] , argumento[0][2] , argumento[0][3] ))
-        elif len(argumento[0]) >= 3:
-            argumentofull = ("%s\n%s\n%s\n%s" % (item.title , argumento[0][0] , argumento[0][1] , argumento[0][2] ))
-        elif len(argumento[0]) >= 2:
-            argumentofull = ("%s\n%s\n%s" % (item.title , argumento[0][0] , argumento[0][1] ))
-        elif len(argumento[0]) >= 1:
-            argumentofull = ("%s\n%s" % (item.title , argumento[0][0] ))
-    #argumentofull = ("%s\n%s" % (.description , argumento[0][0] ))
-    plot = scrapertools.entityunescape(argumentofull)
+    # Extrae la URL del video
+    #http://ondemand.rtva.ondemand.flumotion.com/rtva/ondemand/flash8/programas/andaluces-por-el-mundo/20110509112657-7-andaluces-por-el-mundo-jamaica-10-05-11.flv
+    #http://ondemand.rtva.ondemand.flumotion.com/rtva/ondemand/flash8/programas/andaluces-por-el-mundo/20110509112657-7-andaluces-por-el-mundo-jamaica-10-05-11.flv
+    data = scrapertools.cachePage(url)
+    patron = '<url>([^<]+)</url>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    if len(matches)>0:
+        url = matches[len(matches)-1]
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Ver el vídeo" , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=plot , show=item.show , folder=False) )
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=item.plot , show=item.show , folder=False) )
 
     return itemlist
