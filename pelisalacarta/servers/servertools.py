@@ -198,7 +198,7 @@ def findvideos(data):
         url = match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'tu.tv' ] )
+            devuelve.append( [ titulo , url , 'tutv' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -214,7 +214,7 @@ def findvideos(data):
         url = match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'tu.tv' ] )
+            devuelve.append( [ titulo , url , 'tutv' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -229,7 +229,7 @@ def findvideos(data):
         url = match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'tu.tv' ] )
+            devuelve.append( [ titulo , url , 'tutv' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -353,20 +353,6 @@ def findvideos(data):
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'Stagevu' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Megavideo... formato d=XXXXXXX")
-    patronvideos  = 'http://www.megavideo.com/.*?\&d\=([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    for match in matches:
-        titulo = "[Megavideo]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megavideo' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
