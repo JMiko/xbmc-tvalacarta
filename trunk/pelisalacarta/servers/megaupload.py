@@ -13,7 +13,7 @@ from core import scrapertools
 from core import logger
 from core import config
 
-DEBUG=True
+DEBUG=False
 PREMIUM=0
 GRATIS=1
 ANONIMO=2
@@ -301,7 +301,7 @@ def find_videos(text):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-    
+
     # Código especial cinetube
     #xrxa("BLYT2ZC9=d?/moc.daolpuagem.www//:ptth")
     patronvideos  = 'xrxa\("([A-Z0-9a-z]{8})=d\?/moc.daolpuagem.www//\:ptth"\)'
@@ -318,7 +318,7 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
 
-    patronvideos  = 'http://www.megavideo.com/\?d\=([^"]+)"'
+    patronvideos  = 'http://www.megavideo.com/\?d\=([A-Z0-9a-z]{8})'
     logger.info("[megaupload.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
