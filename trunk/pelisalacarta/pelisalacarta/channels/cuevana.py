@@ -6,8 +6,6 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os, sys
-import xbmc
-import xbmcgui
 
 from core import logger
 from core import config
@@ -36,6 +34,8 @@ def mainlist(item):
 def peliculas(item):
     logger.info("[cuevana.py] peliculas")
     itemlist = []
+     
+    itemlist.append( Item(channel=CHANNELNAME, title="Próximas"  , action="novedades", url="http://www.cuevana.tv/peliculas/proximas/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/?orderby=ano&reverse=true"))
     itemlist.append( Item(channel=CHANNELNAME, title="Más Populares"  , action="novedades", url="http://www.cuevana.tv/peliculas/populares/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Mejor Puntuadas"  , action="novedades", url="http://www.cuevana.tv/peliculas/mejorpuntuadas/"))
@@ -392,6 +392,8 @@ def strm_detail(item):
 
     listavideos = servertools.findvideos(data)
     
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        import xbmc
     for video in listavideos:
         server = video[2]
         if server == "Megaupload":
@@ -417,6 +419,8 @@ def addlist2Library(item):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        import xbmcgui
     pDialog = xbmcgui.DialogProgress()
     ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
     pDialog.update(0, 'Añadiendo episodio...')
