@@ -14,11 +14,12 @@ from core import logger
 from core import config
 
 DEBUG=False
+
 PREMIUM=0
 GRATIS=1
 ANONIMO=2
 
-def get_video_url( page_url , user="" , password="" , video_password="" ):
+def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
     if DEBUG:
         logger.info("[megaupload.py] get_video_url( page_url='%s' , user='%s' , password='%s')" % (page_url , user , password) )
     else:
@@ -33,14 +34,25 @@ def get_video_url( page_url , user="" , password="" , video_password="" ):
     # Si el usuario es gratis o anónimo utiliza el método nuevo
     tipo_usuario , cookie = login(user,password)
 
+    # Obtiene el enlace para Megaupload
     if tipo_usuario == PREMIUM:
         video_url = get_premium_video_url(page_url,cookie,video_password)
+        extension = video_url[-4:]
+        video_urls = [['%s (Premium) [megaupload]' % extension , video_url]]
     else:
         video_url = get_free_video_url(page_url,tipo_usuario,video_password)
-        
-    logger.info("[megaupload.py] get_video_url returns %s" % video_url)
+        extension = video_url[-4:]
+        video_urls = [['%s (Free) [megaupload]' % extension , video_url]]
+
+    # Obtiene el enlace para Megavideo
+    megavideo_video_id = convertcode(page_url)
+    if not megavideo_video_id=="":
+        from servers import megavideo
+        video_urls.extend( megavideo.get_video_url( megavideo_video_id, premium, user, password ) )
+
+    #logger.info("[megaupload.py] get_video_urls returns %s" % video_url)
     
-    return video_url
+    return video_urls
 
 # Extrae directamente la URL del vídeo de Megaupload
 def login(user,password):
@@ -257,7 +269,9 @@ def convertcode(megaupload_page_url):
     
     megavideocode = ""
     if len(matches)>0:
-            megavideocode = matches[0]
+        megavideocode = matches[0]
+
+    logger.info("[megaupload.py] convertcode returns #%s#" % megavideocode)
 
     return megavideocode
 

@@ -6,49 +6,48 @@
 #------------------------------------------------------------
 
 import os,re
+import base64
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
+from core import scrapertools
+from core import logger
+from core import config
 
-_VALID_URL = r'^((?:http://)?(?:\w+\.)?videozer\.com/(?:(?:e/|video/)|(?:(?:flash/|f/)))?)?([0-9A-Za-z_-]+)(?(1).+)?$'
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[videozer.py] get_video_url(page_url='%s')" % page_url)
 
+    video_urls = []
 
-def geturl(url):
-
-    logger.info("[videozer.py] url="+url)
-    # El formato de la URL de la página es
-    # http://videozer.com/video/Tnfs1OI
-    # El formato de la URL del vídeo es
-    # http://video33.videozer.com:80/video?v=Tnfs1OI&t=1303649554&u=&c=c6bffc4fa689297273cf2a04658ca435&r=1
-    code = Extract_id(url)
-
+    # Obtiene el id
+    code = Extract_id(page_url)
     
+    # Descarga el json con los detalles del vídeo
     controluri = "http://videozer.com/player_control/settings.php?v=%s&fv=v1.1.03"  %code
     datajson = scrapertools.cachePage(controluri)
-    print datajson
+    #logger.info("response="+datajson);
+
+    # Convierte el json en un diccionario
     datajson = datajson.replace("false","False").replace("true","True")
     datajson = datajson.replace("null","None")
     datadict = eval("("+datajson+")")
+    
+    # Formatos
     formatos = datadict["cfg"]["quality"]
-    longitud = len(formatos)
-    uri = formatos[longitud-1]["u"]
-    logger.info("Resolucion del video ="+formatos[longitud-1]["l"])
-    import base64
     
-    devuelve = base64.decodestring(uri)
-
-    logger.info("[videozer.py] url="+devuelve)
+    for formato in formatos:
+        uri = base64.decodestring(formato["u"])
+        resolucion = formato["l"]
     
-    return devuelve
+        video_urls.append( ["%s [videozer]" % resolucion , uri ])
 
+    for video_url in video_urls:
+        logger.info("[videozer.py] %s - %s" % (video_url[0],video_url[1]))
+
+    return video_urls
+
+# Extract video id from URL
 def Extract_id(url):
-    # Extract video id from URL
+    _VALID_URL = r'^((?:http://)?(?:\w+\.)?videozer\.com/(?:(?:e/|embed/|video/)|(?:(?:flash/|f/)))?)?([0-9A-Za-z_-]+)(?(1).+)?$'
     mobj = re.match(_VALID_URL, url)
     if mobj is None:
         print 'ERROR: URL invalida: %s' % url
@@ -56,3 +55,26 @@ def Extract_id(url):
         return ""
     id = mobj.group(2)
     return id
+
+
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    patronvideos  = "(http\:\/\/(?:www\.)?videozer.com\/(?:(?:e/|embed/|flash/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{4,8})"
+    logger.info("[videozer.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #print data
+    for match in matches:
+        titulo = "[videozer]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videozer' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve
