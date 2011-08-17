@@ -7,118 +7,23 @@
 
 import urlparse,urllib2,urllib,re
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-    from core import unpackerjs
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import unpackerjs
+from core import scrapertools
+from core import logger
+from core import config
+from core import unpackerjs
 
 import os
 COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
 
-def geturl(urlvideo):
-    logger.info("[divxden.py] url="+urlvideo)
-    # ---------------------------------------
-    #  Inicializa la libreria de las cookies
-    # ---------------------------------------
-    ficherocookies = COOKIEFILE
-    try:
-        os.remove(ficherocookies)
-    except:
-        pass
-    # the path and filename to save your cookies in
-
-    cj = None
-    ClientCookie = None
-    cookielib = None
-
-    # Let's see if cookielib is available
-    try:
-        import cookielib
-    except ImportError:
-        # If importing cookielib fails
-        # let's try ClientCookie
-        try:
-            import ClientCookie
-        except ImportError:
-            # ClientCookie isn't available either
-            urlopen = urllib2.urlopen
-            Request = urllib2.Request
-        else:
-            # imported ClientCookie
-            urlopen = ClientCookie.urlopen
-            Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
-
-    else:
-        # importing cookielib worked
-        urlopen = urllib2.urlopen
-        Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
-        # This is a subclass of FileCookieJar
-        # that has useful load and save methods
-
-    # ---------------------------------
-    # Instala las cookies
-    # ---------------------------------
-
-    if cj is not None:
-    # we successfully imported
-    # one of the two cookie handling modules
-
-        if os.path.isfile(ficherocookies):
-            # if we have a cookie file already saved
-            # then load the cookies into the Cookie Jar
-            cj.load(ficherocookies)
-
-        # Now we need to get our Cookie Jar
-        # installed in the opener;
-        # for fetching URLs
-        if cookielib is not None:
-            # if we use cookielib
-            # then we get the HTTPCookieProcessor
-            # and install the opener in urllib2
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-            urllib2.install_opener(opener)
-
-        else:
-            # if we use ClientCookie
-            # then we get the HTTPCookieProcessor
-            # and install the opener in ClientCookie
-            opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(cj))
-            ClientCookie.install_opener(opener)
-
-    #print "-------------------------------------------------------"
-    url=urlvideo
-    #print url
-    #print "-------------------------------------------------------"
-    theurl = url
-    # an example url that sets a cookie,
-    # try different urls here and see the cookie collection you can make !
-
-    txdata = None
-    # if we were making a POST type request,
-    # we could encode a dictionary of values here,
-    # using urllib.urlencode(somedict)
-
-    txheaders =  {'User-Agent':'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)'}
-    # fake a user agent, some websites (like google) don't like automated exploration
-
-    req = Request(theurl, txdata, txheaders)
-    handle = urlopen(req)
-    cj.save(ficherocookies)                     # save the cookies again    
-
-    data=handle.read()
-    handle.close()
-    #print data
-
+# http://www.vidxden.com/3360qika02mo/whale.wars.s04e10.hdtv.xvid-momentum.avi.html
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[divxden.py] url="+page_url)
+    
+    # Lo pide una vez
+    scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
+    
     # Lo pide una segunda vez, como si hubieras hecho click en el banner
-    patron = 'http\:\/\/www\.divxden\.com/([^\/]+)/(.*?)\.html'
+    patron = 'http\:\/\/www\.vidxden\.com/([^\/]+)/(.*?)\.html'
     matches = re.compile(patron,re.DOTALL).findall(url)
     logger.info("[divxden.py] fragmentos de la URL")
     scrapertools.printMatches(matches)
@@ -129,15 +34,8 @@ def geturl(urlvideo):
         codigo = matches[0][0]
         nombre = matches[0][1]
 
-    txdata = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Free+Stream"
-    logger.info(txdata)
-    req = Request(theurl, txdata, txheaders)
-    handle = urlopen(req)
-    cj.save(ficherocookies)                     # save the cookies again    
-
-    data=handle.read()
-    handle.close()
-    #print data
+    post = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Free+Stream"
+    data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
     
     # Extrae el trozo cifrado
     patron = '<div align="center" id="divxshowboxt">(.*?)</div>'

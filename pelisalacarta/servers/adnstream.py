@@ -1,29 +1,23 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para linkbucks
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
 import re, sys
 import urlparse, urllib, urllib2
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
+from core import scrapertools
+from core import logger
+from core import config
 
-DEBUG = True
+def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
+    logger.info("[adnstream.py] get_video_url(page_url='%s')" % page_url)
 
-# Obtiene la URL que hay detrás de un enlace a linkbucks
-def geturl(code):
-
+    # TODO: Esto sólo funciona con el ID del vídeo, no con la URL
+    code = page_url
+    
     mediaurl = "http://www.adnstream.tv/get_playlist.php?lista=video&param="+code+"&c=463"
-    # Descarga la página de linkbucks
     data = scrapertools.cachePage(mediaurl)
 
     # Extrae la URL real
@@ -32,8 +26,10 @@ def geturl(code):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
-    devuelve = "";
     if len(matches)>0:
-        devuelve = matches[0]
+        video_urls = [['[adnstream]' , matches[0]]]
+    else:
+        video_urls = []
 
-    return devuelve
+    return video_urls
+
