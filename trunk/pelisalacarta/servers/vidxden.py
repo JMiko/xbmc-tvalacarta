@@ -6,26 +6,23 @@
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
+import os
 
 from core import scrapertools
 from core import logger
 from core import config
 from core import unpackerjs
 
-import os
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
-
-# http://www.vidxden.com/3360qika02mo/whale.wars.s04e10.hdtv.xvid-momentum.avi.html
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[divxden.py] url="+page_url)
+    logger.info("[vidxden.py] url="+page_url)
     
     # Lo pide una vez
     scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
     
     # Lo pide una segunda vez, como si hubieras hecho click en el banner
     patron = 'http\:\/\/www\.vidxden\.com/([^\/]+)/(.*?)\.html'
-    matches = re.compile(patron,re.DOTALL).findall(url)
-    logger.info("[divxden.py] fragmentos de la URL")
+    matches = re.compile(patron,re.DOTALL).findall(page_url)
+    logger.info("[vidxden.py] fragmentos de la URL")
     scrapertools.printMatches(matches)
     
     codigo = ""
@@ -38,14 +35,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
     
     # Extrae el trozo cifrado
-    patron = '<div align="center" id="divxshowboxt">(.*?)</div>'
+    patron = '<div id="embedcontmvshre"[^>]+>(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
     data = ""
     if len(matches)>0:
         data = matches[0]
-        logger.info("[divxden.py] bloque packed="+data)
+        logger.info("[vidxden.py] bloque packed="+data)
     else:
+        logger.info("[vidxden.py] no encuentra bloque packed="+data)
         return ""
     
     # Lo descifra
@@ -58,10 +56,34 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     matches = re.compile(patron,re.DOTALL).findall(descifrado)
     scrapertools.printMatches(matches)
     
-    url = ""
+    video_urls = []
     
     if len(matches)>0:
-        url = matches[0]
+        video_urls.append( ["[vidxden]",matches[0]])
 
-    logger.info("[divxden.py] url="+url)
-    return url
+    for video_url in video_urls:
+        logger.info("[vidxden.py] %s - %s" % (video_url[0],video_url[1]))
+
+    return video_urls
+
+# Encuentra vídeos de este servidor en el texto pasado
+def find_videos(text):
+    encontrados = set()
+    devuelve = []
+
+    # http://www.vidxden.com/3360qika02mo/whale.wars.s04e10.hdtv.xvid-momentum.avi.html
+    patronvideos  = '(http://www.vidxden.com/[A-Z0-9a-z]+/.*?html)'
+    logger.info("[vidxden.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[vidxden]"
+        url = match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vidxden' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve
