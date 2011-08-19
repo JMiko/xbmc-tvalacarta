@@ -14,187 +14,82 @@ def findvideos(data):
     logger.info("[servertools.py] findvideos")
     encontrados = set()
     devuelve = []
+
+    # Megavideo
+    import megavideo
+    devuelve.extend(megavideo.find_videos(data))
+        
+    # Megaupload
+    import megaupload
+    devuelve.extend(megaupload.find_videos(data))
+
+    # ---------------------------
     
     # adnstream
-    #import adnstream
-    #devuelve.extend(adnstream.find_videos(data))
+    import adnstream
+    devuelve.extend(adnstream.find_videos(data))
     
     # blip.tv
     import bliptv
     devuelve.extend(bliptv.find_videos(data))
 
-    # Megaupload
-    import megaupload
-    devuelve.extend(megaupload.find_videos(data))
+    # facebook
+    import facebook
+    devuelve.extend(facebook.find_videos(data))
+
+    # fourshared
+    import fourshared
+    devuelve.extend(fourshared.find_videos(data))
+
+    # gigabyteupload
+    import gigabyteupload
+    devuelve.extend(gigabyteupload.find_videos(data))
+
+    # movshare
+    import movshare
+    devuelve.extend(movshare.find_videos(data))
+ 
+    # stagevu
+    import stagevu
+    devuelve.extend(stagevu.find_videos(data))
+ 
+    # tutv
+    import tutv
+    devuelve.extend(tutv.find_videos(data))
     
-    # Megavideo
-    import megavideo
-    devuelve.extend(megavideo.find_videos(data))
+    # tutv
+    import userporn
+    devuelve.extend(userporn.find_videos(data))
     
-    # vidxden
-    import vidxden
-    devuelve.extend(vidxden.find_videos(data))
+    # veoh
+    import veoh
+    devuelve.extend(veoh.find_videos(data))
 
     # videobb
     import videobb
     devuelve.extend(videobb.find_videos(data))
 
+    # videoweed
+    import videoweed
+    devuelve.extend(videoweed.find_videos(data))
+
     # videozer
     import videozer
     devuelve.extend(videozer.find_videos(data))
 
-    # STAGEVU
-    logger.info("7) Stagevu sin título...")
-    patronvideos  = '"(http://stagevu.com[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    # vidxden
+    import vidxden
+    devuelve.extend(vidxden.find_videos(data))
 
-    for match in matches:
-        titulo = "[Stagevu]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Stagevu' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
+    # vimeo
+    import vimeo
+    devuelve.extend(vimeo.find_videos(data))
 
-    # TU.TV
-    logger.info("8) Tu.tv sin título...")
-    patronvideos  = '<param name="movie" value="(http://tu.tv[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    # vk
+    import vk
+    devuelve.extend(vk.find_videos(data))
 
-    for match in matches:
-        titulo = "[tu.tv]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'tutv' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    # TU.TV
-    logger.info("9) Tu.tv sin título...")
-    #<param name="movie" value="http://www.tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aWRlb3Njb2RpL24vYS9uYXppcy11bi1hdmlzby1kZS1sYS1oaXN0b3JpYS0xLTYtbGEtbC5mbHY=&xtp=669149_VIDEO"
-    patronvideos  = '<param name="movie" value="(http://www.tu.tv[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[tu.tv]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'tutv' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("9b) Tu.tv sin título...")
-    #<embed src="http://tu.tv/tutvweb.swf?kpt=aHR0cDovL3d3dy50dS50di92aW
-    patronvideos  = '<embed src="(http://tu.tv/[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[tu.tv]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'tutv' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    # STAGEVU
-    '''
-    logger.info("12) Stagevu...")
-    patronvideos  = '(http://stagevu.com[^<]+)<'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "Ver el vídeo en Stagevu"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Stagevu' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-    '''
-
-    logger.info("0) Stagevu...")
-    patronvideos  = '"http://stagevu.com.*?uid\=([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    for match in matches:
-        titulo = "[Stagevu]"
-        url = "http://stagevu.com/video/"+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Stagevu' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Stagevu...")
-    patronvideos  = "'http://stagevu.com.*?uid\=([^']+)'"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Stagevu]"
-        url = "http://stagevu.com/video/"+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Stagevu' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Movshare...")
-    patronvideos  = '"(http://www.movshare.net/video/[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    for match in matches:
-        titulo = "[Movshare]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'movshare' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Movshare...")
-    patronvideos  = "'(http://www.movshare.net/embed/[^']+)'"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    for match in matches:
-        titulo = "[Movshare]"
-        url = match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'movshare' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Veoh...")
-    patronvideos  = '"http://www.veoh.com/.*?permalinkId=([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Veoh]"
-        if match.count("&")>0:
-            primera = match.find("&")
-            url = match[:primera]
-        else:
-            url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'veoh' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
+    # ---------------------------
 
     logger.info("0) Directo - myspace")
     patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
@@ -241,36 +136,6 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    logger.info("0) Videoweed...")
-    patronvideos  = '(http://www.videoweed.com/file/*?\.flv)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Videoweed]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'videoweed' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("1) Videoweed formato islapeliculas") #http://embed.videoweed.com/embed.php?v=h56ts9bh1vat8
-    patronvideos  = "(http://embed.videoweed.*?)&"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Videoweed]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'videoweed' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
     logger.info("0) YouTube...")
     patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -302,68 +167,6 @@ def findvideos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    #http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
-    logger.info("0) Facebook...")
-    patronvideos  = '(http://video.ak.facebook.com/.*?\.mp4)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Facebook]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'directo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Facebook para buenaisla...") #http%3A%2F%2Fwww.facebook.com%2Fv%2F139377799432141_23545.mp4
-    patronvideos  = "www.facebook.com(?:/|%2F)v(?:/|%2F)(.*?)(?:&|%26)"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Facebook]"
-        url = "http://www.facebook.com/video/external_video.php?v="+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'facebook' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)        
-
-    #http://www.4shared.com/embed/392975628/ff297d3f
-    logger.info("0) 4shared...")
-    patronvideos  = '"(http://www.4shared.com.*?)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[4shared]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , '4shared' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    #http://www.4shared.com/embed/392975628/ff297d3f
-    logger.info("0) 4shared...")
-    patronvideos  = "'(http://www.4shared.com.*?)'"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[4shared]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , '4shared' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
     #file=http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv&
     #http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv
     logger.info("0) netlogicstat...")
@@ -376,105 +179,11 @@ def findvideos(data):
 
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Directo' ] )
+            devuelve.append( [ titulo , url , 'directo' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
 
-    logger.info ("vk...")
-    #vk tipo "http://vk.com/video_ext.php?oid=70712020&amp;id=159787030&amp;hash=88899d94685174af&amp;hd=3"
-    patronvideos = '<iframe src="(http://[^\/]+\/video_ext.php[^"]+)"'
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = "[vk]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'vk' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("VKserver...")
-    patronvideos  = '(http\:\/\/vk.+?\/video_ext\.php[^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    #print data
-    for match in matches:
-        titulo = "[VKserver]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'vk' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-            
-    logger.info ("0) Enlace estricto a userporn")
-    #userporn tipo "http://www.userporn.com/f/szIwlZD8ewaH.swf"
-    patronvideos = 'userporn.com\/f\/([A-Z0-9a-z]{12}).swf'
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = "[userporn]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'userporn' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-           
-    logger.info ("1) Enlace estricto a userporn")
-    #userporn tipo "http://www.userporn.com/video/ZIeb370iuHE4"
-    patronvideos = 'userporn.com\/video\/([A-Z0-9a-z]{12})'
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = "[userporn]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'userporn' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-           
-    logger.info ("2) Enlace estricto a userporn")
-    #userporn tipo "http://www.userporn.com/e/LLqVzhw5ft7T"
-    patronvideos = 'userporn.com\/e\/([A-Z0-9a-z]{12})'
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = "[userporn]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'userporn' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("userporn...")
-    patronvideos  = "(http\:\/\/(?:www\.)?userporn.com\/(?:(?:e/|flash/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{0,12})"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    #print data
-    for match in matches:
-        titulo = "[Userporn]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'userporn' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-            
     logger.info("0) Videos animeid...") #http%3A%2F%2Fmangaid.com%2Ff.php%3Fh3eqiGdkh3akY2GaZJ6KpqyDaWmJ%23.mp4
     patronvideos  = "file=http.*?mangaid.com(.*?)&amp;backcolor="
     matches = re.compile(patronvideos,re.DOTALL).findall(data)

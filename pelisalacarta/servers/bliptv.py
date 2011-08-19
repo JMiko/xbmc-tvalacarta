@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para blip.tv
+# Conector para bliptv
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import re
@@ -10,7 +10,7 @@ import urllib
 from core import scrapertools
 from core import logger
 
-# Resuelve los videos de blip.tv que se usan en el embed
+# Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
     logger.info("[bliptv.py] get_video_url(page_url='%s')" % page_url)
 

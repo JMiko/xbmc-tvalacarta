@@ -8,72 +8,57 @@
 import os
 import urlparse,urllib2,urllib,re
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
+from core import scrapertools
+from core import logger
+from core import config
 
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[veoh.py] get_video_url(page_url='%s')" % page_url)
 
-def geturl(code):
-    logger.info("[veoh.py] code="+code)
-    url = 'http://www.flashvideodownloader.org/download.php?u=http://www.veoh.com/browse/videos/category/entertainment/watch/'+code
+    video_urls = []
+
+    # Lo extrae a partir de flashvideodownloader.org
+    if page_url.startswith("http://"):
+        url = 'http://www.flashvideodownloader.org/download.php?u='+page_url
+    else:
+        url = 'http://www.flashvideodownloader.org/download.php?u=http://www.veoh.com/watch/'+page_url
     logger.info("[veoh.py] url="+url)
     data = scrapertools.cachePage(url)
-    #logger.info("[veoh.py] data="+data)
+    
+    # Extrae el vídeo
     patronvideos  = '<a href="(http://content.veoh.com.*?)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    movielink=""
-    if len(matches)>0:
-        movielink = matches[0]
-    logger.info("[veoh.py] movielink="+movielink)
+    for match in matches:
+        video_urls.append( ["[veoh]",match] )
     
-    import httplib
-    parsedurl = urlparse.urlparse(movielink)
-    #logger.info("[veoh.py] parsedurl="+parsedurl)
-    print "parsedurl=",parsedurl
+    for video_url in video_urls:
+        logger.info("[veoh.py] %s - %s" % (video_url[0],video_url[1]))
 
-    try:
-        logger.info("[veoh.py] 1")
-        host = parsedurl.netloc
-    except:
-        logger.info("[veoh.py] 2")
-        host = parsedurl[1]
-    logger.info("[veoh.py] host="+host)
+    return video_urls
 
-    try:
-        logger.info("[veoh.py] 1")
-        query = parsedurl.path+parsedurl.query
-    except:
-        logger.info("[veoh.py] 2")
-        query = parsedurl[2]+parsedurl[3]
-    logger.info("[veoh.py] query = " + query)
-    query = urllib.unquote( query )
-    logger.info("[veoh.py] query = " + query)
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
 
-    try:
-        logger.info("[veoh.py] 1")
-        params = parsedurl.params
-    except:
-        logger.info("[veoh.py] 2")
-        params = parsedurl[4]
-    logger.info("[veoh.py] params = " + params)
+    patronvideos  = '"http://www.veoh.com/.*?permalinkId=([^"]+)"'
+    logger.info("[veoh.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    import httplib
-    conn = httplib.HTTPConnection(host)
-    conn.request("GET", query+"?"+params)
-    response = conn.getresponse()
-    location = response.getheader("location")
-    conn.close()
+    for match in matches:
+        titulo = "[veoh]"
+        if match.count("&")>0:
+            primera = match.find("&")
+            url = match[:primera]
+        else:
+            url = match
 
-    if location!=None:
-        logger.info("[veoh.py] Encontrado header location")
-        logger.info("[veoh.py] location="+location)
-    else:
-        location=""
-    
-    return location
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'veoh' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

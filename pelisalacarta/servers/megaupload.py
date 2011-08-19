@@ -4,7 +4,6 @@
 # Conector para Megaupload
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-
 import re
 import urlparse, urllib, urllib2
 import exceptions
@@ -294,7 +293,7 @@ def find_videos(text):
         if url not in encontrados:
             logger.info("  titulo="+titulo)
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
+            devuelve.append( [ titulo , url , 'megaupload' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -311,7 +310,7 @@ def find_videos(text):
         if url not in encontrados:
             logger.info("  titulo="+titulo)
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
+            devuelve.append( [ titulo , url , 'megaupload' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -327,7 +326,7 @@ def find_videos(text):
         if url not in encontrados:
             logger.info("  titulo="+titulo)
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
+            devuelve.append( [ titulo , url , 'megaupload' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -341,7 +340,7 @@ def find_videos(text):
         url = "http://www.megaupload.com/?d="+match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Megaupload' ] )
+            devuelve.append( [ titulo , url , 'megaupload' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)

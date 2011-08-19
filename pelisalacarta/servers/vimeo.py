@@ -10,196 +10,110 @@ import os
 import socket
 from xml.dom.minidom import parseString
 
-try:
-	from core import scrapertools
-	from core import logger
-	from core import config
-except:
-	from Code.core import scrapertools
-	from Code.core import logger
-	from Code.core import config
+from core import scrapertools
+from core import logger
+from core import config
 
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[vimeo.py] get_video_url(page_url='%s')" % page_url)
 
-def geturl(urlvideo):
-	videoid = urlvideo
-	
-	# ---------------------------------------
-	#  Inicializa la libreria de las cookies
-	# ---------------------------------------
-	ficherocookies = COOKIEFILE
-	try:
-		os.remove(ficherocookies)
-	except:
-		pass
-	#logger.info("ficherocookies %s", ficherocookies)
-	# the path and filename to save your cookies in
+    video_urls = []
 
-	cj = None
-	ClientCookie = None
-	cookielib = None
+    if page_url.startswith("http://"):
+        videoid = extract_video_id(page_url)
+    else:
+        videoid = page_url
+    url = "http://www.vimeo.com/moogaloop/load/clip:%s/local/" % videoid
+    
+    headers = [ ['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'],['Referer','http://vimeo/%s' % page_url] ]
+    data = scrapertools.cache_page(url, headers=headers)
 
-	# Let's see if cookielib is available
-	try:
-		import cookielib
-	except ImportError:
-		# If importing cookielib fails
-		# let's try ClientCookie
-		try:
-			import ClientCookie
-		except ImportError:
-			# ClientCookie isn't available either
-			urlopen = urllib2.urlopen
-			Request = urllib2.Request
-		else:
-			# imported ClientCookie
-			urlopen = ClientCookie.urlopen
-			Request = ClientCookie.Request
-			cj = ClientCookie.LWPCookieJar()
+    #parseamos el xml en busca del codigo de signatura
+    dom = parseString(data);
+    xml = dom.getElementsByTagName("xml")
 
-	else:
-		# importing cookielib worked
-		urlopen = urllib2.urlopen
-		Request = urllib2.Request
-		cj = cookielib.LWPCookieJar()
-		# This is a subclass of FileCookieJar
-		# that has useful load and save methods
+    for node in xml:
+        try:
+            request_signature = getNodeValue(node, "request_signature", "Unknown Uploader").encode( "utf-8" )
+            request_signature_expires = getNodeValue(node, "request_signature_expires", "Unknown Uploader").encode( "utf-8")
+        except:
+            logger.info("Error : Video borrado")
+            return ""
 
-	# ---------------------------------
-	# Instala las cookies
-	# ---------------------------------
+    # Extrae las dos calidades (SD y HD)
+    video_url = resolve_video_link(videoid,request_signature,request_signature_expires,"sd")
+    if len(video_url) > 0:
+        video_urls.append( ["SD [vimeo]",video_url])
 
-	if cj is not None:
-	# we successfully imported
-	# one of the two cookie handling modules
-
-		if os.path.isfile(ficherocookies):
-			# if we have a cookie file already saved
-			# then load the cookies into the Cookie Jar
-			cj.load(ficherocookies)
-
-		# Now we need to get our Cookie Jar
-		# installed in the opener;
-		# for fetching URLs
-		if cookielib is not None:
-			# if we use cookielib
-			# then we get the HTTPCookieProcessor
-			# and install the opener in urllib2
-			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-			urllib2.install_opener(opener)
-
-		else:
-			# if we use ClientCookie
-			# then we get the HTTPCookieProcessor
-			# and install the opener in ClientCookie
-			opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(cj))
-			ClientCookie.install_opener(opener)
-	
-	#print "-------------------------------------------------------"
-	url= "http://www.vimeo.com/moogaloop/load/clip:%s/local/" %videoid
-	#print url
-	#print "-------------------------------------------------------"
-	
-	theurl = url
-	# an example url that sets a cookie,
-	# try different urls here and see the cookie collection you can make !
-
-	txdata = None
-	# if we were making a POST type request,
-	# we could encode a dictionary of values here,
-	# using urllib.urlencode(somedict)
-	
-	txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
-				  'Referer':'http://vimeo/%s' %urlvideo}
-	# fake a user agent, some websites (like google) don't like automated exploration
-
-	req = Request(theurl, txdata, txheaders)
-	handle = urlopen(req)
-	#cj.save(ficherocookies)					 # save the cookies again	
-
-	data=handle.read()
-	handle.close()
-	print data
-
-	
-
-	#parseamos el xml en busca del codigo de signatura
-	dom = parseString(data);
-	xml = dom.getElementsByTagName("xml")
+    video_url = resolve_video_link(videoid,request_signature,request_signature_expires,"hd")
+    if len(video_url) > 0:
+        video_urls.append( ["HD [vimeo]",video_url])
 
 
+    for video_url in video_urls:
+        logger.info("[videobb.py] %s - %s" % (video_url[0],video_url[1]))
 
+    return video_urls
 
-	for node in xml:
-		try:
-			request_signature = getNodeValue(node, "request_signature", "Unknown Uploader").encode( "utf-8" )
-			request_signature_expires = getNodeValue(node, "request_signature_expires", "Unknown Uploader").encode( "utf-8")
-		except:
-			logger.info("Error : Video borrado")
-			return ""
-	try:
-		quality =  ((config.get_setting("quality_flv") == "1" and "hd") or "sd")
-	except:
-		quality = "sd"
-	#http://player.vimeo.com/play_redirect?clip_id=19284716&sig=876501f707e219dc48ae78efc83329c3&time=1297504613&quality=hd&codecs=H264,VP8,VP6&type=moogaloop_local&embed_location=
-	video_url = "http://player.vimeo.com/play_redirect?clip_id=%s&sig=%s&time=%s&quality=%s&codecs=H264,VP8,VP6&type=moogaloop_local&embed_location=" % ( videoid, request_signature, request_signature_expires , quality )
-	print video_url
-	txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
-				  'Host':'player.vimeo.com'
-				  }
-	#buscamos la url real en el headers
-	req = urllib2.Request(video_url, txdata, txheaders)
-	
-	try:
-		opener = urllib2.build_opener(SmartRedirectHandler())
-		response = opener.open(req)
-	except ImportError, inst:
-		status,location=inst
-		logger.info(str(status) + " " + location)	
-		mediaurl = location	
-		
-	# Timeout del socket a 60 segundos
-	socket.setdefaulttimeout(10)
+def resolve_video_link(videoid,request_signature,request_signature_expires,quality):
+    #http://player.vimeo.com/play_redirect?clip_id=19284716&sig=876501f707e219dc48ae78efc83329c3&time=1297504613&quality=hd&codecs=H264,VP8,VP6&type=moogaloop_local&embed_location=
+    video_url = "http://player.vimeo.com/play_redirect?clip_id=%s&sig=%s&time=%s&quality=%s&codecs=H264,VP8,VP6&type=moogaloop_local&embed_location=" % ( videoid, request_signature, request_signature_expires , quality )
+    logger.info("[vimeo.py] video_url="+video_url)
+    txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
+                  'Host':'player.vimeo.com'}
+    
+    #buscamos la url real en el headers
+    txdata=None
+    req = urllib2.Request(video_url, txdata, txheaders)
+    
+    try:
+        opener = urllib2.build_opener(SmartRedirectHandler())
+        response = opener.open(req)
+    except ImportError, inst:
+        status,location=inst
+        logger.info(str(status) + " " + location)    
+        mediaurl = location    
+        
+    # Timeout del socket a 60 segundos
+    socket.setdefaulttimeout(10)
 
-	h=urllib2.HTTPHandler(debuglevel=0)
-	request = urllib2.Request(mediaurl)
+    h=urllib2.HTTPHandler(debuglevel=0)
+    request = urllib2.Request(mediaurl)
 
-	opener = urllib2.build_opener(h)
-	urllib2.install_opener(opener)
-	try:
-		connexion = opener.open(request)
-		video_url = connexion.geturl()
-	except urllib2.HTTPError,e:
-		xbmc.output("[vimeo.py]  error %d (%s) al abrir la url %s" % (e.code,e.msg,video_url))
-		
-		print e.read()	
+    opener = urllib2.build_opener(h)
+    urllib2.install_opener(opener)
+    try:
+        connexion = opener.open(request)
+        video_url = connexion.geturl()
+    except urllib2.HTTPError,e:
+        logger.info.output("[vimeo.py]  error %d (%s) al abrir la url %s" % (e.code,e.msg,video_url))
+        logger.info( e.read() )
 
+    return video_url
 
-
-	#print data	
-	if len(video_url) == 0:
-		logger.info(" vimeo.geturl(): result was empty")
-		return ""
-	else:				
-		logger.info (" vimeo.geturl(): done")
-		return video_url
-	'''	
-	except urllib2.HTTPError, e:
-	logger.info (" vimeo.geturl HTTPError: " + str(e))
-	return (str(e), 303)
-								
-	except:
-	logger.info (" Vimeo.geturl: uncaught exception")
-
-	return ""
-	'''
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
-	def http_error_302(self, req, fp, code, msg, headers):
-		raise ImportError(302,headers.getheader("Location"))
-		
+    def http_error_302(self, req, fp, code, msg, headers):
+        raise ImportError(302,headers.getheader("Location"))
+        
 def getNodeValue(node, tag, default = ""):
-		if node.getElementsByTagName(tag).item(0):
-			if node.getElementsByTagName(tag).item(0).firstChild:
-				return node.getElementsByTagName(tag).item(0).firstChild.nodeValue
+        if node.getElementsByTagName(tag).item(0):
+            if node.getElementsByTagName(tag).item(0).firstChild:
+                return node.getElementsByTagName(tag).item(0).firstChild.nodeValue
 
+def extract_video_id(url):
+    #http://vimeo.com/27307766
+    patron = 'http://vimeo.com/([0-9]+)'
+    matches = re.compile(patron,re.DOTALL).findall(url)
+    
+    if len(matches)>0:
+        return matches[0]
+    else:
+        return ""
 
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    return devuelve
