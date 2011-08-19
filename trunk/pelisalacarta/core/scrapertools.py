@@ -383,17 +383,19 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     # Diccionario para las cabeceras
     txheaders = {}
 
-    # Añade las cabeceras
-    for header in headers:
-        logger.info("[scrapertools.py] header="+header[0]+": "+header[1])
-        txheaders[header[0]]=header[1]
-
     # Construye el request
     if post is None:
         logger.info("[scrapertools.py] petición GET")
     else:
         logger.info("[scrapertools.py] petición POST")
     
+    # Añade las cabeceras
+    logger.info("[scrapertools.py] ---------------------------")
+    for header in headers:
+        logger.info("[scrapertools.py] header="+header[0]+": "+header[1])
+        txheaders[header[0]]=header[1]
+    logger.info("[scrapertools.py] ---------------------------")
+
     req = Request(url, post, txheaders)
     handle = urlopen(req)
     
@@ -402,7 +404,13 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
 
     # Lee los datos y cierra
     data=handle.read()
+    info = handle.info()
+    logger.info("[scrapertools.py] Respuesta")
+    logger.info("[scrapertools.py] ---------------------------")
+    for header in info:
+        logger.info("[scrapertools.py] "+header+"="+info[header])
     handle.close()
+    logger.info("[scrapertools.py] ---------------------------")
 
     '''
     # Lanza la petición
@@ -661,35 +669,7 @@ def printMatches(matches):
         i = i + 1
 
 def entityunescape(cadena):
-    from xml.sax.saxutils import unescape
-    cadena = unescape(cadena)
-
-    '''
-    cadena = cadena.replace('&amp;','&')
-    cadena = cadena.replace('&Agrave;','À')
-    cadena = cadena.replace('&Aacute;','Á')
-    cadena = cadena.replace('&Eacute;','É')
-    cadena = cadena.replace('&Iacute;','Í')
-    cadena = cadena.replace('&Oacute;','Ó')
-    cadena = cadena.replace('&Uacute;','Ú')
-    cadena = cadena.replace('&ntilde;','ñ')
-    cadena = cadena.replace('&Ntilde;','Ñ')
-    cadena = cadena.replace('&agrave;','à')
-    cadena = cadena.replace('&aacute;','á')
-    cadena = cadena.replace('&eacute;','é')
-    cadena = cadena.replace('&iacute;','í')
-    cadena = cadena.replace('&oacute;','ó')
-    cadena = cadena.replace('&uacute;','ú')
-    cadena = cadena.replace('&iexcl;','¡')
-    cadena = cadena.replace('&iquest;','¿')
-    cadena = cadena.replace('&ordf;','ª')
-    cadena = cadena.replace('&quot;','"')
-    cadena = cadena.replace('&hellip;','...')
-    cadena = cadena.replace('&#39;','\'')
-    cadena = cadena.replace('&Ccedil;','Ç')
-    cadena = cadena.replace('&ccedil;','ç')
-    '''
-    return cadena
+    return unescape(cadena)
 
 def unescape(text):
     """Removes HTML or XML character references 
@@ -798,6 +778,89 @@ def htmlclean(cadena):
     cadena = entityunescape(cadena)
     return cadena
 
+
+def slugify(title):
+    
+    #print title
+    
+    # Sustituye acentos y eñes
+    title = title.replace("Á","a")
+    title = title.replace("É","e")
+    title = title.replace("Í","i")
+    title = title.replace("Ó","o")
+    title = title.replace("Ú","u")
+    title = title.replace("á","a")
+    title = title.replace("é","e")
+    title = title.replace("í","i")
+    title = title.replace("ó","o")
+    title = title.replace("ú","u")
+    title = title.replace("À","a")
+    title = title.replace("È","e")
+    title = title.replace("Ì","i")
+    title = title.replace("Ò","o")
+    title = title.replace("Ù","u")
+    title = title.replace("à","a")
+    title = title.replace("è","e")
+    title = title.replace("ì","i")
+    title = title.replace("ò","o")
+    title = title.replace("ù","u")
+    title = title.replace("ç","c")
+    title = title.replace("Ç","C")
+    title = title.replace("Ñ","n")
+    title = title.replace("ñ","n")
+    title = title.replace("/","-")
+    title = title.replace("&amp;","&")
+
+    # Pasa a minúsculas
+    title = title.lower().strip()
+
+    # Elimina caracteres no válidos 
+    validchars = "abcdefghijklmnopqrstuvwxyz1234567890- "
+    title = ''.join(c for c in title if c in validchars)
+
+    # Sustituye espacios en blanco duplicados y saltos de línea
+    title = re.compile("\s+",re.DOTALL).sub(" ",title)
+    
+    # Sustituye espacios en blanco por guiones
+    title = re.compile("\s",re.DOTALL).sub("-",title.strip())
+
+    # Sustituye espacios en blanco duplicados y saltos de línea
+    title = re.compile("\-+",re.DOTALL).sub("-",title)
+    
+    # Arregla casos especiales
+    if title.startswith("-"):
+        title = title [1:]
+    
+    if title=="":
+        import time
+        title = "-"+str(time.time())
+
+    return title
+
+
+def remove_show_from_title(title,show):
+    #print slugify(title)+" == "+slugify(show)
+    # Quita el nombre del programa del título
+    if slugify(title).startswith(slugify(show)):
+
+        # Convierte a unicode primero, o el encoding se pierde
+        title = unicode(title,"utf-8")
+        show = unicode(show,"utf-8")
+        title = title[ len(show) : ].strip()
+
+        if title.startswith("-"):
+            title = title[ 1: ].strip()
+    
+        if title=="":
+            import time
+            title = str( time.time() )
+        
+        # Vuelve a utf-8
+        title = title.encode("utf-8","ignore")
+        show = show.encode("utf-8","ignore")
+    
+    return title
+
 def getRandom(str):
     return binascii.hexlify(md5.new(str).digest())
 
@@ -809,23 +872,23 @@ def getLocationHeaderFromResponse(url):
 
     import httplib
     parsedurl = urlparse.urlparse(url)
-    print "parsedurl=",parsedurl
+    #print "parsedurl=",parsedurl
 
     try:
         host = parsedurl.netloc
     except:
         host = parsedurl[1]
-    print "host=",host
+    #print "host=",host
 
     try:
-        print "1"
+        #print "1"
         query = parsedurl.path+";"+parsedurl.query
     except:
-        print "2"
+        #print "2"
         query = parsedurl[2]+";"+parsedurl[3]+"?"
-    print "query=",query
+    #print "query=",query
     query = urllib.unquote( query )
-    print "query = " + query
+    #print "query = " + query
 
     import httplib
     conn = httplib.HTTPConnection(host)
@@ -834,9 +897,9 @@ def getLocationHeaderFromResponse(url):
     location = response.getheader("location")
     conn.close()
     
-    print "location=",location
+    #print "location=",location
 
-    if location!=None:
-        print "Encontrado header location"
+    #if location!=None:
+    #    print "Encontrado header location"
     
     return location

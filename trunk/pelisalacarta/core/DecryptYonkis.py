@@ -9,21 +9,26 @@ import logger
 
 class DecryptYonkis:
     def decryptALT(self, str):
+        logger.info("DecriptYonkis.decriptALT("+str+")")
         strdcd = ''
         for letra in str:
             strdcd = (strdcd + chr((254 ^ ord(letra))))
+        logger.info("  ->"+strdcd)
         return strdcd
 
     def unescape(self, str):
+        logger.info("DecriptYonkis.unescape("+str+")")
         logger.info('decode %s' % str)
         strdcd = ''
         letras = str.split('%')
         letras.pop(0)
         for letra in letras:
             strdcd = (strdcd + chr(int(letra, 16)))
+        logger.info("  ->"+strdcd)
         return strdcd
         
     def charting(self,str):
+        logger.info("DecriptYonkis.charting("+str+")")
         strcd = ""
         i = 0
         c = c1 = c2 = 0
@@ -42,10 +47,12 @@ class DecryptYonkis:
                 c3     = ord(str[i+2])
                 strcd += chr((c & 15) << 12 | (c2 & 63) << 6 | c3 & 63)
                 i     += 3
+        logger.info("  ->"+strcd)
         return strcd
         
     def decryptID_series(self,str):
-        
+        logger.info("DecriptYonkis.decryptID_series("+str+")")
+
         c = self.charting(str)
         d = 17
         id = ""
@@ -76,10 +83,12 @@ class DecryptYonkis:
             else:
                 id += chr(2*f)
             d += i + 1
+        logger.info("  ->"+id)
         return  id
         
         
     def decryptID(self,str):
+        logger.info("DecriptYonkis.decryptID("+str+")")
         c = str
         d = 17
         id = ""
@@ -104,10 +113,11 @@ class DecryptYonkis:
                 id += chr(f*1)
             else:
                 id += chr(2*f)
+        logger.info("  ->"+id)
         return  id
 
     def ccM(self,str):
-    
+        logger.info("DecriptYonkis.ccM("+str+")")
         d=str
         e=900+101+43-27-1000
         f=""
@@ -126,4 +136,5 @@ class DecryptYonkis:
                 f+=chr(2*g)
         
     
+        logger.info("  ->"+f)
         return f
