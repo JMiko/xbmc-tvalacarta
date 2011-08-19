@@ -8,16 +8,9 @@
 import re, sys
 import urlparse, urllib, urllib2
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
-
-DEBUG = True
+from core import scrapertools
+from core import logger
+from core import config
 
 # Obtiene la URL que hay detrás de un enlace a linkbucks
 def geturl(url):

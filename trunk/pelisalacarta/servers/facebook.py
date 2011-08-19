@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para videos externos de facebook
@@ -8,117 +8,18 @@
 import urlparse,urllib2,urllib,re
 import os
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-    from core import unpackerjs
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import unpackerjs
+from core import scrapertools
+from core import logger
+from core import config
 
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[facebook.py] get_video_url(page_url='%s')" % page_url)
 
-def geturl(urlvideo):
-    logger.info("[facebook.py] url="+urlvideo)
-    # ---------------------------------------
-    #  Inicializa la libreria de las cookies
-    # ---------------------------------------
-    ficherocookies = COOKIEFILE
-    try:
-        os.remove(ficherocookies)
-    except:
-        pass
-    # the path and filename to save your cookies in
+    page_url = page_url.replace("amp;","")
+    data = scrapertools.cache_page(page_url)
 
-    cj = None
-    ClientCookie = None
-    cookielib = None
+    video_urls = []
 
-    # Let's see if cookielib is available
-    try:
-        import cookielib
-    except ImportError:
-        # If importing cookielib fails
-        # let's try ClientCookie
-        try:
-            import ClientCookie
-        except ImportError:
-            # ClientCookie isn't available either
-            urlopen = urllib2.urlopen
-            Request = urllib2.Request
-        else:
-            # imported ClientCookie
-            urlopen = ClientCookie.urlopen
-            Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
-
-    else:
-        # importing cookielib worked
-        urlopen = urllib2.urlopen
-        Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
-        # This is a subclass of FileCookieJar
-        # that has useful load and save methods
-
-    # ---------------------------------
-    # Instala las cookies
-    # ---------------------------------
-
-    if cj is not None:
-    # we successfully imported
-    # one of the two cookie handling modules
-
-        if os.path.isfile(ficherocookies):
-            # if we have a cookie file already saved
-            # then load the cookies into the Cookie Jar
-            cj.load(ficherocookies)
-
-        # Now we need to get our Cookie Jar
-        # installed in the opener;
-        # for fetching URLs
-        if cookielib is not None:
-            # if we use cookielib
-            # then we get the HTTPCookieProcessor
-            # and install the opener in urllib2
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-            urllib2.install_opener(opener)
-
-        else:
-            # if we use ClientCookie
-            # then we get the HTTPCookieProcessor
-            # and install the opener in ClientCookie
-            opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(cj))
-            ClientCookie.install_opener(opener)
-
-    #print "-------------------------------------------------------"
-    url=urlvideo.replace("amp;","")
-    #print "-------------------------------------------------------"
-    theurl = url
-    # an example url that sets a cookie,
-    # try different urls here and see the cookie collection you can make !
-
-    txdata = None
-    # if we were making a POST type request,
-    # we could encode a dictionary of values here,
-    # using urllib.urlencode(somedict)
-
-    txheaders =  {'User-Agent':'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)'}
-    # fake a user agent, some websites (like google) don't like automated exploration
-
-    req = Request(theurl, txdata, txheaders)
-    handle = urlopen(req)
-    cj.save(ficherocookies)                     # save the cookies again    
-
-    data=handle.read()
-    handle.close()
-    
-    # Extrae la URL
-
-    videourl = ""
-        
     patron  = "src.*?(http.*?)%22%2C%22video_timestamp" 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -127,6 +28,48 @@ def geturl(urlvideo):
         logger.info(match)
         videourl = videourl.replace('%5C','')
         videourl = urllib.unquote(videourl)
-                
-    return videourl
+        video_urls.append( [ "[facebook]" , videourl ] )
 
+    for video_url in video_urls:
+        logger.info("[facebook.py] %s - %s" % (video_url[0],video_url[1]))
+
+    return video_urls
+
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    # Facebook para buenaisla...") #http%3A%2F%2Fwww.facebook.com%2Fv%2F139377799432141_23545.mp4
+    patronvideos  = "www.facebook.com(?:/|%2F)v(?:/|%2F)(.*?)(?:&|%26)"
+    logger.info("[facebook.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[Facebook]"
+        url = "http://www.facebook.com/video/external_video.php?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'facebook' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)        
+
+    # Estos vídeos son en realidad enlaces directos
+    #http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
+    patronvideos  = '(http://video.ak.facebook.com/.*?\.mp4)'
+    logger.info("[facebook.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[facebook]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

@@ -1,25 +1,16 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para linkbucks
+# Convierte una lista de vídeos en xml a una playlist PLS
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-
 import re, os
 import urlparse, urllib, urllib2
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-    from core import downloadtools
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import downloadtools
-
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
+from core import scrapertools
+from core import logger
+from core import config
+from core import downloadtools
 
 DEBUG = True
 CHANNELNAME = "xmltoplaylist"
@@ -28,10 +19,12 @@ FULL_FILENAME_PATH_XML = os.path.join( downloadtools.getDownloadPath(), PLAYLIST
 PLAYLIST_FILENAME_TEMP = "video_playlist.temp.pls"
 FULL_FILENAME_PATH = os.path.join( downloadtools.getDownloadPath(), PLAYLIST_FILENAME_TEMP )
 
-def geturl(xmlurl,title="default"):
-    logger.info("[xmltoplaylist.py] geturl")
-    
-    return MakePlaylistFromXML(xmlurl)
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[xmltoplaylist.py] get_video_url(page_url='%s')" % page_url)
+
+    video_urls = [ ["[directo]" , MakePlaylistFromXML(page_url)] ]
+    return video_urls
     
 def MakePlaylistFromXML(xmlurl,title="default"):
     logger.info("[%s.py] MakePlaylistFromXML" %CHANNELNAME)

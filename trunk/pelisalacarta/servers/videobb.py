@@ -61,23 +61,6 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    '''
-    patronvideos  = "(http\:\/\/videobb.com\/e\/[a-zA-Z0-9]+)"
-    logger.info("[videobb.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[videobb]"
-        url = match
-    
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'videobb' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-    '''
-    
     patronvideos  = "(http\:\/\/(?:www\.)?videobb.com\/(?:(?:e/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{12})"
     logger.info("[videobb.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
