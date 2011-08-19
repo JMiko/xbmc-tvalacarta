@@ -33,11 +33,11 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 DEBUG = True
 
 # TODO: (3.2) Esto es un lío, hay que unificar
-def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context=0):
-    ok = addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems,fanart,context)
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context=0, show=""):
+    ok = addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems,fanart,context,show)
     return ok
 
-def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart="",context=0):
+def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart="",context=0,show=""):
     contextCommands = []
     ok = False
     #logger.info("pluginhandle=%d" % pluginhandle)
@@ -56,14 +56,14 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         title = title.encode ("utf-8") #This only aplies to unicode strings. The rest stay as they are.
     except:
         pass
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus(title) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie)
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s&show=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus(title) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ))
 
     if Serie != "": #Añadimos opción contextual para Añadir la serie completa a la biblioteca
-        addSerieCommand = "XBMC.RunPlugin(%s?channel=%s&action=addlist2Library&category=%s&title=%s&url=%s&extradata=%s&Serie=%s)" % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( extradata ) , Serie)
+        addSerieCommand = "XBMC.RunPlugin(%s?channel=%s&action=addlist2Library&category=%s&title=%s&url=%s&extradata=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ) )
         contextCommands.append(("Añadir Serie a Biblioteca",addSerieCommand))
         
     if context == 1 and accion != "por_teclado":
-        DeleteCommand = "XBMC.RunPlugin(%s?channel=buscador&action=borrar_busqueda&title=%s&url=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( title ) , urllib.quote_plus( url ) )
+        DeleteCommand = "XBMC.RunPlugin(%s?channel=buscador&action=borrar_busqueda&title=%s&url=%s&show=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( show ) )
         contextCommands.append((config.get_localized_string( 30300 ),DeleteCommand))
         
     if len (contextCommands) > 0:
@@ -74,7 +74,7 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
     return ok
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle="", totalItems = 0):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle="", totalItems = 0, show=""):
     contextCommands = []
     ok = False
     if DEBUG:
@@ -90,13 +90,13 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
         listitem.setProperty('IsPlayable', 'true')
     #listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
     if context == 1: #El uno añade al menu contextual la opcion de guardar en megalive un canal a favoritos
-        addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s)" % ( sys.argv[ 0 ] , canal , "saveChannelFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)
+        addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ] , canal , "saveChannelFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus(show) )
         contextCommands.append((config.get_localized_string(30301),addItemCommand))
         
     if context == 2:#El dos añade al menu contextual la opciones de eliminar y/o renombrar un canal en favoritos 
-        addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s)" % ( sys.argv[ 0 ] , canal , "deleteSavedChannel" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)
+        addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ] , canal , "deleteSavedChannel" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus( show) )
         contextCommands.append((config.get_localized_string(30302),addItemCommand))
-        addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s)" % ( sys.argv[ 0 ] , canal , "renameChannelTitle" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie)
+        addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ] , canal , "renameChannelTitle" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus( show) )
         contextCommands.append((config.get_localized_string(30303),addItemCommand))    
     if len (contextCommands) > 0:
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
@@ -106,7 +106,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     except:
         pass
     
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle))
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s&show=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle), urllib.quote_plus( show ) )
     #logger.info("[xbmctools.py] itemurl=%s" % itemurl)
     if totalItems == 0:
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
@@ -133,6 +133,10 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
     itemurl = '%s?channel=%s&action=play&category=%s&url=%s&server=%s&title=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , category , urllib.quote_plus(url) , server , urllib.quote_plus( nombre ) , Serie)
     xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
 
+def play_video(channel="",server="",url="",category="",title="",thumbnail="",plot="",desdefavoritos=False,desdedescargados=False,desderrordescargas=False,strmfile=False,Serie="",subtitle=""):
+    logger.info("[xbmctools.py] play_video(channel=%s, server=%s, url=%s, category=%s, title=%s, thumbnail=%s, plot=%s, desdefavoritos=%s, desdedescargados=%s, desderrordescargas=%s, strmfile=%s, Serie=%s, subtitle=%s" % (channel,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile,Serie,subtitle))
+    playvideoEx(canal=channel, server=server, url=url, category=category, title=title, plot=plot, desdefavoritos=desdefavoritos, desdedescargados=desdedescargados, desderrordescargas=desderrordescargas,strmfile=strmfile, Serie=Serie, subtitle=subtitle)
+
 def playvideo(canal,server,url,category,title,thumbnail,plot,strmfile=False,Serie="",subtitle=""):
     playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,False,strmfile,Serie,subtitle)
 
@@ -145,13 +149,14 @@ def playvideo3(canal,server,url,category,title,thumbnail,plot):
 def playvideo4(canal,server,url,category,title,thumbnail,plot):
     playvideoEx(canal,server,url,category,title,thumbnail,plot,False,False,True)
 
-def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile=False,Serie="",subtitle=""):
+def playvideoEx(canal="",server="",url="",category="",title="",thumbnail="",plot="",desdefavoritos="",desdedescargados="",desderrordescargas="",strmfile=False,Serie="",subtitle=""):
 
     try:
         server = server.lower()
     except:
         server = ""
 
+    '''
     logger.info("[xbmctools.py] playvideo")
     logger.info("[xbmctools.py] playvideo canal="+canal)
     logger.info("[xbmctools.py] playvideo server="+server)
@@ -159,20 +164,44 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
     logger.info("[xbmctools.py] playvideo category="+category)
     logger.info("[xbmctools.py] playvideo serie="+Serie)
     logger.info("[xbmctools.py] playvideo subtitle="+config.get_setting("subtitulo")+" "+subtitle)
-    
+    '''
+
     # Abre el diálogo de selección
     opciones = []
+    video_urls = []
     default_action = config.get_setting("default_action")
     logger.info("default_action="+default_action)
+
+    if (server=="directo"):
+        video_urls = [["%s [directo]" % url[-4:],url]]
+    else:
+        # Muestra un diálogo de progreso
+        import xbmcgui
+        progreso = xbmcgui.DialogProgress()
+        progreso.create( "pelisalacarta" , "Conectando con %s..." % server)
+
+        # Extrae todos los enlaces posibles
+        exec "from servers import "+server+" as server_connector"
+        video_urls = server_connector.get_video_url( page_url=url , premium=config.get_setting("megavideopremium") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword"), video_password="" )
+
+        # Cierra el diálogo de progreso
+        progreso.close()
+
+    for video_url in video_urls:
+        opciones.append(config.get_localized_string(30151) + " " + video_url[0])
+
+    '''
     # Los vídeos de Megavídeo sólo se pueden ver en calidad alta con cuenta premium
     # Los vídeos de Megaupload sólo se pueden ver con cuenta premium, en otro caso pide captcha
     if (server=="megavideo") and config.get_setting("megavideopremium")=="true":
+        
         opcion = config.get_localized_string(30150)+" ["+server+"]"
         logger.info(opcion)
         opciones.append(opcion) # "Ver en calidad alta"
         # Si la accion por defecto es "Ver en calidad alta", la seleccion se hace ya
         if default_action=="2":
             seleccion = len(opciones)-1
+
     elif (server=="megaupload"):
 
         opcion = config.get_localized_string(30150)+" ["+server+"]"
@@ -197,7 +226,8 @@ def playvideoEx(canal,server,url,category,title,thumbnail,plot,desdefavoritos,de
         # Si la accion por defecto es "Ver en calidad baja", la seleccion se hace ya
         if default_action<>"0":  #Si hay alguna calidad elegida (alta o baja) seleccionarmos esta para los no megavideo
             seleccion = len(opciones)-1
-
+    '''
+    
     if config.get_setting("download.enabled")=="true":
         opcion = config.get_localized_string(30153)
         logger.info(opcion)
@@ -635,14 +665,14 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
                 item.category = category
             if item.folder :
                 if len(item.extra)>0:
-                    addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context )
+                    addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context, show=item.show )
                 else:
-                    addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context  )
+                    addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context, show=item.show  )
             else:
                 if item.duration:
-                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems  )
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems, show=item.show  )
                 else:    
-                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems )
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems, show=item.show )
     
         # Cierra el directorio
         xbmcplugin.setContent(pluginhandle,"Movies")

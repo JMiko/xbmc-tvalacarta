@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Descifra el empaquetado javascript PACK de Dean Edwards
@@ -9,13 +9,14 @@
 import urlparse,urllib2,urllib,re
 import os.path
 import sys
-import xbmc
 import os
-import scrapertools
-import config
+
+from core import scrapertools
+from core import config
+from core import logger
 
 def unpackjs(texto):
-    xbmc.output("unpackjs")
+    logger.info("unpackjs")
     # Extrae el cuerpo de la funcion
     patron = "eval\(function\(p\,a\,c\,k\,e\,d\)\{[^\}]+\}(.*?)\.split\('\|'\)\)\)"
     matches = re.compile(patron,re.DOTALL).findall(texto)
@@ -24,15 +25,15 @@ def unpackjs(texto):
     # Separa el código de la tabla de conversion
     if len(matches)>0:
         data = matches[0]
-        xbmc.output("[divxden.py] bloque funcion="+data)
+        logger.info("[divxden.py] bloque funcion="+data)
     else:
         return ""
     patron = "(.*)'([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     cifrado = matches[0][0]
-    xbmc.output("[divxden.py] cifrado="+cifrado)
-    xbmc.output("[divxden.py] palabras="+matches[0][1])
+    logger.info("[divxden.py] cifrado="+cifrado)
+    logger.info("[divxden.py] palabras="+matches[0][1])
     descifrado = ""
     
     # Crea el dicionario con la tabla de conversion
@@ -46,7 +47,7 @@ def unpackjs(texto):
             diccionario[claves[i]]=palabra
         else:
             diccionario[claves[i]]=claves[i]
-        xbmc.output(claves[i]+"="+palabra)
+        logger.info(claves[i]+"="+palabra)
         i=i+1
 
     # Sustituye las palabras de la tabla de conversion
@@ -58,7 +59,7 @@ def unpackjs(texto):
     # Invierte las claves, para que tengan prioridad las más largas
     claves.reverse()
     cadenapatron = '|'.join(claves)
-    #xbmc.output("[divxden.py] cadenapatron="+cadenapatron)
+    #logger.info("[divxden.py] cadenapatron="+cadenapatron)
     compiled = re.compile(cadenapatron)
     descifrado = compiled.sub(lookup, cifrado)
 
