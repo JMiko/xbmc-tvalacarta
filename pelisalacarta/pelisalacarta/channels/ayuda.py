@@ -7,7 +7,6 @@
 #----------------------------------------------------------------------
 import re
 from core import scrapertools
-from core import xbmctools
 from core import config
 from core import logger
 from core.item import Item
@@ -24,7 +23,7 @@ def isGeneric():
     return True
 
 def fixSTRMLibrary(params,url,category):
-    from core import library
+    from platform.xbmc import library
     total,errores = library.fixStrmLibrary()
     import xbmcgui
     dlg = xbmcgui.Dialog()
