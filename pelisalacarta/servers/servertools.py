@@ -25,6 +25,9 @@ def findvideos(data):
 
     # ---------------------------
     
+    import directo
+    devuelve.extend(directo.find_videos(data))
+    
     # adnstream
     import adnstream
     devuelve.extend(adnstream.find_videos(data))
