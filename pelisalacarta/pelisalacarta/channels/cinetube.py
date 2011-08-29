@@ -129,6 +129,7 @@ def peliculas(item):
         scrapedtitle = scrapedtitle.replace("descarga directa","DD")
 
         # Convierte desde UTF-8 y quita entidades HTML
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
 
         # procesa el resto
@@ -149,8 +150,12 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True) )
-
+        pagitem = Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True)
+        if config.get_platform()=="developer":
+            itemlist.extend( peliculas(pagitem) )
+        else:
+            itemlist.append( pagitem )
+        
     return itemlist
 
 def documentales(item):
@@ -336,22 +341,30 @@ def temporadas(item):
     data = scrapertools.cachePage(item.url)
 
     # Busca el argumento
-    patronvideos  = '<div class="ficha_des des_move">(.*?)</div>'
+    patronvideos  = '<div class="content">.*?<p>(.*?)</p>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
-        data = matches[0]
         scrapedplot = scrapertools.htmlclean(matches[0])
         logger.info("plot actualizado en detalle");
     else:
         logger.info("plot no actualizado en detalle");
 
     # Busca las temporadas
-    patronvideos  = '<li><h2><a href="([^"]+)">([^<]+)<'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    patron = '<div class="temporadas">.*?<tbody>(.*?)</tbody>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    if len(matches)>0:
+        data = matches[0]
+    
+    patron  = '<tr><td[^>]+></td>[^<]+'
+    patron += '<td><a href="([^"]+)">([^<]+)</a></td>[^<]+'
+    patron += '<td>([^<]+)</td>[^<]+'
+    patron += '<td><img src="[^"]+" alt="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = match[1].strip()
+        scrapedtitle = match[1].strip()+" ("+match[2]+", "+match[3]+")"
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -370,7 +383,13 @@ def temporadas(item):
 
 def episodios(item):
     '''
-    <div class="title"> <a class="bold" href="/series/geronimo-stilton/temporada-1/capitulo-5/">Geronimo Stilton 1x05 </a></div>
+    <li>
+    <span class="link"><a href="/series/star-wars-las-guerras-clon/temporada-1/capitulo-13/">Star Wars: Las Guerras Clon 1x13 </a></span>
+    <dl>
+    <dt>Información</dt>
+    <dd class="n"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="Español" /></dd><dd class="n"><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="megavideo.png" /></dd><dd class="n"><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="Descarga" /></dd>											</dl>
+    <p><span><a id="novisto_27325" class="novisto" onclick="cap_yavisto('27325',1,1)">No Visto</a></span> <span><a href="/series/star-wars-las-guerras-clon/temporada-1/capitulo-13/">Ver Ficha</a></span></p>
+        </li>
     '''
     logger.info("[cinetube.py] episodios")
     itemlist = []
@@ -379,8 +398,12 @@ def episodios(item):
     data = scrapertools.cachePage(item.url)
 
     # Busca los episodios
-    patronvideos  = '<div class="title"> <a class="bold" href="([^"]+)">([^<]+)</a></div>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    patron  = '<li>[^<]+'
+    patron += '<span class="link"><a href="([^"]+)">([^<]+)</a></span>[^<]+'
+    patron += '<dl>[^<]+'
+    patron += '<dt>Info[^<]+</dt>[^<]+'
+    patron += '<dd class="n"><img src="[^"]+" alt="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
@@ -448,16 +471,20 @@ def findvideos(item):
         logger.info("Encontrado iframe mirrors "+match[0])
         # Lee el iframe
         mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
+        data = scrapertools.cache_page(mirror)
+        '''
         req = urllib2.Request(mirror)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         data=response.read()
         response.close()
-        
+        '''
+
         listavideos = servertools.findvideos(data)
         
         for video in listavideos:
-            scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
+            #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
+            scrapedtitle = match[1] + " " + match[2] + " " + video[0]
             scrapedtitle = scrapertools.htmlclean(scrapedtitle)
             scrapedurl = video[1]
             server = video[2]
