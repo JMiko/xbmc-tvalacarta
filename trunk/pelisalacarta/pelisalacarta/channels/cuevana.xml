@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>8</tag>
-	<date>31/07/2011</date>
-	<changes>Se puso condicional el import de xbmc solo cuando esta corriendo el xbmc, se agrego la opcion de ver Proximas que son las ultimas peliculas subidas</changes>
+	<tag>9</tag>
+	<date>08/09/2011</date>
+	<changes>Arreglo error 409</changes>
 </version>
