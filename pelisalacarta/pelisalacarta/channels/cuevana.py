@@ -11,9 +11,7 @@ from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-from core import xbmctools
 from servers import servertools
-from core import library
 
 CHANNELNAME = "cuevana"
 DEBUG = True
@@ -78,11 +76,11 @@ def listadoAlfabetico(item):
 def novedades(item):
     if (DEBUG): logger.info("[cuevana.py] novedades login")
     try:
-        p = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
-        data = scrapertools.downloadpage("http://www.cuevana.tv/login_get.php",p)
+        post = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
+        data = scrapertools.cache_page("http://www.cuevana.tv/login_get.php",post=post)
     except:
         pass
-    data = scrapertools.downloadpagewithcookies(item.url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
     '''
@@ -127,7 +125,7 @@ def series(item):
     logger.info("[cuevana.py] series")
     
     # Descarga la pagina
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
     patron  = 'serieslist.push\(\{id\:([0-9]+),nombre\:"([^"]+)"\}\);'
@@ -150,7 +148,7 @@ def temporadas(item):
     logger.info("[cuevana.py] temporadas")
 
     # Descarga la pagina
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
     patron  = '<li onclick=\'listSeries\(2,"([^"]+)"\)\'>([^<]+)</li>'
@@ -174,7 +172,7 @@ def episodios(item):
     logger.info("[cuevana.py] episodios")
 
     # Descarga la pagina
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
     #<li onclick='listSeries(3,"5099")'><span class='nume'>1</span> Truth Be Told</li>
@@ -340,6 +338,9 @@ def listar(item):
 
 def strm_detail(item):
     logger.info("[cuevana.py] strm_detail")
+    from platform.xbmc import xbmctools
+    import xbmc
+    
     code =""
     if (item.url.startswith("http://www.cuevana.tv/list_search_info.php")):
         data = scrapertools.cachePage(item.url)
@@ -392,23 +393,25 @@ def strm_detail(item):
 
     listavideos = servertools.findvideos(data)
     
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        import xbmc
     for video in listavideos:
         server = video[2]
         if server == "Megaupload":
-          scrapedtitle = item.title + " [" + server + "]"
-          scrapedurl = video[1]
-          thumbnail = urllib.unquote_plus( item.thumbnail )
-          plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-          # xbmctools.playvideo("cuevana","megaupload","G0NMCIXJ","Series","24","","",strmfile=True)
-          xbmctools.playvideo(CHANNELNAME,server,scrapedurl,"Series",scrapedtitle,item.thumbnail,item.plot,strmfile=True,subtitle=suburl)
-          exit
+            scrapedtitle = item.title + " [" + server + "]"
+            scrapedurl = video[1]
+            thumbnail = urllib.unquote_plus( item.thumbnail )
+            plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+            # xbmctools.play_video("cuevana","megaupload","G0NMCIXJ","Series","24","","",strmfile=True)
+            xbmctools.play_video(CHANNELNAME,server,scrapedurl,"Series",scrapedtitle,item.thumbnail,item.plot,strmfile=True,subtitle=suburl)
+            exit
     logger.info("[cuevana.py] strm_detail fin")
     return
 
 def addlist2Library(item):
     logger.info("[cuevana.py] addlist2Library")
+
+    from platform.xbmc import library
+    import xbmcgui
+
     itemlist = []
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -419,8 +422,6 @@ def addlist2Library(item):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        import xbmcgui
     pDialog = xbmcgui.DialogProgress()
     ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
     pDialog.update(0, 'Añadiendo episodio...')
@@ -451,5 +452,6 @@ def addlist2Library(item):
             logger.info("Error al grabar el archivo "+scrapedtitle)
             errores = errores + 1
     if errores > 0:
-        logger.info ("[cuevana.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
+        logger.info ("[cuevana.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios")
+
     library.update(totalepisodes,errores,nuevos)
