@@ -338,7 +338,7 @@ def listar(item):
 
 def strm_detail(item):
     logger.info("[cuevana.py] strm_detail")
-    from platform.xbmc import xbmctools
+    from core import xbmctools
     import xbmc
     
     code =""
@@ -400,8 +400,7 @@ def strm_detail(item):
             scrapedurl = video[1]
             thumbnail = urllib.unquote_plus( item.thumbnail )
             plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-            # xbmctools.play_video("cuevana","megaupload","G0NMCIXJ","Series","24","","",strmfile=True)
-            xbmctools.play_video(CHANNELNAME,server,scrapedurl,"Series",scrapedtitle,item.thumbnail,item.plot,strmfile=True,subtitle=suburl)
+            xbmctools.playvideo(CHANNELNAME,server,scrapedurl,"Series",scrapedtitle,item.thumbnail,item.plot,strmfile=True,subtitle=suburl)
             exit
     logger.info("[cuevana.py] strm_detail fin")
     return
@@ -409,9 +408,8 @@ def strm_detail(item):
 def addlist2Library(item):
     logger.info("[cuevana.py] addlist2Library")
 
-    from platform.xbmc import library
+    from core import library
     import xbmcgui
-
     itemlist = []
     # Descarga la página
     data = scrapertools.cachePage(item.url)
