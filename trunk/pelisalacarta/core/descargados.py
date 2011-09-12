@@ -8,50 +8,40 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 
-from core import downloadtools
+from core import config
 from core import logger
+from core.item import Item
 
 CHANNELNAME = "descargados"
-
-# Traza el inicio del canal
-logger.info("[descargados.py] init")
-
 DEBUG = True
 
-def mainlist(params,url,category):
-    import xbmc
-    import xbmcgui
-    import xbmcplugin
-    from core import xbmctools
+def isGeneric():
+    return True
 
+def mainlist(item):
     logger.info("[descargados.py] mainlist")
+    itemlist=[]
 
-    # Verifica ruta de descargas
-    downloadpath = downloadtools.getDownloadPath()
+    # Lee la ruta de descargas
+    downloadpath = config.get_setting("downloadpath")
+
     logger.info("[descargados.py] downloadpath=" + downloadpath)
     #logger.info("[descargados.py] pluginhandle=" + pluginhandle)
 
-    xbmctools.addnewfolder( "descargadoslist" , "mainlist"  , category , "Descargas pendientes","","","")
-    xbmctools.addnewfolder( "descargadoslist" , "errorlist"  , category , "Descargas con error","","","")
+    itemlist.append( Item( channel="descargadoslist", action="mainlist", title="Descargas pendientes"))
+    itemlist.append( Item( channel="descargadoslist", action="errorlist", title="Descargas con error"))
 
     # Añade al listado de XBMC
     try:
         ficheros = os.listdir(downloadpath)
         for fichero in ficheros:
             logger.info("[descargados.py] fichero=" + fichero)
-            if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=downloadtools.getDownloadListPath():
+            if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
                 url = os.path.join( downloadpath , fichero )
-                listitem = xbmcgui.ListItem( fichero, iconImage="DefaultVideo.png" )
-                xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url = url, listitem=listitem, isFolder=False)
+                itemlist.append( Item( channel="descargados", action="play", title=fichero, url=url, server="local", folder=False))
+
     except:
         logger.info("[descargados.py] exception on mainlist")
         pass
-    
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
