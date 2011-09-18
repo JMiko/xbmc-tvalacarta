@@ -24,7 +24,6 @@ db = dict()
 def builddict():
     try:
         f = open( os.path.join( config.get_data_path() , "notas.tab" , "r" ) )
-        # f = open(os.getcwd()+"/fa.tab","r")
     
         for line in f:
             l = line.split("\t")

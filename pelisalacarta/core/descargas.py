@@ -1,42 +1,61 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Lista de descargas
+# Lista de vídeos descargados
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import urllib
+import urlparse,urllib2,urllib,re
 import os
 import sys
 
-import downloadtools
-import config
-import logger
-import samba
-from platform.xbmc import xbmctools
-import favoritos
+from core import config
+from core import logger
+from core import samba
+from core import favoritos
+from core.item import Item
 
-from servers import servertools
-
-CHANNELNAME = "descargadoslist"
+CHANNELNAME = "descargas"
 DEBUG = True
+
 DOWNLOAD_LIST_PATH = config.get_setting("downloadlistpath")
 IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' )
 ERROR_PATH = os.path.join( DOWNLOAD_LIST_PATH, 'error' )
 usingsamba = DOWNLOAD_LIST_PATH.upper().startswith("SMB://")
 
-if not usingsamba:
-    # Crea el directorio de la lista de descargas si no existe
+def isGeneric():
+    return True
+
+def mainlist(item):
+    logger.info("[descargados.py] mainlist")
+    itemlist=[]
+
+    # Lee la ruta de descargas
+    downloadpath = config.get_setting("downloadpath")
+
+    logger.info("[descargados.py] downloadpath=" + downloadpath)
+    #logger.info("[descargados.py] pluginhandle=" + pluginhandle)
+
+    itemlist.append( Item( channel="descargas", action="pendientes", title="Descargas pendientes"))
+    itemlist.append( Item( channel="descargas", action="errores", title="Descargas con error"))
+
+    # Añade al listado de XBMC
     try:
-        os.mkdir(DOWNLOAD_LIST_PATH)
+        ficheros = os.listdir(downloadpath)
+        for fichero in ficheros:
+            logger.info("[descargados.py] fichero=" + fichero)
+            if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
+                url = os.path.join( downloadpath , fichero )
+                itemlist.append( Item( channel="descargados", action="play", title=fichero, url=url, server="local", folder=False))
+
     except:
-        pass
-    try:
-        os.mkdir(ERROR_PATH)
-    except:
+        logger.info("[descargados.py] exception on mainlist")
         pass
 
-def mainlist(params,url,category):
-    logger.info("[descargadoslist.py] mainlist")
+    return itemlist
+
+def pendientes(item):
+    logger.info("[descargas.py] pendientes")
+    itemlist=[]
 
     # Crea un listado con las entradas de favoritos
     if usingsamba:
@@ -56,23 +75,19 @@ def mainlist(params,url,category):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( DOWNLOAD_LIST_PATH, fichero ) , server , titulo , url , thumbnail, plot  , fanart=thumbnail)
+            itemlist.append( Item( channel=CHANNELNAME , action="play" , url=url , server=server, title=titulo, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
+
         except:
             pass
-            logger.info("[downloadall.py] error al leer bookmark")
+            logger.info("[descargas.py] error al leer bookmark")
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
-    xbmctools.addnewvideo( CHANNELNAME , "downloadall" , "category" , "server" , "(Empezar la descarga de la lista)" , "" , os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png"), "" )
+    itemlist.append( Item( channel=CHANNELNAME , action="downloadall" , title="(Empezar la descarga de la lista)", thumbnail=os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png") , folder=False ))
 
-    # Label (top-right)...
-    import xbmcplugin
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def errorlist(params,url,category):
+def errorlist(item):
     logger.info("[descargadoslist.py] errorlist")
 
     # Crea un listado con las entradas de favoritos
@@ -231,31 +246,20 @@ def downloadall(params,url,category):
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-    
-def play(params,url,category):
-    logger.info("[descargadoslist.py] play")
-
-    import xbmc
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-    
-    play_video(CHANNELNAME,server,url,category,title,thumbnail,plot,desdefavoritos=False,desdedescargados=True,desderrordescargas=False)
-    
-def playerror(params,url,category):
-    logger.info("[descargadoslist.py] play")
-
-    import xbmc
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-
-    xbmctools.play_video(channel=CHANNELNAME,server=server,url=url,category=category,title=title,thumbnail=thumbnail,plot=plot,desdefavoritos=False,desdedescargados=False,desderrordescargas=True)
 
 def savebookmark(titulo,url,thumbnail,server,plot,savepath=DOWNLOAD_LIST_PATH):
     favoritos.savebookmark(titulo,url,thumbnail,server,plot,savepath)
 
 def deletebookmark(fullfilename,deletepath=DOWNLOAD_LIST_PATH):
     favoritos.deletebookmark(fullfilename,deletepath)
+
+def borrar_descarga(fullfilename):
+    os.remove(fullfilename)
+
+def mover_descarga_error_a_pendiente(fullfilename):
+    # La categoría es el nombre del fichero en favoritos, así que lee el fichero
+    titulo,thumbnail,plot,server,url = favoritos,readbookmarkfile(fullfilename,"")
+    # Lo añade a la lista de descargas
+    descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+    # Y lo borra de la lista de errores
+    os.remove(urllib.unquote_plus( extra ))

@@ -20,8 +20,10 @@ class Item(object):
     subtitle = ""
     totalItems =0
     overlay = None
+    password = ""
+    fulltitle = ""
 
-    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = 0,totalItems = 0, overlay = None, type="" ):
+    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = 0,totalItems = 0, overlay = None, type="", password="", fulltitle="" ):
         self.channel = channel
         self.title = title
         self.url = url
@@ -46,6 +48,8 @@ class Item(object):
         self.subtitle = subtitle
         self.totalItems = totalItems
         self.overlay = overlay
+        self.password = password
+        self.fulltitle = fulltitle
 
     def tostring(self):
         return "title=["+self.title+"], url=["+self.url+"], thumbnail=["+self.thumbnail+"], action=["+self.action+"], show=["+self.show+"], category=["+self.category+"]"

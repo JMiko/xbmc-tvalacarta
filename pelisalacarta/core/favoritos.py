@@ -11,6 +11,7 @@ import downloadtools
 import config
 import logger
 import samba
+from item import Item
 
 CHANNELNAME = "favoritos"
 DEBUG = True
@@ -25,10 +26,12 @@ if not BOOKMARK_PATH.upper().startswith("SMB://"):
 
 logger.info("[favoritos.py] path="+BOOKMARK_PATH)
 
-def mainlist(params,url,category):
-    logger.info("[favoritos.py] mainlist")
+def isGeneric():
+    return True
 
-    import xbmctools
+def mainlist(item):
+    logger.info("[favoritos.py] mainlist")
+    itemlist=[]
 
     # Crea un listado con las entradas de favoritos
     if usingsamba(BOOKMARK_PATH):
@@ -47,29 +50,13 @@ def mainlist(params,url,category):
             titulo,thumbnail,plot,server,url = readbookmark(fichero)
 
             # Crea la entrada
-            # En la categoría va el nombre del fichero para poder borrarlo
-            xbmctools.addnewvideo( CHANNELNAME , "play" , os.path.join( BOOKMARK_PATH, fichero ) , server , titulo , url , thumbnail, plot , fanart=thumbnail )
+            # En extra va el nombre del fichero para poder borrarlo
+            itemlist.append( Item( channel=CHANNELNAME , action="play" , url=url , server=server, title=titulo, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), folder=False ))
         except:
-            pass
-
-    # Label (top-right)...
-    import xbmcplugin
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def play(params,url,category):
-    logger.info("[favoritos.py] play")
-
-    import xbmc
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
     
-    import xbmctools
-    xbmctools.playvideo2(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    return itemlist
 
 def readbookmark(filename,readpath=BOOKMARK_PATH):
     logger.info("[favoritos.py] readbookmark")
@@ -136,9 +123,9 @@ def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
         #filenumber = int( ficheros[len(ficheros)-1][0:-4] )+1
         filenumber = 1
         for fichero in ficheros:
-            logger.info("fichero="+fichero)
+            logger.info("[favoritos.py] fichero="+fichero)
             try:
-                tmpfilenumber = int( fichero[0:-4] )+1
+                tmpfilenumber = int( fichero[0:8] )+1
                 if tmpfilenumber > filenumber:
                     filenumber = tmpfilenumber
             except:
@@ -154,8 +141,9 @@ def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
     filecontent = filecontent + urllib.quote_plus(server)+'\n'
     filecontent = filecontent + urllib.quote_plus(downloadtools.limpia_nombre_excepto_1(plot))+'\n'
 
-    # Genera el nombre de fichero    
-    filename = '%08d.txt' % filenumber
+    # Genera el nombre de fichero
+    from core import scrapertools
+    filename = '%08d-%s.txt' % (filenumber,scrapertools.slugify(titulo))
     logger.info("[favoritos.py] savebookmark filename="+filename)
 
     # Graba el fichero
@@ -169,13 +157,15 @@ def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
         samba.write_file(filename, filecontent, savepath)
 
 def deletebookmark(fullfilename,deletepath=BOOKMARK_PATH):
-    
+    logger.info("[favoritos.py] deletebookmark(fullfilename="+fullfilename+",deletepath="+deletepath+")")
+
     if not usingsamba(deletepath):
         os.remove(urllib.unquote_plus( fullfilename ))
     else:
         fullfilename = fullfilename.replace("\\","/")
         partes = fullfilename.split("/")
         filename = partes[len(partes)-1]
+        logger.info("[favoritos.py] deletebookmark(filename="+filename+")")
         samba.remove_file(filename,deletepath)
 
 def usingsamba(path):

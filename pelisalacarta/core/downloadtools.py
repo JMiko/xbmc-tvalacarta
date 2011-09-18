@@ -325,97 +325,6 @@ entitydefs3 = {
     u'æ':       u'ae'
 }
 
-def getDownloadPath():
-    
-    # La ruta de descarga es un parámetro
-    downloadpath = config.get_setting("downloadpath")
-    
-    # No está fijada, intenta forzarla
-    try:
-        if downloadpath == "":
-            logger.info("[downloadtools.py] downloadpath está vacio")
-            
-            # Busca un setting del skin (Telebision)
-            try:
-                import xbmc
-                downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-                logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
-            except:
-                downloadpath = ""
-            
-            # No es Telebision, fuerza el directorio home de XBMC
-            if downloadpath == "":
-                downloadpath = os.path.join (config.get_data_path(),"downloads")
-                logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-                if not os.path.exists(downloadpath):
-                    logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
-                    os.mkdir(downloadpath)
-                config.set_setting("downloadpath",downloadpath)
-            
-            # Es Telebision, lo pone en el skin
-            else:
-                # guardar setting del skin en setting del plugin
-                downloadpath = xbmc.translatePath( downloadpath )
-                logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
-                config.set_setting("downloadpath", downloadpath)
-    except:
-        pass
-    
-    logger.info("[downloadtools.py] downloadpath="+downloadpath)
-    
-    try:
-        os.mkdir(downloadpath)
-    except:
-        pass
-
-    return downloadpath
-
-def getDownloadListPath():
-    
-    # La ruta de la lista de descargas es un parámetro
-    downloadpath = config.get_setting("downloadlistpath")
-    
-    # No está fijada, intenta forzarla
-    try:
-        if downloadpath == "":
-            logger.info("[downloadtools.py] downloadpath está vacio")
-            
-            # Busca un setting del skin (Telebision)
-            try:
-                import xbmc
-                downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-                logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
-            except:
-                pass
-            
-            # No es Telebision, fuerza el directorio home de XBMC
-            if downloadpath == "":
-                downloadpath = os.path.join (config.get_data_path(),"downloads","list")
-                logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-                if not os.path.exists(downloadpath):
-                    logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
-                    os.mkdir(downloadpath)
-                config.set_setting("downloadlistpath",downloadpath)
-            
-            # Es Telebision, lo pone en el skin
-            else:
-                # guardar setting del skin en setting del plugin
-                downloadpath = os.path.join( downloadpath , "list" )
-                downloadpath = xbmc.translatePath( downloadpath )
-                logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
-                config.set_setting("downloadlistpath", downloadpath)
-    except:
-        pass
-    
-    logger.info("[downloadtools.py] downloadlistpath="+downloadpath)
-    
-    try:
-        os.mkdir(downloadpath)
-    except:
-        pass
-
-    return downloadpath
-
 def limpia_nombre_caracteres_especiales(s):
     if not s:
         return ''
@@ -437,47 +346,57 @@ def limpia_nombre_excepto_1(s):
         return ''
 
     # Titulo de entrada
+    '''
     try:
         logger.info("s1="+urllib.quote_plus(s))
     except:
         logger.info("s1=no printable")
+    '''
 
     # Convierte a unicode
     try:
         s = unicode( s, "utf-8" )
     except:
-        logger.info("no es utf-8")
+        #logger.info("no es utf-8")
         try:
             s = unicode( s, "iso-8859-1" )
         except:
-            logger.info("no es iso-8859-1")
+            #logger.info("no es iso-8859-1")
             pass
+    '''
     try:
         logger.info("s2="+urllib.quote_plus(s))
     except:
         logger.info("s2=no printable")
+    '''
 
     # Elimina acentos
     s = limpia_nombre_sin_acentos(s)
+    '''
     try:
         logger.info("s3="+urllib.quote_plus(s))
     except:
-        logger.info("s3=no printable")    
+        logger.info("s3=no printable")
+    '''
 
     # Elimina caracteres prohibidos
     validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
     stripped = ''.join(c for c in s if c in validchars)
+    '''
     try:
         logger.info("s4="+urllib.quote_plus(stripped))
     except:
         logger.info("s4=no printable")
+    '''
     
     # Convierte a iso
     s = stripped.encode("iso-8859-1")
+    '''
     try:
         logger.info("s5="+urllib.quote_plus(s))
     except:
         logger.info("s5=no printable")
+    '''
 
     return s;
 

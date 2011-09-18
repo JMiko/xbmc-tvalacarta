@@ -18,32 +18,44 @@ PLATFORM = ""
 # boxee
 # xbmc
 # xbmcdharma
+# xbmceden
 # developer
 
 # plex
 # mediaportal
 # windowsmediacenter
+# enigma2
 
+# Enigma2
 try:
     from enigma import iPlayableService
     PLATFORM="dreambox"
 except:
+    # Boxee
     try:
         import mc
         PLATFORM="boxee"
     except:
+        # XBMC Eden
         try:
-            import xbmcaddon
-            PLATFORM = "xbmcdharma"
-        except ImportError:
-            # XBMC
+            import xbmcvfs
+            PLATFORM = "xbmceden"
+        except:
+            # XBMC Dharma
             try:
-                import xbmc
-                PLATFORM = "xbmc"
+                import xbmcaddon
+                PLATFORM = "xbmcdharma"
             except ImportError:
-                print "Platform=DEVELOPER"
-                # Eclipse
-                PLATFORM = "developer"
+                # XBMC
+                try:
+                    import xbmc
+                    PLATFORM = "xbmc"
+                except ImportError:
+                    print "Platform=DEVELOPER"
+                    # Modo desarrollo
+                    PLATFORM = "developer"
+
+#print "PLATFORM=%s" % PLATFORM
 
 def force_platform(platform):
     global PLATFORM
@@ -77,7 +89,9 @@ def open_settings():
     return platformconfig.open_settings()
 
 def get_setting(name,channel=""):
+    #print "[config.py] get_setting"
     try:
+        #print "[config.py] get_setting en PLATFORM=%s" % PLATFORM
         exec "import platform."+PLATFORM+".config as platformconfig"
     except:
         exec "import "+PLATFORM+"config as platformconfig"
