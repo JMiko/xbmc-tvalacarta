@@ -6,6 +6,7 @@
 #------------------------------------------------------------
 import logger
 import os
+import config
 
 '''
 El formato de una ruta samba es:
@@ -19,12 +20,12 @@ Con acceso guest: smb://MEDIASERVER/DESCARGAS/xbmc/favoritos
 '''
 def parse_url(url):
 
-    logger.info("url="+url)    
+    #logger.info("[samba.py] url="+url)    
     # Algunas trampas para facilitar el parseo de la url
     url = url.strip()
     if not url.endswith("/"):
         url = url + "/"
-    logger.info("url="+url)    
+    #logger.info("[samba.py] url="+url)    
         
     import re
     patron = 'smb\:\/\/([^\:]+)\:([^\@]+)@([^\/]+)\/([^\/]+)/(.*/)?'
@@ -58,37 +59,33 @@ def parse_url(url):
     if path=="":
         path="/"
     
-    logger.info("server_name="+server_name)
-    logger.info("share_name="+share_name)
-    logger.info("path="+path)
-    logger.info("user="+user)
-    logger.info("password="+password)
+    #logger.info("[samba.py] server_name="+server_name+", share_name="+share_name+", path="+path+", user="+user+", password="+password)
 
     return server_name,share_name,path,user,password
 
 def connect(server_name,user,password):
     import smb,nmb
 
-    logger.info("Crea netbios...")
+    logger.info("[samba.py] Crea netbios...")
     netbios = nmb.NetBIOS()
     
-    logger.info("Averigua IP...")
+    logger.info("[samba.py] Averigua IP...")
     nbhost = netbios.gethostbyname(server_name)
     server_ip = nbhost[0].get_ip()
-    logger.info("server_ip="+server_ip)
+    logger.info("[samba.py] server_ip="+server_ip)
     
-    logger.info("Crea smb...")
+    logger.info("[samba.py] Crea smb...")
     remote = smb.SMB(server_name, server_ip)
     logger.info("ok")
 
     if remote.is_login_required():
-        logger.info("Login...")
+        logger.info("[samba.py] Login...")
         if user=="":
-            logger.info("User vacio, se asume 'guest'")
+            logger.info("[samba.py] User vacio, se asume 'guest'")
             user="guest"    
         remote.login(user, password)
     else:
-        logger.info("Login no requerido")
+        logger.info("[samba.py] Login no requerido")
 
     return remote
 
@@ -130,19 +127,19 @@ def write_file(filename,filecontent,url):
 
 def get_files(url):
 
-    logger.info("get_files")
-    
+    logger.info("[samba.py] get_files")
+
     # Separa la URL en los elementos    
     server_name,share_name,path,user,password = parse_url(url)
 
     # Conecta con el servidor remoto
     remote = connect(server_name,user,password)
-    
+
     ficheros = []
-    
+
     for f in remote.list_path(share_name, path + '*'):
         name = f.get_longname()
-        logger.info("name="+name)
+        #logger.info("[samba.py] name="+name)
         if name == '.' or name == '..':
             continue
 
@@ -155,7 +152,7 @@ def get_files(url):
 
 def get_file_handle_for_reading(filename,url):
 
-    logger.info("get_file_handle_for_reading")
+    logger.info("[samba.py] get_file_handle_for_reading")
     
     # Separa la URL en los elementos    
     server_name,share_name,path,user,password = parse_url(url)
@@ -164,13 +161,13 @@ def get_file_handle_for_reading(filename,url):
     remote = connect(server_name,user,password)
 
     # Crea un fichero temporal con el bookmark
-    logger.info("Crea fichero temporal")
+    logger.info("[samba.py] Crea fichero temporal")
     try:
         import xbmc
         localfilename = xbmc.translatePath( "special://temp" )
     except:
         localfilename = config.get_data_path()
-    logger.info("localfilename="+localfilename)
+    logger.info("[samba.py] localfilename="+localfilename)
 
     localfilename = os.path.join(localfilename,"bookmark.tmp")
     
@@ -187,7 +184,7 @@ def get_file_handle_for_reading(filename,url):
 
 def file_exists(filename,url):
 
-    logger.info("file_exists "+ filename )
+    logger.info("[samba.py] file_exists "+ filename )
     
     # Separa la URL en los elementos    
     server_name,share_name,path,user,password = parse_url(url)
@@ -216,7 +213,7 @@ def file_exists(filename,url):
 
 def remove_file(filename,url):
 
-    logger.info("remove_file "+filename)
+    logger.info("[samba.py] remove_file "+filename)
     
     # Separa la URL en los elementos    
     server_name,share_name,path,user,password = parse_url(url)

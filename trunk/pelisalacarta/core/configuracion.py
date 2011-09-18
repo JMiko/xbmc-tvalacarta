@@ -14,8 +14,4 @@ logger.info("[configuracion.py] init")
 def mainlist(params,url,category):
     logger.info("[configuracion.py] mainlist")
     
-    # Verifica ruta de descargas
-    downloadtools.getDownloadPath()
-    downloadtools.getDownloadListPath()
-
     config.open_settings( )

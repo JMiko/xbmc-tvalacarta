@@ -16,14 +16,9 @@ import gdata.youtube
 import gdata.youtube.service
 from servers import youtube
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
+from core import scrapertools
+from core import logger
+from core import config
 
 import os
 COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
@@ -36,7 +31,7 @@ except:
     pluginhandle = ""
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images'  ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images'  ) )
 def mainlist(params,url,category):
     logger.info("[trailertools.py] mainlist")
     titulo = ""
@@ -436,7 +431,7 @@ def youtubeplay(params,url,category):
     videourl = youtube.geturl(id)
     if len(videourl)>0:
         logger.info("link directo de youtube : "+videourl)
-        xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+        xbmctools.play_video("Trailer",server,videourl,category,title,thumbnail,plot)
     elif videourl is None:
         alertaerror()
         return

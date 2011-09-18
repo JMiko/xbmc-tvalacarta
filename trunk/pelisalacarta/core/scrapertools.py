@@ -42,10 +42,9 @@ def cache_page(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U;
 # TODO: (3.1) Quitar el parámetro modoCache (ahora se hace por configuración)
 # TODO: (3.2) Usar notación minusculas_con_underscores para funciones y variables como recomienda Python http://www.python.org/dev/peps/pep-0008/
 def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modoCache=CACHE_ACTIVA):
-
     logger.info("[scrapertools.py] cachePage url="+url)
     modoCache = config.get_setting("cache.mode")
-    
+
     if config.get_platform()=="plex":
         from PMS import HTTP
         try:
@@ -549,7 +548,7 @@ def downloadpageGzip(url):
     
     #  Inicializa la librería de las cookies
     ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
-    print "Cookiefile="+ficherocookies
+    logger.info("Cookiefile="+ficherocookies)
     inicio = time.clock()
     
     cj = None
@@ -622,7 +621,7 @@ def downloadpageGzip(url):
     
     import httplib
     parsedurl = urlparse.urlparse(url)
-    print "parsedurl=",parsedurl
+    logger.info("parsedurl="+str(parsedurl))
         
     txheaders =  {
     'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3',
@@ -633,7 +632,7 @@ def downloadpageGzip(url):
     'Keep-Alive':'300',
     'Connection':'keep-alive',
     'Referer':parsedurl[0]+"://"+parsedurl[1]}
-    print txheaders
+    logger.info(str(txheaders))
 
     # fake a user agent, some websites (like google) don't like automated exploration
 
@@ -903,3 +902,18 @@ def getLocationHeaderFromResponse(url):
     #    print "Encontrado header location"
     
     return location
+
+def unseo(cadena):
+    if cadena.upper().startswith("VER GRATIS LA PELICULA "):
+        cadena = cadena[23:]
+    elif cadena.upper().startswith("VER GRATIS PELICULA "):
+        cadena = cadena[20:]
+    elif cadena.upper().startswith("VER ONLINE LA PELICULA "):
+        cadena = cadena[23:]
+    elif cadena.upper().startswith("VER GRATIS "):
+        cadena = cadena[11:]
+    elif cadena.upper().startswith("VER ONLINE "):
+        cadena = cadena[11:]
+    elif cadena.upper().startswith("DESCARGA DIRECTA "):
+        cadena = cadena[17:]
+    return cadena
