@@ -38,11 +38,25 @@
 	<string id="30021">Felirat engedélyezése</string>
 	<string id="30022">JDownloader cím:</string>
 	<string id="30024">Ennyi keresést mentsen</string>
-	<string id="30025">Cache mode:</string>
-	<string id="30026">Automatic</string>
-	<string id="30027">Cache all</string>
-	<string id="30028">Cache nothing</string>
-    <string id="30029">Cache path:</string>
+
+    <string id="30019">Filter channels by language:</string>
+    <string id="30025">All languages</string>
+    <string id="30026">Spanish</string>
+    <string id="30027">English</string>
+    <string id="30028">Italian</string>
+    <string id="30029">Portuguese</string>
+    <string id="30016">Catalán</string>
+    <string id="30023">Euskera</string>
+    <string id="30036">Gallego</string>
+    <string id="30037">Valenciano</string>
+
+    <string id="30038">Cache mode:</string>
+    <string id="30039">Auto</string>
+    <string id="30040">Cache all</string>
+    <string id="30041">Cache nothing</string>
+    <string id="30042">Cache path:</string>
+
+    <string id="30044">Play mode:</string>
 
 	<!-- =============================================================== -->
 	<!-- 30050 to 30099: Info / error messages                           -->
