@@ -5,27 +5,25 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os, sys
-import xbmc,xbmcplugin
-from core import scrapertools,xbmctools
-from servers import servertools
-from core import logger,config
-from pelisalacarta import buscador
+
+from core import logger
+from core import config
+from core import scrapertools
 from core.item import Item
+from servers import servertools
+
 from xml.dom import minidom
 from xml.dom import EMPTY_NAMESPACE
-from platform.xbmc.config import  get_system_platform
 
 PLUGIN_NAME = "pelisalacarta"
 CHANNELNAME = "seriesdanko"
 ATOM_NS = 'http://www.w3.org/2005/Atom'
 DEBUG = config.get_setting("debug")
 
-if get_system_platform() == "xbox":
+if config.get_system_platform() == "xbox":
     MaxResult = "55"
 else:
     MaxResult = "500"
-
 
 def isGeneric():
     return True
@@ -36,10 +34,9 @@ def mainlist(item):
     
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Noticias"       , action="novedades"   , url="http://www.blogger.com/feeds/5090863330072217342/posts/default/-/Noticias?start-index=1&max-results=25&orderby=published&alt=json&callback=nuevoscapitulos"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series Actualizadas"    , action="listvideofeeds", url="http://www.blogger.com/feeds/5090863330072217342/posts/default/-/sd?start-index=1&max-results=%s" %MaxResult))
-    itemlist.append( Item(channel=CHANNELNAME, title="Lista Alfanumerica" , action="ListByLetters", url="http://www.seriesdanko.com/documentales/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series actualizadas"    , action="listvideofeeds", url="http://www.blogger.com/feeds/5090863330072217342/posts/default/-/sd?start-index=1&max-results=%s" %MaxResult))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Lista alfanumerica" , action="ListByLetters", url="http://www.seriesdanko.com/documentales/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Listado completo"    , action="allserieslist", url="http://www.seriesdanko.com"))
-    
     return itemlist
 
 def listvideofeeds(item):
@@ -99,7 +96,6 @@ def listvideofeeds(item):
             logger.info("scrapedthumbnail="+thumbnail)
                 
         #print etitletext, '(', elinktext, thumbnail,plot, ')'
-        #xbmctools.addnewfolder( CHANNELNAME , "detail" , category ,  etitletext,  elinktext, thumbnail, plot )
         itemlist.append( Item(channel=CHANNELNAME, action="capitulos" ,category = "Tv show",  title=etitletext , url=elinktext, thumbnail=thumbnail, plot=eplot, extra=ethumbnailtext, totalItems = totalitems))
         c +=1
     
@@ -112,15 +108,15 @@ def listvideofeeds(item):
         scrapedurl =  "http://www.blogger.com/feeds/5090863330072217342/posts/default?start-index="+str(start_index)+"&max-results=%s" %MaxResult
         scrapedthumbnail = ""
         scrapedplot = ""
-        #xbmctools.addnewfolder( CHANNELNAME , "listvideofeeds" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
         itemlist.append( Item(channel=CHANNELNAME, action="listvideofeeds", title=scrapedtitle , url=scrapedurl , folder=True, totalItems = totalitems + 1) )
 
-    if config.get_setting("forceview")=="true":
-        xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons    
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        import xbmc
+        if config.get_setting("forceview")=="true":
+            xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons    
+
     return itemlist
 
-
-    
 def get_text_from_construct(element):
     '''
     Return the content of an Atom element declared with the
@@ -136,7 +132,6 @@ def get_text_from_construct(element):
     else:
         return element.firstChild.data.encode('utf-8')
 
-
 def novedades(item):
     logger.info("[seriesdanko.py] novedades")
     
@@ -145,6 +140,7 @@ def novedades(item):
     data = scrapertools.downloadpageGzip(item.url)
     data = data.replace("nuevoscapitulos","")
     data = data.replace(";","")
+    data = data.replace("// API callback","")
     datadict = eval( data  )
     url = item.url
     #print datadict
@@ -193,7 +189,6 @@ def novedades(item):
         scrapedurl =  "http://www.blogger.com/feeds/5090863330072217342/posts/default/-/Noticias?start-index="+str(start_index)+"&max-results=25&orderby=published&alt=json&callback=nuevoscapitulos"
         scrapedthumbnail = ""
         scrapedplot = ""
-        #xbmctools.addnewfolder( CHANNELNAME , "listvideofeeds" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
         itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , folder=True, totalItems = len(itemlist) + 1) )
 
 
@@ -217,6 +212,7 @@ def ListByLetters(item):
         itemlist.append( Item(channel=CHANNELNAME, action="ListVideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
+
 def allserieslist(item):
     logger.info("[seriesdanko.py] allserieslist")
 
@@ -240,8 +236,9 @@ def allserieslist(item):
     scrapertools.printMatches(matches)
     totalItems = len(matches)
     for url,title in matches:
-        scrapedtitle = title
+        scrapedtitle = title.replace("\n","").replace("\r","")
         scrapedurl = "http://www.blogger.com/feeds/5090863330072217342/posts/default/-/%s?alt=json|%s" % (title.strip(),url)
+        scrapedurl = scrapedurl.replace("\n","").replace("\r","")
         scrapedthumbnail = ""
         scrapedplot = ""
 
@@ -256,6 +253,7 @@ def allserieslist(item):
         itemlist.append( Item(channel=CHANNELNAME, action=action , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle , totalItems = totalItems))
 
     return itemlist
+
 def ListVideos(item):
     logger.info("[seriesdanko.py] ListVideos")
     
@@ -291,18 +289,18 @@ def ListVideos(item):
 
         # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-        
     
     #print datalist
     return itemlist
 
-
 def capitulos(item):
     logger.info("[seriesdanko.py] capitulos")
     
-    if config.get_setting("forceview")=="true":
-        xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
-        #xbmc.executebuiltin("Container.Content(Movies)")
+    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
+        import xbmc
+        if config.get_setting("forceview")=="true":
+            xbmc.executebuiltin("Container.SetViewMode(53)")  #53=icons
+            #xbmc.executebuiltin("Container.Content(Movies)")
         
     if "|" in item.url:
         url = item.url.split("|")[0]
@@ -339,6 +337,8 @@ def capitulos(item):
             contenidos = item.url
             if sw:
                 url = item.url.split("|")[1]
+                if not url.startswith("http://"):
+                    url = urlparse.urljoin("http://www.seriesdanko.com",url)
                 # Descarga la página
                 data = scrapertools.downloadpageGzip(url)
                 patronvideos  = "entry-content(.*?)<div class='post-footer'>"
@@ -359,7 +359,16 @@ def capitulos(item):
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[1]
+        scrapedtitle = match[1].replace("\n","").replace("\r","")
+        scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
+        
+        #[1x01 - Capitulo 01]
+        patron = "(\d+x\d+) - Capitulo \d+"
+        matches = re.compile(patron,re.DOTALL).findall(scrapedtitle)
+        #print matches
+        if len(matches)>0 and len(matches[0])>0:
+            scrapedtitle = matches[0]
+
         if "es.png" in match[2]:
             subtitle = " (Español)"
         elif "la.png" in match[2]:
@@ -371,7 +380,7 @@ def capitulos(item):
         else:
             subtitle = ""
         scrapedplot = plot
-        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedurl = urlparse.urljoin(item.url,match[0]).replace("\n","").replace("\r","")
         if not item.thumbnail:
             try:
                 scrapedthumbnail = re.compile(r'src="(.+?)"').findall(contenidos)[0]
@@ -379,10 +388,11 @@ def capitulos(item):
                 scrapedthumbnail = ""
         else:
             scrapedthumbnail = item.thumbnail
+        scrapedthumbnail = scrapedthumbnail.replace("\n","").replace("\r","")
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show, folder=True) )
     
     #xbmc.executebuiltin("Container.Content(Movies)")
     
@@ -403,12 +413,9 @@ def capitulos(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # Añade al listado de XBMC
-            xbmctools.addnewvideo( CHANNELNAME , "play" , "" , server , item.title +" "+ scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
-                
+            itemlist.append( Item(channel=CHANNELNAME, action="play", server=server, title=item.title +" "+ scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
+
     return itemlist
-    
-
-
     
 def capitulos2(item):
     logger.info("[seriesdanko.py] capitulos")
@@ -431,7 +438,6 @@ def capitulos2(item):
         # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )    
     return itemlist
-    
 
 def decodeHtmlentities(string):
     import re
@@ -449,5 +455,3 @@ def decodeHtmlentities(string):
                 return unichr(cp)
             else:
                 return match.group()
-# addon_path is this plugins path. i.e. plugin://plugin.video.myplugin/
-

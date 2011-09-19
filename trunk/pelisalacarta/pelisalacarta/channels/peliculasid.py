@@ -18,7 +18,7 @@ from core import scrapertools
 from core import logger
 from core.item import Item
 from core import downloadtools
-from core import xbmctools
+from platform.xbmc import xbmctools
 
 from servers import servertools
 from servers import xmltoplaylist
@@ -335,7 +335,7 @@ def play(params,url,category):
 			server = "videobb"
 			url = "http://www.videobb.com/video/" + matches[0]
 
-	xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def acentos(title):
 
@@ -364,7 +364,7 @@ def MakePlaylistFromXML(xmlurl,title="default"):
 	if title== ("default" or ""):
 		nombrefichero = FULL_FILENAME_PATH_XML
 	else:
-		nombrefichero = os.path.join( downloadtools.getDownloadPath(),title + ".pls")
+		nombrefichero = os.path.join( config.get_setting("downloadpath"),title + ".pls")
 	xmldata = scrapertools.cachePage(xmlurl)
 	patron = '<title>([^<]+)</title>.*?<location>([^<]+)</location>'
 	matches = re.compile(patron,re.DOTALL).findall(xmldata)
@@ -393,7 +393,7 @@ def MakePlaylistFromList(Listdata,title="default"):
 	if title== ("default" or ""):
 		nombrefichero = FULL_FILENAME_PATH
 	else:
-		nombrefichero = os.path.join( downloadtools.getDownloadPath(),title + ".pls")
+		nombrefichero = os.path.join( config.get_setting("downloadpath"),title + ".pls")
 
 	if len(Listdata)>0:
 		playlistFile = open(nombrefichero,"w")

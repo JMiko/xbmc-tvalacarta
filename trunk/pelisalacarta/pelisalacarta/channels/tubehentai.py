@@ -12,7 +12,7 @@ from core import scrapertools
 from core import logger
 from core import config
 from core.item import Item
-from core import xbmctools
+from platform.xbmc import xbmctools
 from pelisalacarta import buscador
 
 from servers import servertools
@@ -126,5 +126,6 @@ def play(params,url,category):
     if len(matches)>0:
         url = "http://media.tubehentai.com/videos/" + matches[0]
         server="Directo"
-        xbmctools.playvideo4(CHANNELNAME,server,url,category,title,thumbnail,plot)
+        xbmctools.play_video(channel=CHANNELNAME,server=server,url=url,category=category,title=title,thumbnail=thumbnail,plot=plot)
+
     # ------------------------------------------------------------------------------------

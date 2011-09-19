@@ -105,7 +105,7 @@ def novedades(params,url,category):
     scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = xbmctools.unseo(match[1])
+        scrapedtitle = scrapertools.unseo(match[1])
         scrapedurl = urlparse.urljoin(url,match[0])
         scrapedthumbnail = urlparse.urljoin(url,match[2])
         scrapedplot = ""
@@ -197,4 +197,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)

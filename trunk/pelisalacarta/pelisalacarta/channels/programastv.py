@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -794,7 +794,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
  
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
  
 def addfolder(nombre,url,accion):
     logger.info('[programastv.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

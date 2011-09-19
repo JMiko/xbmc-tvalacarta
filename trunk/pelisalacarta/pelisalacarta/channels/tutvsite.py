@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -190,7 +190,7 @@ def play(params,url,category):
         url = listavideos[0][1]
     logger.info("[tutvsite.py] url="+url)
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
     logger.info('[tutvsite.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

@@ -21,7 +21,7 @@ from servers import youtube
 from servers import servertools
 
 from core import scrapertools
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core import config
 from core import logger
 from core import trailertools
@@ -33,7 +33,7 @@ ATOM_NS = 'http://www.w3.org/2005/Atom'
 logger.info("[dospuntocerovision.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images','posters' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
     logger.info("[dospuntocerovision.py] mainlist")
@@ -599,7 +599,7 @@ def detail(params,url,category):
        plot = xbmc.getInfoLabel( "ListItem.Plot" )
     server = params["server"]
 
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
     logger.info("[dospuntocerovision.py] youtubeplay")
@@ -615,7 +615,7 @@ def youtubeplay(params,url,category):
     
     if len(videourl)>0:
         logger.info("link directo de youtube : "+videourl)
-        xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+        xbmctools.play_video("Trailer",server,videourl,category,title,thumbnail,plot)
     
     return
     

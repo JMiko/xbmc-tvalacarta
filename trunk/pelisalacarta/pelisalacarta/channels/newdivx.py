@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -283,25 +283,24 @@ def detail(params,url,category):
    ## --------------------------------------------------------------------------------------##
    #                   Busca enlaces en el servidor Cinshare                                  #
    ## --------------------------------------------------------------------------------------##
-    
+    '''
     patronvideos = '<iframe src="(http://www.cinshare.com/[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         ####
-        '''
-        data2 = scrapertools.cachePage(matches[0])
+        #data2 = scrapertools.cachePage(matches[0])
         #print data2
         
-        patron = '<param name="src" value="([^"]+)"'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        if len(matches2)>0:
-        '''
+        #patron = '<param name="src" value="([^"]+)"'
+        #matches2 = re.compile(patron,re.DOTALL).findall(data2)
+        #if len(matches2)>0:
         ####
         import cinshare
         videourl = matches[0]
         subtitle = "[divx-Directo-Cinshare]"
         xbmctools.addnewvideo( CHANNELNAME , "play" , category ,"Cinshare", title + " - "+subtitle, videourl , thumbnail , plot )
-            
+    '''
+    
     ## --------------------------------------------------------------------------------------##
     #               Busca enlaces a videos .flv o (.mp4 dentro de un xml)                     #
     ## --------------------------------------------------------------------------------------##
@@ -447,7 +446,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
     logger.info("[newdivx.py] play")

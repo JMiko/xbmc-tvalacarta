@@ -6,18 +6,11 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "seriespepito"
 DEBUG = True
@@ -30,12 +23,39 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"   , title="Listado alfabético"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
+
+    return itemlist
+
+def allserieslist(item):
+    logger.info("[seriespepito.py] allserieslist")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    patron = "<li><a href='([^']+)'>([^<]+)</a></li>"
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        scrapedtitle = match[1]
+        scrapedurl = match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Ajusta el encoding a UTF-8
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
+
+        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
 def listalfabetico(item):
-    
+    logger.info("[seriespepito.py] mainlist")
+
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="0-9",url="http://www.seriespepito.com/lista-series-num/"))
     itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="A",url="http://www.seriespepito.com/lista-series-a/"))
@@ -109,11 +129,12 @@ def alphaserieslist(item):
         scrapedtitle = match[2]
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
-        scrapedplot = match[3]
+        scrapedplot = match[3].strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Ajusta el encoding a UTF-8
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
         itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
@@ -140,5 +161,99 @@ def episodelist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
+
+    return itemlist
+
+def findvideos(item):
+    logger.info("[seriespepito.py] findvideos")
+    itemlist = []
+
+    try:
+        # Descarga la pagina
+        data = scrapertools.cachePage(item.url)
+        #logger.info(data)
+        '''
+        <div class="content">
+        <div class="viewOnline"><h4>Ver Capitulo 3 Online</h4></div>	
+        <div style="clear:both"></div>					
+        <table cellpadding="0" cellspacing="0" border="0">
+        <thead>
+        <tr>
+        <th>Idioma</th>
+        <th>Fecha</th>
+        <th>Servidor</th>
+        <th>Enlace</th>
+        <th>Colabora</th>									
+        <th>Comentario</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td><div class='flag vos'></div></td><td>21/11/2010</td><td><img src='http://www.seriespepito.com/seriespepito/servidores/megavideod.jpg' width=45 height=20 class=server></td><td><a class='grayButton' href='http://www.megavideo.com/?d=0I8GDC55' target='_blank' rel='nofollow' alt=''>Ver</a></td><td>lKranich</td><td></td></tr>                    </tbody>
+        </table>
+        <div style="clear:both"></div>			
+        <div class="download"><h4>Descargar Capitulo 3 Gratis</h4></div>
+        <div style="clear:both"></div>
+        <table cellpadding="0" cellspacing="0" border="0">
+        <thead>
+        <tr>
+        <th>Idioma</th>
+        <th>Fecha</th>
+        <th>Servidor</th>
+        <th>Enlace</th>
+        <th>Colabora</th>									
+        <th>Comentario</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td><div class='flag vos'></div></td><td>21/11/2010</td><td><img src='http://www.seriespepito.com/seriespepito/servidores/megaupload.jpg' width=45 height=20 class=server></td><td><a class='grayButton' href='http://www.megaupload.com/?d=0I8GDC55' target='_blank' rel='nofollow' alt=''>Descargar</a></td><td>lKranich</td><td></td></tr>							</table>    
+        </div>
+        '''
+    
+        # Bloque con los enlaces
+        patron  = '<div class="downloadContainer">(.*?)<div class="linkContainer">'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        data = matches[0]
+        
+        # Listas de enlaces
+        patron  = "<tr><td><div class='([^']+)'></div></td>"
+        patron += "<td>[^<]+</td>"
+        patron += "<td><img src='([^']+)'[^>]+></td>"
+        patron += "<td><a.*?href='([^']+)'"
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        numero = 1
+        for match in matches:
+            scrapedurl = match[2]
+            scrapedthumbnail = item.thumbnail
+            scrapedplot = item.plot
+
+            if match[0]=="flag vos":
+                idioma="SUB"
+            else:
+                idioma="ESP"
+            
+            servidor = match[1].lower()
+            print servidor
+            if "megaupload" in servidor:
+                servidor="megaupload"
+            elif "megavideo" in servidor:
+                servidor="megavideo"
+            else:
+                videos = servertools.findvideos(scrapedurl)
+                if len(videos)>0:
+                    servidor = videos[0][2]
+                else:
+                    servidor = ""
+            print servidor
+    
+            if servidor!="":
+                scrapedtitle = "Mirror %d - Idioma %s [%s]" % (numero,idioma,servidor)
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=servidor, folder=False))
+                numero = numero + 1
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
 
     return itemlist

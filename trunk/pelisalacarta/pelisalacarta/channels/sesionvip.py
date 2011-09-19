@@ -82,7 +82,7 @@ def newlist(params,url,category):
         scrapedtitle = nuevomatches[0][1]
         if not scrapedtitle.startswith("Descargar"):
             #Elimina todos los prefijos SEO
-            scrapedtitle = xbmctools.unseo(scrapedtitle)
+            scrapedtitle = scrapertools.unseo(scrapedtitle)
             # URL
             scrapedurl = urlparse.urljoin(url,nuevomatches[0][0])
             # Thumbnail
@@ -207,7 +207,7 @@ def performsearch(texto):
         # Titulo
         scrapedtitle = match[1]
         if not scrapedtitle.startswith("Descargar"):
-            scrapedtitle = xbmctools.unseo(scrapedtitle)
+            scrapedtitle = scrapertools.unseo(scrapedtitle)
             scrapedurl = urlparse.urljoin(url,match[0])
             scrapedthumbnail = ""
             scrapedplot = ""
@@ -236,7 +236,7 @@ def searchresults(params,url,category):
         scrapedtitle = match[1]
         if not scrapedtitle.startswith("Descargar"):
             #Elimina todos los prefijos SEO
-            scrapedtitle = xbmctools.unseo(scrapedtitle)
+            scrapedtitle = scrapertools.unseo(scrapedtitle)
             # URL
             scrapedurl = urlparse.urljoin(url,match[0])
             # Thumbnail
@@ -273,4 +273,4 @@ def play(params,url,category):
     logger.info("[sesionvip.py] thumbnail="+thumbnail)
     logger.info("[sesionvip.py] server="+server)
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)

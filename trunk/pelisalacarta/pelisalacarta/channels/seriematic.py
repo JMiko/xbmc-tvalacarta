@@ -5,7 +5,8 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os, sys
+import os
+import sys
 
 from core import logger
 from core import config

@@ -16,7 +16,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -34,7 +34,7 @@ except:
 logger.info("[sonolatino.py] init")
 
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'posters' ) )
 
 
 def mainlist(params,url,category):
@@ -885,7 +885,7 @@ def play(params,url,category):
         if len(matches)>0:
             url = matches[0]
             server = "Directo"
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 
 def playRtmp(params,url,category):
@@ -1067,7 +1067,7 @@ def playrtmp(params,url,category):
     
 
 def creartag(params,url,category):
-    nombrefichero = os.path.join( downloadtools.getDownloadPath(), "sonolatino_category.txt")
+    nombrefichero = os.path.join( config.get_setting("downloadpath"), "sonolatino_category.txt")
     data = scrapertools.cachePage(url)
     patron = '<ul id="ul_categories">(.*?)</ul>'
     matches = re.compile(patron,re.DOTALL).findall(data)

@@ -15,7 +15,7 @@ import xbmcplugin
 
 from servers import servertools
 from core import scrapertools
-from core import xbmctools
+from platform.xbmc import xbmctools
 
 import casttv
 
@@ -1880,7 +1880,7 @@ def episodiomenu(params,url,category):
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
         #Check: no se muestran los strings con el texto de las opciones...
-        #xbmctools.playvideo(CHANNELNAME,server,url,categoryback,title,thumbnail,plot)
+        #xbmctools.play_video(CHANNELNAME,server,url,categoryback,title,thumbnail,plot)
 
         # Otra manera de continuar sin abrir nuevo directorio pero lento en listados grandes...
         # detail(titleback,urlbac...
@@ -1892,7 +1892,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def ftitleerdmsearch(title):
     title = re.sub('^El Patito Alfred$','Alfred J Quack',title)

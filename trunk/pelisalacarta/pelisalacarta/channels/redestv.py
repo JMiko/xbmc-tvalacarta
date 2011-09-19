@@ -18,7 +18,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -170,7 +170,7 @@ def buscavideos(params,url,category):
     #mediaurl = bliptv.geturl(matches[0])
     #logger.info("mediaurl="+mediaurl)
     
-    xbmctools.playvideo(CHANNELNAME,"bliptv",matches[0],"","","","")
+    xbmctools.play_video(CHANNELNAME,"bliptv",matches[0],"","","","")
 
 def novedades(params,url,category):
     logger.info("[redestv.py] parseweb")
@@ -320,7 +320,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
  
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
  
 def addfolder(nombre,url,accion):
     logger.info('[redestv.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

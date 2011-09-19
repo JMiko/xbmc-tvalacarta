@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para mcanime
@@ -18,7 +18,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -27,7 +27,7 @@ from pelisalacarta import buscador
 
 CHANNELNAME = "mcanime"
 
-# Esto permite su ejecuciÛn en modo emulado
+# Esto permite su ejecucion en modo emulado
 try:
     pluginhandle = int( sys.argv[ 1 ] )
 except:
@@ -42,10 +42,10 @@ def mainlist(params,url,category):
 
     # AÒade al listado de XBMC
     xbmctools.addnewfolder( CHANNELNAME , "home"       , category , "Novedades"                             ,"http://www.mcanime.net/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "forum"      , category , "Foro anime en lÌnea"                   ,"http://www.mcanime.net/foro/viewforum.php?f=113","","")
+    xbmctools.addnewfolder( CHANNELNAME , "forum"      , category , "Foro anime en línea"                   ,"http://www.mcanime.net/foro/viewforum.php?f=113","","")
     xbmctools.addnewfolder( CHANNELNAME , "ddnovedades", category , "Descarga directa - Novedades"          ,"http://www.mcanime.net/descarga_directa/anime","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ddalpha"    , category , "Descarga directa - Listado alfabÈtico" ,"http://www.mcanime.net/descarga_directa/anime","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ddcat"      , category , "Descarga directa - CategorÌas"         ,"http://www.mcanime.net/descarga_directa/anime","","")
+    xbmctools.addnewfolder( CHANNELNAME , "ddalpha"    , category , "Descarga directa - Listado alfabético" ,"http://www.mcanime.net/descarga_directa/anime","","")
+    xbmctools.addnewfolder( CHANNELNAME , "ddcat"      , category , "Descarga directa - Categorías"         ,"http://www.mcanime.net/descarga_directa/anime","","")
     xbmctools.addnewfolder( CHANNELNAME , "estrenos"   , category , "Enciclopedia - Estrenos"               ,"http://www.mcanime.net/enciclopedia/estrenos/anime","","")
 
     # Propiedades
@@ -403,9 +403,12 @@ def ddpostdetail(params,url,category):
     for video in listavideos:
         try:
             fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
+            fulltitle = fulltitle % i
         except:
-            fulltitle = title.strip() + " (%d) " + video[0]
-        fulltitle = fulltitle % i
+            validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$&'()-@^_`."
+            stripped = ''.join(c for c in title if c in validchars)
+            fulltitle = stripped.strip() + " (%d) " + video[0]
+            fulltitle = fulltitle % i
         i = i + 1
         videourl = video[1]
         server = video[2]
@@ -420,7 +423,7 @@ def ddpostdetail(params,url,category):
     # ------------------------------------------------------------------------------------
     # AÒade la opciÛn "AÒadir todos los vÌdeos a la lista de descarga"
     # ------------------------------------------------------------------------------------
-    xbmctools.addnewvideo( CHANNELNAME , "addalltodownloadlist" , title , "" , "(AÒadir todos los vÌdeos a la lista de descarga)" , url , thumbnail , plot )
+    xbmctools.addnewvideo( CHANNELNAME , "addalltodownloadlist" , title , "" , "(Añadir todos los videos a la lista de descarga)" , url , thumbnail , plot )
     
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -453,7 +456,7 @@ def addalltodownloadlist(params,url,category):
 
     # Di·logo de progreso
     pDialog = xbmcgui.DialogProgress()
-    ret = pDialog.create('pelisalacarta', 'AÒadiendo vÌdeos a la lista de descargas')
+    ret = pDialog.create('pelisalacarta', 'Añadiendo videos a la lista de descargas')
     pDialog.update(0, 'VÌdeo...')
     totalepisodes = len(listavideos)
 
@@ -514,7 +517,7 @@ def forum(params,url,category):
         scrapedplot = ""
 
         # Depuracion
-        xbmctools.logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # AÒade al listado de XBMC
         xbmctools.addnewfolder( CHANNELNAME , "forumdetail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -533,7 +536,7 @@ def forum(params,url,category):
         scrapedplot = ""
 
         # Depuracion
-        xbmctools.logdebuginfo(DEBUG,scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
         # AÒade al listado de XBMC
         xbmctools.addnewfolder( CHANNELNAME , "forum" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -625,5 +628,5 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 

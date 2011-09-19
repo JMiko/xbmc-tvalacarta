@@ -15,8 +15,8 @@ import string
 from core import scrapertools
 from core import logger
 from core import config
-from core import xbmctools
-from core import library
+from platform.xbmc import xbmctools
+from platform.xbmc import library
 from core.item import Item
 
 from pelisalacarta import buscador
@@ -35,15 +35,15 @@ from compiler.syntax import check
 CHANNELNAME = "tvshack"
 TVSHACK_URL = "http://tvshack.bz"
 
-MEGAVIDEO_POSTER = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' , "megavideosite.png") )
+MEGAVIDEO_POSTER = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'posters' , "megavideosite.png") )
 
 ALLOWED_SERVERS = ['megavideo','megaupload','veoh','tudou','movshare','stagevu','smotri']
 #No soportados comprobados por el momento 56.com,zshare
 
-SEARCH_THUMBNAIL = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters','buscador.png' ) )
+SEARCH_THUMBNAIL = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'posters','buscador.png' ) )
 
 
-FANART_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'fanart' ) )
+FANART_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'fanart' ) )
 
 pluginhandle = int( sys.argv[ 1 ] )
 
@@ -715,21 +715,21 @@ def playVideo(params,url,category,strmfile=False):
             for url in mediaurl:
                 dlog (url)
         mediaurl = mediaurl[0]
-#            xbmctools.playvideo(CHANNELNAME,server,mediaurl,category,title,thumbnail,plot,Serie=Serie)
+#            xbmctools.play_video(CHANNELNAME,server,mediaurl,category,title,thumbnail,plot,Serie=Serie)
         dlog ("[tvshack.py]playVideo: Llamando al play. mediaurl= "+mediaurl)
-        xbmctools.playvideo(CHANNELNAME,'Megavideo',mediaurl,category,title,'','',Serie=serie,strmfile=strmfile)
+        xbmctools.play_video(CHANNELNAME,'Megavideo',mediaurl,category,title,'','',Serie=serie,strmfile=strmfile)
     else: # Video de otro servidor (no megavideo)
             #Probamos si es flash...
         flashmatch = re.search('flashvars="file=(.+?)&type=flv',data)
         if flashmatch != None:
             dlog ('[tvshack.py]playVideo: Video flash - url = ' + flashmatch.group(1))
-            xbmctools.playvideo(CHANNELNAME,'Directo',flashmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
+            xbmctools.play_video(CHANNELNAME,'Directo',flashmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
             return
             #Si no, buscamos otras fuentes de video
         othersmatch = re.search('src="([^"]+)"',data)
         if othersmatch != None and server in ALLOWED_SERVERS:
             url = othersmatch.group(1).replace('&amp;','&')
-            xbmctools.playvideo(CHANNELNAME,server,url,category,title,'','',Serie=serie,strmfile=strmfile)
+            xbmctools.play_video(CHANNELNAME,server,url,category,title,'','',Serie=serie,strmfile=strmfile)
             return
 
         dlog ("[tvshack.py]playVideo: Servidor no soportado: "+server)
@@ -829,21 +829,21 @@ def playVideo_OLD(params,url,category,strmfile=False):
                 for url in mediaurl:
                     dlog (url)
             mediaurl = mediaurl[0]
-#            xbmctools.playvideo(CHANNELNAME,server,mediaurl,category,title,thumbnail,plot,Serie=Serie)
+#            xbmctools.play_video(CHANNELNAME,server,mediaurl,category,title,thumbnail,plot,Serie=Serie)
             dlog ("[tvshack.py]playVideo: Llamando al play. mediaurl= "+mediaurl)
-            xbmctools.playvideo(CHANNELNAME,'Megavideo',mediaurl,category,title,'','',Serie=serie,strmfile=strmfile)
+            xbmctools.play_video(CHANNELNAME,'Megavideo',mediaurl,category,title,'','',Serie=serie,strmfile=strmfile)
         else: # Video de otro servidor (no megavideo)
             #Probamos si es flash...
             flashmatch = re.search('flashvars="file=(.+?)&type=flv',data2)
             if flashmatch != None:
                 dlog ('[tvshack.py]playVideo: Video flash - url = ' + flashmatch.group(1))
-                xbmctools.playvideo(CHANNELNAME,'Directo',flashmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
+                xbmctools.play_video(CHANNELNAME,'Directo',flashmatch.group(1),category,title,'','',Serie=serie,strmfile=strmfile)
                 return
             #Si no, buscamos otras fuentes de video
             othersmatch = re.search('src="([^"]+)"',data2)
             if othersmatch != None and server in ALLOWED_SERVERS:
                 url = othersmatch.group(1).replace('&amp;','&')
-                xbmctools.playvideo(CHANNELNAME,server,url,category,title,'','',Serie=serie,strmfile=strmfile)
+                xbmctools.play_video(CHANNELNAME,server,url,category,title,'','',Serie=serie,strmfile=strmfile)
                 return
 
             dlog ("[tvshack.py]playVideo: Servidor no soportado: "+server)

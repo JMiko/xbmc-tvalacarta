@@ -15,7 +15,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 
@@ -26,12 +26,7 @@ import simplejson as json
 
 __plugin__ = "plugin.video.pelisalacarta"
 CHANNELNAME = "megalivewall"
-try:
-    import xbmcaddon
-    Addon = xbmcaddon.Addon( id=__plugin__)
-    PLUGIN_PATH = xbmc.translatePath( Addon.getAddonInfo( "Path" ))
-except ImportError:
-    PLUGIN_PATH = os.getcwd()
+PLUGIN_PATH = config.get_runtime_path()
 
 _VALID_URL = r'http\:\/\/www.megalive\.com/(?:(?:v/)|\?(?:s=.+?&(?:amp;)?)?((?:(?:v\=)))?)?([A-Z0-9]{8})'
 file_path = xbmc.translatePath( os.path.join( PLUGIN_PATH,"pelisalacarta", 'channels' , "megalive.json" ) )

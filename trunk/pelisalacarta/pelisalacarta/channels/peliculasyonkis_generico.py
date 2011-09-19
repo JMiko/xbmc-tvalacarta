@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para peliculasyonkis
@@ -522,7 +522,7 @@ def play2(item):
         servidor = SERVER[item.server]
         url = Decrypt_Server(item.url,item.server)
         if url == "":
-            from core import xbmctools
+            from platform.xbmc import xbmctools
             xbmctools.alertUnsopportedServer()
             servidor = "unknown"
             return []
@@ -538,8 +538,8 @@ def play2(item):
         
     else:
         #opciones.append(Item (channel=CHANNELNAME, title=item.title, server=servidor, url=url, action="play",folder=False) )
-        from core import xbmctools
-        xbmctools.playvideo(CHANNELNAME,servidor,url,item.category,item.title,item.thumbnail,item.plot,subtitle=item.subtitle)
+        from platform.xbmc import xbmctools
+        xbmctools.play_video(CHANNELNAME,servidor,url,item.category,item.title,item.thumbnail,item.plot,subtitle=item.subtitle)
     return opciones
 def getId(url):
     logger.info("[peliculasyonkis.py] getId")

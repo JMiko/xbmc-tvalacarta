@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para peliculasyonkis
@@ -12,7 +12,7 @@ import xbmcgui
 import xbmcplugin
 
 from core import scrapertools
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core import DecryptYonkis as Yonkis
 from core import config
 from core import logger
@@ -436,7 +436,7 @@ def detail(params,url,category):
         return ""
     
     if url == "":return
-    xbmctools.playvideo(CHANNELNAME,SERVER[serv],url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,SERVER[serv],url,category,title,thumbnail,plot)
 
 def choiceOnePart(matches):
     opciones = []
