@@ -14,7 +14,7 @@
 # 18-12-2010 Implementa lector cadenas internacionales con strings.xml de xbmc
 #-------------------------------------------------------------------------------
 
-print "Using DEVELOPER config 3.0.1"
+print "[config.py] Using DEVELOPER config 3.2"
 
 import os,re
 import ConfigParser

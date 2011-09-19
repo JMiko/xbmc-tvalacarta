@@ -14,10 +14,25 @@
 import xbmc
 
 def info(texto):
-    xbmc.output(texto)
+    try:
+        xbmc.output(texto)
+    except:
+        validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+        stripped = ''.join(c for c in texto if c in validchars)
+        xbmc.output("(stripped) "+stripped)
 
 def debug(texto):
-    xbmc.output(texto)
+    try:
+        xbmc.output(texto)
+    except:
+        validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+        stripped = ''.join(c for c in texto if c in validchars)
+        xbmc.output("(stripped) "+stripped)
 
 def error(texto):
-    xbmc.output(texto)
+    try:
+        xbmc.output(texto)
+    except:
+        validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
+        stripped = ''.join(c for c in texto if c in validchars)
+        xbmc.output("(stripped) "+stripped)

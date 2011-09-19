@@ -12,27 +12,28 @@
 #------------------------------------------------------------
 
 import xbmc
+import urllib
 
 def info(texto):
     try:
-        xbmc.output(texto)
+        xbmc.log(texto)
     except:
         validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
         stripped = ''.join(c for c in texto if c in validchars)
-        xbmc.output("(stripped) "+stripped)
+        xbmc.log("(stripped) "+stripped)
 
 def debug(texto):
     try:
-        xbmc.output(texto)
+        xbmc.log(texto)
     except:
         validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
         stripped = ''.join(c for c in texto if c in validchars)
-        xbmc.output("(stripped) "+stripped)
+        xbmc.log("(stripped) "+stripped)
 
 def error(texto):
     try:
-        xbmc.output(texto)
+        xbmc.log(texto)
     except:
         validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
         stripped = ''.join(c for c in texto if c in validchars)
-        xbmc.output("(stripped) "+stripped)
+        xbmc.log("(stripped) "+stripped)
