@@ -254,3 +254,40 @@ def alertaIDerror(url):
     import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID de la URL"," %s" %url,'la URL es invalida ')
+
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    #<a href="http://www.youtube.com/watch?v=je-692ngMY0" target="_blank">parte 1</a>
+    patronvideos = '<a href="(http://www.youtube.com/watch\?v\=[^"]+)".*?>(.*?)</a>'
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = match[1]
+        url = match[0]
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos = "<param name='movie' value='http://www.youtube.com/v/([^']+)'"
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = match[1]
+        url = "http://www.youtube.com/watch?v="+match[0]
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

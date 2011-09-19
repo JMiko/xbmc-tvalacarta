@@ -73,4 +73,19 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    patronvideos  = 'http://.*?.stagevu.com/v/.*?/(.*?).avi'
+    logger.info("[stagevu.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[stagevu]"
+        url = "http://stagevu.com/video/"+match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'stagevu' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     return devuelve

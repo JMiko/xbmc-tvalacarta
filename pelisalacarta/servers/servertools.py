@@ -10,6 +10,34 @@ from core import scrapertools
 from core import config
 from core import logger
 
+# Función genérica para encontrar vídeos en una página
+def find_video_items(item=None, data=None):
+    logger.info("[launcher.py] findvideos")
+
+    # Descarga la página
+    if data is None:
+        from core import scrapertools
+        data = scrapertools.cache_page(item.url)
+        #logger.info(data)
+    
+    # Busca los enlaces a los videos
+    from core.item import Item
+    from servers import servertools
+    listavideos = servertools.findvideos(data)
+
+    if item is None:
+        item = Item()
+
+    itemlist = []
+    for video in listavideos:
+        scrapedtitle = item.title.strip() + " - " + video[0]
+        scrapedurl = video[1]
+        server = video[2]
+        
+        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=server, page=item.page, url=scrapedurl, thumbnail=item.thumbnail, show=item.show , plot=item.plot , folder=False) )
+
+    return itemlist
+
 def findvideos(data):
     logger.info("[servertools.py] findvideos")
     encontrados = set()
@@ -43,6 +71,10 @@ def findvideos(data):
     # fourshared
     import fourshared
     devuelve.extend(fourshared.find_videos(data))
+
+    # googlevideo
+    import googlevideo
+    devuelve.extend(googlevideo.find_videos(data))
 
     # gigabyteupload
     import gigabyteupload

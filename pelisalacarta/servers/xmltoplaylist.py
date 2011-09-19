@@ -15,9 +15,9 @@ from core import downloadtools
 DEBUG = True
 CHANNELNAME = "xmltoplaylist"
 PLAYLIST_XML_FILENAME_TEMP = "video_playlist.xml.temp.pls"
-FULL_FILENAME_PATH_XML = os.path.join( downloadtools.getDownloadPath(), PLAYLIST_XML_FILENAME_TEMP )
+FULL_FILENAME_PATH_XML = os.path.join( config.get_setting("downloadpath"), PLAYLIST_XML_FILENAME_TEMP )
 PLAYLIST_FILENAME_TEMP = "video_playlist.temp.pls"
-FULL_FILENAME_PATH = os.path.join( downloadtools.getDownloadPath(), PLAYLIST_FILENAME_TEMP )
+FULL_FILENAME_PATH = os.path.join( config.get_setting("downloadpath"), PLAYLIST_FILENAME_TEMP )
 
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
@@ -32,7 +32,7 @@ def MakePlaylistFromXML(xmlurl,title="default"):
     if title== ("default" or ""):
         nombrefichero = FULL_FILENAME_PATH_XML
     else:
-        nombrefichero = os.path.join( downloadtools.getDownloadPath(),title + ".pls")
+        nombrefichero = os.path.join( config.get_setting("downloadpath"),title + ".pls")
     xmldata = scrapertools.cachePage(xmlurl)
     patron = '<title>([^<]+)</title>.*?<location>([^<]+)</location>'
     matches = re.compile(patron,re.DOTALL).findall(xmldata)
@@ -61,7 +61,7 @@ def MakePlaylistFromList(Listdata,title="default"):
     if title== ("default" or ""):
         nombrefichero = FULL_FILENAME_PATH
     else:
-        nombrefichero = os.path.join( downloadtools.getDownloadPath(),title + ".pls")
+        nombrefichero = os.path.join( config.get_setting("downloadpath"),title + ".pls")
     
     if len(Listdata)>0:
         playlistFile = open(nombrefichero,"w")
