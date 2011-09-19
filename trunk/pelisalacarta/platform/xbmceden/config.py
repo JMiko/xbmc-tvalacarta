@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# Gestión de parámetros de configuración - xbmc dharma
+# Gestión de parámetros de configuración - xbmc eden
 #------------------------------------------------------------
 # tvalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
@@ -13,7 +13,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] xbmcdharma config 3.2"
+print "[config.py] xbmceden config 3.2"
 
 import sys
 import os

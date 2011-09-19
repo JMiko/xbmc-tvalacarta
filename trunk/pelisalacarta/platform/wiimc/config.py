@@ -14,7 +14,7 @@
 # 20-01-2010 Fichero de configuración en el directorio de usuario
 #-------------------------------------------------------------------------------
 
-print "[config.py] wiimc config 3.0.1"
+print "[config.py] wiimc config 3.2"
 
 import os,re
 import ConfigParser

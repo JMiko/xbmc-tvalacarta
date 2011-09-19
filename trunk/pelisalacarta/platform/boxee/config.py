@@ -11,7 +11,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] boxee config 3.1.1"
+print "[config.py] boxee config 3.2"
 
 import os,re
 import xbmc
