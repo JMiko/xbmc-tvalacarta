@@ -46,13 +46,20 @@
 	<string id="30024">Numero de recerques a salvar:</string>
  
  	<string id="30019">Filtrar canals per idioma:</string>
-
 	<string id="30025">Tots els idiomes</string>
 	<string id="30026">Espanyol</string>
 	<string id="30027">Anglés</string>
 	<string id="30028">Italiano</string>
 	<string id="30029">Portugués</string>
- 
+
+    <string id="30038">Modo de cache:</string>
+    <string id="30039">Automático</string>
+    <string id="30040">Cachear todo</string>
+    <string id="30041">No cachear nada</string>
+    <string id="30042">Directorio de cache:</string>
+
+    <string id="30044">Modo de reproducción:</string>
+
 	<!-- =============================================================== -->
 	<!-- De 30050 a 30099: Mensajes informativos - error                 -->
 	<!-- =============================================================== -->
