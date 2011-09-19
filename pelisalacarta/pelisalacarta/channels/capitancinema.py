@@ -24,7 +24,7 @@ def mainlist(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage("http://www.capitancinema.com/foro/")
+    data = scrapertools.cachePage("http://www.capitancinema.com/foro")
 
     # Extrae los títulos de los subforos
     '''
@@ -35,12 +35,8 @@ def mainlist(item):
     <dl class="icon">
     <dt><a href="http://www.capitancinema.com/foro/descargas-series/">Series TV en Descarga Directa</a></dt>
     '''
-    patron  = '<div class="forabg">[^<]+'
-    patron += '<div class="inner"><span class="corners-top"><span></span></span>[^<]+'
-    patron += '<ul class="topiclist">[^<]+'
-    patron += '<li class="header">[^<]+'
-    patron += '<dl class="icon">[^<]+'
-    patron += '<dt><a href="([^"]+)">([^<]+)</a></dt>'
+    patron  = '<div class="block-caption block-caption-header">[^<]+'
+    patron += '<h2><a href="([^"]+)">([^<]+)</a></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 

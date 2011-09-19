@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import youtube
@@ -488,7 +488,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
     logger.info("[peliculasonlineflv.py] youtubeplay")
@@ -505,6 +505,6 @@ def youtubeplay(params,url,category):
 
     if len(videourl)>0:
         logger.info("link directo de youtube : "+videourl)
-        xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+        xbmctools.play_video("Trailer",server,videourl,category,title,thumbnail,plot)
 
     return

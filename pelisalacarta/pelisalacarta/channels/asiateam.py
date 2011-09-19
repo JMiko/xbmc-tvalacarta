@@ -5,6 +5,8 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
+# FIXME: Unificar sistema de subtítulos para todos los canales
+
 import urlparse,urllib2,urllib,re,string,time,xbmc,xbmcgui
 import os, sys
 
@@ -12,27 +14,26 @@ from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-from core import xbmctools
 from core import downloadtools
 from servers import servertools
 
 CHANNELNAME = "asiateam"
 DEBUG = True
-SUB_PATH = xbmc.translatePath( os.path.join( downloadtools.getDownloadPath() , 'subtitulos','asiateam' ) )
+SUB_PATH = os.path.join( config.get_setting( "downloadpath" ),"subtitulos","asiateam" )
 if not os.path.exists(SUB_PATH):
     os.mkdir(SUB_PATH)
 
-SUBTEMP_PATH = xbmc.translatePath( os.path.join( config.get_data_path() , 'subtitulo.srt' ) )
+SUBTEMP_PATH = os.path.join( config.get_data_path() , 'subtitulo.srt' )
 
 def isGeneric():
-    return False
+    return True
 
 def mainlist(item):
     logger.info("[asiateam.py] mainlist")
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Películas", action="peliculas", url="http://www.asia-team.net/foros/forumdisplay.php?f=119"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series", action="series", url="http://www.asia-team.net/foros/forumdisplay.php?f=44"))	
+    itemlist.append( Item(channel=CHANNELNAME, title="Series", action="series", url="http://www.asia-team.net/foros/forumdisplay.php?f=44"))    
 
     return itemlist
 
@@ -49,7 +50,7 @@ def peliculas(item):
     itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Terror / Horror / Gore" , url="http://www.asia-team.net/foros/forumdisplay.php?f=125" , folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Thriller / Crimen" , url="http://www.asia-team.net/foros/forumdisplay.php?f=126" , folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Índice", action="indice_peliculas"))
-			
+
     return itemlist
 
 def series(item):
@@ -58,298 +59,298 @@ def series(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="lista_s", title="Series en Curso" , url="http://www.asia-team.net/foros/forumdisplay.php?f=45" , folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, action="lista_s", title="Series Finalizadas" , url="http://www.asia-team.net/foros/forumdisplay.php?f=46" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Índice", action="indice_series"))	
-			
-    return itemlist	
-	
+    itemlist.append( Item(channel=CHANNELNAME, title="Índice", action="indice_series"))    
+
+    return itemlist    
+
 def lista_p(item):
-	logger.info("[asiateam.py] peliculas")
+    logger.info("[asiateam.py] peliculas")
 
     # Descarga la página
-	data = scrapertools.cachePage(item.url)
+    data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-	patronvideos  = '<!-- show threads -->(.*?)<!-- end show threads -->'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	#if DEBUG: scrapertools.printMatches(matches)
-	itemlist = []
-	for post in matches:
-		patronvideos = '<tr>(.*?)</tr>'
-		posts =re.compile(patronvideos, re.DOTALL).findall(post)
-		for elemento in posts:
-			patronvideos = '<td class="alt2"><img src="(.*?)" alt.*?>.*<a href="showthread.php\?t=(.*)" id=".*?>(.*?)</a>'
-			matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+    patronvideos  = '<!-- show threads -->(.*?)<!-- end show threads -->'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    for post in matches:
+        patronvideos = '<tr>(.*?)</tr>'
+        posts =re.compile(patronvideos, re.DOTALL).findall(post)
+        for elemento in posts:
+            patronvideos = '<td class="alt2"><img src="(.*?)" alt.*?>.*?<a href="showthread.php\?t=(.*)" id=".*?>(.*?)</a>'
+            matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
 
-			for match in matches2:
-				title_invalid= match[2]
-				title_invalid= title_invalid[:10]
-				if title_invalid=="IMPORTANTE":break
-				scrapedurl = "http://www.asia-team.net/foros/showthread.php?t="+match[1]
-				scrapedtitle = match[2].split(' [')
-				scrapedtitle = scrapedtitle[0]
-				scrapedthumbnail = "http://imagenes.asia-team.net/afiche/"+match[1]+".jpg"
+            for match in matches2:
+                title_invalid= match[2]
+                title_invalid= title_invalid[:10]
+                if title_invalid=="IMPORTANTE":break
+                scrapedurl = "http://www.asia-team.net/foros/showthread.php?t="+match[1]
+                scrapedtitle = match[2].split(' [')
+                scrapedtitle = scrapedtitle[0]
+                scrapedthumbnail = "http://imagenes.asia-team.net/afiche/"+match[1]+".jpg"
 
-				# Añade al listado
-				itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
-			  
-	# Extrae la marca de siguiente página
-	patronvideos  = '<!-- controls below thread list -->(.*?)<!-- / controls below thread list -->'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
-	for elemento in matches:
-		patronvideos = '<a rel="next" class="smallfont" href="(.*?)">'
-		matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+                # Añade al listado
+                itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+              
+    # Extrae la marca de siguiente página
+    patronvideos  = '<!-- controls below thread list -->(.*?)<!-- / controls below thread list -->'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    for elemento in matches:
+        patronvideos = '<a rel="next" class="smallfont" href="(.*?)">'
+        matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
 
-		if len(matches2)>0:
-			scrapedtitle = "Página siguiente"
-			scrapedurl = "http://www.asia-team.net/foros/"+matches2[0]
-			scrapedurl = scrapedurl.replace('amp;','')
-			scrapedthumbnail = ""
-			itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="lista_p" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+        if len(matches2)>0:
+            scrapedtitle = "Página siguiente"
+            scrapedurl = "http://www.asia-team.net/foros/"+matches2[0]
+            scrapedurl = scrapedurl.replace('amp;','')
+            scrapedthumbnail = ""
+            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="lista_p" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
-	return itemlist
-	
+    return itemlist
+    
 def lista_s(item):
-	logger.info("[asiateam.py] series")
+    logger.info("[asiateam.py] series")
 
     # Descarga la página
-	data = scrapertools.cachePage(item.url)
+    data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-	patronvideos  = '<!-- show threads -->(.*?)<!-- end show threads -->'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	itemlist = []
-	for post in matches:
-		patronvideos = '<tr>(.*?)</tr>'
-		posts =re.compile(patronvideos, re.DOTALL).findall(post)
-		for elemento in posts:
-			patronvideos = '<td class="alt2"><img src="(.*?)" alt.*?>.*<a href="showthread.php\?t=(.*)" id=".*?>(.*?)</a>'
-			matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
-			if DEBUG: scrapertools.printMatches(matches2)
-			for match in matches2:
-				scrapedurl = "http://www.asia-team.net/foros/showthread.php?t="+match[1]
-				scrapedtitle = match[2].split(' [')
-				scrapedtitle = scrapedtitle[0]
-				scrapedthumbnail = "http://imagenes.asia-team.net/afiche/"+match[1]+".jpg"
+    patronvideos  = '<!-- show threads -->(.*?)<!-- end show threads -->'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    itemlist = []
+    for post in matches:
+        patronvideos = '<tr>(.*?)</tr>'
+        posts =re.compile(patronvideos, re.DOTALL).findall(post)
+        for elemento in posts:
+            patronvideos = '<td class="alt2"><img src="(.*?)" alt.*?>.*<a href="showthread.php\?t=(.*)" id=".*?>(.*?)</a>'
+            matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+            if DEBUG: scrapertools.printMatches(matches2)
+            for match in matches2:
+                scrapedurl = "http://www.asia-team.net/foros/showthread.php?t="+match[1]
+                scrapedtitle = match[2].split(' [')
+                scrapedtitle = scrapedtitle[0]
+                scrapedthumbnail = "http://imagenes.asia-team.net/afiche/"+match[1]+".jpg"
 
-				# Añade al listado
-				itemlist.append( Item(channel=CHANNELNAME, action="videos_s", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
-			  
-	# Extrae la marca de siguiente página
-	patronvideos  = '<!-- controls below thread list -->(.*?)<!-- / controls below thread list -->'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
-	for elemento in matches:
-		patronvideos = '<a rel="next" class="smallfont" href="(.*?)">'
-		matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+                # Añade al listado
+                itemlist.append( Item(channel=CHANNELNAME, action="videos_s", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+              
+    # Extrae la marca de siguiente página
+    patronvideos  = '<!-- controls below thread list -->(.*?)<!-- / controls below thread list -->'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    for elemento in matches:
+        patronvideos = '<a rel="next" class="smallfont" href="(.*?)">'
+        matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
 
-		if len(matches2)>0:
-			scrapedtitle = "Página siguiente"
-			scrapedurl = "http://www.asia-team.net/foros/"+matches2[0]
-			scrapedurl = scrapedurl.replace('amp;','')
-			scrapedthumbnail = ""
-			itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="lista_s" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+        if len(matches2)>0:
+            scrapedtitle = "Página siguiente"
+            scrapedurl = "http://www.asia-team.net/foros/"+matches2[0]
+            scrapedurl = scrapedurl.replace('amp;','')
+            scrapedthumbnail = ""
+            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="lista_s" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
-	return itemlist
+    return itemlist
 
 def videos_p(item):
 
-	logger.info("[asiateam.py] videos peliculas")
-	# Descarga la página
-	data = scrapertools.cachePage(item.url)
-	title = item.title
-	scrapedthumbnail = item.thumbnail
-	scrapedplot = ""
-	subtitulo = ""
-	
+    logger.info("[asiateam.py] videos peliculas")
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    title = item.title
+    scrapedthumbnail = item.thumbnail
+    scrapedplot = ""
+    subtitulo = ""
+    
     # Extrae las entradas
-	patronimagen  = 'titulo.png".*?<img src="(.*?)".*?>'
-	matches = re.compile(patronimagen,re.DOTALL).findall(data)
-	if len(matches)>0:
-		scrapedthumbnail = matches[0]
-	patronplot  = 'sinopsis.png".*?>.*?<font color="(?:N|n)avy".*?>(.*?)</td>'
-	matches = re.compile(patronplot,re.DOTALL).findall(data)
-	if len(matches)>0:
-		scrapedplot =  matches[0]
-		scrapedplot = re.sub("</?\w+((\s+\w+(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)/?>",'',scrapedplot)
-		scrapedplot = scrapedplot.replace('&quot;','"')
-	patronsubs = 'subtitulos.png".*?>.*<a href="http://subs.asia-team.net/file.php\?id=(.*?)".*?>'
-	matches = re.compile(patronsubs,re.DOTALL).findall(data)
-	if len(matches)>0:
-		subtitulo =  "http://subs.asia-team.net/download.php?id="+matches[0]
-	itemlist = []
-	listavideos = servertools.findvideos(data)
-	for video in listavideos:
-		scrapedtitle = title.strip() + " - " + video[0]
-		videourl = video[1]
-		server = video[2]
-		if server.lower() =="megaupload":
-			url = "http://www.megavideo.com/?d="+videourl
-			data = scrapertools.cachePage(url)		
-			patronname = 'flashvars.title = "(.*?)"'
-			matches = re.compile(patronname,re.DOTALL).findall(data)
-			if len(matches)>0:
-				titulo = matches[0]
-				#logger.info("Titulo: "+titulo)			
-				if titulo[-3:]=="avi" or titulo[-3:]=="mkv" or titulo[-3:]=="mp4":
-						scrapedtitle = "[MV] "+ title.strip()+"-"+titulo
-				
-		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
+    patronimagen  = 'titulo.png".*?<img src="(.*?)".*?>'
+    matches = re.compile(patronimagen,re.DOTALL).findall(data)
+    if len(matches)>0:
+        scrapedthumbnail = matches[0]
+    patronplot  = 'sinopsis.png".*?>.*?<font color="(?:N|n)avy".*?>(.*?)</td>'
+    matches = re.compile(patronplot,re.DOTALL).findall(data)
+    if len(matches)>0:
+        scrapedplot =  matches[0]
+        scrapedplot = re.sub("</?\w+((\s+\w+(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)/?>",'',scrapedplot)
+        scrapedplot = scrapedplot.replace('&quot;','"')
+    patronsubs = 'subtitulos.png".*?>.*<a href="http://subs.asia-team.net/file.php\?id=(.*?)".*?>'
+    matches = re.compile(patronsubs,re.DOTALL).findall(data)
+    if len(matches)>0:
+        subtitulo =  "http://subs.asia-team.net/download.php?id="+matches[0]
+    itemlist = []
+    listavideos = servertools.findvideos(data)
+    for video in listavideos:
+        scrapedtitle = title.strip() + " - " + video[0]
+        videourl = video[1]
+        server = video[2]
+        if server.lower() =="megaupload":
+            url = "http://www.megavideo.com/?d="+videourl
+            data = scrapertools.cachePage(url)        
+            patronname = 'flashvars.title = "(.*?)"'
+            matches = re.compile(patronname,re.DOTALL).findall(data)
+            if len(matches)>0:
+                titulo = matches[0]
+                #logger.info("Titulo: "+titulo)            
+                if titulo[-3:]=="avi" or titulo[-3:]=="mkv" or titulo[-3:]=="mp4":
+                        scrapedtitle = "[MV] "+ title.strip()+"-"+titulo
+                
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
-		itemlist.append( Item(channel=CHANNELNAME, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
-	
-	#Añade opcion para filestube y asianmovielink
-	if re.search('asia-team.net',item.url)!=None:
-		if re.search(' / ',title)!=None:
-			title = title.split(' / ')
-			buscar = title[0]
-		else:
-			buscar = title
-		
-		itemlist.append( Item(channel=CHANNELNAME, action="search", title="Buscar Película en FilesTube",  extra=buscar , folder=True) )
-		
-	return itemlist
-	
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
+    
+    #Añade opcion para filestube y asianmovielink
+    if re.search('asia-team.net',item.url)!=None:
+        if re.search(' / ',title)!=None:
+            title = title.split(' / ')
+            buscar = title[0]
+        else:
+            buscar = title
+        
+        itemlist.append( Item(channel=CHANNELNAME, action="search", title="Buscar Película en FilesTube",  extra=buscar , folder=True) )
+        
+    return itemlist
+    
 def videos_s(item):
 
-	logger.info("[asiateam.py] videos series")
-	# Descarga la página
-	data = scrapertools.cachePage(item.url)
-	title = item.title
-	scrapedthumbnail = item.thumbnail
-	scrapedplot = ""
-	sub = {"Capitulo 1":""}
-	lista_titulos = []
+    logger.info("[asiateam.py] videos series")
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    title = item.title
+    scrapedthumbnail = item.thumbnail
+    scrapedplot = ""
+    sub = {"Capitulo 1":""}
+    lista_titulos = []
 
     # Extrae las entradas
-	patronimagen  = 'titulo.png".*?<img src="(.*?)".*?>'
-	matches = re.compile(patronimagen,re.DOTALL).findall(data)
-	if len(matches)>0:
-		scrapedthumbnail = matches[0]
-	patronplot  = 'sinopsis.png".*?>.*?<font color="(?:N|n)avy".*?>(.*?)</td>'
-	matches = re.compile(patronplot,re.DOTALL).findall(data)
-	if len(matches)>0:
-		scrapedplot =  matches[0]
-		scrapedplot = re.sub("</?\w+((\s+\w+(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)/?>",'',scrapedplot)
-		scrapedplot = scrapedplot.replace('&quot;','"')
-	
-	patronsubs = 'subtitulos.png".*?>(.*?)<!-- sig -->'
-	matches = re.compile(patronsubs,re.DOTALL).findall(data)
-	for elemento in matches:
-		patronsubs = '<a href="http://subs.asia-team.net/file.php\?id=(.*?)".*?>.*?<font color="navy">(.*?)</font></b></a>'
-		matches2 = re.compile(patronsubs,re.DOTALL).findall(elemento)
-		if len(matches2)>0:
-			for match in matches2:
-				sub[match[1]] = "http://subs.asia-team.net/download.php?id="+match[0]	
-	itemlist = []
-	listavideos = servertools.findvideos(data)
-	for video in listavideos:
-		try: 
-			lista_titulos.index(video[0])
-			scrapedtitle = title.strip() + " - " + video[0] + " X264"
-		except:
-			lista_titulos.append(video[0])
-			scrapedtitle = title.strip() + " - " + video[0] + " XVID"
+    patronimagen  = 'titulo.png".*?<img src="(.*?)".*?>'
+    matches = re.compile(patronimagen,re.DOTALL).findall(data)
+    if len(matches)>0:
+        scrapedthumbnail = matches[0]
+    patronplot  = 'sinopsis.png".*?>.*?<font color="(?:N|n)avy".*?>(.*?)</td>'
+    matches = re.compile(patronplot,re.DOTALL).findall(data)
+    if len(matches)>0:
+        scrapedplot =  matches[0]
+        scrapedplot = re.sub("</?\w+((\s+\w+(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)/?>",'',scrapedplot)
+        scrapedplot = scrapedplot.replace('&quot;','"')
+    
+    patronsubs = 'subtitulos.png".*?>(.*?)<!-- sig -->'
+    matches = re.compile(patronsubs,re.DOTALL).findall(data)
+    for elemento in matches:
+        patronsubs = '<a href="http://subs.asia-team.net/file.php\?id=(.*?)".*?>.*?<font color="navy">(.*?)</font></b></a>'
+        matches2 = re.compile(patronsubs,re.DOTALL).findall(elemento)
+        if len(matches2)>0:
+            for match in matches2:
+                sub[match[1]] = "http://subs.asia-team.net/download.php?id="+match[0]    
+    itemlist = []
+    listavideos = servertools.findvideos(data)
+    for video in listavideos:
+        try: 
+            lista_titulos.index(video[0])
+            scrapedtitle = title.strip() + " - " + video[0] + " X264"
+        except:
+            lista_titulos.append(video[0])
+            scrapedtitle = title.strip() + " - " + video[0] + " XVID"
 
-		videourl = video[1]
-		server = video[2]
-		try:
-			clave_sub = video[0]
-			clave_sub = clave_sub.split(' -')
-			subtitulo = sub[clave_sub[0]]
-			if DEBUG:logger.info("CLAVE "+ subtitulo)			
-		except:
-			subtitulo = ""
-			logger.info("Sin subtitulo")
-		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
+        videourl = video[1]
+        server = video[2]
+        try:
+            clave_sub = video[0]
+            clave_sub = clave_sub.split(' -')
+            subtitulo = sub[clave_sub[0]]
+            if DEBUG:logger.info("CLAVE "+ subtitulo)            
+        except:
+            subtitulo = ""
+            logger.info("Sin subtitulo")
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
-		itemlist.append( Item(channel=CHANNELNAME, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
-	
-	#Añade opcion para filestube
-	if re.search('asia-team.net',item.url)!=None:
-		if re.search(' / ',title)!=None:
-			title = title.split(' / ')
-			buscar = title[0]
-		else:
-			buscar = title
-		
-		itemlist.append( Item(channel=CHANNELNAME, action="search", title="Buscar Serie en FilesTube",  extra=buscar , folder=True) )
-		
-	return itemlist
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
+    
+    #Añade opcion para filestube
+    if re.search('asia-team.net',item.url)!=None:
+        if re.search(' / ',title)!=None:
+            title = title.split(' / ')
+            buscar = title[0]
+        else:
+            buscar = title
+        
+        itemlist.append( Item(channel=CHANNELNAME, action="search", title="Buscar Serie en FilesTube",  extra=buscar , folder=True) )
+        
+    return itemlist
 
 def search(item):
-	logger.info("[asiateam.py] busqueda")
+    logger.info("[asiateam.py] busqueda")
     
-	tecleado = ""
-	keyboard = xbmc.Keyboard(item.extra,"Acepte o Modifique la Búsqueda")
-	keyboard.doModal()
-	if (keyboard.isConfirmed()):
-		tecleado = keyboard.getText()
-		if len(tecleado)<=0:
-			return
-	item.extra = tecleado
+    tecleado = ""
+    keyboard = xbmc.Keyboard(item.extra,"Acepte o Modifique la Búsqueda")
+    keyboard.doModal()
+    if (keyboard.isConfirmed()):
+        tecleado = keyboard.getText()
+        if len(tecleado)<=0:
+            return
+    item.extra = tecleado
 
-	itemlist = searchresults(item)
+    itemlist = searchresults(item)
 
-	return itemlist
-    
+    return itemlist
+
 def searchresults(item):
-	logger.info("[asiateam.py] resultados")
-	teclado = item.extra.replace(" ", "+")
-	return filestube(item,teclado)
-
+    logger.info("[asiateam.py] resultados")
+    teclado = item.extra.replace(" ", "+")
+    return filestube(item,teclado)
 
 def filestube(item,teclado):
 
-	logger.info("[asiateam.py] filestube")
+    logger.info("[asiateam.py] filestube")
 
     # Descarga la página
-	data = scrapertools.cachePage("http://www.filestube.com/search.html?q="+teclado+"+avi+mkv+mp4&hosting=3")
+    data = scrapertools.cachePage("http://www.filestube.com/search.html?q="+teclado+"+avi+mkv+mp4&hosting=3")
     # Extrae las entradas
-	patronvideos  = '<div class="star.*?>.*?<div.*?>(.*?)<br />.*?<a href=".*?>.*?<a href="(.*?)".*?>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+    patronvideos  = '<div class="star.*?>.*?<div.*?>(.*?)<br />.*?<a href=".*?>.*?<a href="(.*?)".*?>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	itemlist = []
-	if len(matches)>0:
-		for match in matches:
-			scrapedurl = match[1]
-			scrapedtitle = match[0]
-			scrapedtitle = re.sub("</?\w+((\s+\w+(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)/?>",'',scrapedtitle)
-			logger.info(scrapedtitle)
+    itemlist = []
+    if len(matches)>0:
+        for match in matches:
+            scrapedurl = match[1]
+            scrapedtitle = match[0]
+            scrapedtitle = re.sub("</?\w+((\s+\w+(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)/?>",'',scrapedtitle)
+            logger.info(scrapedtitle)
 
-			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title=scrapedtitle , url=scrapedurl , folder=True) )
-	
-	# Extrae la marca de siguiente página
-	patronvideos = '<span class="resultsLink3a">.*?</span>.*?<a href="(.*?)".*?>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title=scrapedtitle , url=scrapedurl , folder=True) )
+    
+    # Extrae la marca de siguiente página
+    patronvideos = '<span class="resultsLink3a">.*?</span>.*?<a href="(.*?)".*?>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-	if len(matches)>0:
-		scrapedtitle = "Página siguiente"
-		scrapedurl = matches[0]
-		scrapedurl = scrapedurl.replace('amp;','')
-		itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="filestube" , url=scrapedurl , folder=True ) )
-		
-	return itemlist
-
-	
+    if len(matches)>0:
+        scrapedtitle = "Página siguiente"
+        scrapedurl = matches[0]
+        scrapedurl = scrapedurl.replace('amp;','')
+        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="filestube" , url=scrapedurl , folder=True ) )
+        
+    return itemlist
+    
 def sub(item):
 
-	itemlist = []
-	if item.category!="asiateam":
-		sub_file=download_subtitles(item.category)
-		if sub_file!="":
-			config.set_setting("subtitulo", "true")	
-	else:
-		mensaje = xbmcgui.Dialog()
-		resultado = mensaje.ok('Subtítulo no disponible en Asia-Team', 'No se han encontrado subtítulos para este archivo' , 'Para asegurarse, pruebe a buscar en Xbmc Subtitles')	
-	
-	itemlist.append( Item(channel=CHANNELNAME, action="play", title=item.title , url=item.url , thumbnail=item.thumbnail , plot=item.plot , server=item.extra ,folder=False) )
-	return itemlist
-	
+    itemlist = []
+    if item.category!="asiateam":
+        sub_file=download_subtitles(item.category)
+        if sub_file!="":
+            config.set_setting("subtitulo", "true")    
+    else:
+        mensaje = xbmcgui.Dialog()
+        resultado = mensaje.ok('Subtítulo no disponible en Asia-Team', 'No se han encontrado subtítulos para este archivo' , 'Para asegurarse, pruebe a buscar en Xbmc Subtitles')    
+    
+    # Los vídeos de Asia-Team están protegidos con el password "www.Asia-Team.net"
+
+    itemlist.append( Item(channel=CHANNELNAME, action="play", title=item.title , url=item.url , thumbnail=item.thumbnail , plot=item.plot , server=item.extra ,folder=False, password="www.Asia-Team.net") )
+    return itemlist
+    
 def download_subtitles (url):
 
     tmp_sub_dir= SUB_PATH #Carpeta temporal
@@ -359,13 +360,13 @@ def download_subtitles (url):
           os.remove(fullpath)
         except IOError:
           xbmc.output("Error al eliminar el archivo subtitulo.srt "+fullpath)
-          raise	
+          raise    
     for root, dirs, files in os.walk(tmp_sub_dir): #Borro archivos de la carpeta temporal
         for f in files:
             f = unicode(f,'utf8')
             os.unlink(os.path.join(root, f)) 
         for d in dirs:
-            from shutil import rmtree						
+            from shutil import rmtree                        
             shutil.rmtree(os.path.join(root, d))
     #Mensaje de información
     mensaje = xbmcgui.DialogProgress()
@@ -374,14 +375,14 @@ def download_subtitles (url):
     linea3 = 'que aparecerá a continuación'
     mensaje.create(linea1 , linea2 , linea3)
     time.sleep(3)
-    mensaje.close()	
+    mensaje.close()    
     try:
         req = urllib2.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         opener = urllib2.build_opener(SmartRedirectHandler())
         content = opener.open(req)
     except ImportError, inst:
-        status,location = inst	
+        status,location = inst    
         response = urllib.urlopen(location)
         content =response.read()
     if content is not None:
@@ -398,7 +399,7 @@ def download_subtitles (url):
             local_file_handle.close()
         except:
             logger.info("Fallo al guardar en '%s'" % (local_tmp_file))
-        if packed:	
+        if packed:    
             files = os.listdir(tmp_sub_dir)
             init_filecount = len(files)
             filecount = init_filecount
@@ -425,8 +426,8 @@ def download_subtitles (url):
             if waittime == 20:
                 logger.info("Error al extraer en '%s'" % (tmp_sub_dir))
             else:
-                logger.info("Archivos extraídos en '%s'" % (tmp_sub_dir))			
-                try:				
+                logger.info("Archivos extraídos en '%s'" % (tmp_sub_dir))            
+                try:                
                     file = choice_one(files) #Nuevo dialogo para seleccionar subtitulo
                     subs_file = os.path.join(SUB_PATH,file)
                     if os.path.exists(subs_file):
@@ -434,16 +435,16 @@ def download_subtitles (url):
                         sub = copy2(subs_file, SUBTEMP_PATH)
                     return sub
                 except:
-                    return "" 			
+                    return ""             
 
-		
+        
 def choice_one(files):
     opciones = []
     sub_list = []
     numero = 0
     
     for file in files:
-        if (string.split(file, '.')[-1] in ['srt','sub','txt','idx','ssa']):		
+        if (string.split(file, '.')[-1] in ['srt','sub','txt','idx','ssa']):        
             numero = numero + 1
             opciones.append("%02d) %s" % (numero , file))
             sub_list.append(file)
@@ -453,69 +454,69 @@ def choice_one(files):
         return sub_list[seleccion]
 
 
-class SmartRedirectHandler(urllib2.HTTPRedirectHandler):	
-	def http_error_302(self, req, fp, code, msg, headers):
-			if 'location' in headers:
-				newurl = headers.getheaders('location')[0]
-			elif 'uri' in headers:
-				newurl = headers.getheaders('uri')[0]
-			else:
-				return
-			newurl = newurl.replace(' ','%20')
-			newurl = urlparse.urljoin(req.get_full_url(), newurl)
-			raise ImportError(302,newurl)
-			
-			
+class SmartRedirectHandler(urllib2.HTTPRedirectHandler):    
+    def http_error_302(self, req, fp, code, msg, headers):
+            if 'location' in headers:
+                newurl = headers.getheaders('location')[0]
+            elif 'uri' in headers:
+                newurl = headers.getheaders('uri')[0]
+            else:
+                return
+            newurl = newurl.replace(' ','%20')
+            newurl = urlparse.urljoin(req.get_full_url(), newurl)
+            raise ImportError(302,newurl)
+            
+            
 def indice_series(item):
-	logger.info("[asiateam.py] indice de series")
+    logger.info("[asiateam.py] indice de series")
 
-	itemlist = []
-	itemlist.append( Item(channel=CHANNELNAME, action="indice_s", title="Series en Curso" , url="http://www.asia-team.net/index.php?page=Series1" , folder=True) )
-	itemlist.append( Item(channel=CHANNELNAME, action="indice_s", title="Series Finalizadas" , url="http://www.asia-team.net/index.php?page=Series2" , folder=True) )		
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, action="indice_s", title="Series en Curso" , url="http://www.asia-team.net/index.php?page=Series1" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="indice_s", title="Series Finalizadas" , url="http://www.asia-team.net/index.php?page=Series2" , folder=True) )        
 
-	return itemlist	
-	
+    return itemlist    
+    
 def indice_peliculas(item):
     logger.info("[asiateam.py] indice de peliculas")
     
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="indice_completo", title="Lista Completa" , url="http://www.asia-team.net/index.php?page=CineConSubTodos" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="cat_p", title="Por Categorías" , folder=True) )	
-			
-    return itemlist	
-	
+    itemlist.append( Item(channel=CHANNELNAME, action="cat_p", title="Por Categorías" , folder=True) )    
+            
+    return itemlist    
+    
 def indice_completo(item):
-	logger.info("[asiateam.py] lista de peliculas")
-	
-	itemlist =[]
-	data = scrapertools.cachePage(item.url)
-	patron = '<li><b><a href=(.*?) target=_blank>(.*?)</a></b></li>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	
-	for match in matches:
-		scrapedtitle = match[1].split(' [')
-		scrapedtitle = scrapedtitle[0]
-		scrapedurl = urlparse.urljoin("http://www.asia-team.net/", match[0])
-		itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title= scrapedtitle , url= scrapedurl, folder=True) )
-		
-	return itemlist	
-	
+    logger.info("[asiateam.py] lista de peliculas")
+    
+    itemlist =[]
+    data = scrapertools.cachePage(item.url)
+    patron = '<li><b><a href=(.*?) target=_blank>(.*?)</a></b></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    for match in matches:
+        scrapedtitle = match[1].split(' [')
+        scrapedtitle = scrapedtitle[0]
+        scrapedurl = urlparse.urljoin("http://www.asia-team.net/", match[0])
+        itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title= scrapedtitle , url= scrapedurl, folder=True) )
+        
+    return itemlist    
+    
 def indice_s(item):
-	logger.info("[asiateam.py] lista de series")
-	
-	itemlist =[]
-	data = scrapertools.cachePage(item.url)
-	patron = '<li><b><a href=(.*?) target=_blank>(.*?)</a></b></li>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	
-	for match in matches:
-		scrapedtitle = match[1].split(' [')
-		scrapedtitle = scrapedtitle[0]
-		scrapedurl = urlparse.urljoin("http://www.asia-team.net/", match[0])
-		itemlist.append( Item(channel=CHANNELNAME, action="videos_s", title= scrapedtitle , url= scrapedurl, folder=True) )
-		
-	return itemlist	
-	
+    logger.info("[asiateam.py] lista de series")
+    
+    itemlist =[]
+    data = scrapertools.cachePage(item.url)
+    patron = '<li><b><a href=(.*?) target=_blank>(.*?)</a></b></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    for match in matches:
+        scrapedtitle = match[1].split(' [')
+        scrapedtitle = scrapedtitle[0]
+        scrapedurl = urlparse.urljoin("http://www.asia-team.net/", match[0])
+        itemlist.append( Item(channel=CHANNELNAME, action="videos_s", title= scrapedtitle , url= scrapedurl, folder=True) )
+        
+    return itemlist    
+    
 def cat_p(item):
     logger.info("[asiateam.py] categorias peliculas")
     
@@ -527,6 +528,6 @@ def cat_p(item):
     itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Drama / Romance" , url="http://www.asia-team.net/index.php?page=CineConSub5",  folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, action="indice_p" ,title="Documentales / Musicales",  url="http://www.asia-team.net/index.php?page=CineConSub6", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Terror / Horror / Gore" , url="http://www.asia-team.net/index.php?page=CineConSub7",  folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p" ,title="Thiller / Crimen",  url="http://www.asia-team.net/index.php?page=CineConSub8", folder=True) )	
-			
+    itemlist.append( Item(channel=CHANNELNAME, action="indice_p" ,title="Thiller / Crimen",  url="http://www.asia-team.net/index.php?page=CineConSub8", folder=True) )    
+            
     return itemlist

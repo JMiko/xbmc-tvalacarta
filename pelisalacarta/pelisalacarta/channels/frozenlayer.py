@@ -205,4 +205,4 @@ def play(params,url,category):
         if len(listavideos)>0:
             url = listavideos[0][1]
 
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)

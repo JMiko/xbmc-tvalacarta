@@ -153,4 +153,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)

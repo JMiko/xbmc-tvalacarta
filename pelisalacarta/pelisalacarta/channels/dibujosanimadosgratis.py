@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para dibujosanimadosgratis
@@ -7,18 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "dibujosanimadosgratis"
 DEBUG = True
@@ -27,7 +20,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[cuevana.py] mainlist")
+    logger.info("[dibujosanimadosgratis.py] mainlist")
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades" , url="http://dibujosanimadosgratis.net/"))

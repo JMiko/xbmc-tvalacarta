@@ -16,7 +16,7 @@ from xml.dom import EMPTY_NAMESPACE
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from core import downloadtools
 from servers import vk
@@ -25,7 +25,7 @@ from servers import servertools
 CHANNELNAME = "pelisflv"
 ATOM_NS = 'http://www.w3.org/2005/Atom'
 PLAYLIST_FILENAME_TEMP = "video_playlist.temp.pls"
-FULL_FILENAME_PATH = os.path.join( downloadtools.getDownloadPath(), PLAYLIST_FILENAME_TEMP )
+FULL_FILENAME_PATH = os.path.join( config.get_setting("downloadpath"), PLAYLIST_FILENAME_TEMP )
 
 
 # Esto permite su ejecución en modo emulado
@@ -636,7 +636,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
     logger.info("[pelisflv.py] play2")

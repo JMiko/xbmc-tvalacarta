@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -168,7 +168,7 @@ def play(params,url,category):
     logger.info("[stagevusite.py] thumbnail="+thumbnail)
     server="stagevu"
 
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
     logger.info('[stagevusite.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

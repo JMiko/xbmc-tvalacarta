@@ -18,7 +18,7 @@ from core import scrapertools
 from core import logger
 from core import config
 from core.item import Item
-from core import xbmctools
+from platform.xbmc import xbmctools
 from pelisalacarta import buscador
 
 from servers import servertools

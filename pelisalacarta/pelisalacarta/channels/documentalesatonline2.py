@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para documentalesatonline2
@@ -8,56 +8,33 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 
-import xbmc
-import xbmcgui
-import xbmcplugin
-
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
 from core.item import Item
 from servers import servertools
-from servers import vk
-
-from pelisalacarta import buscador
 
 import xml.dom.minidom
 
 CHANNELNAME = "documentalesatonline2"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
-
-# Traza el inicio del canal
-logger.info("[documentalesatonline2.py] init")
-
 DEBUG = True
 
+def isGeneric():
+    return True
 
-
-
-
-def mainlist(params,url,category):
+def mainlist(item):
     logger.info("[documentalesatonline2.py] mainlist")
-    
-    xbmctools.addnewfolder( CHANNELNAME , "novedades"  , category , "Novedades"     ,"http://documentalesatonline.loquenosecuenta.com/feed?paged=1","","")
-    xbmctools.addnewfolder( CHANNELNAME , "categorias" , category , "Por categorias","http://documentalesatonline.loquenosecuenta.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar"                           ,"","","")
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    itemlist=[]
 
+    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades" , url="http://www.bizzentte.com/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Categorías" , action="categorias" , url="http://www.bizzentte.com/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search"))
 
-def search(params,url,category):
-    
-    buscador.listar_busquedas(params,url,category)
-    
-    
+    return itemlist
+
+def search(item):
+    buscador.listar_busquedas(item)
+
 def searchresults(params,tecleado,category):
     logger.info("[documentalesatonline2.py] search")
 
@@ -66,104 +43,83 @@ def searchresults(params,tecleado,category):
     searchUrl = "http://documentalesatonline.loquenosecuenta.com/search/"+tecleado+"?feed=rss2&paged=1"
     novedades(params,searchUrl,category)
 
-def categorias(params,url,category):
+def categorias(item):
     logger.info("[documentalesatonline2.py] novedades")
+    itemlist=[]
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<li class=.cat-item.+?href=\"(.+?)\" .+?>(.+?)</a> \(\d+\)'
+    #<li class="jcl_category" style="display:none;" >
+    #<a href="http://www.bizzentte.com/categoria/categorias-en-general-para-todo/arte-y-cultura/" >Arte y Cultura (80)</a>
+    #<a class="jcl_link" href="#jcl" title="Ver Sub-Categor&iacute;as">
+    #<span class="jcl_symbol" style="padding-left:5px">(+)</span></a>
+    #<ul>
+    #<li class="jcl_category" style="display:none;" ><a href="http://www.bizzentte.com/categoria/categorias-en-general-para-todo/arte-y-cultura/fotografia/" >Fotografia (2)</a></li><li class="jcl_category" style="display:none;" ><a href="http://www.bizzentte.com/categoria/categorias-en-general-para-todo/arte-y-cultura/grafiti/" >Grafiti (2)</a></li>
+    patronvideos  = '<li class="jcl_category"[^>]+><a href="([^"]+)"[^>]*>([^<]+)</a></li>'
     # '\" url nombre cantidad_entradas
     matches = re.compile(patronvideos).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
-    #    scrapedtitle = match[1]+" "+match[2]
-    #    scrapedurl = urlparse.urljoin(url,match[0])
-    #    scrapedthumbnail = ""
-    #    scrapedplot = ""
-    #    if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        #xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , match[1] , match[0] + "feed?paged=1" , "" , "")
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=match[1] , url=match[0] , folder=True) )
 
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , match[1] , match[0] + "feed?paged=1" , "" , "")
+    return itemlist
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def parsefeedwordpress(url):
-    data = scrapertools.cachePage(url)
-    doc = xml.dom.minidom.parseString(data)
-    #logger.info(doc.toxml().encode("ascii","ignore"))
-    items=doc.getElementsByTagName("item")
-    returnarray=[];
-    
-    for item in items:
-        #logger.info(item.toxml().encode("ascii","ignore"))
-        #logger.info("---------------------------------------")
-        #logger.info(item.getElementsByTagName("title")[0].firstChild.wholeText.encode("ascii","ignore"))
-        #logger.info(item.getElementsByTagName("link")[0].firstChild.wholeText.encode("ascii","ignore"))
-        #logger.info(item.getElementsByTagName("description")[0].firstChild.data.encode("ascii","ignore") )
-        returnarray.append([item.getElementsByTagName("title")[0].firstChild.wholeText,item.getElementsByTagName("link")[0].firstChild.wholeText,item.getElementsByTagName("description")[0].firstChild.data])
-        
-    return(returnarray)    
-
-    
-
-def novedades(params,url,category):
+def novedades(item):
     logger.info("[documentalesatonline2.py] novedades")
+    itemlist=[]
 
     # Descarga la página
-    elementos=parsefeedwordpress(url)
-    data=""    
-    logger.info(str(len(elementos)) + " es la cantidad de elementos")
-    if len(elementos)>0:
-        
-        for j in elementos:
-            logger.info(j[0].encode("ascii","ignore")) #titulo 
-            logger.info(j[1].encode("ascii","ignore")) #url
-            logger.info(j[2].encode("ascii","ignore")) #plot
-            
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , j[0].encode("utf-8","ignore") , j[0].encode("utf-8","ignore") , j[1].encode("utf-8","ignore") , "" , j[2].encode("utf-8","ignore"))
-        
-        if len(elementos)==30:
-            logger.info("tiene 30 elementos tenemos que poner pagina siguiente")
-            patronvideos  = '(.+?paged=)(\d+)'
-    # '\" url nombre cantidad_entradas
-            matches = re.compile(patronvideos).findall(url)
-            if len(matches)>0:
-                
-                logger.info(matches[0][0])
-                numero=(int)(matches[0][1]) + 1
-                xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , "pagina siguiente" , matches[0][0] + str(numero) , "" , "")
-            else:
-                logger.info("no hay matches para anyadir la pagina siguiente")
-    #http://documentalesatonline.loquenosecuenta.com/categoria/documentales/feed?paged=3&feed=rss
-
+    data = scrapertools.cache_page(item.url)
     
+    # Entradas
+    '''
+    <h2 id="post-5250"><a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/" rel="bookmark">Chips: Implantes de futuro.2009 (Documental C.Odisea) (RFID) (Español)</a></h2>
+    <div class="main">
+    <p>En este interesante documental, seguimos a Mark Stepanek mientras delibera si debe o no obtener una identificación por radiofrecuencia (RFID), es decir, implantarse un microchip, semejante al que pueda llevar una mascota, en su propia mano..</p>
+    <ul class="readmore">
+    <li>&raquo;
+    <a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/#comments">Comentarios</a>
+    <a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/#comments" title="Comentarios en Chips: Implantes de futuro.2009 (Documental C.Odisea) (RFID) (Español)">(3)</a>						</li>
+    </ul>
+    </div>
+    '''
+    patron  = '<h2 id="post-[^"]+"><a href="([^"]+)"[^>]+>([^<]+)</a></h2>[^<]+'
+    patron += '<div class="main">[^<]+'
+    patron += '<p>([^<]+)</p>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    for match in matches:
+        scrapedtitle = match[1]
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = ""
+        scrapedplot = match[2]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-def detail(params,url,category):
-    logger.info("[documentalesatonline2.py] detail")
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    #title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    #thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    #plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
+    # Página siguiente
+    patron  = '<a href="([^"]+)" >P..gina siguiente \&raquo\;</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for match in matches:
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="!Página siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+
+    return itemlist
+
+def findvideos(item):
+    logger.info("[documentalesatonline2.py] findvideos")
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
+    data = scrapertools.cachePage(item.url)
     patronvideos0  = '- [0-9]+? de [0-9]+?:(.+)'
     #- 1 de 3:
-    
-    
     matches0 = re.compile(patronvideos0).findall(data)
     
     if len(matches0)==0:
@@ -178,83 +134,37 @@ def detail(params,url,category):
             logger.info("es el doble, vamos a anadir un link de megavideo y uno de megaupload por cada fideo")
             length=len(matches0)
             for i in range(len(matches0)):
-                
-                logger.info(listavideos[0+i][0])
-                logger.info(listavideos[0+i][1])
-                logger.info(listavideos[0+i][2])
+                title=listavideos[0+i][0]
+                url=listavideos[0+i][1]
+                server=listavideos[0+i][2]
                 #logger.info(matches0)
-                xbmctools.addvideo( CHANNELNAME , strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[0+i][0] , listavideos[0+i][1] , category , listavideos[0+i][2] )
-                xbmctools.addvideo( CHANNELNAME , strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[length+i][0] , listavideos[length+i][1] , category , listavideos[length+i][2] )
-                 
-
+                itemlist.append( Item(channel=CHANNELNAME, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[0+i][0] , url=listavideos[0+i][1] , server=listavideos[0+i][2] , folder=False ))
+                itemlist.append( Item(channel=CHANNELNAME, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[length+i][0] , url=listavideos[length+i][1] , server=listavideos[length+i][2] , folder=False ))
         else:
             logger.info("vamos a ponerlos con el nombre del titulo todos, el mismo que el por defecto")
             logger.info("no hay capitulos")
             patronvideos  = '(.+?)\('
             matches = re.compile(patronvideos).findall(category)
-        # ------------------------------------------------------------------------------------
-        # Busca los enlaces a los videos
-        # ------------------------------------------------------------------------------------
             listavideos = servertools.findvideos(data)
             
-        
             for video in listavideos:
-                xbmctools.addvideo( CHANNELNAME , matches[0] +  video[0] , video[1] , category , video[2] )
-                #    addvideo( "Mafia rusa.2010 [Megavideo]" , "3KT95673" , "Megavideo" , "")"
-            # ------------------------------------------------------------------------------------
-        
-                
-            
-        #for i in matches0:
-            
-        #    logger.info(strip_ml_tags(i))
-            
-            
-        
+                itemlist.append( Item(channel=CHANNELNAME, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
     else: 
         logger.info("no hay capitulos")
         patronvideos  = '(.+?)\('
         matches = re.compile(patronvideos).findall(category)
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
+        # Busca los enlaces a los videos
         listavideos = servertools.findvideos(data)
         
-    
         for video in listavideos:
-            xbmctools.addvideo( CHANNELNAME , matches[0] +  video[0] , video[1] , category , video[2] )
-        # ------------------------------------------------------------------------------------
-
+            itemlist.append( Item(channel=CHANNELNAME, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2] , folder=False ))
 
     patronvideos  = '<a rel="bookmark" href="../(.+?)">(.+?)<'
     matches = re.compile(patronvideos).findall(data)
     for z in matches:
-        xbmctools.addfolder( CHANNELNAME, z[1], "http://documentalesatonline.loquenosecuenta.com/" + z[0], "detail")
-        
-    
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=z[1], url="http://documentalesatonline.loquenosecuenta.com/" + z[0] , folder=True ))
 
-    #<a href="http://programastvonline.blogspot.com/2010/09/cuarto-milenio-6x02-tardigrados-el.html">Cuarto Milenio 6&#215;02: Tardígrados, El Misterio Medjugorje, El fantasma del Verdugo y En los límites del miedo (26-09-10).Online.</a><br />
-    patronvideos  = '<a href="(http://programastvonline.blogspot.com.+?)">(.+?)<'
-    matches = re.compile(patronvideos).findall(data)
-    #logger.info(str(len(matches)) + " no te veo!")
-    for z in matches:
-        #xbmctools.addnewfolder("programastv","detail",category,z[1],z[0],"","")
-        #xbmctools.addnewfolder(canal, accion, category, title, url, thumbnail, plot, Serie, totalItems)
-        xbmctools.addfolder("programastv", z[1], z[0], "parsear")
-        #xbmctools.addnewfolder(canal, accion, category, title, url, thumbnail, plot, Serie, totalItems)
-    #<a rel="bookmark" href="../2010/11/cuarto-milenio-6x06-el-pan-malditoanxelinossenales-del-espacio-exterior-y-murcia-la-torre-de-los-exorcismos-24-10-10-descargaronline/">Cuarto  Milenio 6×06: El pan maldito,Anxeliños,Señales del espacio exterior y  Murcia: La Torre de los exorcismos (24-10-10) (Descargaronline)</a><br />
-
-    
-    
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-        
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
+    return itemlist
 
 def strip_ml_tags(in_text):
     #source http://code.activestate.com/recipes/440481-strips-xmlhtml-tags-from-string/
@@ -271,17 +181,3 @@ def strip_ml_tags(in_text):
 
     join_char=''
     return join_char.join(s_list)
-
-
-
-
-
-def play(params,url,category):
-    logger.info("[documentalesatonline2.py] play")
-
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = "" #urllib.unquote_plus( params.get("thumbnail") )
-    plot = "" #unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-    
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)

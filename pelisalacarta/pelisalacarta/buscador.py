@@ -11,7 +11,7 @@ import xbmcplugin
 
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 
 CHANNELNAME = "buscador"

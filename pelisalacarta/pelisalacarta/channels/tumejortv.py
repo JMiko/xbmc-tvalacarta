@@ -6,18 +6,11 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "tumejortv"
 DEBUG = True
@@ -218,13 +211,34 @@ def shortlist(item):
 # Listado de series de una letra
 def shortlistserie(item):
     logger.info("[tumejortv.py] shortlistserie")
-
+    itemlist = []
     url = item.url
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
+    salir = False
 
-    # Extrae las películas
+    while not salir:
+        # Descarga la página
+        data = scrapertools.cachePage(url)
+
+        # Extrae las entradas
+        partial_list = get_pagina(data)
+        itemlist.extend( partial_list )
+
+        # Extrae la página siguiente
+        patron = '<a href="([^"]+)" >&raquo;</a>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if DEBUG: scrapertools.printMatches(matches)
+    
+        if len(matches)>0:
+            url = matches[0]
+        else:
+            url = ""
+
+        # Condicion de salida
+        salir = ( len(partial_list) == 0 or url=="")
+
+    return itemlist
+
+def get_pagina(data):
     patron  = '<li><div class="covershot"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"[^>]+></a></div></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -237,22 +251,8 @@ def shortlistserie(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    # Extrae la página siguiente
-    patron = '<a href="([^"]+)" >&raquo;</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        scrapedtitle = "Pagina siguiente"
-        scrapedurl = matches[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=CHANNELNAME, action="shortlistserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
+        itemlist.append( Item(channel=CHANNELNAME, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+    
     return itemlist
 
 # Listado de categorias de películas, de la caja derecha de la home
@@ -431,24 +431,65 @@ def detailserie(item):
     for match in matches:
         patron2 = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
         matches2 = re.compile(patron2,re.DOTALL).findall(match)
-        if DEBUG:
-            scrapertools.printMatches(matches2)
+        #if DEBUG: scrapertools.printMatches(matches2)
 
         for match2 in matches2:
             scrapedtitle = match2[1]
-            scrapedtitle = scrapedtitle.replace("Temporada ","")
+            #print "#"+scrapedtitle+"# == #"+item.show+"#"
+            scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
+            if scrapedtitle.startswith(", "):
+                scrapedtitle = scrapedtitle[2:]
+            scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
+
+            scrapedtitle = scrapedtitle.replace(", Capítulo ","x")
             scrapedtitle = scrapedtitle.replace(", Capitulo ","x")
             scrapedtitle = scrapedtitle.replace("&#215;","x")
+            scrapedtitle = scrapedtitle.replace(", Series Online ","x")
+            scrapedtitle = scrapedtitle.replace(", Series online capitulo ","x")
+            scrapedtitle = scrapedtitle.replace(", Series Online Capítulo ","x")
+            scrapedtitle = scrapedtitle.replace(", Series online capítulo ","x")
+            scrapedtitle = scrapedtitle.strip()
+            #scrapedtitle = scrapedtitle.replace("Temporada ","")
+            
+            #print scrapedtitle
+
+            # Reemplaza "1, 1x33" por "1x33"
+            patron = "\d+\, (\d+x\d+)"
+            matches3 = re.compile(patron,re.DOTALL).findall(scrapedtitle)
+            if len(matches3)>0 and len(matches3[0])>0:
+                scrapedtitle = matches3[0]
+
+            #print scrapedtitle
+
+            # Reemplaza "Temporada 1, Capítulo 33" por "1x33"
+            patron = "Temporada (\d+). Cap.*?lo (\d+.*?)"
+            matches3 = re.compile(patron,re.DOTALL).findall(scrapedtitle)
+            #print matches3
+            if len(matches3)>0:
+                scrapedtitle = matches3[0][0]+"x"+matches3[0][1]
+
+            #print scrapedtitle
+
+            # Reemplaza "Temporada 1, Capítulo 33" por "1x33"
+            patron = "Temporada (\d+). Series online\s+(\d+x\d+.*?)"
+            matches3 = re.compile(patron,re.DOTALL).findall(scrapedtitle)
+            #print matches3
+            if len(matches3)>0:
+                scrapedtitle = matches3[0][1]
+
+            #print scrapedtitle
 
             if scrapedtitle.startswith(item.title+", "):
                 scrapedtitle = scrapedtitle[ len(item.title)+2 : ]
+
+            #scrapedtitle = scrapedtitle + "#"+match2[1]+"#"
             
             scrapedurl = match2[0]
-            scrapedthumbnail = ""
+            scrapedthumbnail = item.thumbnail
             scrapedplot = ""
 
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
 
     return itemlist

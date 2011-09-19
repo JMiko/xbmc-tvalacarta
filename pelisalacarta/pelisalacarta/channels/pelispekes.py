@@ -12,7 +12,7 @@ from core import scrapertools
 from core import logger
 from core import config
 from core.item import Item
-from core import xbmctools
+from platform.xbmc import xbmctools
 from pelisalacarta import buscador
 
 from servers import servertools
@@ -305,6 +305,6 @@ def play(params,url,category):
     if len(url)>0:
         
         logger.info("url="+url)
-        xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+        xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
     else:
         xbmctools.alertnodisponible()

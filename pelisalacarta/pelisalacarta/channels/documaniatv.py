@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para documaniatv.com
@@ -13,62 +13,221 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-from pelisalacarta import buscador
+#from pelisalacarta import buscador
 
 CHANNELNAME = "documaniatv"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
 
 logger.info("[documaniatv.py] init")
 tecleadoultimo = ""
 DEBUG = True
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'documaniatv' ) )
+IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'documaniatv' )
 
+def isGeneric():
+    return True
 
-def mainlist(params,url,category):
+def mainlist(item):
     logger.info("[documaniatv.py] mainlist")
-    
-    xbmctools.addnewfolder( CHANNELNAME , "documentalesnuevos" , category , "Documentales Online Nuevos","http://www.documaniatv.com/newvideos.html",os.path.join(IMAGES_PATH, 'nuevos.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "TipoDocumental"   , category , "Tipo de Documental","",os.path.join(IMAGES_PATH, 'tipo.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "tagdocumentales"  , category , "Tag de Documentales","http://www.documaniatv.com/index.html",os.path.join(IMAGES_PATH, 'tag.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "topdocumentales"  , category , "Top Documentales Online","http://www.documaniatv.com/topvideos.html",os.path.join(IMAGES_PATH, 'top.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "listatipodocumental"     , category , "Documentales Siendo Vistos Ahora","http://www.documaniatv.com/index.html",os.path.join(IMAGES_PATH, 'viendose.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "documentaldeldia"     , category , "Documental del dia","http://www.documaniatv.com/index.html",os.path.join(IMAGES_PATH, 'deldia.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "search"           , category , "Buscar",tecleadoultimo,os.path.join(IMAGES_PATH, 'search_icon.png'),"")
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, action="documentalesnuevos"  , title="Novedades" , url="http://www.documaniatv.com/newvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
+    itemlist.append( Item(channel=CHANNELNAME, action="TipoDocumental"      , title="Por tipos" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentales"     , title="Por tags"  , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tag.png')))
+    #itemlist.append( Item(channel=CHANNELNAME, action="topdocumentales"     , title="Top documentales online"          , url="http://www.documaniatv.com/topvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'top.png')))
+    #itemlist.append( Item(channel=CHANNELNAME, action="listatipodocumental" , title="Documentales siendo vistos ahora" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'viendose.png')))
+    #itemlist.append( Item(channel=CHANNELNAME, action="documentaldeldia"    , title="Documental del dia"               , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'deldia.png')))
+    #itemlist.append( Item(channel=CHANNELNAME, action="search"              , title="Buscar"                           , url="http://www.cinetube.es/peliculas/",thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
+    return itemlist
+
+def documentalesnuevos(item):
+    logger.info("[documaniatv.py] documentalesnuevos")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cache_page(item.url)
+    #logger.info(data)
+
+    # Extrae las entradas (carpetas)
+    patronvideos  = '<tr><td.*?<a href="([^"]+)">'
+    patronvideos += '<img src="([^"]+)".*?'
+    patronvideos += 'alt="([^"]+)".*?'
+    patronvideos += 'width="250">([^<]+)<'
+    patronvideos += 'td class.*?<a href="[^"]+">[^<]+</a></td><td class.*?>([^<]+)</td></tr>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #logger.info("matches = "+str(matches))
+
+    for match in matches:
+        scrapedtitle = acentos(match[2])+" - " + match[3]+" - " + match[4] 
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
+        imagen = ""
+        scrapedplot = match[3]
+        tipo = match[3]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    # Busca enlaces de paginas siguientes...
+    cat = "nuevo"
+    patronvideo = patronvideos
+    itemlist.extend(paginasiguientes(patronvideo,data,"",cat))
+    
+    return itemlist
+
+def TipoDocumental(item):
+    logger.info("[documaniatv.py] TipoDocumental")
+    itemlist = []
+
+    # Saca el bloque con las categorias
+    data = scrapertools.cache_page(item.url)
+    patron = '<ul id="ul_categories">(.*?)</ul>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)==0:
+        return []
+    
+    # Saca la lista de categorias
+    data = matches[0]
+    patron = '<li><a href="([^"]+)">([^<]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        itemlist.append( Item(channel=CHANNELNAME , action="listatipodocumental" , title=match[1],url=match[0]))
+    
+    return itemlist
+
+def listatipodocumental(item):
+    logger.info("[documaniatv.py] listatipodocumental")
+    itemlist = []
+
+    data = scrapertools.cache_page(item.url)
+    if item.url == "http://www.documaniatv.com/index.html":
+        patronvideos = '<li class="item">[^<]+<a href="([^"]+)"><img src="([^"]+)" alt="([^"]+)" class="imag".*?/></a>'
+        cat = "viendose"
+    else:  
+        patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
+        patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
+        cat = "tipo"
+
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    #logger.info("matches = "+matches[0])
+    scrapedplot = ""
+    for match in matches:
+        scrapedtitle = acentos(match[2])
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
         
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+        # procesa el resto
+        if cat == "tipo":
+           scrapedplot = match[3]
+        else:
+           for campo in re.findall("/(.*?)/",match[0]):
+                scrapedplot = campo
 
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-      
-##############------------------------------------------------------#################        
+        itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle + " - " + scrapedplot , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-def search(params,url,category):
-    logger.info("[documaniatv.py] search")
-    buscador.listar_busquedas(params,url,category)
+    if cat == "tipo":
+        patron_pagina_sgte = '</span><a href="([^"]+)"'
+        itemlist.extend( paginasiguientes(patron_pagina_sgte,data,"",cat))
+
+    return itemlist
+
+def tagdocumentales(item):
+    logger.info("[documaniatv.py] tagdocumentales")
+    itemlist = []
+
+    data = scrapertools.cache_page(item.url)
+    patron = '<a href="([^"]+)" class="tag_cloud_link" style="[^>]+">([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        itemlist.append( Item(channel=CHANNELNAME , action="tagdocumentaleslist" , title=match[1],url=match[0]))
     
-def searchresults(params,url,category):
+    return itemlist
+
+def tagdocumentaleslist(item):
+    logger.info("[documaniatv.py] tagdocumentaleslist")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+
+    # Extrae el listado de documentales del tag
+    patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
+    patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)         
+
+    for match in matches:
+        scrapedtitle = acentos(match[2])
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
+        scrapeddescription = match[3]
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle + " - " + scrapeddescription , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+    
+    # Página siguiente
+    patron = '<a href="([^"]+)">next &raquo;</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)         
+    for match in matches:
+        itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title="Página siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+    
+    return itemlist
+
+def detail(item):
+    logger.info("[documaniatv.py] detail")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    descripcion = ""
+    plot = ""
+    patrondescrip = '<h3>Descripci[^<]+</h3>(.*?)<br><br>'
+    matches = re.compile(patrondescrip,re.DOTALL).findall(data)
+    if len(matches)>0:
+        descripcion = matches[0]
+        descripcion = descripcion.replace("&nbsp;","")
+        descripcion = descripcion.replace("<br/>","")
+        descripcion = descripcion.replace("\r","")
+        descripcion = descripcion.replace("\n"," ")
+        descripcion = descripcion.replace("\t"," ")
+        descripcion = re.sub("<[^>]+>"," ",descripcion)
+        descripcion = acentos(descripcion)
+        try :
+            plot = unicode( descripcion, "utf-8" ).encode("iso-8859-1")
+        except:
+            plot = descripcion
+
+    # Busca los enlaces a los videos de : "Megavideo"
+    video_itemlist = servertools.find_video_items(data=data)
+    for video_item in video_itemlist:
+        itemlist.append( Item(channel=CHANNELNAME , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=video_item.thumbnail, plot=video_item.plot, folder=False))
+
+    # Extrae los enlaces a los vídeos (Directo)
+    patronvideos = "file: '([^']+)'"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        itemlist.append( Item(channel=CHANNELNAME , action="play" , server="Directo", title=title+" [directo]",url=matches[0], thumbnail=thumbnail, plot=plot))
+
+    return itemlist
+
+def search(item):
+    logger.info("[documaniatv.py] search")
+    buscador.listar_busquedas(item)
+    
+def searchresults(item):
     logger.info("[documaniatv.py] search")
             
-    buscador.salvar_busquedas(params,url,category)
+    buscador.salvar_busquedas(item)
     
     #convert to HTML
     tecleado = url.replace(" ", "+")
     searchUrl = "http://www.documaniatv.com/search.php?keywords="+tecleado+"&btn=Buscar"
     searchresults2(params,searchUrl,category)
-
-
-
-###############---------------------------------------------------#####################
 
 def performsearch(texto):
     logger.info("[documaniatv.py] performsearch")
@@ -99,7 +258,7 @@ def performsearch(texto):
         
     return resultados
 
-def searchresults2(params,url,category):
+def searchresults2(item):
     logger.info("[documaniatv.py] searchresults")
 
     # Descarga la página
@@ -153,37 +312,7 @@ def searchresults2(params,url,category):
 
 #############----------------------------------------------------------#############        
 
-
-def TipoDocumental(params, url, category):
-    logger.info("[documaniatv.py] TipoDocumental")
-        
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Arte y cine","http://www.documaniatv.com/browse-arte-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Biografia","http://www.documaniatv.com/browse-biografias-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Ciencia y tecnologia","http://www.documaniatv.com/browse-tecnologia-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Deporte","http://www.documaniatv.com/browse-deporte-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "en ingles","http://www.documaniatv.com/browse-ingles-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Historia","http://www.documaniatv.com/browse-historia-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Naturaleza","http://www.documaniatv.com/browse-naturaleza-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Politica","http://www.documaniatv.com/browse-politica-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Social","http://www.documaniatv.com/browse-social-","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipodocumental" , category , "Viajes","http://www.documaniatv.com/browse-viajes-","","")
-    
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
- 
-
-
-#############--------------------------------------------------------###########
-
-def listarpor(params,url,category):
+def listarpor(item):
         url1=url
         title = urllib.unquote_plus(params.get("title"))[:11]
            
@@ -213,187 +342,8 @@ def listarpor(params,url,category):
         return(url1)
 #############-----------------------------------#########################
 
-
-def tagdocumentales(params,url,category):
-    logger.info("[documaniatv.py] tagdocumentales")
-
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "2gm","http://www.documaniatv.com/tags/2gm/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "la2","http://www.documaniatv.com/tags/la2/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category ,"tve","http://www.documaniatv.com/tags/tve/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "ciencia","http://www.documaniatv.com/tags/ciencia/","","") 
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "usa","http://www.documaniatv.com/tags/usa/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "ovnis","http://www.documaniatv.com/tags/ovnis/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "history channel","http://www.documaniatv.com/tags/history-channel/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category ,"egipto","http://www.documaniatv.com/tags/history-channel/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "national geographic","http://www.documaniatv.com/tags/national-geographic/","","") 
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "discovery channel","http://www.documaniatv.com/tags/discovery-channel/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "bbc","http://www.documaniatv.com/tags/bbc/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "politica","http://www.documaniatv.com/tags/politica/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category ,"historia","http://www.documaniatv.com/tags/historia/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "biografias","http://www.documaniatv.com/tags/biografias/","","") 
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "guerra mundial","http://www.documaniatv.com/tags/guerra-mundial/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "cuatro","http://www.documaniatv.com/tags/cuatro/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "españa","http://www.documaniatv.com/tags/espana/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category ,"social","http://www.documaniatv.com/tags/social/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "noche tematica","http://www.documaniatv.com/tags/noche-tematica/","","") 
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "redes","http://www.documaniatv.com/tags/redes/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "GUERRA","http://www.documaniatv.com/tags/guerra/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "tecnologia","http://www.documaniatv.com/tags/tecnologia/","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category ,"viaje","http://www.documaniatv.com/tags/viajes","","")
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "naturaleza","http://www.documaniatv.com/tags/naturaleza/","","") 
-    xbmctools.addnewfolder(CHANNELNAME , "tagdocumentaleslist" , category , "nazis","http://www.documaniatv.com/tags/nazis/","","")
-
-
-        # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-       
-############---------------------------------------------------------###########
-
-
-def listatipodocumental(params,url,category):
-    logger.info("[documaniatv.py] listatipodocumental")
-
-    # busca tipo de listado por : FECHA | VISTAS | RATING #
-    url = listarpor(params,url,category) 
-    if len(url)==0 :
-       return  
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    
-    # Extrae las entradas (carpetas)
-            
-
-    if url == "http://www.documaniatv.com/index.html":
-        patronvideos = '<li class="item">[^<]+<a href="([^"]+)"><img src="([^"]+)" alt="([^"]+)" class="imag".*?/></a>'
-        cat = "viendose"
-    else:  
-        patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
-        patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
-        cat = "tipo"
-            
-            
-    
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    #logger.info("matches = "+matches[0])
-    scrapedplot = ""
-    for match in matches:
-        # Titulo
-        scrapedtitle = acentos(match[2])
-
-        # URL
-        scrapedurl = match[0]
-        
-        # Thumbnail
-        scrapedthumbnail = match[1]
-        
-        # procesa el resto
-        if cat == "tipo":
-           scrapedplot = match[3]
-        else:
-           for campo in re.findall("/(.*?)/",match[0]):
-                scrapedplot = campo
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
- #  -------------------------------------------
- #         Busqueda de la siguiente pagina
-        
-        if cat == "tipo":
-               patron_pagina_sgte = '</span><a href="([^"]+)"'
-               paginasiguientes(patron_pagina_sgte,data,category,cat)
-
-    # Label (top-right)...
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-##############---------------------------------------------------------##############
-
-def documentalesnuevos(params,url,category):
-    url1=url
-    # Abre el diálogo de selección
-    opciones = []
-    opciones.append("Todo el tiempo")
-    opciones.append("Hoy")
-    opciones.append("Ayer")
-    opciones.append("Este Mes")
-    dia = xbmcgui.Dialog()
-    seleccion = dia.select("Elige uno", opciones)
-    logger.info("seleccion=%d" % seleccion)        
-    if seleccion==-1:
-       return
-    if seleccion==0:
-        url1 = "http://www.documaniatv.com/newvideos.html"
-    elif seleccion==1:
-        url1 = "http://www.documaniatv.com/newvideos.html?d=today"
-    elif seleccion==2:
-        url1 = "http://www.documaniatv.com/newvideos.html?d=yesterday"
-    elif seleccion==3:
-        url1 = "http://www.documaniatv.com/newvideos.html?d=month"
-    documentalesnuevoslist(params,url1,category)
-
-#############----------------------------------------########################
-
-
-def documentalesnuevoslist(params,url,category):
-    logger.info("[documaniatv.py] DocumentalesNuevos")
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las entradas (carpetas)
-
-    
-    patronvideos  = '<tr><td.*?<a href="([^"]+)">'
-    patronvideos += '<img src="([^"]+)".*?'
-    patronvideos += 'alt="([^"]+)".*?'
-    patronvideos += 'width="250">([^<]+)<'
-    patronvideos += 'td class.*?<a href="[^"]+">[^<]+</a></td><td class.*?>([^<]+)</td></tr>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    #logger.info("matches = "+str(matches))
-
-    for match in matches:
-        scrapedtitle = acentos(match[2])+" - " + match[3]+" - " + match[4] 
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
-        imagen = ""
-        scrapedplot = match[3]
-        tipo = match[3]
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle ,scrapedurl , scrapedthumbnail , scrapedplot )
-        
-
-    # Busca enlaces de paginas siguientes...
-    cat = "nuevo"
-    patronvideo = patronvideos
-    paginasiguientes(patronvideo,data,category,cat)     
-
-    # Label (top-right)...
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-##########---------------------------------------------------------------#############
-
-def documentaldeldia(params,url,category):
-#    list(params,url,category,patronvideos)
+def documentaldeldia(item):
+#    list(item,patronvideos)
     logger.info("[documaniatv.py] Documentaldeldia")
                
     # Descarga la página
@@ -418,67 +368,13 @@ def documentaldeldia(params,url,category):
 ################---------------------------------------------------------###########
 
 
-def tagdocumentaleslist(params,url,category):
-    logger.info("[documaniatv.py] tagdocumentaleslist")
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-
-
-    # Extrae el listado de documentales del tag
-    
-    patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
-    patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-         
-
-    for match in matches:
-        # Titulo
-        scrapedtitle = acentos(match[2])
-
-        # URL
-        scrapedurl = match[0]
-        
-        # Thumbnail
-        scrapedthumbnail = match[1]
-        
-                # procesa el resto
-        scrapeddescription = match[3]
-
-        # procesa el resto
-        scrapedplot = ""
-
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle+" - "+scrapeddescription , scrapedurl , scrapedthumbnail , scrapedplot )
-
-        #Busca la pagina siguiente
-        cat = "tag"
-        patronvideo = patronvideos
-        paginasiguientes(patronvideo,data,category,cat)
-
-    # Label (top-right)...
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
 #############----------------------------------------------------------#############
 
 
 
 ############---------------------------------------------------#######################
 
-def topdocumentales(params,url,category):
+def topdocumentales(item):
     url2=url
     # Abre el diálogo de selección
     opciones = []
@@ -527,7 +423,7 @@ def topdocumentales(params,url,category):
     toplist(params,url2,category)
 ############----------------------------------------------####################
 
-def toplist(params,url,category):
+def toplist(item):
     logger.info("[documaniatv.py] toplist")
 
     # Descarga la página
@@ -579,180 +475,10 @@ def toplist(params,url,category):
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
-#############----------------------------------------------------------#############
-
-def detail(params,url,category):
-    logger.info("[documaniatv.py] detail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    thumnbail = thumbnail
-    #logger.info("[prueba.py] title="+title)
-    #logger.info("[prueba.py] thumbnail="+thumbnail)
-    patrondescrip = '<h3>Descripci[^<]+</h3>(.*?)<br><br>'
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    descripcion = ""
-    plot = ""
-    matches = re.compile(patrondescrip,re.DOTALL).findall(data)
-    if len(matches)>0:
-        descripcion = matches[0]
-        descripcion = descripcion.replace("&nbsp;","")
-        descripcion = descripcion.replace("<br/>","")
-        descripcion = descripcion.replace("\r","")
-        descripcion = descripcion.replace("\n"," ")
-        descripcion = descripcion.replace("\t"," ")
-        descripcion = re.sub("<[^>]+>"," ",descripcion)
-        descripcion = acentos(descripcion)
-        try :
-            plot = unicode( descripcion, "utf-8" ).encode("iso-8859-1")
-        except:
-            plot = descripcion
-    # ----------------------------------------------------------------------------
-    # Busca los enlaces a los videos de : "Megavideo"
-    # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
-
-    for video in listavideos:
-        videotitle = video[0]
-        url1 = video[1].replace("&amp;","&")
-        logger.info("url   ="+url)
-        if  url.endswith(".jpg"):break
-        server = video[2]
-        if server=="Megavideo" or "Veoh":
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace("(Megavideo)","").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
-        else:
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
-
-        #  ---- Extrae los videos directos ----- 
-
-        # Extrae los enlaces a los vídeos (Directo)
-        patronvideos = "file: '([^']+)'"
-        servidor = "Directo"
-        extraevideos(patronvideos,data,category,title+" - directo",thumbnail,plot,servidor)
-        # ---------------------------------------
-
-        #  --- Extrae los videos de veoh  ----
-        patronvideos = 'var embed_code[^>]+>   <param name="movie" value="http://www.veoh.com/static/swf/webplayer/WebPlayer.swf.*?permalinkId=(.*?)&player=videodetailsembedded&videoAutoPlay=0&id=anonymous"></param>'
-        servidor = "Veoh"
-        extraevideos(patronvideos,data,category,title+" - Video en  Veoh",thumbnail,plot,servidor)
-        # ---------------------------------------
-
-        #var embed_code =  '<embed id="VideoPlayback" src="http://video.google.com/googleplayer.swf?docid=1447612366747092264&hl=en&fs=true" style="width:496px;height:401px" allowFullScreen="true" allowScriptAccess="always" type="application/x-shockwave-flash" wmode="window">  </embed>' ;
-
-        #  --- Extrae los videos de google  ----
-        patronvideos = '<embed id="VideoPlayback" src="http://video.google.com/googleplayer.swf.*?docid=(.*?)&hl=en&'
-        servidor = "Google"
-        extraevideos(patronvideos,data,category,title+" - [Video en google]",thumbnail,plot,servidor)
-        # --------------------------------------- 
-
-        #  --- Extrae los videos de http://n59.stagevu.com  ----
-        patronvideos = '"http://.*?.stagevu.com/v/.*?/(.*?).avi"'
-        servidor = "Stagevu"
-        extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor)
-
-        # --Muestra Una opcion mas para videos documentales relacionados con el tema--
-        print "esta es la url :%s" %url
-        try:
-            patron = "http://www.documaniatv.com.*?\_(.*?)\.html"
-            matches = re.compile(patron,re.DOTALL).findall(url)
-            url = "http://www.documaniatv.com/ajax.php?p=detail&do=show_more_best&vid="+matches[0]
-            titulo = "Ver Videos Relacionados - MEJOR EN LA CATEGORIA"
-            xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos Documentales relacionados con el mismo tema" )
-        
-            titulo = "Ver Videos Relacionados - MISMO TEMA"
-            url = "http://www.documaniatv.com/ajax.php?p=detail&do=show_more_artist&vid="+matches[0]
-            xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos Documentales relacionados con el mismo tema" )
-        except:
-            pass
-
-    # Label (top-right)...
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-#############----------------------------------------------------------#############
-
-def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
-    logger.info("patron="+patronvideos)
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)        
-
-    if len(matches)>0:
-        
-        # Añade al listado de XBMC
-        if servidor == "Directo":
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, matches[0] , thumbnail , plot )
-
-        elif servidor == "Veoh":
-            veohurl = servertools.findurl(matches[0],"veoh")
-            logger.info(" veohurl = " +veohurl)
-
-            if len(veohurl)>0:
-                if  veohurl=="http://./default.asp":
-                    advertencia = xbmcgui.Dialog()
-                    resultado = advertencia.ok('El Video Documental' , title , 'no existe en Veoh','visite la pagina www.documaniatv.com para reportarlo' )
-                    return
-                logger.info(" newmatches = "+veohurl)
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, veohurl , thumbnail , plot )
-            else:
-                 advertencia = xbmcgui.Dialog()
-                 resultado = advertencia.ok('El Video Documental' , title , 'no existe en Veoh')
-                 return 
-    
-        elif servidor == "Google":
-            url = "http://www.flashvideodownloader.org/download.php?u=http://video.google.com/videoplay?docid="+matches[0]
-            logger.info(" Url = "+url)
-            data = scrapertools.cachePage(url)
-            newpatron = '</script>.*?<a href="(.*?)" title="Click to Download">'
-            newmatches = re.compile(newpatron,re.DOTALL).findall(data)
-            if len(newmatches)>0:
-                logger.info(" newmatches = "+newmatches[0])
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, newmatches[0] , thumbnail , plot )
-        
-        elif servidor == "Stagevu":
-            url= "http://stagevu.com/video/"+matches[0]
-            url = servertools.findurl(url,servidor)
-            
-            logger.info(" url = "+url)
-            videotitle = "Video en Stagevu"
-            server = servidor
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
-   
-#############----------------------------------------------------------#############
-
-def play(params,url,category):
-    logger.info("[documaniatv.py] play")
-
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    try:
-        thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    except:
-        thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-    plot = urllib.unquote_plus( params.get("plot") )
-    plot = urllib.unquote_plus( params.get("plot") )
-
-    try:
-        plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    except:
-        plot = xbmc.getInfoLabel( "ListItem.Plot" )
-
-    server = params["server"]
-    logger.info("[documaniatv.py] thumbnail="+thumbnail)
-    logger.info("[documaniatv.py] server="+server)
-    
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
-
-
-#############----------------------------------------------------------#############
-
 def paginasiguientes(patronvideos,data,category,cat):
 
-    # ------------------------------------------------------
-    # Extrae la página siguiente
-    # ------------------------------------------------------
+    itemlist = []
+
     patron    = '</span><a href="([^"]+)"' 
     matches   = re.compile(patron,re.DOTALL).findall(data)
 
@@ -760,24 +486,18 @@ def paginasiguientes(patronvideos,data,category,cat):
         scrapedtitle = "Pagina siguiente"
         scrapedurl = "http://www.documaniatv.com/" + match
         scrapedthumbnail = os.path.join(IMAGES_PATH, 'next.png')
-        scrapeddescription = ""
 
-        if cat == 'tipo':   
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listatipodocumental" )
+        if cat == 'tipo':
+            itemlist.append( Item(channel=CHANNELNAME, action="listatipodocumental", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
         elif cat == 'nuevo':
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "documentalesnuevoslist" )
+            itemlist.append( Item(channel=CHANNELNAME, action="documentalesnuevos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
         elif cat == 'tag':
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , "http://www.documaniatv.com"+match , scrapedthumbnail, "tagdocumentaleslist" )
+            itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title=scrapedtitle , url="http://www.documaniatv.com"+match , thumbnail=scrapedthumbnail , folder=True) )
         elif cat == 'busca':
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "searchresults" )
+            itemlist.append( Item(channel=CHANNELNAME, action="searchresults", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
 
-    # Label (top-right)...
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-########-------------------------------------------------------############
-  
+    return itemlist
+
 def acentos(title):
 
     title = title.replace("Ã‚Â", "")
@@ -822,7 +542,7 @@ def verRelacionados(params,data,category):
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
  
-def Relacionados(params,url,category): 
+def Relacionados(item): 
     
     data = scrapertools.cachePage(url)
     print data

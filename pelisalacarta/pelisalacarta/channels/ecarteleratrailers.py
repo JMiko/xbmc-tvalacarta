@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 from servers import vk
@@ -140,4 +140,4 @@ def play(params,url,category):
     if len(matches)>0:
         url = urlparse.urljoin(url,matches[0])
         logger.info("[ecarteleratrailers.py] url="+url)
-        xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+        xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)

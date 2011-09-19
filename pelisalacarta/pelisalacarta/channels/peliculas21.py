@@ -19,7 +19,7 @@ from pelisalacarta import buscador
 from core import config
 from core import logger
 from core import decrypt21
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core import scrapertools
 
 CHANNELNAME = "peliculas21"
@@ -668,7 +668,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
     logger.info("[peliculas21.py] youtubeplay")
@@ -682,7 +682,7 @@ def youtubeplay(params,url,category):
 
     if videourl == ("" or "Esc"):return
     logger.info("link directo de youtube : "+videourl)
-    xbmctools.playvideo("Trailer",server,videourl,category,title,thumbnail,plot)
+    xbmctools.play_video("Trailer",server,videourl,category,title,thumbnail,plot)
  
 
 def listaractores(params,data,category):

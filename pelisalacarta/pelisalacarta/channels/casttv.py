@@ -16,7 +16,7 @@ import tvshack
 import seriesyonkis
 
 from core import scrapertools
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core import downloadtools
 from core import config
 
@@ -64,13 +64,13 @@ CTVDATA = os.path.join(TEMP_PATH,'casttv_ctv.txt')
 SYDATA = os.path.join(TEMP_PATH,'casttv_sy.txt')
 TVSDATA = os.path.join(TEMP_PATH,'casttv_tvs.txt')
 
-SUB_PATH = xbmc.translatePath( os.path.join( downloadtools.getDownloadPath() , 'Subtitulos' ) )
+SUB_PATH = xbmc.translatePath( os.path.join( config.get_setting("downloadpath") , 'Subtitulos' ) )
 if not os.path.exists(SUB_PATH):
     os.mkdir(SUB_PATH)
 
 SUBTEMP_PATH = xbmc.translatePath( os.path.join( config.get_data_path() , 'subtitulo.srt' ) )
 
-IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'casttv' ) )
+IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'casttv' ) )
 STARORANGE_THUMB = os.path.join(IMAGES_PATH, 'starorangesmall.png' )
 STARBLUE_THUMB = os.path.join(IMAGES_PATH, 'starbluesmall.png' )
 STARGREEN_THUMB = os.path.join(IMAGES_PATH, 'stargreensmall.png' )
@@ -3496,7 +3496,7 @@ def play(params,url,category):
     thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def serieupdate(miserievo,status,url,tipocontenido,channel):
     urlsearch0 = ""

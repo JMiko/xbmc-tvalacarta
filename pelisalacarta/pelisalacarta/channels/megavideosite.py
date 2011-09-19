@@ -14,7 +14,7 @@ import xbmcplugin
 from core import scrapertools
 from core import config
 from core import logger
-from core import xbmctools
+from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 
@@ -58,7 +58,7 @@ def search(params,url,category):
 def list(params,url,category):
     logger.info("[megavideosite.py] list")
 
-    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , "Ver el vídeo [Megavídeo]" , url , "" , "" )
+    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megavideo" , "Ver el vídeo [Megavídeo]" , url , "" , "" , IsPlayable="true")
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -73,4 +73,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)

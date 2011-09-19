@@ -161,7 +161,7 @@ def play(params,url,category):
     logger.info("[newcineonline.py] thumbnail="+thumbnail)
     logger.info("[newcineonline.py] server="+server)
     
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
     logger.info('[newcineonline.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
