@@ -20,7 +20,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     # Obtiene el id
     code = Extract_id(page_url)
-    
+    if code == "":
+        return []
+
     # Descarga el json con los detalles del vídeo
     controluri = "http://videobb.com/player_control/settings.php?v=%s&fv=v1.1.58"  %code
     datajson = scrapertools.cachePage(controluri)
@@ -47,14 +49,18 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 def Extract_id(url):
     # Extract video id from URL
-    _VALID_URL = r'^((?:http://)?(?:\w+\.)?videobb\.com/(?:(?:(?:e/)|(?:video/))|(?:f/))?)?([0-9A-Za-z_-]+)(?(1).+)?$'
-    mobj = re.match(_VALID_URL, url)
-    if mobj is None:
-        logger.info('[videobb.py] ERROR: URL invalida: %s' % url)
-        
-        return ""
-    id = mobj.group(2)
-    return id
+    patron = "http\://www.videobb.com/watch_video.php\?v=([a-zA-Z0-9]{12})"
+    matches = re.compile(patron,re.DOTALL).findall(url)
+    if len(matches)>0:
+        return matches[0]
+    else:
+        _VALID_URL = r'^((?:http://)?(?:\w+\.)?videobb\.com/(?:(?:(?:e/)|(?:video/))|(?:f/))?)?([0-9A-Za-z_-]+)(?(1).+)?$'
+        mobj = re.match(_VALID_URL, url)
+        if mobj is None:
+            logger.info('[videobb.py] ERROR: URL invalida: %s' % url)
+            return ""
+        else:        
+            return mobj.group(2)
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
@@ -69,6 +75,21 @@ def find_videos(data):
         titulo = "[videobb]"
         url = match
     
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videobb' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = "(http\://www.videobb.com/watch_video.php\?v=[a-zA-Z0-9]{12})"
+    logger.info("[videobb.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[videobb]"
+        url = match
+
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'videobb' ] )
