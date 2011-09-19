@@ -13,11 +13,13 @@
 	</target>
 
 	<!-- copy-xbmc-addon ============================================================ -->
-	<target name="copy-xbmc-addon">
-        <copy todir="${target}/xbmc-addon/plugin.video.pelisalacarta">
+	<target name="copy-xbmc-addon-dharma">
+        <copy todir="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="addon*.xml"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
 				<exclude name="**/bookmarks/**"/>
@@ -31,15 +33,45 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="tester.py"/>
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
+        <copy file="addon-dharma.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
     </target>
 
-	<target name="copy-xbmc-addon-oficial">
-        <copy todir="${target}/xbmc-addon-oficial/plugin.video.pelisalacarta">
+	<target name="copy-xbmc-addon-eden">
+        <copy todir="${target}/xbmc-addon-eden/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="addon*.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+                <!--exclude name="resources/images/**"/-->
+				<exclude name="descriptor.xml"/>
+                <exclude name="default.tbn"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="tester.py"/>
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
+			</fileset>
+        </copy>
+        <copy file="addon-eden.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
+    </target>
+
+	<target name="copy-xbmc-addon-oficial-dharma">
+        <copy todir="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon*.xml"/>
+				<exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
 				<exclude name="**/bookmarks/**"/>
@@ -71,8 +103,52 @@
                 <exclude name="pelisalacarta/channels/animeforos.py"/>
                 <exclude name="resources/images/casttv/**"/>
                 <exclude name="resources/settings.conf"/>
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
+        <copy file="addon-dharma.xml" tofile="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta/addon.xml"/>
+    </target>
+
+	<target name="copy-xbmc-addon-oficial-eden">
+        <copy todir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon*.xml"/>
+				<exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+                <!--exclude name="resources/images/**"/-->
+				<exclude name="descriptor.xml"/>
+                <exclude name="default.tbn"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/wiimc/**"/>
+                <exclude name="tester.py"/>
+                <exclude name="version.xml"/>
+                <exclude name="pelisalacarta.py"/>
+                <exclude name="channelselector.xml"/>
+                <exclude name="core/updater.py"/>
+                <exclude name="core/descargados.py"/>
+                <exclude name="core/descargadoslist.py"/>
+                <exclude name="pelisalacarta/channels/*.xml"/>
+                <exclude name="pelisalacarta/channels/casttv.py"/>
+                <exclude name="pelisalacarta/channels/animeforos.py"/>
+                <exclude name="resources/images/casttv/**"/>
+                <exclude name="resources/settings.conf"/>
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
+			</fileset>
+        </copy>
+        <copy file="addon-eden.xml" tofile="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta/addon.xml"/>
     </target>
 
     <target name="copy-xbmc-plugin">
@@ -80,6 +156,8 @@
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="addon*.xml"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
 				<exclude name="**/bookmarks/**"/>
@@ -94,6 +172,7 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="tester.py"/>
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
     </target>
@@ -245,20 +324,25 @@
     <!-- package =============================================== -->
     <target name="package" depends="clean,package-boxee" description="Builds a package for each platform">
     	<!-- Crea los directorios -->
-        <mkdir dir="${target}/xbmc-addon/plugin.video.pelisalacarta"/>
-        <mkdir dir="${target}/xbmc-addon-oficial/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon-eden/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta"/>
         <mkdir dir="${target}/xbmc-plugin/pelisalacarta"/>
         <mkdir dir="${target}/wiimc/pelisalacarta"/>
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
 
         <!-- Copia los ficheros -->
-        <antcall target="copy-xbmc-addon"/>
-        <antcall target="copy-xbmc-addon-oficial"/>
+        <antcall target="copy-xbmc-addon-dharma"/>
+        <antcall target="copy-xbmc-addon-eden"/>
+        <antcall target="copy-xbmc-addon-oficial-dharma"/>
+        <antcall target="copy-xbmc-addon-oficial-eden"/>
         <antcall target="copy-xbmc-plugin"/>
         <antcall target="copy-wiimc"/>
         <antcall target="copy-plexmediaserver"/>
     	
-		<zip destfile="${target}/xbmc-addon/pelisalacarta-xbmc-addon-${version}.zip" basedir="${target}/xbmc-addon"/>
+		<zip destfile="${target}/xbmc-addon-dharma/pelisalacarta-xbmc-addon-dharma-${version}.zip" basedir="${target}/xbmc-addon-dharma"/>
+		<zip destfile="${target}/xbmc-addon-eden/pelisalacarta-xbmc-addon-eden-${version}.zip" basedir="${target}/xbmc-addon-eden"/>
 		<zip destfile="${target}/xbmc-plugin/pelisalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
         <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
         <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
