@@ -140,6 +140,9 @@ def findvideos(item):
                 #logger.info(matches0)
                 itemlist.append( Item(channel=CHANNELNAME, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[0+i][0] , url=listavideos[0+i][1] , server=listavideos[0+i][2] , folder=False ))
                 itemlist.append( Item(channel=CHANNELNAME, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[length+i][0] , url=listavideos[length+i][1] , server=listavideos[length+i][2] , folder=False ))
+        elif len(listavideos)>0:
+            for video in listavideos:
+                itemlist.append( Item(channel=CHANNELNAME, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
         else:
             logger.info("vamos a ponerlos con el nombre del titulo todos, el mismo que el por defecto")
             logger.info("no hay capitulos")
@@ -162,7 +165,7 @@ def findvideos(item):
     patronvideos  = '<a rel="bookmark" href="../(.+?)">(.+?)<'
     matches = re.compile(patronvideos).findall(data)
     for z in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=z[1], url="http://documentalesatonline.loquenosecuenta.com/" + z[0] , folder=True ))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=z[1], url=urlparse.urljoin(item.url,z[0]) , folder=True ))
 
     return itemlist
 

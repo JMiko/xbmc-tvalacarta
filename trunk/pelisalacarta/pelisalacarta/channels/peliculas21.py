@@ -183,7 +183,6 @@ def performsearch(texto):
         scrapedplot  = scrapedplot.replace("&oacute;","ó")
         scrapedplot  = scrapedplot.replace("&uacute;","ú")
         scrapedplot  = scrapedplot.replace("&ntilde;","ñ")
-        
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 

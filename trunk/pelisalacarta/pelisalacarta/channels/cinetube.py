@@ -88,27 +88,46 @@ def login(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Sesión iniciada", action="mainlist"))
     return itemlist
 
-def search(item):
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
     logger.info("[cinetube.py] search")
+    itemlist = []
     
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        from pelisalacarta import buscador
-        texto = buscador.teclado()
-        item.extra = texto
+    try:
+        # Series
+        item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
+        item.url = item.url % texto
+        itemlist.extend(series(item))
+        
+        # Películas
+        item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
+        item.url = item.url % texto
+        itemlist.extend(peliculas(item))
+        
+        # Documentales
+        item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
+        item.url = item.url % texto
+        itemlist.extend(documentales(item))
+    
+        # Peliculas-anime
+        item.url="http://www.cinetube.es/buscar/peliculas-anime/?palabra=%s&categoria=&valoracion="
+        item.url = item.url % texto
+        itemlist.extend(documentales(item))
+    
+        # Series-anime
+        item.url="http://www.cinetube.es/buscar/series-anime/?palabra=%s&categoria=&valoracion="
+        item.url = item.url % texto
+        itemlist.extend(series(item))
+    
+        return itemlist
+        
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
-    itemlist = searchresults(item)
-    
-    return itemlist
-    
-def searchresults(item):
-    logger.info("[cinetube.py] searchresults")
-    
-    #buscador.salvar_busquedas(params,tecleado,category)
-    tecleado = item.extra.replace(" ", "+")
-    item.url = "http://www.cinetube.es/buscar/peliculas/?palabra="+tecleado+"&categoria=&valoracion="
-
-    return peliculas(item)
-    
 def peliculas(item,paginacion=True):
     logger.info("[cinetube.py] peliculas")
 

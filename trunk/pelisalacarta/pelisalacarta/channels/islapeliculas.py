@@ -8,19 +8,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
-
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "islapeliculas"
 DEBUG = True
@@ -35,10 +27,19 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="novedades", url="http://www.islapeliculas.com/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Listado por Categorías", action="cat", url="http://www.islapeliculas.com/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Estrenos" , action="estrenos", url="http://www.islapeliculas.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Película", action="busqueda") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Actor", action="busqueda") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Película", action="search", url = "http://www.islapeliculas.com/buscar-pelicula-%s") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Actor", action="search", url = "http://www.islapeliculas.com/actor-%s") )
 
     return itemlist
+
+def search(item,texto):
+    logger.info("[islapeliculas.py] busqueda")
+    
+    if item.url=="":
+        item.url = "http://www.islapeliculas.com/buscar-pelicula-%s"
+    
+    item.url = item.url % texto
+    return novedades(item)
 
 def novedades(item):
     logger.info("[islapeliculas.py] novedades")
@@ -66,102 +67,102 @@ def novedades(item):
 
             # Añade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="listapelis", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-			  
+              
     # Extrae la marca de siguiente página
     patronvideos = '<td width="69">.*?<table.*?<a href="([^"]+)".*?>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-		scrapedtitle = "Página siguiente"
-		scrapedurl = urlparse.urljoin(item.url,matches[0])
-		scrapedthumbnail = ""
-		itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+        scrapedtitle = "Página siguiente"
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
+        scrapedthumbnail = ""
+        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
 
-	
+    
 def listapelis(item):
-	logger.info("[islapeliculas.py] listapelis")
+    logger.info("[islapeliculas.py] listapelis")
 
     # Descarga la página
-	data = scrapertools.cachePage(item.url)
+    data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
 
-	itemlist = []
-	patronvideos = '<span class="estilo16"><a.*?href="([^"]+)".*?>.*?Pelicula (.*?)<strong>(.*?)</strong></a>'
-	patronvideos += '.*?<img.*?>.*?<img.*?>.*?<strong>(.*?)</strong>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
-	for match in matches:
-		if match[3]!="fileserve":
-			scrapedurl = urlparse.urljoin("http://www.islapeliculas.com/",match[0])
-			scrapedtitle = match[1] + match[2] + " - " + match[3]
-			scrapedthumbnail = item.thumbnail
-			logger.info(scrapedtitle)
+    itemlist = []
+    patronvideos = '<span class="estilo16"><a.*?href="([^"]+)".*?>.*?Pelicula (.*?)<strong>(.*?)</strong></a>'
+    patronvideos += '.*?<img.*?>.*?<img.*?>.*?<strong>(.*?)</strong>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    for match in matches:
+        if match[3]!="fileserve":
+            scrapedurl = urlparse.urljoin("http://www.islapeliculas.com/",match[0])
+            scrapedtitle = match[1] + match[2] + " - " + match[3]
+            scrapedthumbnail = item.thumbnail
+            logger.info(scrapedtitle)
 
-			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
-			
-	return itemlist
-			
-			
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+            
+    return itemlist
+            
+            
 def videos(item):
 
-	logger.info("[islapeliculas.py] videos")
-	# Descarga la página
-	data = scrapertools.cachePage(item.url)
-	title= item.title
-	scrapedthumbnail = item.thumbnail
-	listavideos = servertools.findvideos(data)
+    logger.info("[islapeliculas.py] videos")
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    title= item.title
+    scrapedthumbnail = item.thumbnail
+    listavideos = servertools.findvideos(data)
 
-	itemlist = []
-	for video in listavideos:
-		scrapedtitle = title.strip() + " - " + video[0]
-		videourl = video[1]
-		server = video[2]
-		#logger.info("videotitle="+urllib.quote_plus( videotitle ))
-		#logger.info("plot="+urllib.quote_plus( plot ))
-		#plot = ""
-		#logger.info("title="+urllib.quote_plus( title ))
-		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
+    itemlist = []
+    for video in listavideos:
+        scrapedtitle = title.strip() + " - " + video[0]
+        videourl = video[1]
+        server = video[2]
+        #logger.info("videotitle="+urllib.quote_plus( videotitle ))
+        #logger.info("plot="+urllib.quote_plus( plot ))
+        #plot = ""
+        #logger.info("title="+urllib.quote_plus( title ))
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# Añade al listado de XBMC
-		itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
 
-	return itemlist
+    return itemlist
 
 
 def cat(item):
 
-	logger.info("[islapeliculas.py] cat")
+    logger.info("[islapeliculas.py] cat")
 
     # Descarga la página
-	data = scrapertools.cachePage(item.url)
+    data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-	patronvideos  = 'Género</td>(.*?)</table>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+    patronvideos  = 'Género</td>(.*?)</table>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	itemlist = []
-	for elemento in matches:
-		patronvideos  = '.*?<h2>.*?<a href="(.*?)".*?>(.*?)</a>'
-		matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+    itemlist = []
+    for elemento in matches:
+        patronvideos  = '.*?<h2>.*?<a href="(.*?)".*?>(.*?)</a>'
+        matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
 
-		for match in matches2:
-			scrapedurl = urlparse.urljoin(item.url,match[0])
-			scrapedtitle = match[1]
-			scrapedthumbnail = ""
-			scrapedplot = ""
-			logger.info(scrapedtitle)
+        for match in matches2:
+            scrapedurl = urlparse.urljoin(item.url,match[0])
+            scrapedtitle = match[1]
+            scrapedthumbnail = ""
+            scrapedplot = ""
+            logger.info(scrapedtitle)
 
-			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-		
-	return itemlist
-	
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        
+    return itemlist
+    
 def estrenos(item):
     logger.info("[islapeliculas.py] estrenos")
 
@@ -187,30 +188,4 @@ def estrenos(item):
 
             # Añade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-	return itemlist
-
-	
-	
-def busqueda(item):
-	logger.info("[islapeliculas.py] busqueda")
-    
-	if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-		from pelisalacarta import buscador
-		texto = buscador.teclado()
-		item.extra = texto
-
-	itemlist = resultados(item)
-
-	return itemlist
-    
-def resultados(item):
-    logger.info("[islapeliculas.py] resultados")
-    
-    teclado = item.extra.replace(" ", "-")
-    logger.info("[islapeliculas.py] " + teclado)
-    if item.title == "Buscar por Película":
-        item.url = "http://www.islapeliculas.com/buscar-pelicula-" +teclado
-    else:
-        item.url = "http://www.islapeliculas.com/actor-" +teclado
-
-    return novedades(item)
+    return itemlist

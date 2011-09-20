@@ -23,8 +23,7 @@ def mainlist(item):
     logger.info("[animeid.py] mainlist")
     
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="destacados" , title="Destacados"               , url="http://animeid.com/" ))
-    
+    itemlist.append( Item(channel=CHANNELNAME, action="destacados", title="Destacados"               , url="http://animeid.com/" ))
     itemlist.append( Item(channel=CHANNELNAME, action="newlist"   , title="Últimas series agregadas" , url="http://animeid.com/" ))
     itemlist.append( Item(channel=CHANNELNAME, action="chaplist"  , title="Últimos capítulos"        , url="http://animeid.com/" ))
     itemlist.append( Item(channel=CHANNELNAME, action="animelist" , title="Últimos animes agregados" , url="http://animeid.com/" ))

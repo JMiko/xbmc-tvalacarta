@@ -14,8 +14,6 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-from pelisalacarta import buscador
-
 CHANNELNAME = "gratisdocumentales" 
 DEBUG = True
  
@@ -29,24 +27,18 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="parseweb", url="http://www.gratisdocumentales.com/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Categorias", action="buscacategorias", url="http://www.gratisdocumentales.com/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Tags", action="buscatags", url="http://www.gratisdocumentales.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Búsqueda", action="search"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Búsqueda", action="search",url="http://www.gratisdocumentales.com/?s=%s&searchsubmit="))
     
     return itemlist
 
-def search(item):
+def search(item,texto):
     logger.info("[gratisdocumentales.py] search")
     itemlist=[]
-
-    keyboard = xbmc.Keyboard()
-    #keyboard.setDefault('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)>0:
-            #convert to HTML
-            tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://www.gratisdocumentales.com/?s="+tecleado+"&searchsubmit="
-            parseweb(params,searchUrl,category)
+    if item.url=="":
+        item.url="http://www.gratisdocumentales.com/?s=%s&searchsubmit="
+    
+    item.url = item.url % texto
+    return parseweb(item)
 
 def buscacategorias(item):
     logger.info("[gratisdocumentales.py] buscacategorias")

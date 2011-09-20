@@ -32,7 +32,7 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Dibujos - Todos"                  , url="http://www.cinegratis.net/index.php?module=animelist"))
     itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Documentales - Novedades"         , url="http://www.cinegratis.net/index.php?module=documentales"))
     itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Documentales - Todos"             , url="http://www.cinegratis.net/index.php?module=documentaleslist"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="search"     , title="Buscar"))
+    itemlist.append( Item(channel=CHANNELNAME, action="search"     , title="Buscar"                           , url="http://www.cinegratis.net/index.php?module=search&title=%s"))
 
     return itemlist
 
@@ -70,54 +70,28 @@ def pelisalfa(item):
 
     return itemlist
 
-# TODO: La búsqueda no funciona en canales genéricos aún
-def search(params,url,category):
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
     logger.info("[cinegratis.py] search")
 
-    from pelisalacarta import buscador
-    buscador.listar_busquedas(params,url,category)
-
-# TODO: La búsqueda no funciona en canales genéricos aún
-def searchresults(params,tecleado,category):
-    logger.info("[cinegratis.py] search")
-
-    from pelisalacarta import buscador
-    buscador.salvar_busquedas(params,tecleado,category)
-    tecleado = tecleado.replace(" ", "+")
-    searchUrl = "http://www.cinegratis.net/index.php?module=search&title="+tecleado
-    listsimple(params,searchUrl,category)
-
-# TODO: La búsqueda no funciona en canales genéricos aún
-def performsearch(texto):
-    logger.info("[cinegratis.py] performsearch")
-    url = "http://www.cinegratis.net/index.php?module=search&title="+texto
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-
-    # Extrae los items
-    patronvideos  = "<a href='(index.php\?module\=player[^']+)'[^>]*>(.*?)</a>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    try:
+        # La URL puede venir vacía, por ejemplo desde el buscador global
+        if item.url=="":
+            item.url="http://www.cinegratis.net/index.php?module=search&title=%s"
     
-    resultados = []
+        # Reemplaza el texto en la cadena de búsqueda
+        item.url = item.url % texto
 
-    for match in matches:
-        # Atributos
-        scrapedtitle = match[1]
-        scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
-        scrapedtitle = scrapedtitle.replace("</span>","")
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = ""
-        scrapedplot = ""
-
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "findvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
-        
-    return resultados
-
+        # Devuelve los resultados
+        return listsimple(item)
+    
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
+    
 def peliscat(item):
     logger.info("[cinegratis.py] peliscat")
 
