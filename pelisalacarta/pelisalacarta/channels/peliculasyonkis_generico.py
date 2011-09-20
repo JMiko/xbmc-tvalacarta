@@ -8,22 +8,13 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-    from core import DecryptYonkis as Yonkis
-    from pelisalacarta import buscador
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
-    from Code.core import DecryptYonkis as Yonkis
-    from pelisalacarta import buscador
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
+from core import DecryptYonkis as Yonkis
+from pelisalacarta import buscador
 
 CHANNELNAME = "peliculasyonkis_generico"
 SERVER = {'pymeno2'   :'Megavideo' ,'pymeno3':'Megavideo','pymeno4':'Megavideo','pymeno5':'Megavideo','pymeno6':'Megavideo',
@@ -57,7 +48,7 @@ def mainlist(item):
     itemlist.append( Item ( channel=CHANNELNAME , action="listidiomas"    , title="Listado por Idiomas"   ,url="http://www.peliculasyonkis.com/") )
     
     itemlist.append( Item ( channel=CHANNELNAME , action="buscaporanyo"   , title="Busqueda por Año",url="http://www.peliculasyonkis.com/") )
-    itemlist.append( Item ( channel=CHANNELNAME , action="search"         , title="Buscar"          ,url="http://www.peliculasyonkis.com/buscarPelicula.php?s=", category="Buscador_Generico",thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png") )
+    itemlist.append( Item ( channel=CHANNELNAME , action="search"         , title="Buscar"          ,url="http://www.peliculasyonkis.com/buscarPelicula.php?s=%s", category="Buscador_Generico",thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png") )
     
     return itemlist
     
@@ -119,17 +110,27 @@ def listservidor(item):
         itemlist.append( Item ( channel=CHANNELNAME , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
     
     return itemlist
-def search(item):
-    logger.info("[peliculasyonkis_generico.py] search")
-    return buscador.listar_busquedas(item)
+
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
+
+    try:
+        # La URL puede venir vacía, por ejemplo desde el buscador global
+        if item.url=="":
+            item.url = "http://www.peliculasyonkis.com/buscarPelicula.php?s=%s"
+        
+        # Reemplaza el texto en la cadena de búsqueda
+        item.url = item.url % texto
     
-def searchresults(item):
-    logger.info("[peliculasyonkis_generico.py] searchresults")
-    buscador.salvar_busquedas(item)
-    texto = item.url.replace(" ", "+")
-    item.url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
+        # Devuelve los resultados
+        return listvideos(item)
     
-    return listvideos(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
     
 def listalfabetico(item):
 

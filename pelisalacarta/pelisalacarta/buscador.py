@@ -35,46 +35,31 @@ def searchresults(params,url="",category=""):
     tecleado = tecleado.replace(" ", "+")
     
     # Lanza las búsquedas
-    
-    # Cinegratis
     matches = []
     itemlist = []
-    try:
-        from pelisalacarta.channels import cinetube
-        itemlist.extend( cinetube.getsearchresults(params,tecleado,category) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import cinegratis
-        matches.extend( cinegratis.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import peliculasyonkis
-        matches.extend( peliculasyonkis.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import tumejortv
-        matches.extend( tumejortv.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import cine15
-        matches.extend( cine15.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import peliculas21
-        matches.extend( peliculas21.performsearch(tecleado) )
-    except:
-        pass
-    #matches.extend( sesionvip.performsearch(tecleado) )
-    try:
-        from pelisalacarta.channels import seriesyonkis
-        matches.extend( seriesyonkis.performsearch(tecleado) )
-    except:
-        pass
+
+    from pelisalacarta.channels import cinetube
+    itemlist.extend( cinetube.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import cinegratis
+    itemlist.extend( cinegratis.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import cuevana
+    itemlist.extend( cuevana.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import peliculasyonkis_generico
+    itemlist.extend( peliculasyonkis_generico.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import tumejortv
+    itemlist.extend( tumejortv.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import gratisdocumentales
+    itemlist.extend( gratisdocumentales.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import seriesyonkis
+    itemlist.extend( seriesyonkis.search( Item() , tecleado) )
+
+    '''
     try:
         from pelisalacarta.channels import documaniatv
         matches.extend( documaniatv.performsearch(tecleado) )
@@ -100,6 +85,7 @@ def searchresults(params,url="",category=""):
         matches.extend( tutvsite.performsearch(tecleado) )
     except:
         pass
+    '''
     
     for item in itemlist:
         targetchannel = item.channel
@@ -112,18 +98,6 @@ def searchresults(params,url="",category=""):
         
         xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
     
-    # Construye los resultados
-    for match in matches:
-        targetchannel = match[0]
-        action = match[1]
-        category = match[2]
-        scrapedtitle = match[3]+" ["+targetchannel+"]"
-        scrapedurl = match[4]
-        scrapedthumbnail = match[5]
-        scrapedplot = match[6]
-        
-        xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_TITLE )

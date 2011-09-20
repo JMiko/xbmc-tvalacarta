@@ -29,95 +29,30 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, action="serienewlist"      , title="Series - Novedades" , url="http://www.tumejortv.com/"))
     itemlist.append( Item(channel=CHANNELNAME, action="seriealllist"      , title="Series - Todas" , url="http://www.tumejortv.com/"))
     itemlist.append( Item(channel=CHANNELNAME, action="seriealphalist"    , title="Series - Por orden alfabético" , url="http://www.tumejortv.com/"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="search"            , title="Buscar" , ""))
+    itemlist.append( Item(channel=CHANNELNAME, action="search"            , title="Buscar", url="http://www.tumejortv.com/buscar/%s"))
 
     return itemlist
 
-# TODO: Esto no funciona en canales genéricos
-def search(item):
-    logger.info("[tumejortv.py] search")
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
 
-    from pelisalacarta import buscador
-    buscador.listar_busquedas(params,url,category)
-    
-# TODO: Esto no funciona en canales genéricos
-def searchresults(params,tecleado,category):
-    logger.info("[tumejortv.py] searchresults")
-    
-    from pelisalacarta import buscador
-    buscador.salvar_busquedas(params,tecleado,category)
-    resultados = performsearch(tecleado)
-
-    for match in resultados:
-        targetchannel = match[0]
-        action = match[1]
-        category = match[2]
-        scrapedtitle = match[3]
-        scrapedurl = match[4]
-        scrapedthumbnail = match[5]
-        scrapedplot = match[6]
+    try:
+        # La URL puede venir vacía, por ejemplo desde el buscador global
+        if item.url=="":
+            item.url = "http://www.tumejortv.com/buscar/%s"
         
-        xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-# TODO: Esto no funciona en canales genéricos
-def performsearch(texto):
-    logger.info("[tumejortv.py] performsearch")
-    url = "http://www.tumejortv.com/buscar/?s="+texto+"&x=0&y=0"
+        # Reemplaza el texto en la cadena de búsqueda
+        item.url = item.url % texto
     
-    # Descarga la página
-    resultados = []
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las películas
-    patron  = "<h3>Pel.iacute.culas online</h3><ul class='alphaList'>(.*?)</ul>"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    data2 = ""
-    if len(matches)>0:
-        data2 = matches[0]
+        # Devuelve los resultados
+        return shortlist(item)
     
-    patron  = '<li><div class="movieTitle">[^<]+</div><div class="covershot"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data2)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        
-        # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "findvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
-
-    # Extrae las películas
-    patron  = "<h3>Series online</h3><ul class='alphaList'>(.*?)</ul>"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    if len(matches)>0:
-        data2 = matches[0]
-    
-    patron  = '<li><div class="movieTitle">[^<]+</div><div class="covershot"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data2)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        
-        # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "detailserie" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
-
-    return resultados
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 # Listado de novedades de la pagina principal
 def newlist(item):
@@ -190,7 +125,12 @@ def shortlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        # http://www.tumejortv.com/series-tv-online/battlestar-galactica
+        if "series-tv-online" in scrapedurl:
+            action="detailserie"
+        else:
+            action="findvideos"
+        itemlist.append( Item(channel=CHANNELNAME, action=action , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
     patron = '<a href="([^"]+)" >&raquo;</a>'

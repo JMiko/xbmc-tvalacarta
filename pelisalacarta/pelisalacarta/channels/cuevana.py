@@ -25,7 +25,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/peliculas/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.cuevana.tv/series/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search_options") )
     
     return itemlist
 
@@ -265,40 +265,37 @@ def findvideos(item):
 
     return itemlist
 
-def search(item):
-    logger.info("[cuevana.py] search")
+def search_options(item):
+    logger.info("[cuevana.py] search_options")
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Titulo"  , action="search2"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Episodio"     , action="search2"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Actor"  , action="search2"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Director"     , action="search2"))
-    
+    itemlist.append( Item(channel=CHANNELNAME, title="Titulo"   , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Titulo"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Episodio" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Episodio"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Actor"    , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Actor"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Director" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Director"))
     return itemlist
 
-def search2(item):
-    logger.info("[cuevana.py] search2")
-
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        from pelisalacarta import buscador
-        texto = buscador.teclado()
-        texto = texto.replace(' ','+')
-        item.extra = texto
-        title= item.title
-        title = title.lower()
-
-    itemlist = searchresults(item,title)
-
-    return itemlist
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
+    logger.info("[cuevana.py] search")
     
-def searchresults(item,title):
-    logger.info("[cuevana.py] searchresults")
+    try:
+        # La URL puede venir vacía, por ejemplo desde el buscador global
+        if item.url=="":
+            item.url="http://www.cuevana.tv/buscar/?q=%s&cat=Titulo"
     
-    teclado = item.extra.replace(" ", "+")
-    logger.info("[newhd.py] " + teclado)
-    item.url = "http://www.cuevana.tv/buscar/?q="+ teclado+ "&cat=" + title
+        # Reemplaza el texto en la cadena de búsqueda
+        item.url = item.url % texto
 
-    return listar(item)
-
+        # Devuelve los resultados
+        return listar(item)
+        
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
+    
 def listar(item):
     logger.info("[cuevana.py] listar")
 
