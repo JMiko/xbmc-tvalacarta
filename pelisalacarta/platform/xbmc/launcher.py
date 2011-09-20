@@ -140,6 +140,17 @@ def run():
                         #    logger.error( "%s" % line )
 
                     xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+                elif action=="search":
+                    import xbmc
+                    keyboard = xbmc.Keyboard("")
+                    keyboard.doModal()
+                    if (keyboard.isConfirmed()):
+                        tecleado = keyboard.getText()
+                        tecleado = tecleado.replace(" ", "+")
+                        itemlist = channel.search(item,tecleado)
+                    else:
+                        itemlist = []
+                    xbmctools.renderItems(itemlist, params, url, category)
 
                 else:
                     logger.info("[launcher.py] executing channel '"+action+"' method")
