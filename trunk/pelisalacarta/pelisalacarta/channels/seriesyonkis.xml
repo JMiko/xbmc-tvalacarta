@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesyonkis</name>
-	<tag>3</tag>
-	<date>11/05/2011</date>
-	<changes>Arreglado un problema con totalitems en el listado completo de series, opcion nueva que necesita otros archivos actualizados :)</changes>
+	<tag>4</tag>
+	<date>21/09/2011</date>
+	<changes>Nueva web, nuevo canal. Gracias a Truenon</changes>
 </version>

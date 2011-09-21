@@ -12,7 +12,6 @@ from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-#from pelisalacarta import buscador
 
 CHANNELNAME = "seriesyonkis"
 DEBUG = True
