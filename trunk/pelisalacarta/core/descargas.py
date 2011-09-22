@@ -13,6 +13,7 @@ from core import logger
 from core import samba
 from core import favoritos
 from core.item import Item
+from core import downloadtools
 
 CHANNELNAME = "descargas"
 DEBUG = True
@@ -87,8 +88,9 @@ def pendientes(item):
 
     return itemlist
 
-def errorlist(item):
-    logger.info("[descargadoslist.py] errorlist")
+def errores(item):
+    logger.info("[descargadoslist.py] errores")
+    itemlist=[]
 
     # Crea un listado con las entradas de favoritos
     if usingsamba:
@@ -108,21 +110,17 @@ def errorlist(item):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            xbmctools.addnewvideo( CHANNELNAME , "playerror" , os.path.join( ERROR_PATH, fichero ) , server , titulo , url , thumbnail, plot  , fanart=thumbnail)
+            itemlist.append( Item( channel=CHANNELNAME , action="play" , url=url , server=server, title=titulo, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
+
         except:
             pass
             logger.info("[downloadall.py] error al leer bookmark")
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
-    # Label (top-right)...
-    import xbmcplugin
-    xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def downloadall(params,url,category):
+def downloadall(item):
     logger.info("[downloadall.py] downloadall")
 
     # Lee la lista de ficheros
@@ -141,7 +139,7 @@ def downloadall(params,url,category):
         # El primer video de la lista
         logger.info("[downloadall.py] fichero="+fichero)
 
-        if fichero!="error":
+        if fichero!="error" and fichero!=".DS_Store":
             # Descarga el vídeo
             try:
                 # Lee el bookmark
@@ -149,15 +147,12 @@ def downloadall(params,url,category):
                 logger.info("[downloadall.py] url="+url)
 
                 # Averigua la URL del vídeo
-                if (server=="Megavideo" or server=="Megaupload") and config.get_setting("megavideopremium")=="true":
-                    if server=="Megaupload":
-                        mediaurl = servertools.getmegauploadhigh(url)
-                    else:
-                        mediaurl = servertools.getmegavideohigh(url)
-                else:
-                    mediaurl = servertools.findurl(url,server)
+                exec "from servers import "+server+" as server_connector"
+                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
+                # La última es la de mayor calidad, lo mejor para la descarga
+                mediaurl = video_urls[ len(video_urls)-1 ][1]
                 logger.info("[downloadall.py] mediaurl="+mediaurl)
-                
+
                 # Genera el NFO
                 nfofilepath = downloadtools.getfilefromtitle("sample.nfo",titulo)
                 outfile = open(nfofilepath,"w")
@@ -232,6 +227,9 @@ def downloadall(params,url,category):
                     logger.info("[downloadall.py] "+fichero+" borrado")
             except:
                 logger.info("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
+                import sys
+                for line in sys.exc_info():
+                    logger.error( "%s" % line )
                 if not usingsamba:
                     origen = os.path.join( DOWNLOAD_LIST_PATH , fichero )
                     destino = os.path.join( ERROR_PATH , fichero )
@@ -241,20 +239,14 @@ def downloadall(params,url,category):
                     favoritos.savebookmark(titulo, url, thumbnail, server, plot, ERROR_PATH)
                     favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
 
-    # Label (top-right)...
-    import xbmcplugin
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
 def savebookmark(titulo,url,thumbnail,server,plot,savepath=DOWNLOAD_LIST_PATH):
     favoritos.savebookmark(titulo,url,thumbnail,server,plot,savepath)
 
 def deletebookmark(fullfilename,deletepath=DOWNLOAD_LIST_PATH):
     favoritos.deletebookmark(fullfilename,deletepath)
 
-def borrar_descarga(fullfilename):
-    os.remove(fullfilename)
+def delete_error_bookmark(fullfilename,deletepath=ERROR_PATH):
+    favoritos.deletebookmark(fullfilename,deletepath)
 
 def mover_descarga_error_a_pendiente(fullfilename):
     # La categoría es el nombre del fichero en favoritos, así que lee el fichero
