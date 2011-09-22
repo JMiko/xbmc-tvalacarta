@@ -29,8 +29,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Extrae el vídeo
     patronvideos  = '<a href="(http://content.veoh.com.*?)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    for match in matches:
-        video_urls.append( ["[veoh]",match] )
+    if len(matches)>0:
+        video_urls.append( ["[veoh]",matches[0]] )
     
     for video_url in video_urls:
         logger.info("[veoh.py] %s - %s" % (video_url[0],video_url[1]))
