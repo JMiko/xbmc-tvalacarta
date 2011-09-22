@@ -3,7 +3,8 @@
 # pelisalacarta - XBMC Plugin
 # Canal para seriesyonkis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-# Por Truenon y Jes�s
+# Por Truenon y Jesus
+# v7
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -217,17 +218,25 @@ def findvideos(item):
         #matches = re.compile('<h2 class="header-subtitle veronline">.*?<h2 class="header-subtitle descargadirecta">', re.S).findall(data)
         #ONLINE + DESCARGA
         matches = re.compile('<h2 class="header-subtitle veronline">.*?<section class="buy_show">', re.S).findall(data)
-        #scrapertools.printMatches(matches)
+        #logger.info("1")
+        if len(matches)==0:
+            logger.info("no encuentra cabecera 1")
+        else:
+            data = matches[0]
+        #logger.info("2")
         
-        for match in matches: 
-            data = match
         matches = re.compile('<tr>.*?</tr>', re.S).findall(data)
-        #scrapertools.printMatches(matches)
-    
+        #logger.info("3")
+        scrapertools.printMatches(matches)
+        #logger.info("4")
+        if len(matches)==0:
+            logger.info("no encuentra cabecera 2")
+
         for match in matches:
-            logger.info(matches)
+            #logger.info(match)
             #<tr> <td class="episode-server"> <a href="/s/go/674378" title="Reproducir No estamos solos 2x1" target="_blank"><img src="/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/go/674378" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Español">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtítulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-uploader">aritzatila</td> <td class="center"><a href="#" class="errorlink" data-id="674378"><img src="/img/icons/bug.png" alt=""></a></td> </tr> 
-            datos = re.compile('<a href="/s/go/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"', re.S).findall(match)
+            patron = '<a href="/s/go/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
+            datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
                 servidor = info[1]
