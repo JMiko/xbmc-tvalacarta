@@ -28,8 +28,11 @@ def getmainlist():
     itemlist.append( Item(title=config.get_localized_string(30128) , channel="trailertools" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
 
-    if config.get_setting("download.enabled")=="true":
+    try:
+        from core import descargas
         itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist") )
+    except:
+        logger.error("[channelselector.py] no encuentra core/descargas.py, se deshabilitan las descargas")
     itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
     
     #if config.get_library_support():
