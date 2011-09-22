@@ -115,9 +115,13 @@ def series(item):
     #Paginador
     #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
-    if(len(matches)==1):
-        for match in matches:
-            itemlist.append( Item(channel=CHANNELNAME, action="series" , title="Página siguiente" , url=urlparse.urljoin(item.url,match), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show))
+    if len(matches)>0:
+        paginador = Item(channel=CHANNELNAME, action="series" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+    else:
+        paginador = None
+    
+    if paginador is not None:
+        itemlist.append( paginador )
 
     #<div id="main-section" class="lista-series">.*?</div>
     #matches = re.compile('<div id="main-section" class="lista-series">.*?</div>', re.S).findall(data)
@@ -134,12 +138,11 @@ def series(item):
     for match in matches:
         itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=item.show))
 
+    if paginador is not None:
+        itemlist.append( paginador )
+
     return itemlist
 
-def season(item):
-    logger.info("[seriesyonkis.py] getlist")
-    return addChapters(item)
-    
 def episodios(item):
     logger.info("[seriesyonkis.py] episodios")
 
@@ -179,8 +182,9 @@ def episodios(item):
     return itemlist
 
 def addChapters(item):
-    #<tr> <td class="episode-title">  <a href="/capitulo/como-conoci-a-vuestra-madre/gran-dia/82013"> <strong> 6x01 </strong> - Gran día </a> </td> <td> 21/09/2010 </td> <td class="episode-lang">  <span class="flags spa" title="Español"></span>  <span class="flags eng" title="Inglés"></span>  </td> <td class="score"> 9.3 </td> </tr>
-    matches = re.compile('<tr> <td class="episode-title">  <a href="([^"]+)"> <strong>([^<]+)</strong>(.*?)</a>(.*?)</tr>', re.S).findall(item.extra)
+    #<tr > <td class="episode-title"> <span class="downloads allkind" title="Disponibles enlaces a descarga directa y visualizaciones"></span>
+    #<a href="/capitulo/bones/capitulo-2/2870"> <strong> 1x02 </strong> - El hombre en la unidad especial de victimas </a> </td> <td> 18/08/2007 </td> <td class="episode-lang">  <span class="flags_peq spa" title="Español"></span>  </td> <td class="score"> 8 </td> </tr>
+    matches = re.compile('<tr[^<]+<td class="episode-title[^<]+<span[^<]+</span[^<]+<a href="([^"]+)"[^<]+<strong>([^<]+)</strong>(.*?)</a>(.*?)</tr>', re.S).findall(item.extra)
     scrapertools.printMatches(matches)
     
     itemlist=[]
