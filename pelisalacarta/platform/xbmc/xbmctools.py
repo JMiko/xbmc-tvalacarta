@@ -187,7 +187,6 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
 
         if config.get_setting("download.enabled")=="true":
             opcion = config.get_localized_string(30153)
-            logger.info(opcion)
             opciones.append(opcion) # "Descargar"
 
         if channel=="favoritos": 
@@ -195,19 +194,19 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         else:
             opciones.append(config.get_localized_string(30155)) # "Añadir a favoritos"
     
-        if channel=="descargas":
-            opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
-        else:
-            opciones.append(config.get_localized_string(30157)) # "Añadir a lista de descargas"
+        if config.get_setting("download.enabled")=="true":
+            if channel!="descargas":
+                opciones.append(config.get_localized_string(30157)) # "Añadir a lista de descargas"
+            else:
+                if category=="errores":
+                    opciones.append(config.get_localized_string(30159)) # "Borrar descarga definitivamente"
+                    opciones.append(config.get_localized_string(30160)) # "Pasar de nuevo a lista de descargas"
+                else:
+                    opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
 
         opciones.append(config.get_localized_string(30158)) # "Enviar a JDownloader"
         if default_action=="3":
             seleccion = len(opciones)-1
-    
-        if config.get_setting("download.enabled")=="true":
-            if desderrordescargas:
-                opciones.append(config.get_localized_string(30159)) # "Borrar descarga definitivamente"
-                opciones.append(config.get_localized_string(30160)) # "Pasar de nuevo a lista de descargas"
     
         if not strmfile:
             if category in LIBRARY_CATEGORIES:
@@ -228,7 +227,10 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
             opciones.append(config.get_localized_string(30154)) # "Quitar de favoritos"
 
         if channel=="descargas":
-            opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
+            if category=="errores":
+                opciones.append(config.get_localized_string(30159)) # "Borrar descarga definitivamente"
+            else:
+                opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
         
         if len(opciones)==0:
             return
@@ -295,10 +297,11 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
 
     elif opciones[seleccion]==config.get_localized_string(30159): #"Borrar descarga definitivamente"
         from core import descargas
-        descargas.borrar_descarga(urllib.unquote_plus( extra ))
+        descargas.delete_error_bookmark(urllib.unquote_plus( extra ))
 
         advertencia = xbmcgui.Dialog()
         resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30106)) # 'Se ha quitado de la lista'
+        xbmc.executebuiltin( "Container.Refresh" )
         return
 
     elif opciones[seleccion]==config.get_localized_string(30160): #"Pasar de nuevo a lista de descargas":
@@ -423,6 +426,9 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
             xlistitem.setProperty('IsPlayable', 'true')
             xlistitem.setProperty('path', mediaurl)
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, xlistitem)
+        
+        elif config.get_setting("player_mode")=="2":
+            xbmc.executebuiltin( "PlayMedia("+mediaurl+")" )
 
 def handle_wait(time_to_wait,title,text):
     logger.info ("[megaupload.py] handle_wait(time_to_wait=%d)" % time_to_wait)
