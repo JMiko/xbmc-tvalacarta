@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>pelisalacarta</name>
-	<tag>3.1.1</tag>
-	<date>31/08/2011</date>
-	<changes>Channel and server updates</changes>
+	<tag>3.2</tag>
+	<date>21/09/2011</date>
+	<changes>New server connector modules, updated channels</changes>
 </version>
