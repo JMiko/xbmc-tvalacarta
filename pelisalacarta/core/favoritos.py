@@ -160,12 +160,13 @@ def deletebookmark(fullfilename,deletepath=BOOKMARK_PATH):
     logger.info("[favoritos.py] deletebookmark(fullfilename="+fullfilename+",deletepath="+deletepath+")")
 
     if not usingsamba(deletepath):
-        os.remove(urllib.unquote_plus( fullfilename ))
+        os.remove( os.path.join( urllib.unquote_plus( deletepath ) , urllib.unquote_plus( fullfilename )))
     else:
         fullfilename = fullfilename.replace("\\","/")
         partes = fullfilename.split("/")
         filename = partes[len(partes)-1]
-        logger.info("[favoritos.py] deletebookmark(filename="+filename+")")
+        logger.info("[favoritos.py] filename="+filename)
+        logger.info("[favoritos.py] deletepath="+deletepath)
         samba.remove_file(filename,deletepath)
 
 def usingsamba(path):

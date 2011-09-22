@@ -422,7 +422,8 @@ def getfilefromtitle(url,title):
         nombrefichero = title + url[-4:]
 
     logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
-    fullpath = os.path.join( getDownloadPath() , nombrefichero )
+
+    fullpath = os.path.join( config.get_setting("downloadpath") , nombrefichero )
     logger.info("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
     
     return fullpath

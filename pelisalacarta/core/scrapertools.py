@@ -391,7 +391,7 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     # Añade las cabeceras
     logger.info("[scrapertools.py] ---------------------------")
     for header in headers:
-        logger.info("[scrapertools.py] header="+header[0]+": "+header[1])
+        logger.info("[scrapertools.py] header=%s" % str(header[0]))
         txheaders[header[0]]=header[1]
     logger.info("[scrapertools.py] ---------------------------")
 
