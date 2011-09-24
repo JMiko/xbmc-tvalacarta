@@ -26,12 +26,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="�timos cap�tulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.com"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="alltvserieslist"   , title="Listado completo de series"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="allcartoonslist"    , title="Listado completo de dibujos animados"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="allanimelist"   , title="Listado completo de anime"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="allminilist"    , title="Listado completo de miniseries"))
     itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Series m�s vistas", url="http://www.seriesyonkis.com/series-mas-vistas"))
-    #itemlist.append( Item(channel=CHANNELNAME, action="minivideos"    , title="Listado completo de minivideos", url = BASE_URL + "/minivideos"))
     itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.seriesyonkis.com/buscar/serie"))
 
     return itemlist
@@ -43,7 +38,7 @@ def search(item,texto):
     if item.url=="":
         item.url = "http://www.seriesyonkis.com/buscar/serie"
     url = "http://www.seriesyonkis.com/buscar/serie" # write ur URL here
-    post = 'keywords='+texto 
+    post = 'keywords='+texto[0:18]
     
     data = scrapertools.cache_page(url,post=post)
     patron = '<li class="[^"]+"> <a title="([^"]+)" href="([^"]+)"><img width="[^"]+" height="[^"]+" class="thumb" src="([^"]+)"></a> <h3><a[^>]+>[^<]+</a></h3> <p>([^<]+)</p>'
@@ -137,7 +132,7 @@ def series(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=item.show))
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -169,7 +164,7 @@ def episodios(item):
 
     No = 0
     for match in matches:
-        itemlist.extend( addChapters(Item(url=item.url,extra=match, thumbnail=thumbnail)) )
+        itemlist.extend( addChapters(Item(url=item.url,extra=match, thumbnail=thumbnail,show=item.show)) )
         '''
         if(len(matches)==1):
             itemlist = addChapters(Item(url=match, thumbnail=thumbnail))
@@ -179,6 +174,9 @@ def episodios(item):
             title = "Temporada "+str(No)
             itemlist.append( Item(channel=CHANNELNAME, action="season" , title= title, url=match, thumbnail=thumbnail, plot="", show = title, folder=True))
         '''
+
+    if config.get_platform().startswith("xbmc"):
+        itemlist.append( Item(channel=item.channel, title="A�adir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
@@ -200,7 +198,7 @@ def addChapters(item):
         for flag in flags:
             title = title + " ("+flag+")"
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, url=url, thumbnail=item.thumbnail, plot="", show = title, folder=True))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, url=url, thumbnail=item.thumbnail, plot="", show = item.show, folder=True))
 
     return itemlist
 
@@ -283,6 +281,38 @@ def play(item):
     
     return itemlist
 
+# Pone todas las series del listado alfab�tico juntas, para no tener que ir entrando una por una
+def completo(item):
+    logger.info("[seriesyonkis.py] completo()")
+    itemlist = []
+
+    # Carga el men� "Alfab�tico" de series
+    item = Item(channel=CHANNELNAME, action="listalfabetico")
+    items_letras = listalfabetico(item)
+    
+    # Carga las series de cada letra
+    for item_letra in items_letras:
+        items_programas = series(item_letra)
+
+        ultimo_item = items_programas[ len(items_programas)-1 ]
+        
+        if ultimo_item.action!="series":
+            itemlist.extend( items_programas )
+        else:
+            # Si hay un enlace "P�gina siguiente"
+            while ultimo_item.action=="series":
+                
+                # Lo quita
+                pagina_siguiente_item = items_programas.pop()
+                
+                # A�ade el resto a la lista
+                itemlist.extend( items_programas )
+                
+                # Carga la sigiuente p�gina
+                items_programas = series(pagina_siguiente_item)
+
+    return itemlist
+
 def listalfabetico(item):
     logger.info("[seriesyonkis.py] listalfabetico")
        
@@ -316,485 +346,3 @@ def listalfabetico(item):
     itemlist.append( Item(channel=CHANNELNAME, action="series" , title="Z"  , url="http://www.seriesyonkis.com/lista-de-series/Z"))
 
     return itemlist
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-def minivideos(item):
-    logger.info("[seriesyonkis.py] minivideos")
-    data = scrapertools.cachePage(item.url)
-
-    #<article class="minivideo "> <a href="/minivideo/ver/cine/430365"> <img src="http://blackbird.zoomin.tv/Images/.jpg?imageurl=http://bongo.zoomin.tv/uploaded/assetimages/2011/08/26/430365.jpg&amp;width=169&amp;height=125" alt="Estreno: Dinero f�cil" height="125" width="169"> </a> <p class="titulo">Estreno: Dinero f�cil</p> </article>
-    matches = re.compile('<article class="minivideo "> <a href="([^"]+)".*?src="([^"]+)".*?alt="([^"]+)".*?</article>', re.S).findall(data)
-    #scrapertools.printMatches(matches)
-    itemlist = []
-    for match in matches:               
-        scrapedtitle = match[2] 
-        # URL
-        scrapedurl = match[0]            
-        # Thumbnail
-        scrapedthumbnail = match[1]            
-        # procesa el resto
-        scrapedplot = ""
-
-        # Depuracion
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="temporadas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
-
-    return itemlist
-
-def alltvserieslist(params,url,category):
-    allserieslist(params,url,category,"series")
-
-def allcartoonslist(params,url,category):
-    allserieslist(params,url,category,"dibujos")
-
-def allanimelist(params,url,category):
-    allserieslist(params,url,category,"anime")
-
-def allminilist(params,url,category):
-    allserieslist(params,url,category,"miniseries")
-
-def allserieslist(params,url,category,clave):
-    logger.info("[seriesyonkis.py] allserieslist")
-
-    title = urllib.unquote_plus( params.get("title") )
-
-    from core.item import Item
-
-    item = Item(channel=CHANNELNAME, title=title , url=url , extra=clave )
-    itemlist = getallserieslist(item)
-    
-    for item in itemlist:
-        xbmctools.addnewfolder(item.channel , item.action , category , item.title , item.url , item.thumbnail, item.plot , item.extra )#, totalItems = item.totalItems)
-
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-    
-def getallserieslist(item):
-    logger.info("[seriesyonkis.py] getallserieslist")
-
-    from core.item import Item
-
-    itemlist = []
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Extrae el bloque de las series
-    patronvideos = '<h4><a.*?id="'+item.extra+'".*?<ul>(.*?)</ul>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    data = matches[0]
-    #scrapertools.printMatches(matches)
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<li class="page_item_"><a href="(http://www.seriesyonkis.com/serie[^"]+)"[^>]+>([^<]+)</a></li>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
-    totalItems = len(matches)
-
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        Serie = scrapedtitle    # JUR-Añade nombre serie para librería
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="list" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = Serie , show = scrapedtitle ))#, totalItems = totalItems))
-
-    return itemlist
-
-def detail(params,url,category):
-    logger.info("[seriesyonkis.py] detail")
-    logger.info("[seriesyonkis.py] detail url="+url)
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    Serie = urllib.unquote_plus( params.get("Serie") )
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    #server = "Megavideo"
-    server,url = scrapvideoURL(url) 
-    logger.info("[seriesyonkis.py] detail url="+url)
-   
-    if (":" in url):
-        match = url.split(":")
-        if match[0]!="http":
-            url = choiceOnePart(match)
-    logger.info("[seriesyonkis.py] detail url="+url)
-
-    if url == "":return
-   
-    logger.info("[seriesyonkis.py] url="+url)
-   
-    xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot,Serie=Serie)
-    # ------------------------------------------------------------------------------------
-
-def addlist2Library(params,url,category):
-    logger.info("[seriesyonkis.py] addlist2Library")
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    if params.has_key("Serie"):
-        Serie = params.get("Serie")
-    else:
-        Serie = ""
-
-    if params.has_key("server"):
-        server = params.get("server")
-    else:
-        server = ""
-
-    if params.has_key("thumbnail"):
-        thumbnail = params.get("thumbnail")
-    else:
-        thumbnail = ""
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="(http://www.seriesyonkis.com/capitulo[^"]+)"[^>]+>([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    pDialog = xbmcgui.DialogProgress()
-    ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
-    pDialog.update(0, 'Añadiendo episodio...')
-    totalepisodes = len(matches)
-    logger.info ("[seriesyonkis.py - addlist2Library] Total Episodios:"+str(totalepisodes))
-    i = 0
-    errores = 0
-    nuevos = 0
-    for match in matches:
-        # Titulo
-        scrapedtitle = match[1]
-
-        # PARTE NUEVA 
-
-        # Nos quedamos por un lado con el nombre de la serie y 
-        # por otro con el num capitulo
-
-        mo = re.match("^(.*) ([\d]{1,2}[x|X][\d]{1,3}) (.*)$", scrapedtitle)
-
-        if mo == None:
-                errores = errores + 1
-                continue        
-
-        if (DEBUG):
-                xbmc.output("CAPITULO="+ mo.group(2))                
-    
-    
-        scrapedtitle = mo.group(2)
-
-        # FIN PARTE NUEVA
-
-        i = i + 1
-        pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',scrapedtitle)
-        if (pDialog.iscanceled()):
-            return
-
-        # URL
-        #  Tenemos 2 opciones. Scrapear todos los episodios en el momento de añadirlos 
-        #  a la biblioteca o bien dejarlo para cuando se vea cada episodio. Esto segundo
-        #  añade los episodios mucho más rápido, pero implica añadir una función
-        #  strm_detail en cada módulo de canal. Por el bien del rendimiento elijo la
-        #  segunda opción de momento (hacer la primera es simplemente descomentar un par de
-        #  líneas.
-        #  QUIZÁ SEA BUENO PARAMETRIZARLO (PONER OPCIÓN EN LA CONFIGURACIÓN DEL PLUGIN)
-        #  PARA DEJAR QUE EL USUARIO DECIDA DONDE Y CUANDO QUIERE ESPERAR.
-        url = match [0]
-        # JUR-Las 3 líneas siguientes son para OPCIÓN 1
-        #scrapedurl = scrapvideoURL(url)
-        #if scrapedurl == "":
-        #    errores = errores + 1
-            
-        # Thumbnail
-        scrapedthumbnail = ""
-        
-        # procesa el resto
-        scrapedplot = ""
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-#            logger.info("scrapedurl="+scrapedurl) #OPCION 1.
-            logger.info("url="+url) #OPCION 2.
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-            logger.info("Serie="+Serie)
-            logger.info("Episodio "+str(i)+" de "+str(totalepisodes)+"("+str(i*100/totalepisodes)+"%)")
-
-        # Añade a la librería #Comentada la opción 2. Para cambiar invertir los comentarios
-        #OPCION 1:
-        #library.savelibrary(scrapedtitle,scrapedurl,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False)
-        #OPCION 2
-        try:
-            nuevos = nuevos + library.savelibrary(scrapedtitle,url,scrapedthumbnail,server,scrapedplot,canal=CHANNELNAME,category="Series",Serie=Serie,verbose=False,accion="strm_detail",pedirnombre=False)
-        except IOError:
-            logger.info("Error al grabar el archivo "+scrapedtitle)
-            errores = errores + 1
-        
-#    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-    pDialog.close()
-    
-    #Actualización de la biblioteca
-    if errores > 0:
-        logger.info ("[seriesyonkis.py - addlist2Library] No se pudo añadir "+str(errores)+" episodios") 
-    library.update(totalepisodes,errores,nuevos)
-
-    return nuevos
-    
-
-def strm_detail (params,url,category):
-    logger.info("[seriesyonkis.py] strm_detail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    #server = "Megavideo"
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    server,url = scrapvideoURL(url)
-    if url == "":
-        
-        return
-    logger.info("[seriesyonkis] strm_detail url="+url)
-    
-    xbmctools.playvideo("STRM_Channel",server,url,category,title,thumbnail,plot,1)
-#<td><div align="center"><span style="font-size: 10px"><em><img src="http://simages.peliculasyonkis.com/images/tmegavideo.png" alt="Megavideo" style="vertical-align: middle;" /><img src='http://images.peliculasyonkis.com/images/tdescargar2.png' title='Tiene descarga directa' alt='Tiene descarga directa' style='vertical-align: middle;' /><a onmouseover="window.status=''; return true;" onmouseout="window.status=''; return true;" title="Seleccionar esta visualizacion" href="http://www.seriesyonkis.com/player/visor_pymeno4.php?d=1&embed=no&id=%CB%D8%DC%DD%C0%D3%E2%FC&al=%A6%B2%AC%B8%AC%A4%BD%A4" target="peli">SELECCIONAR ESTA</a> (flash desde megavideo)</em>          </span></div></td>          <td><div align="center"><img height="30" src="http://simages.seriesyonkis.com/images/f/spanish.png" alt="Audio Español" title="Audio Español" style="vertical-align: middle;" /></div></td>
-#          <td><div align="center"><span style="font-size: 10px">Español (Spanish)</span></div></td>          <td><div align="center"><span style="font-size: 10px">no</span></div></td>          <td><div align="center"><span style="font-size: 10px">Formato AVI 270mb</span></div></td>          <td><div align="center"><span style="font-size: 10px">MasGlo<br />masglo</span></div></td>        </tr><tr>
- 
-
-def scrapvideoURL(urlSY):
-    logger.info("[seriesyonkis.py] scrapvideoURL")
-    data = scrapertools.cachePage(urlSY)
-    patronvideos  = 'href="' + BASE_URL + '/s/go/(mv)\/([^"]+)".*?alt="([^"]+)".*?'
-    patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
-    patronvideos += '<td><div[^>]+><[^>]+>(.*?)</tr>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    patronvideos  = 'href="' + BASE_URL + '/player/visor_([^\.]+).php.*?id=([^"]+)".*?alt="([^"]+)".*?'
-    patronvideos += '<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+<td><div[^>]+><[^>]+>[^<]+</span></div></td>[^<]+'
-    patronvideos += '<td><div[^>]+><[^>]+>(.*?)</tr>'
-    matches0 = re.compile(patronvideos,re.DOTALL).findall(data)
-    matches = matches + matches0
-    patronvideos1  = BASE_URL + '/s/go/(d)/(.+?)".*?alt="([^"]+)".*?'
-    patronvideos1 += 'Durac.+?:\s?([^>]+?)>'
-    matches1 = re.compile(patronvideos1,re.DOTALL).findall(data)
-    if (len(matches1) > 0):
-        for j in matches1:
-            matches.append(j)
-    scrapertools.printMatches(matches)
-    id=""
-    #newdec = Yonkis.DecryptYonkis()
-    #xbmc.output(newdec.ccM(newdec.charting(newdec.unescape("%B7%AC%A6%B1%B7%AD%A9%B1"))))
-    
-    if len(matches)==0:
-        xbmctools.alertnodisponible()
-        return "",""
-        
-    elif len(matches)==1:
-        if  matches[0][0] == "d":
-            player = "descargar"
-            url = BASE_URL + "/s/go/%s/%s" % (matches[0][0],matches[0][1])
-            id = getId(url)
-        elif matches[0][0] == "mv":
-            player = "pymeno2"
-            url = BASE_URL + "/go/%s/%s" % (matches[0][0],matches[0][1])
-            id = getId(url)
-        else:
-            player = matches[0][0]
-            id = matches[0][1]
-        server = SERVER[player]
-        #print matches[0][1]
-        if player == "svueno":
-            id = matches[0][1]
-            logger.info("[seriesyonkis.py]  id="+id)
-            dec = Yonkis.DecryptYonkis()
-            id = dec.decryptALT(dec.charting(dec.unescape(id)))
-            id = "http://stagevu.com/video/" + id
-        elif player in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
-            cortar = matches[0][1].split("&")
-            id = cortar[0]
-            logger.info("[seriesyonkis.py]  id="+id)
-            dec = Yonkis.DecryptYonkis()
-            id = dec.decryptID_series(dec.unescape(id))
-        
-        elif player == "descargar":
-            cortar = matches[0][1].split("&")
-            id = cortar[0]
-            logger.info("[seriesyonkis.py]  id="+id)
-            dec = Yonkis.DecryptYonkis()
-            id = dec.ccM(dec.unescape(id))
-
-        else:pass
-        #print 'codigo :%s' %id
-        return server,id        
-    else:
-        
-        
-            
-        server,id = choiceOne(matches)
-        if len(id)==0:return "",""
-        print 'codigo :%s' %id
-        return server,id
-        
-        
-def choiceOne(matches):
-    logger.info("[seriesyonkis.py] choiceOne")
-    opciones = []
-    IDlist = []
-    servlist = []
-    Nro = 0
-    fmt=duracion=id=""
-    
-    for server,codigo,audio,data in matches:
-        try:
-            print server
-            if server in SERVER:
-                servidor = SERVER[server]
-                player = server
-                id = codigo
-            else:
-                if server == "d":
-                    player = "descargar"
-                    id = BASE_URL + "/go/%s/%s" % (server,codigo)
-                    
-                    servidor = "Megaupload"
-                    Server = "megaupload"
-                elif server == "mv":
-                    player = "pymeno2"
-                    id = BASE_URL + "/go/%s/%s" % (server,codigo)
-                    
-                    servidor = "Megavideo"
-                    Server = "megavideo"
-                else:
-                    servidor = "desconocido ("+server+")"
-            Nro = Nro + 1
-            
-            regexp = re.compile(r"title='([^']+)'")
-            match = regexp.search(data)
-            if match is not None:
-                fmt = match.group(1)
-                fmt = fmt.replace("Calidad","").strip()
-            regexp = re.compile(r"Duraci\xc3\xb3n:([^<]+)<")
-            match = regexp.search(data)
-            if match is not None:
-                duracion = match.group(1).replace(".",":")        
-            audio = audio.replace("Subt\xc3\xadtulos en Espa\xc3\xb1ol","Subtitulado") 
-            audio = audio.replace("Audio","").strip()
-            opciones.append("%02d) [%s] - (%s) - %s  [%s] " % (Nro , audio,fmt,duracion,servidor))
-            IDlist.append(id)
-            servlist.append(player)
-        except:
-            logger.info("[seriesyonkis.py] error (%s)" % server)
-    dia = xbmcgui.Dialog()
-    seleccion = dia.select("Nº)[AUDIO]-(CALIDAD)-DURACION", opciones)
-    logger.info("seleccion=%d" % seleccion)
-    if seleccion == -1 : return "",""
-    
-    if servlist[seleccion]  in ["pymeno2","pymeno3","pymeno4","pymeno5","pymeno6"]:
-        if "http" in IDlist[seleccion]:
-            id = getId(IDlist[seleccion])
-        else:
-            id = IDlist[seleccion]
-        cortar = id.split("&")
-        id = cortar[0]
-        logger.info("[seriesyonkis.py]  id="+id)
-        dec = Yonkis.DecryptYonkis()
-        if(len(id)==51):                     
-            id = dec.decryptID(dec.charting(dec.unescape(id)))
-        else:
-            id = dec.decryptID_series(dec.unescape(id))
-    elif servlist[seleccion] == "descargar":
-        if "http" in IDlist[seleccion]:
-            id = getId(IDlist[seleccion])
-        else:
-            id = IDlist[seleccion]
-        cortar = id.split("&")
-        id = cortar[0]
-        logger.info("[seriesyonkis.py]  id="+id)
-        dec = Yonkis.DecryptYonkis()
-        id = dec.ccM(dec.unescape(id))        
-    elif servlist[seleccion] == "svueno":
-        id = IDlist[seleccion]
-        logger.info("[seriesyonkis.py]  id="+id)
-        dec = Yonkis.DecryptYonkis()
-        id = dec.decryptALT(dec.charting(dec.unescape(id)))
-        id = "http://stagevu.com/video/" + id
-    elif servlist[seleccion] == "movshare":
-        id = IDlist[seleccion]
-        logger.info("[seriesyonkis.py]  id="+id)
-        dec = Yonkis.DecryptYonkis()
-        id = dec.decryptALT(dec.charting(dec.unescape(id)))
-    elif servlist[seleccion] == "videoweed":
-        id = IDlist[seleccion]
-        logger.info("[seriesyonkis.py]  id="+id)
-        dec = Yonkis.DecryptYonkis()
-        id = dec.decryptID(dec.charting(dec.unescape(id)))
-        id = "http://www.videoweed.com/file/%s" %id                
-    else:
-        pass
-    return SERVER[servlist[seleccion]],id
-
-def choiceOnePart(matches):
-    logger.info("[seriesyonkis.py] choiceOnePart")
-    opciones = []
-    Nro = 0
-    for codigo in matches:
-        Nro = Nro + 1
-        opciones.append("Parte %s " % Nro)
-       
-    dia = xbmcgui.Dialog()
-    seleccion = dia.select("Selecciona uno ", opciones)
-    logger.info("seleccion=%d" % seleccion)
-    if seleccion == -1 : return ""
-    id = matches[seleccion]
-    return id
-    
-def getId(url):
-    logger.info("[seriesyonkis.py] getId")
-
-    #print url
-    try:
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        opener = urllib2.build_opener(SmartRedirectHandler())
-        response = opener.open(req)
-    except ImportError, inst:    
-        status,location=inst
-        logger.info(str(status) + " " + location)    
-        movielink = location
-    #print movielink
-
-    try:
-        id = re.compile(r'id=([A-Z0-9%]{0,})').findall(movielink)[0]
-    except:
-        id = ""
-    
-    return id
-    
-class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
-    def http_error_302(self, req, fp, code, msg, headers):
-        raise ImportError(302,headers.getheader("Location"))
