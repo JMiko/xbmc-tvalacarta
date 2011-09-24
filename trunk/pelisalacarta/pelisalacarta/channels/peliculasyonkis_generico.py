@@ -112,7 +112,7 @@ def search(item,texto):
     if item.url=="":
         item.url = "http://www.peliculasyonkis.com/buscar/pelicula"
     url = "http://www.peliculasyonkis.com/buscar/pelicula" # write ur URL here
-    post = 'keywords='+texto
+    post = 'keywords='+texto[0:18]
     
     data = scrapertools.cache_page(url,post=post)
     patron = '<li class="[^"]+"> <a title="([^"]+)" href="([^"]+)"><img width="[^"]+" height="[^"]+" class="thumb" src="([^"]+)"></a> <h3><a[^>]+>[^<]+</a></h3> <p>([^<]+)</p>'
