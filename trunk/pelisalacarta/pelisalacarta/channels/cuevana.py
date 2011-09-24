@@ -138,17 +138,14 @@ def series(item):
         code = match[0]
         scrapedurl = "http://www.cuevana.tv/list_search_id.php?serie="+code
         scrapedthumbnail = "http://www.cuevana.tv/box/"+code+".jpg"
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.title , folder=True, extra=scrapedtitle) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle , folder=True, extra=scrapedtitle) )
 
     return itemlist
 
-def temporadas(item):
+def temporadas(item,data):
     logger.info("[cuevana.py] temporadas")
-
-    # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
     patron  = '<li onclick=\'listSeries\(2,"([^"]+)"\)\'>([^<]+)</li>'
@@ -162,39 +159,46 @@ def temporadas(item):
         code = match[0]
         scrapedurl = "http://www.cuevana.tv/list_search_id.php?temporada="+code
         scrapedthumbnail = item.thumbnail
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"]")
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"] show="+item.show)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show + " - " + item.title , folder=True, extra=item.extra + "|" + temporada) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=temporada , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show , folder=True, extra=item.extra + "|" + temporada) )
 
     return itemlist
 
 def episodios(item):
     logger.info("[cuevana.py] episodios")
+    itemlist = []
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-
-    # Extrae las entradas
-    #<li onclick='listSeries(3,"5099")'><span class='nume'>1</span> Truth Be Told</li>
-    patron  = '<li onclick=\'listSeries\(3,"([^"]+)"\)\'><span class=\'nume\'>([^<]+)</span>([^<]+)</li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    itemlist = []
-    logger.info("[cuevana.py] agregar todos los episodios a la biblioteca")
     
-    # Añade "Agregar todos a la librería"
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        itemlist.append( Item(channel=CHANNELNAME, action="addlist2Library", title="AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA", url=item.url, thumbnail="", show = item.show , folder=True, extra=item.extra, plot="") )
+    # Extrae las temporadas
+    temporadas_itemlist = temporadas(item,data)
+    
+    for temporada_item in temporadas_itemlist:
+        data = scrapertools.cache_page(temporada_item.url)
 
-    for match in matches:
-        code = match[0]
-        scrapedtitle = match[1]+" "+match[2].strip()
-        scrapedplot = ""
-        scrapedurl = "http://www.cuevana.tv/list_search_info.php?episodio="+code
-        scrapedthumbnail = item.thumbnail
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        # Extrae las entradas
+        #<li onclick='listSeries(3,"5099")'><span class='nume'>1</span> Truth Be Told</li>
+        patron  = '<li onclick=\'listSeries\(3,"([^"]+)"\)\'><span class=\'nume\'>([^<]+)</span>([^<]+)</li>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        
+        for match in matches:
+            code = match[0]
+            episodio = match[1]
+            if len(episodio)==1:
+                episodio = "0" + episodio
+            scrapedtitle = temporada_item.title + "x" + episodio + " "+match[2].strip()
+            scrapedplot = ""
+            scrapedurl = "http://www.cuevana.tv/list_search_info.php?episodio="+code
+            scrapedthumbnail = item.thumbnail
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
+    
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , folder=True) )
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , folder=True) )
+    if config.get_platform().startswith("xbmc"):
+        itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
