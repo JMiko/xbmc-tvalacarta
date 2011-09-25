@@ -20,6 +20,7 @@ ANONIMO=2
 
 def get_video_url( page_url , premium = False , user="" , password="" , video_password="", megavideo_mirror=True, verify=True ):
     logger.info("[megaupload.py] get_video_url( page_url='%s' , user='%s' , password='%s', video_password=%s)" % (page_url , user , "**************************"[0:len(password)] , video_password) )
+    video_urls = []
 
     # Si sólo viene el código, se convierte a URL completa
     if len(page_url)==8:
@@ -40,7 +41,6 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
             tipo_usuario=PREMIUM
     
         # Obtiene el enlace para Megaupload
-        video_urls = []
         if tipo_usuario == PREMIUM:
             video_url = get_premium_video_url(page_url,cookie,video_password,verify)
             if video_url!="":
@@ -57,7 +57,9 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
                 extension = video_url[-4:]
                 video_urls = [['%s (Free) [megaupload]' % extension , video_url, 46]]
     else:
+        logger.info("[megaupload.py] Modo free")
         video_url = get_free_video_url(page_url,ANONIMO,video_password)
+        logger.info("[megaupload.py] video_url=%s" % video_url)
         if video_url!="":
             extension = video_url[-4:]
             video_urls = [['%s (Free) [megaupload]' % extension , video_url, 46]]
@@ -183,6 +185,7 @@ def get_free_video_url(page_url , tipo_usuario , video_password=None):
     # Si tiene password lo pide
     password_data = re.search('filepassword',data)
     if password_data is not None:
+        logger.info("[megaupload.py] Es un video con PASSWORD")
         teclado = password_mega(video_password)
         
         # Vuelve a descargar la página con password
@@ -199,6 +202,7 @@ def get_free_video_url(page_url , tipo_usuario , video_password=None):
         try:
             url=match2[0]
         except:
+            logger.info("[megaupload.py] Es un enlace PREMIUM, no puedes acceder a él sin cuenta")
             #print data
             return ""
     else:
