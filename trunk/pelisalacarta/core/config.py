@@ -186,3 +186,67 @@ def get_cookie_data():
     cookiedatafile.close();
 
     return cookiedata
+
+# Test if all the required directories are created
+def verify_directories_created():
+    import logger
+    import os
+    logger.info("verify_directories_created")
+
+    # Force download path if empty
+    download_path = get_setting("downloadpath")
+    if download_path=="":
+        download_path = os.path.join( get_data_path() , "downloads")
+        set_setting("downloadpath" , download_path)
+
+    # Force download list path if empty
+    download_list_path = get_setting("downloadlistpath")
+    if download_list_path=="":
+        download_list_path = os.path.join( get_data_path() , "downloads" , "list")
+        set_setting("downloadlistpath" , download_list_path)
+
+    # Force bookmark path if empty
+    bookmark_path = get_setting("bookmarkpath")
+    if bookmark_path=="":
+        bookmark_path = os.path.join( get_data_path() , "bookmarks")
+        set_setting("bookmarkpath" , bookmark_path)
+
+    # Create data_path if not exists
+    if not os.path.exists(get_data_path()):
+        logger.debug("Creating data_path "+get_data_path())
+        try:
+            os.mkdir(get_data_path())
+        except:
+            pass
+
+    # Create download_path if not exists
+    if not download_path.lower().startswith("smb") and not os.path.exists(download_path):
+        logger.debug("Creating download_path "+download_path)
+        try:
+            os.mkdir(download_path)
+        except:
+            pass
+
+    # Create download_list_path if not exists
+    if not download_list_path.lower().startswith("smb") and not os.path.exists(download_list_path):
+        logger.debug("Creating download_list_path "+download_list_path)
+        try:
+            os.mkdir(download_list_path)
+        except:
+            pass
+
+    # Create bookmark_path if not exists
+    if not bookmark_path.lower().startswith("smb") and not os.path.exists(bookmark_path):
+        logger.debug("Creating bookmark_path "+bookmark_path)
+        try:
+            os.mkdir(bookmark_path)
+        except:
+            pass
+
+    # Create library_path if not exists
+    if not get_library_path().lower().startswith("smb") and not os.path.exists(get_library_path()):
+        logger.debug("Creating library_path "+get_library_path())
+        try:
+            os.mkdir(get_library_path())
+        except:
+            pass
