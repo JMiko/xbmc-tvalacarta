@@ -162,6 +162,9 @@ def episodelist(item):
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
 
+    if config.get_platform().startswith("xbmc"):
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show) )
+
     return itemlist
 
 def findvideos(item):

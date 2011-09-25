@@ -409,7 +409,7 @@ def series(item):
         scrapedthumbnail = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle, folder=True) )
 
     # Paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -459,7 +459,7 @@ def temporadas(item):
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=item.extra) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=item.extra, show=item.show) )
 
     # Una trampa, si la serie enlaza no con la temporada sino con la lista de episodios, se resuelve aquí
     if len(itemlist)==0:
@@ -503,82 +503,100 @@ def episodios(item):
         scrapedplot = item.plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=item.extra+" "+scrapedtitle, plot=scrapedplot) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=item.extra+" "+scrapedtitle, plot=scrapedplot, show=item.show) )
+
+    if config.get_platform().startswith("xbmc"):
+        itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
 def findvideos(item):
     logger.info("[cinetube.py] findvideos")
 
-    url = item.url
-    title = item.title
-    thumbnail = item.thumbnail
-    plot = item.plot
-
-    # Descarga la pagina
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
+    try:
+        url = item.url
+        title = item.title
+        thumbnail = item.thumbnail
+        plot = item.plot
     
-    # Busca el argumento
-    patronvideos  = '<div class="ficha_des">(.*?)</div>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-        plot = scrapertools.htmlclean(matches[0])
-        logger.info("plot actualizado en detalle");
-    else:
-        logger.info("plot no actualizado en detalle");
-    
-    # Busca el thumbnail
-    patronvideos  = '<div class="ficha_img pelicula_img">[^<]+'
-    patronvideos += '<img src="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-        thumbnail = matches[0]
-        logger.info("thumb actualizado en detalle");
-    else:
-        logger.info("thumb no actualizado en detalle");
-
-    # Busca los enlaces a los mirrors, o a los capitulos de las series...
-    '''
-    FORMATO EN SERIES
-    <div class="tit_opts"><a href="/series/hawai-five/temporada-1/capitulo-13/212498.html">
-    <p>Opción 1: Ver online en Megavideo <span class="bold"></span></p>
-    <p><span>IDIOMA: SUB</span></p>
-    <p class="v_ico"><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="Megavideo" /></p>
-    '''
-    patronvideos = '<div class="tit_opts"><a href="([^"]+)"[^>]*>[^<]+'
-    patronvideos += '<p>(.*?)</p>[^<]+'
-    patronvideos += '<p><span>(.*?)</span>'
-    '''
-    patronvideos = '<div class="tit_opts"><a href="([^"]+)".*?>[^<]+'
-    patronvideos += '<p>([^<]+)</p>[^<]+'
-    patronvideos += '<p><span>(.*?)</span>'
-    '''
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    itemlist = []
-    for match in matches:
-        logger.info("Encontrado iframe mirrors "+match[0])
-        # Lee el iframe
-        mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
-        data = scrapertools.cache_page(mirror)
-        '''
-        req = urllib2.Request(mirror)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        response = urllib2.urlopen(req)
-        data=response.read()
-        response.close()
-        '''
-
-        listavideos = servertools.findvideos(data)
+        # Descarga la pagina
+        data = scrapertools.cachePage(url)
+        #logger.info(data)
         
-        for video in listavideos:
-            #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
-            scrapedtitle = match[1] + " " + match[2] + " " + video[0]
-            scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-            scrapedurl = video[1]
-            server = video[2]
+        # Busca el argumento
+        patronvideos  = '<div class="ficha_des">(.*?)</div>'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        if len(matches)>0:
+            plot = scrapertools.htmlclean(matches[0])
+            logger.info("plot actualizado en detalle");
+        else:
+            logger.info("plot no actualizado en detalle");
+        
+        # Busca el thumbnail
+        patronvideos  = '<div class="ficha_img pelicula_img">[^<]+'
+        patronvideos += '<img src="([^"]+)"'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        if len(matches)>0:
+            thumbnail = matches[0]
+            logger.info("thumb actualizado en detalle");
+        else:
+            logger.info("thumb no actualizado en detalle");
+    
+        # Busca los enlaces a los mirrors, o a los capitulos de las series...
+        '''
+        FORMATO EN SERIES
+        <div class="tit_opts"><a href="/series/hawai-five/temporada-1/capitulo-13/212498.html">
+        <p>Opción 1: Ver online en Megavideo <span class="bold"></span></p>
+        <p><span>IDIOMA: SUB</span></p>
+        <p class="v_ico"><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="Megavideo" /></p>
+        '''
+        patronvideos = '<div class="tit_opts"><a href="([^"]+)"[^>]*>[^<]+'
+        patronvideos += '<p>(.*?)</p>[^<]+'
+        patronvideos += '<p><span>(.*?)</span>'
+        '''
+        patronvideos = '<div class="tit_opts"><a href="([^"]+)".*?>[^<]+'
+        patronvideos += '<p>([^<]+)</p>[^<]+'
+        patronvideos += '<p><span>(.*?)</span>'
+        '''
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    
+        itemlist = []
+        for match in matches:
+            logger.info("Encontrado iframe mirrors "+match[0])
+            # Lee el iframe
+            mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
+            data = scrapertools.cache_page(mirror)
+            #logger.info("-------------------------------------------------------------------------------------")
+            #logger.info(data)
+            #logger.info("-------------------------------------------------------------------------------------")
+            '''
+            req = urllib2.Request(mirror)
+            req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+            response = urllib2.urlopen(req)
+            data=response.read()
+            response.close()
+            '''
+            patron='ct_url_decode\("([^"]+)"\)'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            if len(matches)>0:
+                data = matches[0]
+            logger.info("-------------------------------------------------------------------------------------")
+            logger.info(data)
+            logger.info("-------------------------------------------------------------------------------------")
+    
+            listavideos = servertools.findvideos(data)
             
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
-
+            for video in listavideos:
+                #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
+                scrapedtitle = match[1] + " " + match[2] + " " + video[0]
+                scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+                scrapedurl = video[1]
+                server = video[2]
+                
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        
     return itemlist

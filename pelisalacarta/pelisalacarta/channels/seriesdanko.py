@@ -289,7 +289,7 @@ def ListVideos(item):
 
         # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-    
+
     #print datalist
     return itemlist
 
@@ -393,9 +393,8 @@ def capitulos(item):
 
         # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show, folder=True) )
-    
+
     #xbmc.executebuiltin("Container.Content(Movies)")
-    
     
     if len(itemlist)==0:
         listvideos = servertools.findvideos(contenidos)
