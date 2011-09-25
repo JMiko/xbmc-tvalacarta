@@ -241,6 +241,8 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         dia = xbmcgui.Dialog()
         seleccion = dia.select(config.get_localized_string(30163), opciones) # "Elige una opción"
         #dia.close()
+    if default_action=="2":
+        seleccion = 0
 
     logger.info("seleccion=%d" % seleccion)
     logger.info("seleccion=%s" % opciones[seleccion])
