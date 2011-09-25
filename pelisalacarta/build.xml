@@ -2,7 +2,7 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.2"/>
+    <property name="version" value="3.2.1"/>
     <property name="target" value="target"/>
 
 	<!-- init ===================================================================== -->

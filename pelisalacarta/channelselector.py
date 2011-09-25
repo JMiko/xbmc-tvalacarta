@@ -195,7 +195,7 @@ def channels_list():
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES"    , category="F,D"     , type="xbmc"  ))
     itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES"    , category="F"       , type="generic" )) # xextil 05/05/2011
-    itemlist.append( Item( title="NKI"                   , channel="nki"                  , language="ES"    , category="S"       , type="generic" ))
+    #itemlist.append( Item( title="NKI"                   , channel="nki"                  , language="ES"    , category="S"       , type="generic" ))
     itemlist.append( Item( title="No Megavideo"          , channel="nomegavideo"          , language="ES"    , category="F"       , type="xbmc"  ))
     itemlist.append( Item( title="NoloMires"             , channel="nolomires"            , language="ES"    , category="F"       , type="xbmc"  ))
     itemlist.append( Item( title="Peliculas Online FLV"  , channel="peliculasonlineflv"   , language="ES"    , category="F,D"     , type="xbmc"  ))
@@ -271,12 +271,12 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
         IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'banners' ) )
     
     if config.get_setting("thumbnail_type")=="0":
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
+        WEB_PATH = "http://pelisalacarta.mimediacenter.info/posters/"
     else:
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/pelisalacarta/banners/"
+        WEB_PATH = "http://pelisalacarta.mimediacenter.info/banners/"
 
     if config.get_platform()=="boxee":
-        IMAGES_PATH="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/"
+        IMAGES_PATH="http://pelisalacarta.mimediacenter.info/posters/"
 
     if thumbnailname=="":
         thumbnailname = channelname
