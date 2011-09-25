@@ -33,7 +33,10 @@ try:
     # Añadida a la opcion : si plataforma xbmcdharma es "True", no debe ser con la plataforma de la xbox
     # porque seria un falso "True", ya que el xbmc en las xbox no son dharma por lo tanto no existen los addons   
     if config.get_platform()=="xbmcdharma" and not config.get_system_platform() == "xbox":
-        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-"
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-dharma-"
+        DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
+    elif config.get_platform()=="xbmceden":
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-eden-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     else:
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-plugin-"

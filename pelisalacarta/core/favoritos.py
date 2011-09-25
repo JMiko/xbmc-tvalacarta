@@ -100,7 +100,7 @@ def readbookmark(filename,readpath=BOOKMARK_PATH):
 
     return titulo,thumbnail,plot,server,url
 
-def savebookmark(titulo,url,thumbnail,server,plot,savepath=BOOKMARK_PATH):
+def savebookmark(titulo="",url="",thumbnail="",server="",plot="",savepath=BOOKMARK_PATH):
     logger.info("[favoritos.py] savebookmark(path="+savepath+")")
 
     # Crea el directorio de favoritos si no existe
