@@ -6,13 +6,19 @@
 #------------------------------------------------------------
 
 # TODO: (3.1) Log en fichero
-print "Using WiiMC logger"
+import logging.config
+import logging
+logging.config.fileConfig("logging.conf")
+logger_object=logging.getLogger("wiimc")
+
+ 
+logger_object.info("Using WiiMC logger")
 
 def info(texto):
-    print texto
+    logger_object.info(texto)
 
 def debug(texto):
-    print texto
+    logger_object.debug(texto)
 
 def error(texto):
-    print texto
+    logger_object.error(texto)

@@ -14,12 +14,18 @@
 # 20-01-2010 Fichero de configuración en el directorio de usuario
 #-------------------------------------------------------------------------------
 
-print "[config.py] wiimc config 3.2"
 
 import os,re
 import ConfigParser
 
 PLUGIN_NAME="pelisalacarta"
+
+import logging.config
+import logging
+logging.config.fileConfig("logging.conf")
+logger=logging.getLogger("wiimc")
+
+logger.info("wiimc config 3.2")
 
 def get_system_platform():
     return "wiimc"
@@ -29,12 +35,21 @@ def open_settings():
 
 def get_setting(name):
     try:
-        return configfile.get("General",name)
+        if name in overrides:
+            dev = overrides[name]
+            #print "Overrides: ",name,"=",dev
+        else:
+            dev=configfile.get("General",name)
+            #print "Config file: ",name,"=",dev
+        #print "get_setting",name,dev
+        return dev
     except:
+        #print "get_setting",name,"(vacío)"
         return ""
     
 def set_setting(name,value):
-    pass
+    #print "set_setting",name,value
+    overrides[name]=value
 
 def get_localized_string(code):
     cadenas = re.findall('<string id="%d">([^<]+)<' % code,translations)
@@ -44,9 +59,7 @@ def get_localized_string(code):
         return "%d" % code
     
 def get_library_path():
-    # Una forma rápida de lanzar un error
-    import noexiste
-    return ""
+    return os.path.join(get_data_path(),"library")
 
 def get_temp_file(filename):
     return os.path.join(get_data_path(),filename)
@@ -70,14 +83,16 @@ if not os.path.exists(configfilepath):
 configfile = ConfigParser.ConfigParser()
 configfile.read( configfilepath )
 
+overrides = dict()
+
 # Literales
 TRANSLATION_FILE_PATH = os.path.join(get_runtime_path(),"resources","language","Spanish","strings.xml")
 translationsfile = open(TRANSLATION_FILE_PATH,"r")
 translations = translationsfile.read()
 translationsfile.close()
 
-print "[config.py] runtime path = "+get_runtime_path()
-print "[config.py] data path = "+get_data_path()
-print "[config.py] language file path "+TRANSLATION_FILE_PATH
-print "[config.py] config file "+configfilepath
-print "[config.py] temp path = "+get_temp_file("test")
+logger.info("runtime path = "+get_runtime_path())
+logger.info("data path = "+get_data_path())
+logger.info("language file path "+TRANSLATION_FILE_PATH)
+logger.info("config file "+configfilepath)
+logger.info("temp path = "+get_temp_file("test"))
