@@ -17,7 +17,7 @@ def run():
     logger.info("[launcher.py] run")
     
     # Test if all the required directories are created
-    verify_directories_created()
+    config.verify_directories_created()
     
     # Extract parameters from sys.argv
     params, channel_name, title, url, thumbnail, plot, action, server, extra, subtitle, category, show, password = extract_parameters()
@@ -127,6 +127,7 @@ def run():
                 from platform.xbmc import xbmctools
 
                 if action=="play":
+                    logger.info("[launcher.py] play")
                     # Si el canal tiene una acción "play" tiene prioridad
                     try:
                         logger.info("[launcher.py] executing channel 'play' method")
@@ -140,7 +141,85 @@ def run():
                         #    logger.error( "%s" % line )
 
                     xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+
+                elif action=="strm_detail" or action=="play_from_library":
+                    logger.info("[launcher.py] play_from_library")
+                    # Ejecuta find_videos, del canal o común
+                    try:
+                        itemlist = channel.findvideos(item)
+                    except:
+                        from servers import servertools
+                        itemlist = servertools.find_video_items(item)
+
+                    #for item2 in itemlist:
+                    #    logger.info(item2.title+" "+item2.subtitle)
+
+                    # El usuario elige el mirror
+                    opciones = []
+                    for item in itemlist:
+                        opciones.append(item.title)
+                
+                    import xbmcgui
+                    dia = xbmcgui.Dialog()
+                    seleccion = dia.select(config.get_localized_string(30163), opciones)
+
+                    if seleccion==-1:
+                        return
+                
+                    # Ejecuta el método play del canal, si lo hay
+                    try:
+                        itemlist = channel.play(itemlist[seleccion])
+                        item = itemlist[0]
+                    except:
+                        item = itemlist[seleccion]
+                    logger.info("Elegido %s (sub %s)" % (item.title,item.subtitle))
+                    
+                    from platform.xbmc import xbmctools
+                    logger.info("subtitle="+item.subtitle)
+                    xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+
+                elif action=="add_serie_to_library":
+                    logger.info("[launcher.py] add_serie_to_library")
+                    from platform.xbmc import library
+                    import xbmcgui
+                
+                    # Obtiene el listado desde el que se llamó
+                    action = item.extra
+                    exec "itemlist = channel."+action+"(item)"
+
+                    # Progreso
+                    pDialog = xbmcgui.DialogProgress()
+                    ret = pDialog.create('pelisalacarta', 'Añadiendo episodios...')
+                    pDialog.update(0, 'Añadiendo episodio...')
+                    totalepisodes = len(itemlist)
+                    logger.info ("[launcher.py] Total Episodios:"+str(totalepisodes))
+                    i = 0
+                    errores = 0
+                    nuevos = 0
+                    for item in itemlist:
+                        i = i + 1
+                        pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',item.title)
+                        if (pDialog.iscanceled()):
+                            return
+                
+                        try:
+                            #(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
+                            # Añade todos menos el último (el que dice "Añadir esta serie...")
+                            if i<len(itemlist):
+                                nuevos = nuevos + library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
+                        except IOError:
+                            logger.info("[launcher.py]Error al grabar el archivo "+item.title)
+                            errores = errores + 1
+                        
+                    pDialog.close()
+                    
+                    # Actualizacion de la biblioteca
+                    if errores > 0:
+                        logger.info ("[launcher.py] No se pudo añadir "+str(errores)+" episodios") 
+                    library.update(totalepisodes,errores,nuevos)
+
                 elif action=="search":
+                    logger.info("[launcher.py] search")
                     import xbmc
                     keyboard = xbmc.Keyboard("")
                     keyboard.doModal()
@@ -191,68 +270,6 @@ def run():
             logger.info("codigo de error HTTP : %d" %e.code)
             texto = (config.get_localized_string(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
             ok = ventana_error.ok ("plugin", texto)    
-
-# Test if all the required directories are created
-def verify_directories_created():
-    logger.info("[launcher.py] verify_directories_created")
-
-    # Force download path if empty
-    download_path = config.get_setting("downloadpath")
-    if download_path=="":
-        download_path = os.path.join( config.get_data_path() , "downloads")
-        config.set_setting("downloadpath" , download_path)
-
-    # Force download list path if empty
-    download_list_path = config.get_setting("downloadlistpath")
-    if download_list_path=="":
-        download_list_path = os.path.join( config.get_data_path() , "downloads" , "list")
-        config.set_setting("downloadlistpath" , download_list_path)
-
-    # Force bookmark path if empty
-    bookmark_path = config.get_setting("bookmarkpath")
-    if bookmark_path=="":
-        bookmark_path = os.path.join( config.get_data_path() , "bookmarks")
-        config.set_setting("bookmarkpath" , bookmark_path)
-
-    # Create data_path if not exists
-    if not os.path.exists(config.get_data_path()):
-        logger.debug("[launcher.py] Creating data_path "+config.get_data_path())
-        try:
-            os.mkdir(config.get_data_path())
-        except:
-            pass
-
-    # Create download_path if not exists
-    if not download_path.lower().startswith("smb") and not os.path.exists(download_path):
-        logger.debug("[launcher.py] Creating download_path "+download_path)
-        try:
-            os.mkdir(download_path)
-        except:
-            pass
-
-    # Create download_list_path if not exists
-    if not download_list_path.lower().startswith("smb") and not os.path.exists(download_list_path):
-        logger.debug("[launcher.py] Creating download_list_path "+download_list_path)
-        try:
-            os.mkdir(download_list_path)
-        except:
-            pass
-
-    # Create bookmark_path if not exists
-    if not bookmark_path.lower().startswith("smb") and not os.path.exists(bookmark_path):
-        logger.debug("[launcher.py] Creating bookmark_path "+bookmark_path)
-        try:
-            os.mkdir(bookmark_path)
-        except:
-            pass
-
-    # Create library_path if not exists
-    if not config.get_library_path().lower().startswith("smb") and not os.path.exists(config.get_library_path()):
-        logger.debug("[launcher.py] Creating library_path "+config.get_library_path())
-        try:
-            os.mkdir(config.get_library_path())
-        except:
-            pass
 
 # Extract parameters from sys.argv
 def extract_parameters():

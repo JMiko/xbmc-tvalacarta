@@ -164,7 +164,7 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
     else:
         # Muestra un diálogo de progreso
-        if config.get_setting("player_mode")=="0":
+        if config.get_setting("player_mode")=="0" and not strmfile:
             import xbmcgui
             progreso = xbmcgui.DialogProgress()
             progreso.create( "pelisalacarta" , "Conectando con %s..." % server)
@@ -177,7 +177,7 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
             pass
 
         # Cierra el diálogo de progreso
-        if config.get_setting("player_mode")=="0":
+        if config.get_setting("player_mode")=="0" and not strmfile:
             progreso.close()
 
     # El vídeo está
@@ -382,23 +382,32 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
 
     # Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
     if strmfile:
-        logger.info("[xbmctools.py] 1")
         xlistitem = getLibraryInfo(mediaurl)
     else:
-        logger.info("[xbmctools.py] 2")
         xlistitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
         xlistitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : channel , "Genre" : category } )
 
+    # Descarga el subtitulo
+    if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+        ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
+        if os.path.exists(ficherosubtitulo):
+            try:
+              os.remove(ficherosubtitulo)
+            except IOError:
+              logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
+              raise
+    
+        from core import downloadtools
+        downloadtools.downloadfile(subtitle, ficherosubtitulo )
+
     # Lanza el reproductor
     if strmfile: #Si es un fichero strm no hace falta el play
-        logger.info("[xbmctools.py] 3")
-        xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
+        xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,xlistitem)
+        if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+            logger.info("[xbmctools.py] Con subtitulos")
+            setSubtitles()
     else:
         if config.get_setting("player_mode")=="0":
-            if (config.get_setting("subtitulo") == "true") and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
-                logger.info("[xbmctools.py] Con subtitulos")
-                setSubtitles()
-    
             # Añadimos el listitem a una lista de reproducción (playlist)
             playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
             playlist.clear()
@@ -421,7 +430,12 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         
             xbmcPlayer = xbmc.Player( player_type )
             xbmcPlayer.play(playlist)
-    
+
+            logger.info("subtitulo="+subtitle)
+            if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+                logger.info("[xbmctools.py] Con subtitulos")
+                setSubtitles()
+        
         elif config.get_setting("player_mode")=="1":
             xlistitem.setProperty('IsPlayable', 'true')
             xlistitem.setProperty('path', mediaurl)
@@ -629,13 +643,12 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
     
 def setSubtitles():
-    logger.info("[xbmctools.py] setSubtitles: start")
+    logger.info("[xbmctools.py] setSubtitles")
     import time
     while xbmc.Player().isPlayingVideo()==False:
         logger.info("[xbmctools.py] setSubtitles: Waiting 2 seconds for video to start before setting subtitles")
         time.sleep(2)
-    logger.info("[xbmctools.py] setSubtitles: Setting subtitles now that the video start")
-    xbmc.Player().setSubtitles(os.path.join( config.get_data_path(), 'subtitulo.srt' ))
-    config.set_setting("subtitulo", "false")
-    logger.info("[xbmctools.py] setSubtitles: end")
-    return
+
+    subtitlefile = os.path.join( config.get_data_path(), 'subtitulo.srt' )
+    logger.info("[xbmctools.py] setting subtitle file %s" % subtitlefile)
+    xbmc.Player().setSubtitles(subtitlefile)

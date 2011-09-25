@@ -55,22 +55,8 @@ if not os.path.exists(MONITOR_FILE):
 #   <series serie=name>url</serie>
 # </monitor>
 
-def savelibrary(titulo,url,thumbnail,server,plot,canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
-    '''Añade el elemento indicado a la biblioteca de xbmc (a través de un fichero strm)
-    
-     category puede ser "Series", "Cine", "Documental" u "Otros". Si es Otros se permite un tipo personalizado
-     Si category="Series" entonces Serie contiene el nombre de la serie
-     Si pedirnombre  = True entonces se muestra pantalla de selección
-    '''
-
-    logger.info("[favoritos.py] saveLIBRARY")
-    logger.info("[library.py] saveLIBRARY titulo="+titulo)
-    logger.info("[library.py] saveLIBRARY url="+url)
-    logger.info("[library.py] saveLIBRARY server="+server)
-    logger.info("[library.py] saveLIBRARY canal="+canal)
-    logger.info("[library.py] saveLIBRARY category="+category)
-    logger.info("[library.py] saveLIBRARY serie="+Serie)
-    logger.info("[library.py] saveLIBRARY accion="+accion)
+def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True, subtitle=""):
+    logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
     
     #Limpiamos el título para usarlo como fichero
     try:
@@ -124,7 +110,7 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="",category="Cine",Serie=
         raise
 #    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 # Eliminación de plot i thumnai
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie)
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
     logger.info("[library.py] itemurl=%s" % itemurl)
 
     LIBRARYfile.write(itemurl)
