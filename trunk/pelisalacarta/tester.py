@@ -337,8 +337,8 @@ def test_server_connectors():
     #data = scrapertools.cache_page("http://www.seriesdanko.com/2010/06/eureka-4x18-capitulo-18.html")
     
     # Vuelca todos los vídeos que encuentra
-    #video_urls = megavideo.get_video_url("http://www.megavideo.com/?d=UDHMBYAQ",True,"tvalacarta","oppuwe2010")
-    #video_urls = megaupload.get_video_url("http://www.megaupload.com/?d=S2Q8NWDM",True,"tvalacarta","oppuwe2010")
+    #video_urls = megavideo.get_video_url("http://www.megavideo.com/?d=UDHMBYAQ",True,"","")
+    #video_urls = megaupload.get_video_url("http://www.megaupload.com/?d=S2Q8NWDM",True,"","")
     #for video_url in video_urls:
     #    print video_url
     '''
