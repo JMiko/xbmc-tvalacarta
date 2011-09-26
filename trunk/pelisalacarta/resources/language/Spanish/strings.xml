@@ -17,7 +17,7 @@
 	<!-- Acción por defecto cuando eliges un video -->
 	<string id="30005">Accion al seleccionar vídeo:</string>
 	<string id="30006">Preguntar</string>
-	<string id="30007">Ver</string>
+	<string id="30007">Ver en calidad baja</string>
 	<string id="30008">Ver en calidad alta</string>
 	<string id="30009">Mandar a jdownloader</string>
 
