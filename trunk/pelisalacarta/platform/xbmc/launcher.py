@@ -26,6 +26,11 @@ def run():
     try:
         # Accion por defecto - elegir canal
         if ( action=="selectchannel" ):
+            # Borra el fichero de las cookies para evitar problemas con MV
+            #ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
+            #if os.path.exists(ficherocookies):
+            #    os.remove(ficherocookies)
+            
             if config.get_setting("updatechannels")=="true":
                 try:
                     from core import updater
@@ -134,13 +139,20 @@ def run():
                         itemlist = channel.play(item)
                         if len(itemlist)>0:
                             item = itemlist[0]
+                            xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+                        else:
+                            import xbmcgui
+                            ventana_error = xbmcgui.Dialog()
+                            if "yonkis" in channel_name:
+                                ok = ventana_error.ok ("plugin", "No hay nada para reproducir.","Comprueba el captcha")
+                            else:
+                                ok = ventana_error.ok ("plugin", "No hay nada para reproducir")
                     except:
                         logger.info("[launcher.py] no channel 'play' method, executing core method")
+                        xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
                         #import sys
                         #for line in sys.exc_info():
                         #    logger.error( "%s" % line )
-
-                    xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
 
                 elif action=="strm_detail" or action=="play_from_library":
                     logger.info("[launcher.py] play_from_library")
