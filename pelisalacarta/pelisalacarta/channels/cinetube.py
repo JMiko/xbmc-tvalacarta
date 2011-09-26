@@ -580,9 +580,13 @@ def findvideos(item):
             matches = re.compile(patron,re.DOTALL).findall(data)
             if len(matches)>0:
                 data = matches[0]
-            logger.info("-------------------------------------------------------------------------------------")
-            logger.info(data)
-            logger.info("-------------------------------------------------------------------------------------")
+                logger.info("-------------------------------------------------------------------------------------")
+                logger.info(data)
+                logger.info("-------------------------------------------------------------------------------------")
+                data = ct_url_decode(data)
+                logger.info("-------------------------------------------------------------------------------------")
+                logger.info(data)
+                logger.info("-------------------------------------------------------------------------------------")
     
             listavideos = servertools.findvideos(data)
             
@@ -600,3 +604,16 @@ def findvideos(item):
             logger.error( "%s" % line )
         
     return itemlist
+
+def ct_url_decode(C):
+    if not(C):
+        return C
+    
+    C = C[::-1]
+    X = 4-len(C)%4;
+    if X in range(1,4):
+        for z in range(X):
+            C = C+"="
+    
+    import base64
+    return base64.decodestring(C)

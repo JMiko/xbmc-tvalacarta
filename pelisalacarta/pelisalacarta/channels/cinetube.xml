@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>3</tag>
+	<tag>4</tag>
 	<date>28/08/2011</date>
-	<changes>Modificada por cambios en la web</changes>
+	<changes>Añadido descifrado del bloque de enlaces, gracias a calimocho, bandavi y blablableble</changes>
 </version>
