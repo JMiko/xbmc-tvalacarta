@@ -27,16 +27,16 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     if premium:
         logger.info("[megavideo.py] Modo premium, averigua la cookie")
         # Extrae la cookie del almacen
-        megavideo_cookie_id = get_megavideo_cookie_id()
+        #megavideo_cookie_id = get_megavideo_cookie_id()
 
         # Si no está, hace el login
-        if megavideo_cookie_id == "":
-            logger.info("[megavideo.py] No hay cookie, hace login")
-            megavideo_cookie_id = login(user, password)
+        #if megavideo_cookie_id == "":
+        #    logger.info("[megavideo.py] No hay cookie, hace login")
+        megavideo_cookie_id = login(user, password)
 
         # Si aún así no está, la cuenta no es válida
         if megavideo_cookie_id == "":
-            logger.info("[megavideo.py] No hay cookie de Megavideo válida (error en login o password?)")
+            logger.info("[megavideo.py] No hay cookie de Megavideo válida (error en login o password?), pasa a modo Free")
             premium = False
 
     if premium:
@@ -159,33 +159,39 @@ def login(user, password):
     headers = [ ['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'],['Referer','http://www.megavideo.com/?s=signup'] ]
     data = scrapertools.cache_page(url=url, post=post)
     
-    cookie = get_megavideo_cookie_id()
+    return get_megavideo_cookie_id()
 
 def get_megavideo_cookie_id():
     logger.info("[megavideo.py] get_megavideo_cookie_id")
 
     cookie_data = config.get_cookie_data()
     logger.info("cookie_data="+cookie_data)
-    patron = 'user="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(cookie_data)
     
-    if len(matches)==0:
-        patron = 'user=([^\;]+);'
-        matches = re.compile(patron,re.DOTALL).findall(cookie_data)
-
-    if len(matches)==0:
-        logger.info("[megavideo.py] No se ha encontrado la cookie de Megavideo")
-        logger.info("---------------------------------------------------------------")
-        logger.info("RESPONSE")
-        logger.info(data)
-        logger.info("---------------------------------------------------------------")
-        logger.info("COOKIES")
-        logger.info(cookie_data)
-        logger.info("---------------------------------------------------------------")
-        cookie=""
-    else:
-        cookie=matches[0]
+    lines = cookie_data.split("\n")
+    for line in lines:
+        logger.info("line="+line)
     
+        if "megavideo.com" in line:
+            logger.info("[megavideo.py] patron1")
+            patron = 'user="([^"]+)"'
+            matches = re.compile(patron,re.DOTALL).findall(line)
+        
+            if len(matches)>0:
+                cookie = matches[0]
+                break
+            else:
+                logger.info("[megavideo.py] patron2")
+                patron = 'user=([^\;]+);'
+                matches = re.compile(patron,re.DOTALL).findall(line)
+                if len(matches)>0:
+                    cookie = matches[0]
+                    break
+                else:
+                    logger.info("[megavideo.py] No se ha encontrado la cookie de Megavideo")
+                    cookie=""
+    
+    logger.info("cookie="+cookie)
+        
     return cookie
 
 # Megavideo decryption routines

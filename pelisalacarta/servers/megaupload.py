@@ -31,10 +31,11 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     # Si el usuario es gratis o anónimo utiliza el método nuevo
     if premium:
         logger.info("[megaupload.py] Modo premium, averigua la cookie")
-        cookie = get_megaupload_cookie()
+        #cookie = get_megaupload_cookie()
+        cookie=""
 
         if cookie=="":
-            logger.info("[megaupload.py] No hay cookie, hace login")
+            #logger.info("[megaupload.py] No hay cookie, hace login")
             tipo_usuario , cookie = login(user,password)
             logger.info("[megaupload.py] No hay cookie de Megaupload válida (error en login o password?)")
         else:
