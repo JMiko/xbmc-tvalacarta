@@ -144,6 +144,12 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
     except:
         server = ""
 
+    try:
+        from core import descargas
+        download_enable=True
+    except:
+        download_enable=False
+
     '''
     logger.info("[xbmctools.py] playvideo")
     logger.info("[xbmctools.py] playvideo canal="+canal)
@@ -185,7 +191,7 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         for video_url in video_urls:
             opciones.append(config.get_localized_string(30151) + " " + video_url[0])
 
-        if config.get_setting("download.enabled")=="true":
+        if download_enable:
             opcion = config.get_localized_string(30153)
             opciones.append(opcion) # "Descargar"
 
@@ -194,7 +200,7 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         else:
             opciones.append(config.get_localized_string(30155)) # "Añadir a favoritos"
     
-        if config.get_setting("download.enabled")=="true":
+        if download_enable:
             if channel!="descargas":
                 opciones.append(config.get_localized_string(30157)) # "Añadir a lista de descargas"
             else:
@@ -244,7 +250,7 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
     elif default_action=="1":
         seleccion = 0
     elif default_action=="2":
-        seleccion = 1
+        seleccion = len(video_urls)-1
     elif default_action=="3":
         seleccion = seleccion
     else:
