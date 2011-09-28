@@ -7,6 +7,7 @@
 #------------------------------------------------------------
 import urllib
 import os
+import re
 import sys
 import xbmc
 import xbmcgui
@@ -16,6 +17,7 @@ import xml.parsers.expat
 from core import config
 from core import logger
 from core import downloadtools
+from core import scrapertools
 
 CHANNELNAME = "library"
 allchars = string.maketrans('', '')
@@ -57,23 +59,34 @@ if not os.path.exists(MONITOR_FILE):
 
 def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True, subtitle=""):
     logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
-    
-    #Limpiamos el título para usarlo como fichero
-    try:
-        filename = string.translate(titulo,allchars,deletechars)
-    except:
-        filename = titulo
 
-    if pedirnombre:
-        keyboard = xbmc.Keyboard(filename)
-        keyboard.doModal()
-        if not keyboard.isConfirmed():
-            return False
-        filename = keyboard.getText()
-    try:
-        filename = string.translate(filename,allchars,deletechars)+".strm" #Volvemos a limpiar por si acaso
-    except:
-        filename = filename + ".strm"
+    #Limpiamos el título para usarlo como fichero
+    if config.get_system_platform()=="xbox":
+        patron ="\d+[x|X]\d+"
+        matches = re.compile(patron).findall(titulo)
+        scrapertools.printMatches(matches)
+        if len(matches)>0:
+            logger.info("[library.py] savelibrary id episodio: %s" % matches[0])
+            filename=matches[0]+".strm"
+        else:
+            logger.info("[library.py] savelibrary id episodio no encontrada")
+            filename=string.translate(titulo,allchars,deletechars)+".strm"
+    else:
+        try:
+            filename = string.translate(titulo,allchars,deletechars)
+        except:
+            filename = titulo
+    
+        if pedirnombre:
+            keyboard = xbmc.Keyboard(filename)
+            keyboard.doModal()
+            if not keyboard.isConfirmed():
+                return False
+            filename = keyboard.getText()
+        try:
+            filename = string.translate(filename,allchars,deletechars)+".strm" #Volvemos a limpiar por si acaso
+        except:
+            filename = filename + ".strm"
 
     if category != "Series":  #JUR - DEBUGIN INTERNO PARA 2.14
         category = "Cine"
@@ -82,36 +95,35 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
         fullfilename = os.path.join(MOVIES_PATH,filename)
     elif category == "Series":
         if Serie == "": #Añadir comprobación de len>0 bien hecha
-            logger.info('[library.py] ERROR: intentando añadir una serie y serie=""')
+            logger.info('[library.py] savelibrary ERROR: intentando añadir una serie y serie=""')
             pathserie = SERIES_PATH
         else:
             #Eliminamos caracteres indeseados para archivos en el nombre de la serie
             Serie = string.translate(Serie,allchars,deletechars)
             pathserie = xbmc.translatePath( os.path.join( SERIES_PATH, Serie ) )
         if not os.path.exists(pathserie):
-            logger.info("[library.py] Creando directorio serie:"+pathserie)
+            logger.info("[library.py] savelibrary Creando directorio serie:"+pathserie)
             os.mkdir(pathserie)
         fullfilename = os.path.join(pathserie,filename)
     else:    #Resto de categorias de momento en la raiz de library
         fullfilename = os.path.join(LIBRARY_PATH,filename)
     
         
-    logger.info("[favoritos.py] saveLIBRARY fullfilename="+fullfilename)
     if os.path.exists(fullfilename):
-        logger.info("[favoritos.py] el fichero existe. Se sobreescribe")
+        logger.info("[library.py] savelibrary el fichero existe. Se sobreescribe")
         nuevo = 0
     else:
         nuevo = 1
     try:
         LIBRARYfile = open(fullfilename,"w")
     except IOError:
-        logger.info("Error al grabar el archivo "+fullfilename)
+        logger.info("[library.py] savelibrary Error al grabar el archivo "+fullfilename)
         nuevo = 0
         raise
 #    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 # Eliminación de plot i thumnai
     itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
-    logger.info("[library.py] itemurl=%s" % itemurl)
+    logger.info("[library.py] savelibrary fullfilename=%s , itemurl=%s" % (fullfilename,itemurl))
 
     LIBRARYfile.write(itemurl)
 #    LIBRARYfile.write(urllib.quote_plus(url)+'\n')
@@ -121,13 +133,12 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
     LIBRARYfile.flush();
     LIBRARYfile.close()
 
-    if verbose:
-        advertencia = xbmcgui.Dialog()
-        resultado = advertencia.ok('pelisalacarta' , titulo , 'se ha añadido a Librería')
+    logger.info("[library.py] savelibrary acaba")
 
     return nuevo
     
 def update(total,errores=0, nuevos=0, serie="No indicada"):
+    logger.info("[library.py] update")
     """Pide Resumen de actualización. Además pregunta y actualiza la Biblioteca
     
     nuevos: Número de episodios actualizados. Se muestra como resumen en la ventana 
@@ -142,10 +153,13 @@ def update(total,errores=0, nuevos=0, serie="No indicada"):
         texto = 'Se ha añadido 1 episodio a la Biblioteca (%d en total)' % (total,)
     else:
         texto = 'Se han añadido %d episodios a la Biblioteca (%d en total)' % (nuevos,total)
+
+    logger.info("[library.py] update - %s" % texto)
     advertencia = xbmcgui.Dialog()
 
     # Pedir confirmación para actualizar la biblioteca
     if nuevos > 0:
+        logger.info("[library.py] update - nuevos")
         if errores == 0:
             actualizar = advertencia.yesno('pelisalacarta' , texto ,'¿Deseas que actualice ahora la Biblioteca?')
         else:  # Si hubo errores muestra una línea adicional en la pregunta de actualizar biblioteca
@@ -155,17 +169,21 @@ def update(total,errores=0, nuevos=0, serie="No indicada"):
                 texto2 = '(No se pudieron añadir '+str(errores)+' episodios)'
             actualizar = advertencia.yesno('pelisalacarta' , texto , texto2 , '¿Deseas que actualice ahora la Biblioteca?')
     else: #No hay episodios nuevos -> no actualizar
+        logger.info("[library.py] update - no nuevos")
         if errores == 0:
             texto2 = ""
         elif errores == 1:
             texto2 = '(No se pudo añadir 1 episodio)'
         else:
             texto2 = '(No se pudieron añadir '+str(errores)+' episodios)'
-        advertencia.ok('pelisalacarta',texto,texto2)
+        #advertencia.ok('pelisalacarta',texto,texto2)
         actualizar = False
     
     if actualizar:
+        logger.info("Actualizando biblioteca...")
         xbmc.executebuiltin('UpdateLibrary(video)')
+    else:
+        logger.info("No actualiza biblioteca...")
 
     logger.info ('[Library update] Serie: "%s". Total: %d, Erroneos: %d, Nuevos: %d' %(serie, total, errores, nuevos))
 
