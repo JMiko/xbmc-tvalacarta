@@ -226,9 +226,17 @@ def run():
                     pDialog.close()
                     
                     # Actualizacion de la biblioteca
+                    itemlist=[]
                     if errores > 0:
-                        logger.info ("[launcher.py] No se pudo añadir "+str(errores)+" episodios") 
-                    library.update(totalepisodes,errores,nuevos)
+                        itemlist.append(Item(title="ERROR, la serie NO se ha añadido a la biblioteca o lo ha hecho incompleta"))
+                        logger.info ("[launcher.py] No se pudo añadir "+str(errores)+" episodios")
+                    else:
+                        itemlist.append(Item(title="La serie se ha añadido a la biblioteca"))
+                        logger.info ("[launcher.py] Ningún error al añadir "+str(errores)+" episodios")
+                    
+                    # FIXME:jesus Comentado porque no funciona bien en todas las versiones de XBMC
+                    #library.update(totalepisodes,errores,nuevos)
+                    xbmctools.renderItems(itemlist, params, url, category)
 
                 elif action=="search":
                     logger.info("[launcher.py] search")
