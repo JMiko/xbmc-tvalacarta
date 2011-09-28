@@ -73,9 +73,9 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    patronvideos  = 'http://.*?.stagevu.com/v/.*?/(.*?).avi'
+    patronvideos  = 'http://[^\.]+\.stagevu.com/v/[^/]+/(.*?).avi'
     logger.info("[stagevu.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
         titulo = "[stagevu]"
