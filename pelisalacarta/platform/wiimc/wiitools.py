@@ -16,7 +16,7 @@ from lib import cerealizer
 cerealizer.register(Item)
 
 def getitems(requestpath):
-
+    logger.info("getitems")
     # La ruta empleada en la petición
     ruta = requestpath.split("?")[0]
     logger.info("ruta="+ruta)
@@ -67,29 +67,40 @@ def getitems(requestpath):
 
         # play - es el menú de reproducción de un vídeo
         if accion=="play":
+            logger.info("ACCION PLAY")
             try:
                 exec "itemlist = "+channel+".play(senderitem)"
+                senderitem = itemlist[0]
+                senderitem.folder=False
             except:
-                pass
+                import sys
+                for line in sys.exc_info():
+                    logger.error( "%s" % line )
 
             itemlist = menu_video(senderitem)
 
         # play_video - genera una playlist con una sola entrada para que wiimc la reproduzca
         elif accion=="play_video":
+            logger.info("ACCION PLAY_VIDEO")
             senderitem.folder=False
             itemlist.append( senderitem )
     
         # search - es el buscador
         elif accion=="search":
+            logger.info("ACCION SEARCH")
             extra = requestpath.split("plx")[1]
             senderitem.extra = extra
             exec "itemlist = "+channel+"."+accion+"(senderitem)"
 
         # findvideos - debe encontrar videos reproducibles
         elif accion=="findvideos":
+            logger.info("ACCION FINDVIDEOS")
             try:
                 exec "itemlist = "+channel+"."+accion+"(senderitem)"
             except:
+                import sys
+                for line in sys.exc_info():
+                    logger.error( "%s" % line )
                 itemlist = findvideos(senderitem,channel)
         elif accion=="add_to_favorites":
             
@@ -116,8 +127,7 @@ def getitems(requestpath):
 
 def menu_video(item):
     itemlist = []
-    logger.info("play_video")
-    logger.info("url="+item.url)
+    logger.info("menu_video url="+item.url+", server="+item.server)
     
     video_urls = []
 
