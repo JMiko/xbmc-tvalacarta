@@ -141,6 +141,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Moviezet (01/10/2011)"              , channel="moviezet"             , language="ES"    , category="F.S"     , type="generic" )) # mrfluffy 01/10/2011
     itemlist.append( Item( title="Asia-Team (20/05/2011)"             , channel="asiateam"             , language="ES" , category="F,S" , type="generic" ))	# xextil 20/05/2011
     itemlist.append( Item( title="Internapoli City (16/05/2011)"      , channel="internapoli"          , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Robinfilm (16/05/2011)"             , channel="robinfilm"            , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
