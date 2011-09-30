@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesyonkis</name>
-	<tag>10</tag>
+	<tag>12</tag>
 	<date>25/09/2011</date>
-	<changes>Restablecido lo de añadir a la biblioteca en Boxee</changes>
+	<changes>Modificado por cambios en la web, gracias a @boludiko</changes>
 </version>

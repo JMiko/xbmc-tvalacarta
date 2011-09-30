@@ -3,8 +3,8 @@
 # pelisalacarta - XBMC Plugin
 # Canal para seriesyonkis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-# Por Truenon y Jesus
-# v7
+# Por Truenon y Jesus, modificada por Boludiko
+# v8
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -183,8 +183,6 @@ def episodios(item):
 def addChapters(item):
     #<tr > <td class="episode-title"> <span class="downloads allkind" title="Disponibles enlaces a descarga directa y visualizaciones"></span>
     #<a href="/capitulo/bones/capitulo-2/2870"> <strong> 1x02 </strong> - El hombre en la unidad especial de victimas </a> </td> <td> 18/08/2007 </td> <td class="episode-lang">  <span class="flags_peq spa" title="Español"></span>  </td> <td class="score"> 8 </td> </tr>
-    
-    #<tr> <td class="episode-title"> <a href="/capitulo/la-casa-de-mickey-mouse/mickey-va-de-pesca/13880"> <strong> 0x00 </strong> - Mickey va de pesca </a> </td> <td> 22/12/2007 </td> <td class="episode-lang"> <span class="flags eng" title="Audio en Inglés"></span> <span class="flags spa_sub" title="Subtítulos en Español"></span> </td> <td class="score"> - </td> </tr>
     matches = re.compile('<tr[^<]+<td class="episode-title.*?<a href="([^"]+)"[^<]+<strong>([^<]+)</strong>(.*?)</a>(.*?)</tr>', re.S).findall(item.extra)
     scrapertools.printMatches(matches)
     
@@ -232,8 +230,8 @@ def findvideos(item):
 
         for match in matches:
             #logger.info(match)
-            #<tr> <td class="episode-server"> <a href="/s/go/674378" title="Reproducir No estamos solos 2x1" target="_blank"><img src="/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/go/674378" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="EspaÃ±ol">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtÃ­tulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-uploader">aritzatila</td> <td class="center"><a href="#" class="errorlink" data-id="674378"><img src="/img/icons/bug.png" alt=""></a></td> </tr> 
-            patron = '<a href="/s/go/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
+            #<tr> <td class="episode-server"> <a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Español">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtítulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>Calidad: 6, Duración: 85.8 min, Peso: 405.79 MB, Resolución: 640x368</li> </ul> </div> </td> <td class="episode-uploader">lksomg</td> <td class="center"><a href="#" class="errorlink" data-id="2004967"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
+            patron = '<a href="/s/ngo/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
@@ -242,7 +240,7 @@ def findvideos(item):
                 fmt = info[4]      
                 audio = "Audio:" + info[2]
                 subs = "Subs:" + info[3]
-                url = urlparse.urljoin(item.url,"/s/y/"+id)
+                url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
@@ -269,7 +267,12 @@ def play(item):
     '''
     try:
         data = scrapertools.cache_page(item.url)
+        logger.info("------------------------------------------------------------")
+        #logger.info(data)
+        logger.info("------------------------------------------------------------")
         videos = servertools.findvideos(data) 
+        logger.info(str(videos))
+        logger.info("------------------------------------------------------------")
         if(len(videos)>0): 
             url = videos[0][1]
             server=videos[0][2]                   
@@ -278,7 +281,7 @@ def play(item):
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
-    
+    logger.info("len(itemlist)=%s" % len(itemlist))
     return itemlist
 
 # Pone todas las series del listado alfabético juntas, para no tener que ir entrando una por una
