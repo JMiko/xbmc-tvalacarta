@@ -50,14 +50,15 @@ def controller(plugin_name,port,host,path,headers):
             except:
                 pass
 
-        import channelselector as plugin
-        plugin.mainlist(params, url, category)
-
         for channel in channelslist:
 
             # Quita el canal de ayuda y el de configuración, no sirven en WiiMC
             if channel.channel!="configuracion" and channel.channel!="ayuda":
-                respuesta += "type=playlist\n"
+                
+                if channel.channel!="buscador":
+                    respuesta += "type=playlist\n"
+                else:
+                    respuesta += "type=search\n"
                 respuesta += "name="+channel.title+"\n"
                 respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
                 respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/"+channel.action+"/none/none/none/none/none/none/playlist.plx\n"
@@ -94,6 +95,10 @@ def controller(plugin_name,port,host,path,headers):
     else:
         itemlist,channel = getitems(path)
         
+        # Las listas vacías son problemáticas, añade un elemento dummy
+        if len(itemlist)==0:
+            itemlist.append( Item(title="(No hay elementos)") )
+        
         import urllib
         for item in itemlist:
             if item.action=="search":
@@ -108,7 +113,7 @@ def controller(plugin_name,port,host,path,headers):
                 respuesta += "URL=%s\n" % url
                 respuesta += "\n"
  
-            elif item.folder or item.action=="play":
+            elif item.folder or item.action=="play" or item.action=="downloadall":
                 logger.info("  Nivel intermedio")
                 if item.server=="": item.server="none"
                 if item.url=="": item.url="none"
@@ -159,14 +164,12 @@ def getitems(requestpath):
     logger.info( "channel="+channel+", accion="+accion+", url="+url+", server="+server+", title="+title+", extra="+extra+", category="+category)
 
     if accion=="mainlist" and config.get_setting("updatechannels")=="true":
-        try:
-            from core import updater
-            actualizado = updater.updatechannel(channel)
+        logger.info("Verificando actualización del canal")
+        from core import updater
+        actualizado = updater.updatechannel(channel)
 
-            if actualizado:
-                itemlist.append( Item(title="¡Canal descargado y actualizado!") )
-        except:
-            pass
+        if actualizado:
+            itemlist.append( Item(title="¡Canal descargado y actualizado!") )
 
     '''
     # Obtiene un nombre válido para la cache
@@ -225,9 +228,8 @@ def getitems(requestpath):
     # search - es el buscador
     elif accion=="search":
         logger.info("ACCION SEARCH")
-        extra = requestpath.split("plx")[1]
-        senderitem.extra = extra
-        exec "itemlist = "+channel+"."+accion+"(senderitem)"
+        texto = requestpath.split("plx")[1]
+        exec "itemlist = "+channel+"."+accion+"(senderitem,texto)"
 
     # findvideos - debe encontrar videos reproducibles
     elif accion=="findvideos":
@@ -239,7 +241,11 @@ def getitems(requestpath):
             for line in sys.exc_info():
                 logger.error( "%s" % line )
             itemlist = findvideos(senderitem,channel)
-            
+    
+    elif accion=="descargar":
+        itemlist = download_item(senderitem,refered_item)
+    elif accion=="download_all":
+        itemlist = download_all(senderitem,refered_item)
     elif accion=="add_to_favorites":
         itemlist = add_to_favorites(senderitem,refered_item)
     elif accion=="remove_from_favorites":
@@ -261,7 +267,7 @@ def getitems(requestpath):
     else:
         if senderitem.url=="none":
             senderitem.url=""
-        exec "itemlist = "+channel+"."+accion+"(senderitem)"
+        exec "itemlist.extend( "+channel+"."+accion+"(senderitem) )"
     
     '''
     # Lo almacena en cache
@@ -275,6 +281,30 @@ def getitems(requestpath):
         logger.info( " " + item.title + " | " + item.url + " | " + item.action)
 
     return itemlist,channel
+
+def download_item(senderitem,refered_item):
+    itemlist = []
+
+    # Extrae todos los enlaces posibles
+    exec "from servers import "+refered_item.server+" as server_connector"
+    video_urls = server_connector.get_video_url( page_url=refered_item.url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
+
+    if len(video_urls)>0:
+        from core import downloadtools
+        downloadtools.downloadtitle(video_urls[len(video_urls)-1][1],refered_item.title)
+        itemlist.append( Item( title="Descarga finalizada" ) )
+    else:
+        itemlist.append( Item( title="El video ya no está disponible" ) )
+    
+    return itemlist
+
+def send_to_jdownloader(senderitem,refered_item):
+    itemlist = []
+    itemlist.append( Item( title="Opcion no disponible" ) )
+
+def search_trailer(senderitem,refered_item):
+    itemlist = []
+    itemlist.append( Item( title="Opcion no disponible" ) )
 
 def add_to_favorites(senderitem,refered_item):
     from core import favoritos
@@ -293,6 +323,15 @@ def remove_from_favorites(senderitem,refered_item):
     itemlist = []
     itemlist.append( Item( title="El video %s" % refered_item.title ) )
     itemlist.append( Item( title="ha sido eliminado de favoritos" ) )
+    
+    return itemlist
+
+def download_all(senderitem,refered_item):
+    from core import descargas
+    descargas.downloadall(senderitem)
+    
+    itemlist = []
+    itemlist.append( Item( title="Fin de todas las descargas pendientes" ) )
     
     return itemlist
 
