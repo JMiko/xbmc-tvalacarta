@@ -182,6 +182,10 @@
             <fileset dir=".">
                 <exclude name="target/**"/>
                 <exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="addon*.xml"/>
+				<exclude name="pelisalacarta-version.xml"/>
+				<exclude name="pelisalacarta.log"/>
                 <exclude name="**/.*"/>
                 <exclude name="**/.*/**"/>
                 <exclude name="**/bookmarks/**"/>
@@ -194,6 +198,7 @@
                 <!--exclude name="resources/images/**"/ -->
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="default.tbn"/>
+                <exclude name="tester.py"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
             </fileset>
@@ -344,7 +349,7 @@
 		<zip destfile="${target}/xbmc-addon-dharma/pelisalacarta-xbmc-addon-dharma-${version}.zip" basedir="${target}/xbmc-addon-dharma"/>
 		<zip destfile="${target}/xbmc-addon-eden/pelisalacarta-xbmc-addon-eden-${version}.zip" basedir="${target}/xbmc-addon-eden"/>
 		<zip destfile="${target}/xbmc-plugin/pelisalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
-        <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}-python.zip" basedir="${target}/wiimc"/>
+        <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}.zip" basedir="${target}/wiimc"/>
         <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
     	
     	<!-- TODO Empaquetar py2exe innosetup en wiimc -->
