@@ -148,10 +148,6 @@ def channels_history_list():
     itemlist.append( Item( title="IslaPelículas (09/05/2011)"         , channel="islapeliculas"        , language="ES" , category="F" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="Buena Isla (09/05/2011)"            , channel="buenaisla"            , language="ES" , category="A" , type="generic" )) # xextil 09/05/2011
     itemlist.append( Item( title="NewHD (05/05/2011)"                 , channel="newhd"                , language="ES" , category="F" , type="generic" )) # xextil 05/05/2011
-    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai (10/04/2011)"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
-    itemlist.append( Item( title="Italia film (25/02/2011)"           , channel="italiafilm"           , language="IT" , category="F,S,A" , type="xbmc"  ))
-    itemlist.append( Item( title="Terror y Gore (25/02/2011)"         , channel="terrorygore"          , language="ES,EN" , category="F" , type="xbmc"  ))
-    itemlist.append( Item( title="Biblioteca XBMC (25/02/2011)"       , channel="serieslocales"        , language=""   , category="F,S,D,A" , type="wiimc"  ))
     return itemlist
 
 def channels_list():
@@ -192,6 +188,7 @@ def channels_list():
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""      , category="G"       , type="xbmc"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
+    itemlist.append( Item( title="Moviezet"              , channel="moviezet"             , language="ES"    , category="F.S"     , type="generic" )) # mrfluffy 01/10/2011
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES"    , category="F,D"     , type="xbmc"  ))
     itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES"    , category="F"       , type="generic" )) # xextil 05/05/2011
