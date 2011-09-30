@@ -8,9 +8,6 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 import scrapertools
 import time
 import config
@@ -19,15 +16,15 @@ import logger
 PLUGIN_NAME = "pelisalacarta"
 
 if config.get_setting("thumbnail_type")=="0":
-    IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
+    IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' )
 else:
-    IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
+    IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' )
 
 ROOT_DIR = config.get_runtime_path()
 
 REMOTE_VERSION_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-version.xml"
-LOCAL_VERSION_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , "version.xml" ) )
-LOCAL_FILE = xbmc.translatePath( os.path.join( ROOT_DIR , PLUGIN_NAME+"-" ) )
+LOCAL_VERSION_FILE = os.path.join( ROOT_DIR , "version.xml" )
+LOCAL_FILE = os.path.join( ROOT_DIR , PLUGIN_NAME+"-" )
 
 try:
     # Añadida a la opcion : si plataforma xbmcdharma es "True", no debe ser con la plataforma de la xbox
@@ -40,9 +37,13 @@ try:
     elif config.get_platform()=="xbmceden":
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-eden-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
-    else:
+    elif config.get_platform()=="xbmc":
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-plugin-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
+    elif config.get_platform()=="wiimc":
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-wiimc-"
+        DESTINATION_FOLDER = os.path.join(config.get_runtime_path(),"..")
+
 except:
     REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-plugin-"
     DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
@@ -117,9 +118,11 @@ def checkforupdates():
         # Añade al listado de XBMC
         listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "poster" , "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
         itemurl = '%s?action=update&version=%s' % ( sys.argv[ 0 ] , versiondescargada )
+        import xbmcplugin
         xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
         
         # Avisa con un popup
+        import xbmcgui
         dialog = xbmcgui.Dialog()
         dialog.ok("Versión "+versiondescargada+" disponible","Ya puedes descargar la nueva versión del plugin\ndesde el listado principal")
 
@@ -173,16 +176,15 @@ def get_channel_remote_url(channel_name):
     return remote_channel_url , remote_version_url
 
 def get_channel_local_path(channel_name):
-    import xbmc
     # TODO: (3.2) El XML debería escribirse en el userdata, de forma que se leerán dos ficheros locales: el del userdata y el que está junto al py (vendrá con el plugin). El mayor de los 2 es la versión actual, y si no existe fichero se asume versión 0
     if channel_name<>"channelselector":
-        local_channel_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , channel_name+".py" ) )
-        local_version_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , channel_name+".xml" ) )
-        local_compiled_path = xbmc.translatePath( os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , channel_name+".pyo" ) )
+        local_channel_path = os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , channel_name+".py" )
+        local_version_path = os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , channel_name+".xml" )
+        local_compiled_path = os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , channel_name+".pyo" )
     else:
-        local_channel_path = xbmc.translatePath( os.path.join( config.get_runtime_path() , channel_name+".py" ) )
-        local_version_path = xbmc.translatePath( os.path.join( config.get_runtime_path() , channel_name+".xml" ) )
-        local_compiled_path = xbmc.translatePath( os.path.join( config.get_runtime_path() , channel_name+".pyo" ) )
+        local_channel_path = os.path.join( config.get_runtime_path() , channel_name+".py" )
+        local_version_path = os.path.join( config.get_runtime_path() , channel_name+".xml" )
+        local_compiled_path = os.path.join( config.get_runtime_path() , channel_name+".pyo" )
 
     logger.info("[updater.py] local_channel_path="+local_channel_path)
     logger.info("[updater.py] local_version_path="+local_version_path)
