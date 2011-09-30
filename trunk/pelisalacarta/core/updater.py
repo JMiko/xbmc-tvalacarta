@@ -32,12 +32,15 @@ try:
     logger.info("[updater.py] get_platform="+config.get_platform())
     logger.info("[updater.py] get_system_platform="+config.get_system_platform())
     if config.get_platform()=="xbmcdharma" and not config.get_system_platform() == "xbox":
+        import xbmc
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-dharma-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     elif config.get_platform()=="xbmceden":
+        import xbmc
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-eden-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     elif config.get_platform()=="xbmc":
+        import xbmc
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-plugin-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/plugins/video")
     elif config.get_platform()=="wiimc":
@@ -45,6 +48,7 @@ try:
         DESTINATION_FOLDER = os.path.join(config.get_runtime_path(),"..")
 
 except:
+    import xbmc
     REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-plugin-"
     DESTINATION_FOLDER = xbmc.translatePath( os.path.join( ROOT_DIR , ".." ) )
 
@@ -116,13 +120,13 @@ def checkforupdates():
         logger.info("[updater.py] actualizacion disponible")
         
         # Añade al listado de XBMC
+        import xbmcgui
         listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "poster" , "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
         itemurl = '%s?action=update&version=%s' % ( sys.argv[ 0 ] , versiondescargada )
         import xbmcplugin
         xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
         
         # Avisa con un popup
-        import xbmcgui
         dialog = xbmcgui.Dialog()
         dialog.ok("Versión "+versiondescargada+" disponible","Ya puedes descargar la nueva versión del plugin\ndesde el listado principal")
 
