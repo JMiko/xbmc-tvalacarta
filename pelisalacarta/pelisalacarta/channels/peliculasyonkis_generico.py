@@ -4,7 +4,7 @@
 # Canal para peliculasyonkis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Adaptado por Boludiko basado en el canal seriesyonkis V7 Por Truenon y Jesus
-# v7
+# v8
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -239,8 +239,8 @@ def findvideos(item):
 
         for match in matches:
             #logger.info(match)
-            #<tr> <td class="episode-server"> <a href="/s/go/674378" title="Reproducir No estamos solos 2x1" target="_blank"><img src="/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/go/674378" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="EspaÃ±ol">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtÃ­tulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-uploader">aritzatila</td> <td class="center"><a href="#" class="errorlink" data-id="674378"><img src="/img/icons/bug.png" alt=""></a></td> </tr> 
-            patron = '<a href="/s/go/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
+            #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Español">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subtítulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la película"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
+            patron = '<a href="/s/ngo/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
@@ -249,7 +249,7 @@ def findvideos(item):
                 fmt = info[4]      
                 audio = "Audio:" + info[2]
                 subs = "Subs:" + info[3]
-                url = urlparse.urljoin(item.url,"/s/y/"+id)
+                url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
