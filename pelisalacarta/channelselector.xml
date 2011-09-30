@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>channelselector</name>
-	<tag>15</tag>
-	<date>28/06/2011</date>
-	<changes>Arreglado fallo por cambios en la clase config</changes>
+	<tag>16</tag>
+	<date>01/10/2010</date>
+	<changes>Añadido moviezet por mrfluffy</changes>
 </version>
