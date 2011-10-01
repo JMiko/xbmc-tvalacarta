@@ -13,8 +13,6 @@
 # 18-12-2010 Implementa lector cadenas internacionales con strings.xml de xbmc
 # 20-01-2010 Fichero de configuración en el directorio de usuario
 #-------------------------------------------------------------------------------
-
-
 import os,re
 import ConfigParser
 
