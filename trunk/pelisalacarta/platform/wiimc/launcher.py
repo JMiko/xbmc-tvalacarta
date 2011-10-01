@@ -37,6 +37,7 @@ def controller(plugin_name,port,host,path,headers):
 
         # Actualización automática de canales, actualiza la lista
         if config.get_setting("updatechannels")=="true":
+            logger.info("Verificando actualización del channelselector")
             try:
                 from core import updater
                 actualizado = updater.updatechannel("channelselector")
@@ -48,7 +49,9 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "URL=http://"+host+"/wiimc/\n"
                     respuesta += "\n"
             except:
-                pass
+                import sys
+                for line in sys.exc_info():
+                    logger.error( "%s" % line )
 
         for channel in channelslist:
 
@@ -164,12 +167,17 @@ def getitems(requestpath):
     logger.info( "channel="+channel+", accion="+accion+", url="+url+", server="+server+", title="+title+", extra="+extra+", category="+category)
 
     if accion=="mainlist" and config.get_setting("updatechannels")=="true":
-        logger.info("Verificando actualización del canal")
-        from core import updater
-        actualizado = updater.updatechannel(channel)
-
-        if actualizado:
-            itemlist.append( Item(title="¡Canal descargado y actualizado!") )
+        try:
+            logger.info("Verificando actualización del canal")
+            from core import updater
+            actualizado = updater.updatechannel(channel)
+    
+            if actualizado:
+                itemlist.append( Item(title="¡Canal descargado y actualizado!") )
+        except:
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
 
     '''
     # Obtiene un nombre válido para la cache

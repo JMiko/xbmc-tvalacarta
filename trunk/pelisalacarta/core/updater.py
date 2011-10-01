@@ -205,8 +205,8 @@ def updatechannel(channel_name):
     # Canal local
     local_channel_path , local_version_path , local_compiled_path = get_channel_local_path(channel_name)
     
-    if not os.path.exists(local_channel_path):
-        return False;
+    #if not os.path.exists(local_channel_path):
+    #    return False;
 
     # Version remota
     try:
