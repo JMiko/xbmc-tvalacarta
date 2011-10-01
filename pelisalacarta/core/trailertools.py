@@ -11,11 +11,12 @@ import xbmc
 import string
 import xbmcgui
 import xbmcplugin
-import xbmctools
+
 import gdata.youtube
 import gdata.youtube.service
 from servers import youtube
 
+from platform.xbmc import xbmctools
 from core import scrapertools
 from core import logger
 from core import config
@@ -70,7 +71,7 @@ def buscartrailer(params,url,category):
             url        = video[0]
             thumbnail  = video[2]
             duracion = video[3]
-            xbmctools.addnewvideo( "trailertools" , "youtubeplay" , category , "Directo" ,  titulo , url , thumbnail , "Ver Video","",duracion )
+            xbmctools.addnewvideo( "trailertools" , "youtubeplay" , category , "youtube" ,  titulo , url , thumbnail , "Ver Video","",duracion )
     
     xbmctools.addnewfolder( CHANNELNAME , "buscartrailer" , category , config.get_localized_string(30111)+" "+videotitle , url , os.path.join(IMAGES_PATH, 'trailertools.png'), "" ) #"Insatisfecho?, busca otra vez : "        
     # Propiedades
@@ -426,17 +427,12 @@ def youtubeplay(params,url,category):
     title = urllib.unquote_plus( params.get("title") )
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )
     plot = "Ver Video"
-    server = "Directo"
-    id = youtube.Extract_id(url)
-    videourl = youtube.geturl(id)
-    if len(videourl)>0:
-        logger.info("link directo de youtube : "+videourl)
-        xbmctools.play_video("Trailer",server,videourl,category,title,thumbnail,plot)
-    elif videourl is None:
-        alertaerror()
-        return
-    else:
-        return ""
+    server = "youtube"
+    #id = youtube.Extract_id(url)
+    #videourl = youtube.geturl(id)
+
+    xbmctools.play_video("Trailer",server,url,category,title,thumbnail,plot)
+
     
 def alertaerror():
     ventana = xbmcgui.Dialog()

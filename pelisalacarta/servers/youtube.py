@@ -14,7 +14,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[youtube.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
 
-    page_url = "http://www.youtube.com/get_video_info?&video_id=zlZgGlwBgro"
+    #page_url = "http://www.youtube.com/get_video_info?&video_id=zlZgGlwBgro"
     if not page_url.startswith("http"):
         page_url = "http://www.youtube.com/watch?v=%s" % page_url
         
@@ -50,15 +50,17 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("len(fmt_list_array)=%d" % len(fmt_list_array))
     logger.info("len(fmt_stream_map_array)=%d" % len(fmt_stream_map_array))
 
-    CALIDADES = {'5':'240p','34':'360p','18':'360p','35':'480p','22':'720p','37':'1080p','38':'3072p','17':'144p','43':'360p','44':'480p','45':'720p'}
+    CALIDADES = {'5':'240p','34':'360p','18':'360p','35':'480p','22':'720p','84':'720p','37':'1080p','38':'3072p','17':'144p','43':'360p','44':'480p','45':'720p'}
 
     for i in range(len(fmt_list_array)):
         video_url = urllib.unquote(fmt_stream_map_array[i])
         video_url = urllib.unquote(video_url[4:])
+        video_url = video_url.split(";")[0]
         logger.info(" [%s] - %s" % (fmt_list_array[i],video_url))
         
         calidad = fmt_list_array[i].split("/")[0]
-        
+        video_url = video_url.replace("flv&itag="+calidad,"flv")
+        video_url = video_url.replace("="+calidad+"&url=","")
         resolucion = fmt_list_array[i].split("/")[1]
 
         formato = ""
