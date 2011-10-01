@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>11</tag>
-	<date>25/09/2011</date>
-	<changes>Arreglado el problema con la biblioteca de XBMC</changes>
+	<tag>12</tag>
+	<date>01/10/2011</date>
+	<changes>Añadido listado por género gracias a @aampudia</changes>
 </version>

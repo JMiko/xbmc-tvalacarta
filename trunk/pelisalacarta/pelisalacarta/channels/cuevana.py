@@ -37,10 +37,43 @@ def peliculas(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/?orderby=ano&reverse=true"))
     itemlist.append( Item(channel=CHANNELNAME, title="Más Populares"  , action="novedades", url="http://www.cuevana.tv/peliculas/populares/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Mejor Puntuadas"  , action="novedades", url="http://www.cuevana.tv/peliculas/mejorpuntuadas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Por Género"     , action="porGenero",    url="http://www.cuevana.tv/peliculas/genero/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))	
 
     return itemlist
 
+def porGenero(item):
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Acción",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=5"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Animación",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=7"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Aventura",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=14"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Bélica",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=19"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Ciencia Ficción",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=6"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Cine Negro",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=23"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=2"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Dramática",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=27"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Musical",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=15"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Negra",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=26"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Romántica",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=16"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Stand Up",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=24"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Crimen",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=18"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Deporte",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=20"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Documental",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=10"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Dogma",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=22"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Drama",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=1"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Fantasía",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=13"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Humor",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=12"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Infantil",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=8"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Intriga",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=25"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Musical",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=11"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Romance",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=9"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Suspenso",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=3"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Terror",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=4"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Thriller",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=17"))
+    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Western",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=21"))
+
+    return itemlist	
+	
 def listadoAlfabetico(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="0-9",url="http://www.cuevana.tv/peliculas/lista/letra=num"))
