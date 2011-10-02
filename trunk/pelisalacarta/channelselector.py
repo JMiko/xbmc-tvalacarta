@@ -185,7 +185,7 @@ def channels_list():
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S"     , type="generic"  ))
     itemlist.append( Item( title="Liberateca"            , channel="liberateca"           , language="ES"    , category="S"       , type="generic"  ))
     itemlist.append( Item( title="MCAnime"               , channel="mcanime"              , language="ES"    , category="A"       , type="xbmc"  ))
-    itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""      , category="G"       , type="xbmc"  ))
+    itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""      , category="G"       , type="generic"  ))
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""      , category="G"       , type="xbmc"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
