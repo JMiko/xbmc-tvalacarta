@@ -86,6 +86,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         video_urls.append( ["SD "+account_type , video_url ])
     # Video is not available
     except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
         logger.info("[megavideo.py] Megavideo URL not valid, or video not available")
         return []
 
