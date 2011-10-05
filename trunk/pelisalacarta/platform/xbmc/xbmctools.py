@@ -659,9 +659,14 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
 def setSubtitles():
     logger.info("[xbmctools.py] setSubtitles")
     import time
+    contador = 0
     while xbmc.Player().isPlayingVideo()==False:
         logger.info("[xbmctools.py] setSubtitles: Waiting 2 seconds for video to start before setting subtitles")
         time.sleep(2)
+        contador = contador + 1
+        
+        if contador>10:
+            break
 
     subtitlefile = os.path.join( config.get_data_path(), 'subtitulo.srt' )
     logger.info("[xbmctools.py] setting subtitle file %s" % subtitlefile)
