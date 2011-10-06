@@ -30,6 +30,7 @@ def mainlist(item):
     data = scrapertools.cachePage(url)
 
     itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title='F1' , action="getF1Videos" , url='', thumbnail='http://www.lasexta.com/media/sextatv/img/player_f1.jpg', plot='' , show='' , folder=True) )
     salir = False
     pagina = 0
     while not salir:
@@ -290,4 +291,27 @@ def getVideos(item):
                     # Añade al listado
                     itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedUrl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
+    return itemlist
+
+def getF1Videos(item):
+    logger.info("[sexta.py] getF1Videos")
+    itemlist = []
+    url_f1page = "http://www.lasextadeportes.com/formula1/tv/diferido/carrera"
+    url_f1feed = "http://www.lasextadeportes.com/feeds/playlist/"
+    data = scrapertools.cachePage(url_f1page)
+    if data.find("_id_list=") != -1:
+    id = data.split("_id_list=")[1].split("&")[0]
+    data = scrapertools.cachePage(url_f1feed + id)
+    vid_thumb = data.split("<picture>")[1].split("<")[0]
+    vid_entries  = data.split("<video>")[1:]
+    for vid_entry in vid_entries:
+        vid_url = vid_entry.split("<url>")[1].split("<")[0]
+        ext = "." + vid_url.split(".")[-1]
+        if vid_url.find("/mp4:") != -1: vid_url = vid_url.replace("/mp4:", "/")
+        if vid_url.find("/flv:") != -1: vid_url = vid_url.replace("/flv:", "/")
+        vid_title = vid_entry.split("<title>")[1].split("<")[0].capitalize() + ext
+        logger.info("[lasexta.py] Adding title=["+vid_title+"], url=["+vid_url+"], thumbnail=["+vid_thumb+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=vid_title , action="play", server="Directo" , url=vid_url, thumbnail=vid_thumb, plot='' , folder=False) )
+    else:
+    logger.info("[lasexta.py] No feed id found")
     return itemlist
