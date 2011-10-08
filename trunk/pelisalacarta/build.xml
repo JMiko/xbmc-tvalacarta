@@ -418,6 +418,33 @@
 			</fileset>
         </copy>
     </target>
+
+	<target name="test-xbmc-dharma">
+		<property name="destination-path" value="C:\Users\Jesus\AppData\Roaming\XBMC\addons"/>
+        <copy todir="${destination-path}/plugin.video.pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="addon*.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+                <!--exclude name="resources/images/**"/-->
+				<exclude name="descriptor.xml"/>
+                <exclude name="default.tbn"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="tester.py"/>
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
+			</fileset>
+        </copy>
+        <copy file="addon-dharma.xml" tofile="${destination-path}/plugin.video.pelisalacarta/addon.xml"/>
+	</target>
 	
     <!-- package =============================================== -->
     <target name="package" depends="clean,package-boxee" description="Builds a package for each platform">
