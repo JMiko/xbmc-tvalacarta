@@ -20,7 +20,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     video_urls = []
 
-    patron  = "src.*?(http.*?)%22%2C%22video_timestamp" 
+    patron  = "video_src.*?(http.*?)%22%2C%22video_timestamp" 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for match in matches:
@@ -40,8 +40,9 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    # Facebook para buenaisla...") #http%3A%2F%2Fwww.facebook.com%2Fv%2F139377799432141_23545.mp4
-    patronvideos  = "www.facebook.com(?:/|%2F)v(?:/|%2F)(.*?)(?:&|%26)"
+    # Facebook para AnimeID    src="http://www.facebook.com/v/194008590634623" type="application/x-shockwave-flash"
+    # Facebook para Buena isla src='http://www.facebook.com/v/134004263282552_44773.mp4&amp;video_title=Vid&amp;v=1337'type='application/x-shockwave-flash'
+    patronvideos  = 'http://www.facebook.com/v/([\d]+)'
     logger.info("[facebook.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -53,8 +54,8 @@ def find_videos(data):
             devuelve.append( [ titulo , url , 'facebook' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url)        
-
+            logger.info("  url duplicada="+url)
+            
     # Estos vídeos son en realidad enlaces directos
     #http://video.ak.facebook.com/cfs-ak-ash2/33066/239/133241463372257_27745.mp4
     patronvideos  = '(http://video.ak.facebook.com/.*?\.mp4)'
@@ -71,5 +72,5 @@ def find_videos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-
+            
     return devuelve

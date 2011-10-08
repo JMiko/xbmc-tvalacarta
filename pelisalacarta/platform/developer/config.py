@@ -88,3 +88,6 @@ def get_data_path():
 
 def get_runtime_path():
     return os.getcwd()
+
+print "get_data_path="+get_data_path()
+print "get_runtime_path="+get_runtime_path()

@@ -391,8 +391,21 @@ def test_samba():
 
     samba.remove_file("00000007.txt","smb://MEDIASERVER/DESCARGAS/XBMC/favoritos")
 
+def test_fileserver_premium():
+    url = "http://fileserve.com/index.php"
+    data = scrapertools.cache_page(url)
+
+    url = "http://fileserve.com/login.php"
+    post = "loginUserName=aaa&loginUserPassword=bbb&autoLogin=on&ppp=102&loginFormSubmit=Login"
+    data = scrapertools.cache_page(url, post=post)
+
+    url = "http://www.fileserve.com/file/uzSn5He"
+    post = "download=premium"
+    data = scrapertools.cache_page(url)
+
 if __name__ == "__main__":
-    test_server_connectors()
+    #test_server_connectors()
     #test_cineraculo()
     #test_channels()
     #test_samba()
+    test_fileserver_premium()
