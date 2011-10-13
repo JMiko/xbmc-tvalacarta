@@ -18,8 +18,9 @@ except:
 
 try:
     exec "import platform."+config.get_platform()+".logger as platformlogger"
+    default = False
 except:
-    exec "import dreamboxlogger as platformlogger"
+    default = True
 
 loggeractive = (config.get_setting("debug")=="true")
 
@@ -28,10 +29,22 @@ def log_enable(active):
     loggeractive = active
 
 def info(texto):
-    if loggeractive: platformlogger.info(texto)
+    if loggeractive:
+        if not default:
+            platformlogger.info(texto)
+        else:
+            print texto
 
 def debug(texto):
-    if loggeractive: platformlogger.info(texto)
+    if loggeractive:
+        if not default:
+            platformlogger.info(texto)
+        else:
+            print texto
 
 def error(texto):
-    if loggeractive: platformlogger.info(texto)
+    if loggeractive:
+        if not default:
+            platformlogger.info(texto)
+        else:
+            print texto
