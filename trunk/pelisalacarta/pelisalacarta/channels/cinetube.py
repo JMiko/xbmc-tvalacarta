@@ -169,7 +169,7 @@ def peliculas(item,paginacion=True):
     '''
     patronvideos  = '<!--PELICULA-->[^<]+'
     patronvideos += '<div class="peli_item textcenter">[^<]+'
-    patronvideos += '<div class="pelicula_img"><a[^<]+'
+    patronvideos += '<div class="pelicula_img"><a href=[\S]+ >[^<]+'
     patronvideos += '<img src=["|\']([^"]+?)["|\'][^<]+</a>[^<]+'
     patronvideos += '</div[^<]+<a href=["|\']([^"]+?)["|\'].*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
 
@@ -562,8 +562,7 @@ def findvideos(item):
     
         itemlist = []
         for match in matches:
-            logger.info("Encontrado iframe mirrors "+match[0])
-            # Lee el iframe
+            logger.info("Encontrado iframe mirrors "+match[0])            # Lee el iframe
             mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
             data = scrapertools.cache_page(mirror)
             #logger.info("-------------------------------------------------------------------------------------")
