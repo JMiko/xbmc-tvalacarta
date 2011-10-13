@@ -55,7 +55,7 @@ except:
                     # Modo desarrollo
                     PLATFORM = "developer"
 
-#print "PLATFORM=%s" % PLATFORM
+#print "[core config.py] PLATFORM="+PLATFORM
 
 def force_platform(platform):
     global PLATFORM
