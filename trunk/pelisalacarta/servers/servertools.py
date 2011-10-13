@@ -68,6 +68,10 @@ def findvideos(data):
     import facebook
     devuelve.extend(facebook.find_videos(data))
 
+    # fileserve
+    import fileserve
+    devuelve.extend(fileserve.find_videos(data))
+
     # fourshared
     import fourshared
     devuelve.extend(fourshared.find_videos(data))
