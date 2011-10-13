@@ -15,6 +15,7 @@ from servers import servertools
 
 CHANNELNAME = "cinetube"
 DEBUG = True
+
 SESION = config.get_setting("session","cinetube")
 LOGIN = config.get_setting("login","cinetube")
 PASSWORD = config.get_setting("password","cinetube")
