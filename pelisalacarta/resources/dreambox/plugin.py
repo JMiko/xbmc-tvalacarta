@@ -60,6 +60,9 @@ config.plugins.pelisalacarta.imagescaling = ConfigSelection(default="1", choices
 config.plugins.pelisalacarta.imagescaler = ConfigSelection(default="0", choices = [("0", _("decodePic()")), ("1", _("getThumbnail()"))])
 config.plugins.pelisalacarta.showadultcontent = ConfigYesNo(default=False)
 config.plugins.pelisalacarta.showsecretcontent = ConfigYesNo(default=False)
+config.plugins.pelisalacarta.megavideopremium = ConfigEnableDisable(default=False)
+config.plugins.pelisalacarta.megavideouser = ConfigText(default="", fixed_size=False)
+config.plugins.pelisalacarta.megavideopassword = ConfigText(default="", fixed_size=False)
 config.plugins.pelisalacarta.version = NoSave(ConfigText(default="282"))
 
 default = config.plugins.pelisalacarta.storagepath.value + "/mediathek/movies"
@@ -475,7 +478,10 @@ class Pelisalacarta(Screen):
         if accion=="play":
             #item = Item(title="Megavideo",url=urlx,folder=False,action="__movieplay")
             exec "from servers import "+item.server+" as servermodule"
-            video_urls = servermodule.get_video_url( item.url )
+            if item.server.lower()=="megavideo" or item.server.lower()=="megaupload":
+                video_urls = servermodule.get_video_url( item.url , premium=config.plugins.pelisalacarta.megavideopremium.value , user=config.plugins.pelisalacarta.megavideouser.value , password=config.plugins.pelisalacarta.megavideopassword.value )
+            else:
+                video_urls = servermodule.get_video_url( item.url )
             
             itemlista = []
             for video_url in video_urls:
@@ -1514,6 +1520,9 @@ class Pelisalacarta_Settings(Screen, ConfigListScreen):
         #self.cfglist.append(getConfigListEntry(_("Show Secret Content:"), config.plugins.pelisalacarta.showsecretcontent))
         self.cfglist.append(getConfigListEntry(_("Download Directory:"), config.plugins.pelisalacarta.moviedir))
         self.cfglist.append(getConfigListEntry(_("Cache Folder:"), config.plugins.pelisalacarta.storagepath))
+        self.cfglist.append(getConfigListEntry(_("Tienes cuenta de Megavideo?"), config.plugins.pelisalacarta.megavideopremium))
+        self.cfglist.append(getConfigListEntry(_("Login Megavideo"), config.plugins.pelisalacarta.megavideouser))
+        self.cfglist.append(getConfigListEntry(_("Password Megavideo"), config.plugins.pelisalacarta.megavideopassword))
         ConfigListScreen.__init__(self, self.cfglist, session)
 
     def keySave(self):
