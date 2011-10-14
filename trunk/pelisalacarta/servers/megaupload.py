@@ -26,6 +26,13 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     if len(page_url)==8:
         page_url = "http://www.megaupload.com/?d="+page_url
 
+    # Obtiene el enlace para Megavideo
+    if megavideo_mirror:
+        megavideo_video_id = convertcode(page_url)
+        if not megavideo_video_id=="":
+            from servers import megavideo
+            video_urls.extend( megavideo.get_video_url( megavideo_video_id, premium, user, password ) )
+
     # page_url es del tipo "http://www.megaupload.com/?d="+code
     # Si el usuario es premium utiliza el método antiguo
     # Si el usuario es gratis o anónimo utiliza el método nuevo
@@ -46,31 +53,24 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
             video_url = get_premium_video_url(page_url,cookie,video_password,verify)
             if video_url!="":
                 extension = video_url[-4:]
-                video_urls = [['%s (Premium) [megaupload]' % extension , video_url]]
+                video_urls.append( ['%s (Premium) [megaupload]' % extension , video_url] )
         elif tipo_usuario == GRATIS:
             video_url = get_free_video_url(page_url,tipo_usuario,video_password)
             if video_url!="":
                 extension = video_url[-4:]
-                video_urls = [['%s (Free) [megaupload]' % extension , video_url, 26]]
+                video_urls.append( ['%s (Free) [megaupload]' % extension , video_url, 26] )
         elif tipo_usuario == ANONIMO:
             video_url = get_free_video_url(page_url,tipo_usuario,video_password)
             if video_url!="":
                 extension = video_url[-4:]
-                video_urls = [['%s (Free) [megaupload]' % extension , video_url, 46]]
+                video_urls.append ( ['%s (Free) [megaupload]' % extension , video_url, 46] )
     else:
         logger.info("[megaupload.py] Modo free")
         video_url = get_free_video_url(page_url,ANONIMO,video_password)
         logger.info("[megaupload.py] video_url=%s" % video_url)
         if video_url!="":
             extension = video_url[-4:]
-            video_urls = [['%s (Free) [megaupload]' % extension , video_url, 46]]
-
-    # Obtiene el enlace para Megavideo
-    if megavideo_mirror:
-        megavideo_video_id = convertcode(page_url)
-        if not megavideo_video_id=="":
-            from servers import megavideo
-            video_urls.extend( megavideo.get_video_url( megavideo_video_id, premium, user, password ) )
+            video_urls.append( ['%s (Free) [megaupload]' % extension , video_url, 46] )
 
     #logger.info("[megaupload.py] get_video_urls returns %s" % video_url)
     
