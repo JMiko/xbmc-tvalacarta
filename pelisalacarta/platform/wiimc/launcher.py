@@ -404,7 +404,7 @@ def menu_video(item):
     for video_url in video_urls:
         itemlist.append( Item(channel=item.channel, title="Ver "+video_url[0], url=video_url[1], action="play_video") )
     
-    refered_item_encoded = urllib.quote(item.title)+"|"+urllib.quote(item.server)+"|"+urllib.quote(item.url)+"|"+urllib.quote(item.extra)
+    refered_item_encoded = urllib.quote(item.title.replace("|","-"))+"|"+urllib.quote(item.server)+"|"+urllib.quote(item.url)+"|"+urllib.quote(item.extra)
     
     itemlist.append( Item(channel=item.channel, title="Descargar",action="descargar",url=refered_item_encoded ) )
     
