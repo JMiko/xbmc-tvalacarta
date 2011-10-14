@@ -41,6 +41,9 @@ def searchresults(params,url="",category=""):
     from pelisalacarta.channels import cinetube
     itemlist.extend( cinetube.search( Item() , tecleado) )
 
+    from pelisalacarta.channels import divxonline
+    itemlist.extend( divxonline.search( Item() , tecleado) )
+
     from pelisalacarta.channels import cinegratis
     itemlist.extend( cinegratis.search( Item() , tecleado) )
 
