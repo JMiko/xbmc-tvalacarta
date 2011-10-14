@@ -396,12 +396,14 @@ def test_fileserver_premium():
     data = scrapertools.cache_page(url)
 
     url = "http://fileserve.com/login.php"
-    post = "loginUserName=aaa&loginUserPassword=bbb&autoLogin=on&ppp=102&loginFormSubmit=Login"
+    post = "loginUserName=aaaa&loginUserPassword=bbbb&autoLogin=on&ppp=102&loginFormSubmit=Login"
     data = scrapertools.cache_page(url, post=post)
 
-    url = "http://www.fileserve.com/file/uzSn5He"
-    post = "download=premium"
-    data = scrapertools.cache_page(url)
+    url = "http://www.fileserve.com/file/tvhFAxG"
+    #scrapertools.downloadpage(url,follow_redirects=False)
+    location = scrapertools.getLocationHeaderFromResponse(url)
+    
+    print "location=%s" % location
 
 if __name__ == "__main__":
     #test_server_connectors()
