@@ -42,7 +42,10 @@ def get_setting(name):
     return xbmcplugin.getSetting(name)
 
 def set_setting(name,value):
-    xbmcplugin.setSetting(name,value)
+    try:
+        xbmcplugin.setSetting(name,value)
+    except:
+        pass
 
 def get_localized_string(code):
     dev = xbmc.getLocalizedString( code )
