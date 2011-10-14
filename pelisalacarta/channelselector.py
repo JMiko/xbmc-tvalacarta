@@ -141,6 +141,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Animeflv (14/10/2011)"              , channel="animeflv"             , language="ES"    , category="A"     , type="generic" )) # MarioXD 14/10/2011
     itemlist.append( Item( title="Moviezet (01/10/2011)"              , channel="moviezet"             , language="ES"    , category="F.S"     , type="generic" )) # mrfluffy 01/10/2011
     itemlist.append( Item( title="Asia-Team (20/05/2011)"             , channel="asiateam"             , language="ES" , category="F,S" , type="generic" ))	# xextil 20/05/2011
     itemlist.append( Item( title="Internapoli City (16/05/2011)"      , channel="internapoli"          , language="IT" , category="F" , type="generic"  )) # jesus 16/05/2011
@@ -154,6 +155,7 @@ def channels_history_list():
 def channels_list():
     itemlist = []
 
+    itemlist.append( Item( title="Animeflv"              , channel="Animeflv"             , language="ES"    , category="A"       , type="generic" )) # MarioXD 14/10/2011
     itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES"    , category="A"       , type="xbmc"     ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES"    , category="F,S"     , type="generic"  ))
