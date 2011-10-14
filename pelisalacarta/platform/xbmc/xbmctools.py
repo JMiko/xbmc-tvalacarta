@@ -178,9 +178,16 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
         try:
             # Extrae todos los enlaces posibles
             exec "from servers import "+server+" as server_connector"
-            video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword"), video_password=video_password )
+            if server=="megavideo" or server=="megaupload":
+                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword"), video_password=video_password )
+            elif server=="fileserve":
+                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("fileservepremium")=="true") , user=config.get_setting("fileserveuser") , password=config.get_setting("fileservepassword"), video_password=video_password )
+            else:
+                video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
         except:
-            pass
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
 
         # Cierra el diálogo de progreso
         if config.get_setting("player_mode")=="0" and not strmfile:
@@ -263,6 +270,7 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
     if seleccion==-1:
         #Para evitar el error "Uno o más elementos fallaron" al cancelar la selección desde fichero strm
         listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
+        import sys
         xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,listitem)    # JUR Added
         if config.get_setting("subtitulo") == "true":
             config.set_setting("subtitulo", "false")
@@ -398,7 +406,10 @@ def play_video(channel="",server="",url="",category="",title="",thumbnail="",plo
     if strmfile:
         xlistitem = getLibraryInfo(mediaurl)
     else:
-        xlistitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
+        try:
+            xlistitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail, path=mediaurl)
+        except:
+            xlistitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
         xlistitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : channel , "Genre" : category } )
 
     # Descarga el subtitulo
