@@ -132,7 +132,7 @@ def series(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = match[1] , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -164,7 +164,7 @@ def episodios(item):
 
     No = 0
     for match in matches:
-        itemlist.extend( addChapters(Item(url=item.url,extra=match, thumbnail=thumbnail,show=item.show)) )
+        itemlist.extend( addChapters(Item(url=item.url,extra=match, fulltitle=item.extra, thumbnail=thumbnail,show=item.show)) )
         '''
         if(len(matches)==1):
             itemlist = addChapters(Item(url=match, thumbnail=thumbnail))
@@ -196,7 +196,7 @@ def addChapters(item):
         for flag in flags:
             title = title + " ("+flag+")"
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, url=url, thumbnail=item.thumbnail, plot="", show = item.show, folder=True))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, url=url, thumbnail=item.thumbnail, plot="", show = item.show, extra=item.fulltitle+" "+title, folder=True))
 
     return itemlist
 
@@ -242,13 +242,14 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , url=url, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, folder=False))
     except:
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
 
     return itemlist
+
 def play(item):
     logger.info("[seriesyonkis.py] play")
     itemlist = []
@@ -268,7 +269,7 @@ def play(item):
             if(len(videos)>0): 
                 url = videos[0][1]
                 server=videos[0][2]                   
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
             else:
                 patron='<ul class="form-login">(.*?)</ul'
                 matches = re.compile(patron, re.S).findall(data)
