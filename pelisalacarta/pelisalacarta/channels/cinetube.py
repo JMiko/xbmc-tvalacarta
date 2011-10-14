@@ -28,6 +28,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades"       , action="peliculas"      , url="http://www.cinetube.es/peliculas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Estrenos cine"   , action="documentales"   , url="http://www.cinetube.es/peliculas/estrenos-de-cine/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Películas - A-Z"             , action="listalfabetico" , url="peliculas"))
     itemlist.append( Item(channel=CHANNELNAME, title="Películas - Categorías"      , action="listcategorias" , url="http://www.cinetube.es/peliculas"))
 
@@ -139,36 +140,6 @@ def peliculas(item,paginacion=True):
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas
-    '''
-    <!--PELICULA-->
-    <div class="peli_item textcenter">
-    <div class="pelicula_img"><a href='/peliculas/thriller/ver-pelicula-un-segundo-despues-2.html' >
-    <img src="http://caratulas.cinetube.es/pelis/7058.jpg" alt="Un segundo despu&eacute;s 2" /></a>
-    </div><a href="/peliculas/thriller/ver-pelicula-un-segundo-despues-2.html" ><div class="dvdrip"></div></a><a href='/peliculas/thriller/ver-pelicula-un-segundo-despues-2.html' ><p class="white">Un segundo despu&eacute;s 2</p></a><p><span class="rosa">DVD-RIP</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>
-    </div>
-    <!--FIN PELICULA-->
-    '''
-    # listado alfabetico
-    '''
-    <!--PELICULA-->
-    <div class="peli_item textcenter">
-    <div class="pelicula_img"><a href="/peliculas/musical/ver-pelicula-a-chorus-line.html">
-    <img src="http://caratulas.cinetube.es/pelis/246.jpg" alt="A Chorus Line" /></a>
-    </div>
-    <a href="/peliculas/musical/ver-pelicula-a-chorus-line.html"><p class="white">A Chorus Line</p></a>
-    <p><span class="rosa">DVD-RIP</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="espanol" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>                                    </div>
-    <!--FIN PELICULA-->
-    '''
-    '''
-    <!--PELICULA-->
-    <div class="peli_item textcenter"><a href="/documentales/otros/ver-documental-tu-cerebro-inmortal.html">
-    <div class="pelicula_img">
-    <img src="http://caratulas.cinetube.es/docus/9570.jpg" alt="Tu Cerebro Inmortal" />
-    </div>
-    <p class="white"><a class="white" href="/documentales/otros/ver-documental-tu-cerebro-inmortal.html" title="Ver documental Tu Cerebro Inmortal">Tu Cerebro Inmortal</a></p></a>
-    <div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>                                    </div>
-    <!--FIN PELICULA-->
-    '''
     patronvideos  = '<!--PELICULA-->[^<]+'
     patronvideos += '<div class="peli_item textcenter">[^<]+'
     patronvideos += '<div class=[\W]pelicula_img[\W]><a href=.*?.html[^>]+>[^<]+'
@@ -236,16 +207,20 @@ def documentales(item):
     # Extrae las entradas
     '''
     <!--PELICULA-->
-    <div class="peli_item textcenter"><a href="/documentales/otros/ver-documental-tu-cerebro-inmortal.html">
+    <div class="peli_item textcenter peli_item_puntos"><a href="/peliculas/drama/ver-pelicula-somewhere.html">
     <div class="pelicula_img">
-    <img src="http://caratulas.cinetube.es/docus/9570.jpg" alt="Tu Cerebro Inmortal" />
+    <img src="http://caratulas.cinetube.es/pelis/10070.jpg" alt="Somewhere" />
+    </div></a>
+    <a href="/peliculas/drama/ver-pelicula-somewhere.html" ><div class="estreno"></div></a>                                        <a href="/peliculas/drama/ver-pelicula-somewhere.html" title="Ver estreno Somewhere"><p class="white">Somewhere</p></a>
+    <p><span class="rosa">BLURAY-SCREENER</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/downupload.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div><div class="puntos_box">
+    <div id="votos_media">6,2</div>
+    <div id="votos_votaciones">48 votos</div>
     </div>
-    <p class="white"><a class="white" href="/documentales/otros/ver-documental-tu-cerebro-inmortal.html" title="Ver documental Tu Cerebro Inmortal">Tu Cerebro Inmortal</a></p></a>
-    <div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div>                                    </div>
+    </div>
     <!--FIN PELICULA-->
     '''
     patronvideos  = '<!--PELICULA-->[^<]+'
-    patronvideos += '<div class="peli_item textcenter"><a href="([^"]+)">[^<]+'
+    patronvideos += '<div class="peli_item textcenter[^<]+<a href="([^"]+)">[^<]+'
     patronvideos += '<div class="pelicula_img">[^<]+'
     patronvideos += '<img src="([^"]+)" alt="([^"]+)"'
     
