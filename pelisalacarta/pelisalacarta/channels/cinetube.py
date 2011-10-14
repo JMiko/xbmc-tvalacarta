@@ -27,21 +27,22 @@ def mainlist(item):
     logger.info("[cinetube.py] getmainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades (con carátula)"  , action="peliculas"      , url="http://www.cinetube.es/peliculas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Todas A-Z (con carátula)"  , action="listalfabetico" , url="peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades"       , action="peliculas"      , url="http://www.cinetube.es/peliculas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - A-Z"             , action="listalfabetico" , url="peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Categorías"      , action="listcategorias" , url="http://www.cinetube.es/peliculas"))
 
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - Novedades (con carátula)"    , action="series" , url="http://www.cinetube.es/series/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - Todas A-Z (con carátula)"    , action="listalfabetico" , url="series"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - Listado completo (con carátula)" , action="completo" , url="series"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - Novedades"          , action="series" , url="http://www.cinetube.es/series/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z"                , action="listalfabetico" , url="series"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - Listado completo"   , action="completo" , url="series"))
 
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Novedades" , action="documentales" , url="http://www.cinetube.es/documentales/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Todos A-Z" , action="listalfabetico", url="documentales"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Novedades"    , action="documentales" , url="http://www.cinetube.es/documentales/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - A-Z"          , action="listalfabetico", url="documentales"))
 
     itemlist.append( Item(channel=CHANNELNAME, title="Series anime - Novedades"    , action="series" , url="http://www.cinetube.es/series-anime/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series anime - Todas A-Z"    , action="listalfabetico" , url="series-anime" ))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series anime - A-Z"          , action="listalfabetico" , url="series-anime" ))
                      
     itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Novedades" , action="documentales" , url="http://www.cinetube.es/peliculas-anime/") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Todas A-Z" , action="listalfabetico" , url="peliculas-anime" ))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - A-Z"       , action="listalfabetico" , url="peliculas-anime" ))
 
     itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
 
@@ -96,7 +97,7 @@ def search(item,texto):
     
     try:
         # Series
-        item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
+        item.url="http://www.cinetube.es/buscar/series/?palabra=%s&categoria=&valoracion="
         item.url = item.url % texto
         itemlist.extend(series(item))
         
@@ -170,7 +171,7 @@ def peliculas(item,paginacion=True):
     '''
     patronvideos  = '<!--PELICULA-->[^<]+'
     patronvideos += '<div class="peli_item textcenter">[^<]+'
-    patronvideos += '<div class="pelicula_img"><a href=[\S]+ >[^<]+'
+    patronvideos += '<div class=[\W]pelicula_img[\W]><a href=.*?.html[^>]+>[^<]+'
     patronvideos += '<img src=["|\']([^"]+?)["|\'][^<]+</a>[^<]+'
     patronvideos += '</div[^<]+<a href=["|\']([^"]+?)["|\'].*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
 
@@ -338,6 +339,36 @@ def listalfabetico(item):
     itemlist.append( Item(channel=CHANNELNAME, action=action , title="X"  , url=baseurl+"X/"))
     itemlist.append( Item(channel=CHANNELNAME, action=action , title="Y"  , url=baseurl+"Y/"))
     itemlist.append( Item(channel=CHANNELNAME, action=action , title="Z"  , url=baseurl+"Z/"))
+
+    return itemlist
+
+def listcategorias(item):
+    logger.info("[cinetube.py] listcategorias")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    # Extrae las entradas
+    patronvideos  = '<ul class="categorias">(.*?)</ul>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    if len(matches)==0:
+        return []
+
+    data = matches[0]
+    patronvideos  = '<li><a href="([^"]+)"><span>([^>]+)</span></a></li>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    itemlist = []
+    for match in matches:
+        scrapedtitle = scrapertools.entityunescape(match[1])
+        scrapedplot = ""
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
 
     return itemlist
 
@@ -525,23 +556,13 @@ def findvideos(item):
         #logger.info(data)
         
         # Busca el argumento
-        patronvideos  = '<div class="ficha_des">(.*?)</div>'
+        patronvideos  = '<meta name="description" content="([^"]+)"'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         if len(matches)>0:
             plot = scrapertools.htmlclean(matches[0])
             logger.info("plot actualizado en detalle");
         else:
             logger.info("plot no actualizado en detalle");
-        
-        # Busca el thumbnail
-        patronvideos  = '<div class="ficha_img pelicula_img">[^<]+'
-        patronvideos += '<img src="([^"]+)"'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        if len(matches)>0:
-            thumbnail = matches[0]
-            logger.info("thumb actualizado en detalle");
-        else:
-            logger.info("thumb no actualizado en detalle");
     
         # Busca los enlaces a los mirrors, o a los capitulos de las series...
         '''
@@ -563,7 +584,8 @@ def findvideos(item):
     
         itemlist = []
         for match in matches:
-            logger.info("Encontrado iframe mirrors "+match[0])            # Lee el iframe
+            logger.info("Encontrado iframe mirrors "+match[0])
+            # Lee el iframe
             mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
             data = scrapertools.cache_page(mirror)
             #logger.info("-------------------------------------------------------------------------------------")
@@ -597,7 +619,7 @@ def findvideos(item):
                 scrapedurl = video[1]
                 server = video[2]
                 
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=item.extra, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():

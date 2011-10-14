@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>7</tag>
+	<tag>8</tag>
 	<date>13/10/2011</date>
-	<changes>Arreglado el fallo con la publicidad que salía en lugar del poster, gracias a @Dalim</changes>
+	<changes>Arreglado listado alfabético por @Dalim. Listado por categorías y argumento en el detalle por Jesús.</changes>
 </version>
