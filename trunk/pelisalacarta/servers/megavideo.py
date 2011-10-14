@@ -7,6 +7,9 @@
 # Python Video Decryption and resolving routines.
 # Courtesy of Voinage, Coolblaze.
 #------------------------------------------------------------
+# Note:
+# How to set a cookie or Header in XBMC player
+# http://some/url|Cookie=<urlencodedcookie>&User-Agent=<urlencode dvalue>
 import os
 import re
 import urlparse, urllib, urllib2
@@ -430,7 +433,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # Megavideo - Vídeos con título
-    patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9]{8})" />'
+    patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9a-z]{8})" />'
     logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
