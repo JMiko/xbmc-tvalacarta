@@ -64,6 +64,14 @@ def findvideos(data):
     import bliptv
     devuelve.extend(bliptv.find_videos(data))
 
+    # divxstage
+    import divxstage
+    devuelve.extend(divxstage.find_videos(data))
+
+    # downupload
+    import downupload
+    devuelve.extend(downupload.find_videos(data))
+
     # facebook
     import facebook
     devuelve.extend(facebook.find_videos(data))
@@ -103,6 +111,14 @@ def findvideos(data):
     # veoh
     import veoh
     devuelve.extend(veoh.find_videos(data))
+
+    # videobam
+    import videobam
+    devuelve.extend(videobam.find_videos(data))
+
+    # vidbux
+    import vidbux
+    devuelve.extend(vidbux.find_videos(data))
 
     # videobb
     import videobb

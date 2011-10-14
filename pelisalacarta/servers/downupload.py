@@ -11,13 +11,14 @@ import os
 from core import scrapertools
 from core import logger
 from core import config
+from core import unpackerjs
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[downupload.py] get_video_url(page_url='%s')" % page_url)
 
     page_url = page_url.replace("amp;","")
     data = scrapertools.cache_page(page_url)
-
+    
     video_urls = []
 
     # s1.addVariable('file','http://78.140.181.136:182/d/kka3sx52abiuphevyzfirfaqtihgyq5xlvblnetok2mj4llocdeturoy/video.mp4');
@@ -29,10 +30,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         scrapertools.printMatches(matches)
         for match in matches:
             videourl = match
-            logger.info(match)
             videourl = videourl.replace('%5C','')
             videourl = urllib.unquote(videourl)
-            video_urls.append( [ ".mp4 [Downupload]" , videourl ] )
+            video_urls.append( [ ".mp4 (Free) [Downupload]" , videourl ] )
             
     else:
         # Si es un enlace de Descarga se busca el archivo
@@ -41,7 +41,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         scrapertools.printMatches(matches)
         for match in matches:
             videourl = "http://"+match[0]+".com:"+match[3]+"/d/"+match[2]+"/video."+match[1]
-            logger.info(videourl)
             videourl = videourl.replace('|','.')
             videourl = urllib.unquote(videourl)
             video_urls.append( [ "."+match[1]+" (Free) [Downupload]" , videourl ] )
@@ -53,10 +52,22 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             scrapertools.printMatches(matches)
             for match in matches:
                 videourl = "http://"+match[3]+"."+match[2]+"."+match[1]+"."+match[0]+":"+match[6]+"/d/"+match[5]+"/video."+match[4]
-                logger.info(videourl)
                 videourl = videourl.replace('|','')
                 videourl = urllib.unquote(videourl)
                 video_urls.append( [ "."+match[4]+" (Free) [Downupload]" , videourl ] )
+            # Otro metodo de busqueda
+            if len(matches)==0:
+                url = unpackerjs.unpackjs(data)
+                logger.info("[unpackerjs.py] "+url)
+                patron = 'src"value="([^"]+)"'
+                matches = re.compile(patron,re.DOTALL).findall(url)
+                for match in matches:                  
+                    videourl = match
+                    videourl = videourl.replace('|','')
+                    videourl = urllib.unquote(videourl)
+                    video_urls.append( [ ".avi (Free) [Downupload]" , videourl ] )                  
+                    
+                
 
     for video_url in video_urls:
         logger.info("[downupload.py] %s - %s" % (video_url[0],video_url[1]))
