@@ -30,7 +30,7 @@ def mainlist(item):
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item(channel=CHANNELNAME, title="Listado de Peliculas y ovas Hentai en Español", action="hentai", url="http://www.buenaisla.com/peliculas-hentai"))
     itemlist.append( Item(channel=CHANNELNAME, title="Últimas Series Agregadas" , action="ultimas", url="http://www.buenaisla.com/anime-online"))
     itemlist.append( Item(channel=CHANNELNAME, title="En emisión" , action="listacompleta", url="http://www.buenaisla.com/anime-online"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar" , action="busqueda") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar" , action="search") )
 
     return itemlist
 
@@ -75,7 +75,9 @@ def videos(item):
         data2= scrapertools.cachePage(url)
         data = data + data2
             
-    title= item.title
+    title = item.title
+    extra = item.extra
+    contador = 0
     scrapedthumbnail = item.thumbnail
     listavideos = servertools.findvideos(data)
 
@@ -84,7 +86,11 @@ def videos(item):
         invalid = video[1]
         invalid = invalid[0:8]
         if invalid!= "FN3WE43K" and invalid!="9CC3F8&e":
-            scrapedtitle = video[0]
+            if extra=="hentai":
+                contador=contador+1
+                scrapedtitle = title+" Parte "+str(contador)+" "+str(video[0])
+            else:    
+                scrapedtitle = title+video[0]
             videourl = video[1]
             server = video[2]
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -147,7 +153,8 @@ def cat(item):
 
         # Añade al listado
         itemlist.append( Item(channel=CHANNELNAME, action="listaseries", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-        
+
+    itemlist = sorted(itemlist, key=lambda Item: Item.title)    
     return itemlist
     
 def listaseries(item):
@@ -225,7 +232,8 @@ def listacapitulos(item):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         imagen = "http://www.buenaisla.com/"+matches[0]
-    
+    else:
+        imagen = item.thumbnail
     patronvideos  = '(<div id="comentariocompleto" align="justify" style="display:none">.*?)</div>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -286,18 +294,19 @@ def listacompleta(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    url = item.url
 
     # Extrae las entradas
     patronvideos  = '<li>[^<]+'
     patronvideos += '<a.+?href="([\D]+)([\d]+)">[^<]+'
-    patronvideos += '(.*?)/>(.*?)</a>'
+    patronvideos += '.*?/>(.*?)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
         scrapedurl = urlparse.urljoin(item.url,(match[0]+match[1]))
-        scrapedtitle = match[3].strip()
+        scrapedtitle = match[2].strip()
         scrapedthumbnail = urlparse.urljoin("http://www.buenaisla.com/images/series/",(match[1]+".png"))
         scrapedplot = ""
         logger.info(scrapedtitle)
@@ -305,74 +314,73 @@ def listacompleta(item):
         # Añade al listado
         itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
+    if url=="http://www.buenaisla.com/anime-online": itemlist = sorted(itemlist, key=lambda Item: Item.title) 
     return itemlist
 
 def hentai(item):
     logger.info("[buenaisla.py] hentai")
 
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-
-    # Extrae las entradas <h2><a class="h2_4" href="pelicula-bakunyuu-oyako-1063" style="display:block; padding-bottom:5px; font-weight:bold; overflow:hidden">Bakunyuu Oyako</a></h2>
-    patronvideos  = '<h2><a class="h2_4" href="([^"]+)" .*?>([^<]+)</a>'
-    patronvideos  += '.*? url\S([^)]+)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
+    siguiente = True
     itemlist = []
-    for match in matches:
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedtitle = match[1].strip()
-        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
-        scrapedplot = ""
-        logger.info(scrapedtitle)
+    url = item.url
+    while siguiente==True:
+        # Descarga la página
+        data = scrapertools.cachePage(url)
 
-        # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-
-    return itemlist    
-    
-def busqueda(item):
-    logger.info("[buenaisla.py] busqueda")
-    
-    if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
-        from pelisalacarta import buscador
-        texto = buscador.teclado()
-        texto = texto.split()
-        item.extra = texto[0]
-
-    itemlist = resultados(item)
-
-    return itemlist
-    
-def resultados(item):
-    
-    logger.info("[buenaisla.py] resultados")
-    teclado = item.extra
-    teclado = teclado.capitalize()
-    logger.info("[buenaisla.py] " + teclado)
-    item.url = "http://www.buenaisla.com/modules.php?name=Anime-Online"
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-
-    # Extrae las entradas
-    patronvideos  = '<td bgcolor="#DEEBFE">(.*?)</td>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for elemento in matches:
-        patronvideos = '<a.*?href="(.*?)".*?>.*?>(.*?)(%s)(.*?)</div></a>' % teclado
-        matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
-
-        for match in matches2:
-            scrapedurl = urlparse.urljoin("http://www.buenaisla.com/",match[0])
-            scrapedtitle = match[1] + match[2] + match[3]
-            scrapedthumbnail = ""
+        # Extrae las entradas <h2><a class="h2_4" href="pelicula-bakunyuu-oyako-1063" style="display:block; padding-bottom:5px; font-weight:bold; overflow:hidden">Bakunyuu Oyako</a></h2>
+        patronvideos  = '<h2><a.+?href="([^"]+)" .*?>([^<]+)</a>'
+        patronvideos  += '.*? url\S([^)]+)'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        if DEBUG: scrapertools.printMatches(matches)
+        
+        for match in matches:
+            scrapedurl = urlparse.urljoin(url,match[0])
+            scrapedtitle = match[1].strip()
+            scrapedthumbnail = urlparse.urljoin(url,match[2])
             scrapedplot = ""
             logger.info(scrapedtitle)
 
             # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle.title() , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra="hentai" , folder=True) )
+        # Revisa si es ultima pagina <a href="peliculas-hentai-2">siguiente</a>
+        patronvideos = '<a href="([^"]+)">siguiente</a>'
+        encuentra = re.compile(patronvideos,re.DOTALL).findall(data)
+        if DEBUG: scrapertools.printMatches(encuentra)
+        if len(encuentra)>0:
+            url = ("http://www.buenaisla.com/"+encuentra[0])
+
+        else:
+            siguiente = False
+            
+    itemlist = sorted(itemlist, key=lambda Item: Item.title) 
+    return itemlist    
+    
+def search(item,texto):
+    logger.info("[buenaisla.py] search")
+    itemlist = []
+    
+    # Descarga la página con todas las series
+    url = "http://www.buenaisla.com/series-anime"
+    data = scrapertools.cachePage(url)
+
+    # Extrae las entradas de todas series
+    patronvideos  = '<li>[^<]+'
+    patronvideos += '<a.+?href="([\D]+)([\d]+)">[^<]+'
+    patronvideos += '.*?/>(.*?)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        scrapedtitle = match[2].strip()
+
+        # Realiza la busqueda
+        if scrapedtitle.lower()==texto.lower() or texto.lower() in scrapedtitle.lower():
+            logger.info(scrapedtitle)
+            scrapedurl = urlparse.urljoin(url,(match[0]+match[1]))
+            scrapedthumbnail = urlparse.urljoin("http://www.buenaisla.com/images/series/",(match[1]+".png"))
+            scrapedplot = ""
+
+            # Añade al listado
             itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-        
+
     return itemlist
+
