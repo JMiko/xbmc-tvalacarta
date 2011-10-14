@@ -11,6 +11,7 @@ import sys
 from core import anotador
 import base64
 import datetime
+import time
 
 from servers import servertools
 from core import scrapertools
@@ -34,37 +35,21 @@ def mainlist(item):
     logger.info("[divxonline.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="novedades"     , title="Novedades",url="http://www.divxonline.info/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="megavideo"     , title="Películas en Megavideo",url="http://www.divxonline.info/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisconficha" , title="Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisporletra" , title="Películas de la A a la Z"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisporanio"  , title="Películas por año de estreno"))
-    itemlist.append( Item(channel=CHANNELNAME, action="busqueda"      , title="Buscar"))
+    itemlist.append( Item(channel=CHANNELNAME, action="peliculas"     , title="Películas - Novedades",url="http://www.divxonline.info/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="categorias"    , title="Películas - Categorías",url="http://www.divxonline.info/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="peliculas"     , title="Películas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
+    itemlist.append( Item(channel=CHANNELNAME, action="pelisporletra" , title="Películas - A-Z"))
+    itemlist.append( Item(channel=CHANNELNAME, action="pelisporanio"  , title="Películas - Por año de estreno"))
+    itemlist.append( Item(channel=CHANNELNAME, action="search"        , title="Buscar"))
     return itemlist
 
-def search(item):    
-    buscador.listar_busquedas(item)
-
-def searchresults(params,tecleado,category):
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
     logger.info("[divxonline.py] search")
+    itemlist = []
 
-    buscador.salvar_busquedas(params,tecleado,category)
-    tecleado = tecleado.replace(" ", "+")
-    #searchUrl = "http://documentalesatonline.loquenosecuenta.com/search/"+tecleado+"?feed=rss2&paged=1"
-    busqueda(CHANNELNAME,tecleado,category)
-
-def busqueda(item):
-    logger.info("busqueda")
-    tecleado = ""
-    keyboard = xbmc.Keyboard('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)<=0:
-            return
-    
-    tecleado = tecleado.replace(" ", "+")
-    data=scrapertools.cachePagePost("http://www.divxonline.info/buscador.html",'texto=' + tecleado + '&categoria=0&tipobusqueda=1&Buscador=Buscar')
+    # Lanza la búsqueda
+    data=scrapertools.cachePagePost("http://www.divxonline.info/buscador.html",'texto=' + texto + '&categoria=0&tipobusqueda=1&Buscador=Buscar')
 
     #logger.info(data)
     data=data[data.find('Se han encontrado un total de'):]
@@ -72,18 +57,17 @@ def busqueda(item):
     #<li><a href="/pelicula/306/100-chicas-2000/">100 chicas (2000)</a></li>
     patronvideos  = '<li><a href="(.+?)">(.+?)</a></li>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: 
-        scrapertools.printMatches(matches)
     
     for match in matches:
-        xbmctools.addnewfolder( CHANNELNAME , "findvideos" , category , match[1] , 'http://www.divxonline.info' + match[0] , 'scrapedthumbnail', 'scrapedplot' )
-    
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+        scrapedurl = 'http://www.divxonline.info' + match[0]
+        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
 
-def novedades(item):
-    logger.info("[divxonline.py] novedades")
+        itemlist.append( Item(channel=CHANNELNAME, title = match[1], url=scrapedurl, action="findvideos" ) )
+    
+    return itemlist
+
+def peliculas(item):
+    logger.info("[divxonline.py] peliculas")
     itemlist=[]
     
     # Descarga la página
@@ -91,19 +75,6 @@ def novedades(item):
     #logger.info(data)
 
     # Extrae las entradas
-    '''
-    <td class="contenido"><a href="/pelicula/8853/Conexion-Tequila-1998/"><img src="http://webs.ono.com/jeux/divxonline.info_conexiontequila.jpg" style="padding: 5px;"  border="0" width="150" height="200" align="left" alt="Conexión Tequila (1998)" title="Conexión Tequila (1998)" />
-    <font color="#000000"><b>Género:</b></font> <a href="/peliculas/50/Accion-Megavideo/"><font color="#0066FF">Accion (Megavideo)</font></a><br />
-    <b>Título:</b> <a href="/pelicula/8853/Conexion-Tequila-1998/"><font color="#0066FF"><b>Conexión Tequila (1998) - </b></font></a>
-    <b>Director(es):</b> <a href="/director/2917/Robert-Towne/"><font color="#0066FF">Robert Towne </font></a>
-    <b> - Año de estreno:</b><a href="/peliculas-anho/1998/1.html"><font color="#0066FF"> 1998</a></font> -
-    <b>Autorizada:</b> <a href="/peliculas/Todos-los-publicos/1/"><font color="#0066FF"> Todos los publicos - </a></font>
-    <b>Vista:</b><font color="#0066FF"> 1103 veces - </font><b>Colaborador(es):</b><font color="#0066FF"> jacinto</font><br /><BR><b>Sinopsis:</b> Nick y McKussic son amigos desde niños, pero ahora Nick es teniente de policía y McKussic el mejor traficante de drogas de la ciudad. Se prepara una operación de mil doscientos kilos de cocaína y la Brigada Antinarcóticos cree que McKussic va a coordinar la entrega.
-    <a href="/pelicula/8853/Conexion-Tequila-1998/"> <font color="#0066FF">(leer más)</font></a><br><br>
-    <a href="/pelicula/8853/Conexion-Tequila-1998/" style="font-weight: bold; font-size: 11pt">
-    <img src="http://webs.ono.com/divx/imagenes/flecha.png" border="0"> <font size="3" color="#0066FF">Conexión Tequila (1998)</font></a></td>
-    <td>
-    '''
     patron  = '<td class="contenido"><a href="([^"]+)"><img src="([^"]+)".*?title="([^"]+)"[^>]+>.*?'
     patron += '<b>Sinopsis:</b>([^<]+)<'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -114,25 +85,100 @@ def novedades(item):
         scrapedtitle = match[2]
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
-        scrapedthumbnail = "" # = match[1]
+        scrapedthumbnail = match[1]
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
 
     # Extrae el paginador
-    patron = '<a href="[^"]+" style="border: 1px solid rgb(0, 51, 102); margin: 2px; padding: 2px; text-decoration: none; color: white[^>]+>[^<]+</a><a href="([^"]+)" style="border: 1px solid rgb(0, 51, 102); margin: 2px; padding: 2px; text-decoration: none; color: black[^>]+>([^<]+)</a>'
+    #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
+    patron = '<a href="([^"]+)" class="paginacion" style="color[^>]+>\&gt\;\&gt\;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="!Página siguiente" , url=urlparse.urljoin(url,matches[0][0]) , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
 
     return itemlist
 
-def megavideo(item):
-    logger.info("[divxonline.py] megavideo")
+def peliculasb(item): # fichas con formato en entradas alfabéticas
+    logger.info("[divxonline.py] peliculasb")
+    itemlist=[]
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+
+    patronvideos  = '<td class="contenido"><img src="(.*?)"' # cartel
+    patronvideos += '.*?alt="(.*?)"' # título
+    patronvideos += '.*?<b>Sinopsis(.*?)<a href="([^"]+)"' # url
+
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        scrapedtitle = unicode(match[1],"iso-8859-1").encode("utf-8")
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle) # 7.49 seg 
+        if (not Generate and Notas):
+            score = anotador.getscore(match[1])
+            if (score != ""):
+                scrapedtitle += " " + score
+        scrapedurl = urlparse.urljoin(item.url,match[3]) # url de la ficha divxonline
+        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
+        scrapedthumbnail = match[0]
+        scrapedplot = scrapertools.htmlclean(match[2])
+
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    # añade siguiente página
+    #
+    patron = '<a href="([^"]+)" class="paginacion"[^>]+>\&gt\;\&gt\;</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+
+    return itemlist
+
+def peliculasc(item):
+    logger.info("[divxonline.py] peliculasc")
+    itemlist=[]
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+
+    # Extrae las entradas
+    patron  = '<td class="contenido"><a href="([^"]+)"><img src="([^"]+)".*?title="([^"]+)"[^>]+>.*?'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for match in matches:
+        # Titulo
+        scrapedtitle = match[2]
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
+        scrapedthumbnail = match[1]
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+
+    # Extrae el paginador
+    #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
+    patron = '<a href="([^"]+)" class="paginacion" style="color[^>]+>\&gt\;\&gt\;</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    if len(matches)>0:
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculasc", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+
+    return itemlist
+
+def categorias(item):
+    logger.info("[divxonline.py] categorias")
     itemlist = []
     data = scrapertools.cache_page(item.url)
     patron = '<a href="(/peliculas.*?-megavideo/)">([^<]+)</a><br>'
@@ -166,7 +212,7 @@ def pelisporletra(item):
 
     letras = "9ABCDEFGHIJKLMNÑOPQRSTUVWXYZ" # el 9 antes era 1, que curiosamente está mal en la web divxonline (no funciona en el navegador)
     for letra in letras:
-        itemlist.append( Item(channel=CHANNELNAME, action="pelisconfichaB", title=str(letra), url = "http://www.divxonline.info/verpeliculas/"+str(letra)+"_pagina_1.html"))
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculasb", title=str(letra), url = "http://www.divxonline.info/verpeliculas/"+str(letra)+"_pagina_1.html"))
 
     return itemlist
 
@@ -176,97 +222,7 @@ def pelisporanio(item):
 
     #for anio in range(2009,1915,-1):
     for anio in range(datetime.datetime.today().year,1915,-1):
-        itemlist.append( Item(channel=CHANNELNAME, action="pelisconficha", title=str(anio), url = "http://www.divxonline.info/peliculas-anho/"+str(anio)+"/1.html"))
-
-    return itemlist
-    
-def pelisconficha(item): # fichas en listados por año y en estrenos
-    logger.info("[divxonline.py] pelisconficha")
-    itemlist=[]
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-    if(data.find('Películas del  año') > 0):
-        ##data=data[data.find('<!-- MENU IZQUIERDO -->'):]
-        data=data[data.find('Películas del  año'):]
-    
-    logger.info(data.find('<!-- MENU IZQUIERDO -->'))
-    #logger.info(data)
-    # Extrae las entradas
-    patronvideos  = '<td class="contenido"><a href="(.*?)">' # link
-    patronvideos += '<img src="(.*?)"' # cartel
-    patronvideos += '.*?title="(.*?)"' # título
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = scrapertools.entityunescape(match[2])
-        if (not Generate and Notas):
-            score = anotador.getscore(match[2])
-            if (score != ""):
-                scrapedtitle += " " + score
-
-        scrapedurl = urlparse.urljoin(url,match[0]) # url de la ficha divxonline
-        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
-        scrapedthumbnail = ""
-        if LoadThumbs:
-            scrapedthumbnail = match[1]
-        scrapedplot = "" #match[3]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-
-    # añade siguiente página
-    match = re.search('(.*?)(\d+?)(\.html)',url)
-    logger.info("url="+url)
-    pag = match.group(2)
-    newpag = match.group(1) + str(int(pag)+1) + match.group(3)
-    logger.info("newpag="+newpag)
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisconficha", title="Siguiente" , url=newpag , folder=True) )
-
-    return itemlist
-
-import time
-def pelisconfichaB(item): # fichas con formato en entradas alfabéticas
-    logger.info("[divxonline.py] pelisconfichaB")
-    itemlist=[]
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    patronvideos  = '<td class="contenido"><img src="(.*?)"' # cartel
-    patronvideos += '.*?alt="(.*?)"' # título
-    patronvideos += '.*?<b>Sinopsis.*?<a href="(.*?)"' # url
-        
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = unicode(match[1],"iso-8859-1").encode("utf-8")
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle) # 7.49 seg 
-        if (not Generate and Notas):
-            score = anotador.getscore(match[1])
-            if (score != ""):
-                scrapedtitle += " " + score
-        scrapedurl = urlparse.urljoin(item.url,match[2]) # url de la ficha divxonline
-        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
-        scrapedthumbnail = ""
-        if LoadThumbs:
-            scrapedthumbnail = match[0]
-        scrapedplot = "" # match[3]
-
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-
-    # añade siguiente página
-    #
-    patron = '<a href="([^"]+)" class="paginacion"[^>]+>\&gt\;\&gt\;</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        itemlist.extend( pelisconfichaB( Item(channel=CHANNELNAME, action="pelisconfichaB", title="Siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) ) )
+        itemlist.append( Item(channel=CHANNELNAME, action="peliculasc", title=str(anio), url = "http://www.divxonline.info/peliculas-anho/"+str(anio)+"/1.html"))
 
     return itemlist
 
@@ -276,12 +232,13 @@ def remove_html_tags(data):
 
 def movielist(item): # pelis sin ficha (en listados por género)
     logger.info("[divxonline.py] movielist")
+    itemlist=[]
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    data = stepinto(url,data,'Ver página:(.*?)</p>')
+    data = stepinto(item.url,data,'Ver página:(.*?)</p>')
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<li><h2><a href="([^"]+?)">(.*?)</a>'
@@ -300,7 +257,7 @@ def movielist(item): # pelis sin ficha (en listados por género)
                 scrapedtitle += " " + score
 
         # URL
-        scrapedurl = urlparse.urljoin(url,match[0]) # url de la ficha divxonline
+        scrapedurl = urlparse.urljoin(item.url,match[0]) # url de la ficha divxonline
         scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
 
         # Thumbnail
@@ -322,7 +279,7 @@ def movielist(item): # pelis sin ficha (en listados por género)
             f.write(fareg+"\n")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
 
     if (Generate):
         f.close()
@@ -360,8 +317,12 @@ def findvideos(item):
     logger.info("***********************************************************************************************************************")
     logger.info("***********************************************************************************************************************")
     itemlist = servertools.find_video_items(data=data)
-    for item in itemlist:
-        item.channel=channel=CHANNELNAME
+    i=1
+    for videoitem in itemlist:
+        videoitem.title = "Mirror %d%s" % (i,videoitem.title)
+        videoitem.channel=channel=CHANNELNAME
+        videoitem.extra=item.extra
+        i=i+1
     
     return itemlist
     
