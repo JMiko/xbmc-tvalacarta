@@ -27,10 +27,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         data = scrapertools.cache_page(url, post=post)
     
         location = scrapertools.getLocationHeaderFromResponse(page_url)
+        logger.info("location="+location)
     
         if location.startswith("http"):
             extension = location[-4:]
-            video_urls.append( [ "%s (Premium) [fileserve]" % extension, videourl ] )
+            video_urls.append( [ "%s (Premium) [fileserve]" % extension, location ] )
 
     for video_url in video_urls:
         logger.info("[fileserve.py] %s - %s" % (video_url[0],video_url[1]))

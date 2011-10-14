@@ -24,9 +24,9 @@ def mainlist(item):
     logger.info("[seriesyonkis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="⁄timos capÌtulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
+    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="√ötimos cap√≠tulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.com"))
-    itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Series m·s vistas", url="http://www.seriesyonkis.com/series-mas-vistas"))
+    itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Series m√°s vistas", url="http://www.seriesyonkis.com/series-mas-vistas"))
     itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.seriesyonkis.com/buscar/serie"))
 
     return itemlist
@@ -86,7 +86,7 @@ def mostviewed(item):
     logger.info("[seriesyonkis.py] mostviewed")
     data = scrapertools.cachePage(item.url)
 
-    #<li class="thumb-episode"> <a href="/serie/como-conoci-a-vuestra-madre" title="CÛmo conocÌ a vuestra madre"><img class="img-shadow" src="/img/series/170x243/como-conoci-a-vuestra-madre.jpg" height="166" width="115"></a> <strong><a href="/serie/como-conoci-a-vuestra-madre" title="CÛmo conocÌ a vuestra madre">CÛmo conocÌ a vuestra madre</a></strong> </li> 
+    #<li class="thumb-episode"> <a href="/serie/como-conoci-a-vuestra-madre" title="C√≥mo conoc√≠ a vuestra madre"><img class="img-shadow" src="/img/series/170x243/como-conoci-a-vuestra-madre.jpg" height="166" width="115"></a> <strong><a href="/serie/como-conoci-a-vuestra-madre" title="C√≥mo conoc√≠ a vuestra madre">C√≥mo conoc√≠ a vuestra madre</a></strong> </li> 
     matches = re.compile('<li class="thumb-episode"> <a href="([^"]+)" title="([^"]+)".*?src="([^"]+)".*?</li>', re.S).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
@@ -112,7 +112,7 @@ def series(item):
     #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
     if len(matches)>0:
-        paginador = Item(channel=CHANNELNAME, action="series" , title="!P·gina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+        paginador = Item(channel=CHANNELNAME, action="series" , title="!P√°gina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
     else:
         paginador = None
     
@@ -151,7 +151,7 @@ def episodios(item):
     if len(matches)>0:
         thumbnail = urlparse.urljoin(item.url,matches[0])
 
-    #<h2 class="header-subtitle">Cap√≠tulos</h2> <ul class="menu"> 
+    #<h2 class="header-subtitle">Cap√É¬≠tulos</h2> <ul class="menu"> 
     #<h2 class="header-subtitle">Cap.*?</h2> <ul class="menu">.*?</ul>
     matches = re.compile('<h2 class="header-subtitle">Cap.*?</h2> <ul class="menu">.*?</ul>', re.S).findall(data)
     if len(matches)>0:
@@ -169,20 +169,20 @@ def episodios(item):
         if(len(matches)==1):
             itemlist = addChapters(Item(url=match, thumbnail=thumbnail))
         else:
-            # AÒade al listado de XBMC
+            # A√±ade al listado de XBMC
             No = No + 1
             title = "Temporada "+str(No)
             itemlist.append( Item(channel=CHANNELNAME, action="season" , title= title, url=match, thumbnail=thumbnail, plot="", show = title, folder=True))
         '''
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="AÒadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="A√±adir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
 def addChapters(item):
     #<tr > <td class="episode-title"> <span class="downloads allkind" title="Disponibles enlaces a descarga directa y visualizaciones"></span>
-    #<a href="/capitulo/bones/capitulo-2/2870"> <strong> 1x02 </strong> - El hombre en la unidad especial de victimas </a> </td> <td> 18/08/2007 </td> <td class="episode-lang">  <span class="flags_peq spa" title="EspaÒol"></span>  </td> <td class="score"> 8 </td> </tr>
+    #<a href="/capitulo/bones/capitulo-2/2870"> <strong> 1x02 </strong> - El hombre en la unidad especial de victimas </a> </td> <td> 18/08/2007 </td> <td class="episode-lang">  <span class="flags_peq spa" title="Espa√±ol"></span>  </td> <td class="score"> 8 </td> </tr>
     matches = re.compile('<tr[^<]+<td class="episode-title.*?<a href="([^"]+)"[^<]+<strong>([^<]+)</strong>(.*?)</a>(.*?)</tr>', re.S).findall(item.extra)
     scrapertools.printMatches(matches)
     
@@ -230,7 +230,7 @@ def findvideos(item):
 
         for match in matches:
             #logger.info(match)
-            #<tr> <td class="episode-server"> <a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="EspaÒol">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtÌtulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>InformaciÛn vÌdeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>Calidad: 6, DuraciÛn: 85.8 min, Peso: 405.79 MB, ResoluciÛn: 640x368</li> </ul> </div> </td> <td class="episode-uploader">lksomg</td> <td class="center"><a href="#" class="errorlink" data-id="2004967"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
+            #<tr> <td class="episode-server"> <a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Espa√±ol">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subt√≠tulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Informaci√≥n v√≠deo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>Calidad: 6, Duraci√≥n: 85.8 min, Peso: 405.79 MB, Resoluci√≥n: 640x368</li> </ul> </div> </td> <td class="episode-uploader">lksomg</td> <td class="center"><a href="#" class="errorlink" data-id="2004967"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
             patron = '<a href="/s/ngo/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
@@ -249,34 +249,57 @@ def findvideos(item):
             logger.error( "%s" % line )
 
     return itemlist
-
 def play(item):
     logger.info("[seriesyonkis.py] play")
     itemlist = []
-    '''
-    url = urlparse.urljoin(item.url,"/s/go/"+id)
-    data = scrapertools.cachePage(item.url)
-    matches = re.compile('<td class="title">Duraci.*?</td><td>([^/]+)/ .*?</td></tr>', re.S).findall(data)
-    duracion = ""
+    
     try:
-        for match in matches: 
-            duracion = match.strip()  
-            break
-    except:
-        duration = ""
-    '''
-    try:
-        data = scrapertools.cache_page(item.url)
-        logger.info("------------------------------------------------------------")
-        #logger.info(data)
-        logger.info("------------------------------------------------------------")
-        videos = servertools.findvideos(data) 
-        logger.info(str(videos))
-        logger.info("------------------------------------------------------------")
-        if(len(videos)>0): 
-            url = videos[0][1]
-            server=videos[0][2]                   
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        location = scrapertools.getLocationHeaderFromResponse(item.url)
+        if "fileserve.com" in location:
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+        else:
+            data = scrapertools.cache_page(item.url)
+            logger.info("------------------------------------------------------------")
+            #logger.info(data)
+            logger.info("------------------------------------------------------------")
+            videos = servertools.findvideos(data) 
+            logger.info(str(videos))
+            logger.info("------------------------------------------------------------")
+            if(len(videos)>0): 
+                url = videos[0][1]
+                server=videos[0][2]                   
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+            else:
+                patron='<ul class="form-login">(.*?)</ul'
+                matches = re.compile(patron, re.S).findall(data)
+                if(len(matches)>0):
+                    data = matches[0]
+                    #buscamos la public key
+                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
+                    pkeys = re.compile(patron, re.S).findall(data)
+                    if(len(pkeys)>0):
+                        pkey=pkeys[0]
+                        #buscamos el id de challenge
+                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
+                        patron="challenge.*?'([^']+)'"
+                        challenges = re.compile(patron, re.S).findall(data)
+                        if(len(challenges)>0):
+                            challenge = challenges[0]
+                            image = "http://www.google.com/recaptcha/api/image?c="+challenge
+                            
+                            #CAPTCHA
+                            exec "import pelisalacarta.captcha as plugin"
+                            tbd = plugin.Keyboard("","",image)
+                            tbd.doModal()
+                            confirmed = tbd.isConfirmed()
+                            if (confirmed):
+                                tecleado = tbd.getText()
+                                sendcaptcha(item.url,challenge,tecleado)
+                            del tbd 
+                            #tbd ya no existe
+                            if(confirmed and tecleado != ""):
+                                itemlist = play(item)
+
     except:
         import sys
         for line in sys.exc_info():
@@ -284,37 +307,58 @@ def play(item):
     logger.info("len(itemlist)=%s" % len(itemlist))
     return itemlist
 
-# Pone todas las series del listado alfabÈtico juntas, para no tener que ir entrando una por una
+def sendcaptcha(url,challenge,text):
+    values = {'recaptcha_challenge_field' : challenge,
+          'recaptcha_response_field' : text}
+    form_data = urllib.urlencode(values)
+    request = urllib2.Request(url,form_data)
+    request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
+    response = urllib2.urlopen(request)
+    html = response.read()
+    response.close()
+    return html
+
 def completo(item):
     logger.info("[seriesyonkis.py] completo()")
     itemlist = []
 
-    # Carga el men˙ "AlfabÈtico" de series
+    # Carga el men√∫ "Alfab√©tico" de series
     item = Item(channel=CHANNELNAME, action="listalfabetico")
     items_letras = listalfabetico(item)
     
-    # Carga las series de cada letra
+    # Para cada letra
     for item_letra in items_letras:
+        print item_letra.title
+        
+        # Lee las series
         items_programas = series(item_letra)
 
-        ultimo_item = items_programas[ len(items_programas)-1 ]
-        
-        if ultimo_item.action!="series":
-            itemlist.extend( items_programas )
-        else:
-            # Si hay un enlace "P·gina siguiente"
-            while ultimo_item.action=="series":
-                
-                # Lo quita
-                pagina_siguiente_item = items_programas.pop()
-                
-                # AÒade el resto a la lista
+        salir = False
+        while not salir:
+
+            # Saca la URL de la siguiente p√°gina
+            ultimo_item = items_programas[ len(items_programas)-1 ]
+
+            # P√°ginas intermedias
+            if ultimo_item.action=="series":
+                #print ultimo_item.url
+                # Quita el elemento de "P√°gina siguiente" 
+                ultimo_item = items_programas.pop()
+
+                # A√±ade las series de la p√°gina a la lista completa
                 itemlist.extend( items_programas )
-                
-                # Carga la sigiuente p·gina
-                items_programas = series(pagina_siguiente_item)
+    
+                # Carga la sigiuente p√°gina
+                items_programas = series(ultimo_item)
+
+            # √öltima p√°gina
+            else:
+                # A√±ade a la lista completa y sale
+                itemlist.extend( items_programas )
+                salir = True
 
     return itemlist
+
 
 def listalfabetico(item):
     logger.info("[seriesyonkis.py] listalfabetico")
