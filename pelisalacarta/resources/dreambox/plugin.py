@@ -476,6 +476,13 @@ class Pelisalacarta(Screen):
 
         self["pageinfo"].setText("Cargando elementos del canal...")
         if accion=="play":
+            try:
+                exec "from pelisalacarta.channels import "+canal
+                exec "itemlista = "+canal+"."+accion+"(item)"
+                item = itemlista[0]
+            except:
+                pass
+
             #item = Item(title="Megavideo",url=urlx,folder=False,action="__movieplay")
             exec "from servers import "+item.server+" as servermodule"
             if item.server.lower()=="megavideo" or item.server.lower()=="megaupload":
