@@ -2,7 +2,7 @@
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Descifra el empaquetado javascript PACK de Dean Edwards
-# No est· bien probado, asÌ que no garantizo que funcione aunque en los casos de este plugin va muy bien :)
+# No est√° bien probado, as√≠ que no garantizo que funcione aunque en los casos de este plugin va muy bien :)
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -22,18 +22,18 @@ def unpackjs(texto):
     matches = re.compile(patron,re.DOTALL).findall(texto)
     #scrapertools.printMatches(matches)
     
-    # Separa el cÛdigo de la tabla de conversion
+    # Separa el c√≥digo de la tabla de conversion
     if len(matches)>0:
         data = matches[0]
-        logger.info("[divxden.py] bloque funcion="+data)
+        logger.info("[unpackerjs.py] bloque funcion="+data)
     else:
         return ""
     patron = "(.*)'([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     cifrado = matches[0][0]
-    logger.info("[divxden.py] cifrado="+cifrado)
-    logger.info("[divxden.py] palabras="+matches[0][1])
+    logger.info("[unpackerjs.py] cifrado="+cifrado)
+    logger.info("[unpackerjs.py] palabras="+matches[0][1])
     descifrado = ""
     
     # Crea el dicionario con la tabla de conversion
@@ -56,10 +56,10 @@ def unpackjs(texto):
         return diccionario[match.group(0)]
 
     #lista = map(re.escape, diccionario)
-    # Invierte las claves, para que tengan prioridad las m·s largas
+    # Invierte las claves, para que tengan prioridad las m√°s largas
     claves.reverse()
     cadenapatron = '|'.join(claves)
-    #logger.info("[divxden.py] cadenapatron="+cadenapatron)
+    #logger.info("[unpackerjs.py] cadenapatron="+cadenapatron)
     compiled = re.compile(cadenapatron)
     descifrado = compiled.sub(lookup, cifrado)
 
