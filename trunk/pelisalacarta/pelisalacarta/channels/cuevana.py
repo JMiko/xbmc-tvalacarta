@@ -238,8 +238,7 @@ def episodios(item):
 def findvideos(item):
     logger.info("[cuevana.py] findvideos")
 
-    # True es Serie, False es Pelicula
-    serieOpelicula = True
+    isSerie = True
     code =""
     if (item.url.startswith("http://www.cuevana.tv/list_search_info.php")):
         data = scrapertools.cachePage(item.url)
@@ -249,8 +248,9 @@ def findvideos(item):
         if len(matches)>0:
             code = matches[0]
         logger.info("code="+code)
+        # HD - http://www.cuevana.tv/player/source?id=12043&subs=,ES,EN&onstart=yes&tipo=s&sub_pre=ES&hd=1#
         url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&tipo=s&sub_pre=ES" % matches[0]
-        serieOpelicula = True
+        isSerie = True
     else:
         # http://www.cuevana.tv/peliculas/2553/la-cienaga/
         logger.info("url1="+item.url)
@@ -259,8 +259,9 @@ def findvideos(item):
         if len(matches)>0:
             code = matches[0]
         logger.info("code="+code)
+        # HD - http://www.cuevana.tv/player/source?id=12043&subs=,ES,EN&onstart=yes&tipo=s&sub_pre=ES&hd=1#
         url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&sub_pre=ES#" % code
-        serieOpelicula = False
+        isSerie = False
     
     logger.info("url2="+url)
     data = scrapertools.cachePage(url)
@@ -274,7 +275,7 @@ def findvideos(item):
     logger.info("data="+data)
 
     # Subtitulos
-    if serieOpelicula:
+    if isSerie:
         suburl = "http://www.cuevana.tv/files/s/sub/"+code+"_ES.srt"
     else:
         suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
