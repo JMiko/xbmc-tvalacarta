@@ -28,7 +28,7 @@ def mainlist(item):
 
     itemlist = []
 
-    itemlist.append( Item(channel=CHANNELNAME, title="Todas las series", action="series", url="http://liberateca.net/api/v1/series"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Todas las series", action="series", url="http://liberateca.net/api/v2/series"))
 
     if SESION=="true":
         itemlist.append( Item(channel=CHANNELNAME, title="Cerrar sesion ("+LOGIN+")", action="logout"))
@@ -76,19 +76,27 @@ def series(item):
     data = scrapertools.cachePage(item.url,headers=[["Authorization", "Basic %s" % authStr]])
     
     # Extrae las entradas
+    '''
+    "url": "https://liberateca.net/api/v2/series/695/",
+    "name_en": "   La forja de un rebelde",
+    "id": 695,
+    "name_es": "   La forja de un rebelde"
+    '''
     patronvideos  = '"url": "([^"]+)",[^"]+'
-    patronvideos += '"name": "([^"]+)"'
+    patronvideos += '"name_en": "([^"]+)",[^"]+'
+    patronvideos += '"id": ([^,]+),[^"]+'
+    patronvideos += '"name_es": "([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[1]
+        scrapedtitle = match[3]
         scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,match[0])+"/seasons"
+        scrapedurl = "https://liberateca.net/api/v2/series/"+match[2]+"/seasons/"
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=match[2], folder=True) )
 
     return itemlist
 
