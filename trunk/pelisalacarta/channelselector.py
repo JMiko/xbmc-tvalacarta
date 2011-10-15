@@ -141,12 +141,12 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="DL-More (FR) (14/10/2011)"           , channel="dlmore"               , language="FR" , category="S"   , type="generic"  )) # jesus 14/10/2011
-    itemlist.append( Item( title="Megaupload Premium (FR) (14/10/2011)", channel="megauploadpremiumfr"  , language="FR" , category="S"   , type="generic"  )) # jesus 14/10/2011
+    itemlist.append( Item( title="DL-More (FR) (14/10/2011)"           , channel="dlmore"               , language="FR" , category="S"   , type="generic" )) # jesus 14/10/2011
+    itemlist.append( Item( title="Megaupload Premium (FR) (14/10/2011)", channel="megauploadpremiumfr"  , language="FR" , category="S"   , type="generic" )) # jesus 14/10/2011
     itemlist.append( Item( title="Peliculasaudiolatino (14/10/2011)"   , channel="peliculasaudiolatino" , language="ES" , category="F"   , type="generic" )) # Dalim 14/10/2011
     itemlist.append( Item( title="Animeflv (14/10/2011)"               , channel="animeflv"             , language="ES" , category="A"   , type="generic" )) # MarioXD 14/10/2011
     itemlist.append( Item( title="Moviezet (01/10/2011)"               , channel="moviezet"             , language="ES" , category="F.S" , type="generic" )) # mrfluffy 01/10/2011
-    itemlist.append( Item( title="Asia-Team (20/05/2011)"              , channel="asiateam"             , language="ES" , category="F,S" , type="generic" ))	# xextil 20/05/2011
+    itemlist.append( Item( title="Asia-Team (20/05/2011)"              , channel="asiateam"             , language="ES" , category="F,S" , type="generic" )) # xextil 20/05/2011
     itemlist.append( Item( title="Internapoli City (IT) (16/05/2011)"  , channel="internapoli"          , language="IT" , category="F"   , type="generic" )) # jesus 16/05/2011
     itemlist.append( Item( title="Robinfilm (IT) (16/05/2011)"         , channel="robinfilm"            , language="IT" , category="F"   , type="generic" )) # jesus 16/05/2011
     itemlist.append( Item( title="Liberateca (15/05/2011)"             , channel="liberateca"           , language="ES" , category="S"   , type="generic" )) # jesus 15/05/2011
