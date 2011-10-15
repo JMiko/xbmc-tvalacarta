@@ -249,7 +249,6 @@ def findvideos(item):
             logger.error( "%s" % line )
 
     return itemlist
-
 def play(item):
     logger.info("[seriesyonkis.py] play")
     itemlist = []
@@ -319,6 +318,7 @@ def sendcaptcha(url,challenge,text):
     response.close()
     return html
 
+# Pone todas las series del listado alfabético juntas, para no tener que ir entrando una por una
 def completo(item):
     logger.info("[seriesyonkis.py] completo()")
     itemlist = []
@@ -359,7 +359,6 @@ def completo(item):
                 salir = True
 
     return itemlist
-
 
 def listalfabetico(item):
     logger.info("[seriesyonkis.py] listalfabetico")
