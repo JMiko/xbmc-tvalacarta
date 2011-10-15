@@ -23,13 +23,13 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     matches = re.compile(patronSD,re.DOTALL).findall(data)
     for match in matches:
         videourl = match
-        video_urls.append( [ "SD [videobam]" , videourl ] )
+        video_urls.append( [ "LQ [videobam]" , videourl ] )
         
     patronHD = " high: '([^']+)'"
     matches = re.compile(patronHD,re.DOTALL).findall(data)
     for match in matches:
         videourl = match
-        video_urls.append( [ "HD [videobam]" , videourl ] )
+        video_urls.append( [ "HQ [videobam]" , videourl ] )
 
     for video_url in video_urls:
         logger.info("[videobam.py] %s - %s" % (video_url[0],video_url[1]))
@@ -42,7 +42,8 @@ def find_videos(data):
     devuelve = []
 
     # VideoBam para AnimeID    src="http://videobam.com/widget/USezW"
-    patronvideos  = 'http://videobam.com/widget/([^"]+)'
+    # VideoBam custom    src="http://videobam.com/widget/USezW/custom/568"
+    patronvideos  = 'http://videobam.com/widget/([\w]+)'
     logger.info("[videobam.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
