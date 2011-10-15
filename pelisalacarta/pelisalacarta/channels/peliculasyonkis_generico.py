@@ -24,55 +24,38 @@ def mainlist(item):
     logger.info("[peliculasyonkis_generico.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Útimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
     itemlist.append( Item ( channel=CHANNELNAME , action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
-    itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Peliculas más vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
+    itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
     itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.peliculasyonkis.com/buscar/pelicula"))
 
     return itemlist
 
 def listcategorias(item):
-   logger.info("[peliculasyonkis_generico.py] listcategorias")
-   itemlist=[]
-   # Descarga la página
-   data = scrapertools.cachePage(item.url)
-   #logger.info(data)
+    logger.info("[peliculasyonkis_generico.py] listcategorias")
+    itemlist=[]
+    # Descarga la pagina
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+    
+    # Extrae las entradas (carpetas)
+    patronvideos  = '<li><a href="(/genero/[^"]+)" title="([^"]+)".*?</li>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    
+    for match in matches:
+        try:
+           scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
+        except:
+           scrapedtitle = match[1]
+        scrapedurl = "http://www.peliculasyonkis.com"+match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item ( channel=CHANNELNAME , action="peliculascat" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
 
-   # Extrae las entradas (carpetas)
-   #li><a href="/genero/accion" title="Acción"><span>Acción</span></a></li>
-   patronvideos  = '<li><a href="(/genero/[^"]+)" title="([^"]+)".*?</li>'
- #  patronvideos  = '<li class="page_item"><a href="(http\://www.peliculasyonkis.com/genero/[^"]+)"[^>]+>([^<]+)</a></li>'
-   matches = re.compile(patronvideos,re.DOTALL).findall(data)
-   scrapertools.printMatches(matches)
-
-   for match in matches:
-      # Titulo
-      try:
-         scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
-      except:
-         scrapedtitle = match[1]
-
-      # URL
-      scrapedurl = "http://www.peliculasyonkis.com"+match[0]
-      
-      # Thumbnail
-      scrapedthumbnail = ""
-      
-      # procesa el resto
-      scrapedplot = ""
-
-      # Depuracion
-      if (DEBUG):
-         logger.info("scrapedtitle="+scrapedtitle)
-         logger.info("scrapedurl="+scrapedurl)
-         logger.info("scrapedthumbnail="+scrapedthumbnail)
-
-      # Añade al listado de XBMC
-
-      itemlist.append( Item ( channel=CHANNELNAME , action="peliculascat" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
-
-   return itemlist
+    return itemlist
    
 def peliculascat(item):
     logger.info("[peliculasyonkis_generico.py] series")
@@ -81,19 +64,15 @@ def peliculascat(item):
     data = scrapertools.cachePage(item.url)
    
     #Paginador
-    #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
     if len(matches)>0:
-        paginador = Item(channel=CHANNELNAME, action="peliculascat" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+        paginador = Item(channel=CHANNELNAME, action="peliculascat" , title="!Pagina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
     else:
         paginador = None
     
     if paginador is not None:
         itemlist.append( paginador )
 
-#<li class="blanco"> <a title="... Y el mundo marcha (1928)" href="/pelicula/-y-el-mundo-marcha-1928"><img width="50" height="71" class="thumb" src="http://s.staticyonkis.com/img/peliculas/100x144/-y-el-mundo-marcha-1928.jpg"></a> <h3><a title="... Y el mundo marcha (1928)" href="/pelicula/-y-el-mundo-marcha-1928">... Y el mundo marcha (1928)</a></h3> <p>Historia de una familia de clase trabajadora en una gran ciudad americana.</p> </li>
-#<li class="gris"> <a title="12 (2007)" href="/pelicula/12-2007"><img width="50" height="71" class="thumb" src="http://s.staticyonkis.com/img/peliculas/100x144/12-2007.jpg"></a> <h3><a title="12 (2007)" href="/pelicula/12-2007">12 (2007)</a></h3> <p>Un chico checheno de 18 años es acusado de asesinar a su padrastro, un oficial del ejército ruso. 12 miembros de un jurado son encerrados en el gimnasio de una ...</p> </li>
-    
     matches = re.compile('<li class=.*?title="([^"]+)" href="([^"]+)".*?</li>', re.S).findall(data)
     #scrapertools.printMatches(matches)
 
@@ -133,7 +112,6 @@ def lastepisodes(item):
     logger.info("[peliculasyonkis_generico.py] lastepisodes")
 
     data = scrapertools.cache_page(item.url)
-#<li class="thumb-episode"> <a href="/pelicula/good-neighbors-2010"><img width="115" height="166" class="img-shadow" src="http://s.staticyonkis.com/img/peliculas/170x243/good-neighbors-2010.jpg"></a> <strong><a href="/pelicula/good-neighbors-2010" title="Good Neighbors (2010)">Good Neighbors (2010)</a></strong> </li>
   
     matches = re.compile('<li class="thumb-episode"> <a href="([^"]+)".*?src="([^"]+)".*?title="([^"]+)".*?</li>', re.S).findall(data)
     #scrapertools.printMatches(matches)
@@ -153,8 +131,6 @@ def lastepisodes(item):
 def mostviewed(item):
     logger.info("[peliculasyonkis_generico.py] mostviewed")
     data = scrapertools.cachePage(item.url)
-
-#<li class="thumb-episode"> <a href="/pelicula/la-piel-que-habito-2011" title="La piel que habito (2011)"><img width="115" height="166" class="img-shadow" src="http://s.staticyonkis.com/img/peliculas/170x243/la-piel-que-habito-2011.jpg" /></a> <strong><a href="/pelicula/la-piel-que-habito-2011" title="La piel que habito (2011)">La piel que habito (2011)</a></strong> </li> 
 
     matches = re.compile('<li class="thumb-episode"> <a href="([^"]+)" title="([^"]+)".*?src="([^"]+)".*?</li>', re.S).findall(data)
     #scrapertools.printMatches(matches)
@@ -178,10 +154,9 @@ def peliculas(item):
     data = scrapertools.cachePage(item.url)
    
     #Paginador
-    #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
     if len(matches)>0:
-        paginador = Item(channel=CHANNELNAME, action="peliculas" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+        paginador = Item(channel=CHANNELNAME, action="peliculas" , title="!Pagina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
     else:
         paginador = None
     
@@ -239,7 +214,7 @@ def findvideos(item):
 
         for match in matches:
             #logger.info(match)
-            #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Español">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subtítulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la película"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
+            #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Espaï¿½ol">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subtï¿½tulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la pelï¿½cula"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Informaciï¿½n vï¿½deo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
             patron = '<a href="/s/ngo/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
@@ -275,18 +250,63 @@ def play(item):
         duration = ""
     '''
     try:
-        data = scrapertools.cache_page(item.url)
-        videos = servertools.findvideos(data) 
-        if(len(videos)>0): 
-            url = videos[0][1]
-            server=videos[0][2]                   
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        location = scrapertools.getLocationHeaderFromResponse(item.url)
+        if "fileserve.com" in location:
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+        else:
+            data = scrapertools.cache_page(item.url)
+            videos = servertools.findvideos(data) 
+            if(len(videos)>0): 
+                url = videos[0][1]
+                server=videos[0][2]                   
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+            else:
+                patron='<ul class="form-login">(.*?)</ul'
+                matches = re.compile(patron, re.S).findall(data)
+                if(len(matches)>0):
+                    data = matches[0]
+                    #buscamos la public key
+                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
+                    pkeys = re.compile(patron, re.S).findall(data)
+                    if(len(pkeys)>0):
+                        pkey=pkeys[0]
+                        #buscamos el id de challenge
+                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
+                        patron="challenge.*?'([^']+)'"
+                        challenges = re.compile(patron, re.S).findall(data)
+                        if(len(challenges)>0):
+                            challenge = challenges[0]
+                            image = "http://www.google.com/recaptcha/api/image?c="+challenge
+                            
+                            #CAPTCHA
+                            exec "import pelisalacarta.captcha as plugin"
+                            tbd = plugin.Keyboard("","",image)
+                            tbd.doModal()
+                            confirmed = tbd.isConfirmed()
+                            if (confirmed):
+                                tecleado = tbd.getText()
+                                sendcaptcha(item.url,challenge,tecleado)
+                            del tbd 
+                            #tbd ya no existe
+                            if(confirmed and tecleado != ""):
+                                itemlist = play(item)
     except:
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
     
     return itemlist
+
+def sendcaptcha(url,challenge,text):
+    values = {'recaptcha_challenge_field' : challenge,
+          'recaptcha_response_field' : text}
+    form_data = urllib.urlencode(values)
+    request = urllib2.Request(url,form_data)
+    request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
+    response = urllib2.urlopen(request)
+    html = response.read()
+    response.close()
+    return html
 
 def listalfabetico(item):
     logger.info("[peliculasyonkis_generico.py] listalfabetico")
