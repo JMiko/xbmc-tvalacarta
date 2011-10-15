@@ -7,18 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "yotix"
 DEBUG = True
@@ -30,56 +23,32 @@ def mainlist(item):
     logger.info("[yotix.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="videolist"      , title="Novedades", url="http://yotix.tv/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="videolist"      , title="Novedades", url="http://yotixanime.com/"))
     itemlist.append( Item(channel=CHANNELNAME, action="listcategorias" , title="Listado por categorías", url="http://yotix.tv/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"         , title="Buscador", url="http://yotix.tv/"))
+    itemlist.append( Item(channel=CHANNELNAME, action="search"         , title="Buscador", url="http://yotix.tv/?s=%s"))
 
     return itemlist
 
-# TODO
-def search(item):
+def search(item,texto):
     logger.info("[yotix.py] search")
 
-    keyboard = xbmc.Keyboard('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)>0:
-            #convert to HTML
-            tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://yotix.tv/?s="+tecleado
-            videolist(params,searchUrl,category)
+    try:
+        # La URL puede venir vacía, por ejemplo desde el buscador global
+        if item.url=="":
+            item.url="http://yotix.tv/?s=%s"
 
-# TODO
-def performsearch(texto):
-    logger.info("[yotix.py] performsearch")
-    url = "http://yotix.tv/?s="+texto
+        # Reemplaza el texto en la cadena de búsqueda
+        item.url = item.url % texto
 
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<div class="galleryitem">[^<]+'
-    patronvideos += '<h1><a title="([^"]+)"[^<]+</a></h1>[^<]+'
-    patronvideos += '<a href="([^"]+)"><img src="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+        # Devuelve los resultados
+        return videolist(item)
     
-    resultados = []
-
-    for match in matches:
-        # Atributos
-        scrapedtitle = match[0].replace("&#8211;","-")
-        scrapedurl = match[1]
-        scrapedthumbnail = match[2]
-        scrapedplot = ""
-
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "listmirrors" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
-        
-    return resultados
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def listcategorias(item):
     logger.info("[yotix.py] listcategorias")
