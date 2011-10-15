@@ -1,30 +1,200 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para Megavideo
+# Megavideo server connector
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-# A partir del código de Voinage y Coolblaze
+# Python Video Decryption and resolving routines.
+# Courtesy of Voinage, Coolblaze.
 #------------------------------------------------------------
-
-import re, sys, os
+import os
+import re
 import urlparse, urllib, urllib2
-import os.path
-import sys
-import config
-import logger
 
-COOKIEFILE = os.path.join (config.DATA_PATH , "cookies.lwp")
-
-logger.debug("[megavideo.py] Cookiefile="+COOKIEFILE) 
-
-#Python Video Decryption and resolving routines.
-#Courtesy of Voinage, Coolblaze.
+from core import scrapertools
+from core import logger
+from core import config
 
 DEBUG = False
 
-#Megavideo - Coolblaze # Part 1 put this below VIDEOLINKS function. Ctrl & C after highlighting.
+# Returns an array of possible video url's from the page_url, supporting premium user account and password protected video
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[megavideo.py] get_video_url( page_url='%s' , user='%s' , password='%s', video_password=%s)" % (page_url , user , "**************************"[0:len(password)] , video_password) )
 
+    video_urls = []
+
+    # If user has premium account, retrieve the cookie_id from the cookie store and passes to the request as parameter "u"
+    if premium:
+        logger.info("[megavideo.py] Modo premium, averigua la cookie")
+        # Extrae la cookie del almacen
+        #megavideo_cookie_id = get_megavideo_cookie_id()
+
+        # Si no está, hace el login
+        #if megavideo_cookie_id == "":
+        #    logger.info("[megavideo.py] No hay cookie, hace login")
+        megavideo_cookie_id = login(user, password)
+
+        # Si aún así no está, la cuenta no es válida
+        if megavideo_cookie_id == "":
+            logger.info("[megavideo.py] No hay cookie de Megavideo válida (error en login o password?), pasa a modo Free")
+            premium = False
+
+    if premium:
+        account_type = "(Premium) [megavideo]"
+    else:
+        account_type = "(Free) [megavideo]"
+
+    '''
+        video_urls.append( [ "SD (Free)"          , get_sd_video_url(page_url,premium,user,password,video_password) ] )
+    else:
+        do_login(premium,user,password)
+        video_urls.append( [ "SD (Premium)"       , get_sd_video_url(page_url,premium,user,password,video_password) ] )
+        video_urls.append( [ "Original (Premium)" , get_original_video_url(page_url,premium,user,password,video_password) ] )
+    '''
+
+    # Extract vídeo code from page URL
+    # http://www.megavideo.com/?v=ABCDEFGH -> ABCDEFGH
+    # Si es de megaupload como en http://www.megavideo.com/?d=ABCDEFGH -> convierte primero a formato v=
+    megavideo_video_id = extract_video_id(page_url)
+
+    if megavideo_video_id=="":
+        logger.info("[megavideo.py] Megavideo URL not valid, or video not available")
+        return video_urls
+
+    # Base URL for obtaining Megavideo URL
+    url = "http://www.megavideo.com/xml/videolink.php?v="+megavideo_video_id
+
+    if premium:
+        url = url + "&u="+megavideo_cookie_id
+
+    # If video is password protected, it is sent with the request as parameter "password"
+    if video_password!="":
+        url = url + "&password="+video_password
+
+    # Perform the request to Megavideo
+    logger.info("[megavideo.py] calling Megavideo")
+    data = scrapertools.cache_page( url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer', 'http://www.megavideo.com/']] , )
+
+    # Search for an SD link
+    logger.info("[megavideo.py] SD Link")
+    try:
+        s = re.compile(' s="(.+?)"').findall(data)
+        k1 = re.compile(' k1="(.+?)"').findall(data)
+        k2 = re.compile(' k2="(.+?)"').findall(data)
+        un = re.compile(' un="(.+?)"').findall(data)
+        video_url = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+        video_urls.append( ["SD "+account_type , video_url ])
+    # Video is not available
+    except:
+        logger.info("[megavideo.py] Megavideo URL not valid, or video not available")
+        return []
+
+    # Search for an HD link if it exists
+    logger.info("[megavideo.py] HD Link")
+    hd = re.compile(' hd="(.+?)"').findall(data)
+    if len(hd)>0 and hd[0]=="1":
+        s = re.compile(' hd_s="(.+?)"').findall(data)
+        k1 = re.compile(' hd_k1="(.+?)"').findall(data)
+        k2 = re.compile(' hd_k2="(.+?)"').findall(data)
+        un = re.compile(' hd_un="(.+?)"').findall(data)
+        video_url = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+        video_urls.append( ["HD "+account_type , video_url ])
+
+    # If premium account, search for the original video link
+    if premium:
+        logger.info("[megavideo.py] ORIGINAL Link")
+        url = "http://www.megavideo.com/xml/player_login.php?u="+megavideo_cookie_id+"&v="+megavideo_video_id+"&password="+video_password
+        data2 = scrapertools.cache_page( url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer', 'http://www.megavideo.com/']] , )
+        logger.info(data2)
+    
+        patronvideos  = 'downloadurl="([^"]+)"'
+        matches = re.compile(patronvideos,re.DOTALL).findall(data2)
+        video_url = matches[0].replace("%3A",":").replace("%2F","/").replace("%20"," ")
+        video_urls.append( ["ORIGINAL "+video_url[-4:]+" [megavideo]" , video_url ])
+
+    # Truco http://www.protegerurl.com.es/v9v/00Z8VNVZ.flv
+    #if not premium:
+    #    logger.info("[megavideo.py] SIN LIMITE Link")
+    #    video_urls.append( ["SIN LIMITE [megavideo]" , "http://www.protegerurl.com.es/v9v/"+megavideo_video_id+".flv" ])
+
+    # Search for error conditions
+    errortext = re.compile(' errortext="(.+?)"').findall(data)	
+    if len(errortext)>0:
+        password_required = re.compile('password_required="(.*?)"').findall(data)
+        if len(password_required) > 0:
+            # Launches an exception to force the user to input the password
+            raise PasswordRequiredException()
+
+    logger.info("[megavideo.py] Ended with %d links" % len(video_urls))
+
+    return video_urls
+
+# Extract vídeo code from page URL
+# http://www.megavideo.com/?v=ABCDEFGH -> ABCDEFGH
+def extract_video_id( page_url ):
+    logger.info("[megavideo.py] extract_video_id(page_url="+page_url+")")
+    
+    if page_url.startswith('http://www.megavideo.com/?v='):
+        patron = 'http://www.megavideo.com.*\?v\=([A-Z0-9a-z]{8})'
+        matches = re.compile(patron,re.DOTALL).findall(page_url)
+        video_id = matches[0]
+    elif page_url.startswith('http://www.megavideo.com/?d='):
+        patron = 'http://www.megavideo.com.*\?d\=([A-Z0-9a-z]{8})'
+        matches = re.compile(patron,re.DOTALL).findall(page_url)
+        video_id = matches[0]
+        import megaupload
+        video_id = megaupload.convertcode(video_id)
+    else:
+        video_id = page_url
+
+    logger.info("[megavideo.py] video_id="+video_id)
+    return video_id
+
+# Get the Megavideo user ID (cookie) from the user and password credentials
+def login(user, password):
+    logger.info("[megavideo.py] login(user="+user+", password="+"**************************"[0:len(password)]+")")
+
+    url = "http://www.megavideo.com/?c=login"
+    post = "login=1&redir=1&username="+user+"&password="+urllib.quote(password)
+    headers = [ ['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'],['Referer','http://www.megavideo.com/?s=signup'] ]
+    data = scrapertools.cache_page(url=url, post=post)
+    
+    return get_megavideo_cookie_id()
+
+def get_megavideo_cookie_id():
+    logger.info("[megavideo.py] get_megavideo_cookie_id")
+
+    cookie_data = config.get_cookie_data()
+    logger.info("cookie_data="+cookie_data)
+    
+    lines = cookie_data.split("\n")
+    for line in lines:
+        logger.info("line="+line)
+    
+        if "megavideo.com" in line:
+            logger.info("[megavideo.py] patron1")
+            patron = 'user="([^"]+)"'
+            matches = re.compile(patron,re.DOTALL).findall(line)
+        
+            if len(matches)>0:
+                cookie = matches[0]
+                break
+            else:
+                logger.info("[megavideo.py] patron2")
+                patron = 'user=([^\;]+);'
+                matches = re.compile(patron,re.DOTALL).findall(line)
+                if len(matches)>0:
+                    cookie = matches[0]
+                    break
+                else:
+                    logger.info("[megavideo.py] No se ha encontrado la cookie de Megavideo")
+                    cookie=""
+    
+    logger.info("cookie="+cookie)
+        
+    return cookie
+
+# Megavideo decryption routines
 def ajoin(arr):
     strtest = ''
     for num in range(len(arr)):
@@ -44,53 +214,18 @@ def decrypt(str1, key1, key2):
     while (__reg3 < len(str1)):
         __reg0 = str1[__reg3]
         holder = __reg0
-        if (holder == "0"):
-            __reg1.append("0000")
-        else:
-            if (__reg0 == "1"):
-                __reg1.append("0001")
+        
+        # Optimización de aabilio@gmail.com :)
+        for i in range(16):
+
+            if i == 0:
+                tmp = holder
             else:
-                if (__reg0 == "2"): 
-                    __reg1.append("0010")
-                else: 
-                    if (__reg0 == "3"):
-                        __reg1.append("0011")
-                    else: 
-                        if (__reg0 == "4"):
-                            __reg1.append("0100")
-                        else: 
-                            if (__reg0 == "5"):
-                                __reg1.append("0101")
-                            else: 
-                                if (__reg0 == "6"):
-                                    __reg1.append("0110")
-                                else: 
-                                    if (__reg0 == "7"):
-                                        __reg1.append("0111")
-                                    else: 
-                                        if (__reg0 == "8"):
-                                            __reg1.append("1000")
-                                        else: 
-                                            if (__reg0 == "9"):
-                                                __reg1.append("1001")
-                                            else: 
-                                                if (__reg0 == "a"):
-                                                    __reg1.append("1010")
-                                                else: 
-                                                    if (__reg0 == "b"):
-                                                        __reg1.append("1011")
-                                                    else: 
-                                                        if (__reg0 == "c"):
-                                                            __reg1.append("1100")
-                                                        else: 
-                                                            if (__reg0 == "d"):
-                                                                __reg1.append("1101")
-                                                            else: 
-                                                                if (__reg0 == "e"):
-                                                                    __reg1.append("1110")
-                                                                else: 
-                                                                    if (__reg0 == "f"):
-                                                                        __reg1.append("1111")
+                tmp = __reg0
+
+            if tmp == hex(i).split("x")[1]:
+                __reg1.append("".join([str((i >> y) & 1) for y in range(3, -1, -1)]))
+                break
 
         __reg3 = __reg3 + 1
 
@@ -136,366 +271,256 @@ def decrypt(str1, key1, key2):
     while (__reg3 < len(__reg7)):
         __reg0 = __reg7[__reg3]
         holder2 = __reg0
-    
-        if (holder2 == "0000"):
-            __reg2.append("0")
-        else: 
-            if (__reg0 == "0001"):
-                __reg2.append("1")
-            else: 
-                if (__reg0 == "0010"):
-                    __reg2.append("2")
-                else: 
-                    if (__reg0 == "0011"):
-                        __reg2.append("3")
-                    else: 
-                        if (__reg0 == "0100"):
-                            __reg2.append("4")
-                        else: 
-                            if (__reg0 == "0101"): 
-                                __reg2.append("5")
-                            else: 
-                                if (__reg0 == "0110"): 
-                                    __reg2.append("6")
-                                else: 
-                                    if (__reg0 == "0111"): 
-                                        __reg2.append("7")
-                                    else: 
-                                        if (__reg0 == "1000"): 
-                                            __reg2.append("8")
-                                        else: 
-                                            if (__reg0 == "1001"): 
-                                                __reg2.append("9")
-                                            else: 
-                                                if (__reg0 == "1010"): 
-                                                    __reg2.append("a")
-                                                else: 
-                                                    if (__reg0 == "1011"): 
-                                                        __reg2.append("b")
-                                                    else: 
-                                                        if (__reg0 == "1100"): 
-                                                            __reg2.append("c")
-                                                        else: 
-                                                            if (__reg0 == "1101"): 
-                                                                __reg2.append("d")
-                                                            else: 
-                                                                if (__reg0 == "1110"): 
-                                                                    __reg2.append("e")
-                                                                else: 
-                                                                    if (__reg0 == "1111"): 
-                                                                        __reg2.append("f")
-                                                                    
+
+        # Optimización de aabilio@gmail.com :)
+        for i in range(16):
+            if i == 0:
+                tmp = holder2
+            else:
+                tmp = __reg0
+
+            if tmp == "".join([str((i >> y) & 1) for y in range(3, -1, -1)]):
+                __reg2.append(hex(i).split("x")[1])
+                break
+
         __reg3 = __reg3 + 1
 
     endstr = ajoin(__reg2)
     return endstr
 
-########END OF PART 1
+# Encuentra vídeos de megavideo en el texto pasado
+# Los devuelve con URL "http://www.megavideo.com/?v=AQW9ED93"
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
 
-#Part 2
-# Paste this into your Default.py
-# To activate it just call Megavideo(url) - where url is your megavideo url.
-def getcode(mega):
-    logger.info("[megavideo.py] mega="+mega)
-    if mega.startswith('http://www.megavideo.com/?v='):
-    	# FIXME: Esto no funciona con url que tienen distintos parámetros, hay que usar ER para extraer el código
-        mega = mega[-8:]
-    logger.info("[megavideo.py] mega="+mega)
-    return mega
-
-def Megavideo(mega):
-
-    mega = getcode(mega)
-
-    logger.info("[megavideo.py] Megavideo")
-    modoPremium = config.getSetting("megavideopremium")
-    logger.info("[megavideo.py] modoPremium="+modoPremium)
-    
-    if modoPremium == "false":
-        movielink = getlowurl(mega)
-    else:
-        movielink = gethighurl(mega)
-
-    logger.info("[megavideo.py] movielink="+movielink)
-        
-    return movielink
-#####END of part 2
-
-def getlowurl(code):
-    logger.info("[megavideo.py] Baja calidad")
-    
-    code=getcode(code)
-    try:
-        quality = config.getSetting("quality_flv")
-    except:
-        quality = "0"
-    
-    modoPremium = config.getSetting("megavideopremium")
-    logger.info("[megavideo.py] modoPremium="+modoPremium)
-    if modoPremium == "false":
-        logger.info("[megavideo.py] usando modo normal para baja calidad")
-        req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-        req.add_header('Referer', 'http://www.megavideo.com/')
-        page = urllib2.urlopen(req);response=page.read();page.close()
-        '''
-        logger.info("response="+response)
-        hd = re.compile(' hd="(.+?)"').findall(response)
-        if len(hd)>0 and hd[0]=="1":
-            logger.info("hd="+hd[0])
-            movielink = re.compile(' hd_url="(.+?)"').findall(response)[0]
-            movielink = movielink.replace("%3A",":")
-            movielink = movielink.replace("%2F","/")
-            movielink = movielink + "?.flv"
-            logger.info("movielink="+movielink)
+    #Megavideo con partes para cinetube
+    #id="http://www.megavideo.com/?v=CN7DWZ8S"><a href="#parte1">Parte 1 de 2</a></li>
+    patronvideos = 'id.+?http://www.megavideo.com..v.(.+?)".+?(parte\d+)'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+    for match in matches:
+        titulo = "[Megavideo " + match[1] + "]"
+        url = "http://www.megavideo.com/?v="+match[0]
+        if url not in encontrados:
+            logger.info(" url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
         else:
-        '''
-        errort = re.compile(' errortext="(.+?)"').findall(response)
-        movielink = ""
-        if len(errort) <= 0:
-            
-            if quality == "1":
-                hd = re.compile(' hd="(.+?)"').findall(response)
-                if len(hd)>0 and hd[0]=="1":
-                    s = re.compile(' hd_s="(.+?)"').findall(response)
-                    k1 = re.compile(' hd_k1="(.+?)"').findall(response)
-                    k2 = re.compile(' hd_k2="(.+?)"').findall(response)
-                    un = re.compile(' hd_un="(.+?)"').findall(response)
-                    movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-                    return movielink        
-            
-            s = re.compile(' s="(.+?)"').findall(response)
-            k1 = re.compile(' k1="(.+?)"').findall(response)
-            k2 = re.compile(' k2="(.+?)"').findall(response)
-            un = re.compile(' un="(.+?)"').findall(response)
-            movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-            #addLink(name, movielink+'?.flv','')
-    else:
-        logger.info("[megavideo.py] usando modo premium para baja calidad")
-        megavideocookie = config.getSetting("megavideocookie")
-        if DEBUG: logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
+            logger.info(" url duplicada="+url)
 
-        logger.info("[megavideo.py] Averiguando cookie...")
-        megavideologin = config.getSetting("megavideouser")
-        if DEBUG: logger.info("[megavideo.py] megavideouser=#"+megavideologin+"#")
-
-        megavideopassword = config.getSetting("megavideopassword")
-        if DEBUG: logger.info("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
-
-        megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-        if DEBUG: logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-
-        if len(megavideocookie) == 0:
-            try:
-                advertencia = xbmcgui.Dialog()
-                resultado = advertencia.ok('Cuenta de Megavideo errónea' , 'La cuenta de Megavideo que usas no es válida' , 'Comprueba el login y password en la configuración')
-            except:
-                pass
-            return ""
-
-        req = urllib2.Request("http://www.megavideo.com/xml/videolink.php?v="+code+"&u="+megavideocookie)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-        req.add_header('Referer', 'http://www.megavideo.com/')
-        page = urllib2.urlopen(req);response=page.read();page.close()
-        errort = re.compile(' errortext="(.+?)"').findall(response)
-        movielink = ""
-        if len(errort) <= 0:
-            
-            if quality == "1":
-                hd = re.compile(' hd="(.+?)"').findall(response)
-                if len(hd)>0 and hd[0]=="1":
-                    s = re.compile(' hd_s="(.+?)"').findall(response)
-                    k1 = re.compile(' hd_k1="(.+?)"').findall(response)
-                    k2 = re.compile(' hd_k2="(.+?)"').findall(response)
-                    un = re.compile(' hd_un="(.+?)"').findall(response)
-                    movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-                    return movielink
-                
-            s = re.compile(' s="(.+?)"').findall(response)
-            k1 = re.compile(' k1="(.+?)"').findall(response)
-            k2 = re.compile(' k2="(.+?)"').findall(response)
-            un = re.compile(' un="(.+?)"').findall(response)
-            movielink = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-            #addLink(name, movielink+'?.flv','')
-    
-    return movielink
-
-def gethighurl(code):
-    logger.info("[megavideo.py] Usa modo premium")
-    
-    code = getcode(code)
-
-    megavideocookie = config.getSetting("megavideocookie")
-    if DEBUG:
-        logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-    #if megavideocookie=="":
-    logger.info("[megavideo.py] Averiguando cookie...")
-    megavideologin = config.getSetting("megavideouser")
-    if DEBUG: logger.info("[megavideo.py] megavideouser=#"+megavideologin+"#")
-    megavideopassword = config.getSetting("megavideopassword")
-    if DEBUG: logger.info("[megavideo.py] megavideopassword=#"+megavideopassword+"#")
-    megavideocookie = GetMegavideoUser(megavideologin, megavideopassword)
-    if DEBUG: logger.info("[megavideo.py] megavideocookie=#"+megavideocookie+"#")
-
-    if len(megavideocookie) == 0:
-        try:
-            advertencia = xbmcgui.Dialog()
-            resultado = advertencia.ok('Cuenta de Megavideo errónea' , 'La cuenta de Megavideo que usas no es válida' , 'Comprueba el login y password en la configuración')
-        except:
-            pass
-        return ""
-
-    req = urllib2.Request("http://www.megavideo.com/xml/player_login.php?u="+megavideocookie+"&v="+code)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    response = urllib2.urlopen(req)
-    data=response.read()
-    response.close()
-    
-    # saca los enlaces
-    patronvideos  = 'downloadurl="([^"]+)"'
+    # Megavideo - Vídeos con título
+    patronvideos  = '<div[^>]+>([^<]+)<.*?<param name="movie" value="http://www.megavideo.com/v/([A-Z0-9a-z]{8})[^"]+"'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    movielink = matches[0]
-    movielink = movielink.replace("%3A",":")
-    movielink = movielink.replace("%2F","/")
-    movielink = movielink.replace("%20"," ")
-    
-    return movielink
 
-def GetMegavideoUser(login, password):
-    logger.info("GetMegavideoUser")
-    # ---------------------------------------
-    #  Inicializa la librería de las cookies
-    # ---------------------------------------
-    ficherocookies = COOKIEFILE
-    # Borra el fichero de cookies para evitar errores
-    try:
-        os.remove(ficherocookies)
-    except:
-        pass
-
-    # the path and filename to save your cookies in
-
-    cj = None
-    ClientCookie = None
-    cookielib = None
-
-    # Let's see if cookielib is available
-    try:
-        import cookielib
-    except ImportError:
-        # If importing cookielib fails
-        # let's try ClientCookie
-        try:
-            import ClientCookie
-        except ImportError:
-            # ClientCookie isn't available either
-            urlopen = urllib2.urlopen
-            Request = urllib2.Request
+    for match in matches:
+        titulo = match[0].strip()
+        if titulo == "":
+            titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match[1]
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
         else:
-            # imported ClientCookie
-            urlopen = ClientCookie.urlopen
-            Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            logger.info("  url duplicada="+url)
 
-    else:
-        # importing cookielib worked
-        urlopen = urllib2.urlopen
-        Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
-        # This is a subclass of FileCookieJar
-        # that has useful load and save methods
+    # Megavideo - Vídeos con título
+    patronvideos  = '<a href\="http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})".*?>([^<]+)</a>'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    # ---------------------------------
-    # Instala las cookies
-    # ---------------------------------
-
-    if cj is not None:
-    # we successfully imported
-    # one of the two cookie handling modules
-
-        if os.path.isfile(ficherocookies):
-            # if we have a cookie file already saved
-            # then load the cookies into the Cookie Jar
-            cj.load(ficherocookies)
-
-        # Now we need to get our Cookie Jar
-        # installed in the opener;
-        # for fetching URLs
-        if cookielib is not None:
-            # if we use cookielib
-            # then we get the HTTPCookieProcessor
-            # and install the opener in urllib2
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-            urllib2.install_opener(opener)
-
+    for match in matches:
+        titulo = match[1].strip()
+        if titulo == "":
+            titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match[0]
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
         else:
-            # if we use ClientCookie
-            # then we get the HTTPCookieProcessor
-            # and install the opener in ClientCookie
-            opener = ClientCookie.build_opener(ClientCookie.HTTPCookieProcessor(cj))
-            ClientCookie.install_opener(opener)
+            logger.info("  url duplicada="+url)
 
-    #print "-------------------------------------------------------"
-    url="http://www.megavideo.com/?c=login"
-    #print url
-    #print "-------------------------------------------------------"
-    theurl = url
-    # an example url that sets a cookie,
-    # try different urls here and see the cookie collection you can make !
+    # Megavideo - Vídeos sin título
+    patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
-    passwordesc=password.replace("&","%26")
-    txdata = "login=1&redir=1&username="+login+"&password="+passwordesc
-    # if we were making a POST type request,
-    # we could encode a dictionary of values here,
-    # using urllib.urlencode(somedict)
+    for match in matches:
+        titulo = ""
+        if titulo == "":
+            titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
-    txheaders =  {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3','Referer':'http://www.megavideo.com/?s=signup'}
-    # fake a user agent, some websites (like google) don't like automated exploration
+    # Megavideo - Vídeos sin título
+    patronvideos  = '<param name="movie" value="http://wwwstatic.megavideo.com/mv_player.swf\?v=([^"]+)">'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    req = Request(theurl, txdata, txheaders)
-    handle = urlopen(req)
-    cj.save(ficherocookies)                     # save the cookies again    
+    for match in matches:
+        titulo = "[Megavideo]"
+        if "&" in match:
+            url = "http://www.megavideo.com/?v="+match.split("&")[0]
+        else:
+            url = match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
-    data=handle.read()
-    '''
-    logger.info("----------------------")
-    logger.info("Respuesta de Megavideo")
-    logger.info("----------------------")
-    logger.info(data)
-    logger.info("----------------------")
-    '''
-    handle.close()
+    # Megavideo - Vídeos sin título
+    patronvideos  = "www.megavideo.com.*?mv_player.swf.*?v(?:=|%3D)(\w{8})"
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    cookiedatafile = open(ficherocookies,'r')
-    cookiedata = cookiedatafile.read()
-    cookiedatafile.close();
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
-    '''
-    logger.info("----------------------")
-    logger.info("Cookies despues")
-    logger.info("----------------------")
-    logger.info(cookiedata)
-    logger.info("----------------------")
-    '''
+    # Megavideo - Vídeos sin título
+    patronvideos  = 'http://www.megavideo.com/v/([A-Z0-9a-z]{8})'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    patronvideos  = 'user="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(cookiedata)
-    if len(matches)==0:
-        patronvideos  = 'user=([^\;]+);'
-        matches = re.compile(patronvideos,re.DOTALL).findall(cookiedata)
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # Megavideo - Vídeos con título
+    patronvideos  = '<a href="http://www.megavideo.com/\?v\=([^"]+)".*?>(.*?)</a>'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
-    if len(matches)==0:
-        logger.info("No se ha encontrado la cookie de Megavideo")
-        logger.info("----------------------")
-        logger.info("Respuesta de Megavideo")
-        logger.info("----------------------")
-        logger.info(data)
-        logger.info("----------------------")
-        logger.info("----------------------")
-        logger.info("Cookies despues")
-        logger.info("----------------------")
-        logger.info(cookiedata)
-        logger.info("----------------------")
-        return ""
+    for match in matches:
+        titulo = match[1].strip()
+        if titulo == "":
+            titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match[0]
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # Megavideo - Vídeos con título
+    patronvideos  = '<param name="movie" value=".*?v\=([A-Z0-9]{8})" />'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # Megavideo... formato watchanimeon")
+    patronvideos  = 'src="http://wwwstatic.megavideo.com/mv_player.swf.*?\&v\=([^"]+)"'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?v="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+    # Megavideo... formato cine-adicto")
+    patronvideos = '<div style="visibility:hidden;" id="megaid">(.*?)&langid.*?</div>'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?d="+match.strip()
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # Megavideo... parámetro megaupload ?d
+    # http://www.megavideo.com/?d=0I8GDC55
+    patronvideos  = 'http://www.megavideo.com/\?d\=([A-Z0-9a-z]{8})'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        #import megaupload
+        #megavideo_code = megaupload.convertcode(match)
+        #if megavideo_code<>"":
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?d="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve
+
+if __name__ == "__main__":
+    import getopt
+    import sys
+    options, arguments = getopt.getopt(sys.argv[1:], "", ["video_url=","login=","password="])
+    
+    video_url = ""
+    login = ""
+    password = ""
+    
+    logger.info("%s %s" % (str(options),str(arguments)))
+    
+    for option, argument in options:
+        print option,argument
+        if option == "--video_url":
+            video_url = argument
+        elif option == "--login":
+            login = argument
+        elif option == "--password":
+            password = argument
+        else:
+            assert False, "Opcion desconocida"
+
+    if video_url=="":
+        print "ejemplo de invocacion"
+        print "megavideo --video_url http://www.megavideo.com/?v=ABCDEFGH --login usuario --password secreto"
     else:
-        return matches[0]
+        
+        if login!="":
+            premium=True
+        else:
+            premium=False
+        
+        print get_video_url(video_url,premium,login,password)
