@@ -1,209 +1,302 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para veranime
+# Canal para http://www.veranime.net/
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os
 import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 
 from core import scrapertools
 from core import config
 from core import logger
-from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
-from servers import vk
-
-from pelisalacarta import buscador
 
 CHANNELNAME = "veranime"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
-
-# Traza el inicio del canal
-logger.info("[veranime.py] init")
-
 DEBUG = True
 
-def mainlist(params,url,category):
+def isGeneric():
+    return True
+
+def mainlist(item):
     logger.info("[veranime.py] mainlist")
 
-    # Menu principal
-    xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://ver-anime.net/" , "", "" )
-    xbmctools.addnewfolder( CHANNELNAME , "fulllist" , CHANNELNAME , "Listado completo" , "http://ver-anime.net/" , "", "" )
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Ultimos Capitulos Agregados", action="novedades"     , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Ultimos Animes Agregados"   , action="ultimos"        , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabetico"         , action="listaalfabetica", url="http://www.ver-anime.net/letra/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Listado Completo"           , action="listacompleta"  , url="http://www.ver-anime.net/letra/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Animes Populares"           , action="populares"      , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Animes en Emision"          , action="emision"  , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar" , action="search") )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    return itemlist
 
-def fulllist(params,url,category):
-    logger.info("[veranime.py] fulllist")
+def novedades(item):
+    logger.info("[veranime.py] novedades")
 
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
 
-    # Patron de las entradas
-    #<li><a href="http://ver-anime.net/07-ghost/"><span>07 Ghost</span></a></li>
-    #patron = '<li><a title="[^"]+" href="([^"]+)">([^<]+)</a></li>'
-    patron = '<li><a href="(http://ver-anime.net/[^"]+)"><span>([^<]+)</span></a></li>'
+    # Extrae las entradas
+    patron  = 'Ultimos Capitulos.*?<div id="elmenu">(.*?)<div class'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    # Añade las entradas encontradas
-    for match in matches:
-        # Atributos
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    patron = '<a href="([^"]+)" title="([^"]+)"'
+    matches2 = re.compile(patron,re.DOTALL).findall(matches[0])
+    for match in matches2:
+        scrapedurl = match[0]
         scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        # AÃ±ade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    return itemlist
 
-def newlist(params,url,category):
-    logger.info("[veranime.py] listmirrors")
+def ultimos(item):
+    logger.info("[veranime.py] ultimos")
 
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
 
-    # Extrae las entradas (carpetas)
-    '''
-    <div class="item"><div class="boxgrid captionfull"><a href="http://ver-anime.net/demonbane/" title="Demonbane"><img src="http://ver-anime.net/images/Demonbane.gif"
-    
-    <div class="item">
-    <div class="boxgrid captionfull"><a href="http://ver-anime.net/suzuka/" title="Suzuka"><img src="http://ver-anime.net/images/Suzuka.gif" alt="Suzuka" width="164" height="250" border="0"/></a>
-    <div class="cover boxcaption"><h1><a href="http://ver-anime.net/suzuka/" title="Suzuka">Suzuka</a></h1></div>
-    </div>
-    </div>
-    '''
-    #patron  = '<td style="width.25."><div class="fondoimg"><div class="background"><a href="([^"]+)" title="([^"]+)">'
-    #patron += '<strong><h3>[^<]+</h3></strong></a><br/><div class="borde-interior2"><a href="[^"]+" title="[^"]+">[^<]+'
-    #patron += '<img src="([^"]+)" alt="[^"]+"/></a></div></div></div></td>'
-
-    patron   = '<div class="item">[^<]*'
-    patron  += '<div class="boxgrid captionfull"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"' # alt="Suzuka" width="164" height="250" border="0"/></a>[^<]+'
-    #patron  += '<div class="cover boxcaption"><h1><a href="http://ver-anime.net/suzuka/" title="Suzuka">Suzuka</a></h1></div>[^<]+'
-    #patron  += '</div>[^<]+'
-    #patron  += '</div>'
+    # Extrae las entradas
+    patron  = 'Ultimos Animes Agregados.*?<div id="elmenu">(.*?)<div class'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    patron = '<a href="([^"]+)" title="([^"]+)"'
+    matches2 = re.compile(patron,re.DOTALL).findall(matches[0])
+    for match in matches2:
+        scrapedurl = match[0]
         scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = urlparse.urljoin(url,match[2]).replace(" ","%20")
+        scrapedthumbnail = ""
         scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        # AÃ±ade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    return itemlist
 
-def listmirrors(params,url,category):
-    logger.info("[veranime.py] listmirrors")
+def listaalfabetica(item):
+    logger.info("[veranime.py] listaalfabetica")
 
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
+    url = item.url
+    itemlist = []
+    
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="0-9" , url=url+"09.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="A"   , url=url+"a.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="B"   , url=url+"b.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="C"   , url=url+"c.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="D"   , url=url+"d.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="E"   , url=url+"e.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="F"   , url=url+"F.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="G"   , url=url+"g.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="H"   , url=url+"h.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="I"   , url=url+"i.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="J"   , url=url+"j.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="K"   , url=url+"k.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="L"   , url=url+"l.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="M"   , url=url+"m.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="N"   , url=url+"n.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="O"   , url=url+"o.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="P"   , url=url+"p.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Q"   , url=url+"q.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="R"   , url=url+"r.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="S"   , url=url+"s.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="T"   , url=url+"t.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="U"   , url=url+"u.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="V"   , url=url+"v.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="W"   , url=url+"w.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="X"   , url=url+"x.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Y"   , url=url+"y.html" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Z"   , url=url+"z.html" , folder=True) )
 
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
+    return itemlist
 
-    # Extrae la sinopsis
-    patron  = '<div class="contenido">[^<]+'
-    patron += '<div class="caratula"><img src="[^"]+"[^>]+></div>[^<]+'
-    patron += '<p>([^<]+)<'
-
+def listacompleta(item):
+    logger.info("[veranime.py] listacompleta")
+    url = item.url
+    itemlist = []
+    # Descarga las pÃ¡ginas
+    data = scrapertools.cachePage(url+"09.html")
+    data = data + scrapertools.cachePage(url+"a.html")
+    data = data + scrapertools.cachePage(url+"b.html")
+    data = data + scrapertools.cachePage(url+"c.html")
+    data = data + scrapertools.cachePage(url+"d.html")
+    data = data + scrapertools.cachePage(url+"e.html")
+    data = data + scrapertools.cachePage(url+"f.html")
+    data = data + scrapertools.cachePage(url+"g.html")
+    data = data + scrapertools.cachePage(url+"h.html")
+    data = data + scrapertools.cachePage(url+"i.html")
+    data = data + scrapertools.cachePage(url+"j.html")
+    data = data + scrapertools.cachePage(url+"k.html")
+    data = data + scrapertools.cachePage(url+"l.html")
+    data = data + scrapertools.cachePage(url+"m.html")
+    data = data + scrapertools.cachePage(url+"n.html")
+    data = data + scrapertools.cachePage(url+"o.html")
+    data = data + scrapertools.cachePage(url+"p.html")
+    data = data + scrapertools.cachePage(url+"q.html")
+    data = data + scrapertools.cachePage(url+"r.html")
+    data = data + scrapertools.cachePage(url+"s.html")
+    data = data + scrapertools.cachePage(url+"t.html")
+    data = data + scrapertools.cachePage(url+"u.html")
+    data = data + scrapertools.cachePage(url+"v.html")
+    data = data + scrapertools.cachePage(url+"w.html")
+    data = data + scrapertools.cachePage(url+"x.html")
+    data = data + scrapertools.cachePage(url+"y.html")
+    data = data + scrapertools.cachePage(url+"z.html")
+    
+    # Busca las series
+    patron = '<div class="bl">[^<]+<a href="([^"]+)" title="([^"]+)">[^<]+<img src="([^"]+)"[^<]+</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    if len(matches)>0:
-        plot = matches[0].strip()
-        logger.info(plot)
-
-    patron = '<a title="[^"]+" href="([^"]+)">([^<]+)</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
     for match in matches:
         scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = thumbnail
-        scrapedplot = plot
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        scrapedurl = match[0]
+        scrapedthumbnail = match[2]
+        scrapedplot = ""
+        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    return itemlist    
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def populares(item):
+    logger.info("[veranime.py] populares")
 
-def detail(params,url,category):
-    logger.info("[veranime.py] detail")
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
 
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    patron  = '<div id="listacapdd"><div class="listddserie">[^<]+'
-    patron += '<a title="[^"]+" href="([^"]+)"><strong>[^<]+</strong></a>[^<]+'
-    patron += '</div>'
+    # Extrae las entradas
+    patron  = 'Animes Populares.*?<div id="elmenu">(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        url = matches[0]
-        data = scrapertools.cachePage(url)
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    patron = '<a href="([^"]+)" title="([^"]+)"'
+    matches2 = re.compile(patron,re.DOTALL).findall(matches[0])
+    for match in matches2:
+        scrapedurl = match[0]
+        scrapedtitle = match[1]
+        scrapedthumbnail = ""
+        scrapedplot = ""
 
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
+        # AÃ±ade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    for video in listavideos:
-        videotitle = video[0]
-        url = video[1]
-        server = video[2]
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
-    # ------------------------------------------------------------------------------------
+    return itemlist
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def emision(item):
+    logger.info("[veranime.py] emision")
 
-def play(params,url,category):
-    logger.info("[veranime.py] play")
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
 
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
+    # Extrae las entradas
+    patron  = 'Animes en Emision.*?<div id="elmenu">(.*?)<div class'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    patron = '<a href="([^"]+)" title="([^"]+)"'
+    matches2 = re.compile(patron,re.DOTALL).findall(matches[0])
+    for match in matches2:
+        scrapedurl = match[0]
+        scrapedtitle = match[1]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+
+        # AÃ±ade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    return itemlist
+
+def listar(item):
+    logger.info("[veranime.py] listar")
+
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
+    itemlist = []
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    # Busca las series
+    patron = '<div class="bl">[^<]+<a href="([^"]+)" title="([^"]+)">[^<]+<img src="([^"]+)"[^<]+</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        scrapedtitle = match[1]
+        scrapedurl = match[0]
+        scrapedthumbnail = match[2]
+        scrapedplot = ""
+        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    return itemlist
+
+def capitulos(item):
+    logger.info("[veranime.py] capitulos")
+
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
+    itemlist = []
+    
+    # Busca la caratula y el argumento
+    patronplot = '<div class="caratula">.*?<img src="([^"]+)".*?<p>(.*?)</p>.*?</tr>'
+    matches = re.compile(patronplot,re.DOTALL).findall(data)
+    for match in matches:
+        scrapedthumbnail = match[0]
+        scrapedplot = match[1]
+
+    # Busca donde estan todos los capitulos
+    patron = 'Lista de capitulos de.*?<ul class="truindexlist">(.*?)</ul>'
+    matches2 = re.compile(patron,re.DOTALL).findall(data)
+    data2 = matches2[0]
+
+    # Busca cada capitulo
+    patroncapitulos = '<a title="([^"]+)" href="([^"]+)"'
+    matches3 = re.compile(patroncapitulos,re.DOTALL).findall(data2)
+    for match3 in matches3:
+        scrapedtitle = match3[0]
+        scrapedurl = match3[1]
+        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    return itemlist
+
+def videos(item):
+    logger.info("[veranime.py] videos")
+
+    # Descarga la pÃ¡gina
+    data = scrapertools.cachePage(item.url)
+    itemlist = []
+    patron = '<div id="mirror" class="alternateMirrors contentModuleSmall">(.*?)showmedia_about'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    data2 = matches[0]
+    patronvideos = '<a href="([^"]+)".*?">([^<]+)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data2)
+    for match in matches:
+        listavideos = servertools.findvideos(scrapertools.cachePage(match[0]))
+        for video in listavideos:
+            itemlist.append( Item(channel=CHANNELNAME, action="play", title=match[1] , url=video[1] , thumbnail="" , server=video[2] , folder=False) )
+
+    return itemlist
+
+def search(item,texto):
+    logger.info("[veranime.py] search")
+    itemlist = []
+    
+    # Descarga la pÃ¡gina con la busqueda
+    data = scrapertools.cache_page( "http://www.ver-anime.net/search.php" , post="tuti="+texto )
+
+    # Extrae las entradas de todas series
+    patron  = '<ul class="truindexlist">(.*?)</ul>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    patron = '<a href="([^"]+)" title="([^"]+)">'
+    matches2 = re.compile(patron,re.DOTALL).findall(matches[0])
+    for match in matches2:
+        scrapedtitle = match[1].strip()
+        scrapedurl = match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+
+        # AÃ±ade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    itemlist = sorted(itemlist, key=lambda Item: Item.title) 
+    return itemlist
