@@ -77,7 +77,7 @@ def peliculascat(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[0] , url=urlparse.urljoin(item.url,match[1]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[0] , fulltitle=match[0], url=urlparse.urljoin(item.url,match[1]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -104,7 +104,7 @@ def search(item,texto):
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -124,7 +124,7 @@ def lastepisodes(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist  
 
@@ -143,7 +143,7 @@ def mostviewed(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -176,7 +176,7 @@ def peliculas(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , fulltitle=match[1], url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -226,7 +226,7 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
         import sys
         for line in sys.exc_info():
@@ -252,14 +252,14 @@ def play(item):
     try:
         location = scrapertools.getLocationHeaderFromResponse(item.url)
         if "fileserve.com" in location:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , fulltitle=item.fulltitle, url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
             data = scrapertools.cache_page(item.url)
             videos = servertools.findvideos(data) 
             if(len(videos)>0): 
                 url = videos[0][1]
                 server=videos[0][2]                   
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
             else:
                 patron='<ul class="form-login">(.*?)</ul'
                 matches = re.compile(patron, re.S).findall(data)
