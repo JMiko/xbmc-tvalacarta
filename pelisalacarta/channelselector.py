@@ -158,7 +158,7 @@ def channels_history_list():
 def channels_list():
     itemlist = []
 
-    itemlist.append( Item( title="Animeflv"              , channel="Animeflv"             , language="ES"    , category="A"       , type="generic" )) # MarioXD 14/10/2011
+    itemlist.append( Item( title="Animeflv"              , channel="animeflv"             , language="ES"    , category="A"       , type="generic" )) # MarioXD 14/10/2011
     itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES"    , category="A"       , type="xbmc"     ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES"    , category="F,S"     , type="generic"  ))
@@ -217,7 +217,7 @@ def channels_list():
     itemlist.append( Item( title="Robinfilm (IT)"        , channel="robinfilm"            , language="IT" , category="F"          , type="generic"  )) # jesus 16/05/2011
     itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A"      , type="generic"  ))
     itemlist.append( Item( title="Serieonline"           , channel="serieonline"          , language="ES" , category="F,S,D"      , type="generic"  ))
-    #itemlist.append( Item( title="Series.ly"             , channel="seriesly"             , language="ES" , category="S,A"        , type="generic"  ))
+    itemlist.append( Item( title="Series.ly"             , channel="seriesly"             , language="ES" , category="S,A"        , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S"          , type="xbmc"  ))
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S"          , type="generic" ))
