@@ -44,7 +44,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     for video_url in video_urls:
         logger.info("[tutv.py] %s - %s" % (video_url[0],video_url[1]))
 
-    return url
+    return video_urls
 
 def extract_id(text):
     patron = "xtp\=([a-zA-Z0-9]+)"
