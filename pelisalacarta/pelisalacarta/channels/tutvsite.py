@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para buscar en tu.tv
@@ -7,73 +7,78 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 
 from core import scrapertools
 from core import config
 from core import logger
-from platform.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
-from servers import vk
-
-from pelisalacarta import buscador
 
 CHANNELNAME = "tutvsite"
-
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
-
-logger.info("[tutvsite.py] init")
-
 DEBUG = True
 
-def mainlist(params,url,category):
+def isGeneric():
+    return True
+
+def mainlist(item):
     logger.info("[tutvsite.py] mainlist")
 
-    # Añade al listado de XBMC
-    addfolder("Buscar","http://www.tu.tv/","search")
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, action="search"     , title="Buscar"                           , url="http://www.tu.tv/buscar/?str=%s"))
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    return itemlist
 
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
+    logger.info("[tutvsite.py] search")
 
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    try:
+        # La URL puede venir vacía, por ejemplo desde el buscador global
+        if item.url=="":
+            item.url="http://www.tu.tv/buscar/?str=%s"
+    
+        # Reemplaza el texto en la cadena de búsqueda
+        item.url = item.url % texto
 
-def search(params,url,category):
+        # Devuelve los resultados
+        return list(item)
+    
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
+
+def list(item):
     logger.info("[tutvsite.py] list")
-
-    keyboard = xbmc.Keyboard('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)>0:
-            #convert to HTML
-            tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://www.tu.tv/buscar/?str="+tecleado
-            list(params,searchUrl,category)
-
-def performsearch(texto):
-    logger.info("[tutvsite.py] performsearch")
-    url = "http://www.tu.tv/buscar/?str="+texto
+    itemlist=[]
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<div class="fila clearfix">[^<]+<div.*?</div>[^<]+<a href="([^"]+)"[^<]+<img src="([^"]+)".*?<span id="txtN">(.*?)</span>.*?<span class="tmp">([^<]+)</span.*?<span id="txtN">(.*?)</span>'
+    '''
+    <div class="fila clearfix">
+    <div class="datos">
+    De: <a href="/usuario/avatarenlinea"><img src="http://uimg.tu.tv/imagenes/minis/usuarios/DEFECTO.gif" width="16" height="16" align="absmiddle"/></a> 		<a href="/usuario/avatarenlinea">avatarenlinea</a><br />
+    Categoría: <a href="/categorias/arte-y-animaciones/">Arte y animaciones</a><br />    
+    Añadido: 7/5/2007<br />
+    <strong>385 votos</strong><br />
+    Reproducciones: 238.215 
+    </div>
+    <div class="limagen">
+    <div class="paralistacontent">
+    <a href="/videos/avatar-1x19-el-asedio-del-norte-i" ><img src="http://vimg.tu.tv/imagenes/videos/a/v/avatar-1x19-el-asedio-del-norte-i_imagen1.jpg" alt="Avatar - 1x19 - El Asedio del norte I "  width="122" height="92" align="left" class="vid" /></a>
+    '''
+    patronvideos  = '<div class="fila clearfix">.*?<div class="paralistacontent">(.*?)</div>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    resultados = []
+    data = ""
+    for match in matches:
+        data = data + match
+
+    patronvideos  = '<a href="([^"]+)" ><img src="([^"]+)" alt="([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         # Titulo
@@ -81,139 +86,11 @@ def performsearch(texto):
             scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
         except:
             scrapedtitle = match[2]
-        scrapedtitle = scrapedtitle.replace("<b>","")
-        scrapedtitle = scrapedtitle.replace("</b>","")
-        scrapedtitle = scrapedtitle.strip()
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = urlparse.urljoin(url,match[1])
-        scrapedplot = match[4].strip()
-
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "playfolder" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
-        
-    return resultados
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-def list(params,url,category):
-    logger.info("[tutvsite.py] list")
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="([^"]+)" class="enlace_si">Siguiente'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = "#Siguiente"
-        scrapedurl = urlparse.urljoin(url,match)
-        scrapedthumbnail = ""
-        
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-
-        # Añade al listado de XBMC
-        addfolder(scrapedtitle,scrapedurl,"list")
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<div class="fila clearfix">[^<]+<div.*?</div>[^<]+<a href="([^"]+)"[^<]+<img src="([^"]+)".*?<span id="txtN">(.*?)</span>.*?<span class="tmp">([^<]+)</span.*?<span id="txtN">(.*?)</span>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        # Titulo
-        try:
-            scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
-        except:
-            scrapedtitle = match[2]
-        scrapedtitle = scrapedtitle.replace("<b>","")
-        scrapedtitle = scrapedtitle.replace("</b>","")
-        scrapedtitle = scrapedtitle.strip()
-
-        # URL
-        scrapedurl = urlparse.urljoin(url,match[0])
-        
-        # Thumbnail
-        scrapedthumbnail = urlparse.urljoin(url,match[1])
-        
-        # procesa el resto
-        scrapeddescription = match[4].strip()
-
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-
-        # Añade al listado de XBMC
-        addthumbnailvideo(scrapedtitle,scrapedurl,scrapedthumbnail,scrapeddescription,category,"tutv")
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def playfolder(params,url,category):
-    logger.info("[tutvsite.py] playfolder")
-    
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-    
-    addthumbnailvideo(title,url,thumbnail,plot,category,"tutv")
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def play(params,url,category):
-    logger.info("[tutvsite.py] play")
-
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-    logger.info("[tutvsite.py] thumbnail="+thumbnail)
-    logger.info("[tutvsite.py] server="+server)
-    
-    # Descarga la página de detalle y extrae el vídeo
-    data = scrapertools.cachePage(url)
-    listavideos = servertools.findvideos(data)
-    if len(listavideos)>0:
-        url = listavideos[0][1]
-    logger.info("[tutvsite.py] url="+url)
-    
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
-
-def addfolder(nombre,url,accion):
-    logger.info('[tutvsite.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
-    listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
-    itemurl = '%s?channel=tutvsite&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
-    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
-
-def addvideo(nombre,url,category,server):
-    logger.info('[tutvsite.py] addvideo( "'+nombre+'" , "' + url + '" , "'+server+'")"')
-    listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
-    listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
-    itemurl = '%s?channel=tutvsite&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , urllib.quote_plus(url) , server )
-    xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
-
-def addthumbnailvideo(nombre,url,thumbnail,descripcion,category,server):
-    logger.info('[tutvsite.py] addvideo( "'+nombre+'" , "' + url + '" , "'+thumbnail+'" , "'+server+'")"')
-    listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-    listitem.setInfo( "video", { "Title" : nombre, "Plot" : descripcion } )
-    itemurl = '%s?channel=tutvsite&action=play&category=%s&url=%s&server=%s' % ( sys.argv[ 0 ] , category , url , server )
-    xbmcplugin.addDirectoryItem( handle=int(sys.argv[ 1 ]), url=itemurl, listitem=listitem, isFolder=False)
-
-def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-    logger.info('[tutvsite.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
-    listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
-    itemurl = '%s?channel=tutvsite&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
-    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
+    return itemlist
