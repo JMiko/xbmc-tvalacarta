@@ -62,7 +62,7 @@ def search(item,texto):
         scrapedurl = 'http://www.divxonline.info' + match[0]
         scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
 
-        itemlist.append( Item(channel=CHANNELNAME, title = match[1], url=scrapedurl, action="findvideos" ) )
+        itemlist.append( Item(channel=CHANNELNAME, title = match[1], fulltitle=match[1], url=scrapedurl, action="findvideos" ) )
     
     return itemlist
 
@@ -90,7 +90,7 @@ def peliculas(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
@@ -130,7 +130,7 @@ def peliculasb(item): # fichas con formato en entradas alfabéticas
         scrapedplot = scrapertools.htmlclean(match[2])
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # añade siguiente página
     #
@@ -164,7 +164,7 @@ def peliculasc(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
@@ -279,7 +279,7 @@ def movielist(item): # pelis sin ficha (en listados por género)
             f.write(fareg+"\n")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if (Generate):
         f.close()
@@ -320,8 +320,8 @@ def findvideos(item):
     i=1
     for videoitem in itemlist:
         videoitem.title = "Mirror %d%s" % (i,videoitem.title)
+        videoitem.fulltitle = item.fulltitle
         videoitem.channel=channel=CHANNELNAME
-        videoitem.extra=item.extra
         i=i+1
     
     return itemlist
