@@ -88,10 +88,10 @@ def getitems(requestpath):
         if channel in ("configuracion", "trailertools", "buscador") :
            exec "import "+channel
         else:
-#            try:
+            try:
                exec "from pelisalacarta.channels import "+channel
-#            except:
-#               exec "from core import "+channel
+            except:
+               exec "from core import "+channel
     
         # play - es el menú de reproducción de un vídeo
         if accion=="play":
@@ -180,9 +180,9 @@ def download_item(senderitem,refered_item):
     if len(video_urls)>0:
         from core import downloadtools
         downloadtools.downloadtitle(video_urls[len(video_urls)-1][1],refered_item.fulltitle) ## <--
-        itemlist.append( Item( title="Descarga finalizada" ) )
+        itemlist.append( Item( title="Descarga finalizada", action = "mainlist" ) )
     else:
-        itemlist.append( Item( title="El video ya no está disponible" ) )
+        itemlist.append( Item( title="El video ya no está disponible", action = "mainlist" ) )
     
     return itemlist
 
@@ -221,7 +221,7 @@ def downloadall(senderitem,refered_item):
     from core import descargas
     itemlist = []
     descargas.downloadall(senderitem)
-    itemlist.append( Item( title="Fin de todas las descargas pendientes" ) )
+    itemlist.append( Item( title="Fin de todas las descargas pendientes", action="mainlist" ) )
     
     return itemlist
 
@@ -230,8 +230,8 @@ def add_to_downloads(senderitem,refered_item):
     descargas.savebookmark(canal=senderitem.channel,titulo=refered_item.title,url=refered_item.url,thumbnail=senderitem.thumbnail,server=refered_item.server,plot="",fulltitle=senderitem.fulltitle)
     
     itemlist = []
-    itemlist.append( Item( title="El video %s" % senderitem.fulltitle, channel=senderitem.channel,action="play",url=refered_item.url,server=refered_item.server, fulltitle=senderitem.fulltitle, folder=False ) )
-    itemlist.append( Item( title="ha sido añadido a la lista de descargas", channel=senderitem.channel,action="play",url=refered_item.url,server=refered_item.server, fulltitle=senderitem.fulltitle, folder=False ) )
+    itemlist.append( Item( title="El video %s" % senderitem.fulltitle, channel=senderitem.channel,action="play",url=refered_item.url,server=refered_item.server, fulltitle=senderitem.fulltitle, folder=True ) )
+    itemlist.append( Item( title="ha sido añadido a la lista de descargas", channel=senderitem.channel,action="play",url=refered_item.url,server=refered_item.server, fulltitle=senderitem.fulltitle, folder=True ) )
     
     return itemlist
 
@@ -240,8 +240,8 @@ def remove_from_downloads(senderitem,refered_item):
     descargas.deletebookmark(refered_item.extra)
     
     itemlist = []
-    itemlist.append( Item( title="El video %s" % senderitem.fulltitle ) )
-    itemlist.append( Item( title="ha sido eliminado de la lista de descargas" ) )
+    itemlist.append( Item( title="El video %s" % senderitem.fulltitle, action = "mainlist" ) )
+    itemlist.append( Item( title="ha sido eliminado de la lista de descargas", action = "mainlist" ) )
     
     return itemlist
 
@@ -250,8 +250,8 @@ def remove_from_error_downloads(senderitem,refered_item):
     descargas.delete_error_bookmark(refered_item.extra)
     
     itemlist = []
-    itemlist.append( Item( title="El video %s" % refered_item.title ) )
-    itemlist.append( Item( title="ha sido eliminado definitivamente" ) )
+    itemlist.append( Item( title="El video %s" % refered_item.title, action = "mainlist" ) )
+    itemlist.append( Item( title="ha sido eliminado definitivamente", action = "mainlist" ) )
     
     return itemlist
 
@@ -260,9 +260,9 @@ def add_again_to_downloads(senderitem,refered_item):
     descargas.mover_descarga_error_a_pendiente(refered_item.extra)
     
     itemlist = []
-    itemlist.append( Item( title="El video %s" % refered_item.title ) )
-    itemlist.append( Item( title="ha sido movido a la lista" ) )
-    itemlist.append( Item( title="de descargas de nuevo" ) )
+    itemlist.append( Item( title="El video %s" % refered_item.title, action = "mainlist" ) )
+    itemlist.append( Item( title="ha sido movido a la lista", action = "mainlist" ) )
+    itemlist.append( Item( title="de descargas de nuevo", action = "mainlist" ) )
     
     return itemlist
 
