@@ -34,8 +34,11 @@ def mainlist(item):
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
-def search(item,texto):
+def search(item,texto, categoria="*"):
 
+    if categoria not in ("F","S","*"): 
+       return []
+       
     try:
         # La URL puede venir vacía, por ejemplo desde el buscador global
         if item.url=="":

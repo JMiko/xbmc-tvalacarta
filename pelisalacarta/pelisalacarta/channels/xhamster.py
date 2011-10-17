@@ -172,7 +172,7 @@ def videos(item):
 			# Depuracion
 			logger.info(video[1])
 			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-			itemlist.append( Item(channel=CHANNELNAME, action="obtienedir" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, server="Directo"))
+			itemlist.append( Item(channel=CHANNELNAME, action="obtienedir" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, server="Directo"))
 
 	# METE PAGINADOR
 	if paginador is not None:
@@ -189,7 +189,7 @@ def obtienedir(item):
 	if len(matches)>0:
 		dir = "http://xhamster.com/flv2/" + matches[0]	
 		logger.info("url="+dir)
-		itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=dir, thumbnail=item.thumbnail, plot=item.plot, show=item.title, server="Directo", folder=False))
+		itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=dir, thumbnail=item.thumbnail, plot=item.plot, show=item.title, server="Directo", folder=False))
 	return itemlist
 	
 def play(params,dir,category):
