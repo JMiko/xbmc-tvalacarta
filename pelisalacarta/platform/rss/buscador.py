@@ -67,7 +67,7 @@ def search(item,titulo):
 def buscar(item):
     logger.info("[buscador.py] buscar")
     CHANNELNAME = item.channel
-    item.url = urllib.unquote_plus(item.url)
+    item.url = ""
     categoria = item.url
     titulo = item.extra
     texto = titulo

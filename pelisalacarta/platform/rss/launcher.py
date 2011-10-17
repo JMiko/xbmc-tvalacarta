@@ -136,7 +136,10 @@ def controller(plugin_name,port,host,path,headers):
                 elif item.folder:
                     logger.info("  Nivel intermedio")
                     item.fulltitle = DepuraTitulo(item.fulltitle, "false", "false")
+
+                    from core.scrapertools import slugify
                     play_name = "%s_%s.dat" % ( item.channel ,  urllib.quote(item.fulltitle) )
+                    play_name = slugify(play_name)
                     #print "play_name,fulltitle,plot,thumbnail = %s, %s, %s, %s" % (play_name, item.fulltitle, item.plot, item.thumbnail)
                     if item.plot not in ("none",""):
                         salva_descripcion(play_name, item.fulltitle, item.plot, item.thumbnail)
@@ -155,7 +158,9 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "\n"
                 else:
                     logger.info("  Video")
+                    from core.scrapertools import slugify
                     play_name = "%s_%s.dat" % ( item.channel ,  urllib.quote(item.fulltitle) )
+                    play_name = slugify(play_name)
                     fulltitle,plot,thumbnail = recupera_descripcion(play_name)
                     if plot=="": plot = item.plot
                     if thumbnail=="": thumbnail=item.thumbnail
