@@ -47,11 +47,12 @@ def mainlist(item):
 
         try:
             # Lee el bookmark
-            titulo,thumbnail,plot,server,url = readbookmark(fichero)
+            canal,titulo,thumbnail,plot,server,url,fulltitle = readbookmark(fichero)
 
             # Crea la entrada
             # En extra va el nombre del fichero para poder borrarlo
-            itemlist.append( Item( channel=CHANNELNAME , action="play" , url=url , server=server, title=titulo, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), folder=False ))
+            ## <-- Añado fulltitle con el titulo de la peli
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), fulltitle=fulltitle, folder=True ))
         except:
             for line in sys.exc_info():
                 logger.error( "%s" % line )
@@ -96,11 +97,22 @@ def readbookmark(filename,readpath=BOOKMARK_PATH):
     except:
         plot = lines[4].strip()
 
+    ## Campos fulltitle y canal añadidos
+    try:
+        fulltitle = urllib.unquote_plus(lines[5].strip())
+    except:
+        fulltitle = lines[5].strip()
+
+    try:
+        canal = urllib.unquote_plus(lines[6].strip())
+    except:
+        canal = lines[6].strip()
+
     bookmarkfile.close();
 
-    return titulo,thumbnail,plot,server,url
+    return canal,titulo,thumbnail,plot,server,url,fulltitle
 
-def savebookmark(titulo="",url="",thumbnail="",server="",plot="",savepath=BOOKMARK_PATH):
+def savebookmark(canal=CHANNELNAME,titulo="",url="",thumbnail="",server="",plot="",fulltitle="",savepath=BOOKMARK_PATH):
     logger.info("[favoritos.py] savebookmark(path="+savepath+")")
 
     # Crea el directorio de favoritos si no existe
@@ -140,10 +152,12 @@ def savebookmark(titulo="",url="",thumbnail="",server="",plot="",savepath=BOOKMA
     filecontent = filecontent + urllib.quote_plus(thumbnail)+'\n'
     filecontent = filecontent + urllib.quote_plus(server)+'\n'
     filecontent = filecontent + urllib.quote_plus(downloadtools.limpia_nombre_excepto_1(plot))+'\n'
+    filecontent = filecontent + urllib.quote_plus(fulltitle)+'\n'
+    filecontent = filecontent + urllib.quote_plus(canal)+'\n'
 
     # Genera el nombre de fichero
     from core import scrapertools
-    filename = '%08d-%s.txt' % (filenumber,scrapertools.slugify(titulo))
+    filename = '%08d-%s.txt' % (filenumber,scrapertools.slugify(fulltitle))
     logger.info("[favoritos.py] savebookmark filename="+filename)
 
     # Graba el fichero

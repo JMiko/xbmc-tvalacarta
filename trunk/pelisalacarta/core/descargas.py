@@ -46,7 +46,7 @@ def mainlist(item):
             logger.info("[descargados.py] fichero=" + fichero)
             if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
                 url = os.path.join( downloadpath , fichero )
-                itemlist.append( Item( channel="descargados", action="play", title=fichero, url=url, server="local", folder=False))
+                itemlist.append( Item( channel="descargados", action="play_video", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
 
     except:
         logger.info("[descargados.py] exception on mainlist")
@@ -72,11 +72,11 @@ def pendientes(item):
         logger.info("fichero="+fichero)
         try:
             # Lee el bookmark
-            titulo,thumbnail,plot,server,url = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
+            canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            itemlist.append( Item( channel=CHANNELNAME , action="play" , url=url , server=server, title=titulo, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), fulltitle=fulltitle, folder=True ))
 
         except:
             pass
@@ -84,7 +84,7 @@ def pendientes(item):
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
-    itemlist.append( Item( channel=CHANNELNAME , action="downloadall" , title="(Empezar la descarga de la lista)", thumbnail=os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png") , folder=False ))
+    itemlist.append( Item( channel=CHANNELNAME , action="downloadall" , title="(Empezar la descarga de la lista)", thumbnail=os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png") , folder=True ))
 
     return itemlist
 
@@ -106,11 +106,11 @@ def errores(item):
         logger.info("[downloadall.py] fichero="+fichero)
         try:
             # Lee el bookmark
-            titulo,thumbnail,plot,server,url = favoritos.readbookmark(fichero,ERROR_PATH)
+            canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,ERROR_PATH)
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            itemlist.append( Item( channel=CHANNELNAME , action="play" , url=url , server=server, title=titulo, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=True ))
 
         except:
             pass
@@ -143,7 +143,7 @@ def downloadall(item):
             # Descarga el vídeo
             try:
                 # Lee el bookmark
-                titulo,thumbnail,plot,server,url = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
+                canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
                 logger.info("[downloadall.py] url="+url)
 
                 # Averigua la URL del vídeo
@@ -154,10 +154,10 @@ def downloadall(item):
                 logger.info("[downloadall.py] mediaurl="+mediaurl)
 
                 # Genera el NFO
-                nfofilepath = downloadtools.getfilefromtitle("sample.nfo",titulo)
+                nfofilepath = downloadtools.getfilefromtitle("sample.nfo",fulltitle)
                 outfile = open(nfofilepath,"w")
                 outfile.write("<movie>\n")
-                outfile.write("<title>"+titulo+")</title>\n")
+                outfile.write("<title>("+fulltitle+")</title>\n")
                 outfile.write("<originaltitle></originaltitle>\n")
                 outfile.write("<rating>0.000000</rating>\n")
                 outfile.write("<year>2009</year>\n")
@@ -187,20 +187,21 @@ def downloadall(item):
                 logger.info("[downloadall.py] Creado fichero NFO")
                 
                 # Descarga el thumbnail
-                logger.info("[downloadall.py] thumbnail="+thumbnail)
-                thumbnailfile = downloadtools.getfilefromtitle(thumbnail,titulo)
-                thumbnailfile = thumbnailfile[:-4] + ".tbn"
-                logger.info("[downloadall.py] thumbnailfile="+thumbnailfile)
-                try:
-                    downloadtools.downloadfile(thumbnail,thumbnailfile)
-                    logger.info("[downloadall.py] Thumbnail descargado")
-                except:
-                    logger.info("[downloadall.py] error al descargar thumbnail")
-                    for line in sys.exc_info():
-                        logger.error( "%s" % line )
+                if thumbnail != "":
+                   logger.info("[downloadall.py] thumbnail="+thumbnail)
+                   thumbnailfile = downloadtools.getfilefromtitle(thumbnail,fulltitle)
+                   thumbnailfile = thumbnailfile[:-4] + ".tbn"
+                   logger.info("[downloadall.py] thumbnailfile="+thumbnailfile)
+                   try:
+                       downloadtools.downloadfile(thumbnail,thumbnailfile)
+                       logger.info("[downloadall.py] Thumbnail descargado")
+                   except:
+                       logger.info("[downloadall.py] error al descargar thumbnail")
+                       for line in sys.exc_info():
+                           logger.error( "%s" % line )
                 
                 # Descarga el video
-                dev = downloadtools.downloadtitle(mediaurl,titulo)
+                dev = downloadtools.downloadtitle(mediaurl,fulltitle)
                 if dev == -1:
                     # El usuario ha cancelado la descarga
                     logger.info("[downloadall.py] Descarga cancelada")
@@ -214,7 +215,7 @@ def downloadall(item):
                         import shutil
                         shutil.move( origen , destino )
                     else:
-                        favoritos.savebookmark(titulo, url, thumbnail, server, plot, ERROR_PATH)
+                        favoritos.savebookmark(canal,titulo, url, thumbnail, server, plot, fulltitle, ERROR_PATH)
                         favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
                 else:
                     logger.info("[downloadall.py] Video descargado")
@@ -236,11 +237,11 @@ def downloadall(item):
                     import shutil
                     shutil.move( origen , destino )
                 else:
-                    favoritos.savebookmark(titulo, url, thumbnail, server, plot, ERROR_PATH)
+                    favoritos.savebookmark(canal,titulo, url, thumbnail, server, plot, fulltitle,ERROR_PATH)
                     favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
 
-def savebookmark(titulo,url,thumbnail,server,plot,savepath=DOWNLOAD_LIST_PATH):
-    favoritos.savebookmark(titulo,url,thumbnail,server,plot,savepath)
+def savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle,savepath=DOWNLOAD_LIST_PATH):
+    favoritos.savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle,savepath)
 
 def deletebookmark(fullfilename,deletepath=DOWNLOAD_LIST_PATH):
     favoritos.deletebookmark(fullfilename,deletepath)
@@ -250,8 +251,8 @@ def delete_error_bookmark(fullfilename,deletepath=ERROR_PATH):
 
 def mover_descarga_error_a_pendiente(fullfilename):
     # La categoría es el nombre del fichero en favoritos, así que lee el fichero
-    titulo,thumbnail,plot,server,url = favoritos,readbookmarkfile(fullfilename,"")
+    canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos,readbookmarkfile(fullfilename,"")
     # Lo añade a la lista de descargas
-    descargadoslist.savebookmark(title,url,thumbnail,server,plot)
+    descargadoslist.savebookmark(canal,title,url,thumbnail,server,plot,fulltitle)
     # Y lo borra de la lista de errores
     os.remove(urllib.unquote_plus( extra ))

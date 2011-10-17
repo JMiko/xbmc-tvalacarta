@@ -52,7 +52,7 @@ def mainlist(params,url,category):
         logger.info("fichero="+fichero)
         try:
             # Lee el bookmark
-            titulo,thumbnail,plot,server,url = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
+            canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
@@ -89,7 +89,7 @@ def errorlist(params,url,category):
         logger.info("[downloadall.py] fichero="+fichero)
         try:
             # Lee el bookmark
-            titulo,thumbnail,plot,server,url = favoritos.readbookmark(fichero,ERROR_PATH)
+            canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,ERROR_PATH)
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
@@ -130,7 +130,7 @@ def downloadall(params,url,category):
             # Descarga el vídeo
             try:
                 # Lee el bookmark
-                titulo,thumbnail,plot,server,url = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
+                canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
                 logger.info("[downloadall.py] url="+url)
 
                 # Averigua la URL del vídeo
@@ -204,7 +204,7 @@ def downloadall(params,url,category):
                         import shutil
                         shutil.move( origen , destino )
                     else:
-                        favoritos.savebookmark(titulo, url, thumbnail, server, plot, ERROR_PATH)
+                        favoritos.savebookmark(canal,titulo, url, thumbnail, server, plot, fulltitle , ERROR_PATH)
                         favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
                 else:
                     logger.info("[downloadall.py] Video descargado")
@@ -223,7 +223,7 @@ def downloadall(params,url,category):
                     import shutil
                     shutil.move( origen , destino )
                 else:
-                    favoritos.savebookmark(titulo, url, thumbnail, server, plot, ERROR_PATH)
+                    favoritos.savebookmark(canal,titulo, url, thumbnail, server, plot, fulltitle, ERROR_PATH)
                     favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
 
     # Label (top-right)...
@@ -254,8 +254,8 @@ def playerror(params,url,category):
 
     xbmctools.play_video(channel=CHANNELNAME,server=server,url=url,category=category,title=title,thumbnail=thumbnail,plot=plot,desdefavoritos=False,desdedescargados=False,desderrordescargas=True)
 
-def savebookmark(titulo,url,thumbnail,server,plot,savepath=DOWNLOAD_LIST_PATH):
-    favoritos.savebookmark(titulo,url,thumbnail,server,plot,savepath)
+def savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle,savepath=DOWNLOAD_LIST_PATH):
+    favoritos.savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle,savepath)
 
 def deletebookmark(fullfilename,deletepath=DOWNLOAD_LIST_PATH):
     favoritos.deletebookmark(fullfilename,deletepath)
