@@ -24,17 +24,19 @@ def mainlist(item):
     logger.info("[seriesyonkis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Útimos capítulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
+    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Ultimos capítulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.com"))
     itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Series más vistas", url="http://www.seriesyonkis.com/series-mas-vistas"))
     itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.seriesyonkis.com/buscar/serie"))
 
     return itemlist
 
-def search(item,texto):
+def search(item,texto, categoria="*"):
     logger.info("[seriesyonkis.py] search")
     itemlist = []
 
+    if categoria not in ("*", "S"): return itemlist ## <--
+    
     if item.url=="":
         item.url = "http://www.seriesyonkis.com/buscar/serie"
     url = "http://www.seriesyonkis.com/buscar/serie" # write ur URL here
@@ -51,7 +53,7 @@ def search(item,texto):
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -78,7 +80,7 @@ def lastepisodes(item):
     
             # Depuracion
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist  
 
@@ -98,7 +100,7 @@ def mostviewed(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -132,7 +134,7 @@ def series(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = match[1] , show=match[1] ))
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1], fulltitle=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -151,6 +153,13 @@ def episodios(item):
     if len(matches)>0:
         thumbnail = urlparse.urljoin(item.url,matches[0])
 
+    ## <-- plot y titulo
+    patronvideos = '<h1 class="underline">([^<]+?)</h1> <div id="description"> <p>(.+?)<a href=' #titulo, plot
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+       item.plot = matches[0][1]
+       item.title = matches[0][0]
+
     #<h2 class="header-subtitle">CapÃ­tulos</h2> <ul class="menu"> 
     #<h2 class="header-subtitle">Cap.*?</h2> <ul class="menu">.*?</ul>
     matches = re.compile('<h2 class="header-subtitle">Cap.*?</h2> <ul class="menu">.*?</ul>', re.S).findall(data)
@@ -164,7 +173,7 @@ def episodios(item):
 
     No = 0
     for match in matches:
-        itemlist.extend( addChapters(Item(url=item.url,extra=match, fulltitle=item.extra, thumbnail=thumbnail,show=item.show)) )
+        itemlist.extend( addChapters(Item(url=item.url,extra=match, thumbnail=thumbnail,show=item.show,plot=item.plot,fulltitle=item.title)) )
         '''
         if(len(matches)==1):
             itemlist = addChapters(Item(url=match, thumbnail=thumbnail))
@@ -196,7 +205,7 @@ def addChapters(item):
         for flag in flags:
             title = title + " ("+flag+")"
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, url=url, thumbnail=item.thumbnail, plot="", show = item.show, extra=item.fulltitle+" "+title, folder=True))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, folder=True))
 
     return itemlist
 
@@ -242,13 +251,14 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , url=url, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True))
     except:
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
 
     return itemlist
+
 def play(item):
     logger.info("[seriesyonkis.py] play")
     itemlist = []
@@ -256,7 +266,7 @@ def play(item):
     try:
         location = scrapertools.getLocationHeaderFromResponse(item.url)
         if "fileserve.com" in location:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
             data = scrapertools.cache_page(item.url)
             logger.info("------------------------------------------------------------")
@@ -268,7 +278,7 @@ def play(item):
             if(len(videos)>0): 
                 url = videos[0][1]
                 server=videos[0][2]                   
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
             else:
                 patron='<ul class="form-login">(.*?)</ul'
                 matches = re.compile(patron, re.S).findall(data)

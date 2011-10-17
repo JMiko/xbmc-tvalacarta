@@ -71,19 +71,25 @@ def pelisalfa(item):
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
-def search(item,texto):
+def search(item,texto, categoria="*"):
     logger.info("[cinegratis.py] search")
 
+    texto = texto.replace(" ", "+")
+    itemlist = []
     try:
         # La URL puede venir vacía, por ejemplo desde el buscador global
         if item.url=="":
-            item.url="http://www.cinegratis.net/index.php?module=search&title=%s"
-    
-        # Reemplaza el texto en la cadena de búsqueda
-        item.url = item.url % texto
-
-        # Devuelve los resultados
-        return listsimple(item)
+            if categoria in ("*","F"):
+                item.url = "http://www.cinegratis.net/index.php?module=search&title="+texto
+                itemlist.extend(listsimple(item)) 
+            if categoria in ("*","D"):
+                item.url = "http://www.cinegratis.net/index.php?hstitle="+texto+"&hscat=Documentales&hsyear"
+                itemlist.extend(listsimple_documentales(item))
+        else:
+            item.url = item.url % texto
+            itemlist.extend(listsimple(item))
+              
+        return itemlist
     
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
@@ -121,7 +127,7 @@ def peliscat(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -149,7 +155,7 @@ def listsimple(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -180,7 +186,7 @@ def listvideos(item):
         scrapedplot = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la marca de siguiente página
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -192,7 +198,7 @@ def listvideos(item):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -220,7 +226,7 @@ def listseries(item):
         scrapedplot = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la marca de siguiente página
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -232,6 +238,67 @@ def listseries(item):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
+    
+
+def listsimple_documentales(item):
+    logger.info("[cinegratis.py] listsimple_documentales")
+
+    url = item.url
+
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    #logger.info(data)
+    '''
+<table cellspacing='1' cellpadding='0' class='style3'>
+<tr class='style4'><td>T�tulo</td><td width='10'></td><td>G�nero</td></tr>
+<tr><td height='5'></td></tr>
+<tr><td><a href='/pelicula/Abusos sexuales y el Vaticano/455'>Abusos sexuales y el Vaticano</td><td width='10'></td><td>Documentales</td></tr>
+<tr><td><a href='/pelicula/Abusos sexuales y el Vaticano (Documental)/7320'>Abusos sexuales y el Vaticano (Documental)</td><td width='10'></td><td>Documentales</td></tr>
+</table></td></tr></table></td></tr></table>
+    '''
+    # Extrae los items
+    patronvideos  = "<tr><td><a href='([^']+)'>([^<]+)</td>"   
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        # Atributos
+        scrapedtitle = match[1]
+        scrapedurl = urlparse.urljoin("http://www.cinegratis.net",match[0]).replace(" ","+")
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+
+    return itemlist
+
+def findvideos(item):
+    logger.info("[cinegratis.py] findvideos")
+
+    from core import scrapertools
+    data = scrapertools.cache_page(item.url)    
+    patronvideos = "<td width='100\%' align='justify' valign='top' class='style3'>(.+?)<br>\s*?<center>\s*?<br><br>\s*?\s*?<style>.+?(http://www\.stage54\.net/cgimages/caratulas/.+?jpg)" # plot
+    matches = re.compile(patronvideos,re.S).findall(data)
+    if len(matches)>0: 
+        item.plot = matches[0][0]
+        item.thumbnail = matches[0][1]
+
+    from servers import servertools
+    listavideos = servertools.findvideos(data)
+    
+    itemlist = []
+    for video in listavideos:
+        scrapedtitle = video[0]
+        scrapedurl = video[1]
+        server = video[2]
+        itemlist.append( Item(channel=channel, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, fulltitle=item.fulltitle, folder=True))
+
+    return itemlist
+
+    
+

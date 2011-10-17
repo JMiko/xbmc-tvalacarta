@@ -57,7 +57,7 @@ def novedades(item):
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -91,12 +91,13 @@ def videos(item):
                 scrapedtitle = title+" Parte "+str(contador)+" "+str(video[0])
             else:    
                 scrapedtitle = title+video[0]
+            scrapedtitle = scrapedtitle.replace("/"," ")
             videourl = video[1]
             server = video[2]
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
+            itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle, fulltitle=item.fulltitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=True) )
 
     return itemlist
 
@@ -146,7 +147,7 @@ def cat(item):
     for match in matches:
         scrapedurl = urlparse.urljoin("http://www.buenaisla.com",match[0])
         scrapedtitle = match[1]
-        scrapedtitle = scrapedtitle.replace("-"," ")
+        #scrapedtitle = scrapedtitle.replace("-"," ")
         scrapedthumbnail = ""
         scrapedplot = ""
         logger.info(scrapedtitle)
@@ -175,13 +176,13 @@ def listaseries(item):
 
         for match in matches2:
             scrapedurl = urlparse.urljoin("http://www.buenaisla.com/",match[0])
-            scrapedtitle = match[2]
+            scrapedtitle = match[2].replace("/"," ")
             scrapedthumbnail = urlparse.urljoin("http://www.buenaisla.com/",match[1])
             scrapedplot = ""
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -211,13 +212,13 @@ def ultimas(item):
 
         for match in matches2:
             scrapedurl = urlparse.urljoin("http://www.buenaisla.com/",match[0])
-            scrapedtitle = match[2]
+            scrapedtitle = match[2].replace("/"," ")
             scrapedthumbnail = urlparse.urljoin("http://www.buenaisla.com/",match[1])
             scrapedplot = ""
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
     
@@ -264,11 +265,11 @@ def listacapitulos(item):
 
         for match in matches2:
             scrapedurl = urlparse.urljoin("http://www.buenaisla.com/",match[0])
-            scrapedtitle = match[1]
+            scrapedtitle = match[1].replace("/"," ")
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=imagen , plot=sinopsis , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=imagen , plot=sinopsis , folder=True) )
             
     # Extrae la marca de siguiente página
     patronvideos = 'Chistes Encontrados(.*?)<b>'
@@ -285,7 +286,7 @@ def listacapitulos(item):
             pagina = pagina.replace('=','')
             scrapedtitle = "Página " + pagina + " de "+ paginas[1:]
             if pagina=="1":break
-            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="listacapitulos" , url=scrapedurl , thumbnail="", plot="" , folder=True ) )
+            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle, fulltitle=scrapedtitle , action="listacapitulos" , url=scrapedurl , thumbnail="", plot="" , folder=True ) )
 
     return itemlist
     
@@ -312,7 +313,7 @@ def listacompleta(item):
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if url=="http://www.buenaisla.com/anime-online": itemlist = sorted(itemlist, key=lambda Item: Item.title) 
     return itemlist
@@ -355,9 +356,10 @@ def hentai(item):
     itemlist = sorted(itemlist, key=lambda Item: Item.title) 
     return itemlist    
     
-def search(item,texto):
+def search(item,texto, categoria="*"):
     logger.info("[buenaisla.py] search")
     itemlist = []
+    if categoria not in ("*", "A"): return itemlist
     
     # Descarga la página con todas las series
     url = "http://www.buenaisla.com/series-anime"
@@ -380,7 +382,7 @@ def search(item,texto):
             scrapedplot = ""
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
