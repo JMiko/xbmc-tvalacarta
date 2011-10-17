@@ -46,6 +46,9 @@ try:
     elif config.get_platform()=="wiimc":
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-wiimc-"
         DESTINATION_FOLDER = os.path.join(config.get_runtime_path(),"..")
+    elif config.get_platform()=="rss":
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-rss-"
+        DESTINATION_FOLDER = os.path.join(config.get_runtime_path(),"..")
 
 except:
     import xbmc

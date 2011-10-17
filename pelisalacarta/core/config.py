@@ -142,6 +142,13 @@ def set_setting(name,value):
         exec "import "+PLATFORM+"config as platformconfig"
     platformconfig.set_setting(name,value)
 
+def save_settings():
+    try:
+        exec "import platform."+PLATFORM+".config as platformconfig"
+    except:
+        exec "import "+PLATFORM+"config as platformconfig"
+    platformconfig.save_settings()
+
 def get_localized_string(code):
     try:
         exec "import platform."+PLATFORM+".config as platformconfig"

@@ -158,7 +158,7 @@
     
     <!-- Megalive menu strings -->
     <string id="30401">Muralla de canales</string>
-    <string id="30402">Categorias</string>
+    <string id="30402">Categorías</string>
     <string id="30403">Canales Favoritos</string>
     <string id="30404">Ver Canal por Codigo(ID)</string>
     <string id="30405">Introduce el còdigo del canal</string>
@@ -192,4 +192,17 @@
     <string id="30919"> (Nuevos contenidos)</string>
 
     <string id="30920">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
+
+    <!-- =============================================================== -->
+    <!-- Configuracion RSS (IAMM, XTreamer y otros)    -->
+    <!-- =============================================================== -->
+    <string id="31000">Media translate activado:</string>
+    <string id="30140">Título</string>
+    <string id="30165">Pulse OK para cambiar...</string>
+    <string id="30166">Salvar cambios</string>
+    <string id="30167">Salir</string>
+    <string id="30168">Cambios aplicados</string>
+    <string id="30169">Buscar</string>
+    <string id="30170">Actualizar canales:</string>
 </strings>
+
