@@ -120,7 +120,7 @@ def controller(plugin_name,port,host,path,headers):
                 if item.action == "search":
                    url = "http://%s/rss/%s/%s/%s/%s/%s/%s/%s/%s/playlist.rss" % ( host , channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle))               
                    respuesta += "<title>%s</title>\n" % entityunescape(item.title)
-                   if item.fulltitle != "": respuesta += "<fulltitle>%s</fulltitle>\n" % item.fulltitle
+                   if item.fulltitle  not in ("","none"): respuesta += "<fulltitle>%s</fulltitle>\n" % item.fulltitle
                    if item.thumbnail != "":    respuesta += "<image>%s</image>\n" % item.thumbnail
                    respuesta += "<link>rss_command://search</link>\n"
                    respuesta += "<search url=\""+url+"%s\" />\n"
@@ -140,20 +140,19 @@ def controller(plugin_name,port,host,path,headers):
                     from core.scrapertools import slugify
                     play_name = "%s_%s.dat" % ( item.channel ,  urllib.quote(item.fulltitle) )
                     play_name = slugify(play_name)
-                    #print "play_name,fulltitle,plot,thumbnail = %s, %s, %s, %s" % (play_name, item.fulltitle, item.plot, item.thumbnail)
                     if item.plot not in ("none",""):
                         salva_descripcion(play_name, item.fulltitle, item.plot, item.thumbnail)
                     else:
                         fulltitle,plot,thumbnail = recupera_descripcion(play_name)
-                        if fulltitle not in ("","none") and item.fulltitle=="": item.fulltitle = fulltitle
-                        if plot!=""      and item.plot=="":                     item.plot = plot
-                        if thumbnail!="" and item.thumbnail=="":                item.thumbnail = thumbnail
+                        if fulltitle != "" and item.fulltitle in ("","none"): item.fulltitle = fulltitle
+                        if plot      != "" and item.plot == "":               item.plot = plot
+                        if thumbnail != "" and item.thumbnail == "":          item.thumbnail = thumbnail
                     if item.title=="none": item.title="Ver el video"
                     url = "http://%s/rss/%s/%s/%s/%s/%s/%s/%s/%s/playlist.rss" % ( host , item.channel , item.action , urllib.quote_plus(item.url) , item.server , urllib.quote(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle) )
                     respuesta += "<title><![CDATA[%s]]></title>\n" % item.title
-                    if item.fulltitle != "": respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % item.fulltitle
-                    if item.plot != "":      respuesta += "<description><![CDATA[ %s ]]></description>\n" % item.plot   
-                    if item.thumbnail != "": respuesta += "<image>%s</image>\n" % item.thumbnail
+                    if item.fulltitle not in ("","none"): respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % item.fulltitle
+                    if item.plot != "":                   respuesta += "<description><![CDATA[ %s ]]></description>\n" % item.plot   
+                    if item.thumbnail != "":              respuesta += "<image>%s</image>\n" % item.thumbnail
                     respuesta += "<link>%s</link>\n" % url
                     respuesta += "\n"
                 else:
@@ -182,6 +181,7 @@ def controller(plugin_name,port,host,path,headers):
         return respuesta
     
 def salva_descripcion(play_name,fulltitle,plot,thumbnail):
+    if fulltitle == "none": fulltitle == ""
     # Obtiene un nombre válido para la cache
     #hashed_url = binascii.hexlify(md5.new(play_name).digest())
     #cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , hashed_url )
