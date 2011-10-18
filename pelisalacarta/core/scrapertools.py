@@ -702,7 +702,7 @@ def unescape(text):
                     return unichr(int(text[2:-1])).encode("utf-8")
                   
             except ValueError:
-                print "error de valor"
+                logger.info("error de valor")
                 pass
         else:
             # named entity
@@ -721,7 +721,7 @@ def unescape(text):
                 import htmlentitydefs
                 text = unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode("utf-8")
             except KeyError:
-                print "keyerror"
+                logger.info("keyerror")
                 pass
             except:
                 pass

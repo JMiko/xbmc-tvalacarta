@@ -649,9 +649,9 @@ def downloadfileGzipped(url,pathfichero):
             return -2
     nombreficheroBase = os.path.basename(nombrefichero)
     if len(nombreficheroBase) == 0:
-        print "Buscando nombre en el Headers de respuesta"
+        logger.info("Buscando nombre en el Headers de respuesta")
         nombreBase = connexion.headers["Content-Disposition"]
-        print nombreBase
+        logger.info(nombreBase)
         patron = 'filename="([^"]+)"'
         matches = re.compile(patron,re.DOTALL).findall(nombreBase)
         if len(matches)>0:
@@ -659,8 +659,7 @@ def downloadfileGzipped(url,pathfichero):
             titulo = GetTitleFromFile(titulo)
             nombrefichero = os.path.join(pathfichero,titulo)
         else:
-            print "Nombre del fichero no encontrado"
-            print "Colocando nombre temporal :sin_nombre.txt"
+            logger.info("Nombre del fichero no encontrado, Colocando nombre temporal :sin_nombre.txt")
             titulo = "sin_nombre.txt"
             nombrefichero = os.path.join(pathfichero,titulo)            
     totalfichero = int(connexion.headers["Content-Length"])

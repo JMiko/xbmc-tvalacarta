@@ -206,7 +206,7 @@ def file_exists(filename,url):
         ficheros.append(name)
 
     try:
-        print ficheros.index(filename)
+        logger.info(ficheros.index(filename))
         return True
     except:
         return False

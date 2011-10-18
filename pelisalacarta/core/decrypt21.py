@@ -68,7 +68,7 @@ class Base64:
 		return output
 	
 	def _utf8_encode(self,string):
-		print string
+		#print string
 		string = string.replace("\r\n", "\n")
 		utftext = ""
 		for  n in range(len(string)):
@@ -119,7 +119,7 @@ class Base64:
 		# Extract code
 		mobj = re.match(self._VALID_URL, url)
 		if mobj is None:
-			print (u'ERROR: invalid url: %s' % url)
+			#print (u'ERROR: invalid url: %s' % url)
 			return ""
 		id = mobj.group(2)
 		return id		

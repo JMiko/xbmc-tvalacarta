@@ -51,7 +51,7 @@ except:
                     import xbmc
                     PLATFORM = "xbmc"
                 except ImportError:
-                    print "Platform=DEVELOPER"
+                    #print "Platform=DEVELOPER"
                     # Modo desarrollo
                     PLATFORM = "developer"
 
@@ -104,9 +104,9 @@ def get_setting(name,channel=""):
             from core import descargados
             dev="true"
         except:
-            import sys
-            for line in sys.exc_info():
-                print line
+            #import sys
+            #for line in sys.exc_info():
+            #    print line
             dev="false"
     
     elif name=="cookies.dir":
