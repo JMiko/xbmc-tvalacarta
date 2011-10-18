@@ -2,7 +2,6 @@
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para cine-adicto.com by Bandavi
-# Actualización Carles Carmona 15/08/2011
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -13,7 +12,7 @@ from core import scrapertools
 from core import config
 from core import logger
 from core.item import Item
-from pelisalacarta import buscador
+#from pelisalacarta import buscador
 from servers import servertools
 
 CHANNELNAME = "cineadicto"
@@ -26,20 +25,22 @@ def mainlist(item):
     logger.info("[cineadicto.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME , action="ultimas"        , title="Ultimas Películas Añadidas"    , url="http://www.cine-adicto.com/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="ListaCat"          , title="Listado por Genero"            , url="http://www.cine-adicto.com/"))
-    #itemlist.append( Item(channel=CHANNELNAME , action="ListaAlfa"         , title="Listado Alfanumerico"          , url="http://www.cine-adicto.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
-    
+    itemlist.append( Item(channel=CHANNELNAME , action="listvideos"         , title="Ultimas Películas Añadidas"    , url="http://www.cine-adicto.com/" , extra="ultimas" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"   , title="Estrenos"                      , url="" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="ListaCat"           , title="Listado por Genero"            , url="http://www.cine-adicto.com/"))
+    # Desactivado por problemas en la web
+    #itemlist.append( Item(channel=CHANNELNAME , action="ListaAlfa"          , title="Listado Alfanumerico"          , url="http://www.cine-adicto.com/" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"   , title="Documentales"                  , url="http://www.cine-adicto.com/category/documentales/"))
+    #itemlist.append( Item(channel=CHANNELNAME , action="listvideos"         , title="Peliculas en HD"               , url="http://www.cine-adicto.com/category/peliculas-hd-categorias" ))
+    itemlist.append( Item(channel=CHANNELNAME , action="search"             , title="Buscar"                        , url="http://www.cine-adicto.com/?s="))
+
     return itemlist
     
 def search(item,texto):
-    logger.info("[cineadicto.py] searchresults")
+    logger.info("[cineadicto.py] search")
+    item.url = item.url+texto
     itemlist = []
-    #convert to HTML
-    texto = texto.replace(" ", "+")
-    item.url = "http://www.cine-adicto.com/?s="+texto
-    itemlist.extend(lista(item))
+    itemlist.extend(ListvideosMirror(item))
     return itemlist
 
 def ListaCat(item):
@@ -47,10 +48,9 @@ def ListaCat(item):
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    #print data
-    # Extrae las entradas (carpetas)
-    #<li class="cat-item cat-item-6"><a href="http://www.cine-adicto.com/category/accion" title="Ver todas las entradas archivadas en Accion">Accion</a></li>
-    patronvideos  = '<li class="cat-item cat-item-.*?<a href="(.*?)".*?>(.*?)</a>.*?</li>'
+
+    # <li class="cat-item cat-item-1"><a href="http://www.cine-adicto.com/category/2008" title="Películas Online del año 2008">2008</a>
+    patronvideos  = '<li class="[^"]+"><a href="([^"]+)" title="[^"]+">([^<]+)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     scrapertools.printMatches(matches)
@@ -59,13 +59,13 @@ def ListaCat(item):
     for match in matches:
         # Atributos
         scrapedurl = match[0]
-        scrapedtitle =match[1]
+        scrapedtitle = match[1]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=item.channel , action="lista"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=item.channel , action="ListvideosMirror"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
     
     return itemlist
     
@@ -101,99 +101,112 @@ def ListaAlfa(item):
 
     return itemlist
 
-def ultimas(item):
-    logger.info("[cineadicto.py] Ultimas")
+def ListvideosMirror(item):
+    logger.info("[cineadicto.py] ListvideosMirror")
 
-    url = item.url
-    if url=="":
-        url = "http://www.cine-adicto.com/"
-                
-    data = scrapertools.cachePage(url)
+    if item.url=="":
+        data = scrapertools.cachePage("http://www.cine-adicto.com/")
+        patron = '<a href="([^"]+)">Ver Estrenos Online</a>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        item.url = matches[0]
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
 
-    # Extrae las entradas (carpetas)
-    
-    #<div class="slidethumb">
-    #<a href="http://www.cine-adicto.com/transformers-dark-of-the-moon.html"><img src="http://www.cine-adicto.com/wp-content/uploads/2011/09/Transformers-Dark-of-the-moon-wallpaper.jpg" width="638" alt="Transformers: Dark of the Moon 2011" /></a>
-    #</div>
-
-    patron = '<div class="movie-thumbnail">(.*?)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
+    # Patron de las entradas
+    '''
+    <div class="short_post">
+    <h2 id="post-12662"><a href="http://www.cine-adicto.com/setup.html">Setup</a></h2>
+    <div class="arch_port">
+    <img src="http://www.cine-adicto.com/images/set_up_pelicula.jpg" width="86" height="128" alt="Setup" />
+    </div>
+    <div class="arch_entry">
+    <p>En Setup, un grupo de amigos se verá envuelto en un robo de diamantes en el que termina habiendo muertos de por medio.</p>
+    <span class="arch_views">Vista 220 veces</span>
+    <a class="movie_arc_go" href="http://www.cine-adicto.com/setup.html" title="Ver Pelicula">Ver Pelicula</a>
+    </div>
+    '''
+    patronvideos  = '<div class="short_post">.*?<a href="([^"]+)">([^<]+)</a>.*?'
+    patronvideos += 'src="([^"]+)".*?'
+    patronvideos += '<p>([^<]+)</p>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
-        data2 = match
-        patron  = '<a href="(.*?)">.*?'
-        patron  += '<img class=".*?" src="(.*?)" width=".*?" height=".*?" alt="(.*?)" />.*?'
-        patron  += '<span class="pop_desc">.*?<p>(.*?)</p>'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+        # Atributos
+        scrapedtitle = match[1]
+        
+        # Quita entidades HTML
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        
+        scrapedurl = match[0]
+        scrapedthumbnail = match[2]
+        if "http://www.cine-adicto.com/images/" not in scrapedthumbnail:
+            scrapedthumbnail = urlparse.urljoin("http://www.cine-adicto.com/images",scrapedthumbnail)
+        scrapedplot = match[3]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        for match2 in matches2:
-            scrapedtitle = match2[2]
-            scrapedurl = match2[0]
-            scrapedthumbnail = match2[1].replace(" ","%20")
-            scrapedplot = match2[3]
-            
-            itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
     #Extrae la marca de siguiente página
-    #<span class='current'>1</span><a href='http://delatv.com/page/2' class='page'>2</a>
-    patronvideos  = '<span class="current">[^<]+</span>[^<]*<a.*?href="([^"]+)"' #"</span><a href='(http://www.cine-adicto.com/page/[^']+)'"
+    patronvideos  = '<span class=[\W]current[\W]>[^<]+</span>?<a href=([\S]+)'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    
-    if len(matches)==0:
-        patronvideos  = "<span class='current'>[^<]+</span>[^<]*<a.*?href='([^']+)'" #"</span><a href='(http://www.cine-adicto.com/page/[^']+)'""
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "Página siguiente"
-        scrapedurl = urlparse.urljoin(url,matches[0])#matches[0]
+        scrapedtitle = "!Página siguiente"
+        scrapedurl = matches[0].strip("'").strip('"')
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=item.channel , action="listvideos"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
     return itemlist
 
-def lista(item):
-    logger.info("[cineadicto.py] Lista")
+def listvideos(item):
+    logger.info("[cineadicto.py] listvideos")
 
     url = item.url
     if url=="":
         url = "http://www.cine-adicto.com/"
+    patron = ""
+    if item.extra=="ultimas":
+        patron = '<div id="latest-movies"(.*?)popular-movies'
                 
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas (carpetas)
-    
-    #<div class="slidethumb">
-    #<a href="http://www.cine-adicto.com/transformers-dark-of-the-moon.html"><img src="http://www.cine-adicto.com/wp-content/uploads/2011/09/Transformers-Dark-of-the-moon-wallpaper.jpg" width="638" alt="Transformers: Dark of the Moon 2011" /></a>
-    #</div>
-
-    patron = '<div class="short_post">(.*?)<span class="arch_views">'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
+    '''
+    <div class="movie_box">
+    <div class="movie-thumbnail">
+    <a href="http://www.cine-adicto.com/flypaper.html"><img class="homethumb" src="http://www.cine-adicto.com/images/Atraco_por_duplicado-online.jpg" width="149" height="222" alt="Flypaper" /></a>
+    <div class="movie-desc">
+    <img src="http://www.cine-adicto.com/wp-content/themes/cineadicto_theme/images/mouseover-arrow.png" alt="" class="mouseover-arrow" />
+    <h3>Flypaper</h3>
+    <span class="pop_desc">
+    <p>Historia que trata sobre un hombre atrapado en medio de dos atracos diferentes pero en el mismo banco. Su objetivo no es otro que proteger a una de las cajeras del banco de quien está locamente enamorado en secreto.</p>
+    '''
 
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '.*?<a href="(.*?)">.*?'
-        patron  += '<img src="(.*?)" width=".*?" height=".*?" alt="(.*?)" />.*?'
-        patron  += '<p>(.*?)</p>'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+    data2 = re.compile(patron,re.DOTALL).findall(data)
+    patronvideos = '<div class="movie_box">.*?<a href="([^"]+)"><img.*?src="([^"]+)".*?/>[^<]+'
+    patronvideos += '<[^>]+>([^<]+)</[^>]+>.*?'
+    patronvideos += '<p>([^<]+)</p>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data2[0])
+    logger.info("hay %d matches" % len(matches))
 
-        for match2 in matches2:
-            scrapedtitle = match2[2]
-            scrapedurl = match2[0]
-            scrapedthumbnail = match2[1].replace(" ","%20")
-            scrapedplot = match2[3]
+    for match in matches:
+        scrapedtitle = match[2]
+        
+        # Quita entidades HTML
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        
+        scrapedurl = match[0]
+        scrapedthumbnail = match[1]
+        scrapedplot = match[3]
             
-            itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
+        itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
 
     #Extrae la marca de siguiente página
     #<span class='current'>1</span><a href='http://delatv.com/page/2' class='page'>2</a>
@@ -211,7 +224,7 @@ def lista(item):
         scrapedurl = urlparse.urljoin(url,matches[0])#matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=item.channel , action="listvideos"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=item.channel , action="listvideos"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , extra="ultimas" ))
 
     return itemlist
 
@@ -228,20 +241,115 @@ def detail(item):
 
     # Descarga la página
     data = scrapertools.cachePage(url)
+    #logger.info(data)
+    patronvideos = 'name="Pelicula" src="([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        data = scrapertools.cachePage(matches[0])
+
+    # Extrae el argumento
+    patronarg = '</p><p>.*?<strong>([^<]+</strong> <strong>.*?)<p></p>'
+    matches   = re.compile(patronarg,re.DOTALL).findall(data)
+    if len(matches)>0:
+        plot  = re.sub("<[^>]+>"," ",matches[0])
+  
+    # Busca enlaces a videos .flv o (.mp4 dentro de un xml)                     #
+    itemlist.extend( find_video_items_cineadicto(item,data,plot) )
+
     
-    # Usa findvideos    
+    # matches = url.split("/")
+    # url2 = "http://www.cine-adicto.com/tab/"+matches[3]
+    # logger.info(url2)
+    # data = scrapertools.cachePage(url2)
+    # Busca el ID de megaupload
+    patronmega = '<div style="visibility:hidden;" id="megaid">(.*?)&langid.*?</div>'
+    matches2 = re.compile(patronmega,re.DOTALL).findall(data)
+    url = "http://www.megaupload.com/?d="+matches2[0].strip()
+    data = data.replace('<div style="visibility:hidden;" id="megaid">'+matches2[0],url)
+    
+    # Usa findvideos
     listavideos = servertools.findvideos(data)
     
-    itemlist = []
-    
+    c = 0
     for video in listavideos:
+        videotitle = video[0]
+        url = video[1]
         server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
-        scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
-
+        if "youtube" in server:
+            videotitle = "[Trailer]"
+        if "facebook" in url:
+            c += 1
+            itemlist.append( Item(channel=item.channel , action="play"   , server=server , title=title.strip() + " - Parte %d %s" %(c,videotitle) , url=url , thumbnail=thumbnail , plot=plot , folder=False))
+        elif "p5K-vLAO02M" not in url:
+            itemlist.append( Item(channel=item.channel , action="play"   , server=server , title=title.strip() + " - " + videotitle , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
 
 
     return itemlist
 
+def find_video_items_cineadicto(item,data,plot):
+
+    title = item.title
+    thumbnail = item.thumbnail
+    scrapedurl = ""
+    url = item.url
+    
+    #patron = ''
+
+    patronvideos = 'file=(http\:\/\/[^\&]+)\&'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    playWithSubt = "play"
+    c = 0
+    itemlist = []
+    for match in matches:
+        subtitle = "[FLV-Directo]"
+        c += 1
+        if ("playlist" in match):
+            data2 = scrapertools.cachePage(match)
+            logger.info("data2="+data2)
+            patronvideos  = '<track>.*?'
+            patronvideos += '<title>([^<]+)</title>[^<]+'
+            patronvideos += '<location>([^<]+)</location>(?:[^<]+'
+            patronvideos += '<meta rel="type">video</meta>[^<]+|[^<]+'
+            patronvideos += '<meta rel="captions">([^<]+)</meta>[^<]+)'
+            patronvideos += '</track>'
+            matches2 = re.compile(patronvideos,re.DOTALL).findall(data2)
+            scrapertools.printMatches(matches)
+            
+            for match2 in matches2:
+                subtitle_url=""
+                sub = ""
+                if match2[2].endswith(".xml"): # Subtitulos con formato xml son incompatibles con XBMC
+                    sub = "[Subtitulo incompatible con xbmc]"
+                if ".mp4" in match2[1]:
+                    subtitle = "[MP4-Directo]"
+                scrapedtitle = '%s (castellano) - %s  %s' %(title,match2[0],subtitle)
+                
+                scrapedurl = match2[1].strip()
+                scrapedthumbnail = thumbnail
+                scrapedplot = plot
+                if ("cast.xml" or "mirror.xml") not in match:
+                    scrapedtitle = '%s (V.O.S) - %s  %s %s' %(title,match2[0],subtitle,sub)
+                    if not match2[2].endswith("cine-adicto2.srt") and (sub == ""): 
+                        scrapedurl = scrapedurl
+                        subtitle_url=match2[2]
+                        
+                if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+                        
+                # Añade al listado de XBMC
+                itemlist.append( Item(channel=item.channel , action=playWithSubt  , title=scrapedtitle, url=scrapedurl, subtitle=subtitle_url , thumbnail=scrapedthumbnail, plot=scrapedplot, server= "Directo" , folder = False ))
+            
+        else:
+            c +=1
+            scrapedurl = match
+            if match.endswith(".srt") and not (((c / 2) * 2 - c) == 0) :
+                logger.info("[cineadicto.py] Encontrado subtitulo "+match)
+                itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " (V.O.S) - "+subtitle, subtitle=match, url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False))
+            elif match.endswith(".xml") and not (((c / 2) * 2 - c) == 0):
+                sub = "[Subtitulo incompatible con xbmc]"
+                itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " (V.O) - %s %s" %(subtitle,sub), url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
+            elif not match.endswith("srt" or "xml") :
+                itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " - [Directo]" , url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
+            print scrapedurl
+
+    return itemlist

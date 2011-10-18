@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cineadicto</name>
-	<tag>2</tag>
-	<date>17/10/2011</date>
-	<changes>Updated by Carles</changes>
+	<tag>3</tag>
+	<date>18/10/2011</date>
+	<changes>Solucionado problema al iniciarlo.
+Actualizado para la nueva version de megavideo.
+Actualizado por cambios en la web.
+Desactivado listado alfabetico por errores en la web.
+Otros cambios menores.</changes>
 </version>
