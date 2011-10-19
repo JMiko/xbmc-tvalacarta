@@ -46,7 +46,7 @@ def mainlist(item):
             logger.info("[descargados.py] fichero=" + fichero)
             if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
                 url = os.path.join( downloadpath , fichero )
-                itemlist.append( Item( channel="descargados", action="play_video", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
+                itemlist.append( Item( channel="descargados", action="play", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
 
     except:
         logger.info("[descargados.py] exception on mainlist")
@@ -73,10 +73,14 @@ def pendientes(item):
         try:
             # Lee el bookmark
             canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
+            if canal=="":
+                canal="descargas"
+
+            logger.info("canal="+canal+", titulo="+titulo+", thumbnail="+thumbnail+", server="+server+", url="+url+", fulltitle="+fulltitle+", plot="+plot)
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=True ))
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
 
         except:
             pass
@@ -84,7 +88,7 @@ def pendientes(item):
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
-    itemlist.append( Item( channel=CHANNELNAME , action="downloadall" , title="(Empezar la descarga de la lista)", thumbnail=os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png") , folder=True ))
+    itemlist.append( Item( channel=CHANNELNAME , action="downloadall" , title="(Empezar la descarga de la lista)", thumbnail=os.path.join(IMAGES_PATH, "Crystal_Clear_action_db_update.png") , folder=False ))
 
     return itemlist
 
@@ -110,7 +114,7 @@ def errores(item):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=True ))
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
 
         except:
             pass
@@ -240,7 +244,7 @@ def downloadall(item):
                     favoritos.savebookmark(canal,titulo, url, thumbnail, server, plot, fulltitle,ERROR_PATH)
                     favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
 
-def savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle,savepath=DOWNLOAD_LIST_PATH):
+def savebookmark(canal=CHANNELNAME,titulo="",url="",thumbnail="",server="",plot="",fulltitle="",savepath=DOWNLOAD_LIST_PATH):
     favoritos.savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle,savepath)
 
 def deletebookmark(fullfilename,deletepath=DOWNLOAD_LIST_PATH):

@@ -48,11 +48,13 @@ def mainlist(item):
         try:
             # Lee el bookmark
             canal,titulo,thumbnail,plot,server,url,fulltitle = readbookmark(fichero)
+            if canal=="":
+                canal="favoritos"
 
             # Crea la entrada
             # En extra va el nombre del fichero para poder borrarlo
             ## <-- Añado fulltitle con el titulo de la peli
-            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), fulltitle=fulltitle, folder=True ))
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), fulltitle=fulltitle, folder=False ))
         except:
             for line in sys.exc_info():
                 logger.error( "%s" % line )
@@ -98,15 +100,21 @@ def readbookmark(filename,readpath=BOOKMARK_PATH):
         plot = lines[4].strip()
 
     ## Campos fulltitle y canal añadidos
-    try:
-        fulltitle = urllib.unquote_plus(lines[5].strip())
-    except:
-        fulltitle = lines[5].strip()
+    if len(lines)>=6:
+        try:
+            fulltitle = urllib.unquote_plus(lines[5].strip())
+        except:
+            fulltitle = lines[5].strip()
+    else:
+        fulltitle=titulo
 
-    try:
-        canal = urllib.unquote_plus(lines[6].strip())
-    except:
-        canal = lines[6].strip()
+    if len(lines)>=7:
+        try:
+            canal = urllib.unquote_plus(lines[6].strip())
+        except:
+            canal = lines[6].strip()
+    else:
+        canal=""
 
     bookmarkfile.close();
 
