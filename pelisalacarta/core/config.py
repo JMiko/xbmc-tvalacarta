@@ -11,90 +11,48 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-PLATFORM = ""
+import platform_name
 
-# Intenta averiguar la plataforma de entre una de las siguientes:
+PLATFORM_NAME = platform_name.PLATFORM_NAME
+print "PLATFORM_NAME="+PLATFORM_NAME
+exec "import platform."+PLATFORM_NAME+".config as platformconfig"
 
-# boxee
-# xbmc
-# xbmcdharma
-# xbmceden
-# developer
-
-# plex
-# mediaportal
-# windowsmediacenter
-# enigma2
-
-# Enigma2
-try:
-    from enigma import iPlayableService
-    PLATFORM="dreambox"
-except:
-    # Boxee
-    try:
-        import mc
-        PLATFORM="boxee"
-    except:
-        # XBMC Eden
-        try:
-            import xbmcvfs
-            PLATFORM = "xbmceden"
-        except:
-            # XBMC Dharma
-            try:
-                import xbmcaddon
-                PLATFORM = "xbmcdharma"
-            except ImportError:
-                # XBMC
-                try:
-                    import xbmc
-                    PLATFORM = "xbmc"
-                except ImportError:
-                    #print "Platform=DEVELOPER"
-                    # Modo desarrollo
-                    PLATFORM = "developer"
-
-#print "[core config.py] PLATFORM="+PLATFORM
-
-def force_platform(platform):
-    global PLATFORM
+def force_platform(platform_name):
+    global PLATFORM_NAME
     
-    PLATFORM = platform
+    PLATFORM_NAME = platform_name
     # En PLATFORM debería estar el módulo a importar
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
-        
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
 
 def get_platform():
-    return PLATFORM
+    return PLATFORM_NAME
 
 def get_library_support():
-    return (PLATFORM=="xbmc" or PLATFORM=="xbmcdharma")
+    return (PLATFORM_NAME=="xbmc" or PLATFORM_NAME=="xbmcdharma" or PLATFORM_NAME=="xbmceden" or PLATFORM_NAME=="boxee")
 
 def get_system_platform():
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_system_platform()
 
 def open_settings():
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.open_settings()
 
 def get_setting(name,channel=""):
-    #print "[config.py] get_setting"
     try:
         #print "[config.py] get_setting en PLATFORM=%s" % PLATFORM
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     # La cache recibe un valor por defecto la primera vez que se solicita
 
     dev=platformconfig.get_setting(name)
@@ -113,7 +71,7 @@ def get_setting(name,channel=""):
         dev=get_data_path()
     
     # TODO: (3.1) De momento la cache está desactivada...
-    elif name=="cache.mode" and PLATFORM!="developer":
+    elif name=="cache.mode" and PLATFORM_NAME!="developer":
         dev="2"
     
     if channel!="":
@@ -137,51 +95,51 @@ def get_setting(name,channel=""):
 
 def set_setting(name,value):
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     platformconfig.set_setting(name,value)
 
 def save_settings():
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     platformconfig.save_settings()
 
 def get_localized_string(code):
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_localized_string(code)
 
 def get_library_path():
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_library_path()
 
 def get_temp_file(filename):
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_temp_file()
 
 def get_runtime_path():
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_runtime_path()
 
 def get_data_path():
     try:
-        exec "import platform."+PLATFORM+".config as platformconfig"
+        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
     except:
-        exec "import "+PLATFORM+"config as platformconfig"
+        exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_data_path()
 
 def get_cookie_data():
