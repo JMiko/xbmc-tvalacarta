@@ -481,6 +481,21 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    # Megavideo... formato cine-adicto")
+    patronvideos = '<div style="visibility:hidden;" id="megaid">(.*?)&langid.*?</div>'
+    logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    
+    for match in matches:
+        titulo = "[Megavideo]"
+        url = "http://www.megavideo.com/?d="+match.strip()
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'megavideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     return devuelve
 
 if __name__ == "__main__":
