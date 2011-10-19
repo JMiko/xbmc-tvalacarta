@@ -257,7 +257,7 @@ def teclado(default="", heading="", hidden=False):
     
 def por_teclado(params,url="",category=""):
     logger.info("[buscador.py] por_teclado")
-    logger.info("category :"+category,"url :"+url)
+    logger.info("category :"+category+" url :"+url)
     if category == "" or category == "Buscador_Generico":
 
         channel  = params.channel
