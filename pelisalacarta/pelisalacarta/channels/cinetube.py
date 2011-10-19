@@ -15,6 +15,7 @@ from servers import servertools
 
 CHANNELNAME = "cinetube"
 DEBUG = True
+
 SESION = config.get_setting("session","cinetube")
 LOGIN = config.get_setting("login","cinetube")
 PASSWORD = config.get_setting("password","cinetube")
@@ -26,31 +27,79 @@ def mainlist(item):
     logger.info("[cinetube.py] getmainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades"       , action="peliculas"      , url="http://www.cinetube.es/peliculas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Estrenos cine"   , action="documentales"   , url="http://www.cinetube.es/peliculas/estrenos-de-cine/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - A-Z"             , action="listalfabetico" , url="peliculas"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Categorías"      , action="listcategorias" , url="http://www.cinetube.es/peliculas"))
-
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - Novedades"          , action="series" , url="http://www.cinetube.es/series/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z"                , action="listalfabetico" , url="series"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - Listado completo"   , action="completo" , url="series"))
-
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Novedades"    , action="documentales" , url="http://www.cinetube.es/documentales/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - A-Z"          , action="listalfabetico", url="documentales"))
-
-    itemlist.append( Item(channel=CHANNELNAME, title="Series anime - Novedades"    , action="series" , url="http://www.cinetube.es/series-anime/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series anime - A-Z"          , action="listalfabetico" , url="series-anime" ))
-                     
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Novedades" , action="documentales" , url="http://www.cinetube.es/peliculas-anime/") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - A-Z"       , action="listalfabetico" , url="peliculas-anime" ))
-
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas"                , action="menupeliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series"                   , action="menuseries"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales"             , action="menudocumentales"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Anime"                    , action="menuanime"))
+    
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"                   , action="search") )   
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Actor/Director", action="search" , url="actor-director") )
 
     if SESION=="true":
         perform_login(LOGIN,PASSWORD)
         itemlist.append( Item(channel=CHANNELNAME, title="Cerrar sesion ("+LOGIN+")", action="logout"))
     else:
         itemlist.append( Item(channel=CHANNELNAME, title="Iniciar sesion", action="login"))
+
+    return itemlist
+
+def menupeliculas(item):
+    logger.info("[cinetube.py] menupeliculas")
+
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Novedades"        , action="peliculas"        , url="http://www.cinetube.es/peliculas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Estrenos de Cine" , action="documentales"     , url="http://www.cinetube.es/peliculas/estrenos-de-cine/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Estrenos en DVD"  , action="documentales"     , url="http://www.cinetube.es/peliculas/estrenos-dvd/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Nueva Calidad"    , action="documentales"     , url="http://www.cinetube.es/peliculas/nueva-calidad/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - A-Z"              , action="listalfabetico"   , url="peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas - Categorías"       , action="listcategorias"   , url="peliculas"))
+    
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar Películas"             , action="search"           , url="peliculas") )
+
+    return itemlist
+
+def menuseries(item):
+    logger.info("[cinetube.py] menuseries")
+
+    itemlist = []
+
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - Novedades"           , action="series"           , url="http://www.cinetube.es/series/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z"                 , action="listalfabetico"   , url="series"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - Listado completo"    , action="completo"         , url="http://www.cinetube.es/series-todas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - Categorías"          , action="listcategorias"   , url="series"))
+
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar Series"                , action="search"           , url="series") )
+
+    return itemlist
+
+def menudocumentales(item):
+    logger.info("[cinetube.py] menudocumentales")
+
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Novedades"         , action="documentales"     , url="http://www.cinetube.es/documentales/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - A-Z"               , action="listalfabetico"   , url="documentales"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Listado completo"  , action="completo"         , url="http://www.cinetube.es/documentales-todos/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales - Categorías"        , action="listcategorias"   , url="documentales"))
+
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar Documentales"              , action="search"           , url="documentales") )
+
+    return itemlist
+
+def menuanime(item):
+    logger.info("[cinetube.py] menuanime")
+
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Series Anime - Novedades"             , action="series"           , url="http://www.cinetube.es/series-anime/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series Anime - A-Z"                   , action="listalfabetico"   , url="series-anime" ))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series Anime - Listado completo"      , action="completo"         , url="http://www.cinetube.es/series-anime-todas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series Anime - Categorías"            , action="listcategorias"   , url="series-anime"))
+                     
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Novedades"          , action="documentales"     , url="http://www.cinetube.es/peliculas-anime/") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - A-Z"                , action="listalfabetico"   , url="peliculas-anime" ))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Listado completo"   , action="completo"         , url="http://www.cinetube.es/peliculas-anime-todas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas Anime - Categorías"         , action="listcategorias"   , url="peliculas-anime"))
+
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscar Anime"                         , action="search"           , url="anime") )
 
     return itemlist
 
@@ -89,60 +138,69 @@ def login(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Sesión iniciada", action="mainlist"))
     return itemlist
+def prueba (item):
+    itemlist = []
+    itemlist = (search(item,"dragon ball","S"))
+    return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
-def search(item,texto, categoria="*"):
-    logger.info("[cinetube.py] search")
+def search(item,texto,categoria=""):
+    logger.info("[cinetube.py] "+item.url+" search "+texto)
     itemlist = []
-    
-    if categoria in ("*","F"):
-        try:
-            # Películas
-            item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
-            item.url = item.url % texto
-            itemlist.extend(peliculas(item))
-            # Peliculas-anime
-            item.url="http://www.cinetube.es/buscar/peliculas-anime/?palabra=%s&categoria=&valoracion="
-            item.url = item.url % texto
-            itemlist.extend(peliculas(item))
-        except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line )
-        
-    if categoria in ("*","S"):
-        try:
-            # Series
+    url = item.url
+    texto = texto.replace(" ","+")
+    if "*" in categoria:
+        url = "none"
+    elif "F" in categoria:
+        url = "peliculas"
+    elif "S" in categoria:
+        url = "series"
+    logger.info("categoria: "+categoria+" url: "+url)
+    try:
+        # Series
+        if url=="series" or url=="" or url=="none":
             item.url="http://www.cinetube.es/buscar/series/?palabra=%s&categoria=&valoracion="
             item.url = item.url % texto
             itemlist.extend(series(item))
+        
+        # Películas
+        if url=="peliculas" or url=="" or url=="none":
+            item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
+            item.url = item.url % texto
+            itemlist.extend(peliculas(item))
+        
+        # Documentales
+        if item.url=="documentales" or url=="" or url=="none":
+            item.url="http://www.cinetube.es/buscar/peliculas/?palabra=%s&categoria=&valoracion="
+            item.url = item.url % texto
+            itemlist.extend(documentales(item))
+            
+        # Anime
+        if url=="anime" or url=="" or url=="none" or "F" in categoria:
+            # Peliculas-anime
+            item.url="http://www.cinetube.es/buscar/peliculas-anime/?palabra=%s&categoria=&valoracion="
+            item.url = item.url % texto
+            itemlist.extend(documentales(item))
+        if url=="anime" or url=="" or url=="none" or "S" in categoria:
             # Series-anime
             item.url="http://www.cinetube.es/buscar/series-anime/?palabra=%s&categoria=&valoracion="
             item.url = item.url % texto
             itemlist.extend(series(item))
-        except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line )
-        
-        # Series
-        item.url="http://www.cinetube.es/buscar/series/?palabra=%s&categoria=&valoracion="
-        item.url = item.url % texto
-        itemlist.extend(series(item))
-        
-    if categoria in ("*","D"):
-        try:
-            # Documentales
-            item.url="http://www.cinetube.es/buscar/documentales/?palabra=%s&categoria=&valoracion="
+
+        # Actor/Director
+        if url=="actor-director":
+            item.url="http://www.cinetube.es/buscar/actor-director/?palabra=%s&categoria=&valoracion="
             item.url = item.url % texto
-            itemlist.extend(documentales(item))
-        except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line )
+            itemlist.extend(peliculas(item))          
     
-    return itemlist
+        return itemlist
         
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def peliculas(item,paginacion=True):
     logger.info("[cinetube.py] peliculas")
@@ -184,7 +242,7 @@ def peliculas(item,paginacion=True):
         # Convierte desde UTF-8 y quita entidades HTML
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-
+        fulltitle = scrapedtitle
         # procesa el resto
         scrapedplot = ""
 
@@ -193,7 +251,7 @@ def peliculas(item,paginacion=True):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=item.fulltitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , folder=True) )
 
     # Extrae el paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -218,6 +276,20 @@ def documentales(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
+    '''
+    <!--PELICULA-->
+    <div class="peli_item textcenter peli_item_puntos"><a href="/peliculas/drama/ver-pelicula-somewhere.html">
+    <div class="pelicula_img">
+    <img src="http://caratulas.cinetube.es/pelis/10070.jpg" alt="Somewhere" />
+    </div></a>
+    <a href="/peliculas/drama/ver-pelicula-somewhere.html" ><div class="estreno"></div></a>                                        <a href="/peliculas/drama/ver-pelicula-somewhere.html" title="Ver estreno Somewhere"><p class="white">Somewhere</p></a>
+    <p><span class="rosa">BLURAY-SCREENER</span></p><div class="icos_lg"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/downupload.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="" /><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="descarga directa" /> </div><div class="puntos_box">
+    <div id="votos_media">6,2</div>
+    <div id="votos_votaciones">48 votos</div>
+    </div>
+    </div>
+    <!--FIN PELICULA-->
+    '''
     patronvideos  = '<!--PELICULA-->[^<]+'
     patronvideos += '<div class="peli_item textcenter[^<]+<a href="([^"]+)">[^<]+'
     patronvideos += '<div class="pelicula_img">[^<]+'
@@ -229,6 +301,12 @@ def documentales(item):
     itemlist = []
     for match in matches:
         scrapedtitle = match[2]
+        
+        # Convierte desde UTF-8 y quita entidades HTML
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        fulltitle = scrapedtitle
+        
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
@@ -236,9 +314,9 @@ def documentales(item):
 
         # Añade al listado
         if match[0].startswith("/documentales/serie-documental"):
-            itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle+" (serie)" , fulltitle=item.fulltitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle+" (serie)" , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
         else:
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=item.fulltitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
 
     # Extrae el paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -255,22 +333,36 @@ def documentales(item):
 # Pone todas las series del listado alfabético juntas, para no tener que ir entrando una por una
 def completo(item):
     logger.info("[cinetube.py] completo()")
+    
+    url = item.url
+    siguiente = True
     itemlist = []
+    
+    data = scrapertools.cachePage(url)
+    patronpag  = '<li class="navs"><a class="pag_next" href="([^"]+)"></a></li>'
+    while siguiente==True:
+    
+        patron = '<!--SERIE-->.*?<a href="([^"]+)" .*?>([^<]+)</a></span></li>.*?<!--FIN SERIE-->'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        for match in matches:
+            scrapedtitle = match[1]
+            # Convierte desde UTF-8 y quita entidades HTML
+            scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+            scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+            fulltitle = scrapedtitle
+            
+            scrapedplot = ""
+            scrapedurl = urlparse.urljoin(url,match[0])
+            scrapedthumbnail = ""    
 
-    # Carga el menú "Alfabético" de series
-    item = Item(channel=CHANNELNAME, action="listalfabetico" , url="series")
-    items_letras = listalfabetico(item)
-    
-    # Carga las series de cada letra
-    for item_letra in items_letras:
-        items_programas = series(item_letra)
-        
-        if len(items_programas)>0:
-            # Quita la entrada del final si es "Página siguiente"
-            if items_programas[ len(items_programas)-1 ].action=="series":
-                items_programas.pop()
-    
-            itemlist.extend( items_programas )
+            itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle, folder=True) )
+
+        # Extrae el paginador
+        matches = re.compile(patronpag,re.DOTALL).findall(data)
+        if len(matches)==0:
+            siguiente = False
+        else:
+            data = scrapertools.cachePage(urlparse.urljoin(url,matches[0]))
 
     return itemlist
 
@@ -318,9 +410,16 @@ def listalfabetico(item):
 
 def listcategorias(item):
     logger.info("[cinetube.py] listcategorias")
-
+    
+    action = item.url
+    if item.url=="series-anime":
+        action="series"
+    if item.url=="peliculas-anime":
+        action="documentales"
+        
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    url = urlparse.urljoin("http://www.cinetube.es/",item.url)
+    data = scrapertools.cachePage(url)
 
     # Extrae las entradas
     patronvideos  = '<ul class="categorias">(.*?)</ul>'
@@ -330,26 +429,27 @@ def listcategorias(item):
         return []
 
     data = matches[0]
-    patronvideos  = '<li><a href="([^"]+)"><span>([^>]+)</span></a></li>'
+    patronvideos  = '<li><a href="([^"]+)"><span>([^<]+)</span></a></li>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     itemlist = []
     for match in matches:
         scrapedtitle = scrapertools.entityunescape(match[1])
         scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[0])
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
 
     return itemlist
 
 def series(item):
     logger.info("[cinetube.py] series")
     itemlist = []
-
+    fulltitle = item.fulltitle
+    
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     logger.info("Pagina de %d caracteres" % len(data))
@@ -415,7 +515,7 @@ def series(item):
         scrapedthumbnail = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle=item.fulltitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle= fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle, folder=True) )
 
     # Paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -432,7 +532,8 @@ def series(item):
 def temporadas(item):
     logger.info("[cinetube.py] temporadas")
     itemlist = []
-
+    fulltitle = item.fulltitle
+    # extra = item.extra
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
@@ -461,11 +562,12 @@ def temporadas(item):
 
     for match in matches:
         scrapedtitle = match[1].strip()+" ("+match[2]+", "+match[3]+")"
+        extra = match[1].strip()
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=item.extra, show=item.show) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=extra, show=item.show) )
 
     # Una trampa, si la serie enlaza no con la temporada sino con la lista de episodios, se resuelve aquí
     if len(itemlist)==0:
@@ -488,6 +590,9 @@ def episodios(item):
         </li>
     '''
     logger.info("[cinetube.py] episodios")
+    fulltitle = item.fulltitle
+    extra = item.extra
+    # directory = item.directory
     itemlist = []
 
     # Descarga la página
@@ -504,12 +609,17 @@ def episodios(item):
 
     for match in matches:
         scrapedtitle = match[1].strip()
+
+        # Convierte desde UTF-8 y quita entidades HTML
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         scrapedplot = item.plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=item.extra+" "+scrapedtitle, plot=scrapedplot, show=item.show) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=extra+" "+scrapedtitle, plot=scrapedplot, show=item.show) )
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -522,6 +632,8 @@ def findvideos(item):
     try:
         url = item.url
         title = item.title
+        fulltitle = item.fulltitle
+        extra = item.extra
         thumbnail = item.thumbnail
         plot = item.plot
     
@@ -530,15 +642,12 @@ def findvideos(item):
         #logger.info(data)
         
         # Busca el argumento
-        patronvideos  = '</div>\s*?<p>([^<]+?)</p>.+?caratula.+?<img src="([^"]+?)"'
+        patronvideos  = '<meta name="description" content="([^"]+)"'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         if len(matches)>0:
-            plot = scrapertools.htmlclean(matches[0][0])
-            thumbnail = matches[0][1]
+            plot = scrapertools.htmlclean(matches[0])
             logger.info("plot actualizado en detalle");
         else:
-            plot = item.plot
-            thumbnail = item.thumbnail
             logger.info("plot no actualizado en detalle");
     
         # Busca los enlaces a los mirrors, o a los capitulos de las series...
@@ -596,7 +705,7 @@ def findvideos(item):
                 scrapedurl = video[1]
                 server = video[2]
                 
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=thumbnail, plot=plot, server=server, extra=item.extra, fulltitle=item.title, folder=True)) ## <--
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, fanart=item.thumbnail, folder=True))
     except:
         import sys
         for line in sys.exc_info():
