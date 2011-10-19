@@ -190,6 +190,13 @@ def run():
                     logger.info("subtitle="+item.subtitle)
                     xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
 
+                elif action=="add_pelicula_to_library":
+                    logger.info("[launcher.py] Pelicula")
+                    from platform.xbmc import library
+                    # Obtiene el listado desde el que se llamó
+                    scrapedtitle = item.show
+                    library.savelibrary(item.show,url,"",server,"",canal=item.channel,category="Cine",Serie=item.show,verbose=False,accion=item.extra,pedirnombre=False)
+                
                 elif action=="add_serie_to_library":
                     logger.info("[launcher.py] add_serie_to_library")
                     from platform.xbmc import library
