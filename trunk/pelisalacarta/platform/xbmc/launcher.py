@@ -20,8 +20,8 @@ def run():
     config.verify_directories_created()
     
     # Extract parameters from sys.argv
-    params, channel_name, title, url, thumbnail, plot, action, server, extra, subtitle, category, show, password = extract_parameters()
-    logger.info("[launcher.py] channel_name=%s, title=%s, url=%s, thumbnail=%s, plot=%s, action=%s, server=%s, extra=%s, subtitle=%s, category=%s, show=%s, password=%s" % (channel_name, title, url, thumbnail, plot, action, server, extra, subtitle, category, show, password))
+    params, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password = extract_parameters()
+    logger.info("[launcher.py] channel_name=%s, title=%s, fulltitle=%s, url=%s, thumbnail=%s, plot=%s, action=%s, server=%s, extra=%s, subtitle=%s, category=%s, show=%s, password=%s" % (channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password))
 
     try:
         # Accion por defecto - elegir canal
@@ -114,7 +114,7 @@ def run():
             else:            
                 logger.info("[launcher.py] multiplatform channel")
                 from core.item import Item
-                item = Item(channel=channel_name, title=title , url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle, show=show, password=password)
+                item = Item(channel=channel_name, title=title , fulltitle=fulltitle, url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle, show=show, password=password)
 
                 if item.subtitle!="":
                     logger.info("[launcher.py] Downloading subtitle file "+item.subtitle)
@@ -139,7 +139,7 @@ def run():
                         itemlist = channel.play(item)
                         if len(itemlist)>0:
                             item = itemlist[0]
-                            xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+                            xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
                         else:
                             import xbmcgui
                             ventana_error = xbmcgui.Dialog()
@@ -149,7 +149,7 @@ def run():
                                 ok = ventana_error.ok ("plugin", "No hay nada para reproducir")
                     except:
                         logger.info("[launcher.py] no channel 'play' method, executing core method")
-                        xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+                        xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
                         #import sys
                         #for line in sys.exc_info():
                         #    logger.error( "%s" % line )
@@ -188,7 +188,7 @@ def run():
                     
                     from platform.xbmc import xbmctools
                     logger.info("subtitle="+item.subtitle)
-                    xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password)
+                    xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
 
                 elif action=="add_serie_to_library":
                     logger.info("[launcher.py] add_serie_to_library")
@@ -347,6 +347,12 @@ def extract_parameters():
     else:
         title = ""
 
+    # Extrae el título del video
+    if params.has_key("fulltitle"):
+        fulltitle = urllib.unquote_plus( params.get("fulltitle") )
+    else:
+        fulltitle = ""
+
     if params.has_key("thumbnail"):
         thumbnail = urllib.unquote_plus( params.get("thumbnail") )
     else:
@@ -377,4 +383,4 @@ def extract_parameters():
     else:
         show = ""
 
-    return params, channel, title, url, thumbnail, plot, action, server, extra, subtitle, category, show, password
+    return params, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password
