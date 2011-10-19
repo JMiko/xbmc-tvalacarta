@@ -545,5 +545,5 @@ def verRelacionados(params,data,category):
 def Relacionados(item): 
     
     data = scrapertools.cachePage(url)
-    print data
+    logger.info(data)
     verRelacionados(params,data,category)
