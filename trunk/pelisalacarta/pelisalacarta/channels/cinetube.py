@@ -251,7 +251,7 @@ def peliculas(item,paginacion=True):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
 
     # Extrae el paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -261,7 +261,7 @@ def peliculas(item,paginacion=True):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(url,matches[0])
-        pagitem = Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True)
+        pagitem = Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=scrapedurl)
         if not paginacion:
             itemlist.extend( peliculas(pagitem) )
         else:
@@ -314,9 +314,9 @@ def documentales(item):
 
         # Añade al listado
         if match[0].startswith("/documentales/serie-documental"):
-            itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle+" (serie)" , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle+" (serie)" , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
         else:
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
 
     # Extrae el paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -326,7 +326,7 @@ def documentales(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="documentales", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="documentales", title="!Página siguiente" , url=scrapedurl) )
 
     return itemlist
 
@@ -355,7 +355,7 @@ def completo(item):
             scrapedurl = urlparse.urljoin(url,match[0])
             scrapedthumbnail = ""    
 
-            itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle) )
 
         # Extrae el paginador
         matches = re.compile(patronpag,re.DOTALL).findall(data)
@@ -441,7 +441,7 @@ def listcategorias(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
 
     return itemlist
 
@@ -515,7 +515,7 @@ def series(item):
         scrapedthumbnail = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle= fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="temporadas", title=scrapedtitle , fulltitle= fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, show=scrapedtitle) )
 
     # Paginador
     #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
@@ -525,7 +525,7 @@ def series(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="series", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="series", title="!Página siguiente" , url=scrapedurl) )
 
     return itemlist
 
@@ -705,7 +705,7 @@ def findvideos(item):
                 scrapedurl = video[1]
                 server = video[2]
                 
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, fanart=item.thumbnail, folder=True))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():
