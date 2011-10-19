@@ -42,7 +42,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     if mobj is not None:
         video_url = urllib.unquote(mobj.group(1) + mobj.group(2)).decode('utf-8')
         video_url = re.sub(r'(?u)&(.+?);', htmlentity_transform, video_url)
-        print video_url
+        logger.info(video_url)
         return video_url        
     else:    
         logger.info('ERROR: Unable to extract media URL http')
@@ -82,7 +82,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             logger.info('ERROR: re.compile failed')
             video_url = ""
 
-    print video_url.encode("utf-8")
+    logger.info(video_url.encode("utf-8"))
     return video_url
 
 def htmlentity_transform(matchobj):

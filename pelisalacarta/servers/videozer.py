@@ -50,7 +50,7 @@ def Extract_id(url):
     _VALID_URL = r'^((?:http://)?(?:\w+\.)?videozer\.com/(?:(?:e/|embed/|video/)|(?:(?:flash/|f/)))?)?([0-9A-Za-z_-]+)(?(1).+)?$'
     mobj = re.match(_VALID_URL, url)
     if mobj is None:
-        print 'ERROR: URL invalida: %s' % url
+        logger.info('ERROR: URL invalida: %s' % url)
         
         return ""
     id = mobj.group(2)
