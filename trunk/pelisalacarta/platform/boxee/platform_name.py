@@ -1,1 +1,1 @@
-PLATFORM = "boxee"
+PLATFORM_NAME = "boxee"

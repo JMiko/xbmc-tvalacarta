@@ -1,1 +1,1 @@
-PLATFORM = "plex"
+PLATFORM_NAME = "plex"
