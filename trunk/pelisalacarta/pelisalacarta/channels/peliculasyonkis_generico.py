@@ -194,6 +194,9 @@ def findvideos(item):
         
         data = scrapertools.cache_page(item.url)    
         
+        #Url strm
+        url2=item.url
+        
         #Solo queremos los links de ONLINE
         #matches = re.compile('<h2 class="header-subtitle veronline">.*?<h2 class="header-subtitle descargadirecta">', re.S).findall(data)
         #ONLINE + DESCARGA <h2 class="header-subtitle veronline">Ver Online</h2><h2 class="header-subtitle descargadirecta">Descarga directa</h2> 
@@ -215,23 +218,28 @@ def findvideos(item):
         for match in matches:
             #logger.info(match)
             #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Espa�ol">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subt�tulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la pel�cula"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Informaci�n v�deo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
-            patron = '<a href="/s/ngo/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
+            patron = '<a href="/s/ngo/([^"]+)".*? title="(.*?)".*?<span class="server ([^"]+)".*?title=".*?">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
-                servidor = info[1]
+                servidor = info[2]
                 Nro = Nro + 1
                 fmt = info[4]      
-                audio = "Audio:" + info[2]
-                subs = "Subs:" + info[3]
+                audio = "Audio:" + info[3]
+                subs = "Subs:" + info[4]
+                #Nombre para el fichero strm
+                titulo = info[1].replace("Descargar","")
                 url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
+                
     except:
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
-
+    
+    itemlist.append( Item(channel=item.channel, title="Añadir esta pelicula a la biblioteca de XBMC", url=item.url, action="add_pelicula_to_library", category="CINE", extra="strm_detail", show=titulo, folder=False))
+           
     return itemlist
 
 def play(item):
