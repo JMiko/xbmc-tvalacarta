@@ -160,7 +160,7 @@ def listar_busquedas(params,url="",category=""):
         
         if channel_preset != CHANNELNAME:
             channel2 = channel_preset
-        print "channel_preset :%s" %channel_preset
+        logger.info("channel_preset :%s" %channel_preset)
         
         matches = ""
         if "|" in presets:
@@ -257,7 +257,7 @@ def teclado(default="", heading="", hidden=False):
     
 def por_teclado(params,url="",category=""):
     logger.info("[buscador.py] por_teclado")
-    print "category :"+category,"url :"+url
+    logger.info("category :"+category,"url :"+url)
     if category == "" or category == "Buscador_Generico":
 
         channel  = params.channel
