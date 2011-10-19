@@ -73,7 +73,7 @@ def porGenero(item):
     itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Western",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=21"))
 
     return itemlist	
-	
+
 def listadoAlfabetico(item):
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="0-9",url="http://www.cuevana.tv/peliculas/lista/letra=num"))
@@ -141,7 +141,7 @@ def novedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
 
     # Extrae el paginador
     patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
@@ -150,7 +150,7 @@ def novedades(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Pagina siguiente" , url=scrapedurl) )
 
     return itemlist
 
@@ -173,7 +173,7 @@ def series(item):
         scrapedthumbnail = "http://www.cuevana.tv/box/"+code+".jpg"
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
 
     return itemlist
 
@@ -204,7 +204,7 @@ def temporadas(item,data):
         scrapedurl = "http://www.cuevana.tv/list_search_id.php?temporada="+code
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"] show="+item.show)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=temporada , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show , folder=True, extra=item.extra + "|" + temporada) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=temporada , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show , extra=item.extra + "|" + temporada) )
 
     return itemlist
 
@@ -238,7 +238,7 @@ def episodios(item):
             scrapedthumbnail = temporada_item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show) )
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -313,7 +313,7 @@ def findvideos(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=True))
+        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=False))
 
     return itemlist
 
@@ -376,9 +376,9 @@ def listar(item, categoria="*"):
         if "tv/series/" in scrapedurl and categoria in ("S","*"):
            code = re.compile("/series/([0-9]+)/").findall(scrapedurl)[0]
            scrapedurl = "http://www.cuevana.tv/list_search_id.php?serie="+code
-           itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+           itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
         elif "tv/peliculas/" in scrapedurl and categoria in ("F","*"):
-           itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+           itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
 
     # Extrae el paginador
     patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
@@ -387,7 +387,7 @@ def listar(item, categoria="*"):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Página siguiente" , url=scrapedurl) )
 
     return itemlist
 
