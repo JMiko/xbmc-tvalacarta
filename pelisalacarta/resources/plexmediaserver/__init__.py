@@ -67,9 +67,9 @@ def mainlist():
 
     for canal in canales:
         if canal.channel=="configuracion":
-            dir.Append(PrefsItem(title="Configuración", thumb=R('images/posters/'+canal.channel+'.png')))
+            dir.Append(PrefsItem(title="Configuración", thumb='http://pelisalacarta.mimediacenter.info/posters/'+canal.channel+'.png'))
         else:
-            dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = R('images/posters/'+canal.channel+'.png'), art=R(ART) ) , channel=canal.channel , action = canal.action ))
+            dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = 'http://pelisalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , channel=canal.channel , action = canal.action ))
 
     return dir
 
@@ -118,26 +118,28 @@ def runchannel(sender,channel,action="mainlist",category=""):
             category = "Los nuevos"
         else:
             category=""
+        
+        if not item.thumbnail.startswith("http://"):
+            item.thumbnail = 'http://pelisalacarta.mimediacenter.info/posters/'+item.thumbnail+'.png'
         #Log("category=%s" % category)
         
-        thumbnail = 'images/posters/'+item.channel+'.png'
+        #thumbnail = 'images/posters/'+item.channel+'.png'
         #Log("thumbnail=%s" % thumbnail)
 
         # Opciones de menú
         if item.channel=="channelselector":
-            dir.Append( Function( DirectoryItem( runchannel, title = item.title, subtitle = "", thumb = R(thumbnail), art=R(ART) ) , channel=item.channel , action = item.action , category = item.category ))
+            dir.Append( Function( DirectoryItem( runchannel, title = item.title, subtitle = "", thumb = item.thumbnail, art=R(ART) ) , channel=item.channel , action = item.action , category = item.category ))
         # Los canales
         else:
             if item.type=="generic":
-                dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = category, thumb = R(thumbnail) ) , item = item ) )
+                dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = category, thumb = item.thumbnail ) , item = item ) )
 
     return dir
 
 def actionexecute(sender,item):
-    from core import logger
     Log("[__init__.py] actionexecute")
 
-    Log(item.tostring())
+    Log("[__init__.py] "+item.tostring())
     dir = MediaContainer(viewGroup="InfoList")
     
     if item.action=="":
@@ -145,28 +147,38 @@ def actionexecute(sender,item):
     Log("[__init__.py] action="+item.action)
     
     exec "from pelisalacarta.channels import "+item.channel
-    
+
+    Log("[__init__.py] 1")
+
     if item.action!="findvideos":
+        Log("[__init__.py] 2")
         exec "itemlist = "+item.channel+"."+item.action+"(item)"
     else:
         try:
+            Log("[__init__.py] 3")
             exec "itemlist = "+item.channel+"."+item.action+"(item)"
         except:
+            Log("[__init__.py] 4")
             itemlist = findvideos(item)
-            
+
     for item in itemlist:
         item.title = encodingsafe(item.title)
         item.plot = encodingsafe(item.plot)
-        logger.info("item="+item.tostring())
+        Log("item="+item.tostring())
 
         if item.folder:
             dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = "subtitle", thumb = item.thumbnail ) , item = item ))
         else:
             dir.Append( Function( DirectoryItem( playvideo , title=item.title, subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
-    
+
+    Log("[__init__.py] 5")
+
     return dir
 
 def findvideos(item):
+    from core.item import Item
+    cerealizer.register(Item)
+
     Log("[__init__.py] findvideos")
 
     url = item.url
