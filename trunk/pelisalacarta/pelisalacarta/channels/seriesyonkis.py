@@ -251,7 +251,7 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
         import sys
         for line in sys.exc_info():
