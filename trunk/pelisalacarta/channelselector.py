@@ -141,6 +141,8 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Teledocumentales (19/10/2011)"       ,channel="teledocumentales"      , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
+    itemlist.append( Item( title="Descarrega Directa (CAT) (19/10/2011)",channel="descarregadirecta"    , language="CAT" , category="F,S,D,A" , type="generic" )) # mrfloffy 19/10/2011
     itemlist.append( Item( title="DL-More (FR) (14/10/2011)"           , channel="dlmore"               , language="FR" , category="S"   , type="generic" )) # jesus 14/10/2011
     itemlist.append( Item( title="Megaupload Premium (FR) (14/10/2011)", channel="megauploadpremiumfr"  , language="FR" , category="S"   , type="generic" )) # jesus 14/10/2011
     itemlist.append( Item( title="Peliculasaudiolatino (14/10/2011)"   , channel="peliculasaudiolatino" , language="ES" , category="F"   , type="generic" )) # Dalim 14/10/2011
@@ -174,6 +176,7 @@ def channels_list():
     itemlist.append( Item( title="DeLaTV"                , channel="delatv"               , language="ES"    , category="F"       , type="generic"  ))
     itemlist.append( Item( title="Descarga Cine Clásico" , channel="descargacineclasico"  , language="ES"    , category="F,S"     , type="generic"  ))
     itemlist.append( Item( title="Descargapelis"         , channel="descargapelis"        , language="ES"    , category="F"       , type="generic"  ))
+    itemlist.append( Item( title="Descarrega Directa (CAT)",channel="descarregadirecta"   , language="CAT"   , category="F,S,D,A" , type="generic" )) # mrfloffy 19/10/2011
     itemlist.append( Item( title="dibujosanimadosgratis" , channel="dibujosanimadosgratis", language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Discoverymx"           , channel="discoverymx"          , language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="Divx Online"           , channel="divxonline"           , language="ES"    , category="F"       , type="generic"  ))
@@ -227,6 +230,7 @@ def channels_list():
     itemlist.append( Item( title="Somosmovies"           , channel="somosmovies"          , language="ES" , category="F,S,D,A"    , type="generic"  ))
     itemlist.append( Item( title="Sonolatino"            , channel="sonolatino"           , language=""   , category="M"          , type="xbmc"  ))
     itemlist.append( Item( title="Stagevu"               , channel="stagevusite"          , language=""   , category="G"          , type="xbmc"  ))
+    itemlist.append( Item( title="Teledocumentales"      , channel="teledocumentales"     , language="ES" , category="D"          , type="generic" )) # mrfloffy 19/10/2011
     itemlist.append( Item( title="Terror y Gore"         , channel="terrorygore"          , language="ES,EN" , category="F"       , type="xbmc"  ))
     itemlist.append( Item( title="Trailers ecartelera"   , channel="ecarteleratrailers"   , language="ES,EN" , category="F"       , type="xbmc"  ))
     itemlist.append( Item( title="tu.tv"                 , channel="tutvsite"             , language="ES" , category="G"          , type="generic" ))

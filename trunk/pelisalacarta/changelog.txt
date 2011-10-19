@@ -1,3 +1,22 @@
+3.2.3
+
+- Added captcha keyboard for seriesyonkis
+- Trailer search fixed
+- Lot of channel fixes and updates
+- New channels
+    Megaupload-premium (FR)
+    DL-more (FR)
+    moviezet by @mrfloffy
+    peliculasaudiolatino by @Dalim
+    animeflv by @MarioXD
+    descarregadirecta (CAT) by @mrfloffy
+- New connectors
+    Divxstage (@Dalim)
+    Videobam (@Dalim)
+    Vidbux (@Dalim)
+    DownUpload (@Dalim)
+    Fileserve (@jesus)
+
 3.2
 
 - New connector modules now smarter
