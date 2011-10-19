@@ -97,7 +97,7 @@ def videos(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle, fulltitle=item.fulltitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle, fulltitle=item.fulltitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
 
     return itemlist
 

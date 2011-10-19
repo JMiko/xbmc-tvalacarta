@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>buenaisla</name>
-	<tag>3</tag>
-	<date>14/10/2011</date>
-	<changes>Añadido buscador, por Dalim.</changes>
+	<tag>4</tag>
+	<date>19/10/2011</date>
+	<changes>Arreglado folder=false</changes>
 </version>
