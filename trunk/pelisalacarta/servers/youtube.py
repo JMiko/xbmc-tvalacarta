@@ -163,7 +163,7 @@ def getplaylistvideos(url,startindex,maxresults,channel="",action="play"):
     patron = 'http://.*?/([^/]+)/$'
     matches = re.compile(patron,re.DOTALL).findall(url+"/")
     idplaylist = matches[0]
-    print idplaylist
+    logger.info(idplaylist)
     
     # Obtiene el feed segun el API de YouTube
     url = "http://gdata.youtube.com/feeds/api/playlists/%s?start-index=%d&max-results=%d" % (idplaylist,startindex,maxresults)
@@ -210,7 +210,7 @@ def Extract_id(url):
     # Extract video id from URL
     mobj = re.match(_VALID_URL, url)
     if mobj is None:
-        print 'ERROR: URL invalida: %s' % url
+        logger.info('ERROR: URL invalida: %s' % url)
         alertaIDerror(url)
         return ""
     id = mobj.group(2)

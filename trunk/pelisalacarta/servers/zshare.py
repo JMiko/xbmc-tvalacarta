@@ -244,7 +244,7 @@ def geturl(urlvideo):
     url = ""
     patron = "'([^']+)'"
     new_array =  re.compile(patron,re.DOTALL).findall(matches[0])
-    print new_array
+    logger.info(new_array)
     for i in new_array:
         url = url + i
     
