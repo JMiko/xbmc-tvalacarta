@@ -170,6 +170,8 @@ def login(user, password):
 def get_megavideo_cookie_id():
     logger.info("[megavideo.py] get_megavideo_cookie_id")
 
+    cookie=""
+
     cookie_data = config.get_cookie_data()
     logger.info("cookie_data="+cookie_data)
     
