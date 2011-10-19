@@ -1,1 +1,1 @@
-PLATFORM = "developer"
+PLATFORM_NAME = "developer"

@@ -1,1 +1,1 @@
-PLATFORM = "wiimc"
+PLATFORM_NAME = "wiimc"

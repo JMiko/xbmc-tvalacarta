@@ -1,1 +1,1 @@
-PLATFORM = "xbmcdharma"
+PLATFORM_NAME = "xbmcdharma"

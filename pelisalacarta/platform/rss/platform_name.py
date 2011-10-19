@@ -1,1 +1,1 @@
-PLATFORM = "rss"
+PLATFORM_NAME = "rss"

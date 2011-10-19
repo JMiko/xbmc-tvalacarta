@@ -1,1 +1,1 @@
-PLATFORM = "xbmc"
+PLATFORM_NAME = "xbmc"
