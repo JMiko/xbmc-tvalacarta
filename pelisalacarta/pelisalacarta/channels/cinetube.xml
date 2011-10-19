@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>9</tag>
+	<tag>10</tag>
 	<date>19/10/2011</date>
-	<changes>Modificada la estructura del canal.
-Arreglado el listado completo de series.
-Añadido listado completo a Documentales y Anime.
-Añadido el listado por categorías a todas las secciones que faltaban.
-Añadida búsqueda por Actor/Director.
-Añadida búsqueda por secciones.</changes>
+	<changes>Arreglado folder=False en videos</changes>
 </version>
