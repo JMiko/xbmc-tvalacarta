@@ -2,7 +2,7 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.2.2"/>
+    <property name="version" value="3.2.3"/>
     <property name="target" value="target"/>
 
 	<!-- init ===================================================================== -->
@@ -24,28 +24,42 @@
         <copy todir="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
 				<exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="default.tbn"/>
+                <exclude name="logging.conf"/>
+                <exclude name="pelisalacarta.log"/>
+                <exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="pelisalacarta.py"/>
 				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="addon*.xml"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-                <!--exclude name="resources/images/**"/-->
-				<exclude name="descriptor.xml"/>
                 <exclude name="default.tbn"/>
+                <exclude name="core/platform_name.py"/>
+
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-                <exclude name="tester.py"/>
+                
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/rss/**"/>
+                <exclude name="platform/wiimc/**"/>
+                <!--exclude name="platform/xbmc/**"/-->
+                <!--exclude name="platform/xbmcdharma/**"/-->
+                <exclude name="platform/xbmceden/**"/>
+
                 <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
-        <copy file="addon-dharma.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-addon-eden ============================================================ -->
@@ -53,28 +67,121 @@
         <copy todir="${target}/xbmc-addon-eden/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
 				<exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+                <exclude name="default.tbn"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="logging.conf"/>
+                <exclude name="pelisalacarta.log"/>
+                <exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+				<exclude name="pelisalacarta.py"/>
 				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="addon*.xml"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-                <!--exclude name="resources/images/**"/-->
-				<exclude name="descriptor.xml"/>
-                <exclude name="default.tbn"/>
+
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-                <exclude name="tester.py"/>
+
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/rss/**"/>
+                <exclude name="platform/wiimc/**"/>
+                <!--exclude name="platform/xbmc/**"/-->
+                <exclude name="platform/xbmcdharma/**"/>
+                <!--exclude name="platform/xbmceden/**"/-->
+
                 <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
-        <copy file="addon-eden.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-xbmc-plugin ============================================================ -->
+    <target name="copy-xbmc-plugin">
+        <copy todir="${target}/xbmc-plugin/pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+                <exclude name="logging.conf"/>
+                <exclude name="pelisalacarta.log"/>
+                <exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+				<exclude name="pelisalacarta.py"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+                <exclude name="core/platform_name.py"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/rss/**"/>
+                <exclude name="platform/wiimc/**"/>
+                <!--exclude name="platform/xbmc/**"/-->
+                <!--exclude name="platform/xbmcdharma/**"/-->
+                <!--exclude name="platform/xbmceden/**"/-->
+
+                <exclude name="pelisalacarta/channels/seriesly.py"/>
+			</fileset>
+        </copy>
+        <copy file="platform/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-wiimc ============================================================ -->
+    <target name="copy-wiimc">
+        <copy todir="${target}/wiimc/pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.log"/>
+				<exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/rss/**"/>
+                <!--exclude name="platform/wiimc/**"/-->
+                <exclude name="platform/xbmc/**"/>
+                <exclude name="platform/xbmcdharma/**"/>
+                <exclude name="platform/xbmceden/**"/>
+            </fileset>
+        </copy>
+        <copy file="platform/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-addon-oficial-dharma ============================================================ -->
@@ -120,7 +227,8 @@
                 <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
-        <copy file="addon-dharma.xml" tofile="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-addon-oficial-eden ============================================================ -->
@@ -164,65 +272,8 @@
                 <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
-        <copy file="addon-eden.xml" tofile="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta/addon.xml"/>
-    </target>
-
-	<!-- copy-xbmc-plugin ============================================================ -->
-    <target name="copy-xbmc-plugin">
-        <copy todir="${target}/xbmc-plugin/pelisalacarta">
-            <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="build.xml"/>
-				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="addon*.xml"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-				<exclude name="descriptor.xml"/>
-                <exclude name="fanart.jpg"/>
-                <exclude name="icon.png"/>
-                <exclude name="resources/images/posters/**"/>
-                <exclude name="resources/images/banners/**"/>
-                <exclude name="tester.py"/>
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
-			</fileset>
-        </copy>
-    </target>
-		
-	<!-- copy-wiimc ============================================================ -->
-    <target name="copy-wiimc">
-        <copy todir="${target}/wiimc/pelisalacarta">
-            <fileset dir=".">
-                <exclude name="target/**"/>
-                <exclude name="build.xml"/>
-				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="addon*.xml"/>
-				<exclude name="pelisalacarta-version.xml"/>
-				<exclude name="pelisalacarta.log"/>
-                <exclude name="**/.*"/>
-                <exclude name="**/.*/**"/>
-                <exclude name="**/bookmarks/**"/>
-                <exclude name="**/library/**"/>
-                <exclude name="**/*.pyo"/>
-                <exclude name="**/*.pyc"/>
-                <exclude name="**/parametrizacion*.*"/>
-                <exclude name="descriptor.xml"/>
-            	<!-- TODO: Probar wiimc sin imagenes -->
-                <!--exclude name="resources/images/**"/ -->
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-                <exclude name="default.tbn"/>
-                <exclude name="tester.py"/>
-                <exclude name="fanart.jpg"/>
-                <exclude name="icon.png"/>
-            </fileset>
-        </copy>
+        <copy file="platform/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platform/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-plexmediaserver ============================================================ -->

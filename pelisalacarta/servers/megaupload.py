@@ -44,7 +44,7 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
         if cookie=="":
             #logger.info("[megaupload.py] No hay cookie, hace login")
             tipo_usuario , cookie = login(user,password)
-            logger.info("[megaupload.py] No hay cookie de Megaupload válida (error en login o password?)")
+            #logger.info("[megaupload.py] No hay cookie de Megaupload válida (error en login o password?)")
         else:
             tipo_usuario=PREMIUM
     

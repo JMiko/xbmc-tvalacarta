@@ -5,13 +5,9 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 
 from core import config
 from core import logger
-from platform.xbmc import xbmctools
 from core.item import Item
 
 CHANNELNAME = "buscador"
@@ -26,6 +22,11 @@ def mainlist(params,url="",category=""):
     listar_busquedas(params,url,category)
 
 def searchresults(params,url="",category=""):
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    from platform.xbmc import xbmctools
+
     logger.info("[buscador.py] searchresults")
     salvar_busquedas(params,url,category)
     if url == "" and category == "":
@@ -36,6 +37,25 @@ def searchresults(params,url="",category=""):
     
     # Lanza las búsquedas
     matches = []
+    itemlist = do_search_results(tecleado)
+    for item in itemlist:
+        targetchannel = item.channel
+        action = item.action
+        category = category
+        scrapedtitle = item.title+" ["+item.channel+"]"
+        scrapedurl = item.url
+        scrapedthumbnail = item.thumbnail
+        scrapedplot = item.plot
+        
+        xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    
+    # Cierra el directorio
+    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_TITLE )
+    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+def do_search_results(tecleado):
+
     itemlist = []
 
     from pelisalacarta.channels import cinetube
@@ -89,23 +109,7 @@ def searchresults(params,url="",category=""):
     except:
         pass
     '''
-    
-    for item in itemlist:
-        targetchannel = item.channel
-        action = item.action
-        category = category
-        scrapedtitle = item.title+" ["+item.channel+"]"
-        scrapedurl = item.url
-        scrapedthumbnail = item.thumbnail
-        scrapedplot = item.plot
-        
-        xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-    
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_TITLE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
+    return itemlist
 
 def salvar_busquedas(params,url="",category=""):
     if url == "" and category == "":
@@ -142,6 +146,11 @@ def salvar_busquedas(params,url="",category=""):
     #xbmc.executebuiltin( "Container.Refresh" )
         
 def listar_busquedas(params,url="",category=""):
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    
+    from platform.xbmc import xbmctools
     #print "category :" +category
     if url == "" and category == "":
         channel_preset = params.channel
@@ -207,6 +216,11 @@ def listar_busquedas(params,url="",category=""):
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
     
 def borrar_busqueda(params,url="",category=""):
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    
+    from platform.xbmc import xbmctools
     if url == "" and category == "":
         channel = params.channel
         url = params.url
@@ -244,6 +258,11 @@ def borrar_busqueda(params,url="",category=""):
     xbmc.executebuiltin( "Container.Refresh" )
 
 def teclado(default="", heading="", hidden=False):
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    
+    from platform.xbmc import xbmctools
     logger.info("[buscador.py] teclado")
     tecleado = ""
     keyboard = xbmc.Keyboard(default)
@@ -288,8 +307,12 @@ def por_teclado(params,url="",category=""):
         url = tecleado
         plugin.searchresults(params, url, category)
 
-
 def addfolder( canal , nombre , url , accion , channel2 = "" ):
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    
+    from platform.xbmc import xbmctools
     logger.info('[buscador.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
     itemurl = '%s?channel=%s&action=%s&category=%s&url=%s&channel2=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url),channel2 )

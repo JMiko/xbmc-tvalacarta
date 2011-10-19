@@ -145,7 +145,7 @@ def listcat(item):
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Remove the next page mark
-    patronvideos = '<a href="(http://[www/.]*cineblog01.com/category/[a-z]+'
+    patronvideos = '<a href="(http://www.cineblog01.com/category/[0-9a-zA-Z]+/page/[0-9]+/)">Avanti >'
     patronvideos += '/page/[0-9]+/)">Avanti >'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)

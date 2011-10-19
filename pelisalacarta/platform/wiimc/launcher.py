@@ -28,7 +28,7 @@ def controller(plugin_name,port,host,path,headers):
 
     respuesta += "version=7\n"
     respuesta += "logo=http://www.mimediacenter.info/xbmc/tvalacarta/icon.jpg\n"
-    respuesta += "title="+plugin_name+" 3.0.0 (WiiMC)\n"
+    respuesta += "title="+plugin_name+" 3.2.3 (WiiMC)\n"
     respuesta += "\n"
 
     if path == "/wiimc/" or path=="/wiimc":
@@ -108,7 +108,7 @@ def controller(plugin_name,port,host,path,headers):
                 logger.info("  Buscador")
                 if item.server=="": item.server="none"
                 if item.url=="": item.url="none"
-                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category) )
+                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category) )
                 respuesta += "type=search\n"
                 respuesta += "name=%s\n" % item.title
                 if item.thumbnail != "":
@@ -122,7 +122,7 @@ def controller(plugin_name,port,host,path,headers):
                 if item.url=="": item.url="none"
                 if item.title=="": item.title="Ver el video-"
 
-                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , channel , item.action , urllib.quote_plus(item.url) , item.server ,urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category) )
+                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server ,urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category) )
                 respuesta += "type=playlist\n"
                 respuesta += "name=%s\n" % item.title
                 if item.thumbnail != "":
@@ -211,7 +211,16 @@ def getitems(requestpath):
     try:
         exec "from pelisalacarta.channels import "+channel
     except:
-        exec "from core import "+channel
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        try:
+            exec "from pelisalacarta import "+channel
+        except:
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
+            exec "from core import "+channel
 
     # play - es el menú de reproducción de un vídeo
     if accion=="play":
@@ -234,6 +243,11 @@ def getitems(requestpath):
         itemlist.append( senderitem )
 
     # search - es el buscador
+    elif channel=="buscador" and accion=="mainlist":
+        logger.info("ACCION SEARCH (buscador)")
+        texto = requestpath.split("plx")[1]
+        exec "itemlist = buscador.do_search_results(texto)"
+        
     elif accion=="search":
         logger.info("ACCION SEARCH")
         texto = requestpath.split("plx")[1]
