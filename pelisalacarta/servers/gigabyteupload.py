@@ -42,7 +42,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #post = "op=download&usr_login=&id="+id+"&security_key="+security_key+"&submit="+submit+"&aff=&came_from=referer=&method_free=Free+Stream"
     post = "security_key="+security_key+"&submit=Watch+Online"
     data = scrapertools.cache_page( url2 , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
-    print data
+    #logger.info(data)
     
     # Extrae el trozo cifrado
     patron = '<div id="player">.*?<script type="text/javascript">(eval.*?)</script>'
