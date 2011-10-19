@@ -362,7 +362,11 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
             logger.info("[scrapertools.py] Leyendo fichero cookies")
             # if we have a cookie file already saved
             # then load the cookies into the Cookie Jar
-            cj.load(ficherocookies)
+            try:
+                cj.load(ficherocookies)
+            except:
+                logger.info("[scrapertools.py] El fichero de cookies existe pero es ilegible, se borra")
+                os.remove(ficherocookies)
 
         # Now we need to get our Cookie Jar
         # installed in the opener;
@@ -492,7 +496,11 @@ def downloadpagewithcookies(url):
         if os.path.isfile(ficherocookies):
             # if we have a cookie file already saved
             # then load the cookies into the Cookie Jar
-            cj.load(ficherocookies)
+            try:
+                cj.load(ficherocookies)
+            except:
+                logger.info("[scrapertools.py] El fichero de cookies existe pero es ilegible, se borra")
+                os.remove(ficherocookies)
 
         # Now we need to get our Cookie Jar
         # installed in the opener;
@@ -606,7 +614,11 @@ def downloadpageGzip(url):
         if os.path.isfile(ficherocookies):
             # if we have a cookie file already saved
             # then load the cookies into the Cookie Jar
-            cj.load(ficherocookies)
+            try:
+                cj.load(ficherocookies)
+            except:
+                logger.info("[scrapertools.py] El fichero de cookies existe pero es ilegible, se borra")
+                os.remove(ficherocookies)
 
         # Now we need to get our Cookie Jar
         # installed in the opener;
@@ -908,7 +920,11 @@ def getLocationHeaderFromResponse(url,post=None,headers=[['User-Agent', 'Mozilla
         logger.info("[scrapertools.py] Leyendo fichero cookies")
         # if we have a cookie file already saved
         # then load the cookies into the Cookie Jar
-        cj.load(ficherocookies)
+        try:
+            cj.load(ficherocookies)
+        except:
+            logger.info("[scrapertools.py] El fichero de cookies existe pero es ilegible, se borra")
+            os.remove(ficherocookies)
 
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
     urllib2.install_opener(opener)
