@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>12</tag>
-	<date>01/10/2011</date>
-	<changes>Añadido listado por género gracias a @aampudia</changes>
+	<tag>13</tag>
+	<date>19/10/2011</date>
+	<changes>Arreglado el folder=false</changes>
 </version>
