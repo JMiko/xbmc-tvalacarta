@@ -420,6 +420,8 @@ def getfilefromtitle(url,title):
         nombrefichero = limpia_nombre_excepto_1(nombrefichero)
     else:
         nombrefichero = title + url[-4:]
+        if "videobb" in url or "videozer" in url:
+            nombrefichero = title + ".flv"
 
     logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 
