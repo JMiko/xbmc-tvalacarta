@@ -7,20 +7,21 @@
 #------------------------------------------------------------
 print "pelisalacarta server init..."
 
-PLATFORM = "rss" # "rss" o "wiimc"
-
 import os
 import sys
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 # Inicia el core
+from core import platform_name
+PLATFORM_NAME = platform_name.PLATFORM_NAME
+
 from core import config
-config.force_platform(PLATFORM)
+config.force_platform(PLATFORM_NAME)
 
 import logging.config
 import logging
 logging.config.fileConfig("logging.conf")
-logger=logging.getLogger(PLATFORM)
+logger=logging.getLogger(PLATFORM_NAME)
 
 PORT=int(config.get_setting("server.port"))
 PLUGIN_NAME = 'pelisalacarta'
@@ -45,15 +46,15 @@ class Handler(BaseHTTPRequestHandler):
         logger.info(" HOST: "+host)
         logger.info("-----------------------------------------------------------------")
 
-        if self.path.startswith("/"+PLATFORM):
-            exec "from platform."+PLATFORM+" import launcher"
+        if self.path.startswith("/"+PLATFORM_NAME):
+            exec "from platform."+PLATFORM_NAME+" import launcher"
             respuesta = launcher.controller(plugin_name=PLUGIN_NAME,port=PORT,host=host,path=self.path,headers=self.headers)
         else:
             respuesta = ""
 
         self.send_response(200)
         
-        if PLATFORM == "rss":
+        if PLATFORM_NAME == "rss":
             self.send_header('Content-Type', 'text/xml')
         else:
             self.send_header('Content-Type', 'text/plain')
@@ -89,7 +90,7 @@ for fichero in os.listdir( cachedir ):
 
 try:
     print "Iniciando el servidor en http://"+myip+":"+str(PORT) 
-    print "La URL para "+PLATFORM+" es http://"+myip+":"+str(PORT)+"/"+PLATFORM
+    print "La URL para "+PLATFORM_NAME+" es http://"+myip+":"+str(PORT)+"/"+PLATFORM_NAME
     # Levanta el servidor
     server = HTTPServer(('', PORT), Handler)
     #print server.server_address
