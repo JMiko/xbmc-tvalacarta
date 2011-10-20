@@ -32,7 +32,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             videourl = match
             videourl = videourl.replace('%5C','')
             videourl = urllib.unquote(videourl)
-            video_urls.append( [ ".mp4 (Free) [Downupload]" , videourl ] )
+            video_urls.append( [ ".mp4 [Downupload]" , videourl ] )
             
     else:
         # Si es un enlace de Descarga se busca el archivo
@@ -43,7 +43,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             videourl = "http://"+match[0]+".com:"+match[3]+"/d/"+match[2]+"/video."+match[1]
             videourl = videourl.replace('|','.')
             videourl = urllib.unquote(videourl)
-            video_urls.append( [ "."+match[1]+" (Free) [Downupload]" , videourl ] )
+            video_urls.append( [ "."+match[1]+" [Downupload]" , videourl ] )
             
         # Localiza enlaces con IP
         if len(matches)==0:
@@ -54,7 +54,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
                 videourl = "http://"+match[3]+"."+match[2]+"."+match[1]+"."+match[0]+":"+match[6]+"/d/"+match[5]+"/video."+match[4]
                 videourl = videourl.replace('|','')
                 videourl = urllib.unquote(videourl)
-                video_urls.append( [ "."+match[4]+" (Free) [Downupload]" , videourl ] )
+                video_urls.append( [ "."+match[4]+" [Downupload]" , videourl ] )
             # Otro metodo de busqueda
             if len(matches)==0:
                 url = unpackerjs.unpackjs(data)
@@ -65,7 +65,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
                     videourl = match
                     videourl = videourl.replace('|','')
                     videourl = urllib.unquote(videourl)
-                    video_urls.append( [ ".avi (Free) [Downupload]" , videourl ] )                  
+                    video_urls.append( [ "."+videourl.rsplit('.',1)[1]+" [Downupload]" , videourl ] )                  
                     
                 
 
