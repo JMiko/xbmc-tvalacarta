@@ -64,7 +64,7 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "type=search\n"
                 respuesta += "name="+channel.title+"\n"
                 respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-                respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/"+channel.action+"/none/none/none/none/none/none/playlist.plx\n"
+                respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/"+channel.action+"/none/none/none/none/none/none/none/playlist.plx\n"
                 respuesta += "\n"
     
     elif path.startswith("/wiimc/channelselector/channeltypes"):
@@ -76,7 +76,7 @@ def controller(plugin_name,port,host,path,headers):
             respuesta += "type=playlist\n"
             respuesta += "name="+channel.title+"\n"
             respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-            respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/"+channel.action+"/"+channel.category+"/none/none/none/none/playlist.plx\n"
+            respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/"+channel.action+"/"+channel.category+"/none/none/none/none/none/playlist.plx\n"
             respuesta += "\n"
     
     elif path.startswith("/wiimc/channelselector/listchannels"):
@@ -92,7 +92,7 @@ def controller(plugin_name,port,host,path,headers):
                 respuesta += "type=playlist\n"
                 respuesta += "name="+channel.title+"\n"
                 respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-                respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/mainlist/none/none/none/none/none/playlist.plx\n"
+                respuesta += "URL=http://"+host+"/wiimc/"+channel.channel+"/mainlist/none/none/none/none/none/none/playlist.plx\n"
                 respuesta += "\n"
 
     else:
@@ -108,7 +108,7 @@ def controller(plugin_name,port,host,path,headers):
                 logger.info("  Buscador")
                 if item.server=="": item.server="none"
                 if item.url=="": item.url="none"
-                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category) )
+                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle) )
                 respuesta += "type=search\n"
                 respuesta += "name=%s\n" % item.title
                 if item.thumbnail != "":
@@ -122,7 +122,7 @@ def controller(plugin_name,port,host,path,headers):
                 if item.url=="": item.url="none"
                 if item.title=="": item.title="Ver el video-"
 
-                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server ,urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category) )
+                url = "http://%s/%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server ,urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle) )
                 respuesta += "type=playlist\n"
                 respuesta += "name=%s\n" % item.title
                 if item.thumbnail != "":
@@ -164,7 +164,8 @@ def getitems(requestpath):
     title = urllib.unquote_plus(rutas[6])
     extra = urllib.unquote_plus(rutas[7])
     category = urllib.unquote_plus(rutas[8])
-    logger.info( "channel="+channel+", accion="+accion+", url="+url+", server="+server+", title="+title+", extra="+extra+", category="+category)
+    fulltitle = urllib.unquote_plus(rutas[9])
+    logger.info( "channel="+channel+", accion="+accion+", url="+url+", server="+server+", title="+title+", extra="+extra+", category="+category+", fulltitle="+fulltitle)
 
     if accion=="mainlist" and config.get_setting("updatechannels")=="true":
         try:
@@ -198,7 +199,7 @@ def getitems(requestpath):
     logger.info( "Not cached" )
 
     # El item que invocó es importante para obtener el siguiente
-    senderitem = Item( title=title , channel=channel, action=accion, url=url , server=server, extra=extra, category=category )
+    senderitem = Item( title=title , channel=channel, action=accion, url=url , server=server, extra=extra, category=category, fulltitle=fulltitle )
     if "|" in url:
         partes = urllib.unquote_plus(senderitem.url).split("|")
         refered_item = Item(title=partes[0],url=partes[2],thumbnail="",server=partes[1],plot="",extra=partes[3])
@@ -206,7 +207,7 @@ def getitems(requestpath):
 
     else:
         refered_item = Item()
-
+        logger.info(refered_item)
     # Importa el canal y ejecuta la función
     try:
         exec "from pelisalacarta.channels import "+channel
@@ -313,7 +314,7 @@ def download_item(senderitem,refered_item):
 
     if len(video_urls)>0:
         from core import downloadtools
-        downloadtools.downloadtitle(video_urls[len(video_urls)-1][1],refered_item.title)
+        downloadtools.downloadtitle(video_urls[len(video_urls)-1][1],senderitem.fulltitle)
         itemlist.append( Item( title="Descarga finalizada" ) )
     else:
         itemlist.append( Item( title="El video ya no está disponible" ) )
@@ -330,10 +331,10 @@ def search_trailer(senderitem,refered_item):
 
 def add_to_favorites(senderitem,refered_item):
     from core import favoritos
-    favoritos.savebookmark(titulo=refered_item.title,url=refered_item.url,thumbnail="",server=refered_item.server,plot="")
-    
+    favoritos.savebookmark(titulo=refered_item.title,url=refered_item.url,thumbnail="",server=refered_item.server,fulltitle=senderitem.fulltitle,plot="")
+
     itemlist = []
-    itemlist.append( Item( title="El video %s" % refered_item.title ) )
+    itemlist.append( Item( title="El video %s" % senderitem.fulltitle ) )
     itemlist.append( Item( title="ha sido añadido a favoritos" ) )
     
     return itemlist
@@ -402,7 +403,7 @@ def add_again_to_downloads(senderitem,refered_item):
 
 def menu_video(item):
     itemlist = []
-    logger.info("menu_video url="+item.url+", server="+item.server)
+    logger.info("menu_video url="+item.url+", server="+item.server+", fulltitle="+item.fulltitle)
     
     video_urls = []
 
@@ -420,15 +421,15 @@ def menu_video(item):
     
     refered_item_encoded = urllib.quote(item.title.replace("|","-"))+"|"+urllib.quote(item.server)+"|"+urllib.quote(item.url)+"|"+urllib.quote(item.extra)
     
-    itemlist.append( Item(channel=item.channel, title="Descargar",action="descargar",url=refered_item_encoded ) )
+    itemlist.append( Item(channel=item.channel, title="Descargar",action="descargar",url=refered_item_encoded,fulltitle=urllib.quote(item.fulltitle) ) )
     
     if item.channel!="favoritos":
-        itemlist.append( Item(channel=item.channel, title="Añadir a favoritos",action="add_to_favorites",url=refered_item_encoded ) )
+        itemlist.append( Item(channel=item.channel, title="Añadir a favoritos",action="add_to_favorites",url=refered_item_encoded,fulltitle=urllib.quote(item.fulltitle) ) )
     else:
-        itemlist.append( Item(channel=item.channel, title="Quitar de favoritos",action="remove_from_favorites",url=refered_item_encoded ) )
+        itemlist.append( Item(channel=item.channel, title="Quitar de favoritos",action="remove_from_favorites",url=refered_item_encoded,fulltitle=urllib.quote(item.fulltitle) ) )
     
     if item.channel!="descargas":
-        itemlist.append( Item(channel=item.channel, title="Añadir a la lista de descargas",action="add_to_downloads",url=refered_item_encoded ) )
+        itemlist.append( Item(channel=item.channel, title="Añadir a la lista de descargas",action="add_to_downloads",url=refered_item_encoded,fulltitle=urllib.quote(item.fulltitle) ) )
     else:
         if item.category=="errores":
             itemlist.append( Item(channel=item.channel, title="Quitar definitivamente de la lista de descargas",action="remove_from_error_downloads",url=refered_item_encoded ) )
@@ -448,7 +449,7 @@ def findvideos(item,channel):
     title = item.title
     thumbnail = item.thumbnail
     plot = item.plot
-
+    fulltitle = item.fulltitle
     # Descarga la pagina
     from core import scrapertools
     data = scrapertools.cachePage(url)
@@ -462,6 +463,6 @@ def findvideos(item,channel):
         scrapedurl = video[1]
         server = video[2]
 
-        itemlist.append( Item(channel=channel, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=channel, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, fulltitle=fulltitle, folder=False))
 
     return itemlist
