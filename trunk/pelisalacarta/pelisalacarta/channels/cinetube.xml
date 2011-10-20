@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>10</tag>
-	<date>19/10/2011</date>
-	<changes>Arreglado folder=False en videos</changes>
+	<tag>11</tag>
+	<date>20/10/2011</date>
+	<changes>Arreglado titulos en series para favoritos</changes>
 </version>
