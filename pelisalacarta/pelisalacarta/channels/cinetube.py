@@ -448,7 +448,6 @@ def listcategorias(item):
 def series(item):
     logger.info("[cinetube.py] series")
     itemlist = []
-    fulltitle = item.fulltitle
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -509,6 +508,7 @@ def series(item):
         '''
         scrapedtitle = scrapertools.htmlclean(scrapedtitle)
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        fulltitle = scrapedtitle
 
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
@@ -562,6 +562,7 @@ def temporadas(item):
 
     for match in matches:
         scrapedtitle = match[1].strip()+" ("+match[2]+", "+match[3]+")"
+        # directory = match[1].strip()
         extra = match[1].strip()
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
@@ -590,7 +591,6 @@ def episodios(item):
         </li>
     '''
     logger.info("[cinetube.py] episodios")
-    fulltitle = item.fulltitle
     extra = item.extra
     # directory = item.directory
     itemlist = []
@@ -613,7 +613,7 @@ def episodios(item):
         # Convierte desde UTF-8 y quita entidades HTML
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        
+        fulltitle = scrapedtitle
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         scrapedplot = item.plot
