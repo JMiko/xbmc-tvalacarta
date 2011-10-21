@@ -207,7 +207,7 @@ def getitems(requestpath):
 
     else:
         refered_item = Item()
-        logger.info(refered_item)
+
     # Importa el canal y ejecuta la función
     try:
         exec "from pelisalacarta.channels import "+channel
@@ -314,7 +314,9 @@ def download_item(senderitem,refered_item):
 
     if len(video_urls)>0:
         from core import downloadtools
-        downloadtools.downloadtitle(video_urls[len(video_urls)-1][1],senderitem.fulltitle)
+        titulo = senderitem.fulltitle
+        if titulo=="": titulo=refered_item.title
+        downloadtools.downloadtitle(video_urls[len(video_urls)-1][1],titulo)
         itemlist.append( Item( title="Descarga finalizada" ) )
     else:
         itemlist.append( Item( title="El video ya no está disponible" ) )
