@@ -73,7 +73,7 @@ def listarpeliculas(item):
             scrapedthumbnail = ""
             scrapedplot = ""
     
-            itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, action="listarpeliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
 
     return itemlist
 
