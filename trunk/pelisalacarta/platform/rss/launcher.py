@@ -133,7 +133,7 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "<link>%s</link>\n" % url
                     respuesta += "\n"
                 
-                elif item.folder:
+                elif item.folder or item.action=="play" or item.action=="downloadall":
                     logger.info("  Nivel intermedio")
                     item.fulltitle = DepuraTitulo(item.fulltitle, "false", "false")
 
