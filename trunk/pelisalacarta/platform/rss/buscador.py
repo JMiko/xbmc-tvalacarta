@@ -43,6 +43,7 @@ def resultado(categoria, titulo):
     itemlist.append( Item(channel="", title=salir , action="EXIT") )
     return itemlist
 
+# Cambia la categoria
 def busca_cat(item):
     
     CHANNELNAME = item.channel
@@ -56,6 +57,7 @@ def busca_cat(item):
     else: categoria="30121"
     return resultado(categoria, titulo)
 
+# Cambia el titulo a buscar
 def search(item,titulo):
     
     print item.tostring()
@@ -64,14 +66,14 @@ def search(item,titulo):
     categoria = item.url
     return resultado(categoria, titulo)
 
+# Realiza la busqueda
 def buscar(item):
     logger.info("[buscador.py] buscar")
     CHANNELNAME = item.channel
-    item.url = ""
     categoria = item.url
     titulo = item.extra
     texto = titulo
-    
+    item.url = "" # Para que los canales sepan que es una busqueda generica
     if categoria=="30121": category="*"   # Todos
     elif categoria=="30122": category="F" # Peliculas
     elif categoria=="30123": category="S" # Series
@@ -127,7 +129,17 @@ def buscar(item):
     except:
         logger.info("[buscador.py] ERROR en tumejortv")
 
-    return itemlist
+    resultado = []
+
+    # Dejo solo los que contenga <texto> dentro del título
+    from core.downloadtools import limpia_nombre_excepto_1 as limpia_nombre
+    for item in itemlist:
+        buscado = limpia_nombre(texto).lower()
+        titulo = limpia_nombre(item.title).lower()
+        if buscado in titulo: 
+            resultado.append(item)
+    
+    return resultado
 
 '''
 
