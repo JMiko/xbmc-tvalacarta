@@ -24,7 +24,7 @@ def mainlist(item):
     logger.info("[peliculasyonkis_generico.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Ultimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
     itemlist.append( Item ( channel=CHANNELNAME , action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
     itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
@@ -84,13 +84,16 @@ def peliculascat(item):
 
     return itemlist
    
-def search(item,texto):
+def search(item,texto, categoria="*"):
     logger.info("[peliculasyonkis_generico.py] search")
     itemlist = []
+    if categoria not in ("*","F"): return itemlist
+    
+    if item.url in ("","none"): 
+       url = "http://www.peliculasyonkis.com/buscar/pelicula"
+       item.url = url
+    else: url = item.url
 
-    if item.url=="":
-        item.url = "http://www.peliculasyonkis.com/buscar/pelicula"
-    url = "http://www.peliculasyonkis.com/buscar/pelicula" # write ur URL here
     post = 'keywords='+texto[0:18]
     
     data = scrapertools.cache_page(url,post=post)
@@ -101,7 +104,7 @@ def search(item,texto):
         scrapedtitle = match[0]
         scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = match[2]
-        scrapedplot = match[3]
+        scrapedplot = "Peliculasyonkis:\n"+match[3] # En la busquedas generale sirve para saber en que canal lo ha encontrado...
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
@@ -176,7 +179,9 @@ def peliculas(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , fulltitle=match[1], url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        url = urlparse.urljoin(item.url,match[0])
+        thumbnail = url.replace("/pelicula/", "/img/peliculas/170x243/")+".jpg"
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , fulltitle=match[1] , url=url, thumbnail=thumbnail, plot="", extra = "" ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -194,8 +199,17 @@ def findvideos(item):
         
         data = scrapertools.cache_page(item.url)    
         
-        #Url strm
-        url2=item.url
+        ## <-- Obtengo thumbnail, titulo y plot
+        patronvideos = '<div class="profile-box"> <div class="profile-info">.+?<img src="([^"]+?)" alt' # thumbnail
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        if len(matches)>0: item.thumbnail = 'http://www.peliculasyonkis.com'+matches[0]
+
+        patronvideos = '<h1 class="underline">([^<]+?)</h1> <div id="description"> <p>(.+?)<a href=' #titulo, plot
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        if len(matches)>0:
+           item.plot = matches[0][1]
+           item.fulltitle = matches[0][0]
+
         
         #Solo queremos los links de ONLINE
         #matches = re.compile('<h2 class="header-subtitle veronline">.*?<h2 class="header-subtitle descargadirecta">', re.S).findall(data)
