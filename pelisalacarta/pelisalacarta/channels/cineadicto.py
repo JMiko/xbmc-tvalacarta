@@ -36,13 +36,23 @@ def mainlist(item):
 
     return itemlist
     
-def search(item,texto):
+def search(item,texto,categoria="*"):
     logger.info("[cineadicto.py] search")
-    item.url = item.url+texto
+    
     itemlist = []
-    itemlist.extend(ListvideosMirror(item))
-    return itemlist
+    
+    if item.url in ("","none"):
+       if categoria in ("*","F"):
+          item.url = "http://www.cine-adicto.com/?s=%s&x=0&y=0" % texto
+          itemlist.extend(ListvideosMirror(item))
+       if categoria in ("*","D"):
+          item.url = "http://www.cine-adicto.com/category/documentales/?s=%s&x=0&y=0" % texto
+          itemlist.extend(ListvideosMirror(item))
+    else:
+       itemlist.extend(ListvideosMirror(item))
 
+    return itemlist
+    
 def ListaCat(item):
     logger.info("[cineadicto.py] ListaCat")
     
@@ -148,7 +158,7 @@ def ListvideosMirror(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
     #Extrae la marca de siguiente página
     patronvideos  = '<span class=[\W]current[\W]>[^<]+</span>?<a href=([\S]+)'
@@ -206,7 +216,7 @@ def listvideos(item):
         scrapedthumbnail = match[1]
         scrapedplot = match[3]
             
-        itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
+        itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle  , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
 
     #Extrae la marca de siguiente página
     #<span class='current'>1</span><a href='http://delatv.com/page/2' class='page'>2</a>
@@ -279,9 +289,9 @@ def detail(item):
             videotitle = "[Trailer]"
         if "facebook" in url:
             c += 1
-            itemlist.append( Item(channel=item.channel , action="play"   , server=server , title=title.strip() + " - Parte %d %s" %(c,videotitle) , url=url , thumbnail=thumbnail , plot=plot , folder=False))
+            itemlist.append( Item(channel=item.channel , action="play"   , server=server , title=title.strip() + " - Parte %d %s" %(c,videotitle) , fulltitle=item.fulltitle , url=url , thumbnail=thumbnail , plot=plot , folder=False))
         elif "p5K-vLAO02M" not in url:
-            itemlist.append( Item(channel=item.channel , action="play"   , server=server , title=title.strip() + " - " + videotitle , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
+            itemlist.append( Item(channel=item.channel , action="play"   , server=server , title=title.strip() + " - " + videotitle , fulltitle=item.fulltitle  , url=url , thumbnail=thumbnail , plot=plot , folder=False ))
 
 
     return itemlist
