@@ -52,21 +52,23 @@
            echo ("<fulltitle>".$fulltitle[1][0]."</fulltitle>\n");
            echo ("<image>".$imagen[1][0]."</image>\n");
            echo ("<description>".$descr[1][0]."</description>\n");
-           echo ("<protocol>http</protocol>\n");
-           echo ("<location>".$link[1][0]."</location>\n");
-           echo ("<stream_url>".$link[1][0]."</stream_url>\n"); // echo ("<stream_url><script>translate_base_url+\"stream,,".$link[1][0]."\";</script></stream_url>\n");
+           echo ("<stream_url>".str_replace("&","&amp;",$link[1][0])."</stream_url>\n"); 
            echo ("<stream_class>video</stream_class>\n");
            echo ("<stream_protocol>http</stream_protocol>\n");
-           // echo ("<stream_type>video/x-flv</stream_type>\n");
            echo ("<mediaDisplay name=\"photoView\"/>");
+           //echo ("<protocol>http</protocol>\n");
+           //echo ("<location>".$link[1][0]."</location>\n");
+           //echo ("<stream_url><script>translate_base_url+\"stream,,".$link[1][0]."\";</script></stream_url>\n");
+           //echo ("<stream_type>video/x-flv</stream_type>\n");
        }
        elseif ($tipo_contenido == "videos_enclosure") {
            echo ("<title>".$titulo[1][0]."</title>\n");
            echo ("<fulltitle>".$fulltitle[1][0]."</fulltitle>\n");
            echo ("<image>".$imagen[1][0]."</image>\n");
            echo ("<description>".$descr[1][0]."</description>\n");
-           echo ("<media:content url=\"".$link[1][0]."\" />\n"); // echo ("<enclosure url=\"".$link[1][0]."\" type=\"".$link[1][1]."\" />\n");
+           echo ("<media:content url=\"".str_replace("&","&amp;",$link[1][0])."\" />\n"); 
            echo ("<mediaDisplay name=\"photoView\"/>");
+           //echo ("<enclosure url=\"".$link[1][0]."\" type=\"".$link[1][1]."\" />\n");
        }
        else {
            echo ("<title>".html_entity_decode($titulo[1][0])."</title>\n");
