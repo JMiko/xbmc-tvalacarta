@@ -141,6 +141,7 @@ def controller(plugin_name,port,host,path,headers):
                     play_name = "%s_%s.dat" % ( item.channel ,  urllib.quote(item.fulltitle) )
                     play_name = slugify(play_name)
                     if item.plot not in ("none",""):
+                        item.plot = item.plot.replace("\n"," ") 
                         salva_descripcion(play_name, item.fulltitle, item.plot, item.thumbnail)
                     else:
                         fulltitle,plot,thumbnail = recupera_descripcion(play_name)
@@ -161,13 +162,12 @@ def controller(plugin_name,port,host,path,headers):
                     play_name = "%s_%s.dat" % ( item.channel ,  urllib.quote(item.fulltitle) )
                     play_name = slugify(play_name)
                     fulltitle,plot,thumbnail = recupera_descripcion(play_name)
-                    if plot=="": plot = item.plot
-                    if thumbnail=="": thumbnail=item.thumbnail
-                    if fulltitle not in ("","none"): fulltitle=item.fulltitle
-                    if fulltitle=="": fulltitle = item.server
+                    if fulltitle != "" and item.fulltitle in ("","none"): item.fulltitle = fulltitle
+                    if plot      != "" and item.plot == "":               item.plot = plot
+                    if thumbnail != "" and item.thumbnail == "":          item.thumbnail = thumbnail
                     #respuesta += "<title><![CDATA[%s]]></title>\n" % entityunescape(item.title)
-                    respuesta += "<title><![CDATA[%s]]></title>\n" % item.title
-                    respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % fulltitle
+                    respuesta += "<title><![CDATA[%s]]></title>\n" % fulltitle
+                    respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % item.title
                     respuesta += "<description><![CDATA[%s]]></description>\n" % plot
                     respuesta += "<enclosure url=\"%s\" type=\"video/x-flv\" />\n" % item.url
                     respuesta += "<image>%s</image>\n" % thumbnail

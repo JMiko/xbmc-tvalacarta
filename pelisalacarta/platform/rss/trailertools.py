@@ -10,17 +10,10 @@ import sys
 import string
 import os
 
-### No encontraba librerias
-sys.path.append('/opt/pelisalacarta/lib')
-####
+sys.path.append( os.path.abspath( os.path.join( os.path.dirname(__file__) , "../../lib" ) ) )
 
-import gdata.youtube
 import gdata.youtube.service
-import servers.youtube
-
-#### Necesito Item en la versión modificada
 from core.item import Item
-####
 
 try:
     from core import scrapertools
@@ -33,8 +26,6 @@ except:
 from rsstools import DepuraTitulo as DepuraTitulo
 from rsstools import LimpiarTitulo as LimpiarTitulo
 
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
-
 CHANNELNAME = "trailertools"
 # Esto permite su ejecución en modo emulado
 try:
@@ -43,11 +34,6 @@ except:
     pluginhandle = ""
 
 DEBUG = True
-####
-#IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images'  ) )
-IMAGES_PATH = "/home/jose/IAMM/pelisalacarta/resources/images"
-####
-  
 
 ### Nueva función para modificación en RTD1283
 def search(item,titulo):
@@ -55,18 +41,13 @@ def search(item,titulo):
     listavideos = gettrailer(titulo,"","false")
     if len(listavideos)>0:
         for video in listavideos:
-            id = servers.youtube.Extract_id(video[0]) #  No funciona, el script da un error
-            #id = servers.youtube.Extract_id(video[0]) #  No funciona, el script da un error
-            videourl = servers.youtube.verify_url(video[0])
-            print id 
             try:
                 plot = video[4]
             except: plot = ""
             if video[5]=="YOUTUBE": fulltitle = "Duración "+video[3]+" (youtube.com)"
             else: fulltitle = "(trailerdepeliculas.org)"
             
-            itemlist.append( Item(channel=CHANNELNAME, title=video[1] , url=id ,action="play", server="youtube", folder=False, thumbnail=video[2], fulltitle=fulltitle, plot=plot) )
-#            itemlist.append( Item(channel=CHANNELNAME, title=video[1] , url=videourl ,action="findvideos",  folder=False, thumbnail=video[2], fulltitle=fulltitle, plot=plot) )
+            itemlist.append( Item(channel=CHANNELNAME, title=video[1] , url=video[0], server="youtube" ,action="play",  folder=False, thumbnail=video[2], fulltitle=video[1], plot=plot) )
     else: 
        itemlist.append( Item(channel=CHANNELNAME, title="Ninguno hallado. Redifinir busqueda" , url="none" ,action="search") )
        itemlist.append( Item(channel=CHANNELNAME, title="Menú principal" , url="none" ,action="EXIT") )
@@ -116,7 +97,7 @@ def GetFrom_Trailersdepeliculas(titulovideo):
     patronvideos = '<div class="cnt">\s+?<h4><a href="([^"]+?)">([^<]+?)</a></h4>' # url, title
     matches  = re.compile(patronvideos,re.DOTALL).findall(urldata)
     if len(matches)>0:
-        patronvideos1 = 'movie" value="http://www.youtube.com([^"]+)"' # url
+        patronvideos1 = 'movie" value="http://www.youtube.com/v/([^&]+)&' # url
         patronvideos2 = '<img src="([^"]+?)"[^>]+?>\s+<h4>[^<]+?</h4>.+?votos\)</p>\s*?<p[^>]+?>([^<]+?)</p>' # thumbnail, plot
         for match in matches:
             logger.info("Trailers encontrados en www.trailerdepeliculas.org :  "+match[1])
@@ -133,7 +114,7 @@ def GetFrom_Trailersdepeliculas(titulovideo):
                     c=c+1
                     thumbnail = urlparse.urljoin(url1,matches3[0][0])
                     plot = matches3[0][1]
-                    devuelve.append( ["http://www.youtube.com"+match2, match[1] , thumbnail,"", plot, "TRAILERDEPELICULAS"] )
+                    devuelve.append( ["http://www.youtube.com/watch?v="+match2+"&feature=youtube_gdata_player", match[1] , thumbnail,"", plot, "TRAILERDEPELICULAS"] )
             
         logger.info(" lista de links encontrados U "+str(len(match)))
     print '%s Trailers encontrados en Modulo: GetFrom_Trailersdepeliculas()' % str(c)
