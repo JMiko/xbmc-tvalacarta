@@ -244,6 +244,12 @@ def run():
                     # FIXME:jesus Comentado porque no funciona bien en todas las versiones de XBMC
                     #library.update(totalepisodes,errores,nuevos)
                     xbmctools.renderItems(itemlist, params, url, category)
+                    
+                    #Lista con series para actualizar
+                    nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
+                    config_canal = open( nombre_fichero_config_canal , "a" )
+                    config_canal.write("<series>"+item.show+","+item.url+","+item.channel+"</series>")
+                    config_canal.close();
 
                 elif action=="search":
                     logger.info("[launcher.py] search")

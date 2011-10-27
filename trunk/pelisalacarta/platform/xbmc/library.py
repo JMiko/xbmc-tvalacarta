@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Herramientas de integración en Librería
+# Herramientas de integraciï¿½n en Librerï¿½a
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Autor: jurrabi
 #------------------------------------------------------------
@@ -21,8 +21,8 @@ from core import scrapertools
 
 CHANNELNAME = "library"
 allchars = string.maketrans('', '')
-deletechars = '\\/:*"<>|?' #Caracteres no válidos en nombres de archivo
-# Esto permite su ejecución en modo emulado (preguntar a jesus por esto)
+deletechars = '\\/:*"<>|?' #Caracteres no vï¿½lidos en nombres de archivo
+# Esto permite su ejecuciï¿½n en modo emulado (preguntar a jesus por esto)
 # seguro que viene bien para debuguear
 try:
     pluginhandle = int( sys.argv[ 1 ] )
@@ -51,8 +51,8 @@ if not os.path.exists(SERIES_PATH):
 #MONITOR_FILE
 MONITOR_FILE = xbmc.translatePath( os.path.join( LIBRARY_PATH, 'monitor.xml' ) )
 if not os.path.exists(MONITOR_FILE):
-    logger.info("[library.py] No existe fichero de monitorización de series:"+MONITOR_FILE)
-#    os.mkdir(SERIES_PATH) SUSTITUIR POR FUNCION ADECUADA PARA CREACIÓN DE FICHEROS XML CON LA SIGUIENTE ESTRUCTURA:
+    logger.info("[library.py] No existe fichero de monitorizaciï¿½n de series:"+MONITOR_FILE)
+#    os.mkdir(SERIES_PATH) SUSTITUIR POR FUNCION ADECUADA PARA CREACIï¿½N DE FICHEROS XML CON LA SIGUIENTE ESTRUCTURA:
 # <monitor>
 #   <series serie=name>url</serie>
 # </monitor>
@@ -60,7 +60,7 @@ if not os.path.exists(MONITOR_FILE):
 def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True, subtitle=""):
     logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
 
-    #Limpiamos el título para usarlo como fichero
+    #Limpiamos el tï¿½tulo para usarlo como fichero
     if config.get_system_platform()=="xbox":
         patron ="\d+[x|X]\d+"
         matches = re.compile(patron).findall(titulo)
@@ -94,8 +94,8 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
     if category == "Cine":
         fullfilename = os.path.join(MOVIES_PATH,filename)
     elif category == "Series":
-        if Serie == "": #Añadir comprobación de len>0 bien hecha
-            logger.info('[library.py] savelibrary ERROR: intentando añadir una serie y serie=""')
+        if Serie == "": #Aï¿½adir comprobaciï¿½n de len>0 bien hecha
+            logger.info('[library.py] savelibrary ERROR: intentando aï¿½adir una serie y serie=""')
             pathserie = SERIES_PATH
         else:
             #Eliminamos caracteres indeseados para archivos en el nombre de la serie
@@ -121,7 +121,11 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
         nuevo = 0
         raise
 #    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
-# Eliminación de plot i thumnai
+# Eliminaciï¿½n de plot i thumnai
+
+    if sys.argv[ 0 ] == "":
+            itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( "plugin://plugin.video.pelisalacarta/" , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
+    
     itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
     logger.info("[library.py] savelibrary fullfilename=%s , itemurl=%s" % (fullfilename,itemurl))
 
@@ -139,43 +143,43 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
     
 def update(total,errores=0, nuevos=0, serie="No indicada"):
     logger.info("[library.py] update")
-    """Pide Resumen de actualización. Además pregunta y actualiza la Biblioteca
+    """Pide Resumen de actualizaciï¿½n. Ademï¿½s pregunta y actualiza la Biblioteca
     
-    nuevos: Número de episodios actualizados. Se muestra como resumen en la ventana 
-            de confirmación.
-    total:  Número de episodios Totales en la Biblioteca. Se muestra como resumen 
-            en la ventana de confirmación.
-    Erores: Número de episodios que no se pudo añadir (generalmente por caracteres 
-            no válidos en el nombre del archivo o por problemas de permisos.
+    nuevos: Nï¿½mero de episodios actualizados. Se muestra como resumen en la ventana 
+            de confirmaciï¿½n.
+    total:  Nï¿½mero de episodios Totales en la Biblioteca. Se muestra como resumen 
+            en la ventana de confirmaciï¿½n.
+    Erores: Nï¿½mero de episodios que no se pudo aï¿½adir (generalmente por caracteres 
+            no vï¿½lidos en el nombre del archivo o por problemas de permisos.
     """
     
     if nuevos == 1:
-        texto = 'Se ha añadido 1 episodio a la Biblioteca (%d en total)' % (total,)
+        texto = 'Se ha aï¿½adido 1 episodio a la Biblioteca (%d en total)' % (total,)
     else:
-        texto = 'Se han añadido %d episodios a la Biblioteca (%d en total)' % (nuevos,total)
+        texto = 'Se han aï¿½adido %d episodios a la Biblioteca (%d en total)' % (nuevos,total)
 
     logger.info("[library.py] update - %s" % texto)
     advertencia = xbmcgui.Dialog()
 
-    # Pedir confirmación para actualizar la biblioteca
+    # Pedir confirmaciï¿½n para actualizar la biblioteca
     if nuevos > 0:
         logger.info("[library.py] update - nuevos")
         if errores == 0:
-            actualizar = advertencia.yesno('pelisalacarta' , texto ,'¿Deseas que actualice ahora la Biblioteca?')
-        else:  # Si hubo errores muestra una línea adicional en la pregunta de actualizar biblioteca
+            actualizar = advertencia.yesno('pelisalacarta' , texto ,'ï¿½Deseas que actualice ahora la Biblioteca?')
+        else:  # Si hubo errores muestra una lï¿½nea adicional en la pregunta de actualizar biblioteca
             if errores == 1:
-                texto2 = '(No se pudo añadir 1 episodio)'
+                texto2 = '(No se pudo aï¿½adir 1 episodio)'
             else:
-                texto2 = '(No se pudieron añadir '+str(errores)+' episodios)'
-            actualizar = advertencia.yesno('pelisalacarta' , texto , texto2 , '¿Deseas que actualice ahora la Biblioteca?')
+                texto2 = '(No se pudieron aï¿½adir '+str(errores)+' episodios)'
+            actualizar = advertencia.yesno('pelisalacarta' , texto , texto2 , 'ï¿½Deseas que actualice ahora la Biblioteca?')
     else: #No hay episodios nuevos -> no actualizar
         logger.info("[library.py] update - no nuevos")
         if errores == 0:
             texto2 = ""
         elif errores == 1:
-            texto2 = '(No se pudo añadir 1 episodio)'
+            texto2 = '(No se pudo aï¿½adir 1 episodio)'
         else:
-            texto2 = '(No se pudieron añadir '+str(errores)+' episodios)'
+            texto2 = '(No se pudieron aï¿½adir '+str(errores)+' episodios)'
         #advertencia.ok('pelisalacarta',texto,texto2)
         actualizar = False
     
@@ -188,32 +192,32 @@ def update(total,errores=0, nuevos=0, serie="No indicada"):
     logger.info ('[Library update] Serie: "%s". Total: %d, Erroneos: %d, Nuevos: %d' %(serie, total, errores, nuevos))
 
 def MonitorSerie ( canal, accion, server, url, serie): 
-    ''' Añade una serie a la lista de series a monitorizar.
+    ''' Aï¿½ade una serie a la lista de series a monitorizar.
     
-    Si se configura para que lo haga pelisalacarta arrancará un proceso al inicio de XBMC
-    para monitorizar las series que se desee mediante una llamada a esta función.
+    Si se configura para que lo haga pelisalacarta arrancarï¿½ un proceso al inicio de XBMC
+    para monitorizar las series que se desee mediante una llamada a esta funciï¿½n.
     Los episodios nuevos que vayan apareciendo en la web del canal para la serie indicada
-    se irán añadiendo a la biblioteca.
+    se irï¿½n aï¿½adiendo a la biblioteca.
     Para dejar de monitorizar una serie llamar a StopMonitorSerie
     '''
     parser = xml.parsers.expat.ParserCreate()
     
     
 def fixStrmLibrary(path = LIBRARY_PATH):
-    '''Revisa todos los ficheros strm de la librería y repara la url del plugin
+    '''Revisa todos los ficheros strm de la librerï¿½a y repara la url del plugin
     
     Este cambio es necesario con el paso a XBMC Dharma (10.5) donde las url de
     plugin cambiaron de:
       plugin://video/pelisalacarta/
     a: 
       plugin://plugin.video.pelisalacarta/
-    dado que esto podría volver a pasar (en ciertos momentos se ha estado
-    experimentando con urls del tipo addon://... hemos decidido crear esta función
+    dado que esto podrï¿½a volver a pasar (en ciertos momentos se ha estado
+    experimentando con urls del tipo addon://... hemos decidido crear esta funciï¿½n
     para arreglar los strm en cualquier momento.
     '''
     logger.info("[library.py] fixStrm")
     logger.info("[library.py] fixStrm path="+path)
-    # Comprobamos la validez del parámetro
+    # Comprobamos la validez del parï¿½metro
     if not os.path.exists(path):
         logger.info("[library.py] fixStrm ERROR: PATH NO EXISTE")
         return 0
@@ -231,7 +235,7 @@ def fixStrmLibrary(path = LIBRARY_PATH):
                 else:
                     logger.info("[library.py] fixStrm ERROR al fixear "+file)
                     errores = errores + 1
-        #Excluye las carpetas de Subversión de la búsqueda
+        #Excluye las carpetas de Subversiï¿½n de la bï¿½squeda
         if ".svn" in dirnames:
             dirnames.remove (".svn")
     return total,errores
