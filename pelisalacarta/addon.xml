@@ -18,4 +18,7 @@
     <description lang="hu">Spanyol kiegészíto melynek segítségével filmeket és TV musorokat lehet nézni igény szerint választhatóan "on-demand", több mint 70 különbözo forrásoldal használatával</description>
     <platform>all</platform>
   </extension>
+  <extension point="xbmc.service"
+             library="series.py" start="login|startup">
+  </extension>
 </addon>
