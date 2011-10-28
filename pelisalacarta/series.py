@@ -21,10 +21,13 @@ from platform.xbmc import launcher
 from pelisalacarta.channels import seriesyonkis
 import xbmcgui
   
-series = config.get_setting("series","series")
+nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
+config_canal = open( nombre_fichero_config_canal , "r" )
 
-if (isinstance(series,str)):
-    serie = series.split(",")
+
+for serie in config_canal.readlines():
+    serie = serie.split(",")
+    logger.info(serie)
     item = Item(url=serie[1])
     itemlist = seriesyonkis.episodios(item)
     i=0
@@ -33,15 +36,3 @@ if (isinstance(series,str)):
         item.show=serie[0]
         if i<len(itemlist):
             library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show , verbose=False, accion="strm_detail", pedirnombre=False, subtitle=item.subtitle )
-else:    
-    for serie in series:
-        serie = serie.split(",")
-        logger.info(serie)
-        item = Item(url=serie[1])
-        itemlist = seriesyonkis.episodios(item)
-        i=0
-        for item in itemlist:
-            i = i + 1
-            item.show=serie[0]
-            if i<len(itemlist):
-                library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show , verbose=False, accion="strm_detail", pedirnombre=False, subtitle=item.subtitle )
