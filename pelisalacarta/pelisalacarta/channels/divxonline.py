@@ -60,9 +60,18 @@ def search(item,texto):
     
     for match in matches:
         scrapedurl = 'http://www.divxonline.info' + match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        data = scrapertools.cachePage(scrapedurl)
+        patron  = '<td class="contenido"><center><h1>.+?<img src="([^"]+)".*?<b[^>]*?>Sinopsis:</b>([^<]+)<'
+        ficha = re.compile(patron,re.DOTALL).findall(data)
+        if len(ficha) > 0:
+           scrapedthumbnail = ficha[0][0]
+           scrapedplot = ficha[0][1]
+        
         scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
 
-        itemlist.append( Item(channel=CHANNELNAME, title = match[1], fulltitle=match[1], url=scrapedurl, action="findvideos" ) )
+        itemlist.append( Item(channel=CHANNELNAME, title = match[1], fulltitle=match[1], url=scrapedurl, action="findvideos", plot=scrapedplot, thumbnail=scrapedthumbnail ) )
     
     return itemlist
 
