@@ -19,6 +19,7 @@ logger.info("Series.py - Actualización de series")
 from platform.xbmc import library
 from platform.xbmc import launcher
 from pelisalacarta.channels import seriesyonkis
+from pelisalacarta.channels import cuevana
 import xbmcgui
   
 nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
@@ -27,9 +28,10 @@ config_canal = open( nombre_fichero_config_canal , "r" )
 
 for serie in config_canal.readlines():
     serie = serie.split(",")
-    logger.info(serie)
+    logger.info("Channel"+serie[2])
     item = Item(url=serie[1])
-    itemlist = seriesyonkis.episodios(item)
+    if serie[2]=='seriesyonkis\n': itemlist = seriesyonkis.episodios(item)
+    if serie[2]=='cuevana\n': itemlist = cuevana.episodios(item)
     i=0
     for item in itemlist:
         i = i + 1
