@@ -31,6 +31,7 @@
     <string id="30014">Username:</string>
     <string id="30015">Password:</string>
 	<string id="30045">Fileserve premium mode:</string>
+	<string id="30048">Filenium premium mode(All in 1):</string>
     <string id="30031">Video Quality (FLV)</string>
     <string id="30032">Standard Definition (SD)</string>
     <string id="30033">High Definition (HD)(when available)</string>    
@@ -85,6 +86,7 @@
     <string id="30062">Try another quality</string> <!-- Prueba a reproducir en otra calidad -->
     <string id="30063">This channel has been downloaded and updated!</string>
     <string id="30064">¡Channel list has been updated!</string>
+
     <string id="30065">Unsopported Server</string>
 
 	<!-- =============================================================== -->

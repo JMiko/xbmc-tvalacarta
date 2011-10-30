@@ -3,10 +3,9 @@
 # pelisalacarta - XBMC Plugin
 # XBMC Tools
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-# 2010/02/13 Añadida funcionalidad de Biblioteca - JUR
 #------------------------------------------------------------
 
-import urllib
+import urllib, urllib2
 import xbmc
 import xbmcgui
 import xbmcplugin
@@ -195,11 +194,17 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
+        if config.get_setting("fileniumpremium")=="true":
+            exec "from servers import filenium as gen_conector"
+            video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )            
+            video_urls.append( [ "[filenium]", video_gen ] )
+
         # Cierra el diálogo de progreso
         if config.get_setting("player_mode")=="0" and not strmfile:
             progreso.close()
 
     # El vídeo está
+  
     if len(video_urls)>0:
         for video_url in video_urls:
             opciones.append(config.get_localized_string(30151) + " " + video_url[0])
