@@ -17,7 +17,7 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     video_urls = []
 
     if page_url.startswith("http://blip.tv/play"):    
-        redirect = scrapertools.getLocationHeaderFromResponse(page_url)
+        redirect = scrapertools.get_header_from_response(page_url,header_to_get="location")
         logger.info("[bliptv.py] redirect="+redirect)
         
         patron='file\=(.*?)$'

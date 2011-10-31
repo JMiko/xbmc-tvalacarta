@@ -27,3 +27,24 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         user = user.replace("@","%40")
         location = location.replace("http://filenium.com","http://"+user+":"+password+"@filenium.com")
     return location
+
+def extract_authorization_header(url):
+    # Obtiene login y password, y lo añade como cabecera Authorization
+    partes = url[7:].split("@")
+    partes = partes[0].split(":")
+    username = partes[0].replace("%40","@")
+    password = partes[1]
+    logger.info("[filenium.py] username="+username)
+    logger.info("[filenium.py] password="+password)
+    
+    import base64
+    base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
+    logger.info("[filenium.py] Authorization="+base64string)
+    authorization_header = "Basic %s" % base64string
+    
+    # Ahora saca el login y password de la URL
+    partes = url.split("@")
+    url = "http://"+partes[1]
+    logger.info("[filenium.py] nueva url="+url)
+
+    return url,authorization_header

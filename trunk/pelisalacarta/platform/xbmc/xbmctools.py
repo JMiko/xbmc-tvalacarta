@@ -194,9 +194,10 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
-        if config.get_setting("fileniumpremium")=="true":
+        if config.get_setting("fileniumpremium")=="true" and server not in ["downupload","vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
             exec "from servers import filenium as gen_conector"
-            video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )            
+            video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
+            logger.info("[xbmctools.py] filenium url="+video_gen)
             video_urls.append( [ "[filenium]", video_gen ] )
 
         # Cierra el diálogo de progreso
@@ -303,6 +304,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # Descargar
     elif opciones[seleccion]==config.get_localized_string(30153): # "Descargar"
+        
         # El vídeo de más calidad es el último
         mediaurl = video_urls[len(video_urls)-1][1]
 
