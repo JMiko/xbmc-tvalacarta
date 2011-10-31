@@ -28,10 +28,13 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
 
     # Obtiene el enlace para Megavideo
     if megavideo_mirror:
-        megavideo_video_id = convertcode(page_url)
-        if not megavideo_video_id=="":
-            from servers import megavideo
-            video_urls.extend( megavideo.get_video_url( megavideo_video_id, premium, user, password ) )
+        try:
+            megavideo_video_id = convertcode(page_url)
+            if not megavideo_video_id=="":
+                from servers import megavideo
+                video_urls.extend( megavideo.get_video_url( megavideo_video_id, premium, user, password, megaupload_mirror=False ) )
+        except:
+            pass
 
     # page_url es del tipo "http://www.megaupload.com/?d="+code
     # Si el usuario es premium utiliza el método antiguo
