@@ -892,8 +892,9 @@ def remove_show_from_title(title,show):
 def getRandom(str):
     return binascii.hexlify(md5.new(str).digest())
 
-def getLocationHeaderFromResponse(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']]):
-    logger.info("[scrapertools.py] getLocationHeaderFromResponse url="+url)
+def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']]):
+    header_to_get = header_to_get.lower()
+    logger.info("[scrapertools.py] get_header_from_response url="+url+", header_to_get="+header_to_get)
 
     if post is not None:
         logger.info("[scrapertools.py] post="+post)
@@ -926,7 +927,10 @@ def getLocationHeaderFromResponse(url,post=None,headers=[['User-Agent', 'Mozilla
             logger.info("[scrapertools.py] El fichero de cookies existe pero es ilegible, se borra")
             os.remove(ficherocookies)
 
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+    if header_to_get=="location":
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+    else:
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
 
     # Contador
@@ -935,19 +939,27 @@ def getLocationHeaderFromResponse(url,post=None,headers=[['User-Agent', 'Mozilla
     # Diccionario para las cabeceras
     txheaders = {}
 
-    # Construye el request
+    # Traza la peticion
     if post is None:
         logger.info("[scrapertools.py] petición GET")
     else:
         logger.info("[scrapertools.py] petición POST")
     
-    # Añade las cabeceras
+    # Login y password Filenium
+    # http://abcd%40gmail.com:mipass@filenium.com/get/Oi8vd3d3/LmZpbGVz/ZXJ2ZS5j/b20vZmls/ZS9kTnBL/dm11/b0/?.zip
+    if "filenium" in url:
+        from servers import filenium
+        url , authorization_header = filenium.extract_authorization_header(url)
+        headers.append( [ "Authorization",authorization_header ] )
+    
+    # Array de cabeceras
     logger.info("[scrapertools.py] ---------------------------")
     for header in headers:
         logger.info("[scrapertools.py] header=%s" % str(header[0]))
         txheaders[header[0]]=header[1]
     logger.info("[scrapertools.py] ---------------------------")
 
+    # Construye el request
     req = Request(url, post, txheaders)
     handle = urlopen(req)
     
@@ -962,7 +974,7 @@ def getLocationHeaderFromResponse(url,post=None,headers=[['User-Agent', 'Mozilla
     location_header=""
     for header in info:
         logger.info("[scrapertools.py] "+header+"="+info[header])
-        if header=="location":
+        if header==header_to_get:
             location_header=info[header]
     handle.close()
     logger.info("[scrapertools.py] ---------------------------")

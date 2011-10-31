@@ -26,7 +26,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         post = "loginUserName=%s&loginUserPassword=%s&autoLogin=on&ppp=102&loginFormSubmit=Login" % (user,password)
         data = scrapertools.cache_page(url, post=post)
     
-        location = scrapertools.getLocationHeaderFromResponse(page_url)
+        location = scrapertools.get_header_from_response(page_url,header_to_get="location")
         logger.info("location="+location)
     
         if location.startswith("http"):

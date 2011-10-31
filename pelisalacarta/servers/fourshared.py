@@ -20,8 +20,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     if page_url.startswith("http://www.4shared"):
         # http://www.4shared.com/embed/392975628/ff297d3f
-        page_url = scrapertools.getLocationHeaderFromResponse(page_url)
-    
+        page_url = scrapertools.get_header_from_response(page_url,header_to_get="location")
+
         # http://www.4shared.com/flash/player.swf?file=http://dc237.4shared.com/img/392975628/ff297d3f/dlink__2Fdownload_2Flj9Qu-tF_3Ftsid_3D20101030-200423-87e3ba9b/preview.flv&d
         logger.info("[fourshared.py] redirect a '%s'" % page_url)
         patron = "file\=([^\&]+)\&"

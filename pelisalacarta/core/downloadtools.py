@@ -424,6 +424,14 @@ def getfilefromtitle(url,title):
             nombrefichero = title + ".flv"
         if "videobam" in url:
             nombrefichero = title+"."+url.rsplit(".",1)[1][0:3]
+        if "filenium" in url:
+            # Content-Disposition	filename="filenium_El.Gato.con.Botas.TSScreener.Latino.avi"
+            import scrapertools
+            content_disposition_header = scrapertools.get_header_from_response(url,header_to_get="Content-Disposition")
+            logger.info("content_disposition="+content_disposition_header)
+            partes=content_disposition_header.split("=")
+            nombrefichero = title + partes[1][-5:-1]
+
         nombrefichero = limpia_nombre_caracteres_especiales(nombrefichero)
 
     logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
@@ -437,7 +445,7 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
-def downloadfile(url,nombrefichero):
+def downloadfile(url,nombrefichero,headers=[]):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
     # antes
@@ -470,11 +478,22 @@ def downloadfile(url,nombrefichero):
     except:
         progreso = ""
 
+    # Login y password Filenium
+    # http://abcd%40gmail.com:mipass@filenium.com/get/Oi8vd3d3/LmZpbGVz/ZXJ2ZS5j/b20vZmls/ZS9kTnBL/dm11/b0/?.zip
+    if "filenium" in url:
+        from servers import filenium
+        url , authorization_header = filenium.extract_authorization_header(url)
+        headers.append( [ "Authorization", authorization_header ] )
+
     # Timeout del socket a 60 segundos
     socket.setdefaulttimeout(10)
 
     h=urllib2.HTTPHandler(debuglevel=0)
     request = urllib2.Request(url)
+    for header in headers:
+        logger.info("[downloadtools.py] Header="+header[0]+": "+header[1])
+        request.add_header(header[0],header[1])
+
     if existSize > 0:
         request.add_header('Range', 'bytes=%d-' % (existSize, ))
 
