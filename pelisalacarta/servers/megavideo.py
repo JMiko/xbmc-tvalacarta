@@ -21,7 +21,7 @@ from core import config
 DEBUG = False
 
 # Returns an array of possible video url's from the page_url, supporting premium user account and password protected video
-def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+def get_video_url( page_url , premium = False , user="" , password="", video_password="", megaupload_mirror=True ):
     logger.info("[megavideo.py] get_video_url( page_url='%s' , user='%s' , password='%s', video_password=%s)" % (page_url , user , "**************************"[0:len(password)] , video_password) )
 
     video_urls = []
@@ -60,76 +60,78 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Si es de megaupload como en http://www.megavideo.com/?d=ABCDEFGH -> convierte primero a formato v=
     megavideo_video_id = extract_video_id(page_url)
 
-    if megavideo_video_id=="":
-        logger.info("[megavideo.py] Megavideo URL not valid, or video not available")
-        return video_urls
-
-    # Base URL for obtaining Megavideo URL
-    url = "http://www.megavideo.com/xml/videolink.php?v="+megavideo_video_id
-
-    if premium:
-        url = url + "&u="+megavideo_cookie_id
-
-    # If video is password protected, it is sent with the request as parameter "password"
-    if video_password!="":
-        url = url + "&password="+video_password
-
-    # Perform the request to Megavideo
-    logger.info("[megavideo.py] calling Megavideo")
-    data = scrapertools.cache_page( url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer', 'http://www.megavideo.com/']] , )
-
-    # Search for an SD link
-    logger.info("[megavideo.py] SD Link")
-    try:
-        s = re.compile(' s="(.+?)"').findall(data)
-        k1 = re.compile(' k1="(.+?)"').findall(data)
-        k2 = re.compile(' k2="(.+?)"').findall(data)
-        un = re.compile(' un="(.+?)"').findall(data)
-        video_url = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-        video_urls.append( ["SD "+account_type , video_url ])
-    # Video is not available
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        logger.info("[megavideo.py] Megavideo URL not valid, or video not available")
-        return []
-
-    # Search for an HD link if it exists
-    logger.info("[megavideo.py] HD Link")
-    hd = re.compile(' hd="(.+?)"').findall(data)
-    if len(hd)>0 and hd[0]=="1":
-        s = re.compile(' hd_s="(.+?)"').findall(data)
-        k1 = re.compile(' hd_k1="(.+?)"').findall(data)
-        k2 = re.compile(' hd_k2="(.+?)"').findall(data)
-        un = re.compile(' hd_un="(.+?)"').findall(data)
-        video_url = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
-        video_urls.append( ["HD "+account_type , video_url ])
-
-    # If premium account, search for the original video link
-    if premium:
-        logger.info("[megavideo.py] ORIGINAL Link")
-        url = "http://www.megavideo.com/xml/player_login.php?u="+megavideo_cookie_id+"&v="+megavideo_video_id+"&password="+video_password
-        data2 = scrapertools.cache_page( url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer', 'http://www.megavideo.com/']] , )
-        logger.info(data2)
+    if megavideo_video_id!="":
+        # Base URL for obtaining Megavideo URL
+        url = "http://www.megavideo.com/xml/videolink.php?v="+megavideo_video_id
     
-        patronvideos  = 'downloadurl="([^"]+)"'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data2)
-        video_url = matches[0].replace("%3A",":").replace("%2F","/").replace("%20"," ")
-        video_urls.append( ["ORIGINAL "+video_url[-4:]+" [megavideo]" , video_url ])
+        if premium:
+            url = url + "&u="+megavideo_cookie_id
+    
+        # If video is password protected, it is sent with the request as parameter "password"
+        if video_password!="":
+            url = url + "&password="+video_password
+    
+        # Perform the request to Megavideo
+        logger.info("[megavideo.py] calling Megavideo")
+        data = scrapertools.cache_page( url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer', 'http://www.megavideo.com/']] , )
+    
+        # Search for an SD link
+        logger.info("[megavideo.py] SD Link")
+        try:
+            s = re.compile(' s="(.+?)"').findall(data)
+            k1 = re.compile(' k1="(.+?)"').findall(data)
+            k2 = re.compile(' k2="(.+?)"').findall(data)
+            un = re.compile(' un="(.+?)"').findall(data)
+            video_url = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+            video_urls.append( ["SD "+account_type , video_url ])
+        # Video is not available
+        except:
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line )
+            logger.info("[megavideo.py] Megavideo URL not valid, or video not available")
+            return []
+    
+        # Search for an HD link if it exists
+        logger.info("[megavideo.py] HD Link")
+        hd = re.compile(' hd="(.+?)"').findall(data)
+        if len(hd)>0 and hd[0]=="1":
+            s = re.compile(' hd_s="(.+?)"').findall(data)
+            k1 = re.compile(' hd_k1="(.+?)"').findall(data)
+            k2 = re.compile(' hd_k2="(.+?)"').findall(data)
+            un = re.compile(' hd_un="(.+?)"').findall(data)
+            video_url = "http://www" + s[0] + ".megavideo.com/files/" + decrypt(un[0], k1[0], k2[0]) + "/?.flv"
+            video_urls.append( ["HD "+account_type , video_url ])
+    
+        # If premium account, search for the original video link
+        if premium:
+            logger.info("[megavideo.py] ORIGINAL Link")
+            url = "http://www.megavideo.com/xml/player_login.php?u="+megavideo_cookie_id+"&v="+megavideo_video_id+"&password="+video_password
+            data2 = scrapertools.cache_page( url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer', 'http://www.megavideo.com/']] , )
+            logger.info(data2)
+        
+            patronvideos  = 'downloadurl="([^"]+)"'
+            matches = re.compile(patronvideos,re.DOTALL).findall(data2)
+            video_url = matches[0].replace("%3A",":").replace("%2F","/").replace("%20"," ")
+            video_urls.append( ["ORIGINAL "+video_url[-4:]+" [megavideo]" , video_url ])
+    
+        # Truco http://www.protegerurl.com.es/v9v/00Z8VNVZ.flv
+        #if not premium:
+        #    logger.info("[megavideo.py] SIN LIMITE Link")
+        #    video_urls.append( ["SIN LIMITE [megavideo]" , "http://www.protegerurl.com.es/v9v/"+megavideo_video_id+".flv" ])
 
-    # Truco http://www.protegerurl.com.es/v9v/00Z8VNVZ.flv
-    #if not premium:
-    #    logger.info("[megavideo.py] SIN LIMITE Link")
-    #    video_urls.append( ["SIN LIMITE [megavideo]" , "http://www.protegerurl.com.es/v9v/"+megavideo_video_id+".flv" ])
+        # Search for error conditions
+        errortext = re.compile(' errortext="(.+?)"').findall(data)	
+        if len(errortext)>0:
+            password_required = re.compile('password_required="(.*?)"').findall(data)
+            if len(password_required) > 0:
+                # Launches an exception to force the user to input the password
+                raise PasswordRequiredException()
 
-    # Search for error conditions
-    errortext = re.compile(' errortext="(.+?)"').findall(data)	
-    if len(errortext)>0:
-        password_required = re.compile('password_required="(.*?)"').findall(data)
-        if len(password_required) > 0:
-            # Launches an exception to force the user to input the password
-            raise PasswordRequiredException()
+    if page_url.startswith("http://www.megavideo.com/?d=") and megaupload_mirror:
+        logger.info("[megavideo.py] Es una URL tipo Megaupload")
+        from servers import megaupload
+        video_urls.extend( megaupload.get_video_url( page_url.replace("megavideo.com","megaupload.com"), premium, user, password, megavideo_mirror=False ) )
 
     logger.info("[megavideo.py] Ended with %d links" % len(video_urls))
 
