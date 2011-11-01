@@ -60,33 +60,16 @@ if not os.path.exists(MONITOR_FILE):
 def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True, subtitle=""):
     logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
 
-    #Limpiamos el t�tulo para usarlo como fichero
-    if config.get_system_platform()=="xbox":
-        patron ="\d+[x|X]\d+"
-        matches = re.compile(patron).findall(titulo)
-        scrapertools.printMatches(matches)
-        if len(matches)>0:
-            logger.info("[library.py] savelibrary id episodio: %s" % matches[0])
-            filename=matches[0]+".strm"
-        else:
-            logger.info("[library.py] savelibrary id episodio no encontrada")
-            filename=string.translate(titulo,allchars,deletechars)+".strm"
+    #Limpiamos el titulo para usarlo como fichero
+    patron ="\d+[x|X]\d+"
+    matches = re.compile(patron).findall(titulo)
+    scrapertools.printMatches(matches)
+    if len(matches)>0:
+        logger.info("[library.py] savelibrary id episodio: %s" % matches[0])
+        filename=matches[0]+".strm"
     else:
-        try:
-            filename = string.translate(titulo,allchars,deletechars)
-        except:
-            filename = titulo
-    
-        if pedirnombre:
-            keyboard = xbmc.Keyboard(filename)
-            keyboard.doModal()
-            if not keyboard.isConfirmed():
-                return False
-            filename = keyboard.getText()
-        try:
-            filename = string.translate(filename,allchars,deletechars)+".strm" #Volvemos a limpiar por si acaso
-        except:
-            filename = filename + ".strm"
+        logger.info("[library.py] savelibrary id episodio no encontrada")
+        filename=string.translate(titulo,allchars,deletechars)+".strm"
 
     if category != "Series":  #JUR - DEBUGIN INTERNO PARA 2.14
         category = "Cine"
