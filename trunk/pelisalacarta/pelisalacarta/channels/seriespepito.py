@@ -140,6 +140,27 @@ def alphaserieslist(item):
 
     return itemlist
 
+def detalle_programa(item):
+    data = scrapertools.cachePage(item.url)
+
+    # Thumbnail
+    patron  = "<div class=\"bubble\">[^<]+<img src='([^']+)'"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        item.thumbnail = matches[0]
+
+    # Argumento
+    patron  = '<div class="container">[^<]+'
+    patron += '<a name="info"></a><div class="header">[^<]+'
+    patron += '<h3 class="bookIcon">[^<]+</h3>[^<]+'
+    patron += '</div>[^<]+'
+    patron  = '<p>(.*?)</p>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        item.plot = scrapertools.htmlclean(matches[0])
+
+    return item
+
 def episodelist(item):
     logger.info("[seriespepito.py] list")
 
