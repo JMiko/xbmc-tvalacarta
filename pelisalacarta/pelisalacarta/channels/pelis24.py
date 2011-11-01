@@ -57,24 +57,12 @@ def list(params,url,category):
 
     # Extrae las entradas (carpetas)
     '''
-    <div class="yjnewsflash_title"><a href="http://www.pelis24.com/estrenos/727-donde-viven-los-monstruos-espanol-online.html">Donde viven los monstruos Español Online</a> </div>
+    <div class="yjnewsflash_title"><a href="http://www.pelis24.com/peliculas/12554-el-castor-2011castellano.html">El castor (2011)(castellano)</a> </div>
     <p><br>
     <br>
-    <div id='news-id-727'><!--TBegin--><a href="http://www.pelis24.com/uploads/posts/2009-12/1261192166_dondevivenlosmonstruoscine-300a.jpg" onclick="return hs.expand(this)" ><img align="left" src="http://www.pelis24.com/uploads/posts/2009-12/thumbs/1261192166_dondevivenlosmonstruoscine-300a.jpg" alt='Donde viven los monstruos Español Online' title='Donde viven los monstruos Español Online'  /></a><!--TEnd-->Max, un niño muy inteligente, incomprendido y rebelde, se escapa de casa tras una fuerte discusión con su madre. Pero no es una huida cualquiera, pues Max se interna en un bosque misterioso creado por su propia imaginación. Su objetivo: llegar a la tierra de unas extraordinarias criaturas, un lugar donde podrá hacer travesuras para siempre.</div><span class="yjnewsflash_date">Hoy, 04:11 | <a href="http://www.pelis24.com/estrenos/">Estrenos</a> | </span></p>
-    <div class="linksw"><br /><a href="http://www.pelis24.com/estrenos/727-donde-viven-los-monstruos-espanol-online.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (4)</a> &nbsp;<a href="http://www.pelis24.com/estrenos/727-donde-viven-los-monstruos-espanol-online.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
+    <div id='news-id-12554'><!--dle_image_begin:http://x-peliculas.net/images/ba20e6b6e9.jpg|left--><img src="http://x-peliculas.net/images/ba20e6b6e9.jpg" align="left" alt="El castor (2011)(castellano)" title="El castor (2011)(castellano)"  /><!--dle_image_end--><br />Sinopsis:<br /><br />Water Black (Mel Gibson) está sumido en una profunda depresión. Su vida se viene abajo y ni su mujer (Jodie Foster) ni sus hijos saben cómo ayudarle. Un día, ya al límite de la desesperación, encuentra una marioneta con forma de castor en un cubo de basura. A partir de ese momento la vida de Walter da un giro radical.<br /></div><span class="yjnewsflash_date">Hoy, 17:09 | <a href="http://www.pelis24.com/peliculas/">Peliculas</a> | </span></p>
+    <div class="linksw"><br /><a href="http://www.pelis24.com/peliculas/12554-el-castor-2011castellano.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (0)</a> &nbsp;<a href="http://www.pelis24.com/peliculas/12554-el-castor-2011castellano.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
     '''
-    '''
-    <div class="yjnewsflash_title"><a href="http://www.pelis24.com/estrenos/691-agora-espanol-online.html">Agora Español Online</a> </div>
-    <p><br>
-    <br>
-    <div id='news-id-691'><!--TBegin--><a href="http://pelis24.com/uploads/posts/2009-12/1261007067_1257692680_agoracine-300a.jpg" onclick="return hs.expand(this)" ><img align="left" src="http://pelis24.com/uploads/posts/2009-12/thumbs/1261007067_1257692680_agoracine-300a.jpg" alt='Agora Español Online' title='Agora Español Online'  /></a>
-    <!--TEnd-->Siglo IV. Egipto bajo el Imperio Romano. Las violentas revueltas religiosas en las calles de Alejandría alcanzan a su legendaria Biblioteca. Atrapada tras 
-    sus muros, la brillante astrónoma Hipatia lucha por salvar la sabiduría del Mundo Antiguo con la ayuda de sus discípulos. Entre ellos, los dos hombres que se disputan 
-    su corazón: Orestes y el joven esclavo Davo, que se debate entre el amor que le profesa en secreto y la libertad que podría alcanzar uniéndose al 
-    imparable ascenso de los cristianos.<br /><b><!--colorstart:#FF0000--><span style="color:#FF0000"><!--/colorstart-->Mejor Calidad<!--colorend--></span><!--/colorend--></b></div><span class="yjnewsflash_date">10 febrero 2010 | <a href="http://www.pelis24.com/estrenos/">Estrenos</a>, <a href="http://www.pelis24.com/peliculas/">Peliculas</a> | </span></p>
-    <div class="linksw"><br /><a href="http://www.pelis24.com/estrenos/691-agora-espanol-online.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (63)</a> &nbsp;<a href="http://www.pelis24.com/estrenos/691-agora-espanol-online.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
-    '''
-
     patron  = '<div class="yjnewsflash_title"><a href="([^"]+)">([^<]+)</a> </div>[^<]+'
     patron += '<p><br>[^<]+'
     patron += '<br>[^<]+'
@@ -84,23 +72,11 @@ def list(params,url,category):
     scrapertools.printMatches(matches)
 
     for match in matches:
-        # Titulo
         scrapedtitle = match[1]
-
-        # URL
         scrapedurl = urlparse.urljoin(url,match[0])
-        
-        # Thumbnail
         scrapedthumbnail = match[2]
-        
-        # procesa el resto
         scrapedplot = match[3]
-
-        # Depuracion
-        if (DEBUG):
-            logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
     '''

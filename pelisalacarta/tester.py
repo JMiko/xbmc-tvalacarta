@@ -401,7 +401,7 @@ def test_fileserver_premium():
 
     url = "http://www.fileserve.com/file/tvhFAxG"
     #scrapertools.downloadpage(url,follow_redirects=False)
-    location = scrapertools.getLocationHeaderFromResponse(url)
+    location = scrapertools.get_header_from_response(url,header_to_get="location")
     
     print "location=%s" % location
 

@@ -141,6 +141,23 @@ def series(item):
 
     return itemlist
 
+def detalle_programa(item):
+    data = scrapertools.cache_page(item.url)
+
+    # Obtiene el thumbnail
+    matches = re.compile('<div class="profile-info">.*?<img src="([^"]+)".*?</div>', re.S).findall(data)
+    if len(matches)>0:
+        item.thumbnail = urlparse.urljoin(item.url,matches[0])
+
+    ## <-- plot y titulo
+    patronvideos = '<h1 class="underline">([^<]+?)</h1> <div id="description"> <p>(.+?)<a href=' #titulo, plot
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+       item.plot = matches[0][1]
+       item.title = matches[0][0]
+
+    return item
+
 def episodios(item):
     logger.info("[seriesyonkis.py] episodios")
 
@@ -264,7 +281,7 @@ def play(item):
     itemlist = []
     
     try:
-        location = scrapertools.getLocationHeaderFromResponse(item.url)
+        location = scrapertools.get_header_from_response(item.url,header_to_get="location")
         if "fileserve.com" in location:
             itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:

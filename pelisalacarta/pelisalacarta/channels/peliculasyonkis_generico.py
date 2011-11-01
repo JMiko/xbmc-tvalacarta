@@ -253,7 +253,7 @@ def findvideos(item):
             logger.error( "%s" % line )
     
     itemlist.append( Item(channel=item.channel, title="Añadir esta pelicula a la biblioteca de XBMC", url=item.url, action="add_pelicula_to_library", category="CINE", extra="strm_detail", show=titulo, folder=False))
-           
+
     return itemlist
 
 def play(item):
@@ -272,7 +272,7 @@ def play(item):
         duration = ""
     '''
     try:
-        location = scrapertools.getLocationHeaderFromResponse(item.url)
+        location = scrapertools.get_header_from_response(item.url,header_to_get="location")
         if "fileserve.com" in location:
             itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , fulltitle=item.fulltitle, url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
