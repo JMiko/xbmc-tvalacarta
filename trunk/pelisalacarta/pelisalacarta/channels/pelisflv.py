@@ -529,7 +529,8 @@ def detail(params,url,category):
             playlistFile.write("Version=2\n")
             playlistFile.flush();
             playlistFile.close()
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "Reproducir Todo a la vez...", FULL_FILENAME_PATH , scrapedthumbnail, scrapedplot )
+            if c>0:
+                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "Reproducir Todo a la vez...", FULL_FILENAME_PATH , scrapedthumbnail, scrapedplot )
     
     # Busca enlaces en el servidor Videoweed - "el modulo servertools.findvideos() no los encuentra"
     patronvideos = '(http\:\/\/[^\.]+\.videoweed.com\/[^"]+)"'
