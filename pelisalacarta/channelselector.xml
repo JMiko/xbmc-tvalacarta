@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>channelselector</name>
-	<tag>20</tag>
-	<date>14/10/2010</date>
-	<changes>Nuevo canal megaupload-premium (fr)</changes>
+	<tag>21</tag>
+	<date>02/11/2010</date>
+	<changes>Retirados tvshack, series.ly y seriemati</changes>
 </version>
