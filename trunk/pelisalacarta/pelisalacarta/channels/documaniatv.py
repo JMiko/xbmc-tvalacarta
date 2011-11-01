@@ -30,8 +30,8 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, action="documentalesnuevos"  , title="Novedades" , url="http://www.documaniatv.com/newvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
-    itemlist.append( Item(channel=CHANNELNAME, action="TipoDocumental"      , title="Por tipos" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
-    itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentales"     , title="Por tags"  , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tag.png')))
+    itemlist.append( Item(channel=CHANNELNAME, action="TipoDocumental"      , title="Por tipos" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentales"     , title="Por tags"  , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tag.png')))
     #itemlist.append( Item(channel=CHANNELNAME, action="topdocumentales"     , title="Top documentales online"          , url="http://www.documaniatv.com/topvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'top.png')))
     #itemlist.append( Item(channel=CHANNELNAME, action="listatipodocumental" , title="Documentales siendo vistos ahora" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'viendose.png')))
     #itemlist.append( Item(channel=CHANNELNAME, action="documentaldeldia"    , title="Documental del dia"               , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'deldia.png')))
@@ -42,7 +42,7 @@ def documentalesnuevos(item):
     logger.info("[documaniatv.py] documentalesnuevos")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -79,14 +79,15 @@ def TipoDocumental(item):
 
     # Saca el bloque con las categorias
     data = scrapertools.cache_page(item.url)
-    patron = '<ul id="ul_categories">(.*?)</ul>'
+    patron = "<ul id='ul_categories'>(.*?)</ul>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)==0:
         return []
+    scrapertools.printMatches(matches)
     
     # Saca la lista de categorias
     data = matches[0]
-    patron = '<li><a href="([^"]+)">([^<]+)</a></li>'
+    patron = '<li.*?a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
         itemlist.append( Item(channel=CHANNELNAME , action="listatipodocumental" , title=match[1],url=match[0]))
@@ -148,7 +149,7 @@ def tagdocumentaleslist(item):
     logger.info("[documaniatv.py] tagdocumentaleslist")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
@@ -166,15 +167,15 @@ def tagdocumentaleslist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # AÔøΩade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle + " - " + scrapeddescription , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     
-    # P·gina siguiente
+    # PÔøΩgina siguiente
     patron = '<a href="([^"]+)">next &raquo;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)         
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title="P·gina siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title="PÔøΩgina siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
     
     return itemlist
 
@@ -182,7 +183,7 @@ def detail(item):
     logger.info("[documaniatv.py] detail")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cachePage(item.url)
     descripcion = ""
     plot = ""
@@ -207,7 +208,7 @@ def detail(item):
     for video_item in video_itemlist:
         itemlist.append( Item(channel=CHANNELNAME , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=video_item.thumbnail, plot=video_item.plot, folder=False))
 
-    # Extrae los enlaces a los vÌdeos (Directo)
+    # Extrae los enlaces a los vÔøΩdeos (Directo)
     patronvideos = "file: '([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -233,7 +234,7 @@ def performsearch(texto):
     logger.info("[documaniatv.py] performsearch")
     url = "http://www.documaniatv.com/search.php?keywords="+texto+"&btn=Buscar"
 
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas (carpetas)
@@ -253,7 +254,7 @@ def performsearch(texto):
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # AÔøΩade al listado de XBMC
         resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
@@ -261,7 +262,7 @@ def performsearch(texto):
 def searchresults2(item):
     logger.info("[documaniatv.py] searchresults")
 
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -293,7 +294,7 @@ def searchresults2(item):
             logger.info("scrapedurl="+scrapedurl)
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
-        # AÒade al listado de XBMC
+        # AÔøΩade al listado de XBMC
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
 
 
@@ -323,7 +324,7 @@ def listarpor(item):
             fecha = "videos-1-date.html"
             vistas = "videos-1-views.html"
             rating = "videos-1-rating.html" 
-         # Abre el di·logo de selecciÛn
+         # Abre el diÔøΩlogo de selecciÔøΩn
             opciones = []
         opciones.append("Fecha")
         opciones.append("Vistas")
@@ -346,7 +347,7 @@ def documentaldeldia(item):
 #    list(item,patronvideos)
     logger.info("[documaniatv.py] Documentaldeldia")
                
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cachePage(url)
     #logger.info(data)
         
@@ -376,7 +377,7 @@ def documentaldeldia(item):
 
 def topdocumentales(item):
     url2=url
-    # Abre el di·logo de selecciÛn
+    # Abre el diÔøΩlogo de selecciÔøΩn
     opciones = []
     opciones.append("Todo el tiempo")
     opciones.append("Ultimos 7 dias")
@@ -426,7 +427,7 @@ def topdocumentales(item):
 def toplist(item):
     logger.info("[documaniatv.py] toplist")
 
-    # Descarga la p·gina
+    # Descarga la pÔøΩgina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -500,23 +501,23 @@ def paginasiguientes(patronvideos,data,category,cat):
 
 def acentos(title):
 
-    title = title.replace("√Ç¬", "")
-    title = title.replace("√É¬©","È")
-    title = title.replace("√É¬°","·")
-    title = title.replace("√É¬≥","Û")
-    title = title.replace("√É¬∫","˙")
-    title = title.replace("√É¬≠","Ì")
-    title = title.replace("√É¬±","Ò")
+    title = title.replace("√ÇÔøΩ", "")
+    title = title.replace("√É¬©","ÔøΩ")
+    title = title.replace("√É¬°","ÔøΩ")
+    title = title.replace("√É¬≥","ÔøΩ")
+    title = title.replace("√É¬∫","ÔøΩ")
+    title = title.replace("√É¬≠","ÔøΩ")
+    title = title.replace("√É¬±","ÔøΩ")
     title = title.replace("√¢‚Ç¨¬ù", "")
-    title = title.replace("√¢‚Ç¨≈ì√Ç¬", "")
+    title = title.replace("√¢‚Ç¨≈ì√ÇÔøΩ", "")
     title = title.replace("√¢‚Ç¨≈ì","")
-    title = title.replace("√©","È")
-    title = title.replace("√°","·")
-    title = title.replace("√≥","Û")
-    title = title.replace("√∫","˙")
-    title = title.replace("√≠","Ì")
-    title = title.replace("√±","Ò")
-    title = title.replace("√É‚Äú","”")
+    title = title.replace("√©","ÔøΩ")
+    title = title.replace("√°","ÔøΩ")
+    title = title.replace("√≥","ÔøΩ")
+    title = title.replace("√∫","ÔøΩ")
+    title = title.replace("√≠","ÔøΩ")
+    title = title.replace("√±","ÔøΩ")
+    title = title.replace("√É‚Äú","ÔøΩ")
     return(title)
 ######-----------------------------------------------##############
 
