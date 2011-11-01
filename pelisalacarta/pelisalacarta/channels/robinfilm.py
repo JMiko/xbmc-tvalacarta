@@ -41,8 +41,7 @@ def novedades(item):
     patronvideos  = "<div id='post-title-wrapper'>[^<]+"
     patronvideos += "<a[^>]+></a>[^<]+"
     patronvideos += "<h3 class='post-title entry-title'>[^<]+"
-    patronvideos += "<a href='([^']+)'>([^<]+)</a>.*?"
-    patronvideos += '<img alt="[^"]+" height="[^"]+" src="([^"]+)"'
+    patronvideos += "<a href='([^']+)'>([^<]+)</a>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -51,10 +50,11 @@ def novedades(item):
         scrapedtitle = match[1]
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = match[2]
+        scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
+    #<a class='blog-pager-older-link' href='http://www.robinfilm.com/search?updated-max=2011-10-13T18%3A12%3A00%2B02%3A00&max-results=21' id='Blog1_blog-pager-older-link' title='Post più vecchi'>Post più vecchi</a>
     patron = "<a class='blog-pager-older-link' href='([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
