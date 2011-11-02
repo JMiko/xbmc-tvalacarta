@@ -12,6 +12,7 @@ import md5
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from core import config
+from core import wiideoteca
 from core.item import Item
 
 import logging.config
@@ -286,6 +287,8 @@ def getitems(requestpath):
         itemlist = send_to_jdownloader(senderitem,refered_item)
     elif accion=="search_trailer":
         itemlist = search_trailer(senderitem,refered_item)
+    elif accion=="add_serie_to_wiideoteca":
+        itemlist = wiideoteca.AgregarSerie(senderitem)
 
     else:
         if senderitem.url=="none":

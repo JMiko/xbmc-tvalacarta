@@ -119,28 +119,33 @@ def logout(item):
     return itemlist
 
 def login(item):
-    import xbmc
-    keyboard = xbmc.Keyboard("","Login")
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        login = keyboard.getText()
+    if config.get_platform()=="wiimc":
+        login = config.get_setting("cinetubeuser")
+        password = config.get_setting("cinetubepassword")
+        if login<>"" and password<>"":
+            url="http://www.cinetube.es/login.php"
+            data = scrapertools.cache_page("http://www.cinetube.es/login.php",post="usuario=%s&clave=%s" % (login,password))
+            itemlist = []
+            itemlist.append( Item(channel=CHANNELNAME, title="Sesión iniciada", action="mainlist"))
+    else:
+        import xbmc
+        keyboard = xbmc.Keyboard("","Login")
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            login = keyboard.getText()
 
-    keyboard = xbmc.Keyboard("","Password")
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        password = keyboard.getText()
+        keyboard = xbmc.Keyboard("","Password")
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            password = keyboard.getText()
 
-    nombre_fichero_config_canal = os.path.join( config.get_data_path() , CHANNELNAME+".xml" )
-    config_canal = open( nombre_fichero_config_canal , "w" )
-    config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
-    config_canal.close();
+        nombre_fichero_config_canal = os.path.join( config.get_data_path() , CHANNELNAME+".xml" )
+        config_canal = open( nombre_fichero_config_canal , "w" )
+        config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
+        config_canal.close();
 
-    itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Sesión iniciada", action="mainlist"))
-    return itemlist
-def prueba (item):
-    itemlist = []
-    itemlist = (search(item,"dragon ball","S"))
+        itemlist = []
+        itemlist.append( Item(channel=CHANNELNAME, title="Sesión iniciada", action="mainlist"))
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -570,6 +575,10 @@ def temporadas(item):
 
         itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=extra, show=item.show) )
 
+    # Opcion de añadir serie a Wiideoteca
+    if len(itemlist)>0 and config.get_platform()=="wiimc" and item.channel<>"wiideoteca":
+        itemlist.append( Item(channel=CHANNELNAME, action="add_serie_to_wiideoteca", title=">> Agregar Serie a Wiideoteca <<", fulltitle=fulltitle , url=item.url , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=match[1].strip()) )
+   
     # Una trampa, si la serie enlaza no con la temporada sino con la lista de episodios, se resuelve aquí
     if len(itemlist)==0:
         itemlist = episodios(item)

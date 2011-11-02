@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import urlparse,urllib2,urllib,re
 import os
 import sys
@@ -27,6 +27,7 @@ def getmainlist():
     itemlist.append( Item(title=config.get_localized_string(30103) , channel="buscador" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30128) , channel="trailertools" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
+    if config.get_platform()=="wiimc":itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist") )
 
     try:
         from core import descargas
