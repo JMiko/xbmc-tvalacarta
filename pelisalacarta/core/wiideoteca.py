@@ -43,11 +43,8 @@ def mainlist(item):
     eliminarmarcadas()
     itemlist = []
     for i in range(len(title)):
-        scrapedtitle = urllib.unquote_plus(title[i].strip().encode('utf-8'))
-        scrapedfulltitle = urllib.unquote_plus(fulltitle[i].strip().encode('utf-8'))
-        scrapedplot = urllib.unquote_plus(plot[i].strip().encode('utf-8'))
-        logger.info(str(i)+" Title: %s | Fulltitle: %s | Thumbnail: %s | Channel: %s | Url: %s" % (title[i].strip(),fulltitle[i],thumbnail[i],channel[i],url[i]))
-        itemlist.append( Item(channel=CHANNELNAME, action="actualiza", title=scrapedtitle , fulltitle=scrapedfulltitle , url=url[i].encode('utf-8') , thumbnail=thumbnail[i].encode('utf-8') , plot=scrapedplot , extra=str(i) ) )
+        logger.info(str(i)+" Title: %s | Fulltitle: %s | Thumbnail: %s | Channel: %s | Url: %s" % (title[i],fulltitle[i],thumbnail[i],channel[i],url[i]))
+        itemlist.append( Item(channel=CHANNELNAME, action="actualiza", title=title[i] , fulltitle=fulltitle[i] , url=url[i] , thumbnail=thumbnail[i] , plot=plot[i] , extra=str(i) ) )
     itemlist = sorted(itemlist, key=lambda Item: Item.title)  
     return itemlist
 
@@ -88,6 +85,7 @@ def leerXML():
         idioma[i] = urllib.unquote_plus(idioma[i].strip().encode('utf-8'))
         plot[i] = urllib.unquote_plus(plot[i].strip().encode('utf-8'))
         ultimo[i] = urllib.unquote_plus(ultimo[i].strip().encode('utf-8'))
+        url[i] = url[i].encode('utf-8')
     
 def actualiza(item):
     logger.info("[wiideoteca.py] actualiza")
@@ -105,15 +103,15 @@ def actualiza(item):
                     itemlist2 = []
                     itemlist2.extend( cinetube.episodios(temporada))
                     for capitulo in itemlist2:
-                        returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=item.fulltitle , url=capitulo.url , thumbnail=thumbnail[i].encode('utf-8') , plot=plot[i].encode('utf-8') , extra=CHANNELNAME , category="wiideoteca") )
+                        returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=item.fulltitle , url=capitulo.url , thumbnail=thumbnail[i] , plot=plot[i] , extra=CHANNELNAME , category="wiideoteca") )
                 elif int(directory[i].rsplit(" ")[1])==int(temporada.title.split(" ")[1]):
                     itemlist2 = []
                     itemlist2.extend( cinetube.episodios(temporada))
                     for capitulo in itemlist2:
-                        if str(ultimo[i].encode('utf-8'))<capitulo.title and str(ultimo[i].encode('utf-8'))not in capitulo.title:
-                            returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=item.fulltitle , url=capitulo.url , thumbnail=thumbnail[i].encode('utf-8') , plot=plot[i].encode('utf-8') , extra=CHANNELNAME , category="wiideoteca") )
+                        if str(ultimo[i])<capitulo.title and str(ultimo[i])not in capitulo.title:
+                            returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=item.fulltitle , url=capitulo.url , thumbnail=thumbnail[i] , plot=plot[i] , extra=CHANNELNAME , category="wiideoteca") )
             if returnlist==[]:
-                returnlist.append( Item(title="No hay nuevos episodios desde "+str(ultimo[i].encode('utf-8'))) )
+                returnlist.append( Item(title="No hay nuevos episodios desde "+str(ultimo[i])) )
             else:
                 returnlist.append( Item(channel=CHANNELNAME, action="TodosVistos", title=">> Marcar todos como vistos <<", url=temporada.title.split(" ")[1] , fulltitle=capitulo.title, extra=str(i)))
         else:
