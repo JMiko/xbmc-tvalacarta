@@ -573,7 +573,7 @@ def temporadas(item):
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=extra, show=item.show) )
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, category=item.category , plot=scrapedplot, extra=extra, show=item.show) )
 
     # Opcion de añadir serie a Wiideoteca
     if len(itemlist)>0 and config.get_platform()=="wiimc" and item.channel<>"wiideoteca":
@@ -628,7 +628,7 @@ def episodios(item):
         scrapedplot = item.plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=extra+" "+scrapedtitle, plot=scrapedplot, show=item.show) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, category=item.category , extra=extra+" "+scrapedtitle, plot=scrapedplot, show=item.show) )
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -714,7 +714,7 @@ def findvideos(item):
                 scrapedurl = video[1]
                 server = video[2]
                 
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, fanart=item.thumbnail, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():

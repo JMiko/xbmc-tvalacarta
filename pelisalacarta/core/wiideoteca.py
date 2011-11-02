@@ -49,7 +49,7 @@ def mainlist(item):
     return itemlist
 
 def GetXMLTag(archivo,etiqueta):
-    logger.info("[wiideoteca.py] GetXMLTag")
+    logger.info("[wiideoteca.py] GetXMLTag "+etiqueta)
     returnlist = []
     dom = minidom.parse(archivo)
     elementos = dom.getElementsByTagName(etiqueta)
@@ -95,7 +95,7 @@ def actualiza(item):
     i=int(item.extra)
     leerXML()
     if solonuevos[i]=="True":
-        logger.info("Ultimo: %s" %ultimo[i])
+        logger.info("Ultimo episodio visto: %s" %ultimo[i])
         if channel[i]=="cinetube":
             itemlist.extend( cinetube.temporadas(item))
             for temporada in itemlist:
@@ -103,21 +103,21 @@ def actualiza(item):
                     itemlist2 = []
                     itemlist2.extend( cinetube.episodios(temporada))
                     for capitulo in itemlist2:
-                        returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=item.fulltitle , url=capitulo.url , thumbnail=thumbnail[i] , plot=plot[i] , extra=CHANNELNAME , category="wiideoteca") )
+                        returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=capitulo.title , url=capitulo.url , thumbnail=thumbnail[i] , plot=plot[i] , extra=temporada.extra , category="wiideoteca") )
                 elif int(directory[i].rsplit(" ")[1])==int(temporada.title.split(" ")[1]):
                     itemlist2 = []
                     itemlist2.extend( cinetube.episodios(temporada))
                     for capitulo in itemlist2:
                         if str(ultimo[i])<capitulo.title and str(ultimo[i])not in capitulo.title:
-                            returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=item.fulltitle , url=capitulo.url , thumbnail=thumbnail[i] , plot=plot[i] , extra=CHANNELNAME , category="wiideoteca") )
+                            returnlist.append( Item(channel=capitulo.channel, action=capitulo.action, title=capitulo.title , fulltitle=capitulo.title , url=capitulo.url , thumbnail=thumbnail[i] , plot=plot[i] , extra=temporada.extra , category="wiideoteca") )
             if returnlist==[]:
                 returnlist.append( Item(title="No hay nuevos episodios desde "+str(ultimo[i])) )
             else:
-                returnlist.append( Item(channel=CHANNELNAME, action="TodosVistos", title=">> Marcar todos como vistos <<", url=temporada.title.split(" ")[1] , fulltitle=capitulo.title, extra=str(i)))
+                returnlist.append( Item(channel=CHANNELNAME, action="MarcarVisto", title=">> Marcar todos como vistos <<", url=temporada.extra , fulltitle=capitulo.title, extra=str(i)))
         else:
             returnlist.append( Item(title="Error al actualizar serie") )
     else:
-        item.channel=CHANNELNAME;item.action="temporadas"
+        item.channel=CHANNELNAME;item.action="temporadas";item.category="wiideoteca"
         returnlist.extend( cinetube.temporadas(item))
     returnlist.append( Item(channel=CHANNELNAME, action="configurarSerie", title=">> Configurar Serie <<", fulltitle=item.fulltitle, extra=str(i)))
         
@@ -133,6 +133,7 @@ def configurarSerie(item):
         itemlist.append( Item(channel=CHANNELNAME, action="CambiarModo", title="Mostrar todos los episodios", fulltitle=item.fulltitle, extra=str(i)))
     else:
         itemlist.append( Item(channel=CHANNELNAME, action="CambiarModo", title="Mostrar solo los episodios no vistos", fulltitle=item.fulltitle, extra=str(i)))
+    itemlist.append( Item(channel=CHANNELNAME, action="ListarEpisodios", title="Seleccionar ultimo episodio visto", fulltitle=item.fulltitle , url=url[i] , thumbnail=thumbnail[i] , plot=plot[i] , extra=str(i)))
     if borrar[i]=="False":
         itemlist.append( Item(channel=CHANNELNAME, action="QuitarSerie", title="Quitar Serie de "+CHANNELNAME, fulltitle=item.fulltitle, extra=str(i)))
     else:
@@ -158,21 +159,59 @@ def CambiarModo(item):
     itemlist.append( Item(title="Se ha cambiado el metodo de visualizacion") )
     return itemlist
 
-def TodosVistos(item):
-    logger.info("[wiideoteca.py] TodosVistos")
+def ListarEpisodios(item):
+    logger.info("[wiideoteca.py] ListarEpisodios")
+    from pelisalacarta.channels import cinetube
+    returnlist = []
+    itemlist = []
+    i=int(item.extra)
+    item.title=item.fulltitle
+    leerXML()
+    logger.info("Ultimo episodio visto: %s" %ultimo[i])
+    if channel[i]=="cinetube":
+        itemlist.extend( cinetube.temporadas(item))
+        returnlist.append( Item(channel=CHANNELNAME, action="UltimoVisto", title="Ninguno" , fulltitle="0x00" , url="Temporada 0" , thumbnail=thumbnail[i] , extra=str(i) ) )
+        for temporada in itemlist:
+            itemlist2 = []
+            itemlist2.extend( cinetube.episodios(temporada))
+            for capitulo in itemlist2:
+                returnlist.append( Item(channel=CHANNELNAME, action="MarcarVisto", title=capitulo.title , fulltitle=capitulo.title , url=temporada.extra , thumbnail=thumbnail[i] , extra=str(i) ) )
+        if returnlist==[]:
+            returnlist.append( Item(title="Error al abrir serie") )
+        else:
+            returnlist.append( Item(channel=CHANNELNAME, action="MarcarVisto", title=">> Marcar todos como vistos <<", url=temporada.extra , fulltitle=capitulo.title, extra=str(i)))
+    else:
+        returnlist.append( Item(title="Error al abrir serie") )
+        
+    return returnlist
+
+def UltimoVisto(item):
+    logger.info("[wiideoteca.py] UltimoVisto")
+    itemlist = []
+    leerXML()
+    for i in range(len(title)):
+        if title[i] in item.fulltitle:
+            item.extra=str(i)
+            itemlist = MarcarVisto(item)
+    return itemlist
+
+def MarcarVisto(item):
+    logger.info("[wiideoteca.py] MarcarVisto")
     itemlist = []
     i=int(item.extra)
     dom = minidom.parse(XML)
     elementos = dom.getElementsByTagName("series")
     for elemento in elementos:
         elemento.getElementsByTagName('ultimo')[i].childNodes[0].nodeValue=urllib.quote_plus(item.fulltitle)
-        elemento.getElementsByTagName('directory')[i].childNodes[0].nodeValue=str("Temporada "+item.url)
+        elemento.getElementsByTagName('directory')[i].childNodes[0].nodeValue=str(item.url)
     f = open(XML, "w")
     dom.writexml(f, indent="", addindent="", newl="", encoding='utf-8')
     f.close()
     dom.unlink()
-
-    itemlist.append( Item(title="Todos los episodios han sido marcados como vistos") )
+    if item.title==">> Marcar todos como vistos <<":
+        itemlist.append( Item(title="Todos los episodios han sido marcados como vistos") )
+    else:
+        itemlist.append( Item(title="Seleccionado %s como ultimo episodio visto" % item.fulltitle) )
     return itemlist
 
 def QuitarSerie(item):
@@ -200,7 +239,7 @@ def AgregarSerie (item):
     leerXML()
     seguir = True
     for x in range(0,len(fulltitle)):
-        if fulltitle[x]==item.fulltitle: seguir = False
+        if fulltitle[x]==item.fulltitle.strip(): seguir = False
     if seguir==True:
         i=len(title)
         if item.thumbnail=="": item.thumbnail="Vacio"
