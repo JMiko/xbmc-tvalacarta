@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>11</tag>
-	<date>20/10/2011</date>
-	<changes>Arreglado titulos en series para favoritos</changes>
+	<tag>12</tag>
+	<date>02/11/2011</date>
+	<changes>Añadida opcion para Biblioteca en wii</changes>
 </version>
