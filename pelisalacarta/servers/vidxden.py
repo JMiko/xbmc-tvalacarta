@@ -67,7 +67,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     if len(matches)>0:
-        video_urls.append( ["[vidxden]",matches[0]])
+        video_urls.append( ["."+matches[0].rsplit('.',1)[1]+" [vidxden]",matches[0]])
 
     for video_url in video_urls:
         logger.info("[vidxden.py] %s - %s" % (video_url[0],video_url[1]))

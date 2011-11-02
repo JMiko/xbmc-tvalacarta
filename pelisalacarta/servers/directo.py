@@ -31,7 +31,7 @@ def find_videos(text):
     for match in matches:
         partes = match.split("/")
         filename = partes[len(partes)-1]
-        titulo = filename+" [directo]"
+        titulo = "[Directo]"
         url = match
         if url not in encontrados:
             logger.info("  url="+url)
