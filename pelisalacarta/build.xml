@@ -430,6 +430,7 @@
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="addon*.xml"/>
 				<exclude name="**/.*"/>
@@ -447,6 +448,7 @@
                 <exclude name="platform/developer/**"/>
                 <exclude name="platform/plex/**"/>
                 <exclude name="platform/wiimc/**"/>
+                <exclude name="platform/rss/**"/>
                 <exclude name="platform/xbmc/**"/>
                 <exclude name="platform/xbmcdharma/**"/>
                 <exclude name="platform/xbmceden/**"/>
@@ -467,6 +469,9 @@
                 <exclude name="pelisalacarta/channels/tvshack.py"/>
                 <exclude name="lib/elementtree/**"/>
                 <exclude name="lib/gdata/**"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="core/config.py"/>
+                <exclude name="core/logger.py"/>
 			</fileset>
         </copy>
         <copy todir="${target}/dreambox/pelisalacarta">
@@ -474,7 +479,7 @@
 			</fileset>
         </copy>
     </target>
-		
+
 	<!-- copy-boxee ============================================================ -->
 	<target name="test-xbmc-dharma">
 		<property name="destination-path" value="C:\Users\Jesus\AppData\Roaming\XBMC\addons"/>
@@ -526,13 +531,13 @@
         <antcall target="copy-boxee"/>
     	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
 
-        <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
-        <antcall target="copy-plexmediaserver"/>
-        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
-
         <mkdir dir="${target}/dreambox/pelisalacarta"/>
         <antcall target="copy-dreambox"/>
-        <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/-->
+        <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/>
+
+        <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
+        <antcall target="copy-plexmediaserver"/>
+        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/-->
 
         <!-- Repo oficial XBMC -->
         <!--mkdir dir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta"/>
