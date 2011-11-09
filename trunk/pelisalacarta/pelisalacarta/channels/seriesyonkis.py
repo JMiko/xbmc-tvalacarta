@@ -257,7 +257,7 @@ def findvideos(item):
         for match in matches:
             #logger.info(match)
             #<tr> <td class="episode-server"> <a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Español">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtítulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>Calidad: 6, Duración: 85.8 min, Peso: 405.79 MB, Resolución: 640x368</li> </ul> </div> </td> <td class="episode-uploader">lksomg</td> <td class="center"><a href="#" class="errorlink" data-id="2004967"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
-            patron = '<a href="/s/ngo/([^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
+            patron = '<a href="(/s/ngo/[^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
@@ -266,7 +266,7 @@ def findvideos(item):
                 fmt = info[4]      
                 audio = "Audio:" + info[2]
                 subs = "Subs:" + info[3]
-                url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
+                url = urlparse.urljoin(item.url,info[0])
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
@@ -280,6 +280,20 @@ def play(item):
     logger.info("[seriesyonkis.py] play")
     itemlist = []
     
+    # Descarga la página de reproducción de este episodio y server
+    #<a href="/s/y/597157/0/s/1244" target="_blank">Reproducir ahora</a>
+    data = scrapertools.cache_page(item.url)
+    patron = '<a href="([^"]+)" target="_blank">Reproducir ahora</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)==0:
+        patron = '<a href="([^"]+)" target="_blank">Descargar ahora</a>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    if len(matches)==0:
+        return []
+    
+    item.url = urlparse.urljoin(item.url,matches[0])
+
     try:
         location = scrapertools.get_header_from_response(item.url,header_to_get="location")
         if "fileserve.com" in location:
