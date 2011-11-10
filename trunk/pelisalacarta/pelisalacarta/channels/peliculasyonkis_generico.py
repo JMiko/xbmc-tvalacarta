@@ -3,8 +3,8 @@
 # pelisalacarta - XBMC Plugin
 # Canal para peliculasyonkis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-# Adaptado por Boludiko basado en el canal seriesyonkis V7 Por Truenon y Jesus
-# v8
+# Adaptado por Boludiko basado en el canal seriesyonkis V9 Por Truenon y Jesus
+# v10
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -24,7 +24,7 @@ def mainlist(item):
     logger.info("[peliculasyonkis_generico.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Ultimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
+    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
     itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
     itemlist.append( Item ( channel=CHANNELNAME , action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
     itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
@@ -84,16 +84,13 @@ def peliculascat(item):
 
     return itemlist
    
-def search(item,texto, categoria="*"):
+def search(item,texto):
     logger.info("[peliculasyonkis_generico.py] search")
     itemlist = []
-    if categoria not in ("*","F"): return itemlist
-    
-    if item.url in ("","none"): 
-       url = "http://www.peliculasyonkis.com/buscar/pelicula"
-       item.url = url
-    else: url = item.url
 
+    if item.url=="":
+        item.url = "http://www.peliculasyonkis.com/buscar/pelicula"
+    url = "http://www.peliculasyonkis.com/buscar/pelicula" # write ur URL here
     post = 'keywords='+texto[0:18]
     
     data = scrapertools.cache_page(url,post=post)
@@ -104,7 +101,7 @@ def search(item,texto, categoria="*"):
         scrapedtitle = match[0]
         scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = match[2]
-        scrapedplot = "Peliculasyonkis:\n"+match[3] # En la busquedas generale sirve para saber en que canal lo ha encontrado...
+        scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
@@ -179,9 +176,7 @@ def peliculas(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        url = urlparse.urljoin(item.url,match[0])
-        thumbnail = url.replace("/pelicula/", "/img/peliculas/170x243/")+".jpg"
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , fulltitle=match[1] , url=url, thumbnail=thumbnail, plot="", extra = "" ))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , fulltitle=match[1], url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -198,18 +193,6 @@ def findvideos(item):
         fmt=id=""
         
         data = scrapertools.cache_page(item.url)    
-        
-        ## <-- Obtengo thumbnail, titulo y plot
-        patronvideos = '<div class="profile-box"> <div class="profile-info">.+?<img src="([^"]+?)" alt' # thumbnail
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        if len(matches)>0: item.thumbnail = 'http://www.peliculasyonkis.com'+matches[0]
-
-        patronvideos = '<h1 class="underline">([^<]+?)</h1> <div id="description"> <p>(.+?)<a href=' #titulo, plot
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        if len(matches)>0:
-           item.plot = matches[0][1]
-           item.fulltitle = matches[0][0]
-
         
         #Solo queremos los links de ONLINE
         #matches = re.compile('<h2 class="header-subtitle veronline">.*?<h2 class="header-subtitle descargadirecta">', re.S).findall(data)
@@ -232,56 +215,59 @@ def findvideos(item):
         for match in matches:
             #logger.info(match)
             #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Espa�ol">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subt�tulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la pel�cula"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Informaci�n v�deo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
-            patron = '<a href="/s/ngo/([^"]+)".*? title="(.*?)".*?<span class="server ([^"]+)".*?title=".*?">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
+            patron = '<a href="(/s/ngo/[^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
-                servidor = info[2]
+                servidor = info[1]
                 Nro = Nro + 1
                 fmt = info[4]      
-                audio = "Audio:" + info[3]
-                subs = "Subs:" + info[4]
-                #Nombre para el fichero strm
-                titulo = info[1].replace("Descargar","")
-                url = urlparse.urljoin(item.url,"/s/y/"+id.replace("/",""))
+                audio = "Audio:" + info[2]
+                subs = "Subs:" + info[3]
+                url = urlparse.urljoin(item.url,info[0])
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
-                
     except:
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
-    
-    itemlist.append( Item(channel=item.channel, title="Añadir esta pelicula a la biblioteca de XBMC", url=item.url, action="add_pelicula_to_library", category="CINE", extra="strm_detail", show=titulo, folder=False))
 
     return itemlist
 
 def play(item):
-    logger.info("[peliculasyonkis_generico.py] play")
+    logger.info("[seriesyonkis.py] play")
     itemlist = []
-    '''
-    url = urlparse.urljoin(item.url,"/s/go/"+id)
-    data = scrapertools.cachePage(item.url)
-    matches = re.compile('<td class="title">Duraci.*?</td><td>([^/]+)/ .*?</td></tr>', re.S).findall(data)
-    duracion = ""
+    
+    # Descarga la página de reproducción de este episodio y server
+    #<a href="/s/y/597157/0/s/1244" target="_blank">Reproducir ahora</a>
+    data = scrapertools.cache_page(item.url)
+    patron = '<a href="([^"]+)" target="_blank">Reproducir ahora</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)==0:
+        patron = '<a href="([^"]+)" target="_blank">Descargar ahora</a>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    if len(matches)==0:
+        return []
+    
+    item.url = urlparse.urljoin(item.url,matches[0])
+
     try:
-        for match in matches: 
-            duracion = match.strip()  
-            break
-    except:
-        duration = ""
-    '''
-    try:
-        location = scrapertools.get_header_from_response(item.url,header_to_get="location")
+        location = scrapertools.getLocationHeaderFromResponse(item.url)
         if "fileserve.com" in location:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , fulltitle=item.fulltitle, url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
             data = scrapertools.cache_page(item.url)
+            logger.info("------------------------------------------------------------")
+            #logger.info(data)
+            logger.info("------------------------------------------------------------")
             videos = servertools.findvideos(data) 
+            logger.info(str(videos))
+            logger.info("------------------------------------------------------------")
             if(len(videos)>0): 
                 url = videos[0][1]
                 server=videos[0][2]                   
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
             else:
                 patron='<ul class="form-login">(.*?)</ul'
                 matches = re.compile(patron, re.S).findall(data)
@@ -312,11 +298,12 @@ def play(item):
                             #tbd ya no existe
                             if(confirmed and tecleado != ""):
                                 itemlist = play(item)
+
     except:
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
-    
+    logger.info("len(itemlist)=%s" % len(itemlist))
     return itemlist
 
 def sendcaptcha(url,challenge,text):
