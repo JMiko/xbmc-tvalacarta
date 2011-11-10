@@ -4,6 +4,7 @@
 # Canal para seriesyonkis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Por Truenon y Jesus, modificada por Boludiko
+# v10
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -294,7 +295,7 @@ def play(item):
     item.url = urlparse.urljoin(item.url,matches[0])
 
     try:
-        location = scrapertools.get_header_from_response(item.url,header_to_get="location")
+        location = scrapertools.getLocationHeaderFromResponse(item.url)
         if "fileserve.com" in location:
             itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
