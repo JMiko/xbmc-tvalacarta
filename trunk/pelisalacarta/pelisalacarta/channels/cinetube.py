@@ -119,7 +119,7 @@ def logout(item):
     return itemlist
 
 def login(item):
-    if config.get_platform()=="wiimc":
+    if config.get_platform() in ("wiimc", "rss"):
         login = config.get_setting("cinetubeuser")
         password = config.get_setting("cinetubepassword")
         if login<>"" and password<>"":
