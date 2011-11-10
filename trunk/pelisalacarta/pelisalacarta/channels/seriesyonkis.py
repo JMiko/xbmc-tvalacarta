@@ -4,7 +4,6 @@
 # Canal para seriesyonkis
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Por Truenon y Jesus, modificada por Boludiko
-# v8
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
