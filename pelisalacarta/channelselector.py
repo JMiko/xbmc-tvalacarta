@@ -28,6 +28,7 @@ def getmainlist():
     itemlist.append( Item(title=config.get_localized_string(30128) , channel="trailertools" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
     if config.get_platform()=="wiimc":itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist") )
+    if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist") )
 
     try:
         from core import descargas

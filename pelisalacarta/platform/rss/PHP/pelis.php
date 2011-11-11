@@ -4,7 +4,8 @@
 
    $MI_IP = "192.168.1.20";
    $INICIAR_PELISALACARTA = "cd /opt/pelisalacarta; /opt/bin/python /opt/pelisalacarta/pelisalacarta.py  > /dev/null 2> /dev/null &";
-
+   $INICIAR_PYLOAD = "cd /opt/pyload; /opt/bin/python pyLoadCore.py --configdir=/opt/pyload/.pyload  > /dev/null 2> /dev/null &";
+    
    $uri = $_SERVER["PHP_SELF"];
    $ip_remota = $_SERVER["REMOTE_ADDR"];
 
@@ -23,6 +24,7 @@
    $translate = NULL;
    
    inicia_pelisalacarta();
+   if ($canal == "pyload") inicia_pyload();
    $xml = file_get_contents($url);
    $tipo_contenido = tipo_contenido();
    pinta_cabecera();
@@ -163,6 +165,20 @@ function inicia_pelisalacarta() {
       exec("ps -aux | grep pelisalacarta | grep -v grep", $pslist); 
       if (count($pslist) == 0) {
          shell_exec($INICIAR_PELISALACARTA);
+         sleep(15);
+      }
+   }
+}
+
+function inicia_pyload() {
+   global $host, $MI_IP, $INICIAR_PYLOAD;
+   // Si es una peticion a pelisalacarta local y está parado, lo inicia
+   $paso = explode(":",$host);
+   if ($paso[0] == "127.0.0.1" || $paso[0] == $MI_IP) {
+      $py_parado = true;
+      exec("ps -aux | grep pyLoad | grep -v grep", $pslist); 
+      if (count($pslist) == 0) {
+         shell_exec($INICIAR_PYLOAD);
          sleep(15);
       }
    }

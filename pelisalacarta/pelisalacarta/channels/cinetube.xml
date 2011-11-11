@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>13</tag>
+	<tag>14</tag>
 	<date>03/11/2011</date>
-	<changes>Ligero cambio para Biblioteca de Wiimc</changes>
+	<changes>Ligero cambio para autenticar en RSS</changes>
 </version>
