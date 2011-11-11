@@ -21,6 +21,8 @@ def get_setting(name):
         dev = overrides[name]
     elif name=="cache.mode":
         dev = "2"
+    elif name=="cookies.dir":
+        dev = get_data_path()
     else:
         dev = ""
     return dev
