@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>channelselector</name>
-	<tag>22</tag>
-	<date>02/11/2010</date>
-	<changes>Incluida Biblioteca para Wii</changes>
+	<tag>23</tag>
+	<date>10/11/2011</date>
+	<changes>Incluida beta servicio pyLOAD en RSS</changes>
 </version>

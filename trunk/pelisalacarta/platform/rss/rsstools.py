@@ -56,7 +56,7 @@ def getitems(requestpath):
     logger.info("cached_file="+cached_file)
     
     # Si el fichero está en cache
-    if channel!="trailertools" and channel!="buscador" and channel!="configuracion" and os.path.exists(cached_file): # <--
+    if channel not in ("trailertools","buscador","configuracion","pyload") and os.path.exists(cached_file): # <--
         logger.info( "Reading from cache" )
         fichero = open( cached_file ,"rb")
         itemlist = cerealizer.load(fichero)
@@ -151,6 +151,8 @@ def getitems(requestpath):
             itemlist = add_again_to_downloads(senderitem,refered_item)
         elif accion=="send_to_jdownloader":
             itemlist = send_to_jdownloader(senderitem,refered_item)
+        elif accion=="send_to_pyload":
+            itemlist = send_to_pyload(senderitem,refered_item)
         elif accion=="search_trailer":
             itemlist = search_trailer(senderitem,refered_item)
     
@@ -188,7 +190,12 @@ def download_item(senderitem,refered_item):
 
 def send_to_jdownloader(senderitem,refered_item):
     itemlist = []
-    itemlist.append( Item( title="Opcion no disponible" ) )
+    return itemlist
+    
+def send_to_pyload(senderitem,refered_item):
+    from core import pyload
+    refered_item.action = "play"
+    return pyload.descargar(refered_item)
 
 def search_trailer(senderitem,refered_item):
     import trailertools
@@ -196,7 +203,6 @@ def search_trailer(senderitem,refered_item):
     print refered_item.tostring()
     itemlist = trailertools.search(refered_item, senderitem.extra)
     return itemlist
-#    itemlist.append( Item( title="Opcion no disponible" ) )
 
 def add_to_favorites(senderitem,refered_item):
     from core import favoritos
@@ -270,12 +276,16 @@ def menu_video(item):
     itemlist = []
     logger.info("menu_video url="+item.url+", server="+item.server)
     
+    if item.server=="local":
+       itemlist.append( Item(title=item.title, fulltitle=item.fulltitle, url=item.url, action="play_video", thumbnail=item.thumbnail, plot=item.plot, folder=False))
+       return itemlist
+       
     video_urls = []
 
     # Extrae todos los enlaces posibles
     exec "from servers import "+item.server+" as server_connector"
     video_urls = server_connector.get_video_url( page_url=item.url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
-
+        
     if len(video_urls)==0:
         itemlist.append( Item(title="El vídeo no está disponible",channel=item.channel, action=item.action, url=item.url, server=item.server, extra=item.extra, fulltitle=item.fulltitle) )
         itemlist.append( Item(title="en %s." % item.server,channel=item.channel, action=item.action, url=item.url, server=item.server, extra=item.extra, fulltitle=item.fulltitle) )
@@ -283,7 +293,7 @@ def menu_video(item):
     
     for video_url in video_urls:
         itemlist.append( Item(channel=item.channel, title="Ver "+video_url[0], url=video_url[1], action="play_video", extra=item.extra, fulltitle=item.fulltitle) )
-
+    
     refered_item_encoded = urllib.quote(item.title)+"|"+urllib.quote(item.server)+"|"+urllib.quote(item.url)+"|"+urllib.quote(item.extra)+"|"+urllib.quote(item.fulltitle)+"|"+urllib.quote(item.thumbnail)+"|"+urllib.quote(item.plot)
     
     itemlist.append( Item(channel=item.channel, title="Descargar",action="descargar",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
@@ -302,7 +312,8 @@ def menu_video(item):
         else:
             itemlist.append( Item(channel=item.channel, title="Quitar de la lista de descargas",action="remove_from_downloads",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
 
-    itemlist.append( Item(channel=item.channel, title="Enviar a jdownloader",action="send_to_jdownloader",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
+    itemlist.append( Item(channel=item.channel, title="Enviar a pyLoad",action="send_to_pyload",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
+#    itemlist.append( Item(channel=item.channel, title="Enviar a jdownloader",action="send_to_jdownloader",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
     if item.channel != "trailertools" or item.action != "play":
         itemlist.append( Item(channel=item.channel, title="Buscar trailer",action="search_trailer",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
 
