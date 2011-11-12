@@ -1,10 +1,9 @@
-#####################################################
-# Multi-Mediathek Plugin for Enigma2 Dreamboxes
-# Coded by Homey (c) 2011
-#
-# Version: 2.8.2
-# Support: www.i-have-a-dreambox.com
-#####################################################
+#------------------------------------------------------------
+# pelisalacarta launcher for dreambox
+# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+#------------------------------------------------------------
+# Based on Multi-Mediathek Plugin for Enigma2 Dreamboxes
+
 from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigYesNo, ConfigText, ConfigEnableDisable, ConfigSelection, NoSave
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.AVSwitch import AVSwitch
@@ -65,7 +64,7 @@ config.plugins.pelisalacarta.megavideouser = ConfigText(default="", fixed_size=F
 config.plugins.pelisalacarta.megavideopassword = ConfigText(default="", fixed_size=False)
 config.plugins.pelisalacarta.version = NoSave(ConfigText(default="282"))
 
-default = config.plugins.pelisalacarta.storagepath.value + "/mediathek/movies"
+default = config.plugins.pelisalacarta.storagepath.value + "/pelisalacarta/movies"
 tmp = config.movielist.videodirs.value
 if default not in tmp:
     tmp.append(default)
@@ -124,7 +123,7 @@ class downloadTask(Task):
 
     def processOutputLine(self, line):
         line = line[:-1]
-        #print "[MultiMediathek DownloadTask STATUS MSG] %s" % line
+        #print "[DownloadTask STATUS MSG] %s" % line
         self.lasterrormsg = line
         if line.startswith("ERROR:"):
             if line.find("RTMP_ReadPacket") != -1:
@@ -291,7 +290,7 @@ class Pelisalacarta(Screen):
             skincontent += "<widget name=\"thumb" + str(x) + "\" position=\"" + str(absX)+ "," + str(absY+5) + "\" size=\"" + str(self.picX -10) + "," + str(self.picY - (self.textsize*2)) + "\" zPosition=\"4\" transparent=\"1\" alphatest=\"on\" />"
 
         # Screen, backgroundlabel and MovingPixmap
-        self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"Mediathek\"> \
+        self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"pelisalacarta\"> \
             <ePixmap name=\"dp_logo\" position=\"50,30\" zPosition=\"2\" size=\"250,200\" pixmap=\"/usr/lib/enigma2/python/Plugins/Extensions/pelisalacarta/images/logopelis.jpg\" /> \
             <eLabel position=\"75,200\" zPosition=\"1\" size=\"1140,2\" backgroundColor=\"#FF9900\" /> \
             <widget source=\"titletext\" transparent=\"1\" render=\"Label\" zPosition=\"2\" position=\"320,105\" size=\"600,45\" font=\"Regular;40\" backgroundColor=\"" + self.bgcolor + "\" foregroundColor=\"" + self.textcolor + "\" /> \
@@ -376,13 +375,13 @@ class Pelisalacarta(Screen):
                     return False
 
         # Create Cache Folders ...
-        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek")
-        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek/images")
-        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek/movies")
-        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek/tmp")
+        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta")
+        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/images")
+        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/movies")
+        os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/tmp")
 
         # Check if Cache Folders were created successfully
-        if not os_path.exists(config.plugins.pelisalacarta.storagepath.value+"/mediathek"):
+        if not os_path.exists(config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta"):
             self["pageinfo"].setText(_("Error: No write permission to create cache-folders. Check your Cache-Folder Settings!"))
             return False
         else:
@@ -393,7 +392,7 @@ class Pelisalacarta(Screen):
             self["pageinfo"].setText(_("Checking for updates ..."))
             getPage("http://www.dreambox-plugins.de/downloads/MultiMediathek/version.txt").addCallback(self.gotUpdateInfo).addErrback(self.getxmlfeedError)
         except Exception, error:
-            print "[Mediathek]: Could not download HTTP Page\n" + str(error)
+            print "[pelisalacarta]: Could not download HTTP Page\n" + str(error)
 
     def gotUpdateInfo(self, html):
         tmp_infolines = html.splitlines()
@@ -412,7 +411,7 @@ class Pelisalacarta(Screen):
             self.container.execute("opkg install --force-overwrite " + str(self.updateurl))
 
     def finishedPluginUpdate(self,retval):
-        self.session.openWithCallback(self.restartGUI, MessageBox,_("Mediathek-Plugin successfully updated!\nDo you want to restart Enigma2 GUI now?"), MessageBox.TYPE_YESNO)
+        self.session.openWithCallback(self.restartGUI, MessageBox,_("pelisalacarta plugin successfully updated!\nDo you want to restart Enigma2 GUI now?"), MessageBox.TYPE_YESNO)
 
     def restartGUI(self, answer):
         if answer is True:
@@ -633,7 +632,7 @@ class Pelisalacarta(Screen):
         self.currPage = -1
         self.maxPage = 0
 
-        bookmarkfile = "/etc/enigma2/multimediathek.bookmarks"
+        bookmarkfile = "/etc/enigma2/pelisalacarta.bookmarks"
         if fileExists(bookmarkfile, 'r'):
             bookmarklist = []
             bookmarkcount = 0
@@ -668,7 +667,7 @@ class Pelisalacarta(Screen):
     def getThumbnail(self):
         self.thumbcount += 1
         self.thumburl = self.Thumbnaillist[self.thumbcount][2]
-        self.thumbfile = config.plugins.pelisalacarta.storagepath.value+"/mediathek/images/"+str(self.Thumbnaillist[self.thumbcount][3])
+        self.thumbfile = config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/images/"+str(self.Thumbnaillist[self.thumbcount][3])
 
         if fileExists(self.thumbfile, 'r'):
             self.gotThumbnail()
@@ -797,15 +796,15 @@ class Pelisalacarta(Screen):
             self.session.nav.playService(self.oldService)
 
             # Clean TEMP Folder
-            if os_path.isdir(config.plugins.pelisalacarta.storagepath.value+"/mediathek/tmp"):
-                for filename in os_listdir(config.plugins.pelisalacarta.storagepath.value+"/mediathek/tmp"):
-                    filelocation = "%s/mediathek/tmp/%s" % (config.plugins.pelisalacarta.storagepath.value,filename)
+            if os_path.isdir(config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/tmp"):
+                for filename in os_listdir(config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/tmp"):
+                    filelocation = "%s/pelisalacarta/tmp/%s" % (config.plugins.pelisalacarta.storagepath.value,filename)
                     self.BgFileEraser.erase(filelocation)
 
             # Clean Image Cache
-            if os_path.isdir(config.plugins.pelisalacarta.storagepath.value+"/mediathek/images"):
-                for filename in os_listdir(config.plugins.pelisalacarta.storagepath.value+"/mediathek/images"):
-                    filelocation = "%s/mediathek/images/%s" % (config.plugins.pelisalacarta.storagepath.value,filename)
+            if os_path.isdir(config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/images"):
+                for filename in os_listdir(config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/images"):
+                    filelocation = "%s/pelisalacarta/images/%s" % (config.plugins.pelisalacarta.storagepath.value,filename)
                     statinfo = os_stat(filelocation)
                     if statinfo.st_mtime < (time()-86400.0):
                         self.BgFileEraser.erase(filelocation)
@@ -824,7 +823,7 @@ class MovieInfoScreen(Screen):
         size_h = getDesktop(0).size().height()
 
         if size_w == 1280:
-            self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"Mediathek\" > \
+            self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"pelisalacarta\" > \
                 <eLabel position=\"0,0\" zPosition=\"0\" size=\""+ str(size_w) + "," + str(size_h) + "\" backgroundColor=\"#000000\" /> \
                 <eLabel position=\"0,0\" zPosition=\"0\" size=\""+ str(size_w) + "," + str(size_h) + "\" backgroundColor=\"#000000\" /> \
                 <eLabel position=\"75,200\" zPosition=\"1\" size=\"1140,2\" backgroundColor=\"#FF9900\" /> \
@@ -841,7 +840,7 @@ class MovieInfoScreen(Screen):
                 <ePixmap pixmap=\"/usr/share/enigma2/skin_default/buttons/blue.png\" zPosition=\"2\" position=\"800,630\" size=\"140,40\" alphatest=\"on\" /> \
                 </screen>"
         else:
-            self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"Mediathek\" > \
+            self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"pelisalacarta\" > \
                 <eLabel position=\"0,0\" zPosition=\"0\" size=\""+ str(size_w) + "," + str(size_h) + "\" backgroundColor=\"#000000\" /> \
                 <eLabel position=\"0,0\" zPosition=\"0\" size=\""+ str(size_w) + "," + str(size_h) + "\" backgroundColor=\"#000000\" /> \
                 <eLabel position=\"25,110\" zPosition=\"1\" size=\"670,2\" backgroundColor=\"#FF9900\" /> \
@@ -879,7 +878,7 @@ class MovieInfoScreen(Screen):
         config.mediaplayer.save()
 
         self.moviefolder = config.plugins.pelisalacarta.moviedir.value
-        self.imagefolder = config.plugins.pelisalacarta.storagepath.value+"/mediathek/images"
+        self.imagefolder = config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/images"
 
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
         {
@@ -914,7 +913,7 @@ class MovieInfoScreen(Screen):
 
     def keyBlue(self):
         if self.movieinfo is not None:
-            os_system("echo 'movie:::%s:::%s:::%s\n' >> /etc/enigma2/multimediathek.bookmarks" % (self.movieinfo[0], self.url, self.movieinfo[3]))
+            os_system("echo 'movie:::%s:::%s:::%s\n' >> /etc/enigma2/pelisalacarta.bookmarks" % (self.movieinfo[0], self.url, self.movieinfo[3]))
             self.session.open(MessageBox, _("Bookmark added!"), MessageBox.TYPE_INFO, timeout=5)
 
     def GetMovieInfo(self):
@@ -950,7 +949,7 @@ class MovieInfoScreen(Screen):
             config.mediaplayer.alternateUserAgent.value = self.useragent
             config.mediaplayer.alternateUserAgent.save()
         except Exception, error:
-            print "[MultiMediathek] Getting UserAgent String failed. Using default ..."
+            print "[pelisalacarta] Getting UserAgent String failed. Using default ..."
         
         # Download Image
         downloadPage(self.movieinfo[3], self.imagefolder+"/poster.jpg", agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.0.2) Gecko/2008091620 Firefox/3.0.2").addCallback(self.downloadPosterCallback)
@@ -976,7 +975,7 @@ class MovieInfoScreen(Screen):
             else:
                 getPage(self.movieinfo[1]).addCallback(self.GotMovieList).addErrback(self.error)
         except Exception, error:
-            print "[MultiMediathek] Could not download Movie-List\n%s" % (error)
+            print "[pelisalacarta] Could not download Movie-List\n%s" % (error)
             self.GotMovieList("Megavideo<-->"+self.url+"<-->filename.flv\n")
 
     def ForwardExternalMovieList(self, html):
@@ -1164,7 +1163,7 @@ class PlayMovie(Screen):
         self.filename = movieinfo[2]
         self.movietitle = movietitle
         self.movieinfo = movieinfo
-        self.destination = config.plugins.pelisalacarta.storagepath.value+"/mediathek/tmp/"
+        self.destination = config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/tmp/"
         self.useragent = useragent
 
         self.streamactive = False
@@ -1283,7 +1282,7 @@ class PlayMovie(Screen):
         self.StatusTimer.start(1000, True)
         self.streamactive = True
 
-        print "[Mediathek] execute command: " + cmd
+        print "[pelisalacarta] execute command: " + cmd
         self.container.execute(cmd)
 
     def progressUpdate(self, data):
@@ -1348,7 +1347,7 @@ class Pelisalacarta_MenuOptions(Screen):
         Screen.__init__(self, session)
 
         self.skin = """
-            <screen position="center,center" size="400,200" title="Mediathek - Menu Options">
+            <screen position="center,center" size="400,200" title="pelisalacarta - Menu Options">
                 <widget source="itemname" transparent="1" render="Label" zPosition="2" position="10,180" size="380,20" font="Regular;16" />
                 <widget source="menu" render="Listbox" zPosition="5" transparent="1" position="10,10" size="380,160" scrollbarMode="showOnDemand" >
                     <convert type="StringList" />
@@ -1365,7 +1364,7 @@ class Pelisalacarta_MenuOptions(Screen):
             list.append(("Bookmark selected category", "addbookmark", "menu_addbookmark", "50"))
         list.append(("View Bookmarks", "viewbookmarks", "menu_viewbookmarks", "50"))
         list.append(("View Downloads", "viewdownloads", "menu_viewdownloads", "50"))
-        list.append(("Mediathek Settings", "settingsmenu", "menu_settings", "50"))
+        list.append(("pelisalacarta Settings", "settingsmenu", "menu_settings", "50"))
 
         self["menu"] = List(list)
         self["itemname"] = StaticText(self.movieinfo[3])
@@ -1380,10 +1379,10 @@ class Pelisalacarta_MenuOptions(Screen):
         selection = self["menu"].getCurrent()
         if selection:
             if selection[1] == "addbookmark":
-                os_system("echo '%s:::%s:::%s:::%s' >> /etc/enigma2/multimediathek.bookmarks" % (self.movieinfo[6], self.movieinfo[3], self.movieinfo[5], self.movieinfo[4]))
+                os_system("echo '%s:::%s:::%s:::%s' >> /etc/enigma2/pelisalacarta.bookmarks" % (self.movieinfo[6], self.movieinfo[3], self.movieinfo[5], self.movieinfo[4]))
                 self.Exit()
             if selection[1] == "delbookmark":
-                bookmarkfile = "/etc/enigma2/multimediathek.bookmarks"
+                bookmarkfile = "/etc/enigma2/pelisalacarta.bookmarks"
                 if fileExists(bookmarkfile, 'r'):
                     tmpdata = ""
                     tmpfile = open(bookmarkfile, "r")
@@ -1418,7 +1417,7 @@ class Pelisalacarta_TaskViewer(Screen):
         self.session = session
         
         self.skin = """
-            <screen name="MediathekTasksScreen" position="center,center" size="700,550" title="Mediathek - Active Downloads">
+            <screen name="MediathekTasksScreen" position="center,center" size="700,550" title="pelisalacarta - Active Downloads">
                 <widget source="tasklist" render="Listbox" position="30,120" size="640,370" zPosition="7" scrollbarMode="showOnDemand" transparent="1" >
                     <convert type="TemplatedMultiContent">
                         {"template": [
@@ -1486,7 +1485,7 @@ class Pelisalacarta_TaskViewer(Screen):
 
 class Pelisalacarta_Settings(Screen, ConfigListScreen):
     skin = """
-        <screen name="MultiMediathekSettings" position="center,center" size="560,330" title="Mediathek - Settings">
+        <screen name="MultiMediathekSettings" position="center,center" size="560,330" title="pelisalacarta - Settings">
             <widget name="config" position="10,10" size="540,250" scrollbarMode="showOnDemand" />
             <ePixmap name="red"    position="0,280"   zPosition="4" size="140,40" pixmap="/usr/share/enigma2/skin_default/buttons/red.png" transparent="1" alphatest="on" />
             <ePixmap name="green"  position="140,280" zPosition="4" size="140,40" pixmap="/usr/share/enigma2/skin_default/buttons/green.png" transparent="1" alphatest="on" />
@@ -1514,7 +1513,7 @@ class Pelisalacarta_Settings(Screen, ConfigListScreen):
             "cancel": self.keyCancel
         }, -2)
 
-        self.setTitle("Mediathek v%s - Settings" % config.plugins.pelisalacarta.version.value)
+        self.setTitle("pelisalacarta v%s - Settings" % config.plugins.pelisalacarta.version.value)
 
         self.oldadultcontentvalue = config.plugins.pelisalacarta.showadultcontent.value
         self.oldstoragepathvalue = config.plugins.pelisalacarta.storagepath.value
@@ -1544,11 +1543,11 @@ class Pelisalacarta_Settings(Screen, ConfigListScreen):
             return
 
         if config.plugins.pelisalacarta.storagepath.value != self.oldstoragepathvalue:
-            os_system("rm -rf "+self.oldstoragepathvalue+"/mediathek")
-            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek")
-            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek/images")
-            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek/movies")
-            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/mediathek/tmp")
+            os_system("rm -rf "+self.oldstoragepathvalue+"/pelisalacarta")
+            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta")
+            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/images")
+            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/movies")
+            os_system("mkdir -p "+config.plugins.pelisalacarta.storagepath.value+"/pelisalacarta/tmp")
 
         configfile.save()
         self.close()
