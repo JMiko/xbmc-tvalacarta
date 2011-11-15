@@ -23,7 +23,7 @@ def mainlist(item):
     logger.info("[moviezet.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="PelÃ­culas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
     itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.moviezet.com/shows/?page_id=2853"))
     itemlist.append( Item(channel=CHANNELNAME, title="Buscar"   , action="search", url="http://www.moviezet.com/?s="))
     
@@ -103,7 +103,7 @@ def novedades(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="PÃƒÂ¡gina siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
