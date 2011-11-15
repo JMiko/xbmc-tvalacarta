@@ -892,6 +892,9 @@ def remove_show_from_title(title,show):
 def getRandom(str):
     return binascii.hexlify(md5.new(str).digest())
 
+def getLocationHeaderFromResponse(url):
+    return get_header_from_response(url,header_to_get="location")
+
 def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']]):
     header_to_get = header_to_get.lower()
     logger.info("[scrapertools.py] get_header_from_response url="+url+", header_to_get="+header_to_get)
