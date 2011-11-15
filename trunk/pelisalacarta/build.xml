@@ -380,11 +380,12 @@
 
         <copy file="resources/plexmediaserver/info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
         <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
+        <copy file="resources/plexmediaserver/DefaultPrefs.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
         <copy file="resources/plexmediaserver/art-default.jpg" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
         <copy file="resources/plexmediaserver/icon-default.png" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
-        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
+        <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
             <fileset dir="resources/images"/>
-        </copy>
+        </copy-->
         <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries">
             <fileset dir="lib">
                 <exclude name="cerealizer/**"/>
@@ -535,9 +536,9 @@
         <antcall target="copy-dreambox"/>
         <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/>
 
-        <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
         <antcall target="copy-plexmediaserver"/>
-        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/-->
+        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
 
         <!-- Repo oficial XBMC -->
         <!--mkdir dir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta"/>
