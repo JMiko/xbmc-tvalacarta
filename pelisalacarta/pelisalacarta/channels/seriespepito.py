@@ -258,7 +258,7 @@ def findvideos(item):
                 idioma="ESP"
             
             servidor = match[1].lower()
-            print servidor
+            #print servidor
             if "megaupload" in servidor:
                 servidor="megaupload"
             elif "megavideo" in servidor:
@@ -269,7 +269,7 @@ def findvideos(item):
                     servidor = videos[0][2]
                 else:
                     servidor = ""
-            print servidor
+            #print servidor
     
             if servidor!="":
                 scrapedtitle = "Mirror %d - Idioma %s [%s]" % (numero,idioma,servidor)
