@@ -53,3 +53,30 @@ class Item(object):
 
     def tostring(self):
         return "title=["+self.title+"], url=["+self.url+"], thumbnail=["+self.thumbnail+"], action=["+self.action+"], show=["+self.show+"], category=["+self.category+"]"
+    
+    def serialize(self):
+        separator = "|>|<|"
+        devuelve = ""
+        devuelve = devuelve + self.title + separator
+        devuelve = devuelve + self.url + separator
+        devuelve = devuelve + self.channel + separator
+        devuelve = devuelve + self.action + separator
+        devuelve = devuelve + self.server + separator
+        return devuelve
+    
+    def deserialize(self,cadena):
+        trozos=cadena.split("|>|<|")
+        self.title = trozos[0]
+        self.url = trozos[1]
+        self.channel = trozos[2]
+        self.action = trozos[3]
+        self.server = trozos[4]
+
+if __name__ == "__main__":
+    item = Item(title="bla b", url="http://bla")
+    cadena=item.serialize()
+    print cadena
+    
+    item2 = Item()
+    item2.deserialize(cadena)
+    print item2.title,item2.url
