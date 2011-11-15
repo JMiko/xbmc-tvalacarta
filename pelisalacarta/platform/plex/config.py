@@ -4,10 +4,10 @@
 # Configuracion
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+import os
 
 from PMS import Prefs
 from PMS import Locale
-import os
 
 def get_system_platform():
     return "osx"
@@ -18,8 +18,10 @@ def open_settings():
 def get_platform():
     return "plex"
 
-def get_setting(name):
+def get_setting(name,channel=""):
     valor = Prefs.Get(name)
+    
+    valor=""
     if type(valor).__name__=="bool":
         if valor:
             valor = "true"
@@ -40,7 +42,7 @@ def get_setting(name):
     return valor
 
 def set_setting(name,value):
-    Prefs.Set(name,value)
+    return ""
 
 def get_localized_string(code):
     from PMS import Log
@@ -64,3 +66,13 @@ def get_runtime_path():
 
 def get_data_path():
     return os.getcwd()
+
+def get_cookie_data():
+    import os
+    ficherocookies = os.path.join( get_data_path(), 'cookies.lwp' )
+
+    cookiedatafile = open(ficherocookies,'r')
+    cookiedata = cookiedatafile.read()
+    cookiedatafile.close();
+
+    return cookiedata
