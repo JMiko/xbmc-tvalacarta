@@ -1,0 +1,41 @@
+[
+
+        {
+                "id":                   "updatecheck2",
+                "label":                "Verificar actualizaciones",
+                "type":         "bool",
+                "default":      "true",
+        },
+        {
+                "id":                   "enableadultmode",
+                "label":                "Modo adulto",
+                "type":         "bool",
+                "default":      "true",
+        },
+        {
+                "id":                   "debug",
+                "label":                "Usar log completo",
+                "type":         "bool",
+                "default":      "true",
+        },
+        {
+                "id":                   "megavideopremium",
+                "label":                "Usar Megavideo Premium",
+                "type":         "bool",
+                "default":      "true",
+        },
+        {
+                "id":                   "megavideouser",
+                "label":                "Usuario Megavideo",
+                "type":         "text",
+                "default":      "",
+        },
+        {
+                "id":                   "megavideopassword",
+                "label":                "Contraseña Megavideo",
+                "type":         "text",
+                "option":       "hidden",
+                "default":      "",
+                "secure":   "true",
+        },
+]
