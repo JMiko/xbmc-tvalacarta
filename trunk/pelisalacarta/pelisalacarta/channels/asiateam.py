@@ -7,7 +7,7 @@
 
 # FIXME: Unificar sistema de subtítulos para todos los canales
 
-import urlparse,urllib2,urllib,re,string,time,xbmc,xbmcgui
+import urlparse,urllib2,urllib,re,string,time
 import os, sys
 
 from core import logger
