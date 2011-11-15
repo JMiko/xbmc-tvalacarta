@@ -30,29 +30,6 @@ def Start():
     MediaContainer.title1 = NAME
     DirectoryItem.thumb = R(ICON)
 
-def CreatePrefs():
-    Prefs.Add(id="updatecheck2"      , type='bool', default = 'true' , label='Verificar actualizaciones')
-    #Prefs.Add(id="updatechannels"    , type="boolean" label="30004" default="true"/>
-    Prefs.Add(id="enableadultmode"   , type="bool", default = 'false' , label = 'Modo adulto')
-    Prefs.Add(id="debug"             , type="bool", default = 'true' , label = 'Usar log completo')
-    #Prefs.Add(id="default_action"    , type="enum" lvalues="30006|30007|30008|30009" label="30005" default="0"/>
-    #Prefs.Add(id="thumbnail_type"    , type="enum" lvalues="30011|30012" label="30010" default="0"/>
-    #Prefs.Add(id="languagefilter"    , type="enum" lvalues="30025|30026|30027|30028|30029" values="0|1|2|3|4" label="30019" default="0"/>
-    
-    Prefs.Add(id="megavideopremium"  , type="bool", default='', label='Usar Megavideo premium')
-    Prefs.Add(id="megavideouser"     , type="text", default='', label="Usuario Megavideo")
-    Prefs.Add(id="megavideopassword" , type="text", default='', label="Contraseña Megavideo")
-    Prefs.Add(id="privateuser"     , type="text", default='', label="Usuario páginas privadas")
-    Prefs.Add(id="privatepassword" , type="text", default='', label="Contraseña páginas privadas")
-
-    #Prefs.Add(id="downloadpath"      , type="text" source="video" option="writeable" label="30017" default=""/>
-    #Prefs.Add(id="downloadlistpath"  , type="text" source="video" option="writeable" label="30018" default=""/>
-    #Prefs.Add(id="bookmarkpath"      , type="text" label="30030" default=""/>
-    #Prefs.Add(id="quality_youtube"    , type="enum" values="Low|Medium (3gp)|240p (FLV)|360P (FLV)|360p (MP4)|480p (FLV)|720p (HD)|1080p (HD)|Menu", label="Calidad para YouTube" default="3")
-    #Prefs.Add(id="subtitulo"         , type="boolean" label="30021" default="false"/>    
-    #Prefs.Add(id="jdownloader"       , type="text" label="30022" default="http://127.0.0.1:10025"/>
-    #Prefs.Add(id="limite_busquedas"  , type="enum" values="10|20|30|40" label="30024" default="0"/>
-
 def mainlist():
     Log("[__init__.py] channelselector")
 
@@ -68,8 +45,11 @@ def mainlist():
     for canal in canales:
         if canal.channel=="configuracion":
             dir.Append(PrefsItem(title="Configuración", thumb='http://pelisalacarta.mimediacenter.info/posters/'+canal.channel+'.png'))
+        elif canal.channel=="buscador":
+            dir.Append( Function( InputDirectoryItem( do_search, canal.title, "subtitle", "txt", thumb = 'http://pelisalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , itemtext = canal.serialize() ) )
         else:
-            dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = 'http://pelisalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , channel=canal.channel , action = canal.action ))
+            if canal.channel!="trailertools" and canal.channel!="descargas" and canal.channel!="favoritos":
+                dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = 'http://pelisalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , channel=canal.channel , action = canal.action ))
 
     return dir
 
@@ -132,12 +112,14 @@ def runchannel(sender,channel,action="mainlist",category=""):
         # Los canales
         else:
             if item.type=="generic":
-                dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = category, thumb = item.thumbnail ) , item = item ) )
+                dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = category, thumb = item.thumbnail ) , itemtext = item.serialize() ) )
 
     return dir
 
-def actionexecute(sender,item):
+def actionexecute(sender,itemtext):
     Log("[__init__.py] actionexecute")
+    item = Item()
+    item.deserialize(itemtext)
 
     Log("[__init__.py] "+item.tostring())
     dir = MediaContainer(viewGroup="InfoList")
@@ -148,18 +130,13 @@ def actionexecute(sender,item):
     
     exec "from pelisalacarta.channels import "+item.channel
 
-    Log("[__init__.py] 1")
-
-    if item.action!="findvideos":
-        Log("[__init__.py] 2")
-        exec "itemlist = "+item.channel+"."+item.action+"(item)"
-    else:
+    if item.action=="findvideos":
         try:
-            Log("[__init__.py] 3")
             exec "itemlist = "+item.channel+"."+item.action+"(item)"
         except:
-            Log("[__init__.py] 4")
             itemlist = findvideos(item)
+    else:
+        exec "itemlist = "+item.channel+"."+item.action+"(item)"
 
     for item in itemlist:
         item.title = encodingsafe(item.title)
@@ -167,17 +144,47 @@ def actionexecute(sender,item):
         Log("item="+item.tostring())
 
         if item.folder:
-            dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = "subtitle", thumb = item.thumbnail ) , item = item ))
+            if item.action=="search":
+                dir.Append( Function( InputDirectoryItem( do_search, item.title, "subtitle", "txt", thumb = item.thumbnail ) , itemtext = item.serialize() ) )
+            else:
+                dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = "subtitle", thumb = item.thumbnail ) , itemtext = item.serialize() ) )
         else:
-            dir.Append( Function( DirectoryItem( playvideo , title=item.title, subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
+            dir.Append( Function( DirectoryItem( playvideo , title=item.title, subtitle="", summary=item.plot, thumb = item.thumbnail), itemtext = item.serialize() ) )
 
     Log("[__init__.py] 5")
 
     return dir
 
+def do_search(sender,query="",itemtext=""):
+    item = Item()
+    item.deserialize(itemtext)
+    item.title = encodingsafe(item.title)
+    item.plot = encodingsafe(item.plot)
+
+    Log("[__init__.py] do_search "+item.tostring())
+    dir = MediaContainer(viewGroup="InfoList")
+
+    if item.channel=="buscador":
+        exec "from pelisalacarta import buscador"
+        exec "itemlist = buscador.do_search_results(query)"
+    else:
+        exec "from pelisalacarta.channels import "+item.channel
+        exec "itemlist = "+item.channel+".search(item,texto=query)"
+
+    for item in itemlist:
+        item.title = encodingsafe(item.title)
+        item.plot = encodingsafe(item.plot)
+        Log("item="+item.title)
+
+        if item.folder:
+            dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = "subtitle", thumb = item.thumbnail ) , itemtext = item.serialize() ) )
+        else:
+            dir.Append( Function( DirectoryItem( playvideo , title=item.title, subtitle="", summary=item.plot, thumb = item.thumbnail), itemtext = item.serialize() ) )
+
+    return dir
+
 def findvideos(item):
     from core.item import Item
-    cerealizer.register(Item)
 
     Log("[__init__.py] findvideos")
 
@@ -186,9 +193,7 @@ def findvideos(item):
     thumbnail = item.thumbnail
     plot = item.plot
 
-    # ------------------------------------------------------------------------------------
     # Descarga la pagina
-    # ------------------------------------------------------------------------------------
     from core import scrapertools
     data = scrapertools.cachePage(url)
     
@@ -205,94 +210,66 @@ def findvideos(item):
 
     return itemlist
 
-def playvideo(sender,item):
+def playvideo(sender,itemtext):
     Log("[__init__.py] playvideo")
+    item = Item()
+    item.deserialize(itemtext)
 
     dir = MediaContainer(viewGroup="InfoList")
 
     if item.action=="play":
         try:
+            Log("[__init__.py] playvideo ejecutando metodo play del canal #"+item.channel+"#")
             exec "from pelisalacarta.channels import "+item.channel
             exec "itemlist = "+item.channel+"."+item.action+"(item)"
             item = itemlist[0]
             item.title = encodingsafe(item.title)
             item.plot = encodingsafe(item.plot)
         except:
-            pass
-        
+            Log("[__init__.py] playvideo error al ejecutar metodo play del canal")
+            import sys
+            for line in sys.exc_info():
+                Log( "%s" % line )
 
     from core import config
 
-    if item.server.lower() == "megavideo":
-        if config.get_setting("megavideopremium")=="true":
-            dir.Append(Function( VideoItem(playvideohigh,   title="Ver en calidad alta (Megavideo)", subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
-        dir.Append(Function( VideoItem(playvideonormal, title="Ver en calidad baja (Megavideo)", subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
-    elif item.server.lower() == "megaupload":
-        if config.get_setting("megavideopremium")=="true":
-            dir.Append(Function( VideoItem(playvideohigh,   title="Ver en calidad alta (Megaupload)", subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
-        dir.Append(Function( VideoItem(playvideonormal, title="Ver en calidad baja (Megavideo)", subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
-    elif item.server.lower()=="youtube":
-        from servers import servertools
-        url = servertools.findurl(item.url,item.server)
-        for item in url:
-            Log("item="+item.tostring())
-            dir.Append(Function( VideoItem(playvideonormal, title=item.title, url=item.url, server="directo"), item = item ))
-    else:
-        dir.Append(Function( VideoItem(playvideonormal, title="Ver el vídeo ("+item.server+")", subtitle="", summary=item.plot, thumb = item.thumbnail), item = item ))
+    Log("[__init__.py] playvideo url="+item.url+", server="+item.server)
+
+    video_urls = []
+    video_password=""
+    url = item.url
+    server = item.server
+    try:
+        Log("megavideo="+config.get_setting("megavideopremium"))
+        # Extrae todos los enlaces posibles
+        exec "from servers import "+server+" as server_connector"
+        if server=="megavideo" or server=="megaupload":
+            video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword"), video_password=video_password )
+        elif server=="fileserve":
+            video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("fileservepremium")=="true") , user=config.get_setting("fileserveuser") , password=config.get_setting("fileservepassword"), video_password=video_password )
+        else:
+            video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
+    except:
+        import sys
+        for line in sys.exc_info():
+            Log( "%s" % line )
+
+    if config.get_setting("fileniumpremium")=="true" and item.server not in ["downupload","vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
+        exec "from servers import filenium as gen_conector"
+        video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
+        logger.info("[xbmctools.py] filenium url="+video_gen)
+        video_urls.append( [ "[filenium]", video_gen ] )
+
+    for video_url in video_urls:
+        dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
     
     return dir
 
-def playvideonormal(sender,item):
-    Log("[__init__.py] playvideonormal")
-    Log("url="+item.url)
-
-    if item.server.lower() == "directo":
-        url = item.url
-    elif item.server.lower() == "megavideo":
-        from servers import servertools
-        url = servertools.getmegavideolow(item.url)
-    elif item.server.lower() == "megaupload":
-        from server import servertools
-        url = servertools.getmegauploadlow(item.url)
-    else:
-        from servers import servertools
-        url = servertools.findurl(item.url,item.server)
-
-    Log("url="+url)
-    return Redirect(url)
-
-def playvideohigh(sender,item):
-    Log("[__init__.py] playvideohigh")
-    Log("url="+item.url)
-
-    if item.server.lower() == "directo":
-        url = item.url
-    elif item.server.lower() == "megavideo":
-        from servers import servertools
-        url = servertools.getmegavideohigh(item.url)
-    elif item.server.lower() == "megaupload":
-        from server import servertools
-        url = servertools.getmegauploadhigh(item.url)
-    else:
-        from servers import servertools
-        url = servertools.findurl(item.url,item.server)
-
-    Log("url="+url)
-    return Redirect(url)
+def playvideonormal(sender,mediaurl):
+    Log("[__init__.py] playvideonormal url="+mediaurl)
+    return Redirect(mediaurl)
 
 def encodingsafe(text):
     from core import logger
-    try:
-        # Si es utf-8 esto funciona, si no fallará
-        text = unicode( text , "utf-8" )
-    except:
-        try:
-            # Si no es utf-8 puede ser iso-8859-1
-            text = unicode( text , "iso-8859-1" )
-        except:
-            # Si no, probablemente será ya unicode
-            pass
-
-    text = text.encode("utf-8")
-
+    text = unicode( text , "utf-8",errors="replace" ).encode("utf-8")
     return text
