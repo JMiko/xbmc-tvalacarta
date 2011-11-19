@@ -35,8 +35,8 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="novedades", url="http://www.newhd.org/index.php?do=cat&category=online"))
     itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético", action="alfa", url="http://www.newhd.org/index.php?do=cat&category=online"))
     itemlist.append( Item(channel=CHANNELNAME, title="Listado por Categorías", action="cat", url="http://www.newhd.org/index.php?do=cat&category=online"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Lo más valorado" , action="valorados", url="http://www.newhd.org/index.php"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
+    #itemlist.append( Item(channel=CHANNELNAME, title="Lo más valorado" , action="valorados", url="http://www.newhd.org/index.php"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
 
     return itemlist
 
@@ -47,38 +47,70 @@ def novedades(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-    patronvideos  = '<li><i>IMDB: <strong>(.*?)</table>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    '''
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff;cursor:pointer;"
+    id="9111" 
+    onmouseover="colorFade('9111','background','ffffff','eff6f9')" 
+    onmouseout="colorFade('9111','background','eff6f9','ffffff',25,50)">
+    <tr valign="middle">
+    <td width="1%" class="box" bgcolor="#FFFFFF"><div onClick="desplegarContraer('911',this);" class="linkContraido"><img src="/templates/newhd/images/mas.png" border="0"></div></td>
+    <td width="85%" height="100%" class="box"><div onClick="desplegarContraer('911',this);" class="linkContraido">&nbsp;&nbsp;<font color="#83a0ba"><a>Salvar al soldado Ryan</a></font> </div></td>
+    <td width="14%" align="right"><div align="right"><a href="http://www.newhd.org/online/online-belico/911-salvar-al-soldado-ryan.html"><img src="/templates/newhd/images/completo.png" onMouseOver="this.src='/templates/newhd/images/completoon.png';" onMouseOut="this.src='/templates/newhd/images/completo.png';" width="129" height="15" border="0"/></a></div></td>
+    </tr>
+    <td height="1" colspan="4" background="/templates/newhd/images/dotted.gif"><img src="/templates/newhd/images/spacer.gif" width="1" height="1" /></td>
+    </tr>
+    </table>
+    <div id="911" class='elementoOculto'><table width="100%" class="box"><br><tr>
+    <td width="14%" rowspan="6" align="left" valign="top"><img src="/uploads/thumbs/1319662843_salvar_al_soldado_ryan-738956437-large.jpg" width="112" height="154" border="0" align="top" /></td>
+    <td height="122" colspan="4" valign="top"><div id="news-id-911" style="display:inline;">Durante la invasión de Normandía, en plena Segunda Guerra Mundial, a un grupo de soldados americanos se le encomienda una peligrosa misión: poner a salvo al soldado James Ryan. Los hombres de la patrulla del capitán John Miller deben arriesgar sus vidas para encontrar a este soldado, cuyos tres hermanos han muerto en la guerra. Lo único que se sabe del soldado Ryan es que se lanzó con su escuadrón de paracaidistas detrás de las líneas enemigas.</div><font style="text-transform: uppercase;">&nbsp;</font></td>
+    <tr>
+    <tr>
+    <td height="20" valign="bottom" class="rating"><img src="/templates/newhd/images/floder.gif" width="20" height="16" align="absbottom" />&nbsp;Category: <font style="text-transform: uppercase;"><a href="http://www.newhd.org/online/">HD Online</a> &raquo; <a href="http://www.newhd.org/online/online-belico/">Belico</a></font></td>
+    <td align="right" valign="bottom"> <a href="http://nowtrailer.tv/view/1060/Saving-Private-Ryan-1998-Official-Trailer.html" target="_blank"><img src="/templates/newhd/images/trailer.gif" alt="Trailer" width="37" height="15" border="0"></a> </td>
+    <tr>
+    <td height="1" background="/templates/newhd/images/dot_dark.gif"></td>    
+    <td height="1"  background="/templates/newhd/images/dot_dark.gif"></td>
+    <tr>
+    <td width="73%" height="20" valign="bottom" class="rating"><div id='ratig-layer-911'><div class="rating" style="float:left;">
+    <ul class="unit-rating">
+    <li class="current-rating" style="width:0px;">0</li>
+    <li><a href="#" title="Bad" class="r1-unit" onclick="dleRate('1', '911'); return false;">1</a></li>
+    <li><a href="#" title="Poor" class="r2-unit" onclick="dleRate('2', '911'); return false;">2</a></li>
+    <li><a href="#" title="Fair" class="r3-unit" onclick="dleRate('3', '911'); return false;">3</a></li>
+    <li><a href="#" title="Good" class="r4-unit" onclick="dleRate('4', '911'); return false;">4</a></li>
+    <li><a href="#" title="Excellent" class="r5-unit" onclick="dleRate('5', '911'); return false;">5</a></li>
+    </ul>
+    </div>
+    '''
+    patron  = '<table width="100\%" border="0" cellspacing="0" cellpadding="0".*?'
+    patron += '<font[^<]+<a>([^<]+)</a>.*?'
+    patron += '<a href="(http://www.newhd.org/online/[^"]+)"><img.*?<img.*?'
+    patron += '<img src="([^"]+)".*?'
+    patron += '<div id="news-id[^"]+" style="display\:inline\;">([^<]+)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
-    for elemento in matches:
-        patronvideos = '(.*?)</strong>.*?'
-        patronvideos += '<h3 class="btl"><a href="([^"]+)".*?>(.*?)</a></h3>.*?'
-        patronvideos += '<img src="([^"]+)".*?</td>'
-        patronvideos += '.*?<div id=".*?style="display:inline;">([^<]+)</div>'
-        matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+    for match in matches:
+        scrapedurl = match[1]
+        scrapedtitle = match[0]
+        scrapedthumbnail = urlparse.urljoin("http://www.newhd.org",match[2])
+        scrapedplot = match[3]
+        logger.info(scrapedtitle)
 
-        for match in matches2:
-            scrapedurl = match[1]
-            scrapedtitle = match[2]
-            scrapedthumbnail = urlparse.urljoin("http://www.newhd.org",match[3])
-            scrapedplot = match[4] + "\n\n IMDB: "+ match[0]
-            logger.info(scrapedtitle)
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-            # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-			  
     # Extrae la marca de siguiente página
-    patronvideos = '<div class="nextprev">.*?<span class="thide pprev">.*?<a href="([^"]+)">'
+    patronvideos = '<a href="([^"]+)"><span class="thide pnext">Next</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-		scrapedtitle = "Página siguiente"
-		scrapedurl = urlparse.urljoin(item.url,matches[0])
-		scrapedthumbnail = ""
-		itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+        scrapedtitle = "Página siguiente"
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
+        scrapedthumbnail = ""
+        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
 
@@ -109,64 +141,55 @@ def videos(item):
 	return itemlist
 
 def alfa(item):
-
-	logger.info("[newhd.py] alfa")
-
+    
+    logger.info("[newhd.py] alfa")
+    
     # Descarga la página
-	data = scrapertools.cachePage(item.url)
-
+    data = scrapertools.cachePage(item.url)
+    
     # Extrae las entradas
-	patronvideos  = '<span class="Estilo60 Estilo4" >(.*?)</span>'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+    patronvideos  = '<a href="([^"]+)" class="blue">(.)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    
+    itemlist = []
+    for match in matches:
+        scrapedurl = urlparse.urljoin("http://www.newhd.org",match[0])
+        scrapedurl = scrapedurl.replace("&amp;","&")
+        scrapedtitle = match[1]
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        logger.info(scrapedtitle)
 
-	itemlist = []
-	for elemento in matches:
-		patronvideos  = '<a href="(.*?)".*?>(.*?)</a>'
-		matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
-
-		for match in matches2:
-			scrapedurl = urlparse.urljoin("http://www.newhd.org",match[0])
-			scrapedurl = scrapedurl.replace("&amp;","&")
-			scrapedtitle = match[1]
-			scrapedthumbnail = ""
-			scrapedplot = ""
-			logger.info(scrapedtitle)
-
-			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-		
-	return itemlist
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        
+    return itemlist
 
 def cat(item):
-
-	logger.info("[newhd.py] cat")
-
+    
+    logger.info("[newhd.py] cat")
+    
     # Descarga la página
-	data = scrapertools.cachePage(item.url)
-
+    data = scrapertools.cachePage(item.url)
+    
     # Extrae las entradas
-	patronvideos  = '<li class="submenu">(.*?)<span class="sublnk Estilo1 Estilo3">'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	if DEBUG: scrapertools.printMatches(matches)
+    patronvideos  = '<a title="([^"]+)" href="(/index.php\?do\=cat\&category\=[^"]+)">'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    
+    itemlist = []
+    for match in matches:
+        scrapedurl = urlparse.urljoin("http://www.newhd.org",match[1])
+        scrapedtitle = match[0]
+        scrapedthumbnail = ""
+        scrapedplot = ""
 
-	itemlist = []
-	for elemento in matches:
-		patronvideos  = '.*?<a title="(.*?)" href="(.*?)".*?>.*?</a>'
-		matches2 = re.compile(patronvideos,re.DOTALL).findall(elemento)
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        
+    return itemlist
 
-		for match in matches2:
-			scrapedurl = urlparse.urljoin("http://www.newhd.org",match[1])
-			scrapedtitle = match[0]
-			scrapedthumbnail = ""
-			scrapedplot = ""
-			logger.info(scrapedtitle)
-
-			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-		
-	return itemlist
-	
 def valorados(item):
     logger.info("[newhd.py] valorados")
 
