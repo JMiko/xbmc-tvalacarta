@@ -410,13 +410,18 @@
                 <exclude name="descriptor.xml"/>
                 <exclude name="resources/**"/>
                 <exclude name="default.tbn"/>
+                <exclude name="fanart-new.jpg"/>
                 <exclude name="fanart.jpg"/>
+                <exclude name="icon-old.png"/>
                 <exclude name="icon.png"/>
                 <exclude name="lib/**"/>
                 <exclude name="platform/**"/>
                 <exclude name="__init__.py"/>
                 <exclude name="core/logger.py"/>
                 <exclude name="core/config.py"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="logging.conf"/>
+				<exclude name="upload.sh"/>
             </fileset>
         </copy>
         <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
