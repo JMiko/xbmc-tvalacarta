@@ -261,11 +261,16 @@ def playvideo(sender,itemtext):
         video_urls.append( [ "[filenium]", video_gen ] )
 
     for video_url in video_urls:
-        dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+        if len(video_url)>2:
+            wait_time=video_url[2]
+            dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0]+" (Espera %d segundos)" % wait_time, subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+        else:
+            wait_time=0
+            dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
     
     return dir
 
-def playvideonormal(sender,mediaurl):
+def playvideonormal(sender,mediaurl,wait_time=0):
     Log("[__init__.py] playvideonormal url="+mediaurl)
     return Redirect(mediaurl)
 
