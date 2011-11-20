@@ -22,6 +22,16 @@ from pelisalacarta.channels import seriesyonkis
 import xbmcgui
 
 try:
+    
+    #Eliminar carpeta antes de actualizar
+    
+    import shutil
+    directorio = config.get_library_path()+"\SERIES"
+    logger.info (directorio)
+    shutil.rmtree(directorio)
+    os.mkdir(directorio)
+    
+    
     nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
     config_canal = open( nombre_fichero_config_canal , "r" )
 
