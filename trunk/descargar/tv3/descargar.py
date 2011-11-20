@@ -75,8 +75,9 @@ class MyDialog:
         
         # Descarga el descriptor
         import urllib
-        urllib.urlretrieve("http://www.tv3.cat/pvideo/FLV_bbd_dadesItem.jsp?idint="+code,"page.html")
-        fichero = open("page.html","r")
+        destino = os.path.join( os.path.expanduser('~') , "page.html" )
+        urllib.urlretrieve("http://www.tv3.cat/pvideo/FLV_bbd_dadesItem.jsp?idint="+code,destino)
+        fichero = open(destino,"r")
         data = fichero.read()
         fichero.close()
 
@@ -96,8 +97,8 @@ class MyDialog:
         print "Formato",formato
 
         # Descarga el descriptor con el RTMP
-        urllib.urlretrieve("http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+"&rnd=8551","page.html")
-        fichero = open("page.html","r")
+        urllib.urlretrieve("http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+"&rnd=8551",destino)
+        fichero = open(destino,"r")
         data = fichero.read()
         fichero.close()
 
