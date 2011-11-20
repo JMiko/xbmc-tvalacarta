@@ -5,7 +5,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{B58E7A36-09A3-4514-9020-EA8D5AE2F92F}
+AppId={{2334DF5D-8AC0-4220-9DE4-41FF546F057C}
 AppName=Descargar de Telefe
 AppVersion=1.0
 ;AppVerName=Descargar de Telefe 1.0
