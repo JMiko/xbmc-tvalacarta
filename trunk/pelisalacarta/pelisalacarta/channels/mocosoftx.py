@@ -8,18 +8,11 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 CHANNELNAME = "mocosoftx"
 USER = config.get_setting("privateuser")
@@ -27,13 +20,22 @@ PASSWORD = config.get_setting("privatepassword")
 LOGINURL = "http://mocosoftx.com/foro/login2/?user=" + USER + "&passwrd=" + PASSWORD + "&cookieneverexp=on&hash_passwrd="
 DEBUG=True
 
+MAIN_HEADERS = []
+MAIN_HEADERS.append( ["Host","mocosoftx.com"] )
+MAIN_HEADERS.append( ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0"] )
+MAIN_HEADERS.append( ["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"] )
+MAIN_HEADERS.append( ["Accept-Language","es-es,es;q=0.8,en-us;q=0.5,en;q=0.3"] )
+MAIN_HEADERS.append( ["Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7"] )
+MAIN_HEADERS.append( ["Connection","keep-alive"] )
+
+
 def isGeneric():
     return True
 
 def GetSessionID():
     # Descarga la página
-    data = scrapertools.cachePage(LOGINURL)
-    #logger.info(data)
+    data = scrapertools.cache_page(LOGINURL,headers=MAIN_HEADERS)
+    logger.info("data="+data)
     plogin = '<a href="([^"]+)">ingresa</a>'
     plogout = '<a href="http://mocosoftx.com/foro/logout/?([^"]+)"><span>'
     matches = re.compile(plogout,re.DOTALL).findall(data)
@@ -61,7 +63,7 @@ def Novedades(item):
     logger.info("[mocosoftx.py] Novedades")
     itemlist = []
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.cache_page(item.url,headers=MAIN_HEADERS)
     #logger.info(data)
     
     # Extrae las entradas (carpetas)
@@ -104,7 +106,7 @@ def FullList(item):
         url = "http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14"
     
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(url,headers=MAIN_HEADERS)
     #logger.info(data)
     
     # Extrae las entradas (carpetas)
@@ -148,7 +150,7 @@ def detail(item):
     else:
         #Descarga la página
         sid = GetSessionID()
-        data = scrapertools.cachePage(url+sid)
+        data = scrapertools.cache_page(url+sid,headers=MAIN_HEADERS)
         patronthumb = '<img src="([^"]+)" alt="" border="0" />[</a>|<br />]+'
         matches = re.compile(patronthumb,re.DOTALL).findall(data)
         scrapertools.printMatches(matches)
