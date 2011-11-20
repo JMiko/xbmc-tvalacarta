@@ -5,9 +5,25 @@ CANALES NUEVOS
 
 CANALES A MODIFICAR
 ---------------------
-Filmixt.com ( Login bastante complicado)
-Delatv
-Seriesdanko
+	PELIS
+	-----
+	Filmixt.com ( Login bastante complicado)
+	Delatv
+	Internapolicity
+	LetmewatchThis
+	Newdivx
+	Peliculas online FLV
+	PeliculasFLV
+	PelisPEKES
+	Pelis24
+	Pelisflv
+	Sofacine ( Bastante Cutrillo :D)
+	
+	
+	SERIES
+	------
+	Seriesdanko
+
 
 MEJORAS
 -------
