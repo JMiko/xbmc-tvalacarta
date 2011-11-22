@@ -294,30 +294,36 @@ def play(item):
         logger.info("[seriesyonkis.py] play ERROR, no encuentro el enlace 'Reproducir ahora' o 'Descargar ahora'")
         return []
     
-    item.url = urlparse.urljoin(item.url,matches[0])
-    logger.info("[seriesyonkis.py] play url="+item.url)
+    playurl = urlparse.urljoin(item.url,matches[0])
+    logger.info("[seriesyonkis.py] play url="+playurl)
 
     try:
-        location = scrapertools.getLocationHeaderFromResponse(item.url)
+        location = scrapertools.getLocationHeaderFromResponse(playurl)
         logger.info("[seriesyonkis.py] play location="+location)
 
         if "fileserve.com" in location:
             logger.info("[seriesyonkis.py] play USING fileserve")
             itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
-            logger.info("[seriesyonkis.py] play downloading location")
-            data = scrapertools.cache_page(location)
-            logger.info("------------------------------------------------------------")
-            #logger.info(data)
-            logger.info("------------------------------------------------------------")
-            videos = servertools.findvideos(data) 
-            logger.info(str(videos))
-            logger.info("------------------------------------------------------------")
+            if location<>"":
+                logger.info("[seriesyonkis.py] play downloading location")
+                data = scrapertools.cache_page(location)
+                logger.info("------------------------------------------------------------")
+                #logger.info(data)
+                logger.info("------------------------------------------------------------")
+                videos = servertools.findvideos(data) 
+                logger.info(str(videos))
+                logger.info("------------------------------------------------------------")
+            else:
+                logger.info("[seriesyonkis.py] play location vacía")
+                videos=[]
+
             if(len(videos)>0): 
                 url = videos[0][1]
                 server=videos[0][2]                   
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
             else:
+                data = scrapertools.cache_page(playurl)
                 patron='<ul class="form-login">(.*?)</ul'
                 matches = re.compile(patron, re.S).findall(data)
                 if(len(matches)>0):
@@ -343,7 +349,7 @@ def play(item):
                                 confirmed = tbd.isConfirmed()
                                 if (confirmed):
                                     tecleado = tbd.getText()
-                                    sendcaptcha(item.url,challenge,tecleado)
+                                    sendcaptcha(playurl,challenge,tecleado)
                                 del tbd 
                                 #tbd ya no existe
                                 if(confirmed and tecleado != ""):

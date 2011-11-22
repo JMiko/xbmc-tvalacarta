@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesyonkis</name>
-	<tag>19</tag>
-	<date>19/11/2011</date>
-	<changes>Arreglado fallo en play?</changes>
+	<tag>20</tag>
+	<date>22/11/2011</date>
+	<changes>Arreglado fallo en captcha</changes>
 </version>
