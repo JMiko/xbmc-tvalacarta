@@ -14,7 +14,6 @@ CANALES A MODIFICAR
 	Newdivx
 	Peliculas online FLV
 	PeliculasFLV
-	PelisPEKES
 	Pelis24
 	Pelisflv
 	Sofacine ( Bastante Cutrillo :D)
