@@ -15,7 +15,7 @@ AppSupportURL=http://blog.tvalacarta.info/
 AppUpdatesURL=http://blog.tvalacarta.info/
 DefaultDirName={pf}\Televisión a la carta\Descargar de TV3
 DefaultGroupName=Televisión a la carta
-LicenseFile=C:\py2exe\tv3\src\LICENSE.txt
+LicenseFile=C:\py2exe\tv3\LICENSE.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -29,8 +29,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\py2exe\tv3\src\dist\descargar.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\py2exe\tv3\src\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\py2exe\tv3\dist\descargar.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\py2exe\tv3\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
