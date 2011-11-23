@@ -23,9 +23,9 @@ def mainlist(item):
     logger.info("[cuevana.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/peliculas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.cuevana.tv/series/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search_options") )
+    #itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/peliculas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.cuevana.tv/web/series?&todas"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search_options") )
     
     return itemlist
 
@@ -161,50 +161,34 @@ def series(item):
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
-    patron  = 'serieslist.push\(\{id\:([0-9]+),nombre\:"([^"]+)"\}\);'
+    patron  = '<script type="text/javascript">(.*?)</script>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedplot = ""
-        code = match[0]
-        scrapedurl = "http://www.cuevana.tv/list_search_id.php?serie="+code
-        scrapedthumbnail = "http://www.cuevana.tv/box/"+code+".jpg"
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
-
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
-
-    return itemlist
-
-def temporadas(item,data):
-    logger.info("[cuevana.py] temporadas")
-
-    ## <-- Obtengo plot y thumbnail
-    code = item.extra
-    nombre = scrapertools.slugify(item.title)
-    data2 = scrapertools.cache_page("http://www.cuevana.tv/series/%s/%s" % (code, nombre))
-    patron  = '<h4>Sinopsis</h4>\s*?<p>([^<]+?)</p>'
-    matches = re.compile(patron,re.DOTALL).findall(data2)
-    if len(matches) > 0: 
-        scrapedplot = matches[0]
-    else: scrapedplot = item.plot
-    scrapedthumbnail = "http://www.cuevana.tv/box/"+code+".jpg" 
-    ## <--
+    #scrapertools.printMatches(matches)
+    data = matches[0]
     
-    # Extrae las entradas
-    patron  = '<li onclick=\'listSeries\(2,"([^"]+)"\)\'>([^<]+)</li>'
+    #{"id":"3478","url":"#!\/series\/3478\/american-dad","tit":"American Dad!","duracion":"30","ano":"2005","temporadas":"7","episodios":"120","rate":"3.9887976646423340","genero":"Animaci\u00f3n","idioma":"Ingl\u00e9s"}
+    data = data.replace("\\","")
+    patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","ano":"([^"]+)","temporadas":"([^"]+)","episodios":"([^"]+)","rate":"([^"]+)","genero":"([^"]+)","idioma":"([^"]+)"}'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        temporada = scrapedtitle.replace("Temporada ","")
-        code = match[0]
-        scrapedurl = "http://www.cuevana.tv/list_search_id.php?temporada="+code
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"] show="+item.show)
+    for id,url,tit,duracion,ano,temporadas,episodios,rate,genero,idioma in matches:
+        scrapedtitle = tit
+        scrapedplot = ""
+        # url es "#!/series/3478/american-dad"
+        # el destino es "http://www.cuevana.tv/web/series?&3478&american-dad"
+        
+        #   #!/series/3478/american-dad
+        scrapedurl = url.replace("/","&")
+        #   !&series&3478&american-dad
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=temporada , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show , extra=item.extra + "|" + temporada) )
+        scrapedurl = scrapedurl.replace("#!&series","http://www.cuevana.tv/web/series?")
+        #   http://www.cuevana.tv/web/series?&3478&american-dad
+
+        scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
+        #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
+
+        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
 
     return itemlist
 
@@ -214,28 +198,34 @@ def episodios(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    
-    # Extrae las temporadas
-    temporadas_itemlist = temporadas(item,data)
-    
-    for temporada_item in temporadas_itemlist:
-        data = scrapertools.cache_page(temporada_item.url)
 
-        # Extrae las entradas
-        #<li onclick='listSeries(3,"5099")'><span class='nume'>1</span> Truth Be Told</li>
-        patron  = '<li onclick=\'listSeries\(3,"([^"]+)"\)\'><span class=\'nume\'>([^<]+)</span>([^<]+)</li>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
+    # Extrae el argumento
+    patron  = '<div class="txt">(.*?)</div>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        item.plot = matches[0]
+
+    data = data.replace("\\","")
+    patron = "serieList\(\{l\:(.*?)\,e\:\$\('\#episodios'\)\}\)\;"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    data = matches[0]
+    logger.info("data="+data)
+    
+    import simplejson as json
+    seasons = json.loads(data)
+    
+    for season_id in seasons:
+        print seasons[season_id]
         
-        for match in matches:
-            code = match[0]
-            episodio = match[1]
-            if len(episodio)==1:
-                episodio = "0" + episodio
-            scrapedtitle = temporada_item.title + "x" + episodio + " "+match[2].strip()
-            scrapedplot = temporada_item.plot
-            scrapedurl = "http://www.cuevana.tv/list_search_info.php?episodio="+code
-            scrapedthumbnail = temporada_item.thumbnail
+        for episode in seasons[season_id]:
+            num = episode["num"]
+            if len(num)==1: num="0"+num
+            scrapedtitle = "%sx%s %s" % (season_id,num,episode["tit"])
+            if episode["hd"]=="1":
+                scrapedtitle = scrapedtitle + " (HD)"
+            scrapedplot = item.plot
+            scrapedurl = episode["id"]
+            scrapedthumbnail = item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
             itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show) )
@@ -248,72 +238,108 @@ def episodios(item):
 def findvideos(item):
     logger.info("[cuevana.py] findvideos")
 
-    isSerie = True
-    code =""
-    if (item.url.startswith("http://www.cuevana.tv/list_search_info.php")):
-        data = scrapertools.cachePage(item.url)
-        #logger.info("data="+data)
-        patron = "window.location\='/series/([0-9]+)/"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        if len(matches)>0:
-            code = matches[0]
-        logger.info("code="+code)
-        # HD - http://www.cuevana.tv/player/source?id=12043&subs=,ES,EN&onstart=yes&tipo=s&sub_pre=ES&hd=1#
-        url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&tipo=s&sub_pre=ES" % matches[0]
-        isSerie = True
-    else:
-        # http://www.cuevana.tv/peliculas/2553/la-cienaga/
-        logger.info("url1="+item.url)
-        if "/peliculas/" in item.url:
-            patron = "http://www.cuevana.tv/peliculas/([0-9]+)/"
-            isSerie = False
-        else: 
-            patron = "http://www.cuevana.tv/series/([0-9]+)/"
-            isSerie = True
-        matches = re.compile(patron,re.DOTALL).findall(item.url)
-        if len(matches)>0:
-            code = matches[0]
-        logger.info("code="+code)
-        # HD - http://www.cuevana.tv/player/source?id=12043&subs=,ES,EN&onstart=yes&tipo=s&sub_pre=ES&hd=1#
-        url = "http://www.cuevana.tv/player/source?id=%s&subs=,ES&onstart=yes&sub_pre=ES#" % code
+    id = item.url
     
-    logger.info("url2="+url)
-    data = scrapertools.cachePage(url)
-    #logger.info("data="+data)
-
-    # goSource('ee5533f50eab1ef355661eef3b9b90ec','megaupload')
-    patron = "goSource\('([^']+)','megaupload'\)"
+    # Obtiene las fuentes compatibles
+    '''
+    var sources = {"720":{"2":["megaupload","glumbo","wupload"]},"360":{"2":["megaupload","glumbo","wupload"]}}, sel_source = 0;
+    var label = {
+        '360': 'SD (360p)',
+        '480': 'SD (480p)',
+        '720': 'HD (720p)',
+        '1080': 'HD (1080p)'
+    };
+    var labeli = {"1":"Espa\u00f1ol","2":"Ingl\u00e9s","3":"Portugu\u00e9s","4":"Alem\u00e1n","5":"Franc\u00e9s","6":"Coreano","7":"Italiano","8":"Tailand\u00e9s","9":"Ruso","10":"Mongol","11":"Polaco","12":"Esloveno","13":"Sueco","14":"Griego","15":"Canton\u00e9s","16":"Japon\u00e9s","17":"Dan\u00e9s","18":"Neerland\u00e9s","19":"Hebreo","20":"Serbio","21":"\u00c1rabe","22":"Hindi","23":"Noruego","24":"Turco","26":"Mandar\u00edn","27":"Nepal\u00e9s","28":"Rumano","29":"Iran\u00ed","30":"Est\u00f3n","31":"Bosnio","32":"Checo","33":"Croata","34":"Fin\u00e9s","35":"H\u00fanagro"};
+    var labelh = {
+        'megaupload': 'Megaupload',
+        'glumbo': 'Glumbo',
+        'filepost': 'Filepost',
+        'wupload': 'Wupload'
+    };
+    '''
+    url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo=serie"
+    data = scrapertools.cache_page(url)
+    
+    # Fuentes
+    patron = 'var sources \= (.*?)\;'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        data = scrapertools.cachePagePost("http://www.cuevana.tv/player/source_get","key=%s&host=megaupload&vars=&id=2933&subs=,ES&tipo=&amp;sub_pre=ES" % matches[0])
+    cadena = matches[0].replace(", sel_source = 0","")
+    logger.info("cadena="+cadena)
+
+    import simplejson as json
+    sources = json.loads(cadena)
+
+    # Calidades
+    patron = 'var label \= (.*?)\;'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    cadena = matches[0]
+    cadena = re.compile("\s+",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("'",'"')
+    logger.info("cadena="+cadena)
+
+    import simplejson as json
+    qualities = json.loads(cadena)
+
+    # Idiomas
+    language_labels = {}
+    language_labels["1"]="Espanol"
+    language_labels["2"]="Ingles"
+
+    # Presenta las opciones
+    itemlist = []
+    i=1
+    logger.info("sources="+str(sources))
+    for quality_id in sources:
+        logger.info("quality_id="+quality_id)
+        languages = sources[quality_id]
+        logger.info("languages="+str(languages))
+
+        for language_id in languages:
+            print language_id
+            logger.info("language_id="+language_id)
+            mirrors = sources[quality_id][language_id]
+            logger.info("mirrors="+str(mirrors))
+
+            for mirror in mirrors:
+                logger.info("mirror="+mirror)
+                
+                titulo = "Opcion %d: %s %s (%s)" % (i, mirror , qualities[quality_id], language_labels[language_id])
+                i=i+1
+                url = "def=%s&audio=%s&host=%s&id=%s&tipo=serie" % (quality_id,language_id,mirror,id)
+                
+                subtitulo = "http://sc.cuevana.tv/files/s/sub/"+id+"_ES.srt"
+                
+                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=titulo, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, extra=id, subtitle=subtitulo, folder=False))
+
+    return itemlist
+
+def play(item):
+    logger.info("[cuevana.py] play")
+    url = "http://www.cuevana.tv/player/source_get"
+    post = item.url
+    id = item.extra
+    headers = []
+    headers.append( ["Host","www.cuevana.tv"])
+    headers.append( ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0"])
+    headers.append( ["Accept","*/*"])
+    headers.append( ["Accept-Language","es-es,es;q=0.8,en-us;q=0.5,en;q=0.3"])
+    headers.append( ["Accept-Encoding","gzip, deflate"])
+    headers.append( ["Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7"])
+    headers.append( ["Connection","keep-alive"])
+    headers.append( ["Content-Type","application/x-www-form-urlencoded; charset=UTF-8"])
+    headers.append( ["X-Requested-With","XMLHttpRequest"])
+    headers.append( ["Referer","http://www.cuevana.tv/player/sources?id="+id+"&tipo=serie"])
+    headers.append( ["Content-Length", len(post) ])
+    headers.append( ["Pragma","no-cache"])
+    headers.append( ["Cache-Control","no-cache"])
+
+    data = scrapertools.cache_page(url=url, post=post)
     logger.info("data="+data)
 
-    # Subtitulos
-    if isSerie:
-        suburl = "http://www.cuevana.tv/files/s/sub/"+code+"_ES.srt"
-    else:
-        suburl = "http://www.cuevana.tv/files/sub/"+code+"_ES.srt"
-    logger.info("suburl="+suburl)
-    
-    # Elimina el archivo subtitulo.srt de alguna reproduccion anterior
-    ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
-    if os.path.exists(ficherosubtitulo):
-        try:
-          os.remove(ficherosubtitulo)
-        except IOError:
-          logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
-          raise
-
-    listavideos = servertools.findvideos(data)
-    
-    itemlist = []
-    
-    for video in listavideos:
-        server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
-        scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=False))
+    itemlist = servertools.find_video_items(data=data)
+    for returnitem in itemlist:
+        returnitem.channel=item.channel
+        returnitem.subtitle=item.subtitle
 
     return itemlist
 
