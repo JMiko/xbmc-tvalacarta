@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>14</tag>
+	<tag>15</tag>
 	<date>23/11/2011</date>
-	<changes>Añadida la opción de series para la nueva versión</changes>
+	<changes>Se agregaron series rankings, series populares y se empezo a hacer lo de peliculas pero todavia le falta</changes>
 </version>
