@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>13</tag>
-	<date>19/10/2011</date>
-	<changes>Arreglado el folder=false</changes>
+	<tag>14</tag>
+	<date>23/11/2011</date>
+	<changes>Añadida la opción de series para la nueva versión</changes>
 </version>
