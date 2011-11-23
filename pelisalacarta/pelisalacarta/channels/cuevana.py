@@ -23,22 +23,35 @@ def mainlist(item):
     logger.info("[cuevana.py] mainlist")
 
     itemlist = []
-    #itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/peliculas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.cuevana.tv/web/series?&todas"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="seriesMenu",    url="http://www.cuevana.tv/web/series?&todas"))
     #itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search_options") )
     
     return itemlist
+    
+def seriesMenu(item):
+    logger.info("[cuevana.py] peliculas")
+    itemlist = []
+     
+    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"  , action="series", url="http://www.cuevana.tv/web/series?&todas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Populares"  , action="series", url="http://www.cuevana.tv/web/series?&populares"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Ranking"  , action="series", url="http://www.cuevana.tv/web/series?&ranking"))
+
+    return itemlist
+    
 
 def peliculas(item):
     logger.info("[cuevana.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=CHANNELNAME, title="Próximas"  , action="novedades", url="http://www.cuevana.tv/peliculas/proximas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.cuevana.tv/peliculas/?orderby=ano&reverse=true"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Más Populares"  , action="novedades", url="http://www.cuevana.tv/peliculas/populares/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Mejor Puntuadas"  , action="novedades", url="http://www.cuevana.tv/peliculas/mejorpuntuadas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Por Género"     , action="porGenero",    url="http://www.cuevana.tv/peliculas/genero/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))	
+    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&todas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Recientes"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&recientes"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Estrenos"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&estrenos"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Populares"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&populares"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Ranking"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&ranking"))
+    itemlist.append( Item(channel=CHANNELNAME, title="HD"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&hd"))
+#    itemlist.append( Item(channel=CHANNELNAME, title="Por Género"     , action="porGenero",    url="http://www.cuevana.tv/peliculas/genero/"))
+#    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))	
 
     return itemlist
 
@@ -107,52 +120,60 @@ def listadoAlfabetico(item):
     return itemlist
 
 def novedades(item):
-    if (DEBUG): logger.info("[cuevana.py] novedades login")
-    try:
-        post = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
-        data = scrapertools.cache_page("http://www.cuevana.tv/login_get.php",post=post)
-    except:
-        pass
+    logger.info("[cuevana.py] peliculas login")
+    #try:
+    #    post = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
+    #    data = scrapertools.cache_page("http://www.cuevana.tv/login_get.php",post=post)
+    #except:
+    #    pass
+
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
-    '''
-    <tr class='row2'>
-    <td valign='top'><a href='/peliculas/2933/alpha-and-omega/'><img src='/box/2933.jpg' border='0' height='90' /></a></td>
-    <td valign='top'><div class='tit'><a href='/peliculas/2933/alpha-and-omega/'>Alpha and Omega</a></div>
-    <div class='font11'>Dos pequeÃ±os carrochos de lobo se ven obligados a convivir por determinadas circunstancias.
-    <div class='reparto'><b>Reparto:</b> <a href='/buscar/?q=AnimaciÃ³n&cat=actor'>AnimaciÃ³n</a></div>
-    </div></td>
-    '''
-    patronvideos  = "<tr class='row[^<]+"
-    patronvideos += "<td valign='top'><a href='([^']+)'><img src='([^']+)'[^>]+></a></td>[^<]+"
-    patronvideos += "<td valign='top'><div class='tit'><a[^>]+>([^<]+)</a></div>[^<]+"
-    patronvideos += "<div class='font11'>([^<]+)<"
-
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
+    patron  = '<script type="text/javascript">(.*?)</script>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #scrapertools.printMatches(matches)
+    data = matches[0]
+    logger.info("[cuevana.py] peliculas "+data)
+    
+		#{"id":"4337","url":"#!\ys-and-aliens","tit":"Cowbiens","duracion":"118","txt":"En 1873..","reparto":"Dani","ano":"2011","rate":3.92,"genero":"Cienc","idioma":"Ing","hd":1}
+    # {"id":"3054","url":"#!\/peliculas\/3054\/love-and-other-drugs","tit":"Dees","duracion":"113","ano":"2010","rate":3.93,"reparto":"Jake Gyllenhaal, Anne Hathaway, Judy Greer, Hank Azaria, Gabriel Macht, Oliver P...","genero":"Romance","idioma":"Ingl\u00e9s","hd":"0","plays":"1.815.388"},
+    data = data.replace("\\","")
+    patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","txt":"([^"]+)","reparto":"([^"]+)","ano":"([^"]+)","rate":([^,]+),"genero":"([^"]+)","idioma":"([^"]+)","hd":1}'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]
-        scrapedplot = match[3]
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for id,url,tit,duracion,txt,reparto,ano,rate,genero,idioma in matches:
+        scrapedtitle = tit
+        scrapedplot = txt
+        # url es "#!/series/3478/american-dad"
+        # el destino es "http://www.cuevana.tv/web/series?&3478&american-dad"
+        
+        #   #!/series/3478/american-dad
+        scrapedurl = url.replace("/","&")
+        #   !&series&3478&american-dad
 
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
+        scrapedurl = scrapedurl.replace("#!&peliculas","http://www.cuevana.tv/web/peliculas?")
+        #   http://www.cuevana.tv/web/series?&3478&american-dad
 
-    # Extrae el paginador
-    patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+        # scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
+        scrapedthumbnail = scrapedurl.replace("http://www.cuevana.tv/web/peliculas?&","http://sc.cuevana.tv/box/")
+        scrapedthumbnail = scrapedthumbnail.replace("&",".jpg?")
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
-    if len(matches)>0:
-        scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Pagina siguiente" , url=scrapedurl) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
 
-    return itemlist
+        # Extrae el paginador
+        #patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
+        #matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        #scrapertools.printMatches(matches)
+
+        #if len(matches)>0:
+            #scrapedurl = urlparse.urljoin(item.url,matches[0])
+            #itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Pagina siguiente" , url=scrapedurl) )
+
+        return itemlist
 
 def series(item):
     logger.info("[cuevana.py] series")
@@ -167,12 +188,15 @@ def series(item):
     data = matches[0]
     
     #{"id":"3478","url":"#!\/series\/3478\/american-dad","tit":"American Dad!","duracion":"30","ano":"2005","temporadas":"7","episodios":"120","rate":"3.9887976646423340","genero":"Animaci\u00f3n","idioma":"Ingl\u00e9s"}
+		# {"url":"#!\/series\/3622\/game-of-thrones","tit":"Game of Thrones","duracion":"60","temporadas":"1","episodios":"10","genero":" Fantas\u00eda"}
     data = data.replace("\\","")
-    patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","ano":"([^"]+)","temporadas":"([^"]+)","episodios":"([^"]+)","rate":"([^"]+)","genero":"([^"]+)","idioma":"([^"]+)"}'
+    # patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","ano":"([^"]+)","temporadas":"([^"]+)","episodios":"([^"]+)","rate":"([^"]+)","genero":"([^"]+)","idioma":"([^"]+)"}'
+    patron  = '{(.*?)"url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)",(.*?)"temporadas":"([^"]+)","episodios":"([^"]+)",(.*?)"genero":"([^"]+)"(.*?)}'
     matches = re.compile(patron,re.DOTALL).findall(data)
     
     itemlist = []
     for id,url,tit,duracion,ano,temporadas,episodios,rate,genero,idioma in matches:
+    # for url,tit,duracion,temporadas,episodios,genero in matches:
         scrapedtitle = tit
         scrapedplot = ""
         # url es "#!/series/3478/american-dad"
@@ -185,7 +209,9 @@ def series(item):
         scrapedurl = scrapedurl.replace("#!&series","http://www.cuevana.tv/web/series?")
         #   http://www.cuevana.tv/web/series?&3478&american-dad
 
-        scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
+        # scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
+        scrapedthumbnail = scrapedurl.replace("http://www.cuevana.tv/web/series?&","http://sc.cuevana.tv/box/")
+        scrapedthumbnail = scrapedthumbnail.replace("&",".jpg?")
         #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
         itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
