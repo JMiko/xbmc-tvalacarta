@@ -133,47 +133,30 @@ def novedades(item):
     # Extrae las entradas
     patron  = '<script type="text/javascript">(.*?)</script>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
     data = matches[0]
-    logger.info("[cuevana.py] peliculas "+data)
-    
 		#{"id":"4337","url":"#!\ys-and-aliens","tit":"Cowbiens","duracion":"118","txt":"En 1873..","reparto":"Dani","ano":"2011","rate":3.92,"genero":"Cienc","idioma":"Ing","hd":1}
     # {"id":"3054","url":"#!\/peliculas\/3054\/love-and-other-drugs","tit":"Dees","duracion":"113","ano":"2010","rate":3.93,"reparto":"Jake Gyllenhaal, Anne Hathaway, Judy Greer, Hank Azaria, Gabriel Macht, Oliver P...","genero":"Romance","idioma":"Ingl\u00e9s","hd":"0","plays":"1.815.388"},
     data = data.replace("\\","")
     patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","txt":"([^"]+)","reparto":"([^"]+)","ano":"([^"]+)","rate":([^,]+),"genero":"([^"]+)","idioma":"([^"]+)","hd":1}'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    
     itemlist = []
     for id,url,tit,duracion,txt,reparto,ano,rate,genero,idioma in matches:
         scrapedtitle = tit
         scrapedplot = txt
-        # url es "#!/series/3478/american-dad"
-        # el destino es "http://www.cuevana.tv/web/series?&3478&american-dad"
-        
-        #   #!/series/3478/american-dad
         scrapedurl = url.replace("/","&")
-        #   !&series&3478&american-dad
-
         scrapedurl = scrapedurl.replace("#!&peliculas","http://www.cuevana.tv/web/peliculas?")
-        #   http://www.cuevana.tv/web/series?&3478&american-dad
-
-        # scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
         scrapedthumbnail = scrapedurl.replace("http://www.cuevana.tv/web/peliculas?&","http://sc.cuevana.tv/box/")
         scrapedthumbnail = scrapedthumbnail.replace("&",".jpg?")
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
-
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
-
         # Extrae el paginador
         #patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
         #matches = re.compile(patronvideos,re.DOTALL).findall(data)
         #scrapertools.printMatches(matches)
-
         #if len(matches)>0:
             #scrapedurl = urlparse.urljoin(item.url,matches[0])
             #itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Pagina siguiente" , url=scrapedurl) )
-
-        return itemlist
+    return itemlist
 
 def series(item):
     logger.info("[cuevana.py] series")
@@ -265,7 +248,14 @@ def findvideos(item):
     logger.info("[cuevana.py] findvideos")
 
     id = item.url
-    
+
+    if "/web/peliculas" in item.url:
+        tipo="pelicula"
+        pathSubtitle="http://sc.cuevana.tv/files/sub/"
+    else:
+        tipo="serie"
+        pathSubtitle="http://sc.cuevana.tv/files/s/sub/"
+
     # Obtiene las fuentes compatibles
     '''
     var sources = {"720":{"2":["megaupload","glumbo","wupload"]},"360":{"2":["megaupload","glumbo","wupload"]}}, sel_source = 0;
@@ -283,7 +273,7 @@ def findvideos(item):
         'wupload': 'Wupload'
     };
     '''
-    url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo=serie"
+    url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo="+tipo
     data = scrapertools.cache_page(url)
     
     # Fuentes
@@ -331,9 +321,10 @@ def findvideos(item):
                 
                 titulo = "Opcion %d: %s %s (%s)" % (i, mirror , qualities[quality_id], language_labels[language_id])
                 i=i+1
-                url = "def=%s&audio=%s&host=%s&id=%s&tipo=serie" % (quality_id,language_id,mirror,id)
+                url = "def=%s&audio=%s&host=%s&id=%s&tipo="+tipo
+                url = url % (quality_id,language_id,mirror,id)
                 
-                subtitulo = "http://sc.cuevana.tv/files/s/sub/"+id+"_ES.srt"
+                subtitulo = pathSubtitle+id+"_ES.srt"
                 
                 itemlist.append( Item(channel=CHANNELNAME, action="play" , title=titulo, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, extra=id, subtitle=subtitulo, folder=False))
 
