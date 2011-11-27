@@ -23,7 +23,7 @@ def mainlist(item):
     logger.info("[cuevana.py] mainlist")
 
     itemlist = []
-    #itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
     itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="seriesMenu",    url="http://www.cuevana.tv/web/series?&todas"))
     #itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search_options") )
     
@@ -34,8 +34,8 @@ def seriesMenu(item):
     itemlist = []
      
     itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"  , action="series", url="http://www.cuevana.tv/web/series?&todas"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Populares"  , action="series", url="http://www.cuevana.tv/web/series?&populares"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Ranking"  , action="series", url="http://www.cuevana.tv/web/series?&ranking"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Populares"  , action="series", url="http://www.cuevana.tv/web/series?&populares"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Ranking"  , action="series", url="http://www.cuevana.tv/web/series?&ranking"))
 
     return itemlist
     
@@ -120,42 +120,35 @@ def listadoAlfabetico(item):
     return itemlist
 
 def novedades(item):
-    logger.info("[cuevana.py] peliculas login")
-    #try:
-    #    post = urllib.urlencode({'usuario' : 'pelisalacarta','password' : 'pelisalacarta','recordarme':'si','ingresar':'true'})
-    #    data = scrapertools.cache_page("http://www.cuevana.tv/login_get.php",post=post)
-    #except:
-    #    pass
-
+    logger.info("[cuevana.py] login")
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-
     # Extrae las entradas
     patron  = '<script type="text/javascript">(.*?)</script>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     data = matches[0]
-		#{"id":"4337","url":"#!\ys-and-aliens","tit":"Cowbiens","duracion":"118","txt":"En 1873..","reparto":"Dani","ano":"2011","rate":3.92,"genero":"Cienc","idioma":"Ing","hd":1}
-    # {"id":"3054","url":"#!\/peliculas\/3054\/love-and-other-drugs","tit":"Dees","duracion":"113","ano":"2010","rate":3.93,"reparto":"Jake Gyllenhaal, Anne Hathaway, Judy Greer, Hank Azaria, Gabriel Macht, Oliver P...","genero":"Romance","idioma":"Ingl\u00e9s","hd":"0","plays":"1.815.388"},
     data = data.replace("\\","")
-    patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","txt":"([^"]+)","reparto":"([^"]+)","ano":"([^"]+)","rate":([^,]+),"genero":"([^"]+)","idioma":"([^"]+)","hd":1}'
+    patron  = '\{\"(.*?)}'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
-    for id,url,tit,duracion,txt,reparto,ano,rate,genero,idioma in matches:
-        scrapedtitle = tit
-        scrapedplot = txt
-        scrapedurl = url.replace("/","&")
-        scrapedurl = scrapedurl.replace("#!&peliculas","http://www.cuevana.tv/web/peliculas?")
-        scrapedthumbnail = scrapedurl.replace("http://www.cuevana.tv/web/peliculas?&","http://sc.cuevana.tv/box/")
-        scrapedthumbnail = scrapedthumbnail.replace("&",".jpg?")
+    for datos in matches:
+        try:
+            scrapedtitle  = re.compile('"tit":"([^"]+)"',re.DOTALL).findall(datos)[0]
+        except:
+            scrapedtitle  = ""
+        try:
+            scrapedplot   = re.compile('"txt":"([^"]+)"',re.DOTALL).findall(datos)[0]
+        except:
+            scrapedplot   = ""
+        try:
+            scrapedurl    = re.compile('url":"([^"]+)"',re.DOTALL).findall(datos)[0]
+            scrapedurl = re.compile('peliculas/([^/]+)',re.DOTALL).findall(scrapedurl)[0]
+            scrapedthumbnail = "http://sc.cuevana.tv/box/"+scrapedurl+".jpg"
+        except:
+            scrapedurl    = ""
+            scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
-        # Extrae el paginador
-        #patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
-        #matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        #scrapertools.printMatches(matches)
-        #if len(matches)>0:
-            #scrapedurl = urlparse.urljoin(item.url,matches[0])
-            #itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Pagina siguiente" , url=scrapedurl) )
     return itemlist
 
 def series(item):
@@ -179,7 +172,6 @@ def series(item):
     
     itemlist = []
     for id,url,tit,duracion,ano,temporadas,episodios,rate,genero,idioma in matches:
-    # for url,tit,duracion,temporadas,episodios,genero in matches:
         scrapedtitle = tit
         scrapedplot = ""
         # url es "#!/series/3478/american-dad"
@@ -245,7 +237,7 @@ def episodios(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[cuevana.py] findvideos")
+    logger.info("[cuevana.py] findvideos 0")
 
     id = item.url
 
@@ -256,6 +248,7 @@ def findvideos(item):
         tipo="serie"
         pathSubtitle="http://sc.cuevana.tv/files/s/sub/"
 
+    logger.info("[cuevana.py] findvideos 1")
     # Obtiene las fuentes compatibles
     '''
     var sources = {"720":{"2":["megaupload","glumbo","wupload"]},"360":{"2":["megaupload","glumbo","wupload"]}}, sel_source = 0;
@@ -274,12 +267,19 @@ def findvideos(item):
     };
     '''
     url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo="+tipo
+    logger.info("[cuevana.py] findvideos 2"+url)
+
     data = scrapertools.cache_page(url)
     
+    logger.info("[cuevana.py] findvideos 3")
     # Fuentes
     patron = 'var sources \= (.*?)\;'
+    logger.info("[cuevana.py] findvideos 4a"+data)
     matches = re.compile(patron,re.DOTALL).findall(data)
+    logger.info("[cuevana.py] findvideos 5")
+    logger.info("[cuevana.py] findvideos 6"+matches[0])
     cadena = matches[0].replace(", sel_source = 0","")
+    logger.info("[cuevana.py] findvideos 7")
     logger.info("cadena="+cadena)
 
     import simplejson as json
