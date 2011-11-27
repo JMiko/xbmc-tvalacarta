@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>16</tag>
-	<date>27/11/2011</date>
-	<changes>Se arreglo el tema de las peliculas</changes>
+	<tag>17</tag>
+	<date>28/11/2011</date>
+	<changes>Se arreglo bug para ver peliculas</changes>
 </version>

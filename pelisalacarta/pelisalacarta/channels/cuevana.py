@@ -148,7 +148,7 @@ def novedades(item):
             scrapedurl    = ""
             scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, extra="pelicula") )
     return itemlist
 
 def series(item):
@@ -229,7 +229,7 @@ def episodios(item):
             scrapedthumbnail = item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show) )
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show, extra="serie") )
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -237,18 +237,17 @@ def episodios(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[cuevana.py] findvideos 0")
+    logger.info("[cuevana.py] findvideos")
 
     id = item.url
+    logger.info(item.extra)
+    tipo=item.extra
 
-    if "/web/peliculas" in item.url:
-        tipo="pelicula"
+    if tipo=="pelicula":
         pathSubtitle="http://sc.cuevana.tv/files/sub/"
     else:
-        tipo="serie"
         pathSubtitle="http://sc.cuevana.tv/files/s/sub/"
 
-    logger.info("[cuevana.py] findvideos 1")
     # Obtiene las fuentes compatibles
     '''
     var sources = {"720":{"2":["megaupload","glumbo","wupload"]},"360":{"2":["megaupload","glumbo","wupload"]}}, sel_source = 0;
@@ -267,21 +266,13 @@ def findvideos(item):
     };
     '''
     url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo="+tipo
-    logger.info("[cuevana.py] findvideos 2"+url)
 
     data = scrapertools.cache_page(url)
     
-    logger.info("[cuevana.py] findvideos 3")
     # Fuentes
     patron = 'var sources \= (.*?)\;'
-    logger.info("[cuevana.py] findvideos 4a"+data)
     matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("[cuevana.py] findvideos 5")
-    logger.info("[cuevana.py] findvideos 6"+matches[0])
     cadena = matches[0].replace(", sel_source = 0","")
-    logger.info("[cuevana.py] findvideos 7")
-    logger.info("cadena="+cadena)
-
     import simplejson as json
     sources = json.loads(cadena)
 
@@ -291,7 +282,6 @@ def findvideos(item):
     cadena = matches[0]
     cadena = re.compile("\s+",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("'",'"')
-    logger.info("cadena="+cadena)
 
     import simplejson as json
     qualities = json.loads(cadena)
@@ -304,21 +294,14 @@ def findvideos(item):
     # Presenta las opciones
     itemlist = []
     i=1
-    logger.info("sources="+str(sources))
     for quality_id in sources:
-        logger.info("quality_id="+quality_id)
         languages = sources[quality_id]
-        logger.info("languages="+str(languages))
 
         for language_id in languages:
             print language_id
-            logger.info("language_id="+language_id)
             mirrors = sources[quality_id][language_id]
-            logger.info("mirrors="+str(mirrors))
 
             for mirror in mirrors:
-                logger.info("mirror="+mirror)
-                
                 titulo = "Opcion %d: %s %s (%s)" % (i, mirror , qualities[quality_id], language_labels[language_id])
                 i=i+1
                 url = "def=%s&audio=%s&host=%s&id=%s&tipo="+tipo
@@ -351,7 +334,6 @@ def play(item):
     headers.append( ["Cache-Control","no-cache"])
 
     data = scrapertools.cache_page(url=url, post=post)
-    logger.info("data="+data)
 
     itemlist = servertools.find_video_items(data=data)
     for returnitem in itemlist:
