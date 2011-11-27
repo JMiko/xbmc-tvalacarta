@@ -120,7 +120,7 @@ def series(item):
 
         for match2 in matches2:
         # Atributos
-            scrapedurl = "http://series.ly/api/detailSerie.php?auth_token="+auth_token+"&idSerie="+match2[0]+"&user_token="+user_token+"&format=xml"
+            scrapedurl = "http://series.ly/api/detailSerie.php?caps=1&auth_token="+auth_token+"&idSerie="+match2[0]+"&user_token="+user_token+"&format=xml"
             scrapedtitle =match2[1]+" ("+match2[2]+" Temporadas) ("+match2[3]+" Episodios)"
             scrapedthumbnail = match2[4]
             scrapedplot = ""
@@ -211,24 +211,24 @@ def capitulos(item):
     itemlist = []
     for match in matches:
         data2 = match
-        patron  = '<title>(.*?)</title>'
+        patron  = '<idc>(.*?)</idc>'
+        patron  += '<title>(.*?)</title>'
         patron  += '<season>(.*?)</season>'
         patron  += '<viewed>(.*?)</viewed>'
-        patron  += '<links>(.*?)</links>'
                 
         matches2 = re.compile(patron,re.DOTALL).findall(data2)
         logger.info("hay %d matches2" % len(matches2))
 
         for match2 in matches2:
         # Atributos
-            scrapedurl = ""
-            scrapedtitle = match2[1]+" - "+match2[0]
+            scrapedurl = "http://series.ly/api/linksCap.php?auth_token="+auth_token+"&idCap="+match2[0]+"&user_token="+user_token+"&format=xml"
+            scrapedtitle = match2[2]+" - "+match2[1]
             scrapedthumbnail = item.thumbnail
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="buscavideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token+"|"+str(match2[3]) ))
+            itemlist.append( Item(channel=item.channel , action="buscavideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token+"|"+str(match2[0]) ))
     
     
     return itemlist
@@ -241,8 +241,9 @@ def buscavideos(item):
     
     auth_token = item.extra.split("|")[0]
     user_token = item.extra.split("|")[1]
-    data = item.extra.split("|")[2]
-    logger.info(auth_token)
+    
+    data = scrapertools.cache_page(item.url)
+    
     # Extrae las entradas (carpetas)
    
     patron = '<item>(.*?)</item>'
@@ -263,7 +264,7 @@ def buscavideos(item):
 
         for match2 in matches2:
         # Atributos
-            scrapedurl= "http://series.ly/api/goLink.php?auth_token="+auth_token+"&user_token="+user_token+"&enc="+match2[3]
+            scrapedurl= match2[3].replace("&amp;","&")
             scrapedtitle = item.title+" ("+match2[0]+")(Subtítulos "+match2[1]+")"
             if match2[2]=="1": scrapedtitle += " (HD)"
             scrapedthumbnail = item.thumbnail
@@ -386,7 +387,7 @@ def search(item,texto, categoria="*"):
 
         for match2 in matches2:
         # Atributos
-            scrapedurl = "http://series.ly/api/detailSerie.php?auth_token="+auth_token+"&idSerie="+match2[0]+"&user_token="+user_token+"&format=xml"
+            scrapedurl = "http://series.ly/api/detailSerie.php?caps=1&auth_token="+auth_token+"&idSerie="+match2[0]+"&user_token="+user_token+"&format=xml"
             scrapedtitle =match2[1]+" ("+match2[2]+" Temporadas) ("+match2[3]+" Episodios)"
             scrapedthumbnail = match2[4]
             scrapedplot = ""
