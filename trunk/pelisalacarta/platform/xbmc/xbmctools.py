@@ -194,7 +194,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
-        if config.get_setting("fileniumpremium")=="true" and server not in ["downupload","vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
+        if config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
             exec "from servers import filenium as gen_conector"
             video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
             logger.info("[xbmctools.py] filenium url="+video_gen)
@@ -210,26 +210,30 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         for video_url in video_urls:
             opciones.append(config.get_localized_string(30151) + " " + video_url[0])
 
-        if download_enable:
-            opcion = config.get_localized_string(30153)
-            opciones.append(opcion) # "Descargar"
-
-        if channel=="favoritos": 
-            opciones.append(config.get_localized_string(30154)) # "Quitar de favoritos"
+        if server=="local":
+            opciones.append(config.get_localized_string(30164))
         else:
-            opciones.append(config.get_localized_string(30155)) # "Añadir a favoritos"
+            if download_enable:
+                opcion = config.get_localized_string(30153)
+                opciones.append(opcion) # "Descargar"
     
-        if download_enable:
-            if channel!="descargas":
-                opciones.append(config.get_localized_string(30157)) # "Añadir a lista de descargas"
+            if channel=="favoritos": 
+                opciones.append(config.get_localized_string(30154)) # "Quitar de favoritos"
             else:
-                if category=="errores":
-                    opciones.append(config.get_localized_string(30159)) # "Borrar descarga definitivamente"
-                    opciones.append(config.get_localized_string(30160)) # "Pasar de nuevo a lista de descargas"
+                opciones.append(config.get_localized_string(30155)) # "Añadir a favoritos"
+        
+            if download_enable:
+                if channel!="descargas":
+                    opciones.append(config.get_localized_string(30157)) # "Añadir a lista de descargas"
                 else:
-                    opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
+                    if category=="errores":
+                        opciones.append(config.get_localized_string(30159)) # "Borrar descarga definitivamente"
+                        opciones.append(config.get_localized_string(30160)) # "Pasar de nuevo a lista de descargas"
+                    else:
+                        opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
+    
+            opciones.append(config.get_localized_string(30158)) # "Enviar a JDownloader"
 
-        opciones.append(config.get_localized_string(30158)) # "Enviar a JDownloader"
         if default_action=="3":
             seleccion = len(opciones)-1
     
@@ -292,6 +296,13 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         d = {"web": url}
         from core import scrapertools
         data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/"+urllib.urlencode(d)+ " " +thumbnail)
+        return
+
+    elif opciones[seleccion]==config.get_localized_string(30164): # Borrar archivo en descargas
+        # En "extra" está el nombre del fichero en favoritos
+        import os
+        os.remove( url )
+        xbmc.executebuiltin( "Container.Refresh" )
         return
 
     # Ha elegido uno de los vídeos
