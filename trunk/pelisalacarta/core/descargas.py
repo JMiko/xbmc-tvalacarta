@@ -46,7 +46,8 @@ def mainlist(item):
             logger.info("[descargados.py] fichero=" + fichero)
             if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
                 url = os.path.join( downloadpath , fichero )
-                itemlist.append( Item( channel="descargados", action="play", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
+                if not os.path.isdir(url):
+                    itemlist.append( Item( channel="descargados", action="play", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
 
     except:
         logger.info("[descargados.py] exception on mainlist")
@@ -111,6 +112,8 @@ def errores(item):
         try:
             # Lee el bookmark
             canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,ERROR_PATH)
+            if canal=="":
+                canal="descargas"
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
