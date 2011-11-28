@@ -27,7 +27,7 @@ def getmainlist():
     itemlist.append( Item(title=config.get_localized_string(30103) , channel="buscador" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30128) , channel="trailertools" , action="mainlist") )
     itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
-    if config.get_platform()=="wiimc":itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist") )
+    if config.get_platform() in ("wiimc","rss") :itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist") )
     if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist") )
 
     try:
@@ -38,7 +38,7 @@ def getmainlist():
     itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
     
     #if config.get_library_support():
-    itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
+    if config.get_platform()!="rss": itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
     return itemlist
 
 # TODO: (3.1) Pasar el código específico de XBMC al laucher
