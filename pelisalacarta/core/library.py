@@ -122,9 +122,13 @@ def savelibrary(titulo,url,thumbnail,server,plot,canal="",category="Cine",Serie=
         logger.info("Error al grabar el archivo "+fullfilename)
         nuevo = 0
         raise
-#    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
-# Eliminación de plot i thumnai
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie)
+    
+    #    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
+    # Eliminación de plot i thumnai
+    addon_name = sys.argv[ 0 ]
+    if addon_name.strip()=="":
+        addon_name="plugin://plugin.video.pelisalacarta/"
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s' % ( addon_name , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie)
     logger.info("[library.py] itemurl=%s" % itemurl)
 
     LIBRARYfile.write(itemurl)
