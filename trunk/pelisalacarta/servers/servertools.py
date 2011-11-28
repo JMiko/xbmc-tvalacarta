@@ -59,7 +59,12 @@ def findvideos(data):
     # adnstream
     import adnstream
     devuelve.extend(adnstream.find_videos(data))
-    
+
+    # bitshare
+    if config.get_setting("fileniumpremium")=="true":
+        import bitshare
+        devuelve.extend(bitshare.find_videos(data))
+
     # blip.tv
     import bliptv
     devuelve.extend(bliptv.find_videos(data))
@@ -75,6 +80,11 @@ def findvideos(data):
     # facebook
     import facebook
     devuelve.extend(facebook.find_videos(data))
+
+    # filejungle
+    if config.get_setting("fileniumpremium")=="true":
+        import filejungle
+        devuelve.extend(filejungle.find_videos(data))
 
     # fileserve
     import fileserve
@@ -107,7 +117,17 @@ def findvideos(data):
     # tutv
     import userporn
     devuelve.extend(userporn.find_videos(data))
-    
+
+    # uploaded.to
+    if config.get_setting("fileniumpremium")=="true":
+        import uploadedto
+        devuelve.extend(uploadedto.find_videos(data))
+
+    # uploadstation
+    if config.get_setting("fileniumpremium")=="true":
+        import uploadstation
+        devuelve.extend(uploadstation.find_videos(data))
+
     # veoh
     import veoh
     devuelve.extend(veoh.find_videos(data))
@@ -143,6 +163,11 @@ def findvideos(data):
     # vk
     import vk
     devuelve.extend(vk.find_videos(data))
+
+    # wupload
+    if config.get_setting("fileniumpremium")=="true":
+        import wupload
+        devuelve.extend(wupload.find_videos(data))
 
     # ---------------------------
 
