@@ -24,7 +24,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Descarga el json con los detalles del vídeo
     controluri = "http://videozer.com/player_control/settings.php?v=%s&fv=v1.1.03"  %code
     datajson = scrapertools.cachePage(controluri)
-    #logger.info("response="+datajson);
+    logger.info("response="+datajson);
 
     # Convierte el json en un diccionario
     datajson = datajson.replace("false","False").replace("true","True")
@@ -33,12 +33,24 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     # Formatos
     formatos = datadict["cfg"]["quality"]
+
+    cipher = datadict["cfg"]["info"]["sece2"]
+    logger.info("cipher="+cipher);
+    
+    keyTwo = str(datadict["cfg"]["environment"]["rkts"])
+    logger.info("keyTwo="+keyTwo);
+
+    import videobb
+    c = videobb.decrypt32byte(cipher, int(keyTwo), int(base64.decodestring("MjE1Njc4")))
     
     for formato in formatos:
         uri = base64.decodestring(formato["u"])
-        resolucion = formato["l"]
-    
-        video_urls.append( ["%s [videozer]" % resolucion , uri ])
+        # El HD en VideoZer es solo para premium
+        if uri<>"":
+            uri = uri + "&c="+c+"&start=0"
+            resolucion = formato["l"]
+        
+            video_urls.append( ["%s [videozer]" % resolucion , uri ])
 
     for video_url in video_urls:
         logger.info("[videozer.py] %s - %s" % (video_url[0],video_url[1]))
@@ -55,7 +67,6 @@ def Extract_id(url):
         return ""
     id = mobj.group(2)
     return id
-
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
