@@ -222,7 +222,7 @@ def addChapters(item):
         for flag in flags:
             title = title + " ("+flag+")"
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, folder=True))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, fulltitle=item.fulltitle+" "+title, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, folder=True))
 
     return itemlist
 
