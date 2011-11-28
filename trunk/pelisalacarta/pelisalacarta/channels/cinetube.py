@@ -576,7 +576,7 @@ def temporadas(item):
         itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, category=item.category , plot=scrapedplot, extra=extra, show=item.show) )
 
     # Opcion de añadir serie a Wiideoteca
-    if len(itemlist)>0 and config.get_platform()=="wiimc" and item.channel<>"wiideoteca":
+    if len(itemlist)>0 and config.get_platform() in ("wiimc","rss") and item.channel<>"wiideoteca":
         itemlist.append( Item(channel=CHANNELNAME, action="add_serie_to_wiideoteca", title=">> Agregar Serie a Wiideoteca <<", fulltitle=fulltitle , url=item.url , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=match[1].strip()) )
    
     # Una trampa, si la serie enlaza no con la temporada sino con la lista de episodios, se resuelve aquí

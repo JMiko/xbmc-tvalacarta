@@ -88,7 +88,7 @@ def controller(plugin_name,port,host,path,headers):
             
             respuesta += "<title>Canales</title>\n\n"     # Parametrizar
             for channel in channelslist:
-                if channel.type=="generic" or channel.type=="rss" or channel.type=="wiimc":
+                if channel.type=="generic" or channel.type=="rss": # or channel.type=="wiimc":
                     respuesta += "<item>\n"
                     respuesta += "<title>"+channel.title.replace("_generico","").replace(" (Multiplataforma)","")+"</title>\n"
                     respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/mainlist/none/none/none/none/none/none/playlist.rss</link>\n"

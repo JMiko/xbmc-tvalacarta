@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-15 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Blibioteca para Wii por Dalim
@@ -138,6 +138,8 @@ def configurarSerie(item):
         itemlist.append( Item(channel=CHANNELNAME, action="QuitarSerie", title="Quitar Serie de "+CHANNELNAME, fulltitle=item.fulltitle, extra=str(i)))
     else:
         itemlist.append( Item(channel=CHANNELNAME, action="QuitarSerie", title="Recuperar Serie para "+CHANNELNAME, fulltitle=item.fulltitle, extra=str(i)))
+    itemlist.append( Item(channel=CHANNELNAME, action="actualiza", title="Volver" , fulltitle=fulltitle[i] , url=url[i] , thumbnail=thumbnail[i] , plot=plot[i] , extra=str(i)))
+#wiideoteca/actualiza/http%3A%2F%2Fwww.cinetube.es%2Fseries%2Flos-misterios-de-laura%2F/directo/Los%20misterios%20de%20Laura/0/none/Los+misterios+de+Laura/playlist.rss
     return itemlist
 
 def CambiarModo(item):
@@ -156,7 +158,7 @@ def CambiarModo(item):
     f.close()
     dom.unlink()
 
-    itemlist.append( Item(title="Se ha cambiado el metodo de visualizacion") )
+    itemlist.append( Item(title="Se ha cambiado el metodo de visualizacion", action="configurarSerie",fulltitle=item.fulltitle,extra=item.extra) )
     return itemlist
 
 def ListarEpisodios(item):
@@ -177,11 +179,11 @@ def ListarEpisodios(item):
             for capitulo in itemlist2:
                 returnlist.append( Item(channel=CHANNELNAME, action="MarcarVisto", title=capitulo.title , fulltitle=capitulo.title , url=temporada.extra , thumbnail=thumbnail[i] , extra=str(i) ) )
         if returnlist==[]:
-            returnlist.append( Item(title="Error al abrir serie") )
+            returnlist.append( Item(title="Error al abrir serie", action="mainlist") )
         else:
             returnlist.append( Item(channel=CHANNELNAME, action="MarcarVisto", title=">> Marcar todos como vistos <<", url=temporada.extra , fulltitle=capitulo.title, extra=str(i)))
     else:
-        returnlist.append( Item(title="Error al abrir serie") )
+        returnlist.append( Item(title="Error al abrir serie", action="mainlist") )
         
     return returnlist
 
@@ -209,9 +211,9 @@ def MarcarVisto(item):
     f.close()
     dom.unlink()
     if item.title==">> Marcar todos como vistos <<":
-        itemlist.append( Item(title="Todos los episodios han sido marcados como vistos") )
+        itemlist.append( Item(title="Todos los episodios han sido marcados como vistos", action="configurarSerie",fulltitle=item.fulltitle,extra=item.extra) )
     else:
-        itemlist.append( Item(title="Seleccionado %s como ultimo episodio visto" % item.fulltitle) )
+        itemlist.append( Item(title="Seleccionado %s como ultimo episodio visto" % item.fulltitle, action="configurarSerie",fulltitle=item.fulltitle,extra=item.extra) )
     return itemlist
 
 def QuitarSerie(item):
@@ -223,10 +225,10 @@ def QuitarSerie(item):
     for elemento in elementos:
         if "Quitar Serie de " in item.title:
             elemento.getElementsByTagName('borrar')[i].childNodes[0].nodeValue="True"
-            itemlist.append( Item(title="La serie "+str(item.fulltitle)+" se ha quitado de "+CHANNELNAME) )
+            itemlist.append( Item(title="La serie "+str(item.fulltitle)+" se ha quitado de "+CHANNELNAME, action="mainlist") )
         elif "Recuperar Serie para " in item.title:
             elemento.getElementsByTagName('borrar')[i].childNodes[0].nodeValue="False"
-            itemlist.append( Item(title="La serie "+str(item.fulltitle)+" se ha recuperado para "+CHANNELNAME) )            
+            itemlist.append( Item(title="La serie "+str(item.fulltitle)+" se ha recuperado para "+CHANNELNAME, action="mainlist") )            
     f = open(XML, "w")
     dom.writexml(f, indent="", addindent="", newl="", encoding='utf-8')
     f.close()
@@ -309,7 +311,7 @@ def AgregarSerie (item):
         logger.info("Canal: "+item.channel)
         logger.info("Temporada: "+item.extra)
         
-        itemlist.append( Item(title="Se ha añadido la serie a "+CHANNELNAME) )
+        itemlist.append( Item(title="Se ha aÃ±adido la serie a "+CHANNELNAME) )
     else:
         itemlist.append( Item(title="La serie ya esta en la "+CHANNELNAME) )
     return itemlist

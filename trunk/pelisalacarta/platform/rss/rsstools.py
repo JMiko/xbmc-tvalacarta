@@ -2,7 +2,7 @@
 import urllib, os, binascii, md5, string, re
 
 from core.item import Item
-from core import scrapertools,config
+from core import scrapertools,config,wiideoteca
 
 import logging.config
 import logging
@@ -155,6 +155,10 @@ def getitems(requestpath):
             itemlist = send_to_pyload(senderitem,refered_item)
         elif accion=="search_trailer":
             itemlist = search_trailer(senderitem,refered_item)
+        elif accion=="add_serie_to_wiideoteca":
+            itemlist = wiideoteca.AgregarSerie(senderitem)
+        elif accion=="UltimoVisto":
+            itemlist = wiideoteca.UltimoVisto(senderitem)
     
         else:
             if senderitem.url=="none":
@@ -316,6 +320,8 @@ def menu_video(item):
 #    itemlist.append( Item(channel=item.channel, title="Enviar a jdownloader",action="send_to_jdownloader",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
     if item.channel != "trailertools" or item.action != "play":
         itemlist.append( Item(channel=item.channel, title="Buscar trailer",action="search_trailer",url=refered_item_encoded, extra=item.extra, fulltitle=item.fulltitle ) )
+    if item.category=="wiideoteca":
+        itemlist.append( Item(channel=item.channel, title="Marcar como Ultimo Episodio Visto",action="UltimoVisto",url=item.extra,fulltitle=item.fulltitle ) )
 
     return itemlist
 
