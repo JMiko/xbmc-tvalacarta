@@ -42,7 +42,7 @@ def documentalesnuevos(item):
     logger.info("[documaniatv.py] documentalesnuevos")
     itemlist = []
 
-    # Descarga la p�gina
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -56,7 +56,7 @@ def documentalesnuevos(item):
     #logger.info("matches = "+str(matches))
 
     for match in matches:
-        scrapedtitle = acentos(match[2])+" - " + match[3]+" - " + match[4] 
+        scrapedtitle = match[2]+" (" + match[3]+")" #+" - " + match[4] 
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
         imagen = ""
@@ -112,7 +112,7 @@ def listatipodocumental(item):
     #logger.info("matches = "+matches[0])
     scrapedplot = ""
     for match in matches:
-        scrapedtitle = acentos(match[2])
+        scrapedtitle = match[2]
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
         
@@ -149,7 +149,7 @@ def tagdocumentaleslist(item):
     logger.info("[documaniatv.py] tagdocumentaleslist")
     itemlist = []
 
-    # Descarga la p�gina
+    # Descarga la pagina
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
@@ -160,17 +160,17 @@ def tagdocumentaleslist(item):
     scrapertools.printMatches(matches)         
 
     for match in matches:
-        scrapedtitle = acentos(match[2])
+        scrapedtitle = match[2]
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
         scrapeddescription = match[3]
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # A�ade al listado de XBMC
+        # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle + " - " + scrapeddescription , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     
-    # P�gina siguiente
+    # Pagina siguiente
     patron = '<a href="([^"]+)">next &raquo;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)         
@@ -183,7 +183,7 @@ def detail(item):
     logger.info("[documaniatv.py] detail")
     itemlist = []
 
-    # Descarga la p�gina
+    # Descarga la pagina
     data = scrapertools.cachePage(item.url)
     descripcion = ""
     plot = ""
@@ -197,7 +197,7 @@ def detail(item):
         descripcion = descripcion.replace("\n"," ")
         descripcion = descripcion.replace("\t"," ")
         descripcion = re.sub("<[^>]+>"," ",descripcion)
-        descripcion = acentos(descripcion)
+        descripcion = descripcion
         try :
             plot = unicode( descripcion, "utf-8" ).encode("iso-8859-1")
         except:
@@ -208,7 +208,7 @@ def detail(item):
     for video_item in video_itemlist:
         itemlist.append( Item(channel=CHANNELNAME , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=video_item.thumbnail, plot=video_item.plot, folder=False))
 
-    # Extrae los enlaces a los v�deos (Directo)
+    # Extrae los enlaces a los videos (Directo)
     patronvideos = "file: '([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -234,7 +234,7 @@ def performsearch(texto):
     logger.info("[documaniatv.py] performsearch")
     url = "http://www.documaniatv.com/search.php?keywords="+texto+"&btn=Buscar"
 
-    # Descarga la p�gina
+    # Descarga la pagina
     data = scrapertools.cachePage(url)
 
     # Extrae las entradas (carpetas)
@@ -248,7 +248,7 @@ def performsearch(texto):
     resultados = []
 
     for match in matches:
-        scrapedtitle = acentos(match[2])
+        scrapedtitle = match[2]
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
         scrapedplot = match[3]
@@ -262,7 +262,7 @@ def performsearch(texto):
 def searchresults2(item):
     logger.info("[documaniatv.py] searchresults")
 
-    # Descarga la p�gina
+    # Descarga la pagina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -277,7 +277,7 @@ def searchresults2(item):
 
     for match in matches:
         # Titulo
-        scrapedtitle = acentos(match[2])
+        scrapedtitle = match[2]
 
         # URL
         scrapedurl = match[0]
@@ -294,7 +294,7 @@ def searchresults2(item):
             logger.info("scrapedurl="+scrapedurl)
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
-        # A�ade al listado de XBMC
+        # Añade al listado de XBMC
         xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
 
 
@@ -355,7 +355,7 @@ def documentaldeldia(item):
     matches =  re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for match in matches:
-        scrapedtitle = acentos(match[1])
+        scrapedtitle = match[1]
         scrapedurl = match[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -457,7 +457,7 @@ def toplist(item):
 
     for match in matches:
         # Titulo
-        scrapedtitle = acentos(match[3])
+        scrapedtitle = match[3]
 
         # URL
         scrapedurl = match[1]
@@ -499,28 +499,6 @@ def paginasiguientes(patronvideos,data,category,cat):
 
     return itemlist
 
-def acentos(title):
-
-    title = title.replace("Â�", "")
-    title = title.replace("Ã©","�")
-    title = title.replace("Ã¡","�")
-    title = title.replace("Ã³","�")
-    title = title.replace("Ãº","�")
-    title = title.replace("Ã­","�")
-    title = title.replace("Ã±","�")
-    title = title.replace("â€", "")
-    title = title.replace("â€œÂ�", "")
-    title = title.replace("â€œ","")
-    title = title.replace("é","�")
-    title = title.replace("á","�")
-    title = title.replace("ó","�")
-    title = title.replace("ú","�")
-    title = title.replace("í","�")
-    title = title.replace("ñ","�")
-    title = title.replace("Ã“","�")
-    return(title)
-######-----------------------------------------------##############
-
 def verRelacionados(params,data,category):
         
     patronvideos  = '<div class="item">.*?<a href="([^"]+)"'
@@ -530,7 +508,7 @@ def verRelacionados(params,data,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for match in matches:
-        scrapedtitle = acentos(match[2])
+        scrapedtitle = match[2]
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
         scrapeddescription = match[3]
