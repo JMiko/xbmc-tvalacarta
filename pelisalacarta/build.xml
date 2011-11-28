@@ -277,6 +277,44 @@
         <copy file="platform/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
     </target>
 
+	<!-- copy-rss ============================================================ -->
+    <target name="copy-rss">
+        <copy todir="${target}/rss/pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.log"/>
+				<exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+
+                <exclude name="platform/boxee/**"/>
+                <exclude name="platform/developer/**"/>
+                <exclude name="platform/plex/**"/>
+                <exclude name="platform/wiimc/**"/>
+                <!--exclude name="platform/rss/**"/-->
+                <exclude name="platform/xbmc/**"/>
+                <exclude name="platform/xbmcdharma/**"/>
+                <exclude name="platform/xbmceden/**"/>
+            </fileset>
+        </copy>
+        <copy file="platform/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py"/>
+    </target>
+
 	<!-- copy-xbmc-addon-oficial-dharma ============================================================ -->
 	<target name="copy-xbmc-addon-oficial-dharma">
         <copy todir="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta">
@@ -533,6 +571,10 @@
         <antcall target="copy-wiimc"/>
         <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}.zip" basedir="${target}/wiimc"/>
 
+        <mkdir dir="${target}/rss/pelisalacarta"/>
+        <antcall target="copy-rss"/>
+        <zip destfile="${target}/rss/pelisalacarta-rss-${version}.zip" basedir="${target}/rss"/>
+
         <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
         <antcall target="copy-boxee"/>
     	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
@@ -584,6 +626,13 @@
         <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="${target}/wiimc">
 				<include name="pelisalacarta-wiimc-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-rss-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/rss">
+				<include name="pelisalacarta-rss-${version}.zip"/>
             </fileset>
         </ftp>
 
