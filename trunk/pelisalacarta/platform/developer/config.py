@@ -52,6 +52,8 @@ def get_setting(name):
         if name in overrides:
             dev = overrides[name]
             #print "Overrides: ",name,"=",dev
+        #elif name=="debug":
+        #    return "true"
         else:
             dev=configfile.get("General",name)
             #print "Config file: ",name,"=",dev
