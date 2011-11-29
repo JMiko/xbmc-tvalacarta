@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para pintadibujos
+# Canal para Terroygore
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse, urllib2,urllib,re
@@ -24,32 +24,28 @@ logger.info("[terrorygore.py] init")
 
 DEBUG = True
 
-def mainlist(params,url,category):
+def isGeneric():
+    return True
+
+def mainlist(item):
     logger.info("[terrorygore.py] mainlist")
+    
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Películas de Terror"                     , action="movielist" , url="http://www.terrorygore.com/feeds/posts/default?start-index=1&max-results=50"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Película de Terror Asiáticas (VOSEng)"   , action="movielist" , url="http://asianmovielink.blogspot.com/feeds/posts/default/-/Horror?start-index=1&max-results=50"))
+    return itemlist
 
-    xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Películas de Terror" , "http://www.terrorygore.com/feeds/posts/default?start-index=1&max-results=50" , "", "" )
-    xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Película de Terror Asiáticas (VOSEng)" , "http://asianmovielink.blogspot.com/feeds/posts/default/-/Horror?start-index=1&max-results=50" , "", "" )
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def movielist(params,url,category):
+def movielist(item):
     logger.info("[terrorygore.py] mainlist")
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     
     start_index = "1"
     start_index_re = "start-index=(.*)&"
-    url_params = url.split("?",1)
+    url_params = item.url.split("?",1)
     url_limpia = url_params[0]
-    matches = re.compile(start_index_re,re.DOTALL).findall(url)
+    matches = re.compile(start_index_re,re.DOTALL).findall(item.url)
 
     if len(matches)>0:
         start_index = matches[0]
@@ -67,6 +63,7 @@ def movielist(params,url,category):
     matches = re.compile(entrada_blog_re,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
+    itemlist = []
     #Procesamos cada coincidencia 
     for match in matches:
         entrada_blog = match
@@ -95,56 +92,12 @@ def movielist(params,url,category):
                 logger.info("scrapedthumbnail="+scrapedthumbnail)
 
             # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = "" , context=5 ))
         
     if len(matches)>45:
-        scrapedurl = url_limpia+"?start-index="+str(new_start)+"&max-results=50" 
-        xbmctools.addnewfolder( CHANNELNAME , "movielist" , CHANNELNAME , "Página Siguiente" , scrapedurl , "", "" )
+        scrapedurl = url_limpia+"?start-index="+str(new_start)+"&max-results=50"
+        itemlist.append( Item(channel=CHANNELNAME, title="Página Siguiente", action="movielist" , url=scrapedurl))
+    
+    return itemlist
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def detail(params,url,category):
-    logger.info("[terrorygore.py] detail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
-
-    for video in listavideos:
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , title + " - " + video[0] , video[1] , thumbnail , "" )
-    # ------------------------------------------------------------------------------------
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-        
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def play(params,url,category):
-    logger.info("[terrorygore.py] play")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-    server = params["server"]
-
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
 
