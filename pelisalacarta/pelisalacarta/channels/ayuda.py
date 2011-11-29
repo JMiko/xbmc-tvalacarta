@@ -37,9 +37,10 @@ def mainlist(item):
     """
     logger.info("[ayuda.py] mainlist")
     itemlist = []
-    
+    itemlist.append( Item(channel=CHANNELNAME, action="updatebiblio" , title="Buscar nuevos episodios y actualizar biblioteca"))
+        
     # Arreglador de biblioteca
-    if config.get_platform=="xbmc":
+    if config.get_platform()=="xbmc":
         itemlist.append( Item(channel=CHANNELNAME, action="fixSTRMLibrary" , title="Convertir Biblioteca strm",plot="Convierte los archivos strm existentes en la biblioteca actual para que funcionen tras un upgrade a XBMC Dharma (v10.5). Tambien se puede ejecutar para adaptar archivos de un XBMC mas moderno a otro anterior. Básicamente deja los ficheros strm de la forma correcta para que funcionen en la versión actualmente instalada."))
         
     data = scrapertools.cachePage(SOURCE_URL)
@@ -77,3 +78,6 @@ def mainlist(item):
             itemlist.append( Item(channel=CHANNELNAME, action="play", server="megavideo", title=title + " [megavideo]", url=url, thumbnail=image , folder=False ) )
 
     return itemlist
+
+def updatebiblio(item):
+    import library_service

@@ -222,8 +222,11 @@ def run():
                             #(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
                             # Añade todos menos el último (el que dice "Añadir esta serie...")
                             if i<len(itemlist):
-                                nuevos = nuevos + library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
+                                nuevos = nuevos + library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
                         except IOError:
+                            import sys
+                            for line in sys.exc_info():
+                                logger.error( "%s" % line )
                             logger.info("[launcher.py]Error al grabar el archivo "+item.title)
                             errores = errores + 1
                         
@@ -244,9 +247,17 @@ def run():
                     
                     #Lista con series para actualizar
                     nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
-                    config_canal = open( nombre_fichero_config_canal , "a" )
-                    config_canal.write(item.show+","+item.url+","+item.channel+"\n")
-                    config_canal.close();
+                    logger.info("nombre_fichero_config_canal="+nombre_fichero_config_canal)
+                    if not os.path.exists(nombre_fichero_config_canal):
+                        f = open( nombre_fichero_config_canal , "w" )
+                    else:
+                        f = open( nombre_fichero_config_canal , "r" )
+                        contenido = f.read()
+                        f.close()
+                        f = open( nombre_fichero_config_canal , "w" )
+                        f.write(contenido)
+                    f.write(item.show+","+item.url+","+item.channel+"\n")
+                    f.close();
 
                 elif action=="search":
                     logger.info("[launcher.py] search")
