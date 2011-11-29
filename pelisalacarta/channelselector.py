@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import urlparse,urllib2,urllib,re
 import os
 import sys
@@ -202,6 +202,7 @@ def channels_list():
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload Premium (FR)", channel="megauploadpremiumfr"  , language="FR"    , category="S"       , type="generic"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""      , category="G"       , type="xbmc"  ))
+    itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Moviezet"              , channel="moviezet"             , language="ES"    , category="F.S"     , type="generic" )) # mrfluffy 01/10/2011
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
@@ -280,9 +281,9 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     
     #print "thumbnail_type="+config.get_setting("thumbnail_type")
     if config.get_setting("thumbnail_type")=="0":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'posters' ) )
+        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
     else:
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'banners' ) )
+        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
     
     if config.get_setting("thumbnail_type")=="0":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/posters/"
