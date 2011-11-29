@@ -164,7 +164,26 @@
     <string id="30403">Canales Favoritos</string>
     <string id="30404">Ver Canal por Codigo(ID)</string>
     <string id="30405">Introduce el còdigo del canal</string>
-
+    
+    <!-- Justin.tv Category menu strings -->
+    <string id="30407">Producers</string>
+    <string id="30408">Social</string>
+    <string id="30409">Entretenimiento</string>
+    <string id="30410">Juegos</string>
+    <string id="30411">Deportes</string>
+    <string id="30412">Noticias y Acontecimientos</string>
+    <string id="30413">Animales</string>
+    <string id="30414">Ciencia y Tecnologia</string>
+    <string id="30415">Mas</string>
+    <string id="30416">Favoritos</string>
+    <string id="30417">Buscar</string>
+    <string id="30418">Login Justin.tv</string>
+    <string id="30419">Todos los Idiomas</string>
+    <string id="30420">Elegir Idioma</string>
+    <string id="30421">Todos</string>
+    <string id="30422">Ingrese el login de Justin TV</string>
+    <string id="30423">El canal [%s] esta offline en este momento</string>
+    
     <!-- LetMeWatchThis -->
     <string id="40001">Películas - Novedades</string>
     <string id="40002">Series - Novedades</string>

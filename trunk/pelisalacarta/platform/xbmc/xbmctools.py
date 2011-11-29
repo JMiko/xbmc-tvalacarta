@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # XBMC Tools
@@ -50,9 +50,11 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         except:
             logger.info('[xbmctools.py] addnewfolder(<unicode>)')
     listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
+
+    listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
     if fanart!="":
         listitem.setProperty('fanart_image',fanart) 
-    listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
+        xbmcplugin.setPluginFanart(pluginhandle, fanart)
     #Realzamos un quote sencillo para evitar problemas con títulos unicode
 #    title = title.replace("&","%26").replace("+","%2B").replace("%","%25")
     try:
@@ -68,7 +70,11 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     if context == 1 and accion != "por_teclado":
         DeleteCommand = "XBMC.RunPlugin(%s?channel=buscador&action=borrar_busqueda&title=%s&url=%s&show=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( show ) )
         contextCommands.append((config.get_localized_string( 30300 ),DeleteCommand))
-        
+
+    if context == 5:
+        trailerCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30162),trailerCommand))
+
     if len (contextCommands) > 0:
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
     if totalItems == 0:
@@ -86,9 +92,11 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
         except:
             logger.info('[xbmctools.py] addnewvideo(<unicode>)')
     listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-    if fanart!="":
-        listitem.setProperty('fanart_image',fanart) 
     listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal } )
+    if fanart!="":
+        logger.info("fanart :%s" %fanart)
+        listitem.setProperty('fanart_image',fanart)
+        xbmcplugin.setPluginFanart(pluginhandle, fanart)
     if IsPlayable == 'true': #Esta opcion es para poder utilizar el xbmcplugin.setResolvedUrl()
         listitem.setProperty('IsPlayable', 'true')
     #listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
@@ -671,15 +679,14 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
                 else:
                     addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context, show=item.show, fulltitle=item.fulltitle )
             else:
-                if config.get_setting("player_mode")=="1":
-                    isPlayable = "false"
-                else:
-                    isPlayabel = "true"
+                if config.get_setting("player_mode")=="1": # SetResolvedUrl debe ser siempre "isPlayable = true"
+                    isPlayable = "true"
+                
 
                 if item.duration:
-                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" , item.duration , IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems, show=item.show, password = item.password, extra = item.extra, fulltitle=item.fulltitle )
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" ,  duration = item.duration , fanart = item.fanart, IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems, show=item.show, password = item.password, extra = item.extra, fulltitle=item.fulltitle )
                 else:    
-                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems, show=item.show , password = item.password , extra=item.extra, fulltitle=item.fulltitle )
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, fanart = item.fanart, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems, show=item.show , password = item.password , extra=item.extra, fulltitle=item.fulltitle )
     
         # Cierra el directorio
         xbmcplugin.setContent(pluginhandle,"Movies")
@@ -702,3 +709,10 @@ def setSubtitles():
     subtitlefile = os.path.join( config.get_data_path(), 'subtitulo.srt' )
     logger.info("[xbmctools.py] setting subtitle file %s" % subtitlefile)
     xbmc.Player().setSubtitles(subtitlefile)
+
+def trailer(item):
+    logger.info("[xbmctools.py] trailer")
+    config.set_setting("subtitulo", "false")
+    import sys
+    xbmc.executebuiltin("XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( item.category ) , urllib.quote_plus( item.fulltitle ) , urllib.quote_plus( item.url ) , urllib.quote_plus( item.thumbnail ) , urllib.quote_plus( "" ) ))
+    return

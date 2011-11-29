@@ -29,6 +29,9 @@
     <setting type="sep" />
     <setting id="privateuser" type="text" label="30034" default=""/>
     <setting id="privatepassword" type="text" option="hidden" label="30035" default=""/>
+    
+    <setting type="sep" />
+    <setting id="justin_login" type="text" label="30418" default=""/>
 
     <setting type="sep" />
     <setting id="downloadpath" type="text" label="30017" default=""/>

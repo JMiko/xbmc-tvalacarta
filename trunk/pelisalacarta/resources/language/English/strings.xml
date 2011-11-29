@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<!-- Available id from 30000 to 30999 -->
+    <!-- Available id from 30000 to 30999 -->
 
-	<!-- ======================================= -->
-	<!-- 30000 to 30049: Configuration           -->
-	<!-- ======================================= -->
-	
+    <!-- ======================================= -->
+    <!-- 30000 to 30049: Configuration           -->
+    <!-- ======================================= -->
+    
     <!-- Commons -->
     <string id="30000">Default player:</string>
     <string id="30001">Check for updates:</string>
@@ -30,8 +30,8 @@
     <string id="30013">Megavideo/Megaupload premium mode:</string>
     <string id="30014">Username:</string>
     <string id="30015">Password:</string>
-	<string id="30045">Fileserve premium mode:</string>
-	<string id="30048">Filenium premium mode(All in 1):</string>
+    <string id="30045">Fileserve premium mode:</string>
+    <string id="30048">Filenium premium mode(All in 1):</string>
     <string id="30031">Video Quality (FLV)</string>
     <string id="30032">Standard Definition (SD)</string>
     <string id="30033">High Definition (HD)(when available)</string>    
@@ -67,7 +67,7 @@
     <string id="30042">Cache path:</string>
 
     <string id="30044">Play mode:</string>
-	
+    
     <!-- =============================================================== -->
     <!-- 30050 to 30099: Info / error messages                           -->
     <!-- =============================================================== -->
@@ -89,16 +89,16 @@
 
     <string id="30065">Unsopported Server</string>
 
-	<!-- =============================================================== -->
-	<!-- 30100 to 30149: Generic channels (Search, downloads, etc.)      -->
-	<!-- =============================================================== -->
-	<string id="30100">Configuration</string> <!-- Configuración -->
-	<string id="30101">Downloads</string> <!-- Descargas -->
-	<string id="30102">Favorites</string> <!-- Favoritos -->
-	<string id="30103">Global search</string> <!-- Buscador -->
-	<string id="30104">Help</string> <!-- Ayuda -->
-	
-	<string id="30105">Removed from favorites</string> <!-- Se ha quitado de favoritos -->
+    <!-- =============================================================== -->
+    <!-- 30100 to 30149: Generic channels (Search, downloads, etc.)      -->
+    <!-- =============================================================== -->
+    <string id="30100">Configuration</string> <!-- Configuración -->
+    <string id="30101">Downloads</string> <!-- Descargas -->
+    <string id="30102">Favorites</string> <!-- Favoritos -->
+    <string id="30103">Global search</string> <!-- Buscador -->
+    <string id="30104">Help</string> <!-- Ayuda -->
+    
+    <string id="30105">Removed from favorites</string> <!-- Se ha quitado de favoritos -->
     <string id="30106">Removed from download list</string> <!-- Se ha quitado de la lista de descargas -->
     <string id="30107">Moved back to download list</string> <!-- Ha pasado de nuevo a la lista de descargas -->
     <string id="30108">added to favorites</string> <!-- se ha añadido a favoritos -->
@@ -111,8 +111,8 @@
     <string id="30115">Trailer for %s</string> <!-- El Trailer para %s -->
     <string id="30116">cannot be found.</string> <!-- no se ha podido localizar. -->
     <string id="30117">Do you want to refine the search using the keyboard?</string> <!-- ¿Quieres refinar la búsqueda con el teclado? -->
-	
-	<string id="30118">Channels</string>
+    
+    <string id="30118">Channels</string>
     <string id="30119">Choose a Category</string>
     <string id="30120">Choose a Language</string>
     <string id="30121">All</string>
@@ -130,28 +130,28 @@
     <string id="30133">Internet</string>
     <string id="30134">Los nuevos</string>
 
-	<!-- =============================================================== -->
-	<!-- 30150 to 30199: Action menu / contextual menu                   -->
-	<!-- =============================================================== -->
-	<string id="30150">Watch in high quality</string> <!-- Ver en calidad alta -->
-	<string id="30151">Watch the video</string> <!-- Ver en calidad normal -->
-	<string id="30152">Watch in low quality</string> <!-- Ver en calidad baja -->
-	<string id="30153">Download</string> <!-- Descargar -->
-	<string id="30154">Remove from favorites</string> <!-- Quitar de favoritos -->
-	<string id="30155">Add to favorites</string> <!-- Añadir a favoritos -->
-	<string id="30156">Remove from download list</string> <!-- Quitar de lista de descargas -->
-	<string id="30157">Add to download list</string><!--  Añadir a lista de descargas -->
-	<string id="30158">Send to jDownloader</string> <!-- Enviar a JDownloader -->
-	<string id="30159">Remove from download list forever</string> <!-- Borrar descarga definitivamente -->
-	<string id="30160">Move to download list again</string> <!-- Pasar de nuevo a lista de descargas -->
-	<string id="30161">Add to library</string> <!-- Añadir a Biblioteca -->
-	<string id="30162">Search for trailer</string> <!-- Buscar Trailer -->
-	<string id="30163">Choose an option</string> <!-- Elige una opción -->
+    <!-- =============================================================== -->
+    <!-- 30150 to 30199: Action menu / contextual menu                   -->
+    <!-- =============================================================== -->
+    <string id="30150">Watch in high quality</string> <!-- Ver en calidad alta -->
+    <string id="30151">Watch the video</string> <!-- Ver en calidad normal -->
+    <string id="30152">Watch in low quality</string> <!-- Ver en calidad baja -->
+    <string id="30153">Download</string> <!-- Descargar -->
+    <string id="30154">Remove from favorites</string> <!-- Quitar de favoritos -->
+    <string id="30155">Add to favorites</string> <!-- Añadir a favoritos -->
+    <string id="30156">Remove from download list</string> <!-- Quitar de lista de descargas -->
+    <string id="30157">Add to download list</string><!--  Añadir a lista de descargas -->
+    <string id="30158">Send to jDownloader</string> <!-- Enviar a JDownloader -->
+    <string id="30159">Remove from download list forever</string> <!-- Borrar descarga definitivamente -->
+    <string id="30160">Move to download list again</string> <!-- Pasar de nuevo a lista de descargas -->
+    <string id="30161">Add to library</string> <!-- Añadir a Biblioteca -->
+    <string id="30162">Search for trailer</string> <!-- Buscar Trailer -->
+    <string id="30163">Choose an option</string> <!-- Elige una opción -->
 	<string id="30164">Delete this file</string>
 
-	<!-- =============================================================== -->
-	<!-- 30100 to 30999: Individual channels                             -->
-	<!-- =============================================================== -->
+    <!-- =============================================================== -->
+    <!-- 30100 to 30999: Individual channels                             -->
+    <!-- =============================================================== -->
 
     <!-- Context menu strings -->
     <string id="30300">Delete saved search</string>
@@ -165,7 +165,26 @@
     <string id="30403">Favorites channels </string>
     <string id="30404">Play channel Live by ID</string>
     <string id="30405">Input channel ID code</string>
-
+    
+    <!-- Justin.tv Category menu strings -->
+    <string id="30407">Producers</string>
+    <string id="30408">Social</string>
+    <string id="30409">Entertainment</string>
+    <string id="30410">Games</string>
+    <string id="30411">Sports</string>
+    <string id="30412">News & Events</string>
+    <string id="30413">Animals</string>
+    <string id="30414">Science & Tech</string>
+    <string id="30415">More</string>
+    <string id="30416">Favourites</string>
+    <string id="30417">Search</string>
+    <string id="30418">Justin tv Login</string>
+    <string id="30419">All Languages</string>
+    <string id="30420">Choice Language</string>
+    <string id="30421">All</string>
+    <string id="30422">  Enter Justin tv Login</string>
+    <string id="30422">The channel [%s] is offline in this moment</string>
+    
     <!-- LetMeWatchThis -->
     <string id="40001">Movies - Just added</string>
     <string id="40002">TV Shows - Just added</string>
