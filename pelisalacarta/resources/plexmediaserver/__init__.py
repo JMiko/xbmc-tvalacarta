@@ -55,7 +55,15 @@ def mainlist():
 
 def runchannel(sender,channel,action="mainlist",category=""):
     Log("[__init__.py] runchannel")
-
+    '''
+    from PMS import Prefs
+    valor = Prefs.Get("megavideouser")
+    Log("login="+valor)
+    from core import config
+    valor = config.get_setting("megavideouser")
+    Log("login="+valor)
+    Log("get_data_path="+config.get_data_path())
+    '''
     Log("channel="+channel)
     Log("action="+action)
 
