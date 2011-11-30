@@ -111,7 +111,8 @@
     <string id="30115">Trailer for %s</string> <!-- El Trailer para %s -->
     <string id="30116">cannot be found.</string> <!-- no se ha podido localizar. -->
     <string id="30117">Do you want to refine the search using the keyboard?</string> <!-- ¿Quieres refinar la búsqueda con el teclado? -->
-    
+	<string id="30135">added to the library</string>
+
     <string id="30118">Channels</string>
     <string id="30119">Choose a Category</string>
     <string id="30120">Choose a Language</string>
