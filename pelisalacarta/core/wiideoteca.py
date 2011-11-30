@@ -18,9 +18,10 @@ import scrapertools
 CHANNELNAME = "wiideoteca"
 DEBUG = True
 XML = os.path.join( config.get_setting("bookmarkpath"),"series.xml")
-if not os.path.exists(XML):
+if not os.path.exists(XML) and os.path.exists(config.get_setting("bookmarkpath")):
     import shutil
     shutil.copyfile( os.path.join(config.get_runtime_path(),"resources","wiideoteca.xml") , XML )
+
 XML2 = XML.replace("series","pruebas")
 title = []
 fulltitle = []
