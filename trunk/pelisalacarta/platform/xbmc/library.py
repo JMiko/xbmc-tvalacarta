@@ -48,16 +48,7 @@ if not os.path.exists(SERIES_PATH):
     logger.info("[library.py] Series path doesn't exist:"+SERIES_PATH)
     os.mkdir(SERIES_PATH)
 
-#MONITOR_FILE
-MONITOR_FILE = xbmc.translatePath( os.path.join( LIBRARY_PATH, 'monitor.xml' ) )
-if not os.path.exists(MONITOR_FILE):
-    logger.info("[library.py] No existe fichero de monitorizaci�n de series:"+MONITOR_FILE)
-#    os.mkdir(SERIES_PATH) SUSTITUIR POR FUNCION ADECUADA PARA CREACI�N DE FICHEROS XML CON LA SIGUIENTE ESTRUCTURA:
-# <monitor>
-#   <series serie=name>url</serie>
-# </monitor>
-
-def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True, subtitle=""):
+def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="play_from_library",pedirnombre=True, subtitle=""):
     logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
 
     #Limpiamos el titulo para usarlo como fichero
@@ -105,11 +96,10 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
         raise
 #    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s' % ( sys.argv[ 0 ] , canal , "strm" , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server )
 # Eliminaci�n de plot i thumnai
-
-    if sys.argv[ 0 ] == "":
-            itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( "plugin://plugin.video.pelisalacarta/" , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
-    
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
+    addon_name = sys.argv[ 0 ]
+    if addon_name.strip()=="":
+        addon_name="plugin://plugin.video.pelisalacarta/"
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( addon_name , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
     logger.info("[library.py] savelibrary fullfilename=%s , itemurl=%s" % (fullfilename,itemurl))
 
     LIBRARYfile.write(itemurl)
