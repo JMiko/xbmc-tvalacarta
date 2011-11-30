@@ -163,6 +163,7 @@ def channels_history_list():
 def channels_list():
     itemlist = []
 
+    #itemlist.append( Item( title="apiezas"              , channel="apiezas"             , language="ES"    , category="A"       , type="generic" ))
     itemlist.append( Item( title="Animeflv"              , channel="animeflv"             , language="ES"    , category="A"       , type="generic" ))
     #itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES"    , category="A"       , type="xbmc"     ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
