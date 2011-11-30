@@ -204,6 +204,10 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
         if config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
             exec "from servers import filenium as gen_conector"
+            
+            # Parche para solucionar el problema habitual de que un vídeo http://www.megavideo.com/?d=XXX no está, pero http://www.megaupload.com/?d=XXX si
+            url = url.replace("http://www.megavideo.com/?d","http://www.megaupload.com/?d")
+
             video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
             logger.info("[xbmctools.py] filenium url="+video_gen)
             video_urls.append( [ "[filenium]", video_gen ] )
@@ -230,6 +234,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             else:
                 opciones.append(config.get_localized_string(30155)) # "Añadir a favoritos"
         
+            if not strmfile:
+                opciones.append(config.get_localized_string(30161)) # "Añadir a Biblioteca"
+        
             if download_enable:
                 if channel!="descargas":
                     opciones.append(config.get_localized_string(30157)) # "Añadir a lista de descargas"
@@ -244,10 +251,6 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
         if default_action=="3":
             seleccion = len(opciones)-1
-    
-        if not strmfile:
-            if category in LIBRARY_CATEGORIES:
-                opciones.append(config.get_localized_string(30161)) # "Añadir a Biblioteca"
     
         # Busqueda de trailers en youtube    
         if not channel in ["Trailer","ecarteleratrailers"]:
@@ -402,7 +405,12 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     elif opciones[seleccion]==config.get_localized_string(30161): #"Añadir a Biblioteca":  # Library
         from platform.xbmc import library
-        library.savelibrary(title,url,thumbnail,server,plot,canal=channel,category=category,Serie=Serie)
+        titulo = fulltitle
+        if fulltitle=="":
+            titulo = title
+        library.savelibrary(titulo,url,thumbnail,server,plot,canal=channel,category=category,Serie=Serie)
+        advertencia = xbmcgui.Dialog()
+        resultado = advertencia.ok(config.get_localized_string(30101) , fulltitle , config.get_localized_string(30135)) # 'se ha añadido a la lista de descargas'
         return
 
     elif opciones[seleccion]==config.get_localized_string(30162): #"Buscar Trailer":
