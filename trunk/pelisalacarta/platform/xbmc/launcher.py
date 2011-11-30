@@ -153,6 +153,10 @@ def run():
 
                 elif action=="strm_detail" or action=="play_from_library":
                     logger.info("[launcher.py] play_from_library")
+
+                    elegido = Item(url="")                    
+                    
+                    logger.info("item.server=#"+item.server+"#")
                     # Ejecuta find_videos, del canal o común
                     try:
                         itemlist = channel.findvideos(item)
@@ -160,27 +164,31 @@ def run():
                         from servers import servertools
                         itemlist = servertools.find_video_items(item)
 
-                    #for item2 in itemlist:
-                    #    logger.info(item2.title+" "+item2.subtitle)
-
-                    # El usuario elige el mirror
-                    opciones = []
-                    for item in itemlist:
-                        opciones.append(item.title)
-                
-                    import xbmcgui
-                    dia = xbmcgui.Dialog()
-                    seleccion = dia.select(config.get_localized_string(30163), opciones)
-
-                    if seleccion==-1:
-                        return
+                    if len(itemlist)>0:
+                        #for item2 in itemlist:
+                        #    logger.info(item2.title+" "+item2.subtitle)
+    
+                        # El usuario elige el mirror
+                        opciones = []
+                        for item in itemlist:
+                            opciones.append(item.title)
+                    
+                        import xbmcgui
+                        dia = xbmcgui.Dialog()
+                        seleccion = dia.select(config.get_localized_string(30163), opciones)
+                        elegido = itemlist[seleccion]
+    
+                        if seleccion==-1:
+                            return
+                    else:
+                        elegido = item
                 
                     # Ejecuta el método play del canal, si lo hay
                     try:
-                        itemlist = channel.play(itemlist[seleccion])
+                        itemlist = channel.play(elegido)
                         item = itemlist[0]
                     except:
-                        item = itemlist[seleccion]
+                        item = elegido
                     logger.info("Elegido %s (sub %s)" % (item.title,item.subtitle))
                     
                     from platform.xbmc import xbmctools
@@ -188,12 +196,11 @@ def run():
                     xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
 
                 elif action=="add_pelicula_to_library":
-                    logger.info("[launcher.py] Pelicula")
+                    logger.info("[launcher.py] add_pelicula_to_library")
                     from platform.xbmc import library
                     # Obtiene el listado desde el que se llamó
-                    scrapedtitle = item.show
-                    library.savelibrary(item.show,url,"",server,"",canal=item.channel,category="Cine",Serie=item.show,verbose=False,accion=item.extra,pedirnombre=False)
-                
+                    library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
+
                 elif action=="add_serie_to_library":
                     logger.info("[launcher.py] add_serie_to_library")
                     from platform.xbmc import library
