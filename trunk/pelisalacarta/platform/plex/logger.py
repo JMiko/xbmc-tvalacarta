@@ -4,7 +4,7 @@
 # Logger
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-from PMS import *
+from PMS import Log
 
 def info(texto):
     try:
