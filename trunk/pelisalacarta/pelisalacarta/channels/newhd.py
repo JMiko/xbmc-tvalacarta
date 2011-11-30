@@ -33,8 +33,8 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Español", action="idioma", url="http://www.newhd.org/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Inglés",  action="idioma", url="http://www.newhd.org/en/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Inglés",  action="idioma", url="http://www.newhd.org/en/"))
+    #itemlist.append( Item(channel=CHANNELNAME, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
 
     return itemlist
 
