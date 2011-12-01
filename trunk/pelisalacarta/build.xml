@@ -2,7 +2,7 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.2.3"/>
+    <property name="version" value="3.2.4"/>
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
 
@@ -55,8 +55,6 @@
                 <!--exclude name="platform/xbmc/**"/-->
                 <!--exclude name="platform/xbmcdharma/**"/-->
                 <exclude name="platform/xbmceden/**"/>
-
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
         <copy file="platform/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
@@ -97,8 +95,6 @@
                 <!--exclude name="platform/xbmc/**"/-->
                 <exclude name="platform/xbmcdharma/**"/>
                 <!--exclude name="platform/xbmceden/**"/-->
-
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
         <copy file="platform/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
@@ -140,8 +136,6 @@
                 <!--exclude name="platform/xbmc/**"/-->
                 <!--exclude name="platform/xbmcdharma/**"/-->
                 <!--exclude name="platform/xbmceden/**"/-->
-
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
         <copy file="platform/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py"/>
@@ -237,6 +231,7 @@
 			</fileset>
         </copy>
         <copy file="platform/boxee/platform_name.py" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
+        <copy file="platform/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/descriptor.xml"/>
     </target>
 
 	<!-- copy-wiimc ============================================================ -->
@@ -355,7 +350,6 @@
                 <exclude name="pelisalacarta/channels/animeforos.py"/>
                 <exclude name="resources/images/casttv/**"/>
                 <exclude name="resources/settings.conf"/>
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
         <copy file="platform/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
@@ -400,7 +394,6 @@
                 <exclude name="pelisalacarta/channels/animeforos.py"/>
                 <exclude name="resources/images/casttv/**"/>
                 <exclude name="resources/settings.conf"/>
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
         <copy file="platform/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
@@ -506,7 +499,6 @@
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta.py"/>
                 <exclude name="readme.txt"/>
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
                 <exclude name="pelisalacarta/channels/casttv.py"/>
                 <exclude name="pelisalacarta/channels/animeforos.py"/>
                 <exclude name="pelisalacarta/channels/notas.tb"/>
@@ -546,7 +538,6 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="tester.py"/>
-                <exclude name="pelisalacarta/channels/seriesly.py"/>
 			</fileset>
         </copy>
         <copy file="addon-dharma.xml" tofile="${destination-path}/plugin.video.pelisalacarta/addon.xml"/>
