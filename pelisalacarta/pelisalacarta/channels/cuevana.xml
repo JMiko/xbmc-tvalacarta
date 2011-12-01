@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>17</tag>
+	<tag>18</tag>
 	<date>28/11/2011</date>
-	<changes>Se arreglo bug para ver peliculas</changes>
+	<changes>Los episodios ya salen ordenados</changes>
 </version>
