@@ -15,7 +15,7 @@ from core import scrapertools
 from core import logger
 from core.item import Item
 from core import downloadtools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from servers import servertools
 
 CHANNELNAME = "peliculasid"

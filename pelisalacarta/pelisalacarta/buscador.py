@@ -25,7 +25,7 @@ def searchresults(params,url="",category=""):
     import xbmc
     import xbmcgui
     import xbmcplugin
-    from platform.xbmc import xbmctools
+    from platformcode.xbmc import xbmctools
 
     logger.info("[buscador.py] searchresults")
     salvar_busquedas(params,url,category)
@@ -150,7 +150,7 @@ def listar_busquedas(params,url="",category=""):
     import xbmcgui
     import xbmcplugin
     
-    from platform.xbmc import xbmctools
+    from platformcode.xbmc import xbmctools
     #print "category :" +category
     if url == "" and category == "":
         channel_preset = params.channel
@@ -220,7 +220,7 @@ def borrar_busqueda(params,url="",category=""):
     import xbmcgui
     import xbmcplugin
     
-    from platform.xbmc import xbmctools
+    from platformcode.xbmc import xbmctools
     if url == "" and category == "":
         channel = params.channel
         url = params.url
@@ -262,7 +262,7 @@ def teclado(default="", heading="", hidden=False):
     import xbmcgui
     import xbmcplugin
     
-    from platform.xbmc import xbmctools
+    from platformcode.xbmc import xbmctools
     logger.info("[buscador.py] teclado")
     tecleado = ""
     keyboard = xbmc.Keyboard(default)
@@ -312,7 +312,7 @@ def addfolder( canal , nombre , url , accion , channel2 = "" ):
     import xbmcgui
     import xbmcplugin
     
-    from platform.xbmc import xbmctools
+    from platformcode.xbmc import xbmctools
     logger.info('[buscador.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
     itemurl = '%s?channel=%s&action=%s&category=%s&url=%s&channel2=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url),channel2 )

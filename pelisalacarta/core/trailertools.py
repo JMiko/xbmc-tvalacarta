@@ -16,7 +16,7 @@ import gdata.youtube
 import gdata.youtube.service
 from servers import youtube
 
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core import scrapertools
 from core import logger
 from core import config

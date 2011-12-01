@@ -17,7 +17,7 @@ from servers import megavideo
 from servers import servertools
 
 from core import scrapertools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core import config
 from core import logger
 from core.item import Item

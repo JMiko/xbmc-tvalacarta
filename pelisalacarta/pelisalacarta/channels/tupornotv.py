@@ -8,7 +8,7 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 from servers import servertools
-#from platform.xbmc import xbmctools
+#from platformcode.xbmc import xbmctools
 from core import config
 from core.item import Item
 from core import logger

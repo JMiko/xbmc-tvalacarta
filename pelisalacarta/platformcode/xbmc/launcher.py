@@ -107,7 +107,7 @@ def run():
             if not generico:
                 logger.info("[launcher.py] xbmc native channel")
                 if (action=="strm"):
-                    from platform.xbmc import xbmctools
+                    from platformcode.xbmc import xbmctools
                     xbmctools.playstrm(params, url, category)
                 else:
                     exec "channel."+action+"(params, url, category)"
@@ -129,7 +129,7 @@ def run():
                 else:
                     logger.info("[launcher.py] No subtitle")
 
-                from platform.xbmc import xbmctools
+                from platformcode.xbmc import xbmctools
 
                 if action=="play":
                     logger.info("[launcher.py] play")
@@ -191,19 +191,19 @@ def run():
                         item = elegido
                     logger.info("Elegido %s (sub %s)" % (item.title,item.subtitle))
                     
-                    from platform.xbmc import xbmctools
+                    from platformcode.xbmc import xbmctools
                     logger.info("subtitle="+item.subtitle)
                     xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
 
                 elif action=="add_pelicula_to_library":
                     logger.info("[launcher.py] add_pelicula_to_library")
-                    from platform.xbmc import library
+                    from platformcode.xbmc import library
                     # Obtiene el listado desde el que se llamó
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
                 elif action=="add_serie_to_library":
                     logger.info("[launcher.py] add_serie_to_library")
-                    from platform.xbmc import library
+                    from platformcode.xbmc import library
                     import xbmcgui
                 
                     # Obtiene el listado desde el que se llamó

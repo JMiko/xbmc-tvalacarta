@@ -12,7 +12,7 @@ import xbmcgui
 import xbmcplugin
 
 from core import scrapertools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core import DecryptYonkis as Yonkis
 from core import config
 from core import logger

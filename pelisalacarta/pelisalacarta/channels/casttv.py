@@ -16,7 +16,7 @@ import tvshack
 import seriesyonkis
 
 from core import scrapertools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core import downloadtools
 from core import config
 

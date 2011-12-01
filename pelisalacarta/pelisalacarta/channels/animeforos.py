@@ -15,7 +15,7 @@ import xbmcplugin
 
 from servers import servertools
 from core import scrapertools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 
 import casttv
 

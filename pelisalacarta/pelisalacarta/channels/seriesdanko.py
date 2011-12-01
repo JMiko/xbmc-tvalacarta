@@ -432,7 +432,7 @@ def play2(item):
 
     listavideos = servertools.findvideos(data)
     itemlist = []
-    from platform.xbmc import xbmctools 
+    from platformcode.xbmc import xbmctools 
     for video in listavideos:
         scrapedtitle = item.fulltitle.strip() + " - " + video[0]
         scrapedurl = video[1]

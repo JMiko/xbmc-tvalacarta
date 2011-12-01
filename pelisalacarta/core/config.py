@@ -15,7 +15,7 @@ import platform_name
 
 PLATFORM_NAME = platform_name.PLATFORM_NAME
 print "PLATFORM_NAME="+PLATFORM_NAME
-exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
 
 def force_platform(platform_name):
     global PLATFORM_NAME
@@ -23,7 +23,7 @@ def force_platform(platform_name):
     PLATFORM_NAME = platform_name
     # En PLATFORM debería estar el módulo a importar
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
 
@@ -35,14 +35,14 @@ def get_library_support():
 
 def get_system_platform():
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_system_platform()
 
 def open_settings():
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.open_settings()
@@ -50,7 +50,7 @@ def open_settings():
 def get_setting(name,channel=""):
     try:
         #print "[config.py] get_setting en PLATFORM=%s" % PLATFORM
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     # La cache recibe un valor por defecto la primera vez que se solicita
@@ -95,49 +95,49 @@ def get_setting(name,channel=""):
 
 def set_setting(name,value):
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     platformconfig.set_setting(name,value)
 
 def save_settings():
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     platformconfig.save_settings()
 
 def get_localized_string(code):
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_localized_string(code)
 
 def get_library_path():
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_library_path()
 
 def get_temp_file(filename):
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_temp_file()
 
 def get_runtime_path():
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_runtime_path()
 
 def get_data_path():
     try:
-        exec "import platform."+PLATFORM_NAME+".config as platformconfig"
+        exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
     return platformconfig.get_data_path()

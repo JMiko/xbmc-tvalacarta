@@ -47,7 +47,7 @@ class Handler(BaseHTTPRequestHandler):
         logger.info("-----------------------------------------------------------------")
 
         if self.path.startswith("/"+PLATFORM_NAME):
-            exec "from platform."+PLATFORM_NAME+" import launcher"
+            exec "from platformcode."+PLATFORM_NAME+" import launcher"
             respuesta = launcher.controller(plugin_name=PLUGIN_NAME,port=PORT,host=host,path=self.path,headers=self.headers)
         else:
             respuesta = ""

@@ -21,7 +21,7 @@ from servers import youtube
 from servers import servertools
 
 from core import scrapertools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core import config
 from core import logger
 from core import trailertools
