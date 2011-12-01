@@ -24,7 +24,7 @@ Using it you can see videos published on sites like:
     * MCAnime
     * StageVU
     * Tu.tv
-	* AnimeID
+* AnimeID
     * SesionVIP
 	* PeliculasEroticas (thanks to bandavi)
 	* Descarga Cine Clásico (thanks to ermanitu)
