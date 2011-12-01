@@ -446,6 +446,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # Descarga el subtitulo
     if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+        import os
         ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
         if os.path.exists(ficherosubtitulo):
             try:
