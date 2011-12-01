@@ -11,11 +11,9 @@ from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-from BeautifulSoup import BeautifulSoup
 
 PLUGIN_NAME = "pelisalacarta"
 CHANNELNAME = "seriesdanko"
-ATOM_NS = 'http://www.w3.org/2005/Atom'
 DEBUG = config.get_setting("debug")
 
 if config.get_system_platform() == "xbox":
@@ -52,7 +50,7 @@ def novedades(item):
     extra = ""
     # Descarga la página
     data = scrapertools.downloadpageGzip(item.url).replace("\n","")
-    print data
+    #print data
     patronvideos = "(<h3 class='post-title entry-title'>.*?<div class='post-body entry-content')"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     totalItems = len(matches)
@@ -137,7 +135,7 @@ def allserieslist(item):
             action = "capitulos"
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, fulltitle = scrapedtitle , totalItems = totalItems))
+        itemlist.append( Item(channel=CHANNELNAME, action=action , title=scrapedtitle , show=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, fulltitle = scrapedtitle , totalItems = totalItems))
 
     return itemlist
 
@@ -253,7 +251,7 @@ def capitulos(item):
                 
     patronvideos  = "<a href='([^']+)'>([^<]+)</a> <img(.+?)/>"
     matches = re.compile(patronvideos,re.DOTALL).findall(contenidos.replace('"',"'"))
-    print contenidos        
+    #print contenidos        
     try:
         plot = re.compile(r'(Informac.*?/>)</div>').findall(contenidos)[0]
         if len(plot)==0:
@@ -313,7 +311,7 @@ def capitulos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , folder=True) )
 
     #xbmc.executebuiltin("Container.Content(Movies)")
     
