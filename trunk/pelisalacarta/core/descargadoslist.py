@@ -12,7 +12,7 @@ import downloadtools
 import config
 import logger
 import samba
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 import favoritos
 
 from servers import servertools

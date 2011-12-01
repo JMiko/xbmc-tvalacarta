@@ -16,7 +16,7 @@ from xml.dom import EMPTY_NAMESPACE
 from core import scrapertools
 from core import config
 from core import logger
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core.item import Item
 from core import downloadtools
 from servers import vk

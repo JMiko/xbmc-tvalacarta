@@ -19,7 +19,7 @@ from pelisalacarta import buscador
 from core import config
 from core import logger
 from core import decrypt21
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core import scrapertools
 
 CHANNELNAME = "peliculas21"

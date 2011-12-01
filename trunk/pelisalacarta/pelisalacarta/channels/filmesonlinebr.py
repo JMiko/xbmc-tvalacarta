@@ -15,7 +15,7 @@ import string
 from core import scrapertools
 from core import config
 from core import logger
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 

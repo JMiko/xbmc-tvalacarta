@@ -13,7 +13,7 @@ from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-from platform.xbmc import xbmctools
+from platformcode.xbmc import xbmctools
 try:
     import json
 except:

@@ -15,8 +15,8 @@ import string
 from core import scrapertools
 from core import logger
 from core import config
-from platform.xbmc import xbmctools
-from platform.xbmc import library
+from platformcode.xbmc import xbmctools
+from platformcode.xbmc import library
 from core.item import Item
 
 from pelisalacarta import buscador

@@ -17,7 +17,7 @@ except:
     import config
 
 try:
-    exec "import platform."+config.get_platform()+".logger as platformlogger"
+    exec "import platformcode."+config.get_platform()+".logger as platformlogger"
     default = False
 except:
     default = True

@@ -404,7 +404,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         return
 
     elif opciones[seleccion]==config.get_localized_string(30161): #"Añadir a Biblioteca":  # Library
-        from platform.xbmc import library
+        from platformcode.xbmc import library
         titulo = fulltitle
         if fulltitle=="":
             titulo = title

@@ -15,8 +15,8 @@ from core.item import Item
 from servers import servertools
 
 logger.info("[library_service.py] Actualizando series...")
-from platform.xbmc import library
-from platform.xbmc import launcher
+from platformcode.xbmc import library
+from platformcode.xbmc import launcher
 from pelisalacarta.channels import seriesyonkis
 from pelisalacarta.channels import cuevana
 import xbmcgui

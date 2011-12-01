@@ -23,7 +23,7 @@ def isGeneric():
     return True
 
 def fixSTRMLibrary(params,url,category):
-    from platform.xbmc import library
+    from platformcode.xbmc import library
     total,errores = library.fixStrmLibrary()
     import xbmcgui
     dlg = xbmcgui.Dialog()
