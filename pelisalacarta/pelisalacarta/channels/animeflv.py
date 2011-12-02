@@ -160,7 +160,6 @@ def Lista2(item):
 def newlist(item):
     logger.info("[animeflv.py] newlist")
 
-    
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
@@ -250,3 +249,17 @@ def airlist(item):
         itemlist.append( Item(channel=CHANNELNAME, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    itemlist = mainlist()
+    lista_series = newlist(item[0]) # Novedades
+    lista_mirror = findvideos(item[0])
+    if len(lista_mirror)==0:
+        bien = True
+    else:
+        bien = False
+        
+    return bien

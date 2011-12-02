@@ -145,8 +145,11 @@ def peliculasb(item): # fichas con formato en entradas alfabéticas
     #
     patron = '<a href="([^"]+)" class="paginacion"[^>]+>\&gt\;\&gt\;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
+    #if len(matches)>0:
+    #    itemlist.append( Item(channel=CHANNELNAME, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
     if len(matches)>0:
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+        newitem = Item(channel=CHANNELNAME, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True)
+        itemlist.extend( peliculasb(newitem) )
 
     return itemlist
 

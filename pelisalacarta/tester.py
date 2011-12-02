@@ -5,9 +5,23 @@
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 import re,urllib,urllib2,sys
+sys.path.append ("lib")
+
+from core import platform_name
+platform_name.PLATFORM_NAME="developer"
+
 from core import scrapertools
 from core.item import Item
 from servers import servertools
+
+def test_one_channel(channelid):
+    try:
+        exec "from pelisalacarta.channels import "+channelid+" as channelmodule"
+        resultado = channelmodule.test()
+    except:
+        resultado = False
+
+    return resultado
 
 def test_channels():
     
@@ -17,6 +31,13 @@ def test_channels():
     
     #animeforos - xbmc only
     no_probados.append("animeforos")
+
+    # animeflv
+    resultado = test_one_channel("animeflv")
+    if resultado:
+        funcionan.append("animeflv")
+    else:
+        no_funcionan.append("animeflv")
 
     # animeid
     try:
@@ -405,9 +426,57 @@ def test_fileserver_premium():
     
     print "location=%s" % location
 
+def test_filenium():
+    url = "http://www.fileserve.com/file/asDbhwd"
+    from servers import filenium
+    video_url = filenium.get_video_url(url,premium=True,user="aaa@gmail.com",password="bbb")
+    
+    print video_url
+
+def test_json():
+    
+    cadena = '{"480":{"2":["megaupload"]}}'
+    import simplejson as json
+    sources = json.loads(cadena)
+    print sources
+    for quality_id in sources:
+        print quality_id
+        languages = sources[quality_id]
+        print languages
+        
+        for language_id in sources[quality_id]:
+            print language_id
+            mirrors = sources[quality_id][language_id]
+            print mirrors
+
+            for mirror in mirrors:
+                print mirror
+
+def test_videobb():
+    from servers import videobb
+    import base64
+    import binascii
+
+    sece2="621aa94bf809e87900e9e90799bedc281e81e2587e7bb6bb7a15f5a4ec9f0713"
+    rkts="130979"
+    c = videobb.decrypt32byte(sece2, int(rkts), int(base64.decodestring("MjI2NTkz")));
+    print c
+    #  20d90e4a60601383e7d6778ee082861d1e81e2587e7bb6bb7a15f5a4ec9f0713
+    #->583b93ca1cd6adea3112c562f15460bc1e81e2587e7bb6bb7a15f5a4ec9f0713
+    
+    sece2="520674fa436cfe84ad275d37fd12dde91e81e2587e7bb6bb7a15f5a4ec9f0713"
+    rkts="919774"
+    c = videobb.decrypt32byte(sece2, int(rkts), int(base64.decodestring("MjI2NTkz")));
+    print c
+    #  b61f6fe75a78ca7e6c00a428bd1847eb1e81e2587e7bb6bb7a15f5a4ec9f0713
+    #->edc96268979da2615d5cfdb56b569ac31e81e2587e7bb6bb7a15f5a4ec9f0713
+
 if __name__ == "__main__":
     #test_server_connectors()
     #test_cineraculo()
-    #test_channels()
+    test_channels()
     #test_samba()
-    test_fileserver_premium()
+    #test_fileserver_premium()
+    #test_filenium()
+    #test_json()
+    #test_videobb() 
