@@ -66,7 +66,7 @@ class MyDialog:
         code = ""
         for trozo in trozos:
             print "Trozo: "+trozo
-            patron = ".*?([0-9]+)$"
+            patron = "^(\d+)$"
             matches = re.findall(patron,trozo,flags=re.DOTALL)
             if len(matches)>0:
                 code = matches[0]
