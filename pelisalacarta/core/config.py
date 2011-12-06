@@ -59,7 +59,7 @@ def get_setting(name,channel=""):
 
     if name=="download.enabled":
         try:
-            from core import descargados
+            from core import descargas
             dev="true"
         except:
             #import sys
