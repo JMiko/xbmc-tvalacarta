@@ -47,18 +47,18 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
                 
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/rss/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <!--exclude name="platform/xbmc/**"/-->
-                <!--exclude name="platform/xbmcdharma/**"/-->
-                <exclude name="platform/xbmceden/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <!--exclude name="platformcode/xbmcdharma/**"/-->
+                <exclude name="platformcode/xbmceden/**"/>
 			</fileset>
         </copy>
-        <copy file="platform/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platform/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-addon-eden ============================================================ -->
@@ -87,18 +87,18 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
 
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/rss/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <!--exclude name="platform/xbmc/**"/-->
-                <exclude name="platform/xbmcdharma/**"/>
-                <!--exclude name="platform/xbmceden/**"/-->
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <!--exclude name="platformcode/xbmceden/**"/-->
 			</fileset>
         </copy>
-        <copy file="platform/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platform/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-plugin ============================================================ -->
@@ -128,17 +128,17 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
 
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/rss/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <!--exclude name="platform/xbmc/**"/-->
-                <!--exclude name="platform/xbmcdharma/**"/-->
-                <!--exclude name="platform/xbmceden/**"/-->
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <!--exclude name="platformcode/xbmcdharma/**"/-->
+                <!--exclude name="platformcode/xbmceden/**"/-->
 			</fileset>
         </copy>
-        <copy file="platform/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-boxee ============================================================ -->
@@ -171,15 +171,15 @@
                 <exclude name="icon.png"/>
                 <exclude name="tester.py"/>
 
-                <!--exclude name="platform/boxee/**"/-->
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/dreambox/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <exclude name="platform/rss/**"/>
-                <!--exclude name="platform/xbmcdharma/**"/-->
-                <exclude name="platform/xbmcdharma/**"/>
-                <exclude name="platform/xbmceden/**"/>
+                <!--exclude name="platformcode/boxee/**"/-->
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/dreambox/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <!--exclude name="platformcode/xbmcdharma/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
                 <exclude name="core/platform_name.py"/>
 
                 <exclude name="resources/plexmediaserver/**"/>
@@ -188,7 +188,7 @@
                 <exclude name="resources/images/banners/**"/>
 			</fileset>
         </copy>
-        <copy file="platform/boxee/platform_name.py" tofile="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/boxee/platform_name.py" tofile="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
     </target>
 
     <target name="copy-boxee" description="Copy Boxee files for packaging">
@@ -214,15 +214,15 @@
                 <exclude name="tester.py"/>
                 <exclude name="core/platform_name.py"/>
 
-                <!--exclude name="platform/boxee/**"/-->
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/dreambox/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <exclude name="platform/rss/**"/>
-                <!--exclude name="platform/xbmcdharma/**"/-->
-                <exclude name="platform/xbmcdharma/**"/>
-                <exclude name="platform/xbmceden/**"/>
+                <!--exclude name="platformcode/boxee/**"/-->
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/dreambox/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <!--exclude name="platformcode/xbmcdharma/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
 
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/dreambox/**"/>
@@ -230,8 +230,8 @@
                 <exclude name="resources/images/banners/**"/>
 			</fileset>
         </copy>
-        <copy file="platform/boxee/platform_name.py" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
-        <copy file="platform/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/descriptor.xml"/>
+        <copy file="platformcode/boxee/platform_name.py" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/descriptor.xml"/>
     </target>
 
 	<!-- copy-wiimc ============================================================ -->
@@ -259,17 +259,17 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
 
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/rss/**"/>
-                <!--exclude name="platform/wiimc/**"/-->
-                <exclude name="platform/xbmc/**"/>
-                <exclude name="platform/xbmcdharma/**"/>
-                <exclude name="platform/xbmceden/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <!--exclude name="platformcode/wiimc/**"/-->
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
             </fileset>
         </copy>
-        <copy file="platform/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-rss ============================================================ -->
@@ -297,17 +297,17 @@
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
 
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <!--exclude name="platform/rss/**"/-->
-                <exclude name="platform/xbmc/**"/>
-                <exclude name="platform/xbmcdharma/**"/>
-                <exclude name="platform/xbmceden/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/rss/**"/-->
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
             </fileset>
         </copy>
-        <copy file="platform/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-addon-oficial-dharma ============================================================ -->
@@ -332,10 +332,10 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/dreambox/**"/>
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/wiimc/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
                 <exclude name="lib/elementtree/**"/>
                 <exclude name="lib/simplejson/**"/>
                 <exclude name="tester.py"/>
@@ -352,8 +352,8 @@
                 <exclude name="resources/settings.conf"/>
 			</fileset>
         </copy>
-        <copy file="platform/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platform/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-addon-oficial-eden ============================================================ -->
@@ -378,10 +378,10 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/dreambox/**"/>
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/wiimc/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
                 <exclude name="tester.py"/>
                 <exclude name="version.xml"/>
                 <exclude name="pelisalacarta.py"/>
@@ -396,8 +396,8 @@
                 <exclude name="resources/settings.conf"/>
 			</fileset>
         </copy>
-        <copy file="platform/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platform/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-plexmediaserver ============================================================ -->
@@ -412,8 +412,8 @@
         <copy file="resources/plexmediaserver/info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
         <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
         <copy file="resources/plexmediaserver/DefaultPrefs.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
-        <copy file="resources/plexmediaserver/art-default.jpg" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
-        <copy file="resources/plexmediaserver/icon-default.png" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
+        <copy file="fanart.jpg" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/art-default.jpg"/>
+        <copy file="icon.png" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/icon-default.png"/>
         <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
             <fileset dir="resources/images"/>
         </copy-->
@@ -446,7 +446,7 @@
                 <exclude name="icon-old.png"/>
                 <exclude name="icon.png"/>
                 <exclude name="lib/**"/>
-                <exclude name="platform/**"/>
+                <exclude name="platformcode/**"/>
                 <exclude name="__init__.py"/>
                 <exclude name="core/logger.py"/>
                 <exclude name="core/config.py"/>
@@ -456,9 +456,9 @@
             </fileset>
         </copy>
         <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
-        <copy file="platform/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
-        <copy file="platform/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
-        <copy file="platform/plex/platform_name.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+        <copy file="platformcode/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+        <copy file="platformcode/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+        <copy file="platformcode/plex/platform_name.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
 	</target>
 
 	<!-- copy-dreambox ============================================================ -->
@@ -481,14 +481,14 @@
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
                 <exclude name="resources/**"/>
-                <exclude name="platform/boxee/**"/>
-                <exclude name="platform/developer/**"/>
-                <exclude name="platform/plex/**"/>
-                <exclude name="platform/wiimc/**"/>
-                <exclude name="platform/rss/**"/>
-                <exclude name="platform/xbmc/**"/>
-                <exclude name="platform/xbmcdharma/**"/>
-                <exclude name="platform/xbmceden/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
                 <exclude name="tester.py"/>
                 <exclude name="changelog.txt"/>
                 <exclude name="default.py"/>
