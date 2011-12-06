@@ -150,9 +150,9 @@ def controller(plugin_name,port,host,path,headers):
                         if thumbnail != "" and item.thumbnail == "":          item.thumbnail = thumbnail
                     if item.title=="none": item.title="Ver el video"
                     url = "http://%s/rss/%s/%s/%s/%s/%s/%s/%s/%s/playlist.rss" % ( host , item.channel , item.action , urllib.quote_plus(item.url) , item.server , urllib.quote(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle) )
-                    respuesta += "<title><![CDATA[%s]]></title>\n" % item.title
-                    if item.fulltitle not in ("","none"): respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % item.fulltitle
-                    if item.plot != "":                   respuesta += "<description><![CDATA[ %s ]]></description>\n" % item.plot   
+                    respuesta += "<title><![CDATA[%s]]></title>\n" % unicode(item.title,"iso-8859-1",errors="ignore").encode("utf-8",errors="ignore")
+                    if item.fulltitle not in ("","none"): respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % unicode(item.title,"iso-8859-1",errors="ignore").encode("utf-8",errors="ignore")
+                    if item.plot != "":                   respuesta += "<description><![CDATA[ %s ]]></description>\n" % unicode(item.plot,"iso-8859-1",errors="ignore").encode("utf-8",errors="ignore")
                     if item.thumbnail != "":              respuesta += "<image>%s</image>\n" % item.thumbnail
                     respuesta += "<link>%s</link>\n" % url
                     respuesta += "\n"
@@ -166,9 +166,9 @@ def controller(plugin_name,port,host,path,headers):
                     if plot      != "" and item.plot == "":               item.plot = plot
                     if thumbnail != "" and item.thumbnail == "":          item.thumbnail = thumbnail
                     #respuesta += "<title><![CDATA[%s]]></title>\n" % entityunescape(item.title)
-                    respuesta += "<title><![CDATA[%s]]></title>\n" % fulltitle
-                    respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % item.title
-                    respuesta += "<description><![CDATA[%s]]></description>\n" % plot
+                    respuesta += "<title><![CDATA[%s]]></title>\n" % unicode(fulltitle,"iso-8859-1",errors="ignore").encode("utf-8",errors="ignore")
+                    respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % unicode(item.title,"iso-8859-1",errors="ignore").encode("utf-8",errors="ignore")
+                    respuesta += "<description><![CDATA[%s]]></description>\n" % unicode(plot,"iso-8859-1",errors="ignore").encode("utf-8",errors="ignore")
                     respuesta += "<enclosure url=\"%s\" type=\"video/x-flv\" />\n" % item.url
                     respuesta += "<image>%s</image>\n" % thumbnail
                 respuesta += "</item>\n\n"
