@@ -94,7 +94,7 @@ def pendientes(item):
     return itemlist
 
 def errores(item):
-    logger.info("[descargadoslist.py] errores")
+    logger.info("[descargas.py] errores")
     itemlist=[]
 
     # Crea un listado con las entradas de favoritos
@@ -260,6 +260,6 @@ def mover_descarga_error_a_pendiente(fullfilename):
     # La categoría es el nombre del fichero en favoritos, así que lee el fichero
     canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos,readbookmarkfile(fullfilename,"")
     # Lo añade a la lista de descargas
-    descargadoslist.savebookmark(canal,title,url,thumbnail,server,plot,fulltitle)
+    descargas.savebookmark(canal,title,url,thumbnail,server,plot,fulltitle)
     # Y lo borra de la lista de errores
     os.remove(urllib.unquote_plus( extra ))
