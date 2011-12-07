@@ -156,6 +156,17 @@ def downloadall(item):
                 # Averigua la URL del vídeo
                 exec "from servers import "+server+" as server_connector"
                 video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
+
+                if config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
+                    exec "from servers import filenium as gen_conector"
+                    
+                    # Parche para solucionar el problema habitual de que un vídeo http://www.megavideo.com/?d=XXX no está, pero http://www.megaupload.com/?d=XXX si
+                    url = url.replace("http://www.megavideo.com/?d","http://www.megaupload.com/?d")
+        
+                    video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
+                    logger.info("[xbmctools.py] filenium url="+video_gen)
+                    video_urls.append( [ "[filenium]", video_gen ] )
+
                 # La última es la de mayor calidad, lo mejor para la descarga
                 mediaurl = video_urls[ len(video_urls)-1 ][1]
                 logger.info("[downloadall.py] mediaurl="+mediaurl)
