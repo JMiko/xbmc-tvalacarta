@@ -331,7 +331,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         mediaurl = video_urls[len(video_urls)-1][1]
 
         from core import downloadtools
-        keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(fulltitle))
+        keyboard = xbmc.Keyboard(fulltitle)
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             title = keyboard.getText()
