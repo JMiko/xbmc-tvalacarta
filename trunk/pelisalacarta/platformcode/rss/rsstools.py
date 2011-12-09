@@ -56,7 +56,7 @@ def getitems(requestpath):
     logger.info("cached_file="+cached_file)
     
     # Si el fichero está en cache
-    if channel not in ("trailertools","buscador","configuracion","pyload") and os.path.exists(cached_file): # <--
+    if channel not in ("trailertools","buscador","configuracion","pyload","wiidoteca") and os.path.exists(cached_file): # <--
         logger.info( "Reading from cache" )
         fichero = open( cached_file ,"rb")
         itemlist = cerealizer.load(fichero)
