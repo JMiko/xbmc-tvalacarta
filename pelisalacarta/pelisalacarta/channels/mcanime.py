@@ -8,7 +8,7 @@ import urlparse,urllib2,urllib,re
 import os
 import sys
 
-from core import descargadoslist
+from core import descargas
 import time
 
 import xbmc
@@ -280,7 +280,7 @@ def ddcat(params,url,category):
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def ddlist(params,url,category):
-    logger.info("[mcanime.py] ddcat")
+    logger.info("[mcanime.py] ddlist")
 
     # Descarga la p·gina
     data = scrapertools.cachePage(url)
@@ -334,6 +334,32 @@ def ddseriedetail(params,url,category):
         plot = plot.strip()
         plot = scrapertools.htmlclean(matches[0])
     logger.info("[mcanime.py] plot="+plot)
+
+    # Fansubs
+    patron  = '<h6 class="m">Fansubs que trabajan esta serie</h6>[^<]+'
+    patron += '<div id="user_actions">(.*?)</div>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    if len(matches)>0:
+        data = matches[0]
+        #logger.info("[mcanime.py] data="+data)
+        patron = '<ul class="dd_row">[^<]+'
+        patron += '<li class="dd_type"><img[^>]+></li>[^<]+'
+        patron += '<li class="dd_update"> <img[^>]+>([^<]+)</li>[^<]+'
+        patron += '<li class="dd_title">[^<]+'
+        patron += '<h5><a href="([^"]+)">([^<]+)</a></h5>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+
+        for match in matches:
+            # Atributos
+            scrapedtitle = match[2].strip()+" ("+match[0].strip()+")"
+            scrapedurl = urlparse.urljoin(url,match[1])
+            scrapedthumbnail = thumbnail
+            scrapedplot = plot
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+            # AÒade al listado de XBMC
+            xbmctools.addnewfolder( CHANNELNAME , "ddpostdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Aportaciones de los usuarios
     patron  = '<h6 class="m">Por los Usuarios</h6>[^<]+'
@@ -423,7 +449,7 @@ def ddpostdetail(params,url,category):
     # ------------------------------------------------------------------------------------
     # AÒade la opciÛn "AÒadir todos los vÌdeos a la lista de descarga"
     # ------------------------------------------------------------------------------------
-    xbmctools.addnewvideo( CHANNELNAME , "addalltodownloadlist" , title , "" , "(Añadir todos los videos a la lista de descarga)" , url , thumbnail , plot )
+    #xbmctools.addnewvideo( CHANNELNAME , "addalltodownloadlist" , title , "" , "(Añadir todos los videos a la lista de descarga)" , url , thumbnail , plot )
     
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
