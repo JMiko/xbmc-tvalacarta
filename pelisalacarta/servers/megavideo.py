@@ -381,7 +381,7 @@ def find_videos(data):
         if "&" in match:
             url = "http://www.megavideo.com/?v="+match.split("&")[0]
         else:
-            url = match
+            url = "http://www.megavideo.com/?v="+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'megavideo' ] )
