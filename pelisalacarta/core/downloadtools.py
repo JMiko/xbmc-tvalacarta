@@ -475,6 +475,7 @@ def downloadfile(url,nombrefichero,headers=[]):
         import xbmcgui
         progreso = xbmcgui.DialogProgress()
         progreso.create( "plugin" , "Descargando..." , url , nombrefichero )
+        #progreso.create( "plugin" , "Descargando..." , "" , os.path.basename(nombrefichero)+" desde "+urlparse.urlparse(url).hostname )
     except:
         progreso = ""
 
@@ -561,6 +562,7 @@ def downloadfile(url,nombrefichero,headers=[]):
                         #logger.info(sec_to_hms(tiempofalta))
                         try:
                             progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
+                            #progreso.update( percent , "Descargando %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent),"Falta %s - Velocidad %.2f Kb/s" % ( sec_to_hms(tiempofalta) , velocidad/1024 ) )
                         except:
                             pass
                     break
