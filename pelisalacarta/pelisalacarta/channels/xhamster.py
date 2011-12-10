@@ -17,7 +17,7 @@ from core.item import Item
 from servers import servertools
 
 CHANNELNAME = "xhamster"
-DEBUG = True
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
 	return True
@@ -34,51 +34,41 @@ def mainlist(item):
 
 def search(item,texto):
     logger.info("[xhamster.py] search")
-    itemlist=[]
-    if item.url=="":
-        item.url="http://xhamster.com/search.php?q=%s&qcat=video"
     tecleado = texto.replace( " ", "+" )
-    item.url = item.url % texto
-    return buscar(item)
+    item.url = item.url % tecleado
+    return videos(item)
 
 # SECCION ENCARGADA DE BUSCAR
 
-def buscar(item):
-	logger.info("[xhamster.py] buscar")
+def videos(item):
+	logger.info("[xhamster.py] videos")
+	data = scrapertools.downloadpageWithoutCookies(item.url)
 	itemlist = []
- 	data = scrapertools.downloadpageWithoutCookies(item.url)
 
+	matches = re.compile('<td valign="top" id="video_title">.*?<script type="text/javascript">', re.S).findall(data)
+	for match in matches:
+		datos = re.compile('<a href="([^"]+)".*?<img src=\'([^\']+).*?alt="([^"]+)"/>.*?</a>', re.S).findall(match)		
+		for video in datos:
+			try:
+				scrapedtitle = unicode( video[2], "utf-8" ).encode("iso-8859-1")
+			except:
+				scrapedtitle = video[2]
+			scrapedurl = urlparse.urljoin( "http://www.xhamster.com" , video[0] )
+			scrapedthumbnail = video[1]
+			scrapedplot = ""
+			# Depuracion
+			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
+			itemlist.append( Item(channel=CHANNELNAME, action="obtienedir" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+		
 # EXTRAE EL PAGINADOR
 #<a href='search.php?q=sexo&qcat=video&page=3' class='last'>Next</a></td></tr></table></div></td>
 	patronvideos  = '<a href=\'([^\']+)\' class=\'last\'>Next</a></td></tr></table></div></td>'
 	siguiente = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(siguiente)			
+	scrapertools.printMatches(siguiente)
 	if len(siguiente)>0:
-		direccion=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] )
-		paginador = Item(channel=CHANNELNAME, action="buscar" , title="!Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!Página siguiente")
+		itemlist.append( Item(channel=CHANNELNAME, action=item.action , title="!Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!Página siguiente") )
 	else:
 		paginador = None
-
- 	matches = re.compile('<td valign="top" id="video_title">.*?<script type="text/javascript">', re.S).findall(data)
- 	itemlist = []
- 	for match in matches:
- 		datos = re.compile('<a href="([^"]+)".*?<img src=\'([^\']+).*?alt="([^"]+)"/>.*?</a>', re.S).findall(match)		
- 		for video in datos:
- 			try:
- 				scrapedtitle = unicode( video[2], "utf-8" ).encode("iso-8859-1")
- 			except:
- 				scrapedtitle = video[2]
- 			scrapedurl = urlparse.urljoin( "http://www.xhamster.com" , video[0] )
- 			scrapedthumbnail = video[1]
- 			scrapedplot = ""
- 			# Depuracion
- 			logger.info(video[1])
- 			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
- 			itemlist.append( Item(channel=CHANNELNAME, action="obtienedir" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
- 		
- 	# METE PAGINADOR
-	if paginador is not None:
-		itemlist.append( paginador )
 
 	return itemlist
 
@@ -137,73 +127,20 @@ def listcategorias(item):
 	itemlist.append( Item(channel=CHANNELNAME, action="videos" , title="Webcams"  , url="http://xhamster.com/channels/new-webcams-1.html"))
 	return itemlist
 	
-# FUNCION ENCARGADA DE BUSCAR VIDEOS DENTRO DE CADA PAGINA.
 
-def videos(item):
-
- 	logger.info("[xhamster.py] videos")
- 	data = scrapertools.cache_page(item.url)
- 
- 	# EXTRAE EL PAGINADOR
-#<a href='/channels/new-bisexuals-3.html' class='last'>Next</a></td></tr></table></div></td>
-	patronvideos  = '<a href=\'([^\']+)\' class=\'last\'>Next</a></td></tr></table></div></td>'
-	siguiente = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(siguiente)			
-	if len(siguiente)>0:
-		direccion=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] )
-		paginador = Item(channel=CHANNELNAME, action="videos" , title="!Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!Página siguiente")
-	else:
-		paginador = None
-
-	# EXTRAE LOS VIDEOS
- 	#<table cellspacing="0" cellpadding="0" width="100%" border="0" valign="top"...<div id="footer">
- 	matches = re.compile('<table cellspacing="0" cellpadding="0" width="100%" border="0" valign="top".*?<div id="footer">', re.S).findall(data)
- 	itemlist = []
-	for match in matches:
-		datos = re.compile('<a href="([^"]+)".*?<img src=\'([^\']+).*?alt="([^"]+)"/>.*?</a>', re.S).findall(match)		
-		for video in datos:
-			try:
-				scrapedtitle = unicode( video[2], "utf-8" ).encode("iso-8859-1")
-			except:
-				scrapedtitle = video[2]
-			scrapedurl = urlparse.urljoin( "http://www.xhamster.com" , video[0] )		
-			scrapedthumbnail = video[1]
-			scrapedplot = ""
-			# Depuracion
-			logger.info(video[1])
-			if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-			itemlist.append( Item(channel=CHANNELNAME, action="obtienedir" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, server="Directo"))
-
-	# METE PAGINADOR
-	if paginador is not None:
-		itemlist.append( paginador )
-	return itemlist
-	
 # OBTIENE LOS ENLACES SEGUN LOS PATRONES DEL VIDEO Y LOS UNE CON EL SERVIDOR
 def obtienedir(item):
 	logger.info("[xhamster.py] obtienedir")
 	itemlist = []
 	data = scrapertools.cachePage(item.url)
-	patron = '\'file\': \'([^\']+)\','
-	matches = re.compile(patron,re.DOTALL).findall(data)
+	logger.debug(data)
+	#vvfW6Oh2jYE,end=1323406794/data=1473813193/speed=83200/701863_brooklyn_and_gauge.flv'
+	patron = '\'file\': \'(.*?)/(.*?)/(.*?)/(.*?)\','
+	matches = re.compile(patron).findall(data)
 	if len(matches)>0:
-		dir = "http://xhamster.com/flv2/" + matches[0]	
-		logger.info("url="+dir)
+		match= matches[0]
+		server = re.compile('\'srv\': \'(.*?)\'').findall(data);
+		dir = server[0]+'/key=' + match[0] + '/' +match[1] + '/' + match[2] + '/' + match[3]
+		logger.debug("url="+dir)
 		itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=dir, thumbnail=item.thumbnail, plot=item.plot, show=item.title, server="Directo", folder=False))
 	return itemlist
-	
-def play(params,dir,category):
-	logger.info("[xhamster.py] play")
-
-	title = urllib.unquote_plus( params.get("title") )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-	server = "Directo"
-	data = scrapertools.cachePage(url)
-	patron = '\'file\': \'([^\']+)\','
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if len(matches)>0:
-		dir = "http://xhamster.com/flv2/" + matches[0]	
-	logger.info("url="+dir)
-
-	xbmctools.playvideo(CHANNELNAME,server,dir,category,title,thumbnail,plot)
