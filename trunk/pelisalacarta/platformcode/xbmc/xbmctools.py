@@ -329,6 +329,10 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         
         # El vídeo de más calidad es el último
         mediaurl = video_urls[len(video_urls)-1][1]
+        
+        # Si no quiere usar filenium para descargas, coge el anterior
+        if config.get_setting("filenium_for_download")=="false" and video_urls[len(video_urls)-1][0]=="[filenium]":
+            mediaurl = video_urls[len(video_urls)-2][1]
 
         from core import downloadtools
         keyboard = xbmc.Keyboard(fulltitle)
