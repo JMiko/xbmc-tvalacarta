@@ -154,8 +154,9 @@ def run():
                 elif action=="strm_detail" or action=="play_from_library":
                     logger.info("[launcher.py] play_from_library")
 
+                    fulltitle = item.show + " " + item.title
                     elegido = Item(url="")                    
-                    
+
                     logger.info("item.server=#"+item.server+"#")
                     # Ejecuta find_videos, del canal o común
                     try:
@@ -193,7 +194,7 @@ def run():
                     
                     from platformcode.xbmc import xbmctools
                     logger.info("subtitle="+item.subtitle)
-                    xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
+                    xbmctools.play_video(strmfile=True, channel=item.channel, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=fulltitle)
 
                 elif action=="add_pelicula_to_library":
                     logger.info("[launcher.py] add_pelicula_to_library")
@@ -409,6 +410,9 @@ def extract_parameters():
     if params.has_key("show"):
         show = urllib.unquote_plus( params.get("show") )
     else:
-        show = ""
+        if params.has_key("Serie"):
+            show = urllib.unquote_plus( params.get("Serie") )
+        else:
+            show = ""
 
     return params, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password
