@@ -50,19 +50,15 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
             #logger.info("[megaupload.py] No hay cookie de Megaupload válida (error en login o password?)")
         else:
             tipo_usuario=PREMIUM
-    
+        
         # Obtiene el enlace para Megaupload
-        if tipo_usuario == PREMIUM:
+        if premium:
             video_url = get_premium_video_url(page_url,cookie,video_password,verify)
             if video_url!="":
                 extension = video_url[-4:]
                 video_urls.append( ['%s (Premium) [megaupload]' % extension , video_url] )
-        elif tipo_usuario == GRATIS:
-            video_url = get_free_video_url(page_url,tipo_usuario,video_password)
-            if video_url!="":
-                extension = video_url[-4:]
-                video_urls.append( ['%s (Free) [megaupload]' % extension , video_url, 26] )
-        elif tipo_usuario == ANONIMO:
+        else:
+            tipo_usuario=GRATIS
             video_url = get_free_video_url(page_url,tipo_usuario,video_password)
             if video_url!="":
                 extension = video_url[-4:]
@@ -150,7 +146,7 @@ def get_premium_video_url(page_url,cookie,video_password,verify):
         logger.info("[megaupload.py] descarga la página y busca la url")
         data=response.read()
         response.close()
-        patronvideos  = '<div class="down_ad_pad1">[^<]+<a href="([^"]+)"'
+        patronvideos  = '<a href="([^"]+)" class="download_premium_but">'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
         #scrapertools.printMatches(matches)
         mediaurl = ""
@@ -185,6 +181,7 @@ def get_free_video_url(page_url , tipo_usuario , video_password=None):
 
     # Descarga la página de MU
     data = scrapertools.cache_page(page_url,modo_cache=scrapertools.CACHE_NUNCA)
+    logger.info("data="+data)
     
     # Si tiene password lo pide
     password_data = re.search('filepassword',data)
@@ -200,7 +197,7 @@ def get_free_video_url(page_url , tipo_usuario , video_password=None):
             return ""
 
     # Comprueba si es un enlace premium
-    match1=re.compile('<a href="(.+?)" class="down_ad_butt1">').findall(data)
+    match1=re.compile('<a href="([^"]+)" class="download_regular_usual"').findall(data)
     if str(match1)=='[]':
         match2=re.compile('id="downloadlink"><a href="(.+?)" class=').findall(data)
         try:
