@@ -311,7 +311,7 @@ def capitulos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , context="4", folder=True) )
 
     #xbmc.executebuiltin("Container.Content(Movies)")
     
@@ -361,7 +361,8 @@ def findvideos2(item):
     logger.info("[seriesdanko.py] findvideos2")
     
     # Descarga la página
-
+    from core.subtitletools import saveSubtitleName
+    saveSubtitleName(item)
     data = scrapertools.downloadpageGzip(item.url).replace("\n","")
     patronvideos = "<tr><td class=('tam12'>.*?)</td></tr>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -418,7 +419,7 @@ def findvideos2(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="play2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = item.fulltitle, extra = item.thumbnail , folder=False) )    
+        itemlist.append( Item(channel=CHANNELNAME, action="play2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = item.fulltitle, extra = item.thumbnail , fanart=item.thumbnail , folder=False) )    
     return itemlist
 
 def play2(item):

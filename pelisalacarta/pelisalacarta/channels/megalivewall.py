@@ -100,7 +100,7 @@ def getplayByID(params,url,category):
     if len(tecleado)>0:
         url,thumbnail = megalive.getLiveUrl(tecleado,1)
         if len(url)>0:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=tecleado , url=tecleado, thumbnail=thumbnail, plot="", show = tecleado, folder=False , context = True))
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=tecleado , url=tecleado, thumbnail=thumbnail, plot="", show = tecleado, folder=False , context = "1" ))
     return itemlist
             
 def getlistWall(params,url,category):
@@ -131,7 +131,7 @@ def getlistWall(params,url,category):
         for match in matches:
             # Titulo
             if len(match[1])>0:
-                scrapedtitle = decodeHtmlentities(match[1]).encode("utf-8")
+                scrapedtitle = scrapertools.decodeHtmlentities(urllib.unquote_plus(match[1]))
             else:
                 scrapedtitle = "(no title)"
             # URL
@@ -154,7 +154,7 @@ def getlistWall(params,url,category):
 
             # AÒade al listado de XBMC
             #addnewvideo( CHANNELNAME , "play" , category ,"Directo", scrapedtitle+hq , scrapedurl , scrapedthumbnail , scrapedplot )
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = True))
+            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = "1"))
 
         return itemlist
 
@@ -234,7 +234,7 @@ def getlistchannel(params,url,category):
             logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
             
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle + hd , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = 1))
+        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle + hd , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = "1"))
     return itemlist
     
 def saveChannelFavorites(params,url,category):
@@ -401,7 +401,7 @@ def getlistfavorites(params,url,category):
         
     if len(datadict)>0:
         for item in datadict:
-            itemlist.append( Item(channel=CHANNELNAME, action="play_fav" , title=item["title"] , url=item["url"], thumbnail=item["thumbnail"], plot=item["plot"], show = item["title"], folder=False , context = 2))
+            itemlist.append( Item(channel=CHANNELNAME, action="play_fav" , title=item["title"] , url=item["url"], thumbnail=item["thumbnail"], plot=item["plot"], show = item["title"], folder=False , context = "2"))
         return itemlist
     else:
             return ""

@@ -32,17 +32,20 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 DEBUG = True
 
 # TODO: (3.2) Esto es un lío, hay que unificar
-def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context=0, show="",fulltitle=""):
+def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context="", show="",fulltitle=""):
     if fulltitle=="":
         fulltitle=title
     ok = addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , "" ,Serie,totalItems,fanart,context,show, fulltitle)
     return ok
 
-def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart="",context=0,show="",fulltitle=""):
+def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart="",context="",show="",fulltitle=""):
     if fulltitle=="":
         fulltitle=title
     contextCommands = []
     ok = False
+    context = urllib.unquote_plus(context)
+    if "|" in context:
+        context = context.split("|")
     #logger.info("pluginhandle=%d" % pluginhandle)
     if DEBUG:
         try:
@@ -67,11 +70,13 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         addSerieCommand = "XBMC.RunPlugin(%s?channel=%s&action=addlist2Library&category=%s&title=%s&fulltitle=%s&url=%s&extradata=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus(fulltitle) , urllib.quote_plus( url ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ) )
         contextCommands.append(("Añadir Serie a Biblioteca",addSerieCommand))
         
-    if context == 1 and accion != "por_teclado":
+    if "1" in context and accion != "por_teclado":
         DeleteCommand = "XBMC.RunPlugin(%s?channel=buscador&action=borrar_busqueda&title=%s&url=%s&show=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( show ) )
         contextCommands.append((config.get_localized_string( 30300 ),DeleteCommand))
-
-    if context == 5:
+    if "4" in context:
+        searchSubtitleCommand = "XBMC.RunPlugin(%s?channel=subtitletools&action=searchSubtitle&title=%s&url=%s&category=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ]  ,  urllib.quote_plus( title ) , urllib.quote_plus( url ), urllib.quote_plus( category ), urllib.quote_plus(fulltitle) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ) )
+        contextCommands.append(("XBMC Subtitle",searchSubtitleCommand))
+    if "5" in context:
         trailerCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
         contextCommands.append((config.get_localized_string(30162),trailerCommand))
 
@@ -86,6 +91,9 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle="", totalItems = 0, show="", password="", extra="",fulltitle=""):
     contextCommands = []
     ok = False
+    context = urllib.unquote_plus(context)
+    if "|" in context:
+        context = context.split("|")
     if DEBUG:
         try:
             logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
@@ -100,11 +108,11 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     if IsPlayable == 'true': #Esta opcion es para poder utilizar el xbmcplugin.setResolvedUrl()
         listitem.setProperty('IsPlayable', 'true')
     #listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
-    if context == 1: #El uno añade al menu contextual la opcion de guardar en megalive un canal a favoritos
+    if "1" in context: #El uno añade al menu contextual la opcion de guardar en megalive un canal a favoritos
         addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s&password=%s&extradata=%s)" % ( sys.argv[ 0 ] , canal , "saveChannelFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus(show), urllib.quote_plus( password) , urllib.quote_plus(extra) )
         contextCommands.append((config.get_localized_string(30301),addItemCommand))
         
-    if context == 2:#El dos añade al menu contextual la opciones de eliminar y/o renombrar un canal en favoritos 
+    if "2" in context:#El dos añade al menu contextual la opciones de eliminar y/o renombrar un canal en favoritos 
         addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s&password=%s&extradata=%s)" % ( sys.argv[ 0 ] , canal , "deleteSavedChannel" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus( show), urllib.quote_plus( password) , urllib.quote_plus(extra) )
         contextCommands.append((config.get_localized_string(30302),addItemCommand))
         addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s&password=%s&extradata=%s)" % ( sys.argv[ 0 ] , canal , "renameChannelTitle" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus( show),urllib.quote_plus( password) , urllib.quote_plus(extra) )
@@ -173,6 +181,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     logger.info("[xbmctools.py] playvideo subtitle="+config.get_setting("subtitulo")+" "+subtitle)
     '''
 
+    view = False
     # Abre el diálogo de selección
     opciones = []
     video_urls = []
@@ -299,8 +308,8 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
         import sys
         xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,listitem)    # JUR Added
-        if config.get_setting("subtitulo") == "true":
-            config.set_setting("subtitulo", "false")
+        #if config.get_setting("subtitulo") == "true":
+        #    config.set_setting("subtitulo", "false")
         return
 
     if opciones[seleccion]==config.get_localized_string(30158): # "Enviar a JDownloader"
@@ -323,6 +332,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             wait_time = video_urls[seleccion][2]
         else:
             wait_time = 0
+        view = True
 
     # Descargar
     elif opciones[seleccion]==config.get_localized_string(30153): # "Descargar"
@@ -448,6 +458,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             xlistitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
         xlistitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : channel , "Genre" : category } )
 
+    '''
     # Descarga el subtitulo
     if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
         import os
@@ -461,14 +472,14 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     
         from core import downloadtools
         downloadtools.downloadfile(subtitle, ficherosubtitulo )
-
+    '''
     # Lanza el reproductor
     if strmfile: #Si es un fichero strm no hace falta el play
         import sys
         xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,xlistitem)
-        if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
-            logger.info("[xbmctools.py] Con subtitulos")
-            setSubtitles()
+        #if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+        #    logger.info("[xbmctools.py] Con subtitulos")
+        #    setSubtitles()
     else:
         if config.get_setting("player_mode")=="0":
             # Añadimos el listitem a una lista de reproducción (playlist)
@@ -493,12 +504,12 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         
             xbmcPlayer = xbmc.Player( player_type )
             xbmcPlayer.play(playlist)
-
+            '''
             logger.info("subtitulo="+subtitle)
             if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
                 logger.info("[xbmctools.py] Con subtitulos")
                 setSubtitles()
-        
+            '''
         elif config.get_setting("player_mode")=="1":
             xlistitem.setProperty('IsPlayable', 'true')
             xlistitem.setProperty('path', mediaurl)
@@ -506,6 +517,13 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         
         elif config.get_setting("player_mode")=="2":
             xbmc.executebuiltin( "PlayMedia("+mediaurl+")" )
+
+    if (config.get_setting("subtitulo") == "true") and view:
+        from core import subtitletools
+        wait2second()
+        subtitletools.set_Subtitle()
+        if subtitle!="":
+            xbmc.Player().setSubtitles(subtitle)
 
 def handle_wait(time_to_wait,title,text):
     logger.info ("[megaupload.py] handle_wait(time_to_wait=%d)" % time_to_wait)
@@ -675,8 +693,15 @@ def playstrm(params,url,category):
         serie = params.get("Serie")
     else:
         serie = ""
-    
-    play_video("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie)
+    if (params.has_key("subtitle")):
+        subtitle = params.get("subtitle")
+    else:
+        subtitle = ""
+    from core.item import Item
+    from core.subtitletools import saveSubtitleName
+    item = Item(title=title,show=serie)
+    saveSubtitleName(item)
+    play_video("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie,subtitle=subtitle)
 
 def renderItems(itemlist, params, url, category,isPlayable='false'):
     if itemlist <> None:
@@ -706,7 +731,19 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
         xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
         xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-    
+
+def wait2second():
+    logger.info("[xbmctools.py] wait2second")
+    import time
+    contador = 0
+    while xbmc.Player().isPlayingVideo()==False:
+        logger.info("[xbmctools.py] setSubtitles: Waiting 2 seconds for video to start before setting subtitles")
+        time.sleep(2)
+        contador = contador + 1
+        
+        if contador>10:
+            break
+
 def setSubtitles():
     logger.info("[xbmctools.py] setSubtitles")
     import time

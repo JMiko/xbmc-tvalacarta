@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta
 # XBMC Launcher (xbmc / xbmc-dharma / boxee)
@@ -115,7 +115,7 @@ def run():
                 logger.info("[launcher.py] multiplatform channel")
                 from core.item import Item
                 item = Item(channel=channel_name, title=title , fulltitle=fulltitle, url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle, show=show, password=password)
-
+                '''
                 if item.subtitle!="":
                     logger.info("[launcher.py] Downloading subtitle file "+item.subtitle)
                     from core import downloadtools
@@ -128,7 +128,7 @@ def run():
                     config.set_setting("subtitulo","true")
                 else:
                     logger.info("[launcher.py] No subtitle")
-
+                '''
                 from platformcode.xbmc import xbmctools
 
                 if action=="play":
@@ -293,6 +293,8 @@ def run():
                             logger.info("[launcher.py] no channel 'findvideos' method, executing core method")
                             from servers import servertools
                             itemlist = servertools.find_video_items(item)
+                        from core import subtitletools
+                        subtitletools.saveSubtitleName(item)
 
                     # Activa el modo biblioteca para todos los canales genéricos, para que se vea el argumento
                     import xbmcplugin

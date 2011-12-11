@@ -32,7 +32,7 @@
     <string id="30015">Password:</string>
     <string id="30045">Fileserve premium mode:</string>
     <string id="30048">Filenium premium mode(All in 1):</string>
-	<string id="30049">Use Filenium for downloads</string>
+    <string id="30049">Use Filenium for downloads</string>
     <string id="30031">Video Quality (FLV)</string>
     <string id="30032">Standard Definition (SD)</string>
     <string id="30033">High Definition (HD)(when available)</string>    
@@ -112,7 +112,7 @@
     <string id="30115">Trailer for %s</string> <!-- El Trailer para %s -->
     <string id="30116">cannot be found.</string> <!-- no se ha podido localizar. -->
     <string id="30117">Do you want to refine the search using the keyboard?</string> <!-- ¿Quieres refinar la búsqueda con el teclado? -->
-	<string id="30135">added to the library</string>
+    <string id="30135">added to the library</string>
 
     <string id="30118">Channels</string>
     <string id="30119">Choose a Category</string>
@@ -149,7 +149,7 @@
     <string id="30161">Add to library</string> <!-- Añadir a Biblioteca -->
     <string id="30162">Search for trailer</string> <!-- Buscar Trailer -->
     <string id="30163">Choose an option</string> <!-- Elige una opción -->
-	<string id="30164">Delete this file</string>
+    <string id="30164">Delete this file</string>
 
     <!-- =============================================================== -->
     <!-- 30100 to 30999: Individual channels                             -->
@@ -185,7 +185,27 @@
     <string id="30420">Choice Language</string>
     <string id="30421">All</string>
     <string id="30422">  Enter Justin tv Login</string>
-    <string id="30422">The channel [%s] is offline in this moment</string>
+    <string id="30423">The channel [%s] is offline in this moment</string>
+    <string id="30424">Justin.tv Password</string>
+    
+    <!-- =============================================================== -->
+    <!--  Subtitulos                                                     -->
+    <!-- =============================================================== -->
+    <string id="30430">Subtitles</string>
+    <string id="30431">Choice Subtitle source :</string>
+    <string id="30432">Folder</string>
+    <string id="30433">File</string>
+    <string id="30434">Keyboard</string>
+    <string id="30435">Subtitles Directory</string>
+    <string id="30436">Subtitle file</string>
+    <string id="30437">taping the Addres</string>
+    
+    <!-- =============================================================== -->
+    <!-- Setting Category strings                                        -->
+    <!-- =============================================================== -->
+    <string id="30500">Login</string>
+    <string id="30501">Path</string>
+    <string id="30502">Other</string>
     
     <!-- LetMeWatchThis -->
     <string id="40001">Movies - Just added</string>
@@ -216,4 +236,16 @@
     <string id="30919"> (Nuevos contenidos)</string>
 
     <string id="30920">AÑADIR TODOS LOS EPISODIOS A LA BIBLIOTECA</string>
+    
+    <!-- =============================================================== -->
+    <!-- Configuracion RSS (IAMM, XTreamer y otros)    -->
+    <!-- =============================================================== -->
+    <string id="31000">Media translate activated:</string>
+    <string id="30140">Title</string>
+    <string id="30165">Press OK for change...</string>
+    <string id="30166">Salvar cambios</string>
+    <string id="30167">Salir</string>
+    <string id="30168">Cambios aplicados</string>
+    <string id="30169">Buscar</string>
+    <string id="30170">Actualizar canales:</string>
 </strings>

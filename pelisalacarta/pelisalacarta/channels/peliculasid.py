@@ -156,7 +156,7 @@ def listvideos(item):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= 5  ))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5"  ))
         
 
     # Extrae la marca de siguiente página

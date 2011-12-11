@@ -331,7 +331,7 @@ def listatipoVideo(params,url,category):
     scrapedplot = ""
     for match in matches:
         # Titulo
-        scrapedtitle = match[2].decode("utf-8")
+        scrapedtitle = scrapertools.unescape(match[2])
 
         # URL
         scrapedurl = match[0]
@@ -341,13 +341,13 @@ def listatipoVideo(params,url,category):
         
         # procesa el resto
         if cat == "tipo":
-           scrapedplot = match[3].decode("utf-8")
+           scrapedplot = scrapertools.unescape(match[3])
         else:
            for campo in re.findall("/(.*?)/",match[0]):
             scrapedplot = campo
         # Depuracion
         if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle.encode("utf-8"))
+            logger.info("scrapedtitle="+scrapedtitle)
             logger.info("scrapedurl="+scrapedurl)
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
@@ -424,7 +424,7 @@ def Videosnuevoslist(params,url,category):
         # Titulo
         scrapedtitle = match[2] + " - " + match[3]+" - " + match[4].replace('&iacute;','i')
         print scrapedtitle
-        scrapedtitle = scrapedtitle.decode("utf-8") 
+        scrapedtitle = scrapertools.unescape(scrapedtitle)
 
         # URL
         scrapedurl = match[0]
@@ -438,7 +438,7 @@ def Videosnuevoslist(params,url,category):
 
         # Depuracion
         if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle.encode("utf-8"))
+            logger.info("scrapedtitle="+scrapedtitle)
             logger.info("scrapedurl="+scrapedurl)
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 

@@ -740,6 +740,48 @@ def unescape(text):
         return text # leave as is
     return re.sub("&#?\w+;", fixup, text)
 
+    # Convierte los codigos html "&ntilde;" y lo reemplaza por "ñ" caracter unicode utf-8
+def decodeHtmlentities(string):
+    string = entitiesfix(string)
+    import re
+    entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
+
+    def substitute_entity(match):
+        from htmlentitydefs import name2codepoint as n2cp
+        ent = match.group(2)
+        if match.group(1) == "#":
+            return unichr(int(ent)).encode('utf-8')
+        else:
+            cp = n2cp.get(ent)
+
+            if cp:
+                return unichr(cp).encode('utf-8')
+            else:
+                return match.group()
+                
+    return entity_re.subn(substitute_entity, string)[0]
+    
+def entitiesfix(string):
+    # Las entidades comienzan siempre con el símbolo & , y terminan con un punto y coma ( ; ).
+    string = string.replace("&aacute","&aacute;")
+    string = string.replace("&eacute","&eacute;")
+    string = string.replace("&iacute","&iacute;")
+    string = string.replace("&oacute","&oacute;")
+    string = string.replace("&uacute","&uacute;")
+    string = string.replace("&Aacute","&Aacute;")
+    string = string.replace("&Eacute","&Eacute;")
+    string = string.replace("&Iacute","&Iacute;")
+    string = string.replace("&Oacute","&Oacute;")
+    string = string.replace("&Uacute","&Uacute;")
+    string = string.replace("&uuml"  ,"&uuml;")
+    string = string.replace("&Uuml"  ,"&Uuml;")
+    string = string.replace("&ntilde","&ntilde;")
+    string = string.replace("&#191"  ,"&#191;")
+    string = string.replace("&#161"  ,"&#161;")
+    string = string.replace(";;"     ,";")
+    return string
+
+
 def htmlclean(cadena):
     cadena = cadena.replace("<center>","")
     cadena = cadena.replace("</center>","")

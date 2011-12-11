@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para seriespepito
@@ -181,7 +181,7 @@ def episodelist(item):
         scrapedplot = item.plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , context="4"))
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show) )
@@ -191,7 +191,8 @@ def episodelist(item):
 def findvideos(item):
     logger.info("[seriespepito.py] findvideos")
     itemlist = []
-
+    from core.subtitletools import saveSubtitleName
+    saveSubtitleName(item)
     try:
         # Descarga la pagina
         data = scrapertools.cachePage(item.url)

@@ -179,18 +179,38 @@
     <string id="30415">Mas</string>
     <string id="30416">Favoritos</string>
     <string id="30417">Buscar</string>
-    <string id="30418">Login Justin.tv</string>
+    <string id="30418">Usuario Justin.tv</string>
     <string id="30419">Todos los Idiomas</string>
     <string id="30420">Elegir Idioma</string>
     <string id="30421">Todos</string>
     <string id="30422">Ingrese el login de Justin TV</string>
     <string id="30423">El canal [%s] esta offline en este momento</string>
-    
+    <string id="30424">Password Justin.tv</string>
+
+	<!-- =============================================================== -->
+	<!--       Subtitulos                                                -->
+	<!-- =============================================================== -->
+
+	<string id="30431">Elija la fuente de los subtitulos :</string>
+	<string id="30432">Folder</string>
+	<string id="30433">Archivo</string>
+	<string id="30434">Teclado</string>
+	<string id="30435">Directorio de subtitulos</string>
+	<string id="30436">Subtitulo a cargar</string>
+	<string id="30437">introducir direccion</string>
+	
     <!-- LetMeWatchThis -->
     <string id="40001">Películas - Novedades</string>
     <string id="40002">Series - Novedades</string>
     <string id="40003">!Página siguiente</string>
-
+    
+	<!-- =============================================================== -->
+	<!-- Category strings                                                -->
+	<!-- =============================================================== -->
+	<string id="30500">Cuentas</string>
+	<string id="30501">Rutas</string>
+	<string id="30502">Otros</string>
+	
     <!-- TVShack strings -->
     <string id="30900">TVShack</string>
     <string id="30901">Series TV (VO)</string>
