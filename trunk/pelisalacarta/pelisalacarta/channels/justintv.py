@@ -121,6 +121,8 @@ def listchannel(item):
     if not "|Next Page >>" in item.title:
         try:
             lang = config.get_setting("justin_lang")
+            if len(lang) == 0:
+                lang = 'all'
         except:
             lang = "all"
         item.title = item.url
@@ -250,4 +252,4 @@ def _language(item):
 def LoginEmpty():
     return xbmcgui.Dialog().ok("Pelisalacarta - Justin TV" ,"                  "+config.get_localized_string(30422))
 def channeloffline(channelname):
-    return xbmcgui.Dialog().ok("Pelisalacarta - Justin TV" ,"     "+config.get_localized_string(30423) %channelname)
+    return xbmcgui.Dialog().ok("Pelisalacarta - Justin TV" ,"",config.get_localized_string(30423)%channelname)

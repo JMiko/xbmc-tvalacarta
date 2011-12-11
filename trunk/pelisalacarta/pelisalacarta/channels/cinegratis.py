@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para cinegratis
@@ -186,7 +186,7 @@ def listvideos(item):
         scrapedplot = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
 
     # Extrae la marca de siguiente página
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -253,7 +253,7 @@ def listsimple_documentales(item):
     #logger.info(data)
     '''
 <table cellspacing='1' cellpadding='0' class='style3'>
-<tr class='style4'><td>T�tulo</td><td width='10'></td><td>G�nero</td></tr>
+<tr class='style4'><td>T?tulo</td><td width='10'></td><td>G?nero</td></tr>
 <tr><td height='5'></td></tr>
 <tr><td><a href='/pelicula/Abusos sexuales y el Vaticano/455'>Abusos sexuales y el Vaticano</td><td width='10'></td><td>Documentales</td></tr>
 <tr><td><a href='/pelicula/Abusos sexuales y el Vaticano (Documental)/7320'>Abusos sexuales y el Vaticano (Documental)</td><td width='10'></td><td>Documentales</td></tr>

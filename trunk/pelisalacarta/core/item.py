@@ -16,14 +16,14 @@ class Item(object):
     childcount = 0
     language = ""
     type = ""
-    context = 0
+    context = ""
     subtitle = ""
     totalItems =0
     overlay = None
     password = ""
     fulltitle = ""
 
-    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = 0,totalItems = 0, overlay = None, type="", password="", fulltitle="" ):
+    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = "",totalItems = 0, overlay = None, type="", password="", fulltitle="" ):
         self.channel = channel
         self.title = title
         self.url = url

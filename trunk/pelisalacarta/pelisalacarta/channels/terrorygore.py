@@ -92,7 +92,7 @@ def movielist(item):
                 logger.info("scrapedthumbnail="+scrapedthumbnail)
 
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = "" , context=5 ))
+            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = "" , context="4|5" ))
         
     if len(matches)>45:
         scrapedurl = url_limpia+"?start-index="+str(new_start)+"&max-results=50"

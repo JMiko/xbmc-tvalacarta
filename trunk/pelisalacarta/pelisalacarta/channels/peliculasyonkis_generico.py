@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para peliculasyonkis
@@ -124,7 +124,7 @@ def lastepisodes(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, context="4|5"))
 
     return itemlist  
 
@@ -214,7 +214,7 @@ def findvideos(item):
 
         for match in matches:
             #logger.info(match)
-            #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Espa�ol">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subt�tulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la pel�cula"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Informaci�n v�deo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
+            #<tr> <td class="episode-server"> <a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22">Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/1/1/8/7/869" title="Reproducir Colombiana (2011) " target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Espa?ol">esp</span></td> <td class="center"><span class="flags -_sub" title="Sin subt?tulo o desconocido">-</span></td> <td> <span class="episode-quality-icon" title="Calidad de la pel?cula"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Informaci?n v?deo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>No hay datos</li> </ul> </div> </td> <td class="center"><span title="TS-Screener (TS, TS-Screener o Screener)">TS-Scr</span></td> <td class="episode-uploader">Carioca</td> <td class="center"><a href="#" class="errorlink" data-id="1187869" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
             patron = '<a href="(/s/ngo/[^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="sprite quality([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  

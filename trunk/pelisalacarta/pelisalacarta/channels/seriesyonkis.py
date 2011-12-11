@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para seriesyonkis
@@ -222,7 +222,7 @@ def addChapters(item):
         for flag in flags:
             title = title + " ("+flag+")"
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, fulltitle=item.fulltitle+" "+title, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, folder=True))
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, fulltitle=item.fulltitle+" "+title, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, context="4", folder=True))
 
     return itemlist
 
