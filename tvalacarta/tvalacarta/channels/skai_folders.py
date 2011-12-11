@@ -11,7 +11,7 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import scrapertools
+from core import scrapertools
 import binascii
 import xbmctools
 import xbmcaddon
