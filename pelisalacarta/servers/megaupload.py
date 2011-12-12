@@ -286,7 +286,7 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
     
-    patronvideos  = 'http\://www.megaupload.com/(?:es/)?\?.*?d\=([A-Z0-9a-z]{8})(?:[^>]*>([^<]+)</a>)?'
+    patronvideos  = 'www.megaupload.com/(?:es/)?\?.*?d\=([A-Z0-9a-z]{8})(?:[^>]*>([^<]+)</a>)?'
     logger.info("[megaupload.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(text)
     for match in matches:
