@@ -294,10 +294,6 @@ def capitulos(item):
             subtitle = ""
         scrapedplot = plot
         scrapedurl = urlparse.urljoin(item.url,match[0]).replace("\n","").replace("\r","")
-        if "seriesdanko-rs.com" in scrapedurl:
-            action = "findvideos2"
-        else:
-            action = "findvideos"
         if not item.thumbnail:
             try:
                 scrapedthumbnail = re.compile(r"src=([^']+)'").findall(contenidos)[0]
@@ -311,7 +307,7 @@ def capitulos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , context="4", folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , context="4", folder=True) )
 
     #xbmc.executebuiltin("Container.Content(Movies)")
     
@@ -357,69 +353,77 @@ def capitulos2(item):
         itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )    
     return itemlist
 
-def findvideos2(item):
+def findvideos(item):
     logger.info("[seriesdanko.py] findvideos2")
     
     # Descarga la página
-    from core.subtitletools import saveSubtitleName
-    saveSubtitleName(item)
-    data = scrapertools.downloadpageGzip(item.url).replace("\n","")
-    patronvideos = "<tr><td class=('tam12'>.*?)</td></tr>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    #for match in matches:
-        #print match
-    itemlist = []
-    for match in matches:
-        try:
-            scrapedurl = urlparse.urljoin(item.url,re.compile(r"href='(.+?)'").findall(match)[0])
-        except:continue
-       
-        try:
-            scrapedthumbnail = re.compile(r"src='(.+?)'").findall(match)[1]
-            if "megavideo" in scrapedthumbnail:
-                mega = " [Megavideo]"
-            elif "megaupload" in scrapedthumbnail:
-                mega = " [Megaupload]"
-            else:
-                mega = ""
-            if not scrapedthumbnail.startswith("http"):
-                scrapedthumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        except:continue
-        try:
-            subtitle = re.compile(r"src='(.+?)'").findall(match)[0]
-            if "es.png" in subtitle:
-                subtitle = " (Español)"
-            elif "la.png" in  subtitle:
-                subtitle = " (Latino)"
-            elif "vo.png" in  subtitle:
-                subtitle = " (Version Original)"
-            elif "vos.png" in  subtitle:
-                subtitle = " (Subtitulado)"
-            elif "ca.png"  in match[2]:
-                subtitle = " (Catalan)"
-            elif "ga.jpg"  in match[2]:
-                subtitle = " (Gallego)"
-            elif "eu.jpg"  in match[2]:
-                subtitle = " (Euskera)"
-            elif "ba.png"  in match[2]:
-                subtitle = " (Bable)"
-            else:
-                subtitle = "(desconocido)"
-            
+    if "xbmc" in config.get_platform(""):
+        from core.subtitletools import saveSubtitleName
+        saveSubtitleName(item)
+    
+    if "seriesdanko-rs.com" in item.url:
+        data = scrapertools.downloadpageGzip(item.url).replace("\n","")
+        patronvideos = "<tr><td class=('tam12'>.*?)</td></tr>"
+        matches = re.compile(patronvideos,re.DOTALL).findall(data)
+        #for match in matches:
+            #print match
+        itemlist = []
+        for match in matches:
             try:
-                opcion = re.compile(r"(Ver|Descargar)").findall(match)[0]
+                scrapedurl = urlparse.urljoin(item.url,re.compile(r"href='(.+?)'").findall(match)[0])
+            except:continue
+           
+            try:
+                scrapedthumbnail = re.compile(r"src='(.+?)'").findall(match)[1]
+                if "megavideo" in scrapedthumbnail:
+                    mega = " [Megavideo]"
+                elif "megaupload" in scrapedthumbnail:
+                    mega = " [Megaupload]"
+                else:
+                    mega = ""
+                if not scrapedthumbnail.startswith("http"):
+                    scrapedthumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+            except:continue
+            try:
+                subtitle = re.compile(r"src='(.+?)'").findall(match)[0]
+                if "es.png" in subtitle:
+                    subtitle = " (Español)"
+                elif "la.png" in  subtitle:
+                    subtitle = " (Latino)"
+                elif "vo.png" in  subtitle:
+                    subtitle = " (Version Original)"
+                elif "vos.png" in  subtitle:
+                    subtitle = " (Subtitulado)"
+                elif "ca.png"  in match[2]:
+                    subtitle = " (Catalan)"
+                elif "ga.jpg"  in match[2]:
+                    subtitle = " (Gallego)"
+                elif "eu.jpg"  in match[2]:
+                    subtitle = " (Euskera)"
+                elif "ba.png"  in match[2]:
+                    subtitle = " (Bable)"
+                else:
+                    subtitle = "(desconocido)"
+                
+                try:
+                    opcion = re.compile(r"(Ver|Descargar)").findall(match)[0]
+                except:
+                    opcion = "Ver"
+                
+                scrapedtitle = opcion + " video" + subtitle + mega
             except:
-                opcion = "Ver"
-            
-            scrapedtitle = opcion + " video" + subtitle + mega
-        except:
-            scrapedtitle = item.title
-        scrapedplot = ""
-        #scrapedthumbnail = item.thumbnail
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="play2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = item.fulltitle, extra = item.thumbnail , fanart=item.thumbnail , folder=False) )    
+                scrapedtitle = item.title
+            scrapedplot = ""
+            #scrapedthumbnail = item.thumbnail
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    
+            # Añade al listado de XBMC
+            itemlist.append( Item(channel=CHANNELNAME, action="play2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = item.fulltitle, extra = item.thumbnail , fanart=item.thumbnail , folder=False) )    
+    
+    else:
+        from core import servertools
+        itemlist = servertools.find_video_items( item )
+    
     return itemlist
 
 def play2(item):
