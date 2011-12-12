@@ -27,14 +27,13 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[descargados.py] mainlist")
+    logger.info("[descargas.py] mainlist")
     itemlist=[]
 
     # Lee la ruta de descargas
     downloadpath = config.get_setting("downloadpath")
 
-    logger.info("[descargados.py] downloadpath=" + downloadpath)
-    #logger.info("[descargados.py] pluginhandle=" + pluginhandle)
+    logger.info("[descargas.py] downloadpath=" + downloadpath)
 
     itemlist.append( Item( channel="descargas", action="pendientes", title="Descargas pendientes"))
     itemlist.append( Item( channel="descargas", action="errores", title="Descargas con error"))
@@ -43,14 +42,14 @@ def mainlist(item):
     try:
         ficheros = os.listdir(downloadpath)
         for fichero in ficheros:
-            logger.info("[descargados.py] fichero=" + fichero)
+            logger.info("[descargas.py] fichero=" + fichero)
             if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
                 url = os.path.join( downloadpath , fichero )
                 if not os.path.isdir(url):
-                    itemlist.append( Item( channel="descargados", action="play", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
+                    itemlist.append( Item( channel="descargas", action="play", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
 
     except:
-        logger.info("[descargados.py] exception on mainlist")
+        logger.info("[descargas.py] exception on mainlist")
         pass
 
     return itemlist
