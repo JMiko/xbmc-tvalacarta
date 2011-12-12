@@ -23,17 +23,17 @@ def mainlist(item):
     logger.info("[dlmore.py] mainlist")
     
     itemlist=[]
-    itemlist.append( Item(channel=CHANNELNAME, title="TV Shows - Full listing"   , action="completo" , url="http://www.dl-more.eu/series.html"))
+    itemlist.append( Item(channel=CHANNELNAME, title="TV Shows - Full listing"   , action="series" , url="http://www.dl-more.eu/series.html"))
 
     return itemlist
 
-def completo(item):
-    logger.info("[dlmore.py] completo")
+def series(item):
+    logger.info("[dlmore.py] series")
     itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    patron  = '<div class="entry" id="films">[^<]+'
+    patron  = '<div class="entry" id="series">[^<]+'
     patron += '<div id="name">[^<]+'
     patron += '<a href="([^"]+)" onmouseover="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -62,7 +62,7 @@ def episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    patron  = '<a href="(\./ajax/fiche_serie.ajax.php\?id=[^"]+)" name="lien" class="iframe">([^<]+)</a>'
+    patron  = '<a href="(\./ajax/fiche_serie.ajax.php\?id=[^"]+)" name="lien" class="autres">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     for match in matches:
