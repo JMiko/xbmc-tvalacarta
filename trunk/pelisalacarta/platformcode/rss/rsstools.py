@@ -289,7 +289,17 @@ def menu_video(item):
     # Extrae todos los enlaces posibles
     exec "from servers import "+item.server+" as server_connector"
     video_urls = server_connector.get_video_url( page_url=item.url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
+
+    if config.get_setting("fileniumpremium")=="true" and item.server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
+        exec "from servers import filenium as gen_conector"
         
+        # Parche para solucionar el problema habitual de que un vídeo http://www.megavideo.com/?d=XXX no está, pero http://www.megaupload.com/?d=XXX si
+        url = url.replace("http://www.megavideo.com/?d","http://www.megaupload.com/?d")
+
+        video_gen = gen_conector.get_video_url( page_url=item.url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword") )
+        logger.info("[rsstools.py] filenium url="+video_gen)
+        video_urls.append( [ "[filenium]", video_gen ] )
+
     if len(video_urls)==0:
         itemlist.append( Item(title="El vídeo no está disponible",channel=item.channel, action=item.action, url=item.url, server=item.server, extra=item.extra, fulltitle=item.fulltitle) )
         itemlist.append( Item(title="en %s." % item.server,channel=item.channel, action=item.action, url=item.url, server=item.server, extra=item.extra, fulltitle=item.fulltitle) )
