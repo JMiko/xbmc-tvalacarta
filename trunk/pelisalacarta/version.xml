@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>pelisalacarta</name>
-	<tag>3.2.3</tag>
-	<date>19/10/2011</date>
-	<changes>Preparing 3.2.4... now beta1</changes>
+	<tag>3.2.4</tag>
+	<date>12/12/2011</date>
+	<changes>Final release</changes>
 </version>
