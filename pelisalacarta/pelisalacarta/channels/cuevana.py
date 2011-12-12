@@ -164,7 +164,7 @@ def series(item):
     data = matches[0]
     
     #{"id":"3478","url":"#!\/series\/3478\/american-dad","tit":"American Dad!","duracion":"30","ano":"2005","temporadas":"7","episodios":"120","rate":"3.9887976646423340","genero":"Animaci\u00f3n","idioma":"Ingl\u00e9s"}
-		# {"url":"#!\/series\/3622\/game-of-thrones","tit":"Game of Thrones","duracion":"60","temporadas":"1","episodios":"10","genero":" Fantas\u00eda"}
+    # {"url":"#!\/series\/3622\/game-of-thrones","tit":"Game of Thrones","duracion":"60","temporadas":"1","episodios":"10","genero":" Fantas\u00eda"}
     data = data.replace("\\","")
     # patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","ano":"([^"]+)","temporadas":"([^"]+)","episodios":"([^"]+)","rate":"([^"]+)","genero":"([^"]+)","idioma":"([^"]+)"}'
     patron  = '{(.*?)"url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)",(.*?)"temporadas":"([^"]+)","episodios":"([^"]+)",(.*?)"genero":"([^"]+)"(.*?)}'
@@ -242,8 +242,17 @@ def findvideos(item):
     logger.info("[cuevana.py] findvideos")
 
     id = item.url
-    logger.info(item.extra)
-    tipo=item.extra
+    try:
+        logger.info(item.extra)
+        tipo=item.extra
+    except:
+        tipo=""
+    
+    if tipo=="":
+        if item.category=="Series":
+            tipo="serie"
+        else:
+            tipo="pelicula"
 
     if tipo=="pelicula":
         pathSubtitle="http://sc.cuevana.tv/files/sub/"
@@ -336,6 +345,7 @@ def play(item):
     headers.append( ["Cache-Control","no-cache"])
 
     data = scrapertools.cache_page(url=url, post=post)
+    logger.info("data="+data)
 
     itemlist = servertools.find_video_items(data=data)
     for returnitem in itemlist:
