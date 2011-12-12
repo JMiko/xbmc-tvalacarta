@@ -115,6 +115,7 @@ def run():
                 logger.info("[launcher.py] multiplatform channel")
                 from core.item import Item
                 item = Item(channel=channel_name, title=title , fulltitle=fulltitle, url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle, show=show, password=password)
+                
                 '''
                 if item.subtitle!="":
                     logger.info("[launcher.py] Downloading subtitle file "+item.subtitle)
