@@ -13,7 +13,7 @@
     <setting id="player_mode" type="enum" values="Default|SetResolvedUrl|Built-In" label="30044" default="0"/>
   </category>
   
-    <!--- Login --->
+  <!-- Login -->
   <category label="30500">
 
     <setting type="sep" />
@@ -41,7 +41,7 @@
     <setting id="privatepassword" type="text" option="hidden" label="30424" enable="!eq(-1,)" default=""/>
   </category>
 
-    <!-- Path downloads and subtitles -->
+  <!-- Path downloads and subtitles -->
   <category label="30501">
     <setting id="subtitulo" type="bool" label="30021" default="false"/>	
     <setting id="subtitle_type" type="enum" lvalues="30432|30434|30433" label ="30431" enable ="eq(-1,true)" default="0"/>
