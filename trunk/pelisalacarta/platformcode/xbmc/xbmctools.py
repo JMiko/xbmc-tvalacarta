@@ -41,12 +41,18 @@ def addnewfolder( canal , accion , category , title , url , thumbnail , plot , S
 def addnewfolderextra( canal , accion , category , title , url , thumbnail , plot , extradata ,Serie="",totalItems=0,fanart="",context="",show="",fulltitle=""):
     if fulltitle=="":
         fulltitle=title
+    
     contextCommands = []
     ok = False
-    context = urllib.unquote_plus(context)
+    
+    try:
+        context = urllib.unquote_plus(context)
+    except:
+        context=""
+    
     if "|" in context:
         context = context.split("|")
-    #logger.info("pluginhandle=%d" % pluginhandle)
+    
     if DEBUG:
         try:
             logger.info('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
@@ -88,10 +94,13 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
     return ok
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = 0, subtitle="", totalItems = 0, show="", password="", extra="",fulltitle=""):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = "", subtitle="", totalItems = 0, show="", password="", extra="",fulltitle=""):
     contextCommands = []
     ok = False
-    context = urllib.unquote_plus(context)
+    try:
+        context = urllib.unquote_plus(context)
+    except:
+        context=""
     if "|" in context:
         context = context.split("|")
     if DEBUG:
@@ -458,9 +467,8 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             xlistitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
         xlistitem.setInfo( "video", { "Title": title, "Plot" : plot , "Studio" : channel , "Genre" : category } )
 
-    '''
     # Descarga el subtitulo
-    if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+    if channel=="cuevana" and subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
         import os
         ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
         if os.path.exists(ficherosubtitulo):
@@ -472,7 +480,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     
         from core import downloadtools
         downloadtools.downloadfile(subtitle, ficherosubtitulo )
-    '''
+
     # Lanza el reproductor
     if strmfile: #Si es un fichero strm no hace falta el play
         import sys
@@ -504,12 +512,13 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         
             xbmcPlayer = xbmc.Player( player_type )
             xbmcPlayer.play(playlist)
-            '''
-            logger.info("subtitulo="+subtitle)
-            if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
-                logger.info("[xbmctools.py] Con subtitulos")
-                setSubtitles()
-            '''
+            
+            if channel=="cuevana" and subtitle!="":
+                logger.info("subtitulo="+subtitle)
+                if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
+                    logger.info("[xbmctools.py] Con subtitulos")
+                    setSubtitles()
+
         elif config.get_setting("player_mode")=="1":
             xlistitem.setProperty('IsPlayable', 'true')
             xlistitem.setProperty('path', mediaurl)
