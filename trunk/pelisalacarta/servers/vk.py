@@ -62,7 +62,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
                 video_urls.append( ["FLV [vk]",videourl])
                 
             else:                                   #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
-                quality = config.get_setting("quality_flv")
                 #Si la calidad elegida en el setting es HD se reproducira a 480 o 720, caso contrario solo 360, este control es por la xbox
                 if match[4]=="0":
                     video_urls.append( ["240p [vk]",get_mp4_video_link(match[0],match[1],match[2],"240.mp4")])
