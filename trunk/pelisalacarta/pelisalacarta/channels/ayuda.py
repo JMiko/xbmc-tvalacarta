@@ -37,7 +37,9 @@ def mainlist(item):
     """
     logger.info("[ayuda.py] mainlist")
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="updatebiblio" , title="Buscar nuevos episodios y actualizar biblioteca"))
+    from core import platform_name
+    if platform_name.PLATFORM_NAME!="xbmceden":
+        itemlist.append( Item(channel=CHANNELNAME, action="updatebiblio" , title="Buscar nuevos episodios y actualizar biblioteca"))
         
     # Arreglador de biblioteca
     if config.get_platform()=="xbmc":
@@ -81,3 +83,8 @@ def mainlist(item):
 
 def updatebiblio(item):
     import library_service
+    
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, action="" , title="Actualización en curso..."))        
+    
+    return itemlist
