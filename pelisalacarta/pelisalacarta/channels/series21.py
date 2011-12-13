@@ -72,6 +72,7 @@ def series(item):
     for scrapedurl, scrapedthumbnail, scrapedtitle, scrapedplot in matches:
         scrapedurl = urlparse.urljoin(item.url,scrapedurl)
         scrapedtitle = unicode(scrapedtitle,"iso-8859-1").encode("utf-8").strip()
+        scrapedplot = unicode(scrapedplot,"iso-8859-1").encode("utf-8").strip()
         itemlist.append( Item(channel=item.channel, action="episodios", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, category="series" , plot=scrapedplot, show=scrapedtitle, fanart=FANART) )
 
     return itemlist
