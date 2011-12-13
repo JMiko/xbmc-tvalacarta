@@ -71,7 +71,7 @@ def series(item):
 
     for scrapedurl, scrapedthumbnail, scrapedtitle, scrapedplot in matches:
         scrapedurl = urlparse.urljoin(item.url,scrapedurl)
-        scrapedtitle = scrapedtitle.strip()
+        scrapedtitle = unicode(scrapedtitle,"iso-8859-1").encode("utf-8").strip()
         itemlist.append( Item(channel=item.channel, action="episodios", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, category="series" , plot=scrapedplot, show=scrapedtitle, fanart=FANART) )
 
     return itemlist
@@ -93,6 +93,7 @@ def episodios(item):
         resto = resto.replace('<img src="/images/','')
         resto = resto.replace('.gif" class="bandera">','')
         scrapedtitle = scrapedtitle + " ("+resto+")"
+        scrapedtitle = unicode(scrapedtitle,"iso-8859-1").encode("utf-8").strip()
         itemlist.append( Item(channel=item.channel, action="findvideos", title=scrapedtitle , fulltitle=item.title+" "+scrapedtitle , url=scrapedurl , thumbnail=item.thumbnail, category="series" , plot=item.plot, show=item.show, fanart=FANART) )
 
     return itemlist
