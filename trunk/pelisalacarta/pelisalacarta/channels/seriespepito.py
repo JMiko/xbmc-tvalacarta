@@ -190,9 +190,12 @@ def episodelist(item):
 
 def findvideos(item):
     logger.info("[seriespepito.py] findvideos")
+
     itemlist = []
-    from core.subtitletools import saveSubtitleName
-    saveSubtitleName(item)
+    if config.get_platform()=="xbmceden":
+        from core.subtitletools import saveSubtitleName
+        saveSubtitleName(item)
+
     try:
         # Descarga la pagina
         data = scrapertools.cachePage(item.url)
