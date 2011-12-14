@@ -357,7 +357,7 @@ def findvideos(item):
     logger.info("[seriesdanko.py] findvideos2")
     
     # Descarga la página
-    if "xbmc" in config.get_platform():
+    if config.get_platform()=="xbmceden":
         from core.subtitletools import saveSubtitleName
         saveSubtitleName(item)
     
