@@ -183,6 +183,12 @@ def mispelis(item):
         # Atributos
             scrapedurl = "http://series.ly/api/detailMovie.php?auth_token="+auth_token+"&idFilm="+match2[0]+"&user_token="+user_token+"&format=xml"
             scrapedtitle =match2[1]+" ("+match2[2]+")"
+            if(match2[7]=="Watched"):
+                scrapedtitle +=" [Visto]"
+            elif (match2[7]=="Pending"):
+                scrapedtitle +=" [Pendiente]"
+            elif (match2[7]=="Favourite"):
+                scrapedtitle +=" [Preferida]"   
             scrapedthumbnail = match2[4]
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -223,6 +229,8 @@ def capitulos(item):
         # Atributos
             scrapedurl = "http://series.ly/api/linksCap.php?auth_token="+auth_token+"&idCap="+match2[0]+"&user_token="+user_token+"&format=xml"
             scrapedtitle = match2[2]+" - "+match2[1]
+            if (match2[3] == "1"):
+                scrapedtitle +=" [Visto]"
             scrapedthumbnail = item.thumbnail
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -278,23 +286,24 @@ def buscavideos(item):
 
 def links(item):
     
-    data = scrapertools.cachePage(item.url)
-    logger.info(data)
+    logger.info("[seriesly.py] Links")
     
+    data = scrapertools.getLocationHeaderFromResponse(item.url)
+    logger.info("1"+data) 
+    data = scrapertools.getLocationHeaderFromResponse(data)
+    
+    # Usa findvideos    
     listavideos = servertools.findvideos(data)
-            
+    
     itemlist = []
     
     for video in listavideos:
-        #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
-        scrapedtitle = video[0]
-        srapedtitle = scrapertools.htmlclean(scrapedtitle)
-        scrapedurl = video[1]
         server = video[2]
-            
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
-    
-    
+        scrapedtitle = item.title + " [" + server + "]"
+        scrapedurl = video[1]
+        
+        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+
     return itemlist
 
 def pelis(item):
@@ -329,7 +338,7 @@ def pelis(item):
 
         for match2 in matches2:
         # Atributos
-            scrapedurl= "http://series.ly/api/goLink.php?auth_token="+auth_token+"&user_token="+user_token+"&enc="+match2[7].strip()
+            scrapedurl= "http://series.ly/api/goLink.php?auth_token="+auth_token+"&user_token="+user_token+"&enc="+urllib.quote(match2[7].strip())
             scrapedtitle = item.title+" ("+match2[2]+") ("+match2[0]+")(Subtítulos "+match2[1]+") (Parte "+match2[3]+")"
             if match2[5]=="1": scrapedtitle += " (HD)"
             scrapedthumbnail = ""
