@@ -35,7 +35,7 @@ def letras(item):
     for letra in alfabeto:
         itemlist.append( Item(channel=item.channel, action="series", title=str(letra), url = "http://www.series21.com/"+letra+"/", fanart=FANART))
 
-    itemlist.append( Item(channel=item.channel, action="series", title=str(letra), url = "http://www.series21.com/0-9/", fanart=FANART))
+    itemlist.append( Item(channel=item.channel, action="series", title="0-9", url = "http://www.series21.com/0-9/", fanart=FANART))
 
     return itemlist
 
