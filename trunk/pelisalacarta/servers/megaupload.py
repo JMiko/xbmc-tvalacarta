@@ -62,14 +62,14 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
             video_url = get_free_video_url(page_url,tipo_usuario,video_password)
             if video_url!="":
                 extension = video_url[-4:]
-                video_urls.append ( ['%s (Free) [megaupload]' % extension , video_url, 46] )
+                video_urls.append ( ['%s (Free) [megaupload]' % extension , video_url, 60] )
     else:
         logger.info("[megaupload.py] Modo free")
         video_url = get_free_video_url(page_url,ANONIMO,video_password)
         logger.info("[megaupload.py] video_url=%s" % video_url)
         if video_url!="":
             extension = video_url[-4:]
-            video_urls.append( ['%s (Free) [megaupload]' % extension , video_url, 46] )
+            video_urls.append( ['%s (Free) [megaupload]' % extension , video_url, 60] )
 
     #logger.info("[megaupload.py] get_video_urls returns %s" % video_url)
     
