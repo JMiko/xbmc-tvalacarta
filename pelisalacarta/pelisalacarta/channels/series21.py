@@ -15,7 +15,6 @@ from core.item import Item
 
 CHANNELNAME = "series21"
 DEBUG = True
-FANART = os.path.join( config.get_runtime_path(), 'resources' , 'images' ,'fanart','series21.jpg')
 
 def isGeneric():
     return True
@@ -24,7 +23,7 @@ def mainlist(item):
     logger.info("[series21.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z", action="letras"  , url="http://www.series21.com", fanart=FANART))
+    itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z", action="letras"  , url="http://www.series21.com"))
     return itemlist
 
 def letras(item):
@@ -33,9 +32,9 @@ def letras(item):
 
     alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for letra in alfabeto:
-        itemlist.append( Item(channel=item.channel, action="series", title=str(letra), url = "http://www.series21.com/"+letra+"/", fanart=FANART))
+        itemlist.append( Item(channel=item.channel, action="series", title=str(letra), url = "http://www.series21.com/"+letra+"/"))
 
-    itemlist.append( Item(channel=item.channel, action="series", title="0-9", url = "http://www.series21.com/0-9/", fanart=FANART))
+    itemlist.append( Item(channel=item.channel, action="series", title="0-9", url = "http://www.series21.com/0-9/"))
 
     return itemlist
 
@@ -72,7 +71,7 @@ def series(item):
         scrapedurl = urlparse.urljoin(item.url,scrapedurl)
         scrapedtitle = unicode(scrapedtitle,"iso-8859-1").encode("utf-8").strip()
         scrapedplot = unicode(scrapedplot,"iso-8859-1").encode("utf-8").strip()
-        itemlist.append( Item(channel=item.channel, action="episodios", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, category="series" , plot=scrapedplot, show=scrapedtitle, fanart=FANART) )
+        itemlist.append( Item(channel=item.channel, action="episodios", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, category="series" , plot=scrapedplot, show=scrapedtitle) )
 
     return itemlist
 
@@ -94,7 +93,10 @@ def episodios(item):
         resto = resto.replace('.gif" class="bandera">','')
         scrapedtitle = scrapedtitle + " ("+resto+")"
         scrapedtitle = unicode(scrapedtitle,"iso-8859-1").encode("utf-8").strip()
-        itemlist.append( Item(channel=item.channel, action="findvideos", title=scrapedtitle , fulltitle=item.title+" "+scrapedtitle , url=scrapedurl , thumbnail=item.thumbnail, category="series" , plot=item.plot, show=item.show, fanart=FANART) )
+        itemlist.append( Item(channel=item.channel, action="findvideos", title=scrapedtitle , fulltitle=item.title+" "+scrapedtitle , url=scrapedurl , thumbnail=item.thumbnail, category="series" , plot=item.plot, show=item.show) )
+
+    if config.get_platform().startswith("xbmc"):
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
