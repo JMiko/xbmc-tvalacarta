@@ -143,6 +143,8 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Ver-series (15/12/2011)"             , channel="verseries"            , language="ES" , category="S" , type="generic"  )) # jesus 15/12/2011
+    itemlist.append( Item( title="Justin.tv (12/12/2011)"              , channel="justintv"             , language=""      , category="G"       , type="generic"  )) # bandavi 12/12/2011
     itemlist.append( Item( title="Series.ly (19/11/2011)"              ,channel="seriesly"              , language="ES" , category="S" , type="generic" )) # jesus/mrfloffy 19/11/2011
     itemlist.append( Item( title="Teledocumentales (19/10/2011)"       ,channel="teledocumentales"      , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
     itemlist.append( Item( title="Descarrega Directa (CAT) (19/10/2011)",channel="descarregadirecta"    , language="CAT" , category="F,S,D,A" , type="generic" )) # mrfloffy 19/10/2011
@@ -195,6 +197,7 @@ def channels_list():
     #itemlist.append( Item( title="Internapoli City (IT)" , channel="internapoli"          , language="IT"    , category="F"       , type="generic"  )) 
     itemlist.append( Item( title="Italia film (IT)"      , channel="italiafilm"           , language="IT"    , category="F,S,A"   , type="xbmc"     ))
     itemlist.append( Item( title="IslaPelículas"         , channel="islapeliculas"        , language="ES"    , category="F"       , type="generic"  ))
+    itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
     itemlist.append( Item( title="La Guarida de bizzente", channel="documentalesatonline2", language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S"     , type="generic"  ))
     itemlist.append( Item( title="Liberateca"            , channel="liberateca"           , language="ES"    , category="S"       , type="generic"  ))
@@ -203,7 +206,6 @@ def channels_list():
     itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
     itemlist.append( Item( title="Megaupload Premium (FR)", channel="megauploadpremiumfr"  , language="FR"    , category="S"       , type="generic"  ))
     itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""      , category="G"       , type="xbmc"  ))
-    itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Moviezet"              , channel="moviezet"             , language="ES"    , category="F.S"     , type="generic" )) # mrfluffy 01/10/2011
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
@@ -249,7 +251,7 @@ def channels_list():
     itemlist.append( Item( title="Veocine"               , channel="veocine"              , language="ES" , category="F,A,D" , type="xbmc"  ))
     itemlist.append( Item( title="Ver Telenovelas Online", channel="vertelenovelasonline" , language="ES" , category="S" , type="xbmc"  ))
     itemlist.append( Item( title="Ver-anime"             , channel="veranime"             , language="ES" , category="A" , type="generic"  ))
-    itemlist.append( Item( title="Ver-series"            , channel="verseries"            , language="ES" , category="S" , type="generic"  ))
+    itemlist.append( Item( title="Ver-series"            , channel="verseries"            , language="ES" , category="S" , type="generic"  )) # 15/12/2011 jesus
     itemlist.append( Item( title="Watchanimeon"          , channel="watchanimeon"         , language="EN" , category="A" , type="xbmc"  ))
     itemlist.append( Item( title="Yotix.tv"              , channel="yotix"                , language="ES" , category="A" , type="generic" ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="xhamster"          , channel="xhamster"             , language="ES" , category="F" , type="generic"  ))
