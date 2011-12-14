@@ -372,16 +372,14 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # Megavideo - Vídeos sin título
-    patronvideos  = '<param name="movie" value="http://wwwstatic.megavideo.com/mv_player.swf\?v=([^"]+)">'
+    #http://wwwstatic.megavideo.com/mv_player.swf?v=HFZMTQ9N
+    patronvideos  = 'megavideo.com/mv_player.swf\?v\=([A-Z0-9a-z]{8})'
     logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[Megavideo]"
-        if "&" in match:
-            url = "http://www.megavideo.com/?v="+match.split("&")[0]
-        else:
-            url = "http://www.megavideo.com/?v="+match
+        url = "http://www.megavideo.com/?v="+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'megavideo' ] )
