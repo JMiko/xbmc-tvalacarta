@@ -25,7 +25,6 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z", action="letras"  , url="http://www.series21.com", fanart=FANART))
-    print FANART
     return itemlist
 
 def letras(item):
