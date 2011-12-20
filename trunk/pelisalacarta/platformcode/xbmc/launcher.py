@@ -135,7 +135,7 @@ def run():
                 if action=="play":
                     logger.info("[launcher.py] play")
                     # Si el canal tiene una acción "play" tiene prioridad
-                    try:
+                    if hasattr(channel, 'play'):
                         logger.info("[launcher.py] executing channel 'play' method")
                         itemlist = channel.play(item)
                         if len(itemlist)>0:
@@ -145,10 +145,7 @@ def run():
                             import xbmcgui
                             ventana_error = xbmcgui.Dialog()
                             ok = ventana_error.ok ("plugin", "No hay nada para reproducir")
-                    except:
-                        import sys
-                        for line in sys.exc_info():
-                            logger.error( "%s" % line )
+                    else:
                         logger.info("[launcher.py] no channel 'play' method, executing core method")
                         xbmctools.play_video(channel=channel_name, server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot, extra=item.extra, subtitle=item.subtitle, video_password = item.password, fulltitle=item.fulltitle)
 
