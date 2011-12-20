@@ -61,6 +61,7 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
 
     listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Studio" : canal } )
+
     if fanart!="":
         listitem.setProperty('fanart_image',fanart) 
         xbmcplugin.setPluginFanart(pluginhandle, fanart)
@@ -110,10 +111,12 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
             logger.info('[xbmctools.py] addnewvideo(<unicode>)')
     listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
     listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal } )
+
     if fanart!="":
         logger.info("fanart :%s" %fanart)
         listitem.setProperty('fanart_image',fanart)
         xbmcplugin.setPluginFanart(pluginhandle, fanart)
+
     if IsPlayable == 'true': #Esta opcion es para poder utilizar el xbmcplugin.setResolvedUrl()
         listitem.setProperty('IsPlayable', 'true')
     #listitem.setProperty('fanart_image',os.path.join(IMAGES_PATH, "cinetube.png"))
@@ -173,6 +176,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         server = server.lower()
     except:
         server = ""
+
+    if server=="":
+        server="directo"
 
     try:
         from core import descargas
@@ -469,17 +475,26 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # Descarga el subtitulo
     if channel=="cuevana" and subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
-        import os
-        ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
-        if os.path.exists(ficherosubtitulo):
-            try:
-              os.remove(ficherosubtitulo)
-            except IOError:
-              logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
-              raise
-    
-        from core import downloadtools
-        downloadtools.downloadfile(subtitle, ficherosubtitulo )
+        try:
+            import os
+            ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
+            if os.path.exists(ficherosubtitulo):
+                try:
+                  os.remove(ficherosubtitulo)
+                except IOError:
+                  logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
+                  raise
+        
+            from core import scrapertools
+            data = scrapertools.cache_page(subtitle)
+            #print data
+            fichero = open(ficherosubtitulo,"w")
+            fichero.write(data)
+            fichero.close()
+            #from core import downloadtools
+            #downloadtools.downloadfile(subtitle, ficherosubtitulo )
+        except:
+            logger.info("Error al descargar el subtítulo")
 
     # Lanza el reproductor
     if strmfile: #Si es un fichero strm no hace falta el play
@@ -715,11 +730,22 @@ def playstrm(params,url,category):
 def renderItems(itemlist, params, url, category,isPlayable='false'):
     if itemlist <> None:
         for item in itemlist:
+            
             if item.category == "":
                 item.category = category
+                
             if item.fulltitle=="":
                 item.fulltitle=item.title
-                
+            
+            if item.fanart=="":
+
+                channel_fanart = os.path.join( config.get_runtime_path(), 'resources', 'images', 'fanart', item.channel+'.jpg')
+
+                if os.path.exists(channel_fanart):
+                    item.fanart = channel_fanart
+                else:
+                    item.fanart = os.path.join(config.get_runtime_path(),"fanart.jpg")
+
             if item.folder :
                 if len(item.extra)>0:
                     addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context, show=item.show, fulltitle=item.fulltitle )
