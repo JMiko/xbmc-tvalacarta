@@ -3,21 +3,139 @@
 	<description>pelisalacarta</description>
 
     <property name="version" value="3.2.4"/>
+    <property name="versionboxee" value="3.5"/>
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
 
 	<!-- init ===================================================================== -->
-	<target name="init" description="Inicializa el timestamp">
+	<target name="init" description="Reset the timestamp">
         <tstamp>
 			<format property="hoy" pattern="yyyyMMdd" locale="es,ES"/>
 		</tstamp>
 	</target>
 
     <!-- clean =============================================== -->
-    <target name="clean" description="Erases target directory">
+    <target name="clean" description="Erases target directory" depends="init">
         <!-- Declara un target comun -->
     	<echo message="target=${target}"/>
         <delete dir="${target}"/>
+    </target>
+
+    <!-- package =============================================== -->
+    <target name="package" depends="clean" description="Builds a package for each platform">
+
+        <mkdir dir="${target}/xbmc-plugin/pelisalacarta"/>
+        <antcall target="copy-xbmc-plugin"/>
+        <zip destfile="${target}/xbmc-plugin/pelisalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
+		
+        <mkdir dir="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta"/>
+        <antcall target="copy-xbmc-addon-dharma"/>
+		<zip destfile="${target}/xbmc-addon-dharma/pelisalacarta-xbmc-addon-dharma-${version}.zip" basedir="${target}/xbmc-addon-dharma"/>
+
+        <mkdir dir="${target}/xbmc-addon-eden/plugin.video.pelisalacarta"/>
+        <antcall target="copy-xbmc-addon-eden"/>
+		<zip destfile="${target}/xbmc-addon-eden/pelisalacarta-xbmc-addon-eden-${version}.zip" basedir="${target}/xbmc-addon-eden"/>
+
+        <mkdir dir="${target}/wiimc/pelisalacarta"/>
+        <antcall target="copy-wiimc"/>
+        <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}.zip" basedir="${target}/wiimc"/>
+
+        <mkdir dir="${target}/rss/pelisalacarta"/>
+        <antcall target="copy-rss"/>
+        <zip destfile="${target}/rss/pelisalacarta-rss-${version}.zip" basedir="${target}/rss"/>
+
+        <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
+        <antcall target="copy-boxee"/>
+    	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
+
+        <mkdir dir="${target}/dreambox/pelisalacarta"/>
+        <antcall target="copy-dreambox"/>
+        <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/>
+
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
+        <antcall target="copy-plexmediaserver"/>
+        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
+
+        <!-- Repo oficial XBMC -->
+        <!--mkdir dir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta"/>
+        <mkdir dir="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta"/>
+        <antcall target="copy-xbmc-addon-oficial-dharma"/>
+        <antcall target="copy-xbmc-addon-oficial-eden"/-->
+    </target>
+    
+    <!-- upload =============================================== -->
+    <target name="upload" depends="package" description="Upload zip files to the web server">
+        <echo message="Subiendo pelisalacarta-xbmc-addon-dharma-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/xbmc-addon-dharma">
+				<include name="pelisalacarta-xbmc-addon-dharma-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-xbmc-addon-eden-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/xbmc-addon-eden">
+				<include name="pelisalacarta-xbmc-addon-eden-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-xbmc-plugin-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/xbmc-plugin">
+				<include name="pelisalacarta-xbmc-plugin-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-wiimc-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/wiimc">
+				<include name="pelisalacarta-wiimc-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-rss-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/rss">
+				<include name="pelisalacarta-rss-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-plexmediaserver-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/plexmediaserver">
+				<include name="pelisalacarta-plexmediaserver-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-boxee-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/boxee">
+				<include name="info.mimediacenter.pelisalacarta-${version}.zip"/>
+            </fileset>
+        </ftp>
+    </target>
+
+    <!-- publish =============================================== -->
+	<target name="publish" depends="upload" description="Notify the repositories that a new version is available">
+        <echo message="Actualizando el repositorio de Boxee"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}/download" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/boxee">
+				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip"/>
+            </fileset>
+        </ftp>
+        <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="platformcode/boxee">
+				<include name="index.xml"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Actualizando pelisalacarta-version.xml"/>
+        <copy file="version.xml" tofile="pelisalacarta-version.xml"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir=".">
+				<include name="pelisalacarta-version.xml"/>
+            </fileset>
+        </ftp>
     </target>
 
 	<!-- copy-xbmc-addon-dharma ============================================================ -->
@@ -136,59 +254,11 @@
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <!--exclude name="platformcode/xbmceden/**"/-->
+                <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
         <copy file="platformcode/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py"/>
-    </target>
-
-	<!-- copy-boxee ============================================================ -->
-    <target name="test-boxee" description="Deploys the Boxee app for devel testing">
-
-        <!-- TODO: Use build.properties for make this more generic -->
-        <delete dir="/Users/jesus/Library/Application Support/BOXEE/UserData/plugins/video/info.mimediacenter.pelisalacarta"/>
-        <!-- FIXME: Duplicated from copy-boxee -->
-        
-        <!-- Copy files -->
-        <!-- TODO: Use build.properties for make this more generic -->
-        <copy todir="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta">
-            <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="build.xml"/>
-				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="pelisalacarta-version.xml"/>
-				<exclude name="pelisalacarta.log"/>
-				<exclude name="pelisalacarta.py"/>
-				<exclude name="upload.sh"/>
-				<exclude name="addon.xml"/>
-				<exclude name="logging.conf"/>
-				<exclude name="changelog.txt"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-                <exclude name="default.tbn"/>
-                <exclude name="fanart.jpg"/>
-                <exclude name="icon.png"/>
-                <exclude name="tester.py"/>
-
-                <!--exclude name="platformcode/boxee/**"/-->
-                <exclude name="platformcode/developer/**"/>
-                <exclude name="platformcode/dreambox/**"/>
-                <exclude name="platformcode/plex/**"/>
-                <exclude name="platformcode/wiimc/**"/>
-                <exclude name="platformcode/rss/**"/>
-                <!--exclude name="platformcode/xbmcdharma/**"/-->
-                <exclude name="platformcode/xbmcdharma/**"/>
-                <exclude name="platformcode/xbmceden/**"/>
-                <exclude name="core/platform_name.py"/>
-
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-                <exclude name="resources/images/posters/**"/>
-                <exclude name="resources/images/banners/**"/>
-			</fileset>
-        </copy>
-        <copy file="platformcode/boxee/platform_name.py" tofile="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmc/settings.xml" tofile="${target}/xbmc-plugin/pelisalacarta/resources/settings.xml"/>
     </target>
 
     <target name="copy-boxee" description="Copy Boxee files for packaging">
@@ -228,10 +298,12 @@
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
         <copy file="platformcode/boxee/platform_name.py" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
         <copy file="platformcode/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/descriptor.xml"/>
+        <copy file="platformcode/boxee/settings.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/resources/settings.xml"/>
     </target>
 
 	<!-- copy-wiimc ============================================================ -->
@@ -409,11 +481,11 @@
         <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images"/-->
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
 
-        <copy file="resources/plexmediaserver/info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
+        <copy file="resources/plexmediaserver/Info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
         <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
         <copy file="resources/plexmediaserver/DefaultPrefs.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
-        <copy file="fanart.jpg" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/art-default.jpg"/>
-        <copy file="icon.png" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/icon-default.png"/>
+        <copy file="fanart.jpg" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/art-default.jpg"/>
+        <copy file="icon.png" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/icon-default.png"/>
         <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
             <fileset dir="resources/images"/>
         </copy-->
@@ -516,130 +588,5 @@
         </copy>
     </target>
 
-	<!-- copy-boxee ============================================================ -->
-	<target name="test-xbmc-dharma">
-		<property name="destination-path" value="C:\Users\Jesus\AppData\Roaming\XBMC\addons"/>
-        <copy todir="${destination-path}/plugin.video.pelisalacarta">
-            <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="build.xml"/>
-				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="addon*.xml"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-                <!--exclude name="resources/images/**"/-->
-				<exclude name="descriptor.xml"/>
-                <exclude name="default.tbn"/>
-                <exclude name="resources/images/posters/**"/>
-                <exclude name="resources/images/banners/**"/>
-                <exclude name="tester.py"/>
-			</fileset>
-        </copy>
-        <copy file="addon-dharma.xml" tofile="${destination-path}/plugin.video.pelisalacarta/addon.xml"/>
-	</target>
-	
-    <!-- package =============================================== -->
-    <target name="package" depends="clean" description="Builds a package for each platform">
-    	<!-- Crea los directorios -->
-        <mkdir dir="${target}/xbmc-plugin/pelisalacarta"/>
-        <antcall target="copy-xbmc-plugin"/>
-        <zip destfile="${target}/xbmc-plugin/pelisalacarta-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
-		
-        <mkdir dir="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta"/>
-        <antcall target="copy-xbmc-addon-dharma"/>
-		<zip destfile="${target}/xbmc-addon-dharma/pelisalacarta-xbmc-addon-dharma-${version}.zip" basedir="${target}/xbmc-addon-dharma"/>
 
-        <mkdir dir="${target}/xbmc-addon-eden/plugin.video.pelisalacarta"/>
-        <antcall target="copy-xbmc-addon-eden"/>
-		<zip destfile="${target}/xbmc-addon-eden/pelisalacarta-xbmc-addon-eden-${version}.zip" basedir="${target}/xbmc-addon-eden"/>
-
-        <mkdir dir="${target}/wiimc/pelisalacarta"/>
-        <antcall target="copy-wiimc"/>
-        <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}.zip" basedir="${target}/wiimc"/>
-
-        <mkdir dir="${target}/rss/pelisalacarta"/>
-        <antcall target="copy-rss"/>
-        <zip destfile="${target}/rss/pelisalacarta-rss-${version}.zip" basedir="${target}/rss"/>
-
-        <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
-        <antcall target="copy-boxee"/>
-    	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
-
-        <mkdir dir="${target}/dreambox/pelisalacarta"/>
-        <antcall target="copy-dreambox"/>
-        <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/>
-
-        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
-        <antcall target="copy-plexmediaserver"/>
-        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
-
-        <!-- Repo oficial XBMC -->
-        <!--mkdir dir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta"/>
-        <mkdir dir="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta"/>
-        <antcall target="copy-xbmc-addon-oficial-dharma"/>
-        <antcall target="copy-xbmc-addon-oficial-eden"/-->
-    </target>
-    
-    <target name="package-dreambox" depends="clean">
-        <mkdir dir="${target}/dreambox/pelisalacarta"/>
-        <antcall target="copy-dreambox"/>
-        <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/>
-    </target>
-    
-	<target name="publish" depends="init">
-        <echo message="Subiendo pelisalacarta-xbmc-addon-dharma-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/xbmc-addon-dharma">
-				<include name="pelisalacarta-xbmc-addon-dharma-${version}.zip"/>
-            </fileset>
-        </ftp>
-
-        <echo message="Subiendo pelisalacarta-xbmc-addon-eden-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/xbmc-addon-eden">
-				<include name="pelisalacarta-xbmc-addon-eden-${version}.zip"/>
-            </fileset>
-        </ftp>
-
-        <echo message="Subiendo pelisalacarta-xbmc-plugin-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/xbmc-plugin">
-				<include name="pelisalacarta-xbmc-plugin-${version}.zip"/>
-            </fileset>
-        </ftp>
-
-        <echo message="Subiendo pelisalacarta-wiimc-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/wiimc">
-				<include name="pelisalacarta-wiimc-${version}.zip"/>
-            </fileset>
-        </ftp>
-
-        <echo message="Subiendo pelisalacarta-rss-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/rss">
-				<include name="pelisalacarta-rss-${version}.zip"/>
-            </fileset>
-        </ftp>
-
-        <echo message="Subiendo pelisalacarta-boxee-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/boxee">
-				<include name="info.mimediacenter.pelisalacarta-${version}.zip"/>
-            </fileset>
-        </ftp>
-
-        <echo message="Subiendo pelisalacarta-version.xml"/>
-        <copy file="version.xml" tofile="pelisalacarta-version.xml"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir=".">
-				<include name="pelisalacarta-version.xml"/>
-            </fileset>
-        </ftp>
-    </target>
 </project>
