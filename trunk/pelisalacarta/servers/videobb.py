@@ -12,43 +12,26 @@ from core import scrapertools
 from core import logger
 from core import config
 
+HOSTER_KEY="MjI2NTkz"
+HOSTER_TOKEN="token1"
+
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[videobb.py] get_video_url(page_url='%s')" % page_url)
 
-    video_urls = []
+    # Espera un poco como hace el player flash
+    logger.info("[videobb.py] waiting 3 secs")
+    import time
+    time.sleep(3)
 
+    video_urls = []
+    
     # Obtiene el id
     code = Extract_id(page_url)
     if code == "":
         return []
 
-    # Descarga el json con los detalles del vídeo
-    controluri = "http://videobb.com/player_control/settings.php?v=%s&fv=v1.1.58"  %code
-    datajson = scrapertools.cachePage(controluri)
-    logger.info("response="+datajson);
-
-    # Convierte el json en un diccionario
-    datajson = datajson.replace("false","False").replace("true","True")
-    datajson = datajson.replace("null","None")
-    datadict = eval("("+datajson+")")
-    
-    # Formatos
-    formatos = datadict["settings"]["res"]
-
-    cipher = datadict["settings"]["video_details"]["sece2"]
-    logger.info("cipher="+cipher);
-    
-    keyTwo = str(datadict["settings"]["config"]["rkts"])
-    logger.info("keyTwo="+keyTwo);
-
-    c = decrypt32byte(cipher, int(keyTwo), int(base64.decodestring("MjI2NTkz")));
-    
-    for formato in formatos:
-        uri = base64.decodestring(formato["u"]) + "&c="+c+"&start=0"
-        resolucion = formato["l"]
-    
-        video_urls.append( ["%s [videobb]" % resolucion , uri ])
+    video_urls=getFinalLink("http://videobb.com/watch_video.php?v="+code,HOSTER_TOKEN)
 
     for video_url in video_urls:
         logger.info("[videobb.py] %s - %s" % (video_url[0],video_url[1]))
@@ -72,6 +55,221 @@ def Extract_id(url):
             
 # Crypt routines ported from Java VideoBbCom.java from jDownloader
 # Thank you .bismarck ;)
+def getFinalLink(downloadLink, token):
+    
+    # Lee la página
+    print downloadLink
+    data = scrapertools.cache_page(downloadLink)
+    #print "data="+data
+    
+    # Extrae el referer
+    try:
+        referer = re.findall('<param value="([^"]+)" name="movie">',data,re.DOTALL)[0]
+        print "referer="+referer
+    except:
+        referer = ""
+
+    if referer == "":
+        referer = "http://videobb.com/player/p.swf?v=1_2_8_0"
+    
+    if not referer.startswith("http"):
+        referer = "http://videobb.com" + referer
+    print "referer="+referer
+
+    # Extrae la url de la configuración del player
+    setting = re.findall('<param value="setting=([^"]+)"',data,re.DOTALL)[0]
+    print "setting="+setting
+    setting = base64.decodestring(setting)
+    print "setting="+setting
+
+    # Descarga la configuración del player (json)
+    data = scrapertools.cache_page(setting)
+    #filedata = open("/Users/jesus/Downloads/texto.json")
+    #data = filedata.read()
+    #filedata.close()
+    #print "data="+data
+
+    headers=[]
+    headers.append(["Referer",referer])
+    headers.append(["x-flash-version","10,3,183,7"])
+
+    # Parámetros del cifrado
+    token1=re.findall(token + '":"([^"]+)",',data,re.DOTALL)[0]
+    print "token1="+token1
+    dllink = base64.decodestring( token1 )
+
+    # Convierte el json en un diccionario
+    datajson = data.replace("false","False").replace("true","True")
+    datajson = datajson.replace("null","None")
+    datadict = eval("("+datajson+")")
+
+    # Formatos
+    formatos = datadict["settings"]["res"]
+    video_urls = []
+    for formato in formatos:
+        # Si la URL viene vacía, es porque esa calidad no es visible
+        if formato["u"]!="":
+            dllink = base64.decodestring(formato["u"])
+            video_url = build_url(dllink,HOSTER_KEY,data)
+            resolucion = formato["l"]
+            video_urls.append( ["%s [videobb]" % resolucion , video_url ])
+
+    return video_urls
+
+def build_url(dllink,hoster_key,data):
+    if not dllink.endswith("&"):
+        dllink = dllink + "&"
+    
+    print "dllink="+dllink
+
+    keyTwo = int( base64.decodestring(hoster_key) )
+    print "keyTwo="+str(keyTwo)
+
+    keyOne = int( re.findall('rkts":(\d+),',data,re.DOTALL)[0] )
+    print "keyOne="+str(keyOne)
+
+    algoCtrl = base64.decodestring( re.findall('spn":"([^"]+)",',data,re.DOTALL)[0] )
+    print "algoCtrl="+algoCtrl
+    
+    for eachValue in algoCtrl.split("&"):
+        parameterTyp = eachValue.split("=")
+
+        if parameterTyp[1]=="1":
+            keyString = re.findall('sece2":"([0-9a-f]+)",',data,re.DOTALL)[0]
+            decryptedString = decryptByte(keyString, keyOne, keyTwo)
+        elif parameterTyp[1]=="2":
+            keyString = re.findall('\{"url":"([0-9a-f]+)",',data,re.DOTALL)[0]
+            decryptedString = decryptBit(keyString, keyOne, keyTwo)
+        elif parameterTyp[1]=="3":
+            keyString = re.findall('type":"([0-9a-f]+)",',data,re.DOTALL)[0]
+            decryptedString = decryptBit9300(keyString, keyOne, keyTwo)
+        elif parameterTyp[1]=="4":
+            keyString = re.findall('time":"(.*?)"',data,re.DOTALL)[0]
+            decryptedString = decryptBitLion(keyString, keyOne, keyTwo)
+
+        dllink = dllink + parameterTyp[0] + "=" + decryptedString + "&"
+    
+    return dllink + "start=0";
+
+def decryptByte(arg1,arg2,arg3):
+    print "[decryptByte] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    devuelve = zDecrypt(True, arg1, arg2, arg3, 11, 77213, 81371, 17, 92717, 192811)
+    return devuelve
+
+def decryptBit(arg1,arg2,arg3):
+    print "[decryptBit] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    devuelve = zDecrypt(False, arg1, arg2, arg3, 11, 77213, 81371, 17, 92717, 192811)
+    return devuelve
+
+def decryptBit9300(arg1,arg2,arg3):
+    print "[decryptBit9300] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    devuelve = zDecrypt(False, arg1, arg2, arg3, 26, 25431, 56989, 93, 32589, 784152)
+    return devuelve
+
+def decryptBitLion(arg1,arg2,arg3):
+    print "[decryptBitLion] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    devuelve = zDecrypt(False, arg1, arg2, arg3, 82, 84669, 48779, 32, 65598, 115498)
+    return devuelve
+
+def zDecrypt(algo, cipher, keyOne, keyTwo, arg0, arg1, arg2, arg3, arg4, arg5):
+    #int x = 0, y = 0, z = 0;
+    x = 0; y = 0; z = 0
+
+    #final char[] C = convertStr2Bin(cipher).toCharArray();
+    C = list(convertStr2Bin(cipher))
+    
+    #int len = C.length * 2;
+    longitud = len(C) * 2
+    
+    '''
+    if (algo) {
+        len = 256;
+    }
+    '''
+    if algo:
+        longitud = 256
+
+    #final int[] B = new int[(int) (len * 1.5)];
+    B = []
+    
+    #final int[] A = new int[C.length];
+    A = []
+    
+    '''
+    int i = 0;
+    for (final char c : C) {
+        A[i++] = Character.digit(c, 10);
+    }
+    '''
+    i = 0
+    for i in range(0,len(C)):
+        A.append( int(C[i],10) )
+    
+    '''
+    i = 0;
+    while (i < len * 1.5) {
+        keyOne = (keyOne * arg0 + arg1) % arg2;
+        keyTwo = (keyTwo * arg3 + arg4) % arg5;
+        B[i] = (keyOne + keyTwo) % (len / 2);
+        i++;
+    }
+    '''
+    i=0
+    while i<longitud*1.5:
+        keyOne = (keyOne * arg0 + arg1) % arg2
+        keyTwo = (keyTwo * arg3 + arg4) % arg5
+        B.append( (keyOne + keyTwo) % (longitud / 2) )
+        i=i+1
+  
+
+    '''
+    i = len;
+    while (i >= 0) {
+        x = B[i];
+        y = i % (len / 2);
+        z = A[x];
+        A[x] = A[y];
+        A[y] = z;
+        i--;
+    }
+    '''
+    i=longitud
+    while i >= 0:
+        x = B[i]
+        y = i % (longitud / 2)
+        z = A[x]
+        A[x] = A[y]
+        A[y] = z
+        i=i-1
+    
+    '''
+    i = 0;
+    while (i < len / 2) {
+        A[i] = A[i] ^ B[i + len] & 1;
+        i++;
+    }
+    '''
+    i=0
+    while i < longitud/2:
+        A[i] = A[i] ^ B[i + longitud] & 1
+        i=i+1
+
+    '''
+    i = 0;
+    final StringBuilder sb = new StringBuilder();
+    while (i < A.length) {
+        sb.append(A[i]);
+        i++;
+    }
+    return convertBin2Str(sb.toString());
+    '''
+    i = 0
+    result = ""
+    while i < len(A):
+        result = result + str(A[i])
+        i = i + 1
+
+    return convertBin2Str(result)
 
 def convertBin2Str(s):
     # 11111111 -> FF
@@ -194,6 +392,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
+    # TODO: de jdownloader "http://(www\\.)?videobb\\.com/(video/|watch_video\\.php\\?v=|e/)\\w+"
     patronvideos  = "(http\:\/\/(?:www\.)?videobb.com\/(?:(?:e/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{12})"
     logger.info("[videobb.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
