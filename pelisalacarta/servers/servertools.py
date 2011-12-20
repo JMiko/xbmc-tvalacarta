@@ -90,6 +90,11 @@ def findvideos(data):
     import fileserve
     devuelve.extend(fileserve.find_videos(data))
 
+    # filesonic
+    if config.get_setting("fileniumpremium")=="true":
+        import filesonic
+        devuelve.extend(filesonic.find_videos(data))
+
     # fourshared
     import fourshared
     devuelve.extend(fourshared.find_videos(data))

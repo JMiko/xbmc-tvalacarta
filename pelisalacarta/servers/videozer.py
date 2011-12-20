@@ -12,15 +12,26 @@ from core import scrapertools
 from core import logger
 from core import config
 
+HOSTER_KEY="MjE1Njc4"
+
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[videozer.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
 
+    # Espera un poco como hace el player flash
+    logger.info("[videobb.py] waiting 3 secs")
+    import time
+    time.sleep(3)
+
+    video_urls = []
+    
     # Obtiene el id
     code = Extract_id(page_url)
-    
+    if code == "":
+        return []
+
     # Descarga el json con los detalles del vídeo
     controluri = "http://videozer.com/player_control/settings.php?v=%s&fv=v1.1.03"  %code
     datajson = scrapertools.cachePage(controluri)
@@ -34,23 +45,13 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Formatos
     formatos = datadict["cfg"]["quality"]
 
-    cipher = datadict["cfg"]["info"]["sece2"]
-    logger.info("cipher="+cipher);
-    
-    keyTwo = str(datadict["cfg"]["environment"]["rkts"])
-    logger.info("keyTwo="+keyTwo);
-
-    import videobb
-    c = videobb.decrypt32byte(cipher, int(keyTwo), int(base64.decodestring("MjE1Njc4")))
-    
     for formato in formatos:
         uri = base64.decodestring(formato["u"])
-        # El HD en VideoZer es solo para premium
-        if uri<>"":
-            uri = uri + "&c="+c+"&start=0"
-            resolucion = formato["l"]
-        
-            video_urls.append( ["%s [videozer]" % resolucion , uri ])
+
+        import videobb
+        video_url = videobb.build_url(uri,HOSTER_KEY,datajson)
+        resolucion = formato["l"]
+        video_urls.append( ["%s [videozer]" % resolucion , video_url ])
 
     for video_url in video_urls:
         logger.info("[videozer.py] %s - %s" % (video_url[0],video_url[1]))
