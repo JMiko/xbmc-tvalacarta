@@ -351,6 +351,7 @@ def play(item):
     for returnitem in itemlist:
         returnitem.channel=item.channel
         returnitem.subtitle=item.subtitle
+        returnitem.fulltitle=item.fulltitle
 
     return itemlist
 
