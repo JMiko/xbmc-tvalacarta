@@ -175,7 +175,7 @@ def tagdocumentaleslist(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)         
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title="P�gina siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title="Pagina siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
     
     return itemlist
 
@@ -212,7 +212,7 @@ def detail(item):
     patronvideos = "file: '([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
-        itemlist.append( Item(channel=CHANNELNAME , action="play" , server="Directo", title=title+" [directo]",url=matches[0], thumbnail=thumbnail, plot=plot))
+        itemlist.append( Item(channel=CHANNELNAME , action="play" , server="directo", title=item.title+" [directo]",url=matches[0], thumbnail=item.thumbnail, plot=item.plot))
 
     return itemlist
 
