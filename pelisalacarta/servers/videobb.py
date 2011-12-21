@@ -112,7 +112,7 @@ def getFinalLink(downloadLink, token):
             dllink = base64.decodestring(formato["u"])
             video_url = build_url(dllink,HOSTER_KEY,data)
             resolucion = formato["l"]
-            video_urls.append( ["%s [videobb]" % resolucion , video_url ])
+            video_urls.append( ["%s [videobb]" % resolucion , video_url , 5 ])
 
     return video_urls
 

@@ -265,7 +265,7 @@ def playvideo(sender,itemtext):
     if config.get_setting("fileniumpremium")=="true" and item.server not in ["downupload","vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
         exec "from servers import filenium as gen_conector"
         video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
-        logger.info("[xbmctools.py] filenium url="+video_gen)
+        Log("[xbmctools.py] filenium url="+video_gen)
         video_urls.append( [ "[filenium]", video_gen ] )
 
     for video_url in video_urls:

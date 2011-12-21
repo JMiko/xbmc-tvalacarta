@@ -18,39 +18,42 @@ def get_platform():
     return "plex"
 
 def get_setting(name,channel=""):
-    prefs = []
-    from PMS import Log
-    from PMS import Plugin
-    Log("bundlepath="+Plugin.__bundlePath)
-    #/Users/jesus/Library/Application Support/Plex Media Server/Plug-ins/pelisalacarta.bundle
-    path = "%s/Contents/DefaultPrefs.json" % Plugin.__bundlePath
-    if os.path.exists(path):
-        f = open(path, "r")
-        string = f.read()
-        f.close()
-        from PMS import JSON
-        prefs = JSON.ObjectFromString(string)
-
-    from PMS import Prefs
-    Log("prefspath="+Prefs.__prefsPath)
-    #/Users/jesus/Library/Application Support/Plex Media Server/Plug-in Support/Preferences/com.plexapp.plugins.pelisalacarta.xml
-    path = Prefs.__prefsPath
-    if os.path.exists(path):
-        f = open(path, "r")
-        from PMS import XML
-        userPrefs = XML.ElementFromString(f.read())
-        f.close()
-        for userPref in userPrefs:
-            for pref in prefs:
-                if pref["id"] == userPref.tag:
-                    pref["value"] = userPref.text
+    try:
+        prefs = []
+        from PMS import Log
+        from PMS import Plugin
+        Log("bundlepath="+Plugin.__bundlePath)
+        #/Users/jesus/Library/Application Support/Plex Media Server/Plug-ins/pelisalacarta.bundle
+        path = "%s/Contents/DefaultPrefs.json" % Plugin.__bundlePath
+        if os.path.exists(path):
+            f = open(path, "r")
+            string = f.read()
+            f.close()
+            from PMS import JSON
+            prefs = JSON.ObjectFromString(string)
     
-    from PMS import Log
-    valor = ""
-    for pref in prefs:
-        Log("pref="+str(pref))
-        if pref["id"]==name:
-            valor = pref["value"]
+        from PMS import Prefs
+        Log("prefspath="+Prefs.__prefsPath)
+        #/Users/jesus/Library/Application Support/Plex Media Server/Plug-in Support/Preferences/com.plexapp.plugins.pelisalacarta.xml
+        path = Prefs.__prefsPath
+        if os.path.exists(path):
+            f = open(path, "r")
+            from PMS import XML
+            userPrefs = XML.ElementFromString(f.read())
+            f.close()
+            for userPref in userPrefs:
+                for pref in prefs:
+                    if pref["id"] == userPref.tag:
+                        pref["value"] = userPref.text
+        
+        from PMS import Log
+        valor = ""
+        for pref in prefs:
+            Log("pref="+str(pref))
+            if pref["id"]==name:
+                valor = pref["value"]
+    except:
+        valor=""
 
     if name=="cache.dir":
         return ""

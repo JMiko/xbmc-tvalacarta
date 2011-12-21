@@ -2,7 +2,14 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.2.4"/>
+    <property name="version" value="3.2.5-beta-1"/>
+    
+    <!-- Para betas usar: -->
+    <!--property name="version" value="3.2.5-beta-1"/-->
+    
+    <!-- Para versiones finales usar: -->
+    <!--property name="version" value="3.2.5"/-->
+    
     <property name="versionboxee" value="3.5"/>
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
@@ -47,6 +54,7 @@
         <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
         <antcall target="copy-boxee"/>
     	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
+        <copy file="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" tofile="${target}/boxee/info.mimediacenter.pelisalacarta-${versionboxee}.zip"/>
 
         <mkdir dir="${target}/dreambox/pelisalacarta"/>
         <antcall target="copy-dreambox"/>
@@ -121,6 +129,9 @@
         <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}/download" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="${target}/boxee">
 				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip"/>
+            </fileset>
+            <fileset dir="${platformcode}/boxee">
+				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip.xml"/>
             </fileset>
         </ftp>
         <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
@@ -282,6 +293,10 @@
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
                 <exclude name="tester.py"/>
+                <exclude name="fanart-new.jpg"/>
+                <exclude name="icon-old.png"/>
+                <exclude name="TODO.txt"/>
+                <exclude name="version-pelisalacarta.xml"/>
                 <exclude name="core/platform_name.py"/>
 
                 <!--exclude name="platformcode/boxee/**"/-->
