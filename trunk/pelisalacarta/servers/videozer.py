@@ -25,8 +25,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     import time
     time.sleep(3)
 
-    video_urls = []
-    
     # Obtiene el id
     code = Extract_id(page_url)
     if code == "":
@@ -51,7 +49,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         import videobb
         video_url = videobb.build_url(uri,HOSTER_KEY,datajson)
         resolucion = formato["l"]
-        video_urls.append( ["%s [videozer]" % resolucion , video_url ])
+        video_urls.append( ["%s [videozer]" % resolucion , video_url , 5 ])
 
     for video_url in video_urls:
         logger.info("[videozer.py] %s - %s" % (video_url[0],video_url[1]))

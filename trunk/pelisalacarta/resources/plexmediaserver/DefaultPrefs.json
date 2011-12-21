@@ -27,5 +27,5 @@
         {"id": "fileniumpremium", "label": "Cuenta premium Filenium", "type": "bool", "default": "false"},
         {"id": "fileniumuser", "label": "Usuario", "type": "text", "default": ""},
         {"id": "fileniumpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
-        {"id": "fileniumpremium", "label": "Usar Filenium para descargas", "type": "bool", "default": "true"},
+        {"id": "filenium_for_download", "label": "Usar Filenium para descargas", "type": "bool", "default": "true"},
 ]

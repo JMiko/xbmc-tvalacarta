@@ -16,11 +16,16 @@ from core import scrapertools
 from core.item import Item
 from core import downloadtools
 from servers import servertools
+import xbmc,xbmcgui
 
 CHANNELNAME = "asiateam"
 DEBUG = True
-SUB_PATH = os.path.join( config.get_setting( "downloadpath" ),"subtitulos","asiateam" )
+SUB_PATH = os.path.join( config.get_data_path() , "subtitulos" , "asiateam" )
+
+if not os.path.exists(os.path.join( config.get_data_path() , "subtitulos" )):
+    os.mkdir( os.path.join( config.get_data_path() , "subtitulos" ) )
 if not os.path.exists(SUB_PATH):
+    SUB_PATH = os.path.join( config.get_data_path() , "subtitulos" , "asiateam" )
     os.mkdir(SUB_PATH)
 
 SUBTEMP_PATH = os.path.join( config.get_data_path() , 'subtitulo.srt' )
