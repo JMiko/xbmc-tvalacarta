@@ -386,7 +386,7 @@ def completo(item):
     
     # Para cada letra
     for item_letra in items_letras:
-        print item_letra.title
+        #print item_letra.title
         
         # Lee las series
         items_programas = series(item_letra)

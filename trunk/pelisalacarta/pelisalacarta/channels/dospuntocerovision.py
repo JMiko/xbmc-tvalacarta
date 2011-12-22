@@ -688,7 +688,7 @@ def listvideofeeds(params,url,category):
     c = 0
     for entry in xmldoc.getElementsByTagNameNS(ATOM_NS, u'entry'):
     #First title element in doc order within the entry is the title
-        print entry
+        #print entry
         entrytitle = entry.getElementsByTagNameNS(ATOM_NS, u'title')[0]
         entrylink = entry.getElementsByTagNameNS(ATOM_NS, u'link')[2]
         entryplot = entry.getElementsByTagNameNS(ATOM_NS, u'summary')[0]

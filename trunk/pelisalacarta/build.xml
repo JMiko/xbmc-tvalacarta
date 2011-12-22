@@ -130,7 +130,7 @@
             <fileset dir="${target}/boxee">
 				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip"/>
             </fileset>
-            <fileset dir="${platformcode}/boxee">
+            <fileset dir="platformcode/boxee">
 				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip.xml"/>
             </fileset>
         </ftp>

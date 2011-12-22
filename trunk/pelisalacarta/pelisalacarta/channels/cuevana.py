@@ -216,7 +216,7 @@ def episodios(item):
     seasons = json.loads(data)
     
     for season_id in seasons:
-        print seasons[season_id]
+        #print seasons[season_id]
         
         for episode in seasons[season_id]:
             num = episode["num"]
@@ -309,7 +309,7 @@ def findvideos(item):
         languages = sources[quality_id]
 
         for language_id in languages:
-            print language_id
+            #print language_id
             mirrors = sources[quality_id][language_id]
 
             for mirror in mirrors:

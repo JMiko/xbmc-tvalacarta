@@ -38,7 +38,7 @@ def mainlist(params,url,category):
     #decodeBase64('yFA/B6/fgVeTEKXqJsWqmGZuCQaVby9i6umE94Eies2OznsWeVCs9iEzpRfuZfK2xoF8Vj8TAGkbHv4IprauDzwV488pJoEzbndTne34hSMjMH8Apc4Z4Dssl3f8tD98StY3zGjGfkD53ErHTRELz9qcBamiKr+CDcs4ZB6d20rTKi6lseNyfMWKVw7EdLqCozywFTGwmzUQN2iCGyqEQoB2KDPdE8NNDaMn86jGKI8MhRxVNU+iwiSI6JwljACen0BIqzWRJwUIflaLfyQtgcVNnsstw3RbQIBDLxH8TBsn6eBLfIwqeNfHfywQiyw=')
     code = "yFA/B6/fgVeTEKXqJsWqmGZuCQaVby9i6umE94Eies2OznsWeVCs9iEzpRfuZfK2xoF8Vj8TAGkbHv4IprauDzwV488pJoEzbndTne34hSMjMH8Apc4Z4Dssl3f8tD98StY3zGjGfkD53ErHTRELz9qcBamiKr+CDcs4ZB6d20rTKi6lseNyfMWKVw7EdLqCozywFTGwmzUQN2iCGyqEQoB2KDPdE8NNDaMn86jGKI8MhRxVNU+iwiSI6JwljACen0BIqzWRJwUIflaLfyQtgcVNnsstw3RbQIBDLxH8TBsn6eBLfIwqeNfHfywQiyw="
     result = base64.b64decode(code)
-    print "%s" % result
+    #print "%s" % result
 
     # Añade al listado de XBMC
     xbmctools.addnewfolder( CHANNELNAME , "novedadeslist"      , "" , "Novedades","http://www.seriesonlinetv.com/","","")

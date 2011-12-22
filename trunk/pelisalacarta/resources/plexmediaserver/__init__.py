@@ -90,27 +90,29 @@ def runchannel(sender,channel,action="mainlist",category=""):
     for item in itemlist:    
         Log("item="+item.tostring()+" channel=["+item.channel+"]")
 
-        if item.category=="F":
-            category = "Películas"
-        elif item.category=="S":
-            category = "Series"
-        elif item.category=="D":
-            category = "Documentales"
-        elif item.category=="A":
-            category = "Anime"
-        elif item.category=="M":
-            category = "Música"
-        elif item.category=="G":
-            category = "Servidores"
-        elif item.category=="NEW":
-            category = "Los nuevos"
-        else:
-            category=""
+        category=""
+        if "F" in item.category:
+            category = category + "Películas, "
+        if "S" in item.category:
+            category = category + "Series, "
+        if "D" in item.category:
+            category = category + "Documentales, "
+        if "A" in item.category:
+            category = category + "Anime, "
+        if "M" in item.category:
+            category = category + "Música, "
+        if "G" in item.category:
+            category = category + "Servidores, "
+        if "NEW" in item.category:
+            category = "Los nuevos, "
+        
+        if category!="":
+            category = category[:-2]
         
         if not item.thumbnail.startswith("http://"):
-            item.thumbnail = 'http://pelisalacarta.mimediacenter.info/posters/'+item.thumbnail+'.png'
+            item.thumbnail = 'http://pelisalacarta.mimediacenter.info/posters/'+item.channel+'.png'
         #Log("category=%s" % category)
-        
+
         #thumbnail = 'images/posters/'+item.channel+'.png'
         #Log("thumbnail=%s" % thumbnail)
 

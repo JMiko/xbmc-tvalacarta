@@ -154,7 +154,7 @@ def videos(item):
     # Descarga la página
     authStr = base64.encodestring('%s:%s' % (LOGIN, PASSWORD))[:-1]
     data = scrapertools.cachePage(item.url,headers=[["Authorization", "Basic %s" % authStr]])
-    print data
+    #print data
 
     # Extrae las entradas
     patronvideos  = '"url": "([^"]+)",[^"]+'
@@ -172,7 +172,7 @@ def videos(item):
 
         videos = servertools.findvideos(scrapedurl)
         if len(videos)>0:
-            print videos
+            #print videos
             server = videos[0][2]
             scrapedurl = videos[0][1]
             itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle+" ["+server+"]" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, server=server, folder=False) )

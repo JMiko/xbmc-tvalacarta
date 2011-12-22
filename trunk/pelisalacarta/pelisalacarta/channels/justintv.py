@@ -243,7 +243,7 @@ def _language(item):
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Choice a language", languages)
     if seleccion == -1:return
-    print "seleccion :",seleccion
+    #print "seleccion :",seleccion
     abb = abbrev[seleccion]
     config.set_setting('justin_lang',abb)
     xbmc.executebuiltin( "Container.Refresh" )
