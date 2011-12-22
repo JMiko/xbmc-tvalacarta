@@ -188,7 +188,7 @@ def detail(params,url,category):
     # Extrae las entradas (videos) #
     patron = '<div id="article">[^<]+<h2>(.*?)<h2>Comments:</h2>'
     matchtype = re.compile(patron,re.DOTALL).findall(data)
-    print "matchtype :%s" %matchtype[0]
+    #print "matchtype :%s" %matchtype[0]
     if ("porno"or"pornÃ´"or"xxx") in string.lower(matchtype[0]):
         if adulto == "false":
             advertencia()
@@ -198,7 +198,7 @@ def detail(params,url,category):
     else:
         patron = "<h2(.*?)</h2>"
         matchtemp = re.compile(patron,re.DOTALL).findall(data)
-        print matchtemp
+        #print matchtemp
         if len(matchtemp)>0:
             patron = "<h2(.*?)</h2>"
             matchtemp = re.compile(patron,re.DOTALL).findall(matchtype[0])
@@ -207,7 +207,7 @@ def detail(params,url,category):
                     for match in matchtemp:
                         patron = "<h2%s(.*?)</p>" %match[0]
                         matchesdata = re.compile(patron,re.DOTALL).findall(matchtype[0])
-                        print matchesdata[0]
+                        #print matchesdata[0]
                         matches = megasearch(matchtype,matchesdata[0])
                         titulo = re.sub("<[^>]+>"," ",match).replace(">","")
                         listar(titulo,thumbnail,plot,matches,category)

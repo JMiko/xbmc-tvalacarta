@@ -58,14 +58,14 @@ def Extract_id(url):
 def getFinalLink(downloadLink, token):
     
     # Lee la página
-    print downloadLink
+    logger.info(downloadLink)
     data = scrapertools.cache_page(downloadLink)
     #print "data="+data
     
     # Extrae el referer
     try:
         referer = re.findall('<param value="([^"]+)" name="movie">',data,re.DOTALL)[0]
-        print "referer="+referer
+        logger.info("referer="+referer)
     except:
         referer = ""
 
@@ -74,13 +74,13 @@ def getFinalLink(downloadLink, token):
     
     if not referer.startswith("http"):
         referer = "http://videobb.com" + referer
-    print "referer="+referer
+    logger.info("referer="+referer)
 
     # Extrae la url de la configuración del player
     setting = re.findall('<param value="setting=([^"]+)"',data,re.DOTALL)[0]
-    print "setting="+setting
+    logger.info("setting="+setting)
     setting = base64.decodestring(setting)
-    print "setting="+setting
+    logger.info("setting="+setting)
 
     # Descarga la configuración del player (json)
     data = scrapertools.cache_page(setting)
@@ -95,7 +95,7 @@ def getFinalLink(downloadLink, token):
 
     # Parámetros del cifrado
     token1=re.findall(token + '":"([^"]+)",',data,re.DOTALL)[0]
-    print "token1="+token1
+    logger.info("token1="+token1)
     dllink = base64.decodestring( token1 )
 
     # Convierte el json en un diccionario
@@ -120,16 +120,16 @@ def build_url(dllink,hoster_key,data):
     if not dllink.endswith("&"):
         dllink = dllink + "&"
     
-    print "dllink="+dllink
+    logger.info("dllink="+dllink)
 
     keyTwo = int( base64.decodestring(hoster_key) )
-    print "keyTwo="+str(keyTwo)
+    logger.info("keyTwo="+str(keyTwo))
 
     keyOne = int( re.findall('rkts":(\d+),',data,re.DOTALL)[0] )
-    print "keyOne="+str(keyOne)
+    logger.info("keyOne="+str(keyOne))
 
     algoCtrl = base64.decodestring( re.findall('spn":"([^"]+)",',data,re.DOTALL)[0] )
-    print "algoCtrl="+algoCtrl
+    logger.info("algoCtrl="+algoCtrl)
     
     for eachValue in algoCtrl.split("&"):
         parameterTyp = eachValue.split("=")
@@ -152,22 +152,22 @@ def build_url(dllink,hoster_key,data):
     return dllink + "start=0";
 
 def decryptByte(arg1,arg2,arg3):
-    print "[decryptByte] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    logger.info("[decryptByte] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3))
     devuelve = zDecrypt(True, arg1, arg2, arg3, 11, 77213, 81371, 17, 92717, 192811)
     return devuelve
 
 def decryptBit(arg1,arg2,arg3):
-    print "[decryptBit] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    logger.info( "[decryptBit] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3) )
     devuelve = zDecrypt(False, arg1, arg2, arg3, 11, 77213, 81371, 17, 92717, 192811)
     return devuelve
 
 def decryptBit9300(arg1,arg2,arg3):
-    print "[decryptBit9300] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    logger.info( "[decryptBit9300] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3) )
     devuelve = zDecrypt(False, arg1, arg2, arg3, 26, 25431, 56989, 93, 32589, 784152)
     return devuelve
 
 def decryptBitLion(arg1,arg2,arg3):
-    print "[decryptBitLion] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3)
+    logger.info( "[decryptBitLion] keyString=%s, keyOne=%d, keyTwo=%d" % (arg1,arg2,arg3) )
     devuelve = zDecrypt(False, arg1, arg2, arg3, 82, 84669, 48779, 32, 65598, 115498)
     return devuelve
 

@@ -360,6 +360,6 @@ def find_video_items_cineadicto(item,data,plot):
                 itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " (V.O) - %s %s" %(subtitle,sub), url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
             elif not match.endswith("srt" or "xml") :
                 itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " - [Directo]" , url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
-            print scrapedurl
+            #print scrapedurl
 
     return itemlist
