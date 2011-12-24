@@ -475,27 +475,29 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # Descarga el subtitulo
     if channel=="cuevana" and subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
-        try:
-            import os
-            ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
-            if os.path.exists(ficherosubtitulo):
-                try:
-                  os.remove(ficherosubtitulo)
-                except IOError:
-                  logger.info("Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
-                  raise
-        
-            from core import scrapertools
-            data = scrapertools.cache_page(subtitle)
-            #print data
-            fichero = open(ficherosubtitulo,"w")
-            fichero.write(data)
-            fichero.close()
-            #from core import downloadtools
-            #downloadtools.downloadfile(subtitle, ficherosubtitulo )
-        except:
-            logger.info("Error al descargar el subtítulo")
-
+        import os
+        ficherosubtitulo = os.path.join( config.get_data_path(), 'subtitulo.srt' )
+        if os.path.exists(ficherosubtitulo):
+            try:
+                os.remove(ficherosubtitulo)
+            except IOError:
+                logger.info("[xbmctools.py] Error al eliminar el archivo subtitulo.srt "+ficherosubtitulo)
+                raise
+        cancelar=False
+        while cancelar==False:
+            try:
+                from core import scrapertools
+                data = scrapertools.cache_page(subtitle)
+                fichero = open(ficherosubtitulo,"w")
+                fichero.write(data)
+                fichero.close()
+                if os.path.getsize(ficherosubtitulo)==0:
+                    logger.info("[xbmctools.py] El subtitulo se descargo con size 0, pruebo de nuevo")
+                else:
+                    cancelar=True
+            except:
+                logger.info("[xbmctools.py] Error al descargar el subtítulo")
+    
     # Lanza el reproductor
     if strmfile: #Si es un fichero strm no hace falta el play
         import sys
