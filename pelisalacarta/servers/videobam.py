@@ -18,7 +18,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page(page_url)
 
     video_urls = []
-
+    
     patronSD= " low: '([^']+)'" 
     matches = re.compile(patronSD,re.DOTALL).findall(data)
     for match in matches:
@@ -30,6 +30,17 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     for match in matches:
         videourl = match
         video_urls.append( [ "HQ [videobam]" , videourl ] )
+
+    if len(matches)==0:
+        # "scaling":"fit","url":"http:\/\/f10.videobam.com\/storage\/11\/videos\/a\/aa\/AaUsV\/encoded.mp4
+        
+        patron = '[\W]scaling[\W]:[\W]fit[\W],[\W]url[\W]:[\W](.*?.mp4)'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        for match in matches:
+            videourl = match.replace('\/','/')
+            videourl = urllib.unquote(videourl)
+            video_urls.append( [ ".mp4 [videobam]" , videourl ] )
+        
 
     for video_url in video_urls:
         logger.info("[videobam.py] %s - %s" % (video_url[0],video_url[1]))
