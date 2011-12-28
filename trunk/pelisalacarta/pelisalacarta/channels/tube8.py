@@ -113,13 +113,14 @@ def getVideo(item):
     matches = re.compile('"standard_url":"(http.*?)"').findall(data)
     if not matches:
         matches = re.compile('"(http://cdn\d+\.public\.tube8\.com/.*?)"').findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
+
+	logger.debug("[tube8.py] URL  " + matches[0].replace("\\",""))
     
     itemlist = []
     item.action="play"
     item.server="Directo"
     item.Folder=False   
-    item.url=matches[0]
+    item.url=matches[0].replace("\\","")
     # Añade al listado de XBMC
     itemlist.append(item)
 
