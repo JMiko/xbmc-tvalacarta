@@ -14,8 +14,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "seriesyonkis"
-DEBUG = True
+__channel__ = "seriesyonkis"
+__category__ = "S,A"
+__type__ = "generic"
+__title__ = "Seriesyonkis"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -24,10 +29,10 @@ def mainlist(item):
     logger.info("[seriesyonkis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Ultimos capítulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.com"))
-    itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Series más vistas", url="http://www.seriesyonkis.com/series-mas-vistas"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.seriesyonkis.com/buscar/serie"))
+    itemlist.append( Item(channel=__channel__, action="lastepisodes"      , title="Ultimos capítulos" , url="http://www.seriesyonkis.com/ultimos-capitulos"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.com"))
+    itemlist.append( Item(channel=__channel__, action="mostviewed"    , title="Series más vistas", url="http://www.seriesyonkis.com/series-mas-vistas"))
+    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://www.seriesyonkis.com/buscar/serie"))
 
     return itemlist
 
@@ -53,7 +58,7 @@ def search(item,texto, categoria="*"):
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -80,7 +85,7 @@ def lastepisodes(item):
     
             # Depuracion
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist  
 
@@ -100,7 +105,7 @@ def mostviewed(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -114,7 +119,7 @@ def series(item):
     #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
     if len(matches)>0:
-        paginador = Item(channel=CHANNELNAME, action="series" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+        paginador = Item(channel=__channel__, action="series" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
     else:
         paginador = None
     
@@ -134,8 +139,11 @@ def series(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios" , title=match[1], fulltitle=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=match[1], fulltitle=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
+    if len(itemlist)>0 and config.get_platform() in ("wiimc","rss") and item.channel<>"wiideoteca":
+        itemlist.append( Item(channel=__channel__, action="add_serie_to_wiideoteca", title=">> Agregar Serie a Wiideoteca <<", fulltitle=item.fulltitle , url=item.url , thumbnail="", plot="", extra="") )
+ 
     if paginador is not None:
         itemlist.append( paginador )
 
@@ -198,7 +206,7 @@ def episodios(item):
             # Añade al listado de XBMC
             No = No + 1
             title = "Temporada "+str(No)
-            itemlist.append( Item(channel=CHANNELNAME, action="season" , title= title, url=match, thumbnail=thumbnail, plot="", show = title, folder=True))
+            itemlist.append( Item(channel=__channel__, action="season" , title= title, url=match, thumbnail=thumbnail, plot="", show = title, folder=True))
         '''
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
@@ -222,7 +230,7 @@ def addChapters(item):
         for flag in flags:
             title = title + " ("+flag+")"
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=title, fulltitle=item.fulltitle+" "+title, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, context="4", folder=True))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title, fulltitle=item.fulltitle+" "+title, url=url, thumbnail=item.thumbnail, plot=item.plot, show = item.show, context="4", folder=True))
 
     return itemlist
 
@@ -268,7 +276,7 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,info[0])
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
+                itemlist.append( Item(channel=__channel__, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
         import sys
         for line in sys.exc_info():
@@ -301,11 +309,11 @@ def play(item):
         location = scrapertools.getLocationHeaderFromResponse(playurl)
         logger.info("[seriesyonkis.py] play location="+location)
 
-        if location<>"":
-            logger.info("[seriesyonkis.py] Busca videos conocidos en la url")
-            videos = servertools.findvideos(location)
-            
-            if len(videos)==0:
+        if "fileserve.com" in location:
+            logger.info("[seriesyonkis.py] play USING fileserve")
+            itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+        else:
+            if location<>"":
                 logger.info("[seriesyonkis.py] play downloading location")
                 data = scrapertools.cache_page(location)
                 logger.info("------------------------------------------------------------")
@@ -314,48 +322,48 @@ def play(item):
                 videos = servertools.findvideos(data) 
                 logger.info(str(videos))
                 logger.info("------------------------------------------------------------")
-        else:
-            logger.info("[seriesyonkis.py] play location vacía")
-            videos=[]
+            else:
+                logger.info("[seriesyonkis.py] play location vacía")
+                videos=[]
 
-        if(len(videos)>0): 
-            url = videos[0][1]
-            server=videos[0][2]                   
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
-        else:
-            data = scrapertools.cache_page(playurl)
-            patron='<ul class="form-login">(.*?)</ul'
-            matches = re.compile(patron, re.S).findall(data)
-            if(len(matches)>0):
-                if "xbmc" in config.get_platform():
-                    data = matches[0]
-                    #buscamos la public key
-                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
-                    pkeys = re.compile(patron, re.S).findall(data)
-                    if(len(pkeys)>0):
-                        pkey=pkeys[0]
-                        #buscamos el id de challenge
-                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
-                        patron="challenge.*?'([^']+)'"
-                        challenges = re.compile(patron, re.S).findall(data)
-                        if(len(challenges)>0):
-                            challenge = challenges[0]
-                            image = "http://www.google.com/recaptcha/api/image?c="+challenge
-                            
-                            #CAPTCHA
-                            exec "import pelisalacarta.captcha as plugin"
-                            tbd = plugin.Keyboard("","",image)
-                            tbd.doModal()
-                            confirmed = tbd.isConfirmed()
-                            if (confirmed):
-                                tecleado = tbd.getText()
-                                sendcaptcha(playurl,challenge,tecleado)
-                            del tbd 
-                            #tbd ya no existe
-                            if(confirmed and tecleado != ""):
-                                itemlist = play(item)
-                else:
-                    itemlist.append( Item(channel=CHANNELNAME, action="error", title="El sitio web te requiere un captcha") )
+            if(len(videos)>0): 
+                url = videos[0][1]
+                server=videos[0][2]                   
+                itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+            else:
+                data = scrapertools.cache_page(playurl)
+                patron='<ul class="form-login">(.*?)</ul'
+                matches = re.compile(patron, re.S).findall(data)
+                if(len(matches)>0):
+                    if "xbmc" in config.get_platform():
+                        data = matches[0]
+                        #buscamos la public key
+                        patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
+                        pkeys = re.compile(patron, re.S).findall(data)
+                        if(len(pkeys)>0):
+                            pkey=pkeys[0]
+                            #buscamos el id de challenge
+                            data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
+                            patron="challenge.*?'([^']+)'"
+                            challenges = re.compile(patron, re.S).findall(data)
+                            if(len(challenges)>0):
+                                challenge = challenges[0]
+                                image = "http://www.google.com/recaptcha/api/image?c="+challenge
+                                
+                                #CAPTCHA
+                                exec "import pelisalacarta.captcha as plugin"
+                                tbd = plugin.Keyboard("","",image)
+                                tbd.doModal()
+                                confirmed = tbd.isConfirmed()
+                                if (confirmed):
+                                    tecleado = tbd.getText()
+                                    sendcaptcha(playurl,challenge,tecleado)
+                                del tbd 
+                                #tbd ya no existe
+                                if(confirmed and tecleado != ""):
+                                    itemlist = play(item)
+                    else:
+                        itemlist.append( Item(channel=__channel__, action="error", title="El sitio web te requiere un captcha") )
 
     except:
         import sys
@@ -381,12 +389,12 @@ def completo(item):
     itemlist = []
 
     # Carga el menú "Alfabético" de series
-    item = Item(channel=CHANNELNAME, action="listalfabetico")
+    item = Item(channel=__channel__, action="listalfabetico")
     items_letras = listalfabetico(item)
     
     # Para cada letra
     for item_letra in items_letras:
-        #print item_letra.title
+        print item_letra.title
         
         # Lee las series
         items_programas = series(item_letra)
@@ -421,32 +429,32 @@ def listalfabetico(item):
     logger.info("[seriesyonkis.py] listalfabetico")
        
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="0-9", url="http://www.seriesyonkis.com/lista-de-series/0-9"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="A"  , url="http://www.seriesyonkis.com/lista-de-series/A"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="B"  , url="http://www.seriesyonkis.com/lista-de-series/B"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="C"  , url="http://www.seriesyonkis.com/lista-de-series/C"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="D"  , url="http://www.seriesyonkis.com/lista-de-series/D"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="E"  , url="http://www.seriesyonkis.com/lista-de-series/E"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="F"  , url="http://www.seriesyonkis.com/lista-de-series/F"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="G"  , url="http://www.seriesyonkis.com/lista-de-series/G"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="H"  , url="http://www.seriesyonkis.com/lista-de-series/H"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="I"  , url="http://www.seriesyonkis.com/lista-de-series/I"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="J"  , url="http://www.seriesyonkis.com/lista-de-series/J"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="K"  , url="http://www.seriesyonkis.com/lista-de-series/K"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="L"  , url="http://www.seriesyonkis.com/lista-de-series/L"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="M"  , url="http://www.seriesyonkis.com/lista-de-series/M"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="N"  , url="http://www.seriesyonkis.com/lista-de-series/N"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="O"  , url="http://www.seriesyonkis.com/lista-de-series/O"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="P"  , url="http://www.seriesyonkis.com/lista-de-series/P"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="Q"  , url="http://www.seriesyonkis.com/lista-de-series/Q"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="R"  , url="http://www.seriesyonkis.com/lista-de-series/R"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="S"  , url="http://www.seriesyonkis.com/lista-de-series/S"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="T"  , url="http://www.seriesyonkis.com/lista-de-series/T"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="U"  , url="http://www.seriesyonkis.com/lista-de-series/U"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="V"  , url="http://www.seriesyonkis.com/lista-de-series/V"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="W"  , url="http://www.seriesyonkis.com/lista-de-series/W"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="X"  , url="http://www.seriesyonkis.com/lista-de-series/X"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="Y"  , url="http://www.seriesyonkis.com/lista-de-series/Y"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series" , title="Z"  , url="http://www.seriesyonkis.com/lista-de-series/Z"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="0-9", url="http://www.seriesyonkis.com/lista-de-series/0-9"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="A"  , url="http://www.seriesyonkis.com/lista-de-series/A"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="B"  , url="http://www.seriesyonkis.com/lista-de-series/B"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="C"  , url="http://www.seriesyonkis.com/lista-de-series/C"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="D"  , url="http://www.seriesyonkis.com/lista-de-series/D"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="E"  , url="http://www.seriesyonkis.com/lista-de-series/E"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="F"  , url="http://www.seriesyonkis.com/lista-de-series/F"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="G"  , url="http://www.seriesyonkis.com/lista-de-series/G"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="H"  , url="http://www.seriesyonkis.com/lista-de-series/H"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="I"  , url="http://www.seriesyonkis.com/lista-de-series/I"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="J"  , url="http://www.seriesyonkis.com/lista-de-series/J"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="K"  , url="http://www.seriesyonkis.com/lista-de-series/K"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="L"  , url="http://www.seriesyonkis.com/lista-de-series/L"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="M"  , url="http://www.seriesyonkis.com/lista-de-series/M"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="N"  , url="http://www.seriesyonkis.com/lista-de-series/N"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="O"  , url="http://www.seriesyonkis.com/lista-de-series/O"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="P"  , url="http://www.seriesyonkis.com/lista-de-series/P"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="Q"  , url="http://www.seriesyonkis.com/lista-de-series/Q"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="R"  , url="http://www.seriesyonkis.com/lista-de-series/R"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="S"  , url="http://www.seriesyonkis.com/lista-de-series/S"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="T"  , url="http://www.seriesyonkis.com/lista-de-series/T"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="U"  , url="http://www.seriesyonkis.com/lista-de-series/U"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="V"  , url="http://www.seriesyonkis.com/lista-de-series/V"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="W"  , url="http://www.seriesyonkis.com/lista-de-series/W"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="X"  , url="http://www.seriesyonkis.com/lista-de-series/X"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="Y"  , url="http://www.seriesyonkis.com/lista-de-series/Y"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="Z"  , url="http://www.seriesyonkis.com/lista-de-series/Z"))
 
     return itemlist

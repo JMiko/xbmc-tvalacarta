@@ -13,8 +13,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "cuevana"
-DEBUG = True
+__channel__ = "cuevana"
+__category__ = "F,S"
+__type__ = "generic"
+__title__ = "Cuevana"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,9 +28,9 @@ def mainlist(item):
     logger.info("[cuevana.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="seriesMenu",    url="http://www.cuevana.tv/web/series?&todas"))
-    #itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search_options") )
+    itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
+    itemlist.append( Item(channel=__channel__, title="Series"     , action="seriesMenu",    url="http://www.cuevana.tv/web/series?&todas"))
+    #itemlist.append( Item(channel=__channel__, title="Buscar"     , action="search_options") )
     
     return itemlist
     
@@ -33,9 +38,9 @@ def seriesMenu(item):
     logger.info("[cuevana.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"  , action="series", url="http://www.cuevana.tv/web/series?&todas"))
-    #itemlist.append( Item(channel=CHANNELNAME, title="Populares"  , action="series", url="http://www.cuevana.tv/web/series?&populares"))
-    #itemlist.append( Item(channel=CHANNELNAME, title="Ranking"  , action="series", url="http://www.cuevana.tv/web/series?&ranking"))
+    itemlist.append( Item(channel=__channel__, title="Lista Completa"  , action="series", url="http://www.cuevana.tv/web/series?&todas"))
+    #itemlist.append( Item(channel=__channel__, title="Populares"  , action="series", url="http://www.cuevana.tv/web/series?&populares"))
+    #itemlist.append( Item(channel=__channel__, title="Ranking"  , action="series", url="http://www.cuevana.tv/web/series?&ranking"))
 
     return itemlist
     
@@ -44,78 +49,78 @@ def peliculas(item):
     logger.info("[cuevana.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&todas"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Recientes"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&recientes"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Estrenos"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&estrenos"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Populares"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&populares"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Ranking"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&ranking"))
-    itemlist.append( Item(channel=CHANNELNAME, title="HD"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&hd"))
-#    itemlist.append( Item(channel=CHANNELNAME, title="Por Género"     , action="porGenero",    url="http://www.cuevana.tv/peliculas/genero/"))
-#    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))	
+    itemlist.append( Item(channel=__channel__, title="Lista Completa"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&todas"))
+    itemlist.append( Item(channel=__channel__, title="Recientes"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&recientes"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&estrenos"))
+    itemlist.append( Item(channel=__channel__, title="Populares"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&populares"))
+    itemlist.append( Item(channel=__channel__, title="Ranking"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&ranking"))
+    itemlist.append( Item(channel=__channel__, title="HD"  , action="novedades", url="http://www.cuevana.tv/web/peliculas?&hd"))
+#    itemlist.append( Item(channel=__channel__, title="Por Género"     , action="porGenero",    url="http://www.cuevana.tv/peliculas/genero/"))
+#    itemlist.append( Item(channel=__channel__, title="Listado Alfabético"     , action="listadoAlfabetico",    url="http://www.cuevana.tv/peliculas/lista/"))	
 
     return itemlist
 
 def porGenero(item):
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Acción",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=5"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Animación",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=7"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Aventura",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=14"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Bélica",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=19"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Ciencia Ficción",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=6"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Cine Negro",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=23"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=2"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Dramática",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=27"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Musical",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=15"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Negra",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=26"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Romántica",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=16"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Comedia Stand Up",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=24"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Crimen",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=18"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Deporte",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=20"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Documental",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=10"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Dogma",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=22"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Drama",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=1"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Fantasía",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=13"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Humor",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=12"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Infantil",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=8"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Intriga",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=25"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Musical",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=11"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Romance",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=9"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Suspenso",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=3"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Terror",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=4"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Thriller",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=17"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Western",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=21"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Acción",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=5"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Animación",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=7"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Aventura",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=14"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Bélica",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=19"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Ciencia Ficción",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=6"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Cine Negro",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=23"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Comedia",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=2"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Comedia Dramática",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=27"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Comedia Musical",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=15"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Comedia Negra",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=26"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Comedia Romántica",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=16"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Comedia Stand Up",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=24"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Crimen",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=18"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Deporte",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=20"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Documental",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=10"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Dogma",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=22"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Drama",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=1"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Fantasía",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=13"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Humor",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=12"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Infantil",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=8"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Intriga",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=25"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Musical",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=11"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Romance",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=9"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Suspenso",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=3"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Terror",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=4"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Thriller",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=17"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Western",url="http://www.cuevana.tv/peliculas/genero/a=genero&genero=21"))
 
     return itemlist	
 
 def listadoAlfabetico(item):
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="0-9",url="http://www.cuevana.tv/peliculas/lista/letra=num"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="A",url="http://www.cuevana.tv/peliculas/lista/letra=a"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="B",url="http://www.cuevana.tv/peliculas/lista/letra=b"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="C",url="http://www.cuevana.tv/peliculas/lista/letra=c"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="D",url="http://www.cuevana.tv/peliculas/lista/letra=d"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="E",url="http://www.cuevana.tv/peliculas/lista/letra=e"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="F",url="http://www.cuevana.tv/peliculas/lista/letra=f"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="G",url="http://www.cuevana.tv/peliculas/lista/letra=g"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="H",url="http://www.cuevana.tv/peliculas/lista/letra=h"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="I",url="http://www.cuevana.tv/peliculas/lista/letra=i"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="J",url="http://www.cuevana.tv/peliculas/lista/letra=j"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="K",url="http://www.cuevana.tv/peliculas/lista/letra=k"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="L",url="http://www.cuevana.tv/peliculas/lista/letra=l"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="M",url="http://www.cuevana.tv/peliculas/lista/letra=m"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="N",url="http://www.cuevana.tv/peliculas/lista/letra=n"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="O",url="http://www.cuevana.tv/peliculas/lista/letra=o"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="P",url="http://www.cuevana.tv/peliculas/lista/letra=p"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Q",url="http://www.cuevana.tv/peliculas/lista/letra=q"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="R",url="http://www.cuevana.tv/peliculas/lista/letra=r"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="S",url="http://www.cuevana.tv/peliculas/lista/letra=s"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="T",url="http://www.cuevana.tv/peliculas/lista/letra=t"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="U",url="http://www.cuevana.tv/peliculas/lista/letra=u"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="V",url="http://www.cuevana.tv/peliculas/lista/letra=v"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="W",url="http://www.cuevana.tv/peliculas/lista/letra=w"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="X",url="http://www.cuevana.tv/peliculas/lista/letra=x"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Y",url="http://www.cuevana.tv/peliculas/lista/letra=y"))
-    itemlist.append( Item(channel=CHANNELNAME , action="novedades" , title="Z",url="http://www.cuevana.tv/peliculas/lista/letra=z"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="0-9",url="http://www.cuevana.tv/peliculas/lista/letra=num"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="A",url="http://www.cuevana.tv/peliculas/lista/letra=a"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="B",url="http://www.cuevana.tv/peliculas/lista/letra=b"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="C",url="http://www.cuevana.tv/peliculas/lista/letra=c"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="D",url="http://www.cuevana.tv/peliculas/lista/letra=d"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="E",url="http://www.cuevana.tv/peliculas/lista/letra=e"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="F",url="http://www.cuevana.tv/peliculas/lista/letra=f"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="G",url="http://www.cuevana.tv/peliculas/lista/letra=g"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="H",url="http://www.cuevana.tv/peliculas/lista/letra=h"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="I",url="http://www.cuevana.tv/peliculas/lista/letra=i"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="J",url="http://www.cuevana.tv/peliculas/lista/letra=j"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="K",url="http://www.cuevana.tv/peliculas/lista/letra=k"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="L",url="http://www.cuevana.tv/peliculas/lista/letra=l"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="M",url="http://www.cuevana.tv/peliculas/lista/letra=m"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="N",url="http://www.cuevana.tv/peliculas/lista/letra=n"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="O",url="http://www.cuevana.tv/peliculas/lista/letra=o"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="P",url="http://www.cuevana.tv/peliculas/lista/letra=p"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Q",url="http://www.cuevana.tv/peliculas/lista/letra=q"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="R",url="http://www.cuevana.tv/peliculas/lista/letra=r"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="S",url="http://www.cuevana.tv/peliculas/lista/letra=s"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="T",url="http://www.cuevana.tv/peliculas/lista/letra=t"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="U",url="http://www.cuevana.tv/peliculas/lista/letra=u"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="V",url="http://www.cuevana.tv/peliculas/lista/letra=v"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="W",url="http://www.cuevana.tv/peliculas/lista/letra=w"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="X",url="http://www.cuevana.tv/peliculas/lista/letra=x"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Y",url="http://www.cuevana.tv/peliculas/lista/letra=y"))
+    itemlist.append( Item(channel=__channel__ , action="novedades" , title="Z",url="http://www.cuevana.tv/peliculas/lista/letra=z"))
 
     return itemlist
 
@@ -148,7 +153,7 @@ def novedades(item):
             scrapedurl    = ""
             scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, context="4|5", extra="pelicula") )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, context="4|5", extra="pelicula") )
     return itemlist
 
 def series(item):
@@ -189,7 +194,7 @@ def series(item):
         scrapedthumbnail = scrapedthumbnail.replace("&",".jpg?")
         #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
 
     return itemlist
 
@@ -216,7 +221,7 @@ def episodios(item):
     seasons = json.loads(data)
     
     for season_id in seasons:
-        #print seasons[season_id]
+        print seasons[season_id]
         
         for episode in seasons[season_id]:
             num = episode["num"]
@@ -229,7 +234,7 @@ def episodios(item):
             scrapedthumbnail = item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , context="4", extra="serie") )
+            itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , context="4", extra="serie") )
 
     itemlist = sorted(itemlist, key=lambda item: item.title)
 
@@ -309,7 +314,7 @@ def findvideos(item):
         languages = sources[quality_id]
 
         for language_id in languages:
-            #print language_id
+            print language_id
             mirrors = sources[quality_id][language_id]
 
             for mirror in mirrors:
@@ -320,7 +325,7 @@ def findvideos(item):
                 
                 subtitulo = pathSubtitle+id+"_ES.srt"
                 
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=titulo, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, extra=id, subtitle=subtitulo, folder=False))
+                itemlist.append( Item(channel=__channel__, action="play" , title=titulo, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, extra=id, subtitle=subtitulo, folder=False))
 
     return itemlist
 
@@ -351,17 +356,16 @@ def play(item):
     for returnitem in itemlist:
         returnitem.channel=item.channel
         returnitem.subtitle=item.subtitle
-        returnitem.fulltitle=item.fulltitle
 
     return itemlist
 
 def search_options(item):
     logger.info("[cuevana.py] search_options")
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Titulo"   , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Titulo"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Episodio" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Episodio"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Actor"    , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Actor"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Director" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Director"))
+    itemlist.append( Item(channel=__channel__, title="Titulo"   , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Titulo"))
+    itemlist.append( Item(channel=__channel__, title="Episodio" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Episodio"))
+    itemlist.append( Item(channel=__channel__, title="Actor"    , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Actor"))
+    itemlist.append( Item(channel=__channel__, title="Director" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Director"))
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -414,9 +418,9 @@ def listar(item, categoria="*"):
         if "tv/series/" in scrapedurl and categoria in ("S","*"):
            code = re.compile("/series/([0-9]+)/").findall(scrapedurl)[0]
            scrapedurl = "http://www.cuevana.tv/list_search_id.php?serie="+code
-           itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
+           itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , extra=code, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
         elif "tv/peliculas/" in scrapedurl and categoria in ("F","*"):
-           itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
+           itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot) )
 
     # Extrae el paginador
     patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
@@ -425,6 +429,6 @@ def listar(item, categoria="*"):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Página siguiente" , url=scrapedurl) )
+        itemlist.append( Item(channel=__channel__, action="listar", title="Página siguiente" , url=scrapedurl) )
 
     return itemlist

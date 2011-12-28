@@ -13,8 +13,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "yotix"
-DEBUG = True
+__channel__ = "yotix"
+__category__ = "A"
+__type__ = "generic"
+__title__ = "Yotix.tv"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,9 +28,9 @@ def mainlist(item):
     logger.info("[yotix.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="videolist"      , title="Novedades", url="http://yotixanime.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcategorias" , title="Listado por categorías", url="http://yotix.tv/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"         , title="Buscador", url="http://yotix.tv/?s=%s"))
+    itemlist.append( Item(channel=__channel__, action="videolist"      , title="Novedades", url="http://yotixanime.com/"))
+    itemlist.append( Item(channel=__channel__, action="listcategorias" , title="Listado por categorías", url="http://yotix.tv/"))
+    itemlist.append( Item(channel=__channel__, action="search"         , title="Buscador", url="http://yotix.tv/?s=%s"))
 
     return itemlist
 
@@ -70,7 +75,7 @@ def listcategorias(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="videolist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="videolist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -97,7 +102,7 @@ def videolist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="listmirrors" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listmirrors" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
     patron = '<a href="([^"]+)" >&raquo;</a>'
@@ -111,7 +116,7 @@ def videolist(item):
         scrapeddescription = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="videolist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="videolist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -143,7 +148,7 @@ def listmirrors(item):
         newurl = findnewlocation(url)
         if newurl!="":
             url = newurl
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Directo", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Directo", folder=False))
 
     # Extrae los enlaces a los vídeos (Megavídeo)
     patronvideos  = '<a.*?href="(http://yotix.tv/flash/[^"]+)"[^>]*>(.*?)</a>'
@@ -154,7 +159,7 @@ def listmirrors(item):
         # Añade al listado de XBMC
         scrapedtitle = scrapertools.htmlclean(match[1].replace("&#8211;","-")).strip()
         scrapedurl = match[0]
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Megavideo", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Megavideo", folder=False))
 
     # Extrae los enlaces a los vídeos (Directo)
     buscamirrors(itemlist,'<a.*?href="(http://yotix.tv/sitio/[^"]+)"[^>]*>(.*?)</a>',data,thumbnail,plot)
@@ -177,7 +182,7 @@ def buscamirrors(itemlist,patronvideos,data,thumbnail,plot):
     for match in matches:
         scrapedtitle = scrapertools.htmlclean(match[1].replace("&#8211;","-")).strip()
         scrapedurl = match[0]
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=thumbnail, plot=plot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=thumbnail, plot=plot))
 
 def findvideos(item):
     logger.info("[yotix.py] play")
@@ -203,7 +208,7 @@ def findvideos(item):
         if newurl!="":
             url = newurl
     
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Directo", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="Directo", folder=False))
 
     # Busca el resto de videos
     listavideos = servertools.findvideos(data)
@@ -215,7 +220,7 @@ def findvideos(item):
         scrapedthumbnail = item.thumbnail
         scrapedplot = item.plot
         server = video[2]
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server=server, folder=False))
 
     return itemlist
 

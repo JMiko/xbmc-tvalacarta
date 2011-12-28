@@ -11,8 +11,14 @@ from core import config
 from core import logger
 from core.item import Item
 
-CHANNELNAME = "verseries"
-DEBUG = True
+__channel__ = "verseries"
+__category__ = "S"
+__type__ = "generic"
+__title__ = "Ver-Series"
+__language__ = "ES"
+__creationdate__ = "20111215"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -21,7 +27,7 @@ def mainlist(item):
     logger.info("[verseries.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Series - A-Z", action="letras"))
+    itemlist.append( Item(channel=__channel__, title="Series - A-Z", action="letras"))
     return itemlist
 
 def letras(item):

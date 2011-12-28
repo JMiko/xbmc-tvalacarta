@@ -15,7 +15,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "serieshentai"
+__channel__ = "serieshentai"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Series Hentai"
+__language__ = "ES"
+__adult__ = "true"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True

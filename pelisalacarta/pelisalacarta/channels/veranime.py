@@ -14,8 +14,13 @@ from core import logger
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "veranime"
-DEBUG = True
+__channel__ = "veranime"
+__category__ = "A"
+__type__ = "generic"
+__title__ = "Ver-anime"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -24,13 +29,13 @@ def mainlist(item):
     logger.info("[veranime.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Ultimos Capitulos Agregados", action="novedades"     , url="http://www.ver-anime.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Ultimos Animes Agregados"   , action="ultimos"        , url="http://www.ver-anime.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabetico"         , action="listaalfabetica", url="http://www.ver-anime.net/letra/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado Completo"           , action="listacompleta"  , url="http://www.ver-anime.net/letra/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Animes Populares"           , action="populares"      , url="http://www.ver-anime.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Animes en Emision"          , action="emision"  , url="http://www.ver-anime.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar" , action="search") )
+    itemlist.append( Item(channel=__channel__, title="Ultimos Capitulos Agregados", action="novedades"     , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=__channel__, title="Ultimos Animes Agregados"   , action="ultimos"        , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=__channel__, title="Listado Alfabetico"         , action="listaalfabetica", url="http://www.ver-anime.net/letra/"))
+    itemlist.append( Item(channel=__channel__, title="Listado Completo"           , action="listacompleta"  , url="http://www.ver-anime.net/letra/"))
+    itemlist.append( Item(channel=__channel__, title="Animes Populares"           , action="populares"      , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=__channel__, title="Animes en Emision"          , action="emision"  , url="http://www.ver-anime.net/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar" , action="search") )
 
     return itemlist
 
@@ -54,7 +59,7 @@ def novedades(item):
         scrapedplot = ""
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -78,7 +83,7 @@ def ultimos(item):
         scrapedplot = ""
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -88,33 +93,33 @@ def listaalfabetica(item):
     url = item.url
     itemlist = []
     
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="0-9" , url=url+"09.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="A"   , url=url+"a.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="B"   , url=url+"b.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="C"   , url=url+"c.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="D"   , url=url+"d.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="E"   , url=url+"e.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="F"   , url=url+"F.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="G"   , url=url+"g.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="H"   , url=url+"h.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="I"   , url=url+"i.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="J"   , url=url+"j.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="K"   , url=url+"k.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="L"   , url=url+"l.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="M"   , url=url+"m.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="N"   , url=url+"n.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="O"   , url=url+"o.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="P"   , url=url+"p.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Q"   , url=url+"q.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="R"   , url=url+"r.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="S"   , url=url+"s.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="T"   , url=url+"t.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="U"   , url=url+"u.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="V"   , url=url+"v.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="W"   , url=url+"w.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="X"   , url=url+"x.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Y"   , url=url+"y.html" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="listar", title="Z"   , url=url+"z.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="0-9" , url=url+"09.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="A"   , url=url+"a.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="B"   , url=url+"b.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="C"   , url=url+"c.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="D"   , url=url+"d.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="E"   , url=url+"e.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="F"   , url=url+"F.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="G"   , url=url+"g.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="H"   , url=url+"h.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="I"   , url=url+"i.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="J"   , url=url+"j.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="K"   , url=url+"k.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="L"   , url=url+"l.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="M"   , url=url+"m.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="N"   , url=url+"n.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="O"   , url=url+"o.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="P"   , url=url+"p.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="Q"   , url=url+"q.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="R"   , url=url+"r.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="S"   , url=url+"s.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="T"   , url=url+"t.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="U"   , url=url+"u.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="V"   , url=url+"v.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="W"   , url=url+"w.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="X"   , url=url+"x.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="Y"   , url=url+"y.html" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="listar", title="Z"   , url=url+"z.html" , folder=True) )
 
     return itemlist
 
@@ -159,7 +164,7 @@ def listacompleta(item):
         scrapedurl = match[0]
         scrapedthumbnail = match[2]
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist    
 
@@ -183,7 +188,7 @@ def populares(item):
         scrapedplot = ""
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -207,7 +212,7 @@ def emision(item):
         scrapedplot = ""
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -226,7 +231,7 @@ def listar(item):
         scrapedurl = match[0]
         scrapedthumbnail = match[2]
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -255,7 +260,7 @@ def capitulos(item):
     for match3 in matches3:
         scrapedtitle = match3[0]
         scrapedurl = match3[1]
-        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -273,7 +278,7 @@ def videos(item):
     for match in matches:
         listavideos = servertools.findvideos(scrapertools.cachePage(match[0]))
         for video in listavideos:
-            itemlist.append( Item(channel=CHANNELNAME, action="play", title=match[1] , url=video[1] , thumbnail="" , server=video[2] , folder=False) )
+            itemlist.append( Item(channel=__channel__, action="play", title=match[1] , url=video[1] , thumbnail="" , server=video[2] , folder=False) )
 
     return itemlist
 
@@ -296,7 +301,7 @@ def search(item,texto):
         scrapedplot = ""
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     itemlist = sorted(itemlist, key=lambda Item: Item.title) 
     return itemlist

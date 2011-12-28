@@ -20,8 +20,13 @@ except:
     from Code.core import scrapertools
     from Code.core.item import Item
 
-CHANNELNAME = "letmewatchthis"
-DEBUG = True
+__channel__ = "letmewatchthis"
+__category__ = "F,S"
+__type__ = "generic"
+__title__ = "LetMeWatchThis"
+__language__ = "EN"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -30,9 +35,9 @@ def mainlist(item):
     logger.info("[letmewatchthis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="Movies"   ,url="http://www.letmewatchthis.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="series"    , title="TV Shows" ,url="http://www.letmewatchthis.com/?tv"))
-    #itemlist.append( Item(channel=CHANNELNAME, action=""search"     , category , "Buscar"                           ,"","","")
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Movies"   ,url="http://www.letmewatchthis.com/"))
+    itemlist.append( Item(channel=__channel__, action="series"    , title="TV Shows" ,url="http://www.letmewatchthis.com/?tv"))
+    #itemlist.append( Item(channel=__channel__, action=""search"     , category , "Buscar"                           ,"","","")
 
     return itemlist
 
@@ -81,7 +86,7 @@ def listaconcaratulas(item,action):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     #<span class=current>1</span> <a href="/index.php?page=2">2</a>
@@ -91,7 +96,7 @@ def listaconcaratulas(item,action):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="!Next page" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Next page" , url=scrapedurl , folder=True) )
     
     return itemlist
 
@@ -117,7 +122,7 @@ def listepisodes(item):
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="listmirrors", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="listmirrors", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -154,6 +159,6 @@ def listmirrors(item):
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist

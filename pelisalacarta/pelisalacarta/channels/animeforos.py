@@ -19,7 +19,14 @@ from platformcode.xbmc import xbmctools
 
 import casttv
 
-CHANNELNAME = "animeforos"
+DEBUG = config.get_setting("debug")
+
+__category__ = "A"
+__type__ = "xbmc"
+__title__ = "Anime Foros"
+__channel__ = "animeforos"
+__language__ = "ES"
+__working__= false
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -34,14 +41,14 @@ def mainlist(params,url,category):
     categoryerdm = "El Rincón del Manga  -  Anime"
     aviso = "Esta carpeta contiene una pequeña selección de series infantiles. En cuanto al resto, se recomienda supervisar los contenidos a los que los menores acceden. Al abrir la carpeta de cada Anime aparecen, antes de los vídeos, sus datos (Clasificación,Género,etc.) o la opción de buscarlos en McAnime-Enciclopedia. En el aptdo -Información de la Película- encontrará información procedente de la propia release y de McAnime."
     thumbchannel = "http://www.mimediacenter.info/xbmc/pelisalacarta/posters/animeforos.png"
-    #addsimplefolder( CHANNELNAME , "seleccion" , category , "Anime  -  Selección Clásicos Infantiles TV" , "" , thumbchannel , aviso)
-    addsimplefolder( CHANNELNAME , "seleccion" , "AstroteamRG" , "Anime  -  AstroteamRG" , "" , thumbchannel , "Fuente: http://www.astroteamrg.org")
-    #addsimplefolder( CHANNELNAME , "searcherdm" , categoryerdm , "Anime  -  El Rincón del Manga", "" , thumbchannel ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-    addsimplefolder( CHANNELNAME , "genres" , "Géneros  -  McAnime-Enciclopedia" , "Anime  -  McAnime-Enciclopedia - El Rincón del Manga","http://www.mcanime.net/enciclopedia/anime", thumbchannel ,"Fuentes: http://www.mcanime.net/enciclopedia/anime y http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
-    addsimplefolder( CHANNELNAME , "favoritos" , "Mis Favoritos" , "Anime  -  Mis Favoritos","",casttv.STARORANGE_THUMB,"" )
-    addsimplefolder( CHANNELNAME , "searchvistos" , "Anime - Vistos" , "Anime  -  Vistos" , "" , thumbchannel , "" )
-    addsimplefolder( CHANNELNAME , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos","",casttv.STAR4COLORS_THUMB, "" )
-    addsimplefolder( CHANNELNAME , "ayuda" , "Anime Foros - Ayuda" , "Ayuda" , "" , casttv.HELP_THUMB , "" )
+    #addsimplefolder( __channel__ , "seleccion" , category , "Anime  -  Selección Clásicos Infantiles TV" , "" , thumbchannel , aviso)
+    addsimplefolder( __channel__ , "seleccion" , "AstroteamRG" , "Anime  -  AstroteamRG" , "" , thumbchannel , "Fuente: http://www.astroteamrg.org")
+    #addsimplefolder( __channel__ , "searcherdm" , categoryerdm , "Anime  -  El Rincón del Manga", "" , thumbchannel ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+    addsimplefolder( __channel__ , "genres" , "Géneros  -  McAnime-Enciclopedia" , "Anime  -  McAnime-Enciclopedia - El Rincón del Manga","http://www.mcanime.net/enciclopedia/anime", thumbchannel ,"Fuentes: http://www.mcanime.net/enciclopedia/anime y http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+    addsimplefolder( __channel__ , "favoritos" , "Mis Favoritos" , "Anime  -  Mis Favoritos","",casttv.STARORANGE_THUMB,"" )
+    addsimplefolder( __channel__ , "searchvistos" , "Anime - Vistos" , "Anime  -  Vistos" , "" , thumbchannel , "" )
+    addsimplefolder( __channel__ , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos","",casttv.STAR4COLORS_THUMB, "" )
+    addsimplefolder( __channel__ , "ayuda" , "Anime Foros - Ayuda" , "Ayuda" , "" , casttv.HELP_THUMB , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -63,7 +70,7 @@ def seleccion(params,url,category):
         listado = astroteamrglist()
 
     for item in listado:
-        adderdmfolder( CHANNELNAME , "listados" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5], item[6] )
+        adderdmfolder( __channel__ , "listados" , category , item[0] , item[1] , item[2] , item[3] , item[4] , item[5], item[6] )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -114,22 +121,22 @@ def favoritos(params,url,category):
 
     if category=="Todos Mis Favoritos":
         if len(nuevos)>0 or len(seriesnuevos)>0:
-            addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , casttv.STARGREEN2_THUMB , "" )
+            addsimplefolder( __channel__ , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , casttv.STARGREEN2_THUMB , "" )
         if OKxbmcfav=="-1":
-            addsimplefolder( CHANNELNAME , "casttv.xbmcfav" , category , "--------------------------------------------- XBMC ---------------------------------------------" , "" , "" , "" )
+            addsimplefolder( __channel__ , "casttv.xbmcfav" , category , "--------------------------------------------- XBMC ---------------------------------------------" , "" , "" , "" )
         if len(listanime)>0:
-            additem( CHANNELNAME , category , "-------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
+            additem( __channel__ , category , "-------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
     if len(nuevos)>0:
-        addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritos - Nuevos Contenidos" , "-*-"+todostitulo+"Nuevos Contenidos (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
+        addsimplefolder( __channel__ , "listadonuevos" , todostitulo+"Mis Favoritos - Nuevos Contenidos" , "-*-"+todostitulo+"Nuevos Contenidos (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
     for anime in listanime:
-        adderdmfolder( CHANNELNAME , "listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
+        adderdmfolder( __channel__ , "listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
 
     if category=="Todos Mis Favoritos" and len(series)>0:
-        additem( CHANNELNAME , category , "---------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
+        additem( __channel__ , category , "---------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
         if len(seriesnuevos)>0:
-            addsimplefolder( CHANNELNAME , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
+            addsimplefolder( __channel__ , "casttv.listadonuevos" , "Series VO - Mis Favoritas - Nuevos Episodios" , "-*-Series VO - Nuevos Episodios (Posteriores a [LW])" , "" , casttv.STARGREEN2_THUMB , "" )
         for serie in series:
-            casttv.addseriefolder( CHANNELNAME , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
+            casttv.addseriefolder( __channel__ , "casttv.listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,False)
     # ------------------------------------------------------------------------------------
@@ -147,7 +154,7 @@ def findfavoritos(category):
     listanime = []
     nuevosep="0"
 
-    listafav = casttv.readfav("","","",CHANNELNAME)
+    listafav = casttv.readfav("","","",__channel__)
 
     if len(listafav)==0:
         alertnofav()
@@ -291,7 +298,7 @@ def findfavoritos(category):
 def findnuevos(category,title,titleserievisto,url,todos,web):
     listanuevos = []
 
-    listavistos = casttv.readvisto(titleserievisto,"LW",CHANNELNAME)
+    listavistos = casttv.readvisto(titleserievisto,"LW",__channel__)
 
     if len(listavistos)>0:
         listavistos.sort(key=lambda visto: visto[5])
@@ -424,20 +431,20 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
             if  thumbnail == "":
                 thumbnail = listainfo[0][6]
             plot = plot+" "+listainfo[0][5]
-            addsimplefolder( CHANNELNAME , "searchmc" , "McAnime-Enciclopedia" , listainfo[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfo[0][5] )
-            addsimplefolder( CHANNELNAME , "searchmc" , "McAnime-Enciclopedia" , "Clasificación: "+listainfo[0][1] , "" , "" , listainfo[0][5] )
-            addsimplefolder( CHANNELNAME , "searchmc" , "McAnime-Enciclopedia" , "Géneros: "+listainfo[0][2] , "" , "" , listainfo[0][5] )
-            addsimplefolder( CHANNELNAME , "searchmc" , "McAnime-Enciclopedia" , "Contenido: "+listainfo[0][3] , "" , "" , listainfo[0][5] )
-            addsimplefolder( CHANNELNAME , "searchmc" , "McAnime-Enciclopedia" , "Sinopsis: "+listainfo[0][4] , "" , "" , listainfo[0][5] )
+            addsimplefolder( __channel__ , "searchmc" , "McAnime-Enciclopedia" , listainfo[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfo[0][5] )
+            addsimplefolder( __channel__ , "searchmc" , "McAnime-Enciclopedia" , "Clasificación: "+listainfo[0][1] , "" , "" , listainfo[0][5] )
+            addsimplefolder( __channel__ , "searchmc" , "McAnime-Enciclopedia" , "Géneros: "+listainfo[0][2] , "" , "" , listainfo[0][5] )
+            addsimplefolder( __channel__ , "searchmc" , "McAnime-Enciclopedia" , "Contenido: "+listainfo[0][3] , "" , "" , listainfo[0][5] )
+            addsimplefolder( __channel__ , "searchmc" , "McAnime-Enciclopedia" , "Sinopsis: "+listainfo[0][4] , "" , "" , listainfo[0][5] )
         else:    
-            addsimplefolder( CHANNELNAME , "searchmc" , "McAnime-Enciclopedia" , "***Buscar Información en McAnime - Enciclopedia Beta" , "http://www.mcanime.net/enciclopedia/anime" , "" ,"Fuente: http://www.mcanime.net/enciclopedia/anime" )
+            addsimplefolder( __channel__ , "searchmc" , "McAnime-Enciclopedia" , "***Buscar Información en McAnime - Enciclopedia Beta" , "http://www.mcanime.net/enciclopedia/anime" , "" ,"Fuente: http://www.mcanime.net/enciclopedia/anime" )
     else:
         matchinfo = re.match('^([^\|]*)\|([^\|]*)\|([^\|]*)\|([^\|]*)\|([^\|]*)$',infos)
-        additem( CHANNELNAME , category , matchinfo.group(1) , "" , "" , plot )
-        additem( CHANNELNAME , category , matchinfo.group(2) , "" , "" , plot )
-        additem( CHANNELNAME , category , matchinfo.group(3) , "" , "" , plot )
-        additem( CHANNELNAME , category , matchinfo.group(4) , "" , "" , plot )
-        additem( CHANNELNAME , category , matchinfo.group(5) , "" , "" , plot )
+        additem( __channel__ , category , matchinfo.group(1) , "" , "" , plot )
+        additem( __channel__ , category , matchinfo.group(2) , "" , "" , plot )
+        additem( __channel__ , category , matchinfo.group(3) , "" , "" , plot )
+        additem( __channel__ , category , matchinfo.group(4) , "" , "" , plot )
+        additem( __channel__ , category , matchinfo.group(5) , "" , "" , plot )
 
     # Título Anime en Vistos
     # En fav un anime se identifica por el nombre de la serie y la url (por duplicados en eRdM y no sirve el id de la release que va en status...)
@@ -447,7 +454,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
     if (matchurl):
         titleserievisto = titleinfo2+matchurl.group(0)
 
-    listavistos = casttv.readvisto(titleserievisto,"",CHANNELNAME)
+    listavistos = casttv.readvisto(titleserievisto,"",__channel__)
 
     vistoid2 = ""
     vistotipo2 = "0"
@@ -505,7 +512,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
 
     listavideos2.reverse()
     for video in listavideos2:
-        addvideofolder( CHANNELNAME , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
+        addvideofolder( __channel__ , "episodiomenu" , category+";"+url+";"+video[4]+";"+paramsback['title']+";"+paramsback['titleinfo']+";"+paramsback['tcsearch']+";"+paramsback['titleerdm']+";"+paramsback['thumbnail']+";"+paramsback['plot']+";"+titleserievisto+";"+video[0]+";"+autor+";"+urlOK , video[2] , title+" - "+video[3] , video[1] , thumbnail , plot )
 
     if "friki100" in autor:
         OKup = "0"
@@ -518,7 +525,7 @@ def detail(title,url,category,titleinfo,tcsearch,titleerdm,thumbnail,plot,listup
             if (update):
                 OKup = "-1"
         if OKup=="-1":
-            additem( CHANNELNAME , category , update.group(1) , "" , "" , plot )                    
+            additem( __channel__ , category , update.group(1) , "" , "" , plot )                    
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",listupdate,True)
     # ------------------------------------------------------------------------------------
@@ -837,7 +844,7 @@ def searchvistos(params,url,category):
         return 
 
     for serie in listaseries:
-        adderdmfolder( CHANNELNAME , "listadosvistos" , category , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] , serie[6] )
+        adderdmfolder( __channel__ , "listadosvistos" , category , serie[0] , serie[1] , serie[2] , serie[3] , serie[4] , serie[5] , serie[6] )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,False)
     # ------------------------------------------------------------------------------------
@@ -848,7 +855,7 @@ def findvistos(category):
     listavistos2 = []
     searcherdm = ""
 
-    listavistos = casttv.readvisto("","",CHANNELNAME)
+    listavistos = casttv.readvisto("","",__channel__)
     if len(listavistos)==0:
         return listavistos
 
@@ -912,7 +919,7 @@ def findvistos(category):
 
     OKmca="-1"
     for serie in listaseries:
-        listafav = casttv.readfav(serie[0],serie[1],"",CHANNELNAME)
+        listafav = casttv.readfav(serie[0],serie[1],"",__channel__)
         if len(listafav)==0:
             if serie[6]<>"eRdM" and serie[6]<>"mc-anime-fav":
                 listaseries2.append(serie)
@@ -972,7 +979,7 @@ def listadosvistos(params,url,category):
         titleinfo2 = titleinfo+" ("+tcsearch+")"
         title = titleinfo
 
-    respuesta = casttv.serieupdate(titleinfo2,status,url,tcsearch,CHANNELNAME)
+    respuesta = casttv.serieupdate(titleinfo2,status,url,tcsearch,__channel__)
 
     if respuesta<>1 and respuesta<>2 and respuesta<>3 and respuesta<>4:
         category = category+" - "+titleinfo
@@ -1048,7 +1055,7 @@ def searcherdmupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,l
         alertnoresultadosearch()
         return
 
-    listafav = casttv.readfav("","","",CHANNELNAME)
+    listafav = casttv.readfav("","","",__channel__)
 
     listaseries.sort(key=lambda serie: serie[0].lower())
     for serie in listaseries:
@@ -1082,7 +1089,7 @@ def searcherdmupdate(seleccion,tecleado,category,tipocontenido,tipolist,idioma,l
             else:
                 titulo = serie[0]+"  -  "+serie[1]+" ["+serie[2]+"]"
 
-        adderdmfolder( CHANNELNAME , "listadoserdmsearch" , str(seleccion)+";"+tecleado+";"+tipocontenido+";"+tipolist+";"+idioma , titulo , serie[4] , thumbnail , "eRdM" , serie[0] , serie[5] , serie[6] )
+        adderdmfolder( __channel__ , "listadoserdmsearch" , str(seleccion)+";"+tecleado+";"+tipocontenido+";"+tipolist+";"+idioma , titulo , serie[4] , thumbnail , "eRdM" , serie[0] , serie[5] , serie[6] )
 
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",listupdate,True)
@@ -1127,7 +1134,7 @@ def listados(params,url,category):
     else:
         thumbnail = ""
 
-    respuesta = casttv.serieupdate(titleinfo2,status,url,tcsearch,CHANNELNAME)
+    respuesta = casttv.serieupdate(titleinfo2,status,url,tcsearch,__channel__)
 
     if respuesta<>1 and respuesta<>2 and respuesta<>3 and respuesta<>4:
         if "Fav" in category:
@@ -1214,7 +1221,7 @@ def listadoserdmsearch(params,url,category):
     idioma = match1.group(5)
     category0 = fcategory(tipocontenido,tipolist,idioma)
 
-    respuesta = casttv.serieupdate(titleinfo,status,url,tcsearch,CHANNELNAME)
+    respuesta = casttv.serieupdate(titleinfo,status,url,tcsearch,__channel__)
 
     if respuesta==1 or respuesta==2 or respuesta==3 or respuesta==4:
         searcherdmupdate(seleccion,tecleado,category0,tipocontenido,tipolist,idioma,True)
@@ -1264,20 +1271,20 @@ def listadonuevos(params,url,category):
         return
 
     if "Todos" in category and len(nuevos)>0:
-        additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
+        additem( __channel__ , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
     for item in nuevos:
-        addvideofolder( CHANNELNAME , "episodiomenu" , item[0] , item[1] , item[2] , item[3] , "" , "" )
+        addvideofolder( __channel__ , "episodiomenu" , item[0] , item[1] , item[2] , item[3] , "" , "" )
 
     if len(seriesnuevos)>0:
-        additem( CHANNELNAME , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
+        additem( __channel__ , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
         for item in seriesnuevos:
-            casttv.addnewfolder( CHANNELNAME , "casttv.episodiomenu" , category , item[0] , item[1] , item[2] , "" , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , ";" , "New" )
+            casttv.addnewfolder( __channel__ , "casttv.episodiomenu" , category , item[0] , item[1] , item[2] , "" , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , item[9] , ";" , "New" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,False)
     # ------------------------------------------------------------------------------------
 
 def findlistadonvos(category,category2):
-    listafav = casttv.readfav("","","-1|-2",CHANNELNAME)
+    listafav = casttv.readfav("","","-1|-2",__channel__)
     nuevos = []
 
     if len(listafav)==0:
@@ -1526,11 +1533,11 @@ def findinfo2(params,url,category):
         listaseriesmc = findseriesmc(urltodas)
             
     # Añade al listado de XBMC
-    additem( CHANNELNAME , category , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfomc[0][5] )
-    additem( CHANNELNAME , category , "Clasificación: "+listainfomc[0][1] , "" , "" , listainfomc[0][5] )
-    additem( CHANNELNAME , category , "Géneros: "+listainfomc[0][2] , "" , "" , listainfomc[0][5] )
-    additem( CHANNELNAME , category , "Contenido: "+listainfomc[0][3] , "" , "" , listainfomc[0][5] )
-    additem( CHANNELNAME , category , "Sinopsis: "+listainfomc[0][4] , "" , "" , listainfomc[0][5] )
+    additem( __channel__ , category , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "" , "" , listainfomc[0][5] )
+    additem( __channel__ , category , "Clasificación: "+listainfomc[0][1] , "" , "" , listainfomc[0][5] )
+    additem( __channel__ , category , "Géneros: "+listainfomc[0][2] , "" , "" , listainfomc[0][5] )
+    additem( __channel__ , category , "Contenido: "+listainfomc[0][3] , "" , "" , listainfomc[0][5] )
+    additem( __channel__ , category , "Sinopsis: "+listainfomc[0][4] , "" , "" , listainfomc[0][5] )
 
     if len(listaseries)>0:
         listaseries.sort(key=lambda serie: serie[6].lower())
@@ -1555,21 +1562,21 @@ def findinfo2(params,url,category):
                         tituloencontrado2 == "-1"
                                                     
         if len(seriesencontradas)>0:
-            additem( CHANNELNAME , category , "Releases encontradas en El Rincón del Manga: " , "" , "" , "" )
+            additem( __channel__ , category , "Releases encontradas en El Rincón del Manga: " , "" , "" , "" )
             seriesencontradas.sort(key=lambda serie: serie[0].lower())
             for serie in seriesencontradas:    
-                adderdmfolder( CHANNELNAME , "listados" , genero+"  -  El Rincón del Manga" , serie[0]+"  -  "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , listainfomc[0][6] , "eRdM" , serie[0] , serie[5] , serie[6] )
+                adderdmfolder( __channel__ , "listados" , genero+"  -  El Rincón del Manga" , serie[0]+"  -  "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , listainfomc[0][6] , "eRdM" , serie[0] , serie[5] , serie[6] )
     
     if plot == "McAnime-Enciclopedia":
         category = category+"  -  McAnime-Enciclopedia  -  Releases"
-        addsimplefolder( CHANNELNAME , "searcherdm" , "El Rincón del Manga  -  Anime" , "[+] Buscar en El Rincón del Manga", "" , "" ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
+        addsimplefolder( __channel__ , "searcherdm" , "El Rincón del Manga  -  Anime" , "[+] Buscar en El Rincón del Manga", "" , "" ,"Fuente: http://www.elrincondelmanga.com/foro/showthread.php?t=75282")
     else:
         category = "McAnime-Enciclopedia"
 
     if len(listaseriesmc)>0:
-        additem( CHANNELNAME , category , "Releases en McAnime: " , "" , "" , "" )
+        additem( __channel__ , category , "Releases en McAnime: " , "" , "" , "" )
         for seriemc in listaseriesmc:    
-            addmcarelfolder( CHANNELNAME , "listados" , genero+"  -  McAnime;"+title+";"+seriemc[0]+";"+titleinfo+";"+tcsearch , seriemc[0]+seriemc[2] , seriemc[1] , listainfomc[0][6] , listainfomc[0][5] , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "Clasificación: "+listainfomc[0][1] , "Géneros: "+listainfomc[0][2] , "Contenido: "+listainfomc[0][3] , "Sinopsis: "+listainfomc[0][4] )
+            addmcarelfolder( __channel__ , "listados" , genero+"  -  McAnime;"+title+";"+seriemc[0]+";"+titleinfo+";"+tcsearch , seriemc[0]+seriemc[2] , seriemc[1] , listainfomc[0][6] , listainfomc[0][5] , listainfomc[0][0]+": Información McAnime - Enciclopedia Beta" , "Clasificación: "+listainfomc[0][1] , "Géneros: "+listainfomc[0][2] , "Contenido: "+listainfomc[0][3] , "Sinopsis: "+listainfomc[0][4] )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------    
@@ -1678,11 +1685,11 @@ def searchmc(params,url,category):
 
     if len(seriesencontradas)==0:    
         for info in listainfo:
-            addmcafolder( CHANNELNAME , "findinfo2" , title , info[0]+"  -  [McAnime-Enciclopedia]" , info[1] , "" , genre , info[2] , info[3] , info[4] )
+            addmcafolder( __channel__ , "findinfo2" , title , info[0]+"  -  [McAnime-Enciclopedia]" , info[1] , "" , genre , info[2] , info[3] , info[4] )
     else:
         seriesencontradas.sort(key=lambda serie: serie[0].lower())
         for serie in seriesencontradas:    
-            adderdmfolder( CHANNELNAME , "listados" , category , serie[0]+"  -  "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "eRdM" , serie[0] , serie[5] , serie[6] )
+            adderdmfolder( __channel__ , "listados" , category , serie[0]+"  -  "+serie[1]+" ["+serie[5]+"]"+" ["+serie[2]+"]"+serie[3] , serie[4] , "" , "eRdM" , serie[0] , serie[5] , serie[6] )
                     
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
@@ -1755,10 +1762,10 @@ def genres(params,url,category):
 
     listagenres = findgenres(data)
 
-    addsimplefolder( CHANNELNAME , "searchmc" , category , "Todos" , "" , "" , "genreTodos" )
+    addsimplefolder( __channel__ , "searchmc" , category , "Todos" , "" , "" , "genreTodos" )
 
     for genre in listagenres:
-        addsimplefolder( CHANNELNAME , "searchmc" , category , genre[0] , genre[1] , "" , "genre" )
+        addsimplefolder( __channel__ , "searchmc" , category , genre[0] , genre[1] , "" , "genre" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -1836,7 +1843,7 @@ def episodiomenu(params,url,category):
     autor = match.group(12)
     urlOK = match.group(13)
 
-    seleccion,accion,detener = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,CHANNELNAME,urlOK)
+    seleccion,accion,detener = casttv.episodiomenugnral("",titleep,url,"",titleserievisto,"","","0","0","",tipovisto,__channel__,urlOK)
 
     if seleccion>0:
         if tipovisto<>"New":
@@ -1873,14 +1880,14 @@ def episodiomenu(params,url,category):
         title = re.sub('\s\-\s\['+server+'\]','',title)
         title = title+' - ['+server+']'+autor
 
-        addnewvideo( CHANNELNAME , "play" , categoryback , server , title , url , thumbnail , plot )
+        addnewvideo( __channel__ , "play" , categoryback , server , title , url , thumbnail , plot )
 
         xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=categoryback )
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE)
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
         #Check: no se muestran los strings con el texto de las opciones...
-        #xbmctools.play_video(CHANNELNAME,server,url,categoryback,title,thumbnail,plot)
+        #xbmctools.play_video(__channel__,server,url,categoryback,title,thumbnail,plot)
 
         # Otra manera de continuar sin abrir nuevo directorio pero lento en listados grandes...
         # detail(titleback,urlbac...
@@ -1892,7 +1899,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def ftitleerdmsearch(title):
     title = re.sub('^El Patito Alfred$','Alfred J Quack',title)
@@ -2036,19 +2043,19 @@ def additem( canal , category , title , url , thumbnail, plot ):
 
 def ayuda(params,url,category):
     info1 = "Anime - Mis Favoritos: El primer vídeo de los Favoritos sin ningún tipo de marca de Vistos se trata como Nuevo Contenido (al igual que los Posteriores a [LW])"
-    additem( CHANNELNAME , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , casttv.HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , casttv.HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , casttv.HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , casttv.HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios) " , "" , casttv.HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "Mis Favoritos [Listados sin carátula]" , "" , casttv.STARORANGE_THUMB , "" )
-    additem( CHANNELNAME , category , "Mis Favoritos Desactivados [Listados sin carátula]", "" , casttv.STARGREY_THUMB , "" )
-    additem( CHANNELNAME , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN_THUMB , "" )
-    additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN2_THUMB , "" )
-    additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , casttv.HD_THUMB , "" )
-    additem( CHANNELNAME , category , "------------------------------------ Info: 29/11/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
-    additem( CHANNELNAME , category , info1 , "" , casttv.HD_THUMB , "" )
-    additem( CHANNELNAME , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , casttv.HD_THUMB , "" )
+    additem( __channel__ , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , casttv.HELP_THUMB , "" )
+    additem( __channel__ , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , casttv.HELP_THUMB , "" )
+    additem( __channel__ , category , "[W]: Episodio Visto [Watched]" , "" , casttv.HELP_THUMB , "" )
+    additem( __channel__ , category , "[UW]: Episodio No Visto [UnWatched]" , "" , casttv.HELP_THUMB , "" )
+    additem( __channel__ , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios) " , "" , casttv.HELP_THUMB , "" )
+    additem( __channel__ , category , "Mis Favoritos [Listados sin carátula]" , "" , casttv.STARORANGE_THUMB , "" )
+    additem( __channel__ , category , "Mis Favoritos Desactivados [Listados sin carátula]", "" , casttv.STARGREY_THUMB , "" )
+    additem( __channel__ , category , "Mis Favoritos con Nuevos Episodios [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN_THUMB , "" )
+    additem( __channel__ , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritos]" , "" , casttv.STARGREEN2_THUMB , "" )
+    additem( __channel__ , category , "Mensaje o Encabezado (sin acción)" , "" , casttv.HD_THUMB , "" )
+    additem( __channel__ , category , "------------------------------------ Info: 29/11/2010 ------------------------------------" , "" , casttv.HELP_THUMB , "" )
+    additem( __channel__ , category , info1 , "" , casttv.HD_THUMB , "" )
+    additem( __channel__ , category , "Anime - Vistos: Distintos de Mis Favoritos" , "" , casttv.HD_THUMB , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------

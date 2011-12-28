@@ -17,12 +17,17 @@ from platformcode.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "terrorygore"
-
 # Traza el inicio del canal
 logger.info("[terrorygore.py] init")
 
-DEBUG = True
+__channel__ = "terrorygore"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "Terror y Gore"
+__language__ = "ES,EN"
+
+DEBUG = config.get_setting("debug")
+
 
 def isGeneric():
     return True
@@ -31,8 +36,8 @@ def mainlist(item):
     logger.info("[terrorygore.py] mainlist")
     
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas de Terror"                     , action="movielist" , url="http://www.terrorygore.com/feeds/posts/default?start-index=1&max-results=50"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Película de Terror Asiáticas (VOSEng)"   , action="movielist" , url="http://asianmovielink.blogspot.com/feeds/posts/default/-/Horror?start-index=1&max-results=50"))
+    itemlist.append( Item(channel=__channel__, title="Películas de Terror"                     , action="movielist" , url="http://www.terrorygore.com/feeds/posts/default?start-index=1&max-results=50"))
+    itemlist.append( Item(channel=__channel__, title="Película de Terror Asiáticas (VOSEng)"   , action="movielist" , url="http://asianmovielink.blogspot.com/feeds/posts/default/-/Horror?start-index=1&max-results=50"))
     return itemlist
 
 def movielist(item):
@@ -92,11 +97,11 @@ def movielist(item):
                 logger.info("scrapedthumbnail="+scrapedthumbnail)
 
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = "" , context="4|5" ))
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = "" , context="4|5" ))
         
     if len(matches)>45:
         scrapedurl = url_limpia+"?start-index="+str(new_start)+"&max-results=50"
-        itemlist.append( Item(channel=CHANNELNAME, title="Página Siguiente", action="movielist" , url=scrapedurl))
+        itemlist.append( Item(channel=__channel__, title="Página Siguiente", action="movielist" , url=scrapedurl))
     
     return itemlist
 

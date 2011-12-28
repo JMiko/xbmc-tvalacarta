@@ -17,7 +17,14 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-CHANNELNAME = "vagos"
+__channel__ = "vagos"
+__category__ = "F,S"
+__type__ = "xbmc"
+__title__ = "Vagos"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
+
 BASEURL = "http://www.vagos.es/"
 
 USER = config.get_setting("privateuser")
@@ -41,8 +48,6 @@ try:
 except:
     pluginhandle = ""
    
-
-DEBUG = True 
 def mainlist(params,url,category):
     try:
         Login()
@@ -51,29 +56,29 @@ def mainlist(params,url,category):
     
     logger.info("[Vagos.py] mainlist")
 
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - Hasta el 2008 (Inclusive)","http://www.vagos.es/forumdisplay.php?f=455","","")
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Peliculas - 2009/2010","http://www.vagos.es/forumdisplay.php?f=454","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=365","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Series - Temporadas en transmisión o incompletas","http://www.vagos.es/forumdisplay.php?f=364","","")
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Series - Capítulos sueltos","http://www.vagos.es/forumdisplay.php?f=372","","")
+    xbmctools.addnewfolder( __channel__ , "NoParse" , category , "Peliculas - Hasta el 2008 (Inclusive)","http://www.vagos.es/forumdisplay.php?f=455","","")
+    xbmctools.addnewfolder( __channel__ , "NoParse" , category , "Peliculas - 2009/2010","http://www.vagos.es/forumdisplay.php?f=454","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Series - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=365","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Series - Temporadas en transmisión o incompletas","http://www.vagos.es/forumdisplay.php?f=364","","")
+    xbmctools.addnewfolder( __channel__ , "NoParse" , category , "Series - Capítulos sueltos","http://www.vagos.es/forumdisplay.php?f=372","","")
 
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Otros Videos","http://www.vagos.es/forumdisplay.php?f=363","","")
-    xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , "Trailers","http://www.vagos.es/forumdisplay.php?f=456","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
+    xbmctools.addnewfolder( __channel__ , "NoParse" , category , "Otros Videos","http://www.vagos.es/forumdisplay.php?f=363","","")
+    xbmctools.addnewfolder( __channel__ , "NoParse" , category , "Trailers","http://www.vagos.es/forumdisplay.php?f=456","","")
+    xbmctools.addnewfolder( __channel__ , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
 
     '''
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Castellano" ,"http://www.vagos.es/forumdisplay.php?f=289","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Castellano - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=309","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Latino" ,"http://www.vagos.es/forumdisplay.php?f=288","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Latino - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=310","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Otros Idiomas" ,"http://www.vagos.es/forumdisplay.php?f=290","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Dibujos Otros Idiomas - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=307","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Castellano" ,"http://www.vagos.es/forumdisplay.php?f=292","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Castellano - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=303","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Latino" ,"http://www.vagos.es/forumdisplay.php?f=291","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Latino - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=305","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Otros Idiomas" ,"http://www.vagos.es/forumdisplay.php?f=293","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , "Anime Otros Idiomas - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=312","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Dibujos Castellano" ,"http://www.vagos.es/forumdisplay.php?f=289","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Dibujos Castellano - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=309","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Dibujos Latino" ,"http://www.vagos.es/forumdisplay.php?f=288","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Dibujos Latino - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=310","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Dibujos Otros Idiomas" ,"http://www.vagos.es/forumdisplay.php?f=290","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Dibujos Otros Idiomas - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=307","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Anime Castellano" ,"http://www.vagos.es/forumdisplay.php?f=292","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Anime Castellano - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=303","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Anime Latino" ,"http://www.vagos.es/forumdisplay.php?f=291","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Anime Latino - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=305","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Anime Otros Idiomas" ,"http://www.vagos.es/forumdisplay.php?f=293","","")
+    xbmctools.addnewfolder( __channel__ , "Parse" , category , "Anime Otros Idiomas - Temporadas completas" ,"http://www.vagos.es/forumdisplay.php?f=312","","")
     '''
     
     # Propiedades
@@ -94,7 +99,7 @@ def search(params,url,category):
 
     keyboard = xbmc.Keyboard('')
     keyboard.doModal()
-    xbmctools.addnewfolder( CHANNELNAME , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
+    xbmctools.addnewfolder( __channel__ , "search", "" , "Buscador...","http://compras.vagos.es/share-cgi/search.ftcb","","")
         
     if (keyboard.isConfirmed()):
         tecleado = keyboard.getText()
@@ -113,7 +118,7 @@ def search(params,url,category):
                 scrapedthumbnail = ""            
                 scrapedplot = ""
                 
-                xbmctools.addnewfolder( CHANNELNAME , "SerieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+                xbmctools.addnewfolder( __channel__ , "SerieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
                 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -145,9 +150,9 @@ def Foro(params,url,category,parse):
             if match[1] not in chinchetas:
                 # Añade al listado de XBMC
                 if(parse):
-                    xbmctools.addnewfolder( CHANNELNAME , "SerieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+                    xbmctools.addnewfolder( __channel__ , "SerieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
                 else:
-                    xbmctools.addnewfolder( CHANNELNAME , "MovieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+                    xbmctools.addnewfolder( __channel__ , "MovieScan" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
             
             
         # Extrae la marca de siguiente pagina
@@ -164,9 +169,9 @@ def Foro(params,url,category,parse):
             scrapedthumbnail = ""
             scrapedplot = ""
             if(parse):
-                xbmctools.addnewfolder( CHANNELNAME , "Parse" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ) 
+                xbmctools.addnewfolder( __channel__ , "Parse" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ) 
             else:
-                xbmctools.addnewfolder( CHANNELNAME , "NoParse" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+                xbmctools.addnewfolder( __channel__ , "NoParse" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
     
     except Exception:
         pass  
@@ -208,7 +213,7 @@ def SerieScan(params,url,category):
                 else:
                     vtitle = video[0] #+ " [" + video[1] + "]"
                 
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , vtitle +" ["+video[2]+"]", video[1] , imagen , "" )
+                xbmctools.addnewvideo( __channel__ , "play" , category , video[2] , vtitle +" ["+video[2]+"]", video[1] , imagen , "" )
     except:
         printText("Error al obtener videos de" + title)    
            
@@ -241,7 +246,7 @@ def MovieScan(params,url,category):
                 else:
                     vtitle=title
                                 
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , vtitle +" ["+video[2]+"]", video[1] , imagen , "" )
+                xbmctools.addnewvideo( __channel__ , "play" , category , video[2] , vtitle +" ["+video[2]+"]", video[1] , imagen , "" )
     except:
         printText("Error al obtener videos de" + title)    
            
@@ -260,7 +265,7 @@ def play(params,url,category):
     server = params["server"]
    
    
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
     return
 
 #Devuelve el SECURITYTOKEN del codigo WEB recibido   
@@ -282,7 +287,7 @@ def CurrentSecurityTOKEN():
 def printText(txt):
     lines = txt.split('\n')
     for line in lines:
-        xbmctools.addnewfolder( CHANNELNAME , "Test" , '' ,line.strip(),"","","")
+        xbmctools.addnewfolder( __channel__ , "Test" , '' ,line.strip(),"","","")
     return
 
 # Request the given URL and return the response page, sin usar the cookie jar

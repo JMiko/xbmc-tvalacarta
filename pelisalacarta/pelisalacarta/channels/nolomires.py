@@ -20,7 +20,13 @@ from servers import servertools
 from servers import vk
 from pelisalacarta import buscador
 
-CHANNELNAME = "nolomires"
+__channel__ = "nolomires"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "NoloMires"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -37,13 +43,13 @@ def mainlist(params,url,category):
     logger.info("[nolomires.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "search" , category , "Buscar","http://www.nolomires.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "LastSearch" , category , "Peliculas Buscadas Recientemente","http://www.nolomires.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideosMirror" , category , "Ultimos Estrenos","http://www.nolomires.com/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "TagList"         , category , "Tag de Estrenos por año"    ,"http://www.nolomires.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "MostWatched" , category , "Peliculas Mas Vistas","http://www.nolomires.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListaCat"         , category , "Listado por Categorias"    ,"http://www.nolomires.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.nolomires.com/category/peliculas-en-nolomires/","","")
+    xbmctools.addnewfolder( __channel__ , "search" , category , "Buscar","http://www.nolomires.com/","","")
+    xbmctools.addnewfolder( __channel__ , "LastSearch" , category , "Peliculas Buscadas Recientemente","http://www.nolomires.com/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideosMirror" , category , "Ultimos Estrenos","http://www.nolomires.com/","","")
+    #xbmctools.addnewfolder( __channel__ , "TagList"         , category , "Tag de Estrenos por año"    ,"http://www.nolomires.com/","","")
+    xbmctools.addnewfolder( __channel__ , "MostWatched" , category , "Peliculas Mas Vistas","http://www.nolomires.com/","","")
+    xbmctools.addnewfolder( __channel__ , "ListaCat"         , category , "Listado por Categorias"    ,"http://www.nolomires.com/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.nolomires.com/category/peliculas-en-nolomires/","","")
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -72,29 +78,29 @@ def ListaCat(params,url,category):
     logger.info("[nolomires.py] ListaCat")
     
     
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Acción","http://www.nolomires.com/category/peliculas-de-accion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Animado","http://www.nolomires.com/category/peliculas-de-animacion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Anime","http://www.nolomires.com/category/anime/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Aventura","http://www.nolomires.com/category/peliculas-de-aventura/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Bèlico Guerra ","http://www.nolomires.com/category/peliculas-de-guerra/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Ciencia-Ficción","http://www.nolomires.com/category/peliculas-de-ciencia-ficcion/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Clásicos","http://www.nolomires.com/category/peliculasclasicos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Comedia","http://www.nolomires.com/category/peliculas-de-comedia/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Documentales","http://www.nolomires.com/category/peliculas-sobre-documentales/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Destacado","http://www.nolomires.com/category/peliculasdestacado/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Documentales Online","http://www.nolomires.com/category/documentales-online-completos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Drama","http://www.nolomires.com/category/peliculas-de-drama/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Entretenimiento","http://www.nolomires.com/category/entretenimiento/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Estrenos","http://www.nolomires.com/category/ultimos-extrenos/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "General","http://www.nolomires.com/category/general/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Intriga","http://www.nolomires.com/category/peliculas-de-intriga/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Musicales","http://www.nolomires.com/category/peliculas-musicales/","","")
-    #xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Peliculas HD","http://www.nolomires.com/category/peliculaspeliculas-hd-categorias/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Romance","http://www.nolomires.com/category/peliculas-sobre-romance/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Suspenso","http://www.nolomires.com/category/peliculas-de-suspenso/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Terror","http://www.nolomires.com/category/peliculas-de-terror/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Thriller","http://www.nolomires.com/category/peliculas-de-thriller/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Todas las Peliculas","http://www.nolomires.com/category/peliculas-en-nolomires/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Acción","http://www.nolomires.com/category/peliculas-de-accion/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Animado","http://www.nolomires.com/category/peliculas-de-animacion/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Anime","http://www.nolomires.com/category/anime/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Aventura","http://www.nolomires.com/category/peliculas-de-aventura/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Bèlico Guerra ","http://www.nolomires.com/category/peliculas-de-guerra/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Ciencia-Ficción","http://www.nolomires.com/category/peliculas-de-ciencia-ficcion/","","")
+    #xbmctools.addnewfolder( __channel__ ,"listvideosMirror", category , "Clásicos","http://www.nolomires.com/category/peliculasclasicos/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Comedia","http://www.nolomires.com/category/peliculas-de-comedia/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Documentales","http://www.nolomires.com/category/peliculas-sobre-documentales/","","")
+    #xbmctools.addnewfolder( __channel__ ,"listvideosMirror", category , "Destacado","http://www.nolomires.com/category/peliculasdestacado/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Documentales Online","http://www.nolomires.com/category/documentales-online-completos/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Drama","http://www.nolomires.com/category/peliculas-de-drama/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Entretenimiento","http://www.nolomires.com/category/entretenimiento/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Estrenos","http://www.nolomires.com/category/ultimos-extrenos/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "General","http://www.nolomires.com/category/general/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Intriga","http://www.nolomires.com/category/peliculas-de-intriga/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Musicales","http://www.nolomires.com/category/peliculas-musicales/","","")
+    #xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Peliculas HD","http://www.nolomires.com/category/peliculaspeliculas-hd-categorias/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Romance","http://www.nolomires.com/category/peliculas-sobre-romance/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Suspenso","http://www.nolomires.com/category/peliculas-de-suspenso/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Terror","http://www.nolomires.com/category/peliculas-de-terror/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Thriller","http://www.nolomires.com/category/peliculas-de-thriller/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideos", category , "Todas las Peliculas","http://www.nolomires.com/category/peliculas-en-nolomires/","","")
     
     
     
@@ -131,7 +137,7 @@ def TagList(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -164,7 +170,7 @@ def MostWatched(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -198,7 +204,7 @@ def LastSearch(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -248,7 +254,7 @@ def listvideos(params,url,category):
 
         
             # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     #Extrae la marca de siguiente página
     patronvideos  = '<a href="([^"]+)" class="nextpostslink">'
@@ -261,7 +267,7 @@ def listvideos(params,url,category):
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -313,7 +319,7 @@ def listvideosMirror(params,url,category):
 
         
             # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     #Extrae la marca de siguiente página
     patronvideos  = '<a href="([^"]+)" class="nextpostslink">'
@@ -325,7 +331,7 @@ def listvideosMirror(params,url,category):
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -367,7 +373,7 @@ def detail(params,url,category):
         videotitle = video[0]
         url = video[1]
         server = video[2]
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     
    
             
@@ -425,15 +431,15 @@ def detail(params,url,category):
                     if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
                             
                     # Añade al listado de XBMC
-                    xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
+                    xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
                 
             else:
                 if match.endswith(".srt"):
                     scrapedurl = scrapedurl + "|" + match 
-                    xbmctools.addnewvideo( CHANNELNAME ,"play2"  , category , "Directo" , title + " (V.O.S) - "+subtitle, scrapedurl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ ,"play2"  , category , "Directo" , title + " (V.O.S) - "+subtitle, scrapedurl , thumbnail , plot )
                 if     match.endswith(".xml"):
                     sub = "[Subtitulo incompatible con xbmc]"
-                    xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Directo" , title + " (V.O) - %s %s" %(subtitle,sub), scrapedurl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ ,"play"  , category , "Directo" , title + " (V.O) - %s %s" %(subtitle,sub), scrapedurl , thumbnail , plot )
                 scrapedurl = match
                 print scrapedurl
 
@@ -448,7 +454,7 @@ def detail(params,url,category):
         for match in matches:
             print " encontro VK.COM :%s" %match
             videourl =    scrapertools.unescape(match)
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "vk" , title + " - "+"[VK]", videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "vk" , title + " - "+"[VK]", videourl , thumbnail , plot )
     '''
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -463,7 +469,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
     logger.info("[nolomires.py] play2")

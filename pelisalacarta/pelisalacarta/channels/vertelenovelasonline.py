@@ -21,7 +21,13 @@ from servers import vk
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "vertelenovelasonline"
+__channel__ = "vertelenovelasonline"
+__category__ = "S"
+__type__ = "xbmc"
+__title__ = "Ver Telenovelas Online"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -32,13 +38,11 @@ except:
 # Traza el inicio del canal
 logger.info("[vertelenovelasonline.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[vertelenovelasonline.py] mainlist")
 
     # Menu principal
-    xbmctools.addnewfolder( CHANNELNAME , "newlist" , CHANNELNAME , "Novedades" , "http://www.vertelenovelasonline.com/" , "", "" )
+    xbmctools.addnewfolder( __channel__ , "newlist" , __channel__ , "Novedades" , "http://www.vertelenovelasonline.com/" , "", "" )
     
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -71,7 +75,7 @@ def newlist(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -111,7 +115,7 @@ def listmirrors(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -138,7 +142,7 @@ def detail(params,url,category):
         videotitle = video[0]
         url = video[1]
         server = video[2]
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     # ------------------------------------------------------------------------------------
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
@@ -154,4 +158,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

@@ -22,8 +22,15 @@ except:
     from Code.core.item import Item
 
 
-CHANNELNAME = "newhd"
-DEBUG = True
+__channel__ = "newhd"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "NewHD"
+__language__ = "ES"
+__creationdate__ = "20110505"
+
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -32,9 +39,9 @@ def mainlist(item):
     logger.info("[newhd.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Español", action="idioma", url="http://www.newhd.org/"))
-    #itemlist.append( Item(channel=CHANNELNAME, title="Inglés",  action="idioma", url="http://www.newhd.org/en/"))
-    #itemlist.append( Item(channel=CHANNELNAME, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
+    itemlist.append( Item(channel=__channel__, title="Español", action="idioma", url="http://www.newhd.org/"))
+    #itemlist.append( Item(channel=__channel__, title="Inglés",  action="idioma", url="http://www.newhd.org/en/"))
+    #itemlist.append( Item(channel=__channel__, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
 
     return itemlist
 
@@ -42,9 +49,9 @@ def idioma(item):
     logger.info("[newhd.py] idioma")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="novedades", url=item.url+"index.php?do=cat&category=online"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabético", action="alfa", url=item.url+"index.php?do=cat&category=online"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado por Categorías", action="cat", url=item.url+"index.php?do=cat&category=online"))
+    itemlist.append( Item(channel=__channel__, title="Novedades", action="novedades", url=item.url+"index.php?do=cat&category=online"))
+    itemlist.append( Item(channel=__channel__, title="Listado Alfabético", action="alfa", url=item.url+"index.php?do=cat&category=online"))
+    itemlist.append( Item(channel=__channel__, title="Listado por Categorías", action="cat", url=item.url+"index.php?do=cat&category=online"))
 
     return itemlist
 
@@ -107,7 +114,7 @@ def novedades(item):
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae la marca de siguiente página
     patronvideos = '<a href="([^"]+)"><span class="thide pnext">Next</span>'
@@ -118,7 +125,7 @@ def novedades(item):
         scrapedtitle = "Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
-        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
 
@@ -144,7 +151,7 @@ def videos(item):
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , server=server , folder=False) )
+		itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , server=server , folder=False) )
 
 	return itemlist
 
@@ -170,7 +177,7 @@ def alfa(item):
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
         
     return itemlist
 
@@ -194,6 +201,6 @@ def cat(item):
         scrapedplot = ""
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
         
     return itemlist

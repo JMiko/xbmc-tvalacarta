@@ -14,8 +14,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "descargacineclasico"
-DEBUG = True
+__channel__ = "descargacineclasico"
+__category__ = "F,S"
+__type__ = "generic"
+__title__ = "Descarga Cine Clásico"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
+
 LoadThumbnails = True # indica si cargar los carteles
 
 def isGeneric():
@@ -44,7 +50,7 @@ def mainlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
-        itemlist.append( Item(channel=CHANNELNAME, action="movielist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="movielist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
     
     return itemlist
 
@@ -100,6 +106,6 @@ def movielist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist

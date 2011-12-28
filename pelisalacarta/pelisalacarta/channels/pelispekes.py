@@ -13,10 +13,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "pelispekes"
-DEBUG = True
+__channel__ = "pelispekes"
+__category__ = "F,A"
+__type__ = "xbmc"
+__title__ = "Pelis Pekes"
+__language__ = "ES"
 
-
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -25,9 +28,9 @@ def mainlist(item):
     logger.info("[pelispekes.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"        , title="Novedades"                      , url="http://pelispekes.com/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="Categorias"        , title="Categorias"                      , url="http://pelispekes.com/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="Abecedario"        , title="Abecedario"                      , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Generico"        , title="Novedades"                      , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Categorias"        , title="Categorias"                      , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Abecedario"        , title="Abecedario"                      , url="http://pelispekes.com/"))
     
 
     return itemlist
@@ -105,7 +108,7 @@ def buscavideos(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
 
     return itemlist
 

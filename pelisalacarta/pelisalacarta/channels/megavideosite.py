@@ -16,8 +16,13 @@ from servers import servertools
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "megavideosite"
-DEBUG = True
+__channel__ = "megavideosite"
+__category__ = "G"
+__type__ = "generic"
+__title__ = "Megavideo"
+__language__ = ""
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -25,11 +30,11 @@ def isGeneric():
 def mainlist(item):
     logger.info("[megavideosite.py] mainlist")
     itemlist=[]
-    itemlist.append( Item(channel=CHANNELNAME, action="search" , title="Introduce el código del vídeo") )
+    itemlist.append( Item(channel=__channel__, action="search" , title="Introduce el código del vídeo") )
     return itemlist
 
 def search(item,texto):
     logger.info("[megavideosite.py] search")
     itemlist=[]
-    itemlist.append( Item(channel=CHANNELNAME, action="play" , title="Ver el vídeo" , url="http://www.megavideo.com/?v="+texto,server="megavideo",folder=False) )
+    itemlist.append( Item(channel=__channel__, action="play" , title="Ver el vídeo" , url="http://www.megavideo.com/?v="+texto,server="megavideo",folder=False) )
     return itemlist

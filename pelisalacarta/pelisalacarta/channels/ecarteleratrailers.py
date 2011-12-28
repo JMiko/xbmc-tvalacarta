@@ -21,7 +21,13 @@ from servers import vk
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "ecarteleratrailers"
+__channel__ = "ecarteleratrailers"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "Trailers ecartelera"
+__language__ = "ES,EN"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -31,8 +37,6 @@ except:
 
 # Traza el inicio del canal
 logger.info("[ecarteleratrailers.py] init")
-
-DEBUG = True
 
 def mainlist(params,url,category):
     logger.info("[ecarteleratrailers.py] mainlist")
@@ -79,7 +83,7 @@ def mainlist(params,url,category):
             logger.info("scrapedplot="+scrapedplot)
 
         # Añade al listado de XBMC
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
     # ------------------------------------------------------
     # Extrae la página siguiente
@@ -102,7 +106,7 @@ def mainlist(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -140,4 +144,4 @@ def play(params,url,category):
     if len(matches)>0:
         url = urlparse.urljoin(url,matches[0])
         logger.info("[ecarteleratrailers.py] url="+url)
-        xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+        xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

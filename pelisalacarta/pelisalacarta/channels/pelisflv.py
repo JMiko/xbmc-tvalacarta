@@ -22,7 +22,14 @@ from core import downloadtools
 from servers import vk
 from servers import servertools
 
-CHANNELNAME = "pelisflv"
+__channel__ = "pelisflv"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "PelisFlv"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
+
 ATOM_NS = 'http://www.w3.org/2005/Atom'
 PLAYLIST_FILENAME_TEMP = "video_playlist.temp.pls"
 FULL_FILENAME_PATH = os.path.join( config.get_setting("downloadpath"), PLAYLIST_FILENAME_TEMP )
@@ -37,24 +44,22 @@ except:
 # Traza el inicio del canal
 logger.info("[pelisflv.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[pelisflv.py] mainlist")
 
     # Añade al listado de XBMC
 
-    xbmctools.addnewfolder( CHANNELNAME , "listvideofeeds" , category , "Listar - Novedades"    ,"http://www.blogger.com/feeds/3207505541212690627/posts/default?start-index=1&max-results=25","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Listar - Estrenos","http://www.pelisflv.net/search/label/Estrenos","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListadoSeries"  , category , "Listar - Generos"        ,"http://www.pelisflv.net/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "ListadoSeries"  , category , "Listar - Series"        ,"http://www.pelisflv.net/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Listar - Animacion"        ,"http://www.pelisflv.net/search/label/Animaci%C3%B3n","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Listar - Videos no Megavideo (FLV)"        ,"http://www.pelisflv.net/search/label/Flv","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Listar - Videos en Megavideo"        ,"http://www.pelisflv.net/search/label/Megavideo","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Videos Audio Español"        ,"http://www.pelisflv.net/search/label/Espa%C3%B1ol","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Videos Audio Latino"        ,"http://www.pelisflv.net/search/label/Latino","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"     , category , "Videos Audio Original Sub Español"        ,"http://www.pelisflv.net/search/label/Sub%20Espa%C3%B1ol","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search"         , category , "Buscar","http://www.pelisflv.net/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideofeeds" , category , "Listar - Novedades"    ,"http://www.blogger.com/feeds/3207505541212690627/posts/default?start-index=1&max-results=25","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Listar - Estrenos","http://www.pelisflv.net/search/label/Estrenos","","")
+    xbmctools.addnewfolder( __channel__ , "ListadoSeries"  , category , "Listar - Generos"        ,"http://www.pelisflv.net/","","")
+    #xbmctools.addnewfolder( __channel__ , "ListadoSeries"  , category , "Listar - Series"        ,"http://www.pelisflv.net/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Listar - Animacion"        ,"http://www.pelisflv.net/search/label/Animaci%C3%B3n","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Listar - Videos no Megavideo (FLV)"        ,"http://www.pelisflv.net/search/label/Flv","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Listar - Videos en Megavideo"        ,"http://www.pelisflv.net/search/label/Megavideo","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Videos Audio Español"        ,"http://www.pelisflv.net/search/label/Espa%C3%B1ol","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Videos Audio Latino"        ,"http://www.pelisflv.net/search/label/Latino","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"     , category , "Videos Audio Original Sub Español"        ,"http://www.pelisflv.net/search/label/Sub%20Espa%C3%B1ol","","")
+    xbmctools.addnewfolder( __channel__ , "search"         , category , "Buscar","http://www.pelisflv.net/","","")
     
 
     # Label (top-right)...
@@ -107,7 +112,7 @@ def searchresults(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -150,7 +155,7 @@ def ListadoCapitulosSeries(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -195,7 +200,7 @@ def ListadoSeries(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -251,7 +256,7 @@ def listvideos(params,url,category):
 
         
             # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Extrae la marca de siguiente página
 
@@ -264,7 +269,7 @@ def listvideos(params,url,category):
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -311,7 +316,7 @@ def listvideofeeds(params,url,category):
             logger.info("scrapedthumbnail="+thumbnail)
                 
         #print etitletext, '(', elinktext, thumbnail,plot, ')'
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category ,  etitletext,  elinktext, thumbnail, plot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category ,  etitletext,  elinktext, thumbnail, plot )
         c +=1
     
     if c >= 25:
@@ -323,7 +328,7 @@ def listvideofeeds(params,url,category):
         scrapedurl =  "http://www.blogger.com/feeds/3207505541212690627/posts/default?start-index="+str(start_index)+"&max-results=25"
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideofeeds" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideofeeds" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -387,7 +392,7 @@ def detail(params,url,category):
         url = video[1]
         server = video[2]
         
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     
     # Busca enlaces en el servidor Stagevu - "el modulo servertools.findvideos() no los encuentra"
     
@@ -398,7 +403,7 @@ def detail(params,url,category):
         for match in matches:
             ok = True
             scrapedurl = match.replace("&amp;","&")
-            xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Stagevu" , title+" - [Stagevu]", scrapedurl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ ,"play"  , category , "Stagevu" , title+" - [Stagevu]", scrapedurl , thumbnail , plot )
 
     # Busca enlaces en el servidor Movshare - "el modulo servertools.findvideos() no los encuentra"
     
@@ -409,7 +414,7 @@ def detail(params,url,category):
         for match in matches:
             ok = True
             scrapedurl = match.replace("&amp;","&")
-            xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Movshare" , title+" - [Movshare]", scrapedurl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ ,"play"  , category , "Movshare" , title+" - [Movshare]", scrapedurl , thumbnail , plot )
 
 
         
@@ -458,16 +463,16 @@ def detail(params,url,category):
                     if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
                             
                     # Añade al listado de XBMC
-                    xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
+                    xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
                     ok = True
             else:
                 if match.endswith(".srt"):
                     scrapedurl = scrapedurl + "|" + match 
-                    xbmctools.addnewvideo( CHANNELNAME ,"play2"  , category , "Directo" , title + " (V.O.S) - "+subtitle, scrapedurl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ ,"play2"  , category , "Directo" , title + " (V.O.S) - "+subtitle, scrapedurl , thumbnail , plot )
                     ok = True
                 if     match.endswith(".xml"):
                     sub = "[Subtitulo incompatible con xbmc]"
-                    xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Directo" , title + " (V.O) - %s %s" %(subtitle,sub), scrapedurl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ ,"play"  , category , "Directo" , title + " (V.O) - %s %s" %(subtitle,sub), scrapedurl , thumbnail , plot )
                     ok = True
                 scrapedurl = match
                 print scrapedurl
@@ -517,7 +522,7 @@ def detail(params,url,category):
                 if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
                         
                 # Añade al listado de XBMC
-                xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )                    
+                xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )                    
                 ok =True
                 
                 playlistFile.write("File%d=%s\n"  %(c,match2[1]))
@@ -530,7 +535,7 @@ def detail(params,url,category):
             playlistFile.flush();
             playlistFile.close()
             if c>0:
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "Reproducir Todo a la vez...", FULL_FILENAME_PATH , scrapedthumbnail, scrapedplot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , "Reproducir Todo a la vez...", FULL_FILENAME_PATH , scrapedthumbnail, scrapedplot )
     
     # Busca enlaces en el servidor Videoweed - "el modulo servertools.findvideos() no los encuentra"
     patronvideos = '(http\:\/\/[^\.]+\.videoweed.com\/[^"]+)"'
@@ -541,7 +546,7 @@ def detail(params,url,category):
         for match in matches:
             ok = True
             scrapedurl = match.replace("&amp;","&")
-            xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Videoweed" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )        
+            xbmctools.addnewvideo( __channel__ ,"play"  , category , "Videoweed" , title+" - [Videoweed]", scrapedurl , thumbnail , plot )        
     
     # Busca enlaces en el servidor Gigabyteupload # http://cdn-2.gigabyteupload.com/files/207bb7b658d5068650ebabaca8ffc52d/vFuriadeTitanes_newg.es.avi
     patronvideos = '(http\:\/\/[^\.]+\.gigabyteupload.com\/[^"]+)"'
@@ -551,7 +556,7 @@ def detail(params,url,category):
         logger.info(" Servidor Gigabyteupload")
         for match in matches:
             ok = True
-            xbmctools.addnewvideo( CHANNELNAME ,"play"  , category , "Gigabyteupload" , title+" - [Gigabyteupload]",match  , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ ,"play"  , category , "Gigabyteupload" , title+" - [Gigabyteupload]",match  , thumbnail , plot )
 
     ## --------------------------------------------------------------------------------------##
     #            Busca enlaces de videos para el servidor vk.com                             #
@@ -572,7 +577,7 @@ def detail(params,url,category):
         print " encontro VK.COM :%s" %matches[0]
 
         videourl =     vk.geturl(matches[0])
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )        
+        xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+"[VK]", videourl , thumbnail , plot )        
     '''
     ## --------------------------------------------------------------------------------------##
     #            Busca enlaces a video en el servidor Dailymotion                             #
@@ -601,7 +606,7 @@ def detail(params,url,category):
                 videourl = videourl + "|" + subtit
                 playWithSubt = "play2"
             subtitle = "[FLV-Directo-Dailymotion]"
-            xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
         
         # Busca el enlace al video con formato HQ (H264)        
         Highres=re.compile('%22hqURL%22%3A%22(.+?)%22').findall(data2)
@@ -612,7 +617,7 @@ def detail(params,url,category):
                 videourl = videourl + "|" + subtit
                 playWithSubt = "play2"            
             subtitle = "[h264-Directo-Dailymotion-este video no es soportado en versiones antiguas o xbox plataforma]"
-            xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
 
     if not ok:
         patron = "SeriesPage"
@@ -637,7 +642,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
     logger.info("[pelisflv.py] play2")

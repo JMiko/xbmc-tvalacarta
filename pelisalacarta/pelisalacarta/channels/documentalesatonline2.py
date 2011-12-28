@@ -16,8 +16,13 @@ from servers import servertools
 
 import xml.dom.minidom
 
-CHANNELNAME = "documentalesatonline2"
-DEBUG = True
+__channel__ = "documentalesatonline2"
+__category__ = "D"
+__type__ = "generic"
+__title__ = "La Guarida de bizzente"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -26,9 +31,9 @@ def mainlist(item):
     logger.info("[documentalesatonline2.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades" , url="http://www.bizzentte.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Categorías" , action="categorias" , url="http://www.bizzentte.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"  , action="novedades" , url="http://www.bizzentte.com/"))
+    itemlist.append( Item(channel=__channel__, title="Categorías" , action="categorias" , url="http://www.bizzentte.com/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"     , action="search"))
 
     return itemlist
 
@@ -64,8 +69,8 @@ def categorias(item):
     scrapertools.printMatches(matches)
 
     for match in matches:
-        #xbmctools.addnewfolder( CHANNELNAME , "novedades" , category , match[1] , match[0] + "feed?paged=1" , "" , "")
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=match[1] , url=match[0] , folder=True) )
+        #xbmctools.addnewfolder( __channel__ , "novedades" , category , match[1] , match[0] + "feed?paged=1" , "" , "")
+        itemlist.append( Item(channel=__channel__, action="novedades", title=match[1] , url=match[0] , folder=True) )
 
     return itemlist
 
@@ -101,7 +106,7 @@ def novedades(item):
         scrapedplot = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Página siguiente
     patron  = '<a href="([^"]+)" >P..gina siguiente \&raquo\;</a>'
@@ -109,7 +114,7 @@ def novedades(item):
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="!Página siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="!Página siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
 
     return itemlist
 
@@ -138,11 +143,11 @@ def findvideos(item):
                 url=listavideos[0+i][1]
                 server=listavideos[0+i][2]
                 #logger.info(matches0)
-                itemlist.append( Item(channel=CHANNELNAME, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[0+i][0] , url=listavideos[0+i][1] , server=listavideos[0+i][2] , folder=False ))
-                itemlist.append( Item(channel=CHANNELNAME, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[length+i][0] , url=listavideos[length+i][1] , server=listavideos[length+i][2] , folder=False ))
+                itemlist.append( Item(channel=__channel__, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[0+i][0] , url=listavideos[0+i][1] , server=listavideos[0+i][2] , folder=False ))
+                itemlist.append( Item(channel=__channel__, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[length+i][0] , url=listavideos[length+i][1] , server=listavideos[length+i][2] , folder=False ))
         elif len(listavideos)>0:
             for video in listavideos:
-                itemlist.append( Item(channel=CHANNELNAME, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
+                itemlist.append( Item(channel=__channel__, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
         else:
             logger.info("vamos a ponerlos con el nombre del titulo todos, el mismo que el por defecto")
             logger.info("no hay capitulos")
@@ -151,7 +156,7 @@ def findvideos(item):
             listavideos = servertools.findvideos(data)
             
             for video in listavideos:
-                itemlist.append( Item(channel=CHANNELNAME, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
+                itemlist.append( Item(channel=__channel__, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
     else: 
         logger.info("no hay capitulos")
         patronvideos  = '(.+?)\('
@@ -160,12 +165,12 @@ def findvideos(item):
         listavideos = servertools.findvideos(data)
         
         for video in listavideos:
-            itemlist.append( Item(channel=CHANNELNAME, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2] , folder=False ))
+            itemlist.append( Item(channel=__channel__, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2] , folder=False ))
 
     patronvideos  = '<a rel="bookmark" href="../(.+?)">(.+?)<'
     matches = re.compile(patronvideos).findall(data)
     for z in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=z[1], url=urlparse.urljoin(item.url,z[0]) , folder=True ))
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=z[1], url=urlparse.urljoin(item.url,z[0]) , folder=True ))
 
     return itemlist
 

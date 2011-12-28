@@ -12,8 +12,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "seriespepito"
-DEBUG = True
+__channel__ = "seriespepito"
+__category__ = "S"
+__type__ = "generic"
+__title__ = "Seriespepito"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -22,8 +27,8 @@ def mainlist(item):
     logger.info("[seriespepito.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"   , title="Listado alfabético"))
-    itemlist.append( Item(channel=CHANNELNAME, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico"   , title="Listado alfabético"))
+    itemlist.append( Item(channel=__channel__, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
 
     return itemlist
 
@@ -49,7 +54,7 @@ def allserieslist(item):
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -57,33 +62,33 @@ def listalfabetico(item):
     logger.info("[seriespepito.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="0-9",url="http://www.seriespepito.com/lista-series-num/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="A",url="http://www.seriespepito.com/lista-series-a/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="B",url="http://www.seriespepito.com/lista-series-b/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="C",url="http://www.seriespepito.com/lista-series-c/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="D",url="http://www.seriespepito.com/lista-series-d/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="E",url="http://www.seriespepito.com/lista-series-e/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="F",url="http://www.seriespepito.com/lista-series-f/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="G",url="http://www.seriespepito.com/lista-series-g/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="H",url="http://www.seriespepito.com/lista-series-h/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="I",url="http://www.seriespepito.com/lista-series-i/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="J",url="http://www.seriespepito.com/lista-series-j/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="K",url="http://www.seriespepito.com/lista-series-k/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="L",url="http://www.seriespepito.com/lista-series-l/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="M",url="http://www.seriespepito.com/lista-series-m/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="N",url="http://www.seriespepito.com/lista-series-n/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="O",url="http://www.seriespepito.com/lista-series-o/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="P",url="http://www.seriespepito.com/lista-series-p/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="Q",url="http://www.seriespepito.com/lista-series-q/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="R",url="http://www.seriespepito.com/lista-series-r/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="S",url="http://www.seriespepito.com/lista-series-s/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="T",url="http://www.seriespepito.com/lista-series-t/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="U",url="http://www.seriespepito.com/lista-series-u/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="V",url="http://www.seriespepito.com/lista-series-v/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="W",url="http://www.seriespepito.com/lista-series-w/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="X",url="http://www.seriespepito.com/lista-series-x/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="Y",url="http://www.seriespepito.com/lista-series-y/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphaserieslist" , title="Z",url="http://www.seriespepito.com/lista-series-z/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="0-9",url="http://www.seriespepito.com/lista-series-num/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="A",url="http://www.seriespepito.com/lista-series-a/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="B",url="http://www.seriespepito.com/lista-series-b/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="C",url="http://www.seriespepito.com/lista-series-c/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="D",url="http://www.seriespepito.com/lista-series-d/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="E",url="http://www.seriespepito.com/lista-series-e/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="F",url="http://www.seriespepito.com/lista-series-f/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="G",url="http://www.seriespepito.com/lista-series-g/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="H",url="http://www.seriespepito.com/lista-series-h/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="I",url="http://www.seriespepito.com/lista-series-i/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="J",url="http://www.seriespepito.com/lista-series-j/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="K",url="http://www.seriespepito.com/lista-series-k/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="L",url="http://www.seriespepito.com/lista-series-l/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="M",url="http://www.seriespepito.com/lista-series-m/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="N",url="http://www.seriespepito.com/lista-series-n/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="O",url="http://www.seriespepito.com/lista-series-o/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="P",url="http://www.seriespepito.com/lista-series-p/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="Q",url="http://www.seriespepito.com/lista-series-q/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="R",url="http://www.seriespepito.com/lista-series-r/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="S",url="http://www.seriespepito.com/lista-series-s/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="T",url="http://www.seriespepito.com/lista-series-t/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="U",url="http://www.seriespepito.com/lista-series-u/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="V",url="http://www.seriespepito.com/lista-series-v/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="W",url="http://www.seriespepito.com/lista-series-w/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="X",url="http://www.seriespepito.com/lista-series-x/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="Y",url="http://www.seriespepito.com/lista-series-y/"))
+    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="Z",url="http://www.seriespepito.com/lista-series-z/"))
 
     return itemlist
 
@@ -136,7 +141,7 @@ def alphaserieslist(item):
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -181,7 +186,7 @@ def episodelist(item):
         scrapedplot = item.plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , context="4"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , context="4"))
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show) )
@@ -190,12 +195,9 @@ def episodelist(item):
 
 def findvideos(item):
     logger.info("[seriespepito.py] findvideos")
-
     itemlist = []
-    if config.get_platform()=="xbmceden":
-        from core.subtitletools import saveSubtitleName
-        saveSubtitleName(item)
-
+    from core.subtitletools import saveSubtitleName
+    saveSubtitleName(item)
     try:
         # Descarga la pagina
         data = scrapertools.cachePage(item.url)
@@ -277,7 +279,7 @@ def findvideos(item):
     
             if servidor!="":
                 scrapedtitle = "Mirror %d - Idioma %s [%s]" % (numero,idioma,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=servidor, folder=False))
+                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=servidor, folder=False))
                 numero = numero + 1
     except:
         import sys

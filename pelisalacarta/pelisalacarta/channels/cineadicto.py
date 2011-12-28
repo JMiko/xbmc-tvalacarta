@@ -15,8 +15,13 @@ from core.item import Item
 #from pelisalacarta import buscador
 from servers import servertools
 
-CHANNELNAME = "cineadicto"
-DEBUG = True
+__channel__ = "cineadicto"
+__category__ = "F,D"
+__type__ = "generic"
+__title__ = "Cine-Adicto"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -25,14 +30,14 @@ def mainlist(item):
     logger.info("[cineadicto.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME , action="listvideos"         , title="Ultimas Películas Añadidas"    , url="http://www.cine-adicto.com/" , extra="ultimas" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"   , title="Estrenos"                      , url="" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="ListaCat"           , title="Listado por Genero"            , url="http://www.cine-adicto.com/"))
+    itemlist.append( Item(channel=__channel__ , action="listvideos"         , title="Ultimas Películas Añadidas"    , url="http://www.cine-adicto.com/" , extra="ultimas" ))
+    itemlist.append( Item(channel=__channel__ , action="ListvideosMirror"   , title="Estrenos"                      , url="" ))
+    itemlist.append( Item(channel=__channel__ , action="ListaCat"           , title="Listado por Genero"            , url="http://www.cine-adicto.com/"))
     # Desactivado por problemas en la web
-    #itemlist.append( Item(channel=CHANNELNAME , action="ListaAlfa"          , title="Listado Alfanumerico"          , url="http://www.cine-adicto.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"   , title="Documentales"                  , url="http://www.cine-adicto.com/category/documentales/"))
-    #itemlist.append( Item(channel=CHANNELNAME , action="listvideos"         , title="Peliculas en HD"               , url="http://www.cine-adicto.com/category/peliculas-hd-categorias" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="search"             , title="Buscar"                        , url="http://www.cine-adicto.com/?s="))
+    #itemlist.append( Item(channel=__channel__ , action="ListaAlfa"          , title="Listado Alfanumerico"          , url="http://www.cine-adicto.com/" ))
+    itemlist.append( Item(channel=__channel__ , action="ListvideosMirror"   , title="Documentales"                  , url="http://www.cine-adicto.com/category/documentales/"))
+    #itemlist.append( Item(channel=__channel__ , action="listvideos"         , title="Peliculas en HD"               , url="http://www.cine-adicto.com/category/peliculas-hd-categorias" ))
+    itemlist.append( Item(channel=__channel__ , action="search"             , title="Buscar"                        , url="http://www.cine-adicto.com/?s="))
 
     return itemlist
     
@@ -158,7 +163,7 @@ def ListvideosMirror(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME , action="detail"  , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=__channel__ , action="detail"  , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
     #Extrae la marca de siguiente página
     patronvideos  = '<span class=[\W]current[\W]>[^<]+</span>?<a href=([\S]+)'
@@ -170,7 +175,7 @@ def ListvideosMirror(item):
         scrapedurl = matches[0].strip("'").strip('"')
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME , action="ListvideosMirror"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=__channel__ , action="ListvideosMirror"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
 
     return itemlist
 
@@ -360,6 +365,6 @@ def find_video_items_cineadicto(item,data,plot):
                 itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " (V.O) - %s %s" %(subtitle,sub), url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
             elif not match.endswith("srt" or "xml") :
                 itemlist.append( Item(channel=item.channel , action="play"  , server="Directo" , title=title + " - [Directo]" , url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=False ))
-            #print scrapedurl
+            print scrapedurl
 
     return itemlist

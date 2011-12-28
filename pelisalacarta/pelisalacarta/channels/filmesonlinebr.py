@@ -19,23 +19,27 @@ from platformcode.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "filmesonlinebr"
+__channel__ = "filmesonlinebr"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "FilmesOnlineBr"
+__language__ = "PT"
+
+DEBUG = config.get_setting("debug")
 
 # Traza el inicio del canal
 logger.info("[filmesonlinebr.py] init")
-
-DEBUG = True
 
 def mainlist(params,url,category):
     logger.info("[filmesonlinebr.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ultimos Filmes Subidos"    ,"http://www.filmesonlinebr.com/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "listalfa" , category , "Lista Alfabética","http://www.filmesonlinebr.com/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series","http://www.filmesonlinebr.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Categorias"        ,"http://www.filmesonlinebr.com/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Ultimos Filmes Subidos"    ,"http://www.filmesonlinebr.com/","","")
+    #xbmctools.addnewfolder( __channel__ , "listalfa" , category , "Lista Alfabética","http://www.filmesonlinebr.com/","","")
+    #xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Series","http://www.filmesonlinebr.com/","","")
+    xbmctools.addnewfolder( __channel__ , "listcategorias" , category , "Categorias"        ,"http://www.filmesonlinebr.com/","","")
     if config.get_setting("enableadultmode") == "true":
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Adulto (+18)","http://www.filmesonlinebr.com/category/filmes-porno-xxx/","","")
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Filmes Adulto (+18)","http://www.filmesonlinebr.com/category/filmes-porno-xxx/","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -50,22 +54,22 @@ def listcategorias(params,url,category):
     logger.info("[filmeonlinebr.py] listcategorias")
 
 
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Animações e Animes"    ,"http://www.filmesonlinebr.com/category/filmes-animacoes-e-animes/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Aventura"    ,"http://www.filmesonlinebr.com/category/filmes-aventura/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comédia Romântica"    ,"http://www.filmesonlinebr.com/category/filmes-comedia-romantica/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Comédia"    ,"http://www.filmesonlinebr.com/category/filmes-comedia/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Documentário"    ,"http://www.filmesonlinebr.com/category/filmes-documentarios/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Fantasia"    ,"http://www.filmesonlinebr.com/category/filmes-fantasia/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Ficção Científica*"    ,"http://www.filmesonlinebr.com/search/label/Fic%C3%A7%C3%A3o%20Cient%C3%ADfica","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Guerra"    ,"http://www.filmesonlinebr.com/category/filmes-guerra/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Lançamentos 2010"    ,"http://www.filmesonlinebr.com/category/filmes-lancamentos-2010","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Musical e Shows*"    ,"http://www.filmesonlinebr.com/search/label/Musical","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Filmes Brasileiros"    ,"http://www.filmesonlinebr.com/category/filmes-nacional/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Policial*"    ,"http://www.filmesonlinebr.com/search/label/Policial","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Romance"    ,"http://www.filmesonlinebr.com/category/filmes-romance/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Suspense"    ,"http://www.filmesonlinebr.com/category/filmes-suspense/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Terror"    ,"http://www.filmesonlinebr.com/category/filmes-terror/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Series"    ,"http://www.filmesonlinebr.com/category/series-online/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Animações e Animes"    ,"http://www.filmesonlinebr.com/category/filmes-animacoes-e-animes/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Aventura"    ,"http://www.filmesonlinebr.com/category/filmes-aventura/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Comédia Romântica"    ,"http://www.filmesonlinebr.com/category/filmes-comedia-romantica/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Comédia"    ,"http://www.filmesonlinebr.com/category/filmes-comedia/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Documentário"    ,"http://www.filmesonlinebr.com/category/filmes-documentarios/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Fantasia"    ,"http://www.filmesonlinebr.com/category/filmes-fantasia/","","")
+    #xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Ficção Científica*"    ,"http://www.filmesonlinebr.com/search/label/Fic%C3%A7%C3%A3o%20Cient%C3%ADfica","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Guerra"    ,"http://www.filmesonlinebr.com/category/filmes-guerra/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Lançamentos 2010"    ,"http://www.filmesonlinebr.com/category/filmes-lancamentos-2010","","")
+    #xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Musical e Shows*"    ,"http://www.filmesonlinebr.com/search/label/Musical","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Filmes Brasileiros"    ,"http://www.filmesonlinebr.com/category/filmes-nacional/","","")
+    #xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Policial*"    ,"http://www.filmesonlinebr.com/search/label/Policial","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Romance"    ,"http://www.filmesonlinebr.com/category/filmes-romance/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Suspense"    ,"http://www.filmesonlinebr.com/category/filmes-suspense/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Terror"    ,"http://www.filmesonlinebr.com/category/filmes-terror/","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Series"    ,"http://www.filmesonlinebr.com/category/series-online/","","")
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -79,33 +83,33 @@ def listcategorias(params,url,category):
 def listalfa(params,url,category):
     logger.info("[filmesonlinebr.py] listalfa")
     
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "0-9","http://www.filmesonlinebr.com/search/label/0-9/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "A","http://www.filmesonlinebr.com/search/label/a/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "B","http://www.filmesonlinebr.com/search/label/B/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "C","http://www.filmesonlinebr.com/search/label/C/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "D","http://www.filmesonlinebr.com/search/label/D/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "E","http://www.filmesonlinebr.com/search/label/E/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "F","http://www.filmesonlinebr.com/search/label/F/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "G","http://www.filmesonlinebr.com/search/label/G/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "H","http://www.filmesonlinebr.com/search/label/H/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "I","http://www.filmesonlinebr.com/search/label/I/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "J","http://www.filmesonlinebr.com/search/label/J/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "K","http://www.filmesonlinebr.com/search/label/K/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "L","http://www.filmesonlinebr.com/search/label/L/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "M","http://www.filmesonlinebr.com/search/label/M/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "N","http://www.filmesonlinebr.com/search/label/N/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "O","http://www.filmesonlinebr.com/search/label/O/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "P","http://www.filmesonlinebr.com/search/label/P/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "Q","http://www.filmesonlinebr.com/search/label/Q/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "R","http://www.filmesonlinebr.com/search/label/R/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "S","http://www.filmesonlinebr.com/search/label/S/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "T","http://www.filmesonlinebr.com/search/label/T/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "U","http://www.filmesonlinebr.com/search/label/U/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "V","http://www.filmesonlinebr.com/search/label/V/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "W","http://www.filmesonlinebr.com/search/label/W/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "X","http://www.filmesonlinebr.com/search/label/X/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "Y","http://www.filmesonlinebr.com/","","","")
-    xbmctools.addnewfolderextra( CHANNELNAME ,"listvideos", category , "Z","http://www.filmesonlinebr.com/search/label/Z/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "0-9","http://www.filmesonlinebr.com/search/label/0-9/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "A","http://www.filmesonlinebr.com/search/label/a/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "B","http://www.filmesonlinebr.com/search/label/B/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "C","http://www.filmesonlinebr.com/search/label/C/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "D","http://www.filmesonlinebr.com/search/label/D/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "E","http://www.filmesonlinebr.com/search/label/E/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "F","http://www.filmesonlinebr.com/search/label/F/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "G","http://www.filmesonlinebr.com/search/label/G/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "H","http://www.filmesonlinebr.com/search/label/H/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "I","http://www.filmesonlinebr.com/search/label/I/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "J","http://www.filmesonlinebr.com/search/label/J/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "K","http://www.filmesonlinebr.com/search/label/K/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "L","http://www.filmesonlinebr.com/search/label/L/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "M","http://www.filmesonlinebr.com/search/label/M/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "N","http://www.filmesonlinebr.com/search/label/N/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "O","http://www.filmesonlinebr.com/search/label/O/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "P","http://www.filmesonlinebr.com/search/label/P/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "Q","http://www.filmesonlinebr.com/search/label/Q/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "R","http://www.filmesonlinebr.com/search/label/R/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "S","http://www.filmesonlinebr.com/search/label/S/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "T","http://www.filmesonlinebr.com/search/label/T/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "U","http://www.filmesonlinebr.com/search/label/U/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "V","http://www.filmesonlinebr.com/search/label/V/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "W","http://www.filmesonlinebr.com/search/label/W/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "X","http://www.filmesonlinebr.com/search/label/X/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "Y","http://www.filmesonlinebr.com/","","","")
+    xbmctools.addnewfolderextra( __channel__ ,"listvideos", category , "Z","http://www.filmesonlinebr.com/search/label/Z/","","","")
 
         # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -149,7 +153,7 @@ def listvideos(params,url,category):
 
         
             # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Extrae la marca de siguiente página
     patronvideos  = "<li><a class='next page-numbers' href='([^']+)'>"
@@ -161,7 +165,7 @@ def listvideos(params,url,category):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -188,7 +192,7 @@ def detail(params,url,category):
     # Extrae las entradas (videos) #
     patron = '<div id="article">[^<]+<h2>(.*?)<h2>Comments:</h2>'
     matchtype = re.compile(patron,re.DOTALL).findall(data)
-    #print "matchtype :%s" %matchtype[0]
+    print "matchtype :%s" %matchtype[0]
     if ("porno"or"pornÃ´"or"xxx") in string.lower(matchtype[0]):
         if adulto == "false":
             advertencia()
@@ -198,7 +202,7 @@ def detail(params,url,category):
     else:
         patron = "<h2(.*?)</h2>"
         matchtemp = re.compile(patron,re.DOTALL).findall(data)
-        #print matchtemp
+        print matchtemp
         if len(matchtemp)>0:
             patron = "<h2(.*?)</h2>"
             matchtemp = re.compile(patron,re.DOTALL).findall(matchtype[0])
@@ -207,7 +211,7 @@ def detail(params,url,category):
                     for match in matchtemp:
                         patron = "<h2%s(.*?)</p>" %match[0]
                         matchesdata = re.compile(patron,re.DOTALL).findall(matchtype[0])
-                        #print matchesdata[0]
+                        print matchesdata[0]
                         matches = megasearch(matchtype,matchesdata[0])
                         titulo = re.sub("<[^>]+>"," ",match).replace(">","")
                         listar(titulo,thumbnail,plot,matches,category)
@@ -230,7 +234,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def listar(title,thumbnail,plot,matches,category):
     
@@ -254,7 +258,7 @@ def listar(title,thumbnail,plot,matches,category):
 
         
             # Añade al listado de XBMC
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , match[2], scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , match[2], scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 def close_directory(params,url,category):
     # Label (top-right)...

@@ -19,8 +19,13 @@ except:
     from Code.core import scrapertools
     from Code.core.item import Item
 
-CHANNELNAME = "sofacine"
-DEBUG = True
+__channel__ = "sofacine"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Sofacine"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -29,8 +34,8 @@ def mainlist(item):
     logger.info("[sofacine.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Películas - Novedades"            , url="http://www.sofacine.com/index.php"))
-   #itemlist.append( Item(channel=CHANNELNAME, action="search"     , title="Buscar"))
+    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Películas - Novedades"            , url="http://www.sofacine.com/index.php"))
+   #itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"))
 
     return itemlist
 
@@ -38,33 +43,33 @@ def pelisalfa(item):
     logger.info("[sofacine.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="0-9", url="http://www.sofacine.com/index.php?module=peliculaslist&init="))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="A", url="http://www.sofacine.com/index.php?module=peliculaslist&init=a"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="B", url="http://www.sofacine.com/index.php?module=peliculaslist&init=b"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="C", url="http://www.sofacine.com/index.php?module=peliculaslist&init=c"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="D", url="http://www.sofacine.com/index.php?module=peliculaslist&init=d"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="E", url="http://www.sofacine.com/index.php?module=peliculaslist&init=e"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="F", url="http://www.sofacine.com/index.php?module=peliculaslist&init=f"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="G", url="http://www.sofacine.com/index.php?module=peliculaslist&init=g"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="H", url="http://www.sofacine.com/index.php?module=peliculaslist&init=h"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="I", url="http://www.sofacine.com/index.php?module=peliculaslist&init=i"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="J", url="http://www.sofacine.com/index.php?module=peliculaslist&init=j"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="K", url="http://www.sofacine.com/index.php?module=peliculaslist&init=k"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="L", url="http://www.sofacine.com/index.php?module=peliculaslist&init=l"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="M", url="http://www.sofacine.com/index.php?module=peliculaslist&init=m"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="N", url="http://www.sofacine.com/index.php?module=peliculaslist&init=n"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="O", url="http://www.sofacine.com/index.php?module=peliculaslist&init=o"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="P", url="http://www.sofacine.com/index.php?module=peliculaslist&init=p"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="Q", url="http://www.sofacine.com/index.php?module=peliculaslist&init=q"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="R", url="http://www.sofacine.com/index.php?module=peliculaslist&init=r"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="S", url="http://www.sofacine.com/index.php?module=peliculaslist&init=s"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="T", url="http://www.sofacine.com/index.php?module=peliculaslist&init=t"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="U", url="http://www.sofacine.com/index.php?module=peliculaslist&init=u"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="V", url="http://www.sofacine.com/index.php?module=peliculaslist&init=v"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="W", url="http://www.sofacine.com/index.php?module=peliculaslist&init=w"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="X", url="http://www.sofacine.com/index.php?module=peliculaslist&init=x"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="Y", url="http://www.sofacine.com/index.php?module=peliculaslist&init=y"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="Z", url="http://www.sofacine.com/index.php?module=peliculaslist&init=z"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="0-9", url="http://www.sofacine.com/index.php?module=peliculaslist&init="))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="A", url="http://www.sofacine.com/index.php?module=peliculaslist&init=a"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="B", url="http://www.sofacine.com/index.php?module=peliculaslist&init=b"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="C", url="http://www.sofacine.com/index.php?module=peliculaslist&init=c"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="D", url="http://www.sofacine.com/index.php?module=peliculaslist&init=d"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="E", url="http://www.sofacine.com/index.php?module=peliculaslist&init=e"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="F", url="http://www.sofacine.com/index.php?module=peliculaslist&init=f"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="G", url="http://www.sofacine.com/index.php?module=peliculaslist&init=g"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="H", url="http://www.sofacine.com/index.php?module=peliculaslist&init=h"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="I", url="http://www.sofacine.com/index.php?module=peliculaslist&init=i"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="J", url="http://www.sofacine.com/index.php?module=peliculaslist&init=j"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="K", url="http://www.sofacine.com/index.php?module=peliculaslist&init=k"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="L", url="http://www.sofacine.com/index.php?module=peliculaslist&init=l"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="M", url="http://www.sofacine.com/index.php?module=peliculaslist&init=m"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="N", url="http://www.sofacine.com/index.php?module=peliculaslist&init=n"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="O", url="http://www.sofacine.com/index.php?module=peliculaslist&init=o"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="P", url="http://www.sofacine.com/index.php?module=peliculaslist&init=p"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="Q", url="http://www.sofacine.com/index.php?module=peliculaslist&init=q"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="R", url="http://www.sofacine.com/index.php?module=peliculaslist&init=r"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="S", url="http://www.sofacine.com/index.php?module=peliculaslist&init=s"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="T", url="http://www.sofacine.com/index.php?module=peliculaslist&init=t"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="U", url="http://www.sofacine.com/index.php?module=peliculaslist&init=u"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="V", url="http://www.sofacine.com/index.php?module=peliculaslist&init=v"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="W", url="http://www.sofacine.com/index.php?module=peliculaslist&init=w"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="X", url="http://www.sofacine.com/index.php?module=peliculaslist&init=x"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="Y", url="http://www.sofacine.com/index.php?module=peliculaslist&init=y"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="Z", url="http://www.sofacine.com/index.php?module=peliculaslist&init=z"))
 
     return itemlist
 
@@ -112,7 +117,7 @@ def performsearch(texto):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "findvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+        resultados.append( [__channel__ , "findvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
 
@@ -122,8 +127,8 @@ def peliscat(item):
     url = item.url
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Versión original" , url="http://www.sofacine.com/index.php?module=search&title=subtitulado"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Versión latina"   , url="http://www.sofacine.com/index.php?module=search&title=latino"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Versión original" , url="http://www.sofacine.com/index.php?module=search&title=subtitulado"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Versión latina"   , url="http://www.sofacine.com/index.php?module=search&title=latino"))
 
     # Descarga la página
     data = scrapertools.cachePage(url)
@@ -145,7 +150,7 @@ def peliscat(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -173,7 +178,7 @@ def listsimple(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -225,7 +230,7 @@ def listvideos(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la marca de siguiente página
     #patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -238,7 +243,7 @@ def listvideos(item):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -266,7 +271,7 @@ def listseries(item):
         scrapedplot = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la marca de siguiente página
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -278,6 +283,6 @@ def listseries(item):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listseries" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist

@@ -14,11 +14,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "peliculasaudiolatino"
-if config.get_setting("DEBUG") == "true":
-    DEBUG = True
-else:
-    DEBUG = False
+__channel__ = "peliculasaudiolatino"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Peliculasaudiolatino"
+__language__ = "ES"
+__creationdate__ = "20111014"
+
+DEBUG = config.get_setting("debug")
     
 def isGeneric():
     return True
@@ -27,14 +30,14 @@ def mainlist(item):
     logger.info("[peliculasaudiolatino.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Peliculas Recien Agregadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/newest-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/newest-movies/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Estrenos" , action="listarpeliculas", url="http://www.peliculasaudiolatino.com/latest-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/latest-movies/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Peliculas Actulizadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/updated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/updated-movies/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Peliculas Mas Vistas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/most-viewed-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/most-viewed-movies/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Peliculas Mejor Valoradas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/top-rated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/top-rated-movies/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado Alfabetico" , action="alfabetico", url="http://www.peliculasaudiolatino.com/letter/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado por Generos" , action="generos", url="http://www.peliculasaudiolatino.com"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar" , action="search") )
+    itemlist.append( Item(channel=__channel__, title="Peliculas Recien Agregadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/newest-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/newest-movies/page/"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos" , action="listarpeliculas", url="http://www.peliculasaudiolatino.com/latest-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/latest-movies/page/"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas Actulizadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/updated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/updated-movies/page/"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/most-viewed-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/most-viewed-movies/page/"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas Mejor Valoradas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/top-rated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/top-rated-movies/page/"))
+    itemlist.append( Item(channel=__channel__, title="Listado Alfabetico" , action="alfabetico", url="http://www.peliculasaudiolatino.com/letter/"))
+    itemlist.append( Item(channel=__channel__, title="Listado por Generos" , action="generos", url="http://www.peliculasaudiolatino.com"))
+    itemlist.append( Item(channel=__channel__, title="Buscar" , action="search") )
     return itemlist
 
 def listarpeliculas(item):
@@ -60,7 +63,7 @@ def listarpeliculas(item):
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
            
     # Extrae la marca de siguiente página
     patron = 'Anterior.*?  :: <a href="/../../.*?/page/([^"]+)">Siguiente '
@@ -73,7 +76,7 @@ def listarpeliculas(item):
             scrapedthumbnail = ""
             scrapedplot = ""
     
-            itemlist.append( Item(channel=CHANNELNAME, action="listarpeliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="listarpeliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
 
     return itemlist
 
@@ -107,7 +110,7 @@ def videos(item):
                 if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
                 # Añade al listado de XBMC
-                itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
+                itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
 
     return itemlist
 
@@ -162,9 +165,9 @@ def generos(item):
         # Añade al listado
         if scrapedtitle=="Adultos +18":
             if config.get_setting("enableadultmode") == "true":
-                itemlist.append( Item(channel=CHANNELNAME, action="listado2", title=scrapedtitle , url="http://www.myhotamateurvideos.com" , thumbnail=scrapedthumbnail , plot=scrapedplot , extra="" , folder=True) )
+                itemlist.append( Item(channel=__channel__, action="listado2", title=scrapedtitle , url="http://www.myhotamateurvideos.com" , thumbnail=scrapedthumbnail , plot=scrapedplot , extra="" , folder=True) )
         else:
-            itemlist.append( Item(channel=CHANNELNAME, action="listado2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra, folder=True) )
+            itemlist.append( Item(channel=__channel__, action="listado2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra, folder=True) )
 
     itemlist = sorted(itemlist, key=lambda Item: Item.title)    
     return itemlist
@@ -174,33 +177,33 @@ def alfabetico(item):
 
     extra = item.url
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="0-9", url="http://www.peliculasaudiolatino.com/search/0-9/page/0.html", extra="http://www.peliculasaudiolatino.com/search/0-9/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="A"  , url="http://www.peliculasaudiolatino.com/letter/a/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/a/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="B"  , url="http://www.peliculasaudiolatino.com/letter/b/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/b/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="C"  , url="http://www.peliculasaudiolatino.com/letter/c/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/c/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="D"  , url="http://www.peliculasaudiolatino.com/letter/d/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/d/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="E"  , url="http://www.peliculasaudiolatino.com/letter/e/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/e/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="F"  , url="http://www.peliculasaudiolatino.com/letter/f/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/f/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="G"  , url="http://www.peliculasaudiolatino.com/letter/g/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/g/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="H"  , url="http://www.peliculasaudiolatino.com/letter/h/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/h/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="I"  , url="http://www.peliculasaudiolatino.com/letter/i/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/i/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="J"  , url="http://www.peliculasaudiolatino.com/letter/j/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/j/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="K"  , url="http://www.peliculasaudiolatino.com/letter/k/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/k/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="L"  , url="http://www.peliculasaudiolatino.com/letter/l/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/l/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="M"  , url="http://www.peliculasaudiolatino.com/letter/m/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/m/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="N"  , url="http://www.peliculasaudiolatino.com/letter/n/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/n/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="O"  , url="http://www.peliculasaudiolatino.com/letter/o/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/o/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="P"  , url="http://www.peliculasaudiolatino.com/letter/p/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/p/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="Q"  , url="http://www.peliculasaudiolatino.com/letter/q/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/q/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="R"  , url="http://www.peliculasaudiolatino.com/letter/r/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/r/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="S"  , url="http://www.peliculasaudiolatino.com/letter/s/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/s/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="T"  , url="http://www.peliculasaudiolatino.com/letter/t/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/t/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="U"  , url="http://www.peliculasaudiolatino.com/letter/u/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/u/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="V"  , url="http://www.peliculasaudiolatino.com/letter/v/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/v/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="W"  , url="http://www.peliculasaudiolatino.com/letter/w/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/w/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="X"  , url="http://www.peliculasaudiolatino.com/letter/x/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/x/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="Y"  , url="http://www.peliculasaudiolatino.com/letter/y/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/y/page/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listado2" , title="Z"  , url="http://www.peliculasaudiolatino.com/letter/z/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/z/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="0-9", url="http://www.peliculasaudiolatino.com/search/0-9/page/0.html", extra="http://www.peliculasaudiolatino.com/search/0-9/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="A"  , url="http://www.peliculasaudiolatino.com/letter/a/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/a/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="B"  , url="http://www.peliculasaudiolatino.com/letter/b/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/b/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="C"  , url="http://www.peliculasaudiolatino.com/letter/c/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/c/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="D"  , url="http://www.peliculasaudiolatino.com/letter/d/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/d/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="E"  , url="http://www.peliculasaudiolatino.com/letter/e/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/e/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="F"  , url="http://www.peliculasaudiolatino.com/letter/f/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/f/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="G"  , url="http://www.peliculasaudiolatino.com/letter/g/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/g/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="H"  , url="http://www.peliculasaudiolatino.com/letter/h/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/h/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="I"  , url="http://www.peliculasaudiolatino.com/letter/i/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/i/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="J"  , url="http://www.peliculasaudiolatino.com/letter/j/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/j/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="K"  , url="http://www.peliculasaudiolatino.com/letter/k/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/k/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="L"  , url="http://www.peliculasaudiolatino.com/letter/l/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/l/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="M"  , url="http://www.peliculasaudiolatino.com/letter/m/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/m/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="N"  , url="http://www.peliculasaudiolatino.com/letter/n/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/n/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="O"  , url="http://www.peliculasaudiolatino.com/letter/o/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/o/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="P"  , url="http://www.peliculasaudiolatino.com/letter/p/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/p/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="Q"  , url="http://www.peliculasaudiolatino.com/letter/q/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/q/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="R"  , url="http://www.peliculasaudiolatino.com/letter/r/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/r/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="S"  , url="http://www.peliculasaudiolatino.com/letter/s/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/s/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="T"  , url="http://www.peliculasaudiolatino.com/letter/t/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/t/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="U"  , url="http://www.peliculasaudiolatino.com/letter/u/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/u/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="V"  , url="http://www.peliculasaudiolatino.com/letter/v/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/v/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="W"  , url="http://www.peliculasaudiolatino.com/letter/w/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/w/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="X"  , url="http://www.peliculasaudiolatino.com/letter/x/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/x/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="Y"  , url="http://www.peliculasaudiolatino.com/letter/y/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/y/page/"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="Z"  , url="http://www.peliculasaudiolatino.com/letter/z/page/0.html", extra="http://www.peliculasaudiolatino.com/letter/z/page/"))
 
     return itemlist
 
@@ -218,7 +221,7 @@ def listado2(item):
         scrapedtitle = match[2]
         scrapedthumbnail = match[1]
         scrapedplot = match[3]
-        itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if extra<>"":
         # Extrae la marca de siguiente página
@@ -232,7 +235,7 @@ def listado2(item):
                 scrapedthumbnail = ""
                 scrapedplot = ""
     
-                itemlist.append( Item(channel=CHANNELNAME, action="listado2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+                itemlist.append( Item(channel=__channel__, action="listado2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
 
     return itemlist
 
@@ -278,7 +281,7 @@ def search(item,texto):
             scrapedplot = ""
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist'''
 

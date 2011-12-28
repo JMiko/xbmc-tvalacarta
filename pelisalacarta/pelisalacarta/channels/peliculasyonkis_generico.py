@@ -14,8 +14,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "peliculasyonkis_generico"
-DEBUG = True
+__channel__ = "peliculasyonkis_generico"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Peliculasyonkis"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -24,11 +29,11 @@ def mainlist(item):
     logger.info("[peliculasyonkis_generico.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lastepisodes"      , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listalfabetico"    , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
-    itemlist.append( Item ( channel=CHANNELNAME , action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
-    itemlist.append( Item(channel=CHANNELNAME, action="mostviewed"    , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.peliculasyonkis.com/buscar/pelicula"))
+    itemlist.append( Item(channel=__channel__, action="lastepisodes"      , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico"    , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
+    itemlist.append( Item ( channel=__channel__ , action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
+    itemlist.append( Item(channel=__channel__, action="mostviewed"    , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
+    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://www.peliculasyonkis.com/buscar/pelicula"))
 
     return itemlist
 
@@ -53,7 +58,7 @@ def listcategorias(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item ( channel=CHANNELNAME , action="peliculascat" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
+        itemlist.append( Item ( channel=__channel__ , action="peliculascat" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
 
     return itemlist
    
@@ -66,7 +71,7 @@ def peliculascat(item):
     #Paginador
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
     if len(matches)>0:
-        paginador = Item(channel=CHANNELNAME, action="peliculascat" , title="!Pagina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+        paginador = Item(channel=__channel__, action="peliculascat" , title="!Pagina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
     else:
         paginador = None
     
@@ -77,7 +82,7 @@ def peliculascat(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[0] , fulltitle=match[0], url=urlparse.urljoin(item.url,match[1]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=match[0] , fulltitle=match[0], url=urlparse.urljoin(item.url,match[1]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -104,7 +109,7 @@ def search(item,texto):
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -124,7 +129,7 @@ def lastepisodes(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, context="4|5"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, context="4|5"))
 
     return itemlist  
 
@@ -143,7 +148,7 @@ def mostviewed(item):
 
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
 
     return itemlist
 
@@ -156,7 +161,7 @@ def peliculas(item):
     #Paginador
     matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
     if len(matches)>0:
-        paginador = Item(channel=CHANNELNAME, action="peliculas" , title="!Pagina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
+        paginador = Item(channel=__channel__, action="peliculas" , title="!Pagina siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show)
     else:
         paginador = None
     
@@ -176,7 +181,7 @@ def peliculas(item):
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=match[1] , fulltitle=match[1], url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=match[1] , fulltitle=match[1], url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1] ))
 
     if paginador is not None:
         itemlist.append( paginador )
@@ -226,7 +231,7 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,info[0])
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scraptedtitle , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
+                itemlist.append( Item(channel=__channel__, action="play" , title=scraptedtitle , fulltitle=item.fulltitle, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     except:
         import sys
         for line in sys.exc_info():
@@ -258,7 +263,7 @@ def play(item):
         except:
         	location = scrapertools.get_header_from_response(item.url,header_to_get="location")
         if "fileserve.com" in location:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
+            itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
         else:
             data = scrapertools.cache_page(item.url)
             logger.info("------------------------------------------------------------")
@@ -270,7 +275,7 @@ def play(item):
             if(len(videos)>0): 
                 url = videos[0][1]
                 server=videos[0][2]                   
-                itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+                itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
             else:
                 patron='<ul class="form-login">(.*?)</ul'
                 matches = re.compile(patron, re.S).findall(data)
@@ -324,32 +329,32 @@ def listalfabetico(item):
     logger.info("[peliculasyonkis_generico.py] listalfabetico")
        
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="0-9", url="http://www.peliculasyonkis.com/lista-de-peliculas/0-9"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="A"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/A"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="B"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/B"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="C"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/C"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="D"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/D"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="E"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/E"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="F"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/F"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="G"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/G"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="H"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/H"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="I"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/I"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="J"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/J"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="K"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/K"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="L"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/L"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="M"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/M"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="N"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/N"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="O"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/O"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="P"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/P"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="Q"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Q"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="R"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/R"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="S"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/S"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="T"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/T"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="U"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/U"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="V"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/V"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="W"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/W"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="X"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/X"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="Y"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Y"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas" , title="Z"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Z"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="0-9", url="http://www.peliculasyonkis.com/lista-de-peliculas/0-9"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="A"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/A"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="B"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/B"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="C"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/C"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="D"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/D"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="E"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/E"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="F"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/F"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="G"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/G"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="H"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/H"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="I"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/I"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="J"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/J"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="K"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/K"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="L"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/L"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="M"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/M"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="N"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/N"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="O"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/O"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="P"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/P"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Q"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Q"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="R"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/R"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="S"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/S"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="T"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/T"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="U"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/U"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="V"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/V"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="W"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/W"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="X"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/X"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Y"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Y"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Z"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Z"))
 
     return itemlist

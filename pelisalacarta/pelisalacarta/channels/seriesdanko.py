@@ -12,7 +12,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "seriesdanko"
+PLUGIN_NAME = "pelisalacarta"
+
+__channel__ = "seriesdanko"
+__category__ = "S"
+__type__ = "generic"
+__title__ = "Seriesdanko"
+__language__ = "ES"
+
 DEBUG = config.get_setting("debug")
 
 if config.get_system_platform() == "xbox":
@@ -28,10 +35,10 @@ def mainlist(item):
     item.url = 'http://www.seriesdanko-rs.com/'
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Noticias", action="novedades"   , url=item.url))
-    itemlist.append( Item(channel=CHANNELNAME, title="Lista alfanumerica", action="letras", url=item.url))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado completo", action="allserieslist", url=item.url))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search" , url=item.url, thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png"))
+    itemlist.append( Item(channel=__channel__, title="Noticias", action="novedades"   , url=item.url))
+    itemlist.append( Item(channel=__channel__, title="Lista alfanumerica", action="letras", url=item.url))
+    itemlist.append( Item(channel=__channel__, title="Listado completo", action="allserieslist", url=item.url))
+    itemlist.append( Item(channel=__channel__, title="Buscar", action="search" , url=item.url, thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png"))
 
     return itemlist
 
@@ -68,7 +75,7 @@ def novedades(item):
         except:
             scrapedtitle = "sin titulo"
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = extra , folder=True , totalItems = totalItems ) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = extra , folder=True , totalItems = totalItems ) )
     
     return itemlist
 
@@ -111,7 +118,7 @@ def allserieslist(item):
             action = "episodios"
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action , title=scrapedtitle , show=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, fulltitle = scrapedtitle , totalItems = totalItems))
+        itemlist.append( Item(channel=__channel__, action=action , title=scrapedtitle , show=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, fulltitle = scrapedtitle , totalItems = totalItems))
 
     return itemlist
 
@@ -163,7 +170,7 @@ def series(item,data=""):
             scrapedtitle = scrapedtitle.replace("&uacute","&uacute;")
             scrapedtitle = scrapertools.entityunescape(scrapedtitle)
             scrapedurl = urlparse.urljoin( item.url , scrapedurl )
-            itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot="" , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot="" , folder=True) )
 
     return itemlist
 
@@ -274,7 +281,7 @@ def episodios(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , context="4", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , context="4", folder=True) )
 
     #xbmc.executebuiltin("Container.Content(Movies)")
     
@@ -294,7 +301,7 @@ def episodios(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=CHANNELNAME, action="play", server=server, title=item.title +" "+ scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = scrapedtitle , folder=False) )
+            itemlist.append( Item(channel=__channel__, action="play", server=server, title=item.title +" "+ scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = scrapedtitle , folder=False) )
 
     return itemlist
 
@@ -363,7 +370,7 @@ def findvideos(item):
             #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
     
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = item.fulltitle, extra = item.thumbnail , fanart=item.thumbnail , folder=False) )    
+            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, fulltitle = item.fulltitle, extra = item.thumbnail , fanart=item.thumbnail , folder=False) )    
     
     else:
         from core import servertools

@@ -16,8 +16,15 @@ from core.item import Item
 from pelisalacarta import buscador
 from servers import servertools
 
-CHANNELNAME = "teledocumentales"
-DEBUG = True
+__channel__ = "teledocumentales"
+__category__ = "D"
+__type__ = "generic"
+__title__ = "Teledocumentales"
+__language__ = "ES"
+__creationdate__ = "20111019"
+
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -26,9 +33,9 @@ def mainlist(item):
     logger.info("[teledocumentales.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME , action="ultimo"        , title="Últimos Documentales"    , url="http://www.teledocumentales.com/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="ListaCat"          , title="Listado por Genero"            , url="http://www.teledocumentales.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar", action="search") )
+    itemlist.append( Item(channel=__channel__ , action="ultimo"        , title="Últimos Documentales"    , url="http://www.teledocumentales.com/"))
+    itemlist.append( Item(channel=__channel__ , action="ListaCat"          , title="Listado por Genero"            , url="http://www.teledocumentales.com/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
     
     return itemlist
 
@@ -113,7 +120,7 @@ def detail(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
 
 
 

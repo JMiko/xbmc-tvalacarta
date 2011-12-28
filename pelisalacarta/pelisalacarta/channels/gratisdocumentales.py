@@ -14,8 +14,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "gratisdocumentales" 
-DEBUG = True
+__channel__ = "gratisdocumentales"
+__category__ = "D"
+__type__ = "generic"
+__title__ = "Gratisdocumentales"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
  
 def isGeneric():
     return True
@@ -24,10 +29,10 @@ def mainlist(item):
     logger.info("[gratisdocumentales.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="parseweb", url="http://www.gratisdocumentales.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Categorias", action="buscacategorias", url="http://www.gratisdocumentales.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Tags", action="buscatags", url="http://www.gratisdocumentales.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Búsqueda", action="search",url="http://www.gratisdocumentales.com/?s=%s&searchsubmit="))
+    itemlist.append( Item(channel=__channel__, title="Novedades", action="parseweb", url="http://www.gratisdocumentales.com/"))
+    itemlist.append( Item(channel=__channel__, title="Categorias", action="buscacategorias", url="http://www.gratisdocumentales.com/"))
+    itemlist.append( Item(channel=__channel__, title="Tags", action="buscatags", url="http://www.gratisdocumentales.com/"))
+    itemlist.append( Item(channel=__channel__, title="Búsqueda", action="search",url="http://www.gratisdocumentales.com/?s=%s&searchsubmit="))
     
     return itemlist
 
@@ -49,7 +54,7 @@ def buscacategorias(item):
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="parseweb" , title=match[1]+match[2] , url = match[0] , folder = True) )
+        itemlist.append( Item(channel=__channel__, action="parseweb" , title=match[1]+match[2] , url = match[0] , folder = True) )
 
     return itemlist
 
@@ -63,7 +68,7 @@ def buscatags(item):
 
     if len(matches)>0:
         for i in range(len(matches)):
-            itemlist.append( Item(channel=CHANNELNAME, action="parseweb" , title=matches[i][1] , url = matches[i][0] , folder = True) )
+            itemlist.append( Item(channel=__channel__, action="parseweb" , title=matches[i][1] , url = matches[i][0] , folder = True) )
 
     return itemlist
 
@@ -162,11 +167,11 @@ def parseweb(item):
         videos = servertools.findvideos(match)
         
         for video in videos:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle+" ["+video[2]+"]" , url = video[1], server=video[2] , folder=False) )
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle+" ["+video[2]+"]" , url = video[1], server=video[2] , folder=False) )
 
     patronvideos  = "class='current'>[^<]+</span><a\s+href='([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="parseweb" , title="!Página siguiente" , url = match , folder = True) )
+        itemlist.append( Item(channel=__channel__, action="parseweb" , title="!Página siguiente" , url = match , folder = True) )
 
     return itemlist

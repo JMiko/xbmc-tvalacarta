@@ -15,8 +15,13 @@ from core.item import Item
 from servers import servertools
 #from servers import vk
 
-CHANNELNAME = "descargapelis"
-DEBUG = True
+__channel__ = "descargapelis"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Descargapelis"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -25,12 +30,12 @@ def mainlist(item):
     logger.info("[descargapelis.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=CHANNELNAME , action="newlist"           , title="Nuevas incorporaciones"            , url="http://www.descargapelis.net/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="moviecategorylist" , title="Películas - Por categorías"            , url="http://www.descargapelis.net/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="moviealphalist"    , title="Películas - Por orden alfabético"            , url="http://www.descargapelis.net/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="estrenos"          , title="Películas de estreno"            , url="http://www.descargapelis.net/estreno.php"))
-    itemlist.append( Item(channel=CHANNELNAME , action="hayquever"         , title="Películas que hay que ver"            , url="http://www.descargapelis.net/estreno.php"))
-    itemlist.append( Item(channel=CHANNELNAME , action="recomendadas"      , title="Recomendadas"            , url="http://www.descargapelis.net/recomendadas.php"))
+    itemlist.append( Item(channel=__channel__ , action="newlist"           , title="Nuevas incorporaciones"            , url="http://www.descargapelis.net/"))
+    itemlist.append( Item(channel=__channel__ , action="moviecategorylist" , title="Películas - Por categorías"            , url="http://www.descargapelis.net/"))
+    itemlist.append( Item(channel=__channel__ , action="moviealphalist"    , title="Películas - Por orden alfabético"            , url="http://www.descargapelis.net/"))
+    itemlist.append( Item(channel=__channel__ , action="estrenos"          , title="Películas de estreno"            , url="http://www.descargapelis.net/estreno.php"))
+    itemlist.append( Item(channel=__channel__ , action="hayquever"         , title="Películas que hay que ver"            , url="http://www.descargapelis.net/estreno.php"))
+    itemlist.append( Item(channel=__channel__ , action="recomendadas"      , title="Recomendadas"            , url="http://www.descargapelis.net/recomendadas.php"))
 
     return itemlist
 
@@ -42,17 +47,17 @@ def recomendadas(item):
     data = scrapertools.cachePage(item.url)
     
     if (item.extra == "descargapelis") :
-        #xbmctools.addnewfolder( CHANNELNAME , "recomendadas" , "todas" , "Todas" , url , "todas", "" )
-        #xbmctools.addnewfolder( CHANNELNAME , "recomendadas" , "todas" , "Todas" , url , "", "" )
-        itemlist.append( Item(channel=CHANNELNAME , action="recomendadas" , extra="todas" , title="Todas" , url=item.url))
+        #xbmctools.addnewfolder( __channel__ , "recomendadas" , "todas" , "Todas" , url , "todas", "" )
+        #xbmctools.addnewfolder( __channel__ , "recomendadas" , "todas" , "Todas" , url , "", "" )
+        itemlist.append( Item(channel=__channel__ , action="recomendadas" , extra="todas" , title="Todas" , url=item.url))
 
         patron  = 'PELICULAS DE .+?>(.+?)</a>'
         matches = re.compile(patron,re.DOTALL).findall(data)
         if DEBUG: scrapertools.printMatches(matches)
 
         for match in matches:
-            #xbmctools.addnewfolder( CHANNELNAME , "recomendadas" , match , match , url , "", "" )
-            itemlist.append( Item(channel=CHANNELNAME , action="recomendadas" , extra=match , title=match , url=item.url))
+            #xbmctools.addnewfolder( __channel__ , "recomendadas" , match , match , url , "", "" )
+            itemlist.append( Item(channel=__channel__ , action="recomendadas" , extra=match , title=match , url=item.url))
     else:
         url=item.url[0:item.url.index(".net/")+5]
         if item.extra!="todas":
@@ -63,8 +68,8 @@ def recomendadas(item):
         matches = re.compile(patron,re.DOTALL).findall(data)
         if len(matches) > 0 :
             for match in matches:
-                #xbmctools.addnewfolder( CHANNELNAME , "findvideos" , category , match[2] ,url + match[0] , match[1], "" )
-                itemlist.append( Item(channel=CHANNELNAME , action="findvideos" , extra=item.extra , title=match[2] , url=item.url+match[0], thumbnail=match[1]))
+                #xbmctools.addnewfolder( __channel__ , "findvideos" , category , match[2] ,url + match[0] , match[1], "" )
+                itemlist.append( Item(channel=__channel__ , action="findvideos" , extra=item.extra , title=match[2] , url=item.url+match[0], thumbnail=match[1]))
 
     return itemlist
 
@@ -91,8 +96,8 @@ def estrenos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        #xbmctools.addnewfolder( CHANNELNAME , "findvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=CHANNELNAME , action="findvideos" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        #xbmctools.addnewfolder( __channel__ , "findvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__ , action="findvideos" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -118,8 +123,8 @@ def hayquever(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        #xbmctools.addnewfolder( CHANNELNAME , "findvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=CHANNELNAME , action="findvideos" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        #xbmctools.addnewfolder( __channel__ , "findvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__ , action="findvideos" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -143,8 +148,8 @@ def newlist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        #xbmctools.addnewfolder( CHANNELNAME , "findvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=CHANNELNAME , action="findvideos" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        #xbmctools.addnewfolder( __channel__ , "findvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__ , action="findvideos" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -168,8 +173,8 @@ def moviecategorylist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        #xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=CHANNELNAME , action="newlist" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        #xbmctools.addnewfolder( __channel__ , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__ , action="newlist" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -193,8 +198,8 @@ def moviealphalist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        #xbmctools.addnewfolder( CHANNELNAME , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=CHANNELNAME , action="newlist" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        #xbmctools.addnewfolder( __channel__ , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__ , action="newlist" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -221,7 +226,7 @@ def findvideos(item):
         video_title=video[0]
         video_url=video[1]
         video_server=video[2]
-        #xbmctools.addnewvideo( CHANNELNAME , "play" , CHANNELNAME ,  ,  , video[1] , thumbnail, plot )
-        itemlist.append( Item(channel=CHANNELNAME , action="play" , extra=item.extra , title=title + " [" + video_server + "]" , server=video_server, url=video_url, thumbnail=thumbnail, plot=plot, folder=False))
+        #xbmctools.addnewvideo( __channel__ , "play" , __channel__ ,  ,  , video[1] , thumbnail, plot )
+        itemlist.append( Item(channel=__channel__ , action="play" , extra=item.extra , title=title + " [" + video_server + "]" , server=video_server, url=video_url, thumbnail=thumbnail, plot=plot, folder=False))
 
     return itemlist
