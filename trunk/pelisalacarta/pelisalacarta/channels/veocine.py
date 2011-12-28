@@ -20,18 +20,23 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-CHANNELNAME = "veocine"
-DEBUG = True
+__channel__ = "veocine"
+__category__ = "F,A,D"
+__type__ = "xbmc"
+__title__ = "Veocine"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def mainlist(params,url,category):
     logger.info("[veocine.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas","http://www.veocine.es/peliculas.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Documentales", "http://www.veocine.es/documentales.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas infantiles", "http://www.veocine.es/infantil.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Peliculas VOS", "http://www.veocine.es/peliculavos.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "videolist" , "" , "Anime", "http://www.veocine.es/anime.html","","")
+    xbmctools.addnewfolder( __channel__ , "videolist" , "" , "Peliculas","http://www.veocine.es/peliculas.html","","")
+    xbmctools.addnewfolder( __channel__ , "videolist" , "" , "Documentales", "http://www.veocine.es/documentales.html","","")
+    xbmctools.addnewfolder( __channel__ , "videolist" , "" , "Peliculas infantiles", "http://www.veocine.es/infantil.html","","")
+    xbmctools.addnewfolder( __channel__ , "videolist" , "" , "Peliculas VOS", "http://www.veocine.es/peliculavos.html","","")
+    xbmctools.addnewfolder( __channel__ , "videolist" , "" , "Anime", "http://www.veocine.es/anime.html","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -98,7 +103,7 @@ def videolist(params,url,category):
             logger.info("scrapedplot="+scrapedplot)
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listmirrors" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # ------------------------------------------------------
     # Extrae la página siguiente
@@ -121,7 +126,7 @@ def videolist(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
+        xbmctools.addthumbnailfolder( __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail, "mainlist" )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -168,7 +173,7 @@ def listmirrors(params,url,category):
             server="Megavideo"
 
         # Añade al listado de XBMC
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , scrapedtitle , scrapedurl , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , server , scrapedtitle , scrapedurl , thumbnail , plot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -195,4 +200,4 @@ def play(params,url,category):
     dialogWait.close()
     del dialogWait
 
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

@@ -21,7 +21,13 @@ from servers import vk
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "stagevusite"
+__channel__ = "stagevusite"
+__category__ = "G"
+__type__ = "xbmc"
+__title__ = "Stagevu"
+__language__ = ""
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -30,8 +36,6 @@ except:
     pluginhandle = ""
 
 logger.info("[stagevusite.py] init")
-
-DEBUG = True
 
 def mainlist(params,url,category):
     logger.info("[stagevusite.py] mainlist")
@@ -100,7 +104,7 @@ def performsearch(texto):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "play" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+        resultados.append( [__channel__ , "play" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
 
@@ -168,7 +172,7 @@ def play(params,url,category):
     logger.info("[stagevusite.py] thumbnail="+thumbnail)
     server="stagevu"
 
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def addfolder(nombre,url,accion):
     logger.info('[stagevusite.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

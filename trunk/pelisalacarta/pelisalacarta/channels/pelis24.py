@@ -18,7 +18,13 @@ from platformcode.xbmc import xbmctools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "pelis24"
+__channel__ = "pelis24"
+__category__ = "F,S"
+__type__ = "xbmc"
+__title__ = "Pelis24"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -28,16 +34,14 @@ except:
 
 logger.info("[pelis24.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[pelis24.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "list", category , "Peliculas","http://pelis24.com/peliculas/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "list", category , "Peliculas VOSE","http://pelis24.com/peliculasvose/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "list", category , "Series","http://pelis24.com/series/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "list", category , "Novedades","http://pelis24.com/","","")
+    xbmctools.addnewfolder( __channel__ , "list", category , "Peliculas","http://pelis24.com/peliculas/","","")
+    xbmctools.addnewfolder( __channel__ , "list", category , "Peliculas VOSE","http://pelis24.com/peliculasvose/","","")
+    xbmctools.addnewfolder( __channel__ , "list", category , "Series","http://pelis24.com/series/","","")
+    xbmctools.addnewfolder( __channel__ , "list", category , "Novedades","http://pelis24.com/","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -77,7 +81,7 @@ def list(params,url,category):
         scrapedthumbnail = match[2]
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
     '''
     <div class="yjnewsflash_title"><a href="http://www.pelis24.com/series/424-el-mentalista-espanol-online.html">El Mentalista Español Temporada 1</a> </div>
@@ -114,7 +118,7 @@ def list(params,url,category):
 
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
     # Extrae la entrada para la siguiente página
     patronvideos  = '<div id="right"><a href="([^"]+)">Siguiente P.gina</a>'
@@ -139,7 +143,7 @@ def list(params,url,category):
             logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "list" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
+        xbmctools.addnewfolder( __channel__ , "list" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -164,7 +168,7 @@ def detail(params,url,category):
     patronvideos  = '<a href="([^"]+)">Sigu'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     for match in matches:
-        xbmctools.addnewfolder( CHANNELNAME , "list", category , "!Página siguiente",urlparse.urljoin(url,match),"","")
+        xbmctools.addnewfolder( __channel__ , "list", category , "!Página siguiente",urlparse.urljoin(url,match),"","")
 
     patronvideos  = 'file\=(http\://www.pelis24.com/xml[^\&]+)\&'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -191,10 +195,10 @@ def detail(params,url,category):
                 if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
                 # Añade al listado de XBMC
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
         else:
             # Añade al listado de XBMC
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " [Directo]", matches[0] , thumbnail, plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " [Directo]", matches[0] , thumbnail, plot )
     
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a videos directos
@@ -204,7 +208,7 @@ def detail(params,url,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     i = 1
     for match in matches:
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title +" %d - [Directo]" % i, match, thumbnail , "" )
+        xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title +" %d - [Directo]" % i, match, thumbnail , "" )
 
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
@@ -213,7 +217,7 @@ def detail(params,url,category):
     
     i = 1
     for video in listavideos:
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , video[2] , (title +" %d - "+video[0]) % i, video[1], thumbnail , "" )
+        xbmctools.addnewvideo( __channel__ , "play" , category , video[2] , (title +" %d - "+video[0]) % i, video[1], thumbnail , "" )
         i = i + 1
     # ------------------------------------------------------------------------------------
 
@@ -234,4 +238,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

@@ -21,7 +21,13 @@ from servers import vk
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "watchanimeon"
+__channel__ = "watchanimeon"
+__category__ = "A"
+__type__ = "xbmc"
+__title__ = "Watchanimeon"
+__language__ = "EN"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -32,17 +38,15 @@ except:
 # Traza el inicio del canal
 logger.info("[watchanimeon.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[watchanimeon.py] mainlist")
 
     # Menu principal
-    xbmctools.addnewfolder( CHANNELNAME , "newlist"         , category , "Novedades"                   ,"http://www.watchanimeon.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "airinglist"      , category , "Series en curso"             ,"http://www.watchanimeon.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "catlist"         , category , "Series por categoría"        ,"http://www.watchanimeon.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "alphaserieslist" , category , "Series por orden alfabético" ,"http://www.watchanimeon.com/anime-list/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "allmovieslist"   , category , "Todas las películas"         ,"http://www.watchanimeon.com/anime/anime-movies/","","")
+    xbmctools.addnewfolder( __channel__ , "newlist"         , category , "Novedades"                   ,"http://www.watchanimeon.com/","","")
+    xbmctools.addnewfolder( __channel__ , "airinglist"      , category , "Series en curso"             ,"http://www.watchanimeon.com/","","")
+    xbmctools.addnewfolder( __channel__ , "catlist"         , category , "Series por categoría"        ,"http://www.watchanimeon.com/","","")
+    xbmctools.addnewfolder( __channel__ , "alphaserieslist" , category , "Series por orden alfabético" ,"http://www.watchanimeon.com/anime-list/","","")
+    xbmctools.addnewfolder( __channel__ , "allmovieslist"   , category , "Todas las películas"         ,"http://www.watchanimeon.com/anime/anime-movies/","","")
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -74,7 +78,7 @@ def newlist(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -101,7 +105,7 @@ def catlist(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -131,7 +135,7 @@ def catdetail(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 
     # Paginación
@@ -146,7 +150,7 @@ def catdetail(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -179,7 +183,7 @@ def airinglist(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -189,33 +193,33 @@ def airinglist(params,url,category):
 def alphaserieslist(params,url,category):
     logger.info("[watchanimeon.py] alphaserieslist")
 
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , ".",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "A",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "B",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "C",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "D",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "E",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "F",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "G",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "H",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "I",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "J",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "K",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "L",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "M",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "N",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "O",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "P",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "Q",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "R",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "S",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "T",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "U",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "V",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "W",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "X",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "Y",url,"","")
-    xbmctools.addnewfolder( CHANNELNAME ,"singleletterserieslist", category , "Z",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , ".",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "A",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "B",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "C",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "D",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "E",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "F",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "G",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "H",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "I",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "J",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "K",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "L",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "M",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "N",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "O",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "P",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "Q",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "R",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "S",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "T",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "U",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "V",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "W",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "X",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "Y",url,"","")
+    xbmctools.addnewfolder( __channel__ ,"singleletterserieslist", category , "Z",url,"","")
 
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -252,7 +256,7 @@ def singleletterserieslist(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -287,7 +291,7 @@ def allmovieslist(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -360,7 +364,7 @@ def detalleserie(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -387,7 +391,7 @@ def detallecapitulo(params,url,category):
         videotitle = video[0]
         url = video[1]
         server = video[2]
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     # ------------------------------------------------------------------------------------
 
     # Extrae el enlace a la serie completa
@@ -404,7 +408,7 @@ def detallecapitulo(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -419,4 +423,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

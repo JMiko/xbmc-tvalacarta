@@ -23,7 +23,13 @@ from core import config
 from servers import servertools
 #import zshare
 
-CHANNELNAME = "casttv"
+__channel__ = "casttv"
+__category__ = "S"
+__type__ = "xbmc"
+__title__ = "CastTV"
+__language__ = "ES,EN"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -86,14 +92,14 @@ DESCARGAS_THUMB = os.path.join(IMAGES_PATH, 'descargados.png' )
 
 def mainlist(params,url,category):
     category = "Series VO : CastTV - TVShack - SeriesYonkis"
-    addsimplefolder( CHANNELNAME , "searchctv" , "CastTV" , "CastTV  -  Series VO" , "" , "http://www.casttv.com/misc/webapp/tn_shows/tn_casttv.jpg" )
-    addsimplefolder( CHANNELNAME , "searchfuton" , "The Futon Critic" , "The Futon Critic  -  Series VO" , "" , "http://www.thefutoncritic.com/images/logo.gif" )
-    addsimplefolder( CHANNELNAME , "searchsub" , "Subtítulos.es" , "Subtítulos.es  -  Series VO" , "" , "http://www.subtitulos.es/images/subslogo.png" )
-    addsimplefolder( CHANNELNAME , "search" , "Series VO - Buscar" , "Series VO  -  Buscar" , "" ,"http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png" )
-    addsimplefolder( CHANNELNAME , "favoritos" , "Mis Favoritas" , "Series VO  -  Mis Favoritas" , "" , STARORANGE_THUMB )
-    addsimplefolder( CHANNELNAME , "searchvistos" , "Series VO - Vistas" , "Series VO  -  Vistas" , "" , "" )
-    addsimplefolder( CHANNELNAME , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos", "" ,STAR4COLORS_THUMB )
-    addsimplefolder( CHANNELNAME , "ayuda" , "Series VO - Ayuda" , "Ayuda" , "" , HELP_THUMB )
+    addsimplefolder( __channel__ , "searchctv" , "CastTV" , "CastTV  -  Series VO" , "" , "http://www.casttv.com/misc/webapp/tn_shows/tn_casttv.jpg" )
+    addsimplefolder( __channel__ , "searchfuton" , "The Futon Critic" , "The Futon Critic  -  Series VO" , "" , "http://www.thefutoncritic.com/images/logo.gif" )
+    addsimplefolder( __channel__ , "searchsub" , "Subtítulos.es" , "Subtítulos.es  -  Series VO" , "" , "http://www.subtitulos.es/images/subslogo.png" )
+    addsimplefolder( __channel__ , "search" , "Series VO - Buscar" , "Series VO  -  Buscar" , "" ,"http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png" )
+    addsimplefolder( __channel__ , "favoritos" , "Mis Favoritas" , "Series VO  -  Mis Favoritas" , "" , STARORANGE_THUMB )
+    addsimplefolder( __channel__ , "searchvistos" , "Series VO - Vistas" , "Series VO  -  Vistas" , "" , "" )
+    addsimplefolder( __channel__ , "favoritos" , "Todos Mis Favoritos" , "Todos Mis Favoritos", "" ,STAR4COLORS_THUMB )
+    addsimplefolder( __channel__ , "ayuda" , "Series VO - Ayuda" , "Ayuda" , "" , HELP_THUMB )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -154,22 +160,22 @@ def favoritos(params,url,category):
 
     if category=="Todos Mis Favoritos":
         if len(nuevos)>0 or len(animenuevos)>0:
-            addsimplefolder( CHANNELNAME , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , STARGREEN2_THUMB )
+            addsimplefolder( __channel__ , "listadonuevos" , "Todos Mis Favoritos - Nuevos Contenidos" , "-*-Todos Mis Favoritos - Nuevos Contenidos Posteriores a [LW]" , "" , STARGREEN2_THUMB )
         if OKxbmcfav=="-1":
-            addsimplefolder( CHANNELNAME , "xbmcfav" , category , "--------------------------------------------- XBMC ---------------------------------------------" , "" , "" )
+            addsimplefolder( __channel__ , "xbmcfav" , category , "--------------------------------------------- XBMC ---------------------------------------------" , "" , "" )
         if len(series)>0:
-            additem( CHANNELNAME , category , "---------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
+            additem( __channel__ , category , "---------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
     if len(nuevos)>0:
-        addsimplefolder( CHANNELNAME , "listadonuevos" , todostitulo+"Mis Favoritas - Nuevos Episodios" , "-*-"+todostitulo+"Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
+        addsimplefolder( __channel__ , "listadonuevos" , todostitulo+"Mis Favoritas - Nuevos Episodios" , "-*-"+todostitulo+"Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
     for serie in series:
-        addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
+        addseriefolder( __channel__ , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , serie[4] , serie[5] )
 
     if category=="Todos Mis Favoritos" and len(listanime)>0:
-        additem( CHANNELNAME , category , "-------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
+        additem( __channel__ , category , "-------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
         if len(animenuevos)>0:
-            addsimplefolder( CHANNELNAME , "animeforos.listadonuevos" , "Anime - Mis Favoritos - Nuevos Contenidos" , "-*-Anime - Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
+            addsimplefolder( __channel__ , "animeforos.listadonuevos" , "Anime - Mis Favoritos - Nuevos Contenidos" , "-*-Anime - Nuevos Episodios (Posteriores a [LW])" , "" , STARGREEN2_THUMB )
         for anime in listanime:
-            animeforos.adderdmfolder( CHANNELNAME , "animeforos.listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
+            animeforos.adderdmfolder( __channel__ , "animeforos.listados" , anime[0] , anime[1] , anime[2] , anime[3] , anime[4] , anime[5] , anime[6] , anime[7] )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,False)
     # ------------------------------------------------------------------------------------
@@ -185,7 +191,7 @@ def findfavoritos(category):
     series = []
     nuevosep="0"
 
-    listafav = readfav("","","",CHANNELNAME)
+    listafav = readfav("","","",__channel__)
 
     if len(listafav)==0:
         alertnofav("0")
@@ -564,7 +570,7 @@ def searchupdate(seleccion,tecleado,category,web,datafilter,listupdate):
             category = "Series VO - Buscar - CastTV"
             tipo = "ctv"
 
-    listafav = readfav("","","",CHANNELNAME)
+    listafav = readfav("","","",__channel__)
 
     for serie in listaseries:
         status = ""
@@ -598,7 +604,7 @@ def searchupdate(seleccion,tecleado,category,web,datafilter,listupdate):
             if (matchnet):
                 network=" ("+matchnet.group(1)+")"
 
-        addsimplefolder( CHANNELNAME , "listadossearch" , categoryback+";"+str(seleccion)+";"+tecleado+";"+tipo+";"+statustype+";"+showtype+";"+serie[0]+";"+serie[1]+";"+serie[4] , serie[0]+network+status , serie[2] , thumbnail )
+        addsimplefolder( __channel__ , "listadossearch" , categoryback+";"+str(seleccion)+";"+tecleado+";"+tipo+";"+statustype+";"+showtype+";"+serie[0]+";"+serie[1]+";"+serie[4] , serie[0]+network+status , serie[2] , thumbnail )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",listupdate,True)
     # ------------------------------------------------------------------------------------
@@ -628,7 +634,7 @@ def searchvistos(params,url,category):
         alertnoresultadosearch()
         return 
     for serie in seriesvistas:
-        addseriefolder( CHANNELNAME , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , "" , "" )
+        addseriefolder( __channel__ , "listados" , serie[0] , serie[1] , serie[2] , serie[3] , "" , "" , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,False)
     # ------------------------------------------------------------------------------------
@@ -638,7 +644,7 @@ def findvistos(category):
     listaseries = []
     listaseries2 = []
     listavistos2 = []
-    listavistos = readvisto("","",CHANNELNAME)
+    listavistos = readvisto("","",__channel__)
     if len(listavistos)==0:
         return listavistos
 
@@ -719,7 +725,7 @@ def findvistos(category):
         return listaseries
     for serie in listaseries:
         encontrado="0"
-        listafav = readfav(serie[0],"","",CHANNELNAME)
+        listafav = readfav(serie[0],"","",__channel__)
         if len(listafav)==0:
             seriefav = checkvistosfav(serie[0],serie[2],"searchfav")
             if seriefav<>"":
@@ -950,7 +956,7 @@ def listados(params,url,category):
     if "Consulta" in category:
         tipocontenido=tipocontenido+"Consulta"
 
-    serievistos,dataweb,respuesta = serieupdate(miserievo,status,url,tipocontenido,CHANNELNAME)
+    serievistos,dataweb,respuesta = serieupdate(miserievo,status,url,tipocontenido,__channel__)
 
     if respuesta=="Futon":
         if "Vistos" not in category:
@@ -1061,7 +1067,7 @@ def listadossearch(params,url,category):
     if datafuton=="":
         tipocontenido="NoFuton"
 
-    serievistos,dataweb,respuesta = serieupdate(miserievo,status,url,tipocontenido,CHANNELNAME)
+    serievistos,dataweb,respuesta = serieupdate(miserievo,status,url,tipocontenido,__channel__)
 
     if respuesta=="Futon":
         listinfofuton(params,url,datafuton)
@@ -1079,7 +1085,7 @@ def listadosupdate(miserievo,url,category,serievistos,dataweb,listupdate):
         if serievistos=="":
             listavistos=[]
         else:
-            listavistos = readvisto(serievistos,"",CHANNELNAME)
+            listavistos = readvisto(serievistos,"",__channel__)
 
     listaepisodios = findepisodios(url,miserievo,dataweb)
 
@@ -1146,7 +1152,7 @@ def listadosupdate(miserievo,url,category,serievistos,dataweb,listupdate):
                 tipovisto = "N"
                 titulo = episodio[0]
 
-            addnewfolder( CHANNELNAME , "episodiomenu" , category , titulo , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] , miserievo+";"+url , tipovisto )
+            addnewfolder( __channel__ , "episodiomenu" , category , titulo , episodio[1] , episodio[9] , episodio[10] , episodio[2] , episodio[4] , episodio[5] , episodio[6] , serievistos , episodio[8] , episodio[7] , miserievo+";"+url , tipovisto )
 
     # Sorting by date útil para invertir el listado (ep 1 1º...) por el momento descartado porque a igualdad de fecha(automáticos) no respeta el orden inicial...
     # Revisar: probar a crear un índice
@@ -1207,7 +1213,7 @@ def checkvistosfav(miserievo,url,tipo):
 
     if tipo=="nuevos":
         for item in listseries:
-            listavistos = readvisto(item,"LW",CHANNELNAME)
+            listavistos = readvisto(item,"LW",__channel__)
             if len(listavistos)>0:
                 serievistos=item
                 break
@@ -1215,7 +1221,7 @@ def checkvistosfav(miserievo,url,tipo):
 
     if tipo=="listadosupdate" or tipo=="fav" or tipo=="datafav":
         for item in listseries:
-            listavistos = readvisto(item,"",CHANNELNAME)
+            listavistos = readvisto(item,"",__channel__)
             if len(listavistos)>0:
                 serievistos=item
                 break
@@ -2139,7 +2145,7 @@ def listasubep(params,url,category):
         return
 
     for subep in listasubep:
-        addsimplefolder( CHANNELNAME , "listasubs" , category , subep[0]+"  -  [Subtítulos]" , subep[1] , "" )
+        addsimplefolder( __channel__ , "listasubs" , category , subep[0]+"  -  [Subtítulos]" , subep[1] , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -2180,13 +2186,13 @@ def listasubs(params,url,category):
         miseriesub,urlsub = findsubseries(iniciosearch,"0",titlesearch,"0",0)
     
     #Encabezados
-    additem( CHANNELNAME , category , "SUBTITULOS - [Descargar] :" , "" , "" , "" )
+    additem( __channel__ , category , "SUBTITULOS - [Descargar] :" , "" , "" , "" )
     if updates=="-1":
-        addsimplefolder( CHANNELNAME , "listasubep" , "Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
-    additem( CHANNELNAME , category , miep , "" , "" , "" )
+        addsimplefolder( __channel__ , "listasubep" , "Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
+    additem( __channel__ , category , miep , "" , "" , "" )
 
     for subs in listasubtitulos:
-        addnofolder( CHANNELNAME , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , DESCARGAS_THUMB )
+        addnofolder( __channel__ , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , DESCARGAS_THUMB )
 
     if seasonep<>"0" and videos=="-1":
         listacasttv = []
@@ -2239,22 +2245,22 @@ def listasubs(params,url,category):
             if (matchnet):
                 network=" ("+matchnet.group(1)+")"
             
-        additem( CHANNELNAME , category , "VIDEOS :" , "" , "" , "" )
+        additem( __channel__ , category , "VIDEOS :" , "" , "" , "" )
         if tituloserie<>"":
             foldertitle = tituloserie+network+"  -  "+statusfuton
             foldertitle = re.sub('\s+\-\s+$','',foldertitle)
-            addseriefolder( CHANNELNAME , "listados" , category+";"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" )
+            addseriefolder( __channel__ , "listados" , category+";"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" )
         elif datafuton<>"":
-            addsimplefolder( CHANNELNAME , "listinfofuton" , datafuton , serie+"  -  [The Futon Critic]" , "thefutoncritic" , "" )
+            addsimplefolder( __channel__ , "listinfofuton" , datafuton , serie+"  -  [The Futon Critic]" , "thefutoncritic" , "" )
         else:
-            addsimplefolder( CHANNELNAME , "searchfuton" , "The Futon Critic" , "The Futon Critic" , "" , "http://www.thefutoncritic.com/images/logo.gif" )
-            addsimplefolder( CHANNELNAME , "search" , category , "Series VO - Buscar" , "" , "" )
+            addsimplefolder( __channel__ , "searchfuton" , "The Futon Critic" , "The Futon Critic" , "" , "http://www.thefutoncritic.com/images/logo.gif" )
+            addsimplefolder( __channel__ , "search" , category , "Series VO - Buscar" , "" , "" )
 
         if len(listacasttv)>0:
             for video in listacasttv:
-                addnewvideo( CHANNELNAME , "play" , category , video[2] , titlectv+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
+                addnewvideo( __channel__ , "play" , category , video[2] , titlectv+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
             for video in listactmirrors:
-                addnewvideo( CHANNELNAME , "play" , category , video[2] , titlectv+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
+                addnewvideo( __channel__ , "play" , category , video[2] , titlectv+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
         if len(listatv)>0:
             for ep in listatv:
                 #se deja la fecha porque no se muestra previamente el ltdo de episodios...
@@ -2262,10 +2268,10 @@ def listasubs(params,url,category):
                 if thumbnail=="":
                     thumbnail=ep['thumbnail']
                     plot=ep['plot']
-                xbmctools.addnewvideo( CHANNELNAME , "tvshack.listaVideosEpisodio" , category , "" , titletv+" - [TVShack]" , ep['url'] , thumbnail , plot , Serie="" )
+                xbmctools.addnewvideo( __channel__ , "tvshack.listaVideosEpisodio" , category , "" , titletv+" - [TVShack]" , ep['url'] , thumbnail , plot , Serie="" )
         if len(listasy)>0:
             for ep in listasy:
-                xbmctools.addnewvideo( CHANNELNAME , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+ep[2]+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie="" )
+                xbmctools.addnewvideo( __channel__ , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+ep[2]+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie="" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -2523,12 +2529,12 @@ def searchsub(params,url,category):
  
     if len(listasubseries)>0:
         for subserie in listasubseries:
-            addsimplefolder( CHANNELNAME , "listasubep" , category0+" - "+subserie[0] , subserie[0]+"  -  [Subtítulos]" , subserie[2] , "" )
+            addsimplefolder( __channel__ , "listasubep" , category0+" - "+subserie[0] , subserie[0]+"  -  [Subtítulos]" , subserie[2] , "" )
     else:
         category=category+" - Últimas Actualizaciones"
         listasubupdates.sort()
         for subupdate in listasubupdates:
-            addsimplefolder( CHANNELNAME , "listasubs" , category+";"+subupdate[0], subupdate[2] , subupdate[1] , "" )
+            addsimplefolder( __channel__ , "listasubs" , category+";"+subupdate[0], subupdate[2] , subupdate[1] , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -2587,7 +2593,7 @@ def searchfuton(params,url,category):
         searchfutonlist(category,listaseries)
 
 def searchfutonlist(category,listaseries):
-    listafav = readfav("","","",CHANNELNAME)
+    listafav = readfav("","","",__channel__)
 
     for serie in listaseries:
         thumbnail=""
@@ -2606,7 +2612,7 @@ def searchfutonlist(category,listaseries):
         title = serie[0]+" ("+serie[3]+")"
         plot = serie[0].upper()+": Network: "+serie[3]+". Broadcast History: "+serie[2]+". Status: "+serie[7]+". "+serie[5]+": "+serie[6]+". Time Slot: "+serie[4]
 
-        addfolder( CHANNELNAME , "listinfofuton" , serie[0]+";"+serie[1]+";"+serie[2]+";"+serie[3]+";"+serie[4]+";"+serie[5]+";"+serie[6]+";"+serie[7]+";"+serie[8] , title+status , serie[1] , thumbnail , plot )
+        addfolder( __channel__ , "listinfofuton" , serie[0]+";"+serie[1]+";"+serie[2]+";"+serie[3]+";"+serie[4]+";"+serie[5]+";"+serie[6]+";"+serie[7]+";"+serie[8] , title+status , serie[1] , thumbnail , plot )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -3103,31 +3109,31 @@ def listinfofuton(params,url,category):
         plot = titulo+": Network: "+network+". Broadcast History: "+broadcast+". Status: "+status+". "+typeupdate+": "+updated+". Time Slot: "+timeslot
     plot = plot+futoninfo[6]
 
-    additem( CHANNELNAME , category , titulo , "" , "" , plot )
-    additem( CHANNELNAME , category , "Network: "+network , "" , "" , plot )
-    additem( CHANNELNAME , category , "Broadcast History (Date Start/End): "+broadcast , "" , "" , plot )
-    additem( CHANNELNAME , category , "Status: "+status , "" , "" , plot )
+    additem( __channel__ , category , titulo , "" , "" , plot )
+    additem( __channel__ , category , "Network: "+network , "" , "" , plot )
+    additem( __channel__ , category , "Broadcast History (Date Start/End): "+broadcast , "" , "" , plot )
+    additem( __channel__ , category , "Status: "+status , "" , "" , plot )
     if statustitle<>"":
         statusST = re.sub('(?:\[|\])','',statusS)
-        additem( CHANNELNAME , category , "Status "+statustitle+": "+statusST , "" , "" , plot )
-    additem( CHANNELNAME , category , typeupdate+": "+updated , "" , "" , plot )
-    additem( CHANNELNAME , category , "Time Slot: "+timeslot , "" , "" , plot )
+        additem( __channel__ , category , "Status "+statustitle+": "+statusST , "" , "" , plot )
+    additem( __channel__ , category , typeupdate+": "+updated , "" , "" , plot )
+    additem( __channel__ , category , "Time Slot: "+timeslot , "" , "" , plot )
     if futoninfo[0]<>"":    
-        additem( CHANNELNAME , category , futoninfo[0]+": "+futoninfo[1] , "" , "" , plot )
+        additem( __channel__ , category , futoninfo[0]+": "+futoninfo[1] , "" , "" , plot )
     if futoninfo[2]<>"":
-        additem( CHANNELNAME , category , "Additional Notes: "+futoninfo[2] , "" , "" , plot )
+        additem( __channel__ , category , "Additional Notes: "+futoninfo[2] , "" , "" , plot )
     if futoninfo[4]<>"":
-        additem( CHANNELNAME , category , "Genre: "+futoninfo[4] , "" , "" , plot )
+        additem( __channel__ , category , "Genre: "+futoninfo[4] , "" , "" , plot )
     if futoninfo[5]<>"":
-        additem( CHANNELNAME , category , "Studio Information: "+futoninfo[5] , "" , "" , plot )
+        additem( __channel__ , category , "Studio Information: "+futoninfo[5] , "" , "" , plot )
     if futoninfo[3]<>"":
-        additem( CHANNELNAME , category , "Description: "+futoninfo[3] , "" , "" , plot )
+        additem( __channel__ , category , "Description: "+futoninfo[3] , "" , "" , plot )
 
     if "Development" in status or "Telefilm" in status:
         if "Mini-Series" not in futoninfo[4]:
             tipowatch = "telefilm"
     if tipowatch=="":
-        additem( CHANNELNAME , category , "Episodios:" , "" , "" , "" )
+        additem( __channel__ , category , "Episodios:" , "" , "" , "" )
 
     if "thefutoncritic" in url:
         if tituloserie<>"":
@@ -3136,9 +3142,9 @@ def listinfofuton(params,url,category):
             else:
                 folderstatus = statusbroadcast
             foldertitle = tituloserie+"  -  "+folderstatus
-            addseriefolder( CHANNELNAME , "listados" , category+";"+tituloserie+";"+folderstatus+";"+datafuton , foldertitle , urlserie , "" , plot , "" , "" )
+            addseriefolder( __channel__ , "listados" , category+";"+tituloserie+";"+folderstatus+";"+datafuton , foldertitle , urlserie , "" , plot , "" , "" )
         elif tipowatch=="":
-            addsimplefolder( CHANNELNAME , "search" , category , "Buscar Serie" , "" , "" )
+            addsimplefolder( __channel__ , "search" , category , "Buscar Serie" , "" , "" )
     elif "casttv" in url or "seriesyonkis" in url or "tvshack" in url:
         title = urllib.unquote_plus( params.get("title") )
         categoryback = urllib.unquote_plus( params.get("category") )
@@ -3152,7 +3158,7 @@ def listinfofuton(params,url,category):
             dataweb = ""
             categoryback = re.sub('^[^;]*;\d+;[^;]*;[^;]*;[^;]*;[^;]*;','',categoryback)
             categoryback = "Futon;"+categoryback
-        addseriefolder( CHANNELNAME , "listados" , categoryback , title , url , "" , plot , serievistos , dataweb )
+        addseriefolder( __channel__ , "listados" , categoryback , title , url , "" , plot , serievistos , dataweb )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -3256,20 +3262,20 @@ def listadonuevos(params,url,category):
         return
 
     if tipo==4 and len(nuevos)>0:
-        additem( CHANNELNAME , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
+        additem( __channel__ , category , "--------------------- CASTTV - TVSHACK - SERIESYONKIS ---------------------" , "" , "" , "" )
     for item in nuevos:
-        addnewfolder( CHANNELNAME , "episodiomenu" , category , item[0] , item[1] , item[2] , "" , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , int(item[9]) , ";" , "New" )
+        addnewfolder( __channel__ , "episodiomenu" , category , item[0] , item[1] , item[2] , "" , item[3] , item[4] , item[5] , item[6] , item[7] , item[8] , int(item[9]) , ";" , "New" )
 
     if len(animenuevos)>0:
-        additem( CHANNELNAME , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
+        additem( __channel__ , category , "------------------------------------- ANIME - FOROS -------------------------------------" , "" , "" , "" )
         for item in animenuevos:
-            animeforos.addvideofolder( CHANNELNAME , "animeforos.episodiomenu" , item[0] , item[1] , item[2] , item[3] , "" , "" )
+            animeforos.addvideofolder( __channel__ , "animeforos.episodiomenu" , item[0] , item[1] , item[2] , item[3] , "" , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,False)
     # ------------------------------------------------------------------------------------
 
 def findlistadonvos(category2):
-    listafav = readfav("","","-1|-2",CHANNELNAME)
+    listafav = readfav("","","-1|-2",__channel__)
     nuevos = []
 
     if len(listafav)==0:
@@ -3368,7 +3374,7 @@ def detaildos(params,url,category):
     if seasontvid<>"0":
         miseriesub,urlsub,miep,listasubtitulos = findsubseries(iniciosearch,"V",titlesearch,seasontvid,episodiotv)
 
-    additem( CHANNELNAME , category , "VIDEOS :" , "" , "" , "" )
+    additem( __channel__ , category , "VIDEOS :" , "" , "" , "" )
     if "Nuevos" in category:
         if urlctv<>"":
             tituloserie = miseriectv
@@ -3397,38 +3403,38 @@ def detaildos(params,url,category):
         foldertitle = tituloserie+network+"  -  "+statusfuton
         foldertitle = re.sub('\s+\-\s+$','',foldertitle)
             
-        addseriefolder( CHANNELNAME , "listados" , "Series VO - Consulta - ;"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" )
+        addseriefolder( __channel__ , "listados" , "Series VO - Consulta - ;"+tituloserie+";"+statusfuton+";"+datafuton , foldertitle , urlserie , "" , "" , "" , "" )
     # ------------------------------------------------------------------------------------
     # Añade los enlaces a los videos
     # ------------------------------------------------------------------------------------
     for video in listacasttv:
-        addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
+        addnewvideo( __channel__ , "play" , category , video[2] , titleshort+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
     for video in listactmirrors:
-        addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
+        addnewvideo( __channel__ , "play" , category , video[2] , titleshort+" - "+video[0]+" - Mirror - [CastTV]" , video[1] , thumbnail , plot )
     #for video in listazs:
-    #    addnewvideo( CHANNELNAME , "play" , category , video[2] , titleshort+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
+    #    addnewvideo( __channel__ , "play" , category , video[2] , titleshort+" - "+video[0]+" - [CastTV]" , video[1] , thumbnail , plot )
     for ep in listatv:
         #quita la fecha (como arriba, para acortar)
         titletv = re.sub('\s+\([^\)]+\)$','',ep['title'])
-        xbmctools.addnewvideo( CHANNELNAME , "tvshack.listaVideosEpisodio" , category , "" , titletv+visto+" - [TVShack]" , ep['url'] , thumbnail , plot , Serie="" )
+        xbmctools.addnewvideo( __channel__ , "tvshack.listaVideosEpisodio" , category , "" , titletv+visto+" - [TVShack]" , ep['url'] , thumbnail , plot , Serie="" )
     for ep in listasy:
-        xbmctools.addnewvideo( CHANNELNAME , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+ep[2]+visto+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie="" )
+        xbmctools.addnewvideo( __channel__ , "seriesyonkis.detail" , category , "Megavideo" , ep[0]+ep[2]+visto+" - [SeriesYonkis]" , ep[1] , thumbnail , plot , Serie="" )
 
     # ------------------------------------------------------------------------------------
     # Añade los enlaces a los Subtítulos
     # ------------------------------------------------------------------------------------
     if len(listasubtitulos)>0:
-        additem( CHANNELNAME , category , "SUBTITULOS - [Descargar] :" , "" , "" , "" )
-        addsimplefolder( CHANNELNAME , "listasubep" , "Series VO - Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
-        additem( CHANNELNAME , category , miep , "" , "" , "" )
+        additem( __channel__ , category , "SUBTITULOS - [Descargar] :" , "" , "" , "" )
+        addsimplefolder( __channel__ , "listasubep" , "Series VO - Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
+        additem( __channel__ , category , miep , "" , "" , "" )
         for subs in listasubtitulos:
-            addnofolder( CHANNELNAME , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , DESCARGAS_THUMB )
+            addnofolder( __channel__ , "subtitulo" , subs[4] , subs[0]+" ("+subs[1]+") - ["+subs[2]+"] ("+subs[5]+" descargas)" , subs[3] , DESCARGAS_THUMB )
     else:
         if miseriesub<>"":
-            addsimplefolder( CHANNELNAME , "searchsub" , "Series VO - Subtítulos.es" , "SUBTITULOS - [Descargar] :" , "" , "" )
-            addsimplefolder( CHANNELNAME , "listasubep" , "Series VO - Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
+            addsimplefolder( __channel__ , "searchsub" , "Series VO - Subtítulos.es" , "SUBTITULOS - [Descargar] :" , "" , "" )
+            addsimplefolder( __channel__ , "listasubep" , "Series VO - Subtítulos.es - "+miseriesub , miseriesub+"  -  [Subtítulos]" , urlsub , "" )
         else:
-            addsimplefolder( CHANNELNAME , "searchsub" , "Series VO - Subtítulos.es" , "Buscar Subtítulos" , "" , "" )
+            addsimplefolder( __channel__ , "searchsub" , "Series VO - Subtítulos.es" , "Buscar Subtítulos" , "" , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -3496,7 +3502,7 @@ def play(params,url,category):
     thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def serieupdate(miserievo,status,url,tipocontenido,channel):
     urlsearch0 = ""
@@ -3621,7 +3627,7 @@ def episodiomenu(params,url,category):
     if "Consulta" in category:
         detaildos(params,url,category)
     else:
-        episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,season,episodio,dataweb,tipovisto,CHANNELNAME,"-1")
+        episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,season,episodio,dataweb,tipovisto,__channel__,"-1")
 
 def episodiomenugnral(params,title,url,category,serievistos,serieback,urlback,season,episodio,dataweb,tipovisto,channel,urlOK):
     title0 = re.sub('\s+\-\s+\[U?L?N?W\]$','',title)
@@ -4288,29 +4294,29 @@ def ayuda(params,url,category):
     info3 = "Premiere: Estreno de los últimos tres meses"
     info4 = "Series VO - Vistas: Distintas de Mis Favoritas"
     info5 = 'Series VO - Mis Favoritas: El primer "episodio" de las Favoritas sin ningún tipo de marca de Vistos se trata como Nuevo Episodio (al igual que los Posteriores a [LW])'
-    additem( CHANNELNAME , category , "------------------------------------ Info: 29/11/2010 ------------------------------------" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , info5 , "" , HD_THUMB , info5 )
-    additem( CHANNELNAME , category , info4 , "" , HD_THUMB , info4 )
-    additem( CHANNELNAME , category , info1 , "" , HD_THUMB , info1 )
-    additem( CHANNELNAME , category , info3 , "" , HD_THUMB , info3 )
-    additem( CHANNELNAME , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[W]: Episodio Visto [Watched]" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios)" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "ES/LT: Existe enlace de vídeo con Audio Español/Latino" , "" , HELP_THUMB , "" )
-    additem( CHANNELNAME , category , "Series Actualizadas en CastTV [excepto Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
-    additem( CHANNELNAME , category , "Series Favoritas" , "" , STARORANGE_THUMB , "" )
-    additem( CHANNELNAME , category , "(1) Favoritas Actualizadas en CastTV [excepto Actualizaciones]" , "" , STARBLUE_THUMB , "" )
-    additem( CHANNELNAME , category , "(2) Favoritas con Nuevos Episodios [Aptdo Mis Favoritas]" , "" , STARGREEN_THUMB , "" )
-    additem( CHANNELNAME , category , "(1) y (2) - [Aptdo Mis Favoritas]" , "" , STARGB_THUMB , "" )
-    additem( CHANNELNAME , category , "Series Favoritas Desactivadas", "" , STARGREY_THUMB , "" )
-    additem( CHANNELNAME , category , "Desactivadas Actualizadas en CastTV [excepto Actualizaciones]" , "" , STARGREYBLUE_THUMB , "" )
-    additem( CHANNELNAME , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritas]" , "" , STARGREEN2_THUMB , "" )
-    additem( CHANNELNAME , category , "Subtítulo - [Descargar]" , "" , DESCARGAS_THUMB , "" )
-    additem( CHANNELNAME , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
-    #additem( CHANNELNAME , category , "-------------------------------------------- Tools --------------------------------------------" , "" , HELP_THUMB , "" )
-    #addsimplefolder( CHANNELNAME , "checksearchgate" , "" , "Herramienta de Revisión de las búsquedas de Títulos" , "" , HELP_THUMB )
+    additem( __channel__ , category , "------------------------------------ Info: 29/11/2010 ------------------------------------" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , info5 , "" , HD_THUMB , info5 )
+    additem( __channel__ , category , info4 , "" , HD_THUMB , info4 )
+    additem( __channel__ , category , info1 , "" , HD_THUMB , info1 )
+    additem( __channel__ , category , info3 , "" , HD_THUMB , info3 )
+    additem( __channel__ , category , "------------------------------------------- Leyenda -------------------------------------------" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , "[LW]: Último Episodio Visto [Last Watched]" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , "[W]: Episodio Visto [Watched]" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , "[UW]: Episodio No Visto [UnWatched]" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , "[NW]: No para Ver [Not to Watch] (excluido de Nvos Episodios)" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , "ES/LT: Existe enlace de vídeo con Audio Español/Latino" , "" , HELP_THUMB , "" )
+    additem( __channel__ , category , "Series Actualizadas en CastTV [excepto Actualizaciones]" , "" , FOLDERBLUE_THUMB , "" )
+    additem( __channel__ , category , "Series Favoritas" , "" , STARORANGE_THUMB , "" )
+    additem( __channel__ , category , "(1) Favoritas Actualizadas en CastTV [excepto Actualizaciones]" , "" , STARBLUE_THUMB , "" )
+    additem( __channel__ , category , "(2) Favoritas con Nuevos Episodios [Aptdo Mis Favoritas]" , "" , STARGREEN_THUMB , "" )
+    additem( __channel__ , category , "(1) y (2) - [Aptdo Mis Favoritas]" , "" , STARGB_THUMB , "" )
+    additem( __channel__ , category , "Series Favoritas Desactivadas", "" , STARGREY_THUMB , "" )
+    additem( __channel__ , category , "Desactivadas Actualizadas en CastTV [excepto Actualizaciones]" , "" , STARGREYBLUE_THUMB , "" )
+    additem( __channel__ , category , "Nuevos Episodios (posteriores a [LW]) [Aptdo Mis Favoritas]" , "" , STARGREEN2_THUMB , "" )
+    additem( __channel__ , category , "Subtítulo - [Descargar]" , "" , DESCARGAS_THUMB , "" )
+    additem( __channel__ , category , "Mensaje o Encabezado (sin acción)" , "" , HD_THUMB , "" )
+    #additem( __channel__ , category , "-------------------------------------------- Tools --------------------------------------------" , "" , HELP_THUMB , "" )
+    #addsimplefolder( __channel__ , "checksearchgate" , "" , "Herramienta de Revisión de las búsquedas de Títulos" , "" , HELP_THUMB )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------
@@ -5181,14 +5187,14 @@ def xbmcfavupd(tipo,listupdate):
                 thumb = "http://upload.wikimedia.org/wikipedia/commons/2/25/Crystal_Clear_app_package_multimedia.png"
             else:
                 thumb = item[2]
-            addnofolder( CHANNELNAME , "pmedia" , "XBMC - Favoritos"+category2 , item[0] , item[1] , thumb )
+            addnofolder( __channel__ , "pmedia" , "XBMC - Favoritos"+category2 , item[0] , item[1] , thumb )
     if len(plugpelis)>0 or len(plugpelisdir)>0:
         for item in plugpelis:
             addnewvideo( item[0] , item[1] , "XBMC - Favoritos"+category2 , item[2] , item[3] , item[4] , item[5] , "" )
         for item in plugpelisdir:
             addfolder(  item[0] , item[1] , "XBMC - Favoritos"+category2 , item[2] , item[3] , item[4] , "" )
     if tipo<>"2":
-        addsimplefolder( CHANNELNAME , "xbmcfav" , "Archivo" , "ARCHIVO" , "" , "http://upload.wikimedia.org/wikipedia/commons/9/9c/Crystal_Clear_app_file-manager.png" )
+        addsimplefolder( __channel__ , "xbmcfav" , "Archivo" , "ARCHIVO" , "" , "http://upload.wikimedia.org/wikipedia/commons/9/9c/Crystal_Clear_app_file-manager.png" )
     # ------------------------------------------------------------------------------------
     EndDirectory("XBMC - Favoritos"+category2+" - Pelisalacarta","",listupdate,False)
     # ------------------------------------------------------------------------------------
@@ -5378,13 +5384,13 @@ def checksearchgate0(category):
     for titulo in titulos:
         listnorev = readlist(titulo[1],"No Revisado")
         n = str(len(listnorev))
-        additem( CHANNELNAME , category , titulo[0]+" ("+titulo[1]+".txt): Títulos No Revisados="+n , "" , "" , "" )
+        additem( __channel__ , category , titulo[0]+" ("+titulo[1]+".txt): Títulos No Revisados="+n , "" , "" , "" )
         for saved in listnorev:
             rstdo = ""
             if saved[2]=="OK" or saved[2]=="**Varios**":
                 rstdo = ": "+saved[4]
-            additem( CHANNELNAME , category , saved[0]+" ("+saved[1]+") -> "+saved[2]+rstdo , saved[5] , "" , "" )
-        additem( CHANNELNAME , category , "----------------------------------------------------------------------------------------------------" , "" , "" , "" )
+            additem( __channel__ , category , saved[0]+" ("+saved[1]+") -> "+saved[2]+rstdo , saved[5] , "" , "" )
+        additem( __channel__ , category , "----------------------------------------------------------------------------------------------------" , "" , "" , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------            
@@ -5544,7 +5550,7 @@ def checksearchgate1(tipo,origen,destino):
         rstdo = ""        
         if item[1]=="OK" or item[1]=="**Varios**":
             rstdo = ": "+item[3]
-        additem( CHANNELNAME , category , item[0]+" ("+item[-1]+") -> "+item[1]+"-"+item[4]+rstdo , item[2] , "" , "" )
+        additem( __channel__ , category , item[0]+" ("+item[-1]+") -> "+item[1]+"-"+item[4]+rstdo , item[2] , "" , "" )
     # ------------------------------------------------------------------------------------
     EndDirectory(category,"",False,True)
     # ------------------------------------------------------------------------------------

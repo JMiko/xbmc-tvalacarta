@@ -14,11 +14,18 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "mocosoftx"
+__channel__ = "mocosoftx"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "MocosoftX"
+__language__ = "ES"
+__adult__ = "true"
+
+DEBUG = config.get_setting("debug")
+
 USER = config.get_setting("privateuser")
 PASSWORD = config.get_setting("privatepassword")
 LOGINURL = "http://mocosoftx.com/foro/login2/?user=" + USER + "&passwrd=" + PASSWORD + "&cookieneverexp=on&hash_passwrd="
-DEBUG=True
 
 MAIN_HEADERS = []
 MAIN_HEADERS.append( ["Host","mocosoftx.com"] )
@@ -50,12 +57,12 @@ def mainlist(item):
     itemlist = []
     sid = GetSessionID()
     # Añade al listado de XBMC
-    #xbmctools.addnewfolder( CHANNELNAME , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php"+sid,"","")
-    itemlist.append( Item( channel=CHANNELNAME , title="Novedades" , action="Novedades" , url="http://mocosoftx.com/foro/index.php"+sid , folder=True ) )
+    #xbmctools.addnewfolder( __channel__ , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php"+sid,"","")
+    itemlist.append( Item( channel=__channel__ , title="Novedades" , action="Novedades" , url="http://mocosoftx.com/foro/index.php"+sid , folder=True ) )
     if sid=='':
-        itemlist.append( Item( channel=CHANNELNAME , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
     else:
-        itemlist.append( Item( channel=CHANNELNAME , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php"+sid+";action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php"+sid+";action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
     
     return itemlist
 
@@ -81,7 +88,7 @@ def Novedades(item):
         scrapedplot = ""
         # if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         # Añade al listado de XBMC
-        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="detail" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="detail" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
     
     # Extrae la marca de siguiente página
     patronvideos = '\[<b>[^<]+</b>\] <a class="navPages" href="([^"]+)">'
@@ -93,7 +100,7 @@ def Novedades(item):
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="Novedades" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="Novedades" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
                                                                                           
@@ -131,7 +138,7 @@ def FullList(item):
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             
-            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="detail" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="detail" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
     
     return itemlist
 
@@ -167,7 +174,7 @@ def detail(item):
             imagen = matches[c]
         except:
             imagen = thumbnail
-        itemlist.append( Item( channel=CHANNELNAME , title=title+" - ["+video[2]+"]" , action="play" ,  server= video[2], url=video[1] ,thumbnail=imagen, plot=item.plot, folder=False ) )
+        itemlist.append( Item( channel=__channel__ , title=title+" - ["+video[2]+"]" , action="play" ,  server= video[2], url=video[1] ,thumbnail=imagen, plot=item.plot, folder=False ) )
     # ------------------------------------------------------------------------------------
     
     return itemlist

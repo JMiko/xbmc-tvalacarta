@@ -20,8 +20,13 @@ except:
     from Code.core import scrapertools
     from Code.core.item import Item
 
-CHANNELNAME = "somosmovies"
-DEBUG = True
+__channel__ = "somosmovies"
+__category__ = "F,S,D,A"
+__type__ = "generic"
+__title__ = "Somosmovies"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -30,10 +35,10 @@ def mainlist(item):
     logger.info("[somosmovies.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas"    , action="listado", url="http://www.somosmovies.com/search/label/Peliculas?max-results=12"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"       , action="listado", url="http://www.somosmovies.com/search/label/Series?max-results=12"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Anime"        , action="listado", url="http://www.somosmovies.com/search/label/Anime?max-results=12"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales" , action="listado", url="http://www.somosmovies.com/search/label/Documental?max-results=12"))
+    itemlist.append( Item(channel=__channel__, title="Películas"    , action="listado", url="http://www.somosmovies.com/search/label/Peliculas?max-results=12"))
+    itemlist.append( Item(channel=__channel__, title="Series"       , action="listado", url="http://www.somosmovies.com/search/label/Series?max-results=12"))
+    itemlist.append( Item(channel=__channel__, title="Anime"        , action="listado", url="http://www.somosmovies.com/search/label/Anime?max-results=12"))
+    itemlist.append( Item(channel=__channel__, title="Documentales" , action="listado", url="http://www.somosmovies.com/search/label/Documental?max-results=12"))
     
     return itemlist
 
@@ -83,7 +88,7 @@ def listado(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     patronvideos  = "<a class='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Siguiente'>"
@@ -94,6 +99,6 @@ def listado(item):
         #http://www.somosmovies.com/search/label/Peliculas?updated-max=2010-12-20T08%3A27%3A00-06%3A00&max-results=12
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedurl = scrapedurl.replace("%3A",":")
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist

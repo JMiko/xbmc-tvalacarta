@@ -13,8 +13,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "robinfilm"
-DEBUG = True
+__channel__ = "robinfilm"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Robinfilm (IT)"
+__language__ = "IT"
+__creationdate__ = "20110516"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -52,7 +58,7 @@ def novedades(item):
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     #<a class='blog-pager-older-link' href='http://www.robinfilm.com/search?updated-max=2011-10-13T18%3A12%3A00%2B02%3A00&max-results=21' id='Blog1_blog-pager-older-link' title='Post più vecchi'>Post più vecchi</a>
     patron = "<a class='blog-pager-older-link' href='([^']+)'"
@@ -65,6 +71,6 @@ def novedades(item):
         scrapedurl = urlparse.urljoin(item.url,match)
         scrapedthumbnail = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist

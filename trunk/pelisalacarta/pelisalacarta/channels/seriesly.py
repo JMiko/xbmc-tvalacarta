@@ -14,8 +14,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "seriesly"
-DEBUG = True
+__channel__ = "seriesly"
+__category__ = "S,A"
+__type__ = "generic"
+__title__ = "Series.ly"
+__language__ = "ES"
+__creationdate__ = "20111119"
+
+DEBUG = config.get_setting("debug")
 SESION = config.get_setting("session","seriesly")
 LOGIN = config.get_setting("login","seriesly")
 PASSWORD = config.get_setting("password","seriesly")
@@ -28,25 +34,25 @@ def mainlist(item):
 
     itemlist = []
     
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar series", action="search"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Mis series", action="series"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Mis pelis", action="mispelis"))
+    itemlist.append( Item(channel=__channel__, title="Buscar series", action="search"))
+    itemlist.append( Item(channel=__channel__, title="Mis series", action="series"))
+    itemlist.append( Item(channel=__channel__, title="Mis pelis", action="mispelis"))
 
     if SESION=="true":
-        itemlist.append( Item(channel=CHANNELNAME, title="Cerrar sesion ("+LOGIN+")", action="logout"))
+        itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
     else:
-        itemlist.append( Item(channel=CHANNELNAME, title="Iniciar sesion", action="login"))
+        itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
 
     return itemlist
 
 def logout(item):
-    nombre_fichero_config_canal = os.path.join( config.get_data_path() , CHANNELNAME+".xml" )
+    nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
     config_canal = open( nombre_fichero_config_canal , "w" )
     config_canal.write("<settings>\n<session>false</session>\n<login></login>\n<password></password>\n</settings>")
     config_canal.close();
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Sesión finalizada", action="mainlist"))
+    itemlist.append( Item(channel=__channel__, title="Sesión finalizada", action="mainlist"))
     return itemlist
 
 def login(item):
@@ -61,13 +67,13 @@ def login(item):
     if (keyboard.isConfirmed()):
         password = keyboard.getText()
 
-    nombre_fichero_config_canal = os.path.join( config.get_data_path() , CHANNELNAME+".xml" )
+    nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
     config_canal = open( nombre_fichero_config_canal , "w" )
     config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
     config_canal.close();
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Sesión iniciada", action="mainlist"))
+    itemlist.append( Item(channel=__channel__, title="Sesión iniciada", action="mainlist"))
     return itemlist
 
 def series(item):
@@ -183,12 +189,6 @@ def mispelis(item):
         # Atributos
             scrapedurl = "http://series.ly/api/detailMovie.php?auth_token="+auth_token+"&idFilm="+match2[0]+"&user_token="+user_token+"&format=xml"
             scrapedtitle =match2[1]+" ("+match2[2]+")"
-            if(match2[7]=="Watched"):
-                scrapedtitle +=" [Visto]"
-            elif (match2[7]=="Pending"):
-                scrapedtitle +=" [Pendiente]"
-            elif (match2[7]=="Favourite"):
-                scrapedtitle +=" [Preferida]"   
             scrapedthumbnail = match2[4]
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -229,8 +229,6 @@ def capitulos(item):
         # Atributos
             scrapedurl = "http://series.ly/api/linksCap.php?auth_token="+auth_token+"&idCap="+match2[0]+"&user_token="+user_token+"&format=xml"
             scrapedtitle = match2[2]+" - "+match2[1]
-            if (match2[3] == "1"):
-                scrapedtitle +=" [Visto]"
             scrapedthumbnail = item.thumbnail
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -286,24 +284,23 @@ def buscavideos(item):
 
 def links(item):
     
-    logger.info("[seriesly.py] Links")
+    data = scrapertools.cachePage(item.url)
+    logger.info(data)
     
-    data = scrapertools.getLocationHeaderFromResponse(item.url)
-    logger.info("1"+data) 
-    data = scrapertools.getLocationHeaderFromResponse(data)
-    
-    # Usa findvideos    
     listavideos = servertools.findvideos(data)
-    
+            
     itemlist = []
     
     for video in listavideos:
-        server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
+        #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
+        scrapedtitle = video[0]
+        srapedtitle = scrapertools.htmlclean(scrapedtitle)
         scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
-
+        server = video[2]
+            
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    
+    
     return itemlist
 
 def pelis(item):
@@ -338,7 +335,7 @@ def pelis(item):
 
         for match2 in matches2:
         # Atributos
-            scrapedurl= "http://series.ly/api/goLink.php?auth_token="+auth_token+"&user_token="+user_token+"&enc="+urllib.quote(match2[7].strip())
+            scrapedurl= "http://series.ly/api/goLink.php?auth_token="+auth_token+"&user_token="+user_token+"&enc="+match2[7].strip()
             scrapedtitle = item.title+" ("+match2[2]+") ("+match2[0]+")(Subtítulos "+match2[1]+") (Parte "+match2[3]+")"
             if match2[5]=="1": scrapedtitle += " (HD)"
             scrapedthumbnail = ""

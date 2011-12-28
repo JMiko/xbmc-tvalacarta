@@ -25,7 +25,13 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-CHANNELNAME = "italiafilm"
+__channel__ = "italiafilm"
+__category__ = "F,S,A"
+__type__ = "xbmc"
+__title__ = "Italia film (IT)"
+__language__ = "IT"
+
+DEBUG = config.get_setting("debug")
 EVIDENCE = "   "
 
 # Esto permite su ejecución en modo emulado
@@ -43,29 +49,29 @@ def mainlist(params,url,category):
 	logger.info("[italiafilm.py] mainlist")
 
 	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "searchmovie" , category , "Cerca Film","","","")
-        xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Novità" , "http://italia-film.com/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Anime" , "http://italia-film.com/anime-e-cartoon/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Telefilm" , "http://italia-film.com/telefilm/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Animazione" , "http://italia-film.com/film-animazione/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Avventura" , "http://italia-film.com/film-avventura/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Azione" , "http://italia-film.com/film-azione/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Comici" , "http://italia-film.com/film-comici/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Commedia" , "http://italia-film.com/film-commedia/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Documentari" , "http://italia-film.com/film-documentari/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Drammatici" , "http://italia-film.com/film-drammatici/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Fantascienza" , "http://italia-film.com/film-fantascienza/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Fantasy" , "http://italia-film.com/film-fantasy/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Gangster" , "http://italia-film.com/film-gangster/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Guerra" , "http://italia-film.com/film-guerra/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Horror" , "http://italia-film.com/film-horror/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Musical" , "http://italia-film.com/film-musical/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Poliziesco" , "http://italia-film.com/film-poliziesco/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Romantici" , "http://italia-film.com/film-romantici/","","") 
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Erotici" , "http://italia-film.com/film-erotici/","","") 
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Storici" , "http://italia-film.com/film-storici/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Thriller" , "http://italia-film.com/film-thriller/","","")
-	xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , "Film Western" , "http://italia-film.com/film-western/","","")
+	xbmctools.addnewfolder( __channel__ , "searchmovie" , category , "Cerca Film","","","")
+        xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Novità" , "http://italia-film.com/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Anime" , "http://italia-film.com/anime-e-cartoon/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Telefilm" , "http://italia-film.com/telefilm/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Animazione" , "http://italia-film.com/film-animazione/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Avventura" , "http://italia-film.com/film-avventura/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Azione" , "http://italia-film.com/film-azione/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Comici" , "http://italia-film.com/film-comici/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Commedia" , "http://italia-film.com/film-commedia/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Documentari" , "http://italia-film.com/film-documentari/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Drammatici" , "http://italia-film.com/film-drammatici/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Fantascienza" , "http://italia-film.com/film-fantascienza/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Fantasy" , "http://italia-film.com/film-fantasy/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Gangster" , "http://italia-film.com/film-gangster/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Guerra" , "http://italia-film.com/film-guerra/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Horror" , "http://italia-film.com/film-horror/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Musical" , "http://italia-film.com/film-musical/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Poliziesco" , "http://italia-film.com/film-poliziesco/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Romantici" , "http://italia-film.com/film-romantici/","","") 
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Erotici" , "http://italia-film.com/film-erotici/","","") 
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Storici" , "http://italia-film.com/film-storici/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Thriller" , "http://italia-film.com/film-thriller/","","")
+	xbmctools.addnewfolder( __channel__ , "peliculas" , category , "Film Western" , "http://italia-film.com/film-western/","","")
 
 	# Cierra el directorio
 	xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -106,7 +112,7 @@ def peliculas(params,url,category):
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "detalle" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		xbmctools.addnewfolder( __channel__ , "detalle" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Extrae las entradas (carpetas)
 	patronvideos  = '<a href="([^"]+)">Avanti&nbsp;&#8594;'
@@ -123,7 +129,7 @@ def peliculas(params,url,category):
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Añade al listado de XBMC
-		xbmctools.addnewfolder( CHANNELNAME , "peliculas" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+		xbmctools.addnewfolder( __channel__ , "peliculas" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 	# Label (top-right)...
 	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -248,7 +254,7 @@ def loadvideo(params,data,category,title,thumbnail,plot):
 				matches = re.compile(patronvideos,re.DOTALL).findall(data)
 				scrapertools.printMatches(matches)
 				if (matches): videotitle = matches[0]
-				xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
+				xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
 			data = data_all[data_trunc:]
 	#end while
 	listavideos = servertools.findvideos(data)
@@ -260,7 +266,7 @@ def loadvideo(params,data,category,title,thumbnail,plot):
 		matches = re.compile(patronvideos,re.DOTALL).findall(data)
 		scrapertools.printMatches(matches)
 		if (matches): videotitle = matches[0]
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
+		xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle + " ["+server+"]" , url , thumbnail , plot )
 
 def play(params,url,category):
 	logger.info("[italiafilm.py] play")
@@ -270,7 +276,7 @@ def play(params,url,category):
 	plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 	server = params["server"]
 	
-	xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+	xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 	
 def to_ita(text):
 	text = text.replace('&amp;', '&')

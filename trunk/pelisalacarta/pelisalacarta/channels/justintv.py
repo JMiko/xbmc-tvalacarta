@@ -19,9 +19,16 @@ try:
 except:
     import simplejson as json
 
-CHANNELNAME = "justintv"
-DEBUG = True
+__channel__ = "justintv"
+__category__ = "G"
+__type__ = "generic"
+__title__ = "Justin.tv"
+__language__ = ""
+__creationdate__ = "20111212"
+
+DEBUG = config.get_setting("debug")
 pluginhandle = int(sys.argv[1])
+
 IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
 fanart = xbmc.translatePath(os.path.join( config.get_runtime_path(), 'resources' , 'images' ,'fanart','justintv.png'))
 
@@ -48,18 +55,18 @@ def mainlist(item):
         lang = 'all'
         idx  = abbrev.index(lang)
     lang = languages[idx]
-    #itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30407), action="subCategories" ,url = "featured", thumbnail="http://www-cdn.jtvnw.net/images/categories/featured.png"))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30420) + ' (%s)' %lang, action="_language"     ,url = "", thumbnail = os.path.join(IMAGES_PATH, "language.jpg"),fanart = fanart,folder=False))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30408), action="subCategories" ,url = "social", thumbnail="http://www-cdn.jtvnw.net/images/categories/social.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30409), action="subCategories" ,url = "entertainment", thumbnail="http://www-cdn.jtvnw.net/images/categories/entertainment.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30410), action="subCategories" ,url = "gaming", thumbnail="http://www-cdn.jtvnw.net/images/categories/gaming.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30411), action="subCategories" ,url = "sports", thumbnail="http://www-cdn.jtvnw.net/images/categories/sports.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30412), action="subCategories" ,url = "news", thumbnail="http://www-cdn.jtvnw.net/images/categories/news.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30413), action="subCategories" ,url = "animals", thumbnail="http://www-cdn.jtvnw.net/images/categories/animals.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30414), action="subCategories" ,url = "science_tech", thumbnail="http://www-cdn.jtvnw.net/images/categories/science_tech.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30415), action="subCategories" ,url = "other", thumbnail="http://www-cdn.jtvnw.net/images/categories/other.png",fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30416), action="favorites"     ,url = "", thumbnail=os.path.join(IMAGES_PATH, "favoritos.png"),fanart = fanart))
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30417), action="search"        ,url = "", thumbnail=os.path.join(IMAGES_PATH, "buscador.png"),fanart = fanart))
+    #itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30407), action="subCategories" ,url = "featured", thumbnail="http://www-cdn.jtvnw.net/images/categories/featured.png"))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30420) + ' (%s)' %lang, action="_language"     ,url = "", thumbnail = os.path.join(IMAGES_PATH, "language.jpg"),fanart = fanart,folder=False))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30408), action="subCategories" ,url = "social", thumbnail="http://www-cdn.jtvnw.net/images/categories/social.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30409), action="subCategories" ,url = "entertainment", thumbnail="http://www-cdn.jtvnw.net/images/categories/entertainment.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30410), action="subCategories" ,url = "gaming", thumbnail="http://www-cdn.jtvnw.net/images/categories/gaming.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30411), action="subCategories" ,url = "sports", thumbnail="http://www-cdn.jtvnw.net/images/categories/sports.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30412), action="subCategories" ,url = "news", thumbnail="http://www-cdn.jtvnw.net/images/categories/news.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30413), action="subCategories" ,url = "animals", thumbnail="http://www-cdn.jtvnw.net/images/categories/animals.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30414), action="subCategories" ,url = "science_tech", thumbnail="http://www-cdn.jtvnw.net/images/categories/science_tech.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30415), action="subCategories" ,url = "other", thumbnail="http://www-cdn.jtvnw.net/images/categories/other.png",fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30416), action="favorites"     ,url = "", thumbnail=os.path.join(IMAGES_PATH, "favoritos.png"),fanart = fanart))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30417), action="search"        ,url = "", thumbnail=os.path.join(IMAGES_PATH, "buscador.png"),fanart = fanart))
     
 
 
@@ -243,7 +250,7 @@ def _language(item):
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Choice a language", languages)
     if seleccion == -1:return
-    #print "seleccion :",seleccion
+    print "seleccion :",seleccion
     abb = abbrev[seleccion]
     config.set_setting('justin_lang',abb)
     xbmc.executebuiltin( "Container.Refresh" )

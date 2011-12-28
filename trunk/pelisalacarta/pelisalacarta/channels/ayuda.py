@@ -16,7 +16,7 @@ CHANNELNAME = "ayuda"
 # Traza el inicio del canal
 logger.info("[ayuda.py] init")
 
-DEBUG = True
+DEBUG = config.get_setting("debug")
 SOURCE_URL = 'http://www.mimediacenter.info/foro/viewtopic.php?f=6&t=402'
 
 def isGeneric():

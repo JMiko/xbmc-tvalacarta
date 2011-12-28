@@ -18,7 +18,6 @@ import xbmctools
 import config
 import logger
 
-CHANNELNAME = "peliculashd"
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -29,7 +28,13 @@ except:
 # Traza el inicio del canal
 logger.info("[peliculashd.py] init")
 
-DEBUG = True
+__channel__ = "peliculasid"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "Peliculasid"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def mainlist(params,url,category):
     logger.info("[peliculashd.py] mainlist")
@@ -61,7 +66,7 @@ def mainlist(params,url,category):
             logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
     patron = '<div class="navigation".*?<span>[^<]+</span> <a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -82,7 +87,7 @@ def mainlist(params,url,category):
             logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -119,7 +124,7 @@ def detail(params,url,category):
         url = video[1]
         server = video[2]
         if server!="Megaupload":
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     # ------------------------------------------------------------------------------------
 
     # Label (top-right)...
@@ -139,4 +144,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

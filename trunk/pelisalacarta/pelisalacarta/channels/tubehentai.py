@@ -22,7 +22,13 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-CHANNELNAME = "tubehentai"
+__channel__ = "tubehentai"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "tubehentai"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -32,8 +38,6 @@ except:
 
 # Traza el inicio del canal
 logger.info("[tubehentai.py] init")
-
-DEBUG = True
 
 def mainlist(params,url,category):
     logger.info("[tubehentai.py] mainlist")
@@ -45,7 +49,7 @@ def getmainlist(params,url,category):
     logger.info("[tubehentai.py] getmainlist")
 
     itemlist = []
-    itemlist.append( Item( channel=CHANNELNAME , title="Novedades" , action="novedades" , url="http://tubehentai.com/" , folder=True ) )
+    itemlist.append( Item( channel=__channel__ , title="Novedades" , action="novedades" , url="http://tubehentai.com/" , folder=True ) )
     
     return itemlist
 
@@ -92,7 +96,7 @@ def getnovedades(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
 
     # ------------------------------------------------------
     # Extrae el paginador
@@ -105,7 +109,7 @@ def getnovedades(params,url,category):
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(url,"/" + matches[0])
         logger.info("[tubehentai.py] " + scrapedurl)
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="!Página siguiente" , url=scrapedurl , folder=True) )
 
 
     return itemlist
@@ -126,6 +130,6 @@ def play(params,url,category):
     if len(matches)>0:
         url = "http://media.tubehentai.com/videos/" + matches[0]
         server="Directo"
-        xbmctools.play_video(channel=CHANNELNAME,server=server,url=url,category=category,title=title,thumbnail=thumbnail,plot=plot)
+        xbmctools.play_video(channel=__channel__,server=server,url=url,category=category,title=title,thumbnail=thumbnail,plot=plot)
 
     # ------------------------------------------------------------------------------------

@@ -20,7 +20,13 @@ from servers import servertools
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "megauploadsite"
+__channel__ = "megauploadsite"
+__category__ = "G"
+__type__ = "xbmc"
+__title__ = "Megaupload"
+__language__ = ""
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -30,13 +36,11 @@ except:
 
 logger.info("[megaupload.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[megaupload.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "search" , CHANNELNAME , "Introduce el código del fichero de vídeo" , "" , "", "" )
+    xbmctools.addnewfolder( __channel__ , "search" , __channel__ , "Introduce el código del fichero de vídeo" , "" , "", "" )
 
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -58,7 +62,7 @@ def search(params,url,category):
 def list(params,url,category):
     logger.info("[megaupload.py] list")
 
-    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Megaupload" , "Ver el vídeo [Megaupload]" , url , "" , "" )
+    xbmctools.addnewvideo( __channel__ , "play" , category , "Megaupload" , "Ver el vídeo [Megaupload]" , url , "" , "" )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -73,4 +77,4 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)

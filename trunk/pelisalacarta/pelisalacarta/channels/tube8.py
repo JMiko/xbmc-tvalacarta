@@ -7,6 +7,8 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+import time
+from datetime import date, datetime
 from servers import servertools
 #from platform.xbmc import xbmctools
 from core import config
@@ -16,8 +18,15 @@ from core import logger
 
 from core import scrapertools
 
-CHANNELNAME = "tube8"
-DEBUG=config.get_setting("debug")
+__channel__ = "tube8"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Tube 8"
+__language__ = "EN"
+__working__ = "true"
+__adult__ = "true"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -26,10 +35,10 @@ def mainlist(item):
     logger.info("[tube8.py] mainlist")
     
     itemlist = []
-    itemlist.append( Item( channel=CHANNELNAME , title="Destacados" , action="getList" , url="http://www.tube8.com/latest.html" , folder=True ) )
-    itemlist.append( Item( channel=CHANNELNAME , title="Categorias" , action="getCategory" , url="http://www.tube8.com/categories.html" , folder=True ) )
-    itemlist.append( Item( channel=CHANNELNAME , title="Videos Recientes" , action="getList" , url="http://www.tube8.com/newest.html" , folder=True ) )
-    itemlist.append( Item(channel=CHANNELNAME, action="search"    , title="Buscar", url="http://www.tube8.com/search.html?q="))
+    itemlist.append( Item( channel=__channel__ , title="Destacados" , action="getList" , url="http://www.tube8.com/latest.html" , folder=True ) )
+    itemlist.append( Item( channel=__channel__ , title="Categorias" , action="getCategory" , url="http://www.tube8.com/categories.html" , folder=True ) )
+    itemlist.append( Item( channel=__channel__ , title="Videos Recientes" , action="getList" , url="http://www.tube8.com/newest.html" , folder=True ) )
+    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://www.tube8.com/search.html?q="))
     
     return itemlist
 
@@ -66,7 +75,7 @@ def getList(item):
     
     itemlist = []
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="getVideo", title=match[2], url=match[0] , thumbnail=match[1] , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="getVideo", title=match[2], url=match[0] , thumbnail=match[1] , folder=True) )
 
     return itemlist
 
@@ -75,22 +84,42 @@ def getVideo(item):
     # ------------------------------------------------------
     # Descarga la página
     # ------------------------------------------------------
+ 
+    matches = re.compile('(\d+)/').findall(item.url)
+    if DEBUG: scrapertools.printMatches(matches)
+    idvideo= matches[0]
+
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-    
-    '''
-    <param name="flashvars" value="autoplay=false&amp;autoreplay=false&amp;autoload=true&amp;options=&amp;start=0&amp;related_url=http%3A%2F%2Fwww.tube8.com%2Fvideoplayer%2F1820621%2F715314%2F0&amp;image_url=http%3A%2F%2Fcdn1.image.tube8.phncdn.com%2F1110%2F17%2F4e9cc6b7bde22%2F240x180%2F14.jpg&amp;link_url=http%3A%2F%2Fwww.tube8.com%2Fshare%2Fbrazilian-facials-talita%2F1820621%2F&amp;video_title=Brazilian%2BFacials%2B%2BTalita&amp;postroll_url=http%3A%2F%2Fads.genericlink.com%2Fads%2Fsite%2Fpostroll%2Ftube8%2Ft8_postroll.php&amp;pauseroll_url=http%3A%2F%2Fads.genericlink.com%2Fads%2Fsite%2Fpauseroll%2Ftube8%2Ft8_pauseroll.php&amp;video_url=http%3A%2F%2Fcdn1.public.tube8.com%2F1110%2F17%2F4e9cc6b7bde22%2F4e9cc6b7bde22.flv%3Fsr%3D551%26int%3D307200b%26nvb%3D20111208142321%26nva%3D20111208162321%26hash%3D083d30959c2ea44cd4f27&amp;config_filename=player_config.xml%3Fcache%3D009&amp;favorite_js=processFavourites%281820621%29&amp;isFavorite=0"/>
-    '''
-    patronvideos = 'video_url=(.*)&amp;config_filename'
-    
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile('var hash = "([a-z0-9]+)"').findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    hash= matches[0]
+
+    url = "http://www.tube8.com/ajax/getVideoDownloadURL.php?_=" + str(int(time.time()*1000)) + "&hash=" + hash + "&video=" + idvideo
+    logger.debug("[tube8.py] url " + url)
+
+    MAIN_HEADERS = []
+    MAIN_HEADERS.append(["Host","www.tube8.com"] )
+    MAIN_HEADERS.append(['User-Agent', 'Mozilla/5.0 (Windows NT 5.1; rv:8.0) Gecko/20100101 Firefox/8.0'])
+    MAIN_HEADERS.append(['Connection', 'keep-alive'])
+    MAIN_HEADERS.append(['Referer', item.url])
+    MAIN_HEADERS.append(['X-Requested-With', 'XMLHttpRequest'])
+    MAIN_HEADERS.append(['Accept','*/*'])
+    MAIN_HEADERS.append(['Accept-Language', 'es-es,es;q=0.8,en-us;q=0.5,en;q=0.3'])
+    MAIN_HEADERS.append(['Content-Type', 'application/x-www-form-urlencoded'])
+
+    data = scrapertools.cache_page(url,headers=MAIN_HEADERS)
+    logger.debug("[tube8.py] data " + data)
+
+    matches = re.compile('"standard_url":"(http.*?)"').findall(data)
+    if not matches:
+        matches = re.compile('"(http://cdn\d+\.public\.tube8\.com/.*?)"').findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     
     itemlist = []
     item.action="play"
     item.server="Directo"
-    item.Folder=False
-    item.url=urllib.unquote(matches[0])
+    item.Folder=False   
+    item.url=matches[0]
     # Añade al listado de XBMC
     itemlist.append(item)
 
@@ -141,7 +170,7 @@ def getCategory(item):
     
     itemlist = []
     for match in matches:
-        itemlist.append( Item( channel=CHANNELNAME , title=match[1] , action="getList" , url=match[0] , folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=match[1] , action="getList" , url=match[0] , folder=True ) )
 
     return itemlist
 

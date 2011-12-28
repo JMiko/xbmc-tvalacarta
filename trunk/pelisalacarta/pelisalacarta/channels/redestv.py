@@ -25,7 +25,13 @@ from servers import vk
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "redestv"
+__channel__ = "redestv"
+__category__ = "D"
+__type__ = "xbmc"
+__title__ = "Redes.tv"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
  
 # Esto permite su ejecución en modo emulado
 try:
@@ -36,16 +42,14 @@ except:
 # Traza el inicio del canal
 logger.info("[redestv.py] init")
  
-DEBUG = True
- 
 def mainlist(params,url,category):
     logger.info("[redestv.py] mainlist")
     #bliptv.video("+3KBt+grAg")
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "novedades" , category, "Novedades" , "http://www.redes-tv.com/" , "" , "")
-    xbmctools.addnewfolder( CHANNELNAME , "buscacategorias" , category, "Categorias" , "http://www.redes-tv.com/index.php?option=com_xmap&sitemap=1&Itemid=31" , "" , "")
-    xbmctools.addnewfolder( CHANNELNAME , "orden" , category, "Orden de emision" , "http://www.redes-tv.com/index.php?option=com_content&view=article&id=16&Itemid=30" , "" , "")
-    xbmctools.addnewfolder( CHANNELNAME , "search" , category, "Búsqueda" , "" , "" , "")
+    xbmctools.addnewfolder( __channel__ , "novedades" , category, "Novedades" , "http://www.redes-tv.com/" , "" , "")
+    xbmctools.addnewfolder( __channel__ , "buscacategorias" , category, "Categorias" , "http://www.redes-tv.com/index.php?option=com_xmap&sitemap=1&Itemid=31" , "" , "")
+    xbmctools.addnewfolder( __channel__ , "orden" , category, "Orden de emision" , "http://www.redes-tv.com/index.php?option=com_content&view=article&id=16&Itemid=30" , "" , "")
+    xbmctools.addnewfolder( __channel__ , "search" , category, "Búsqueda" , "" , "" , "")
  
      # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -84,7 +88,7 @@ def parsebusquedas(params,url,category):
             patronvideos  = '<a href="(.+?)">\s+(.+?)\s\s\s+</a>'
             matches1 = re.compile(patronvideos,re.DOTALL).findall(matches[i])
             scrapertools.printMatches(matches1)
-            xbmctools.addnewvideo( CHANNELNAME , "buscavideos" , category , "redestv",  matches1[0][1] , matches1[0][0] , "thumbnail" , "")
+            xbmctools.addnewvideo( __channel__ , "buscavideos" , category , "redestv",  matches1[0][1] , matches1[0][0] , "thumbnail" , "")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -102,7 +106,7 @@ def buscacategorias(params,url,category):
     scrapertools.printMatches(matches)
     if len(matches)>0:
         for i in range(len(matches)):
-            xbmctools.addnewfolder( CHANNELNAME , "parsewebcategorias" , category, matches[i][1] , matches[i][0] , "" , "")
+            xbmctools.addnewfolder( __channel__ , "parsewebcategorias" , category, matches[i][1] , matches[i][0] , "" , "")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -127,8 +131,8 @@ def parsewebcategorias(params,url,category):
         patronvideos = 'href="(.+?)" title="(.+?)"'
         matches1 = re.compile(patronvideos).findall(matches[0])
         for i in range(len(matches1)):
-            #xbmctools.addnewvideo( CHANNELNAME , "buscavideos" , category, matches1[i][1] , matches1[i][0] , "thumbnail" , "")
-            xbmctools.addnewvideo( CHANNELNAME , "buscavideos" , category , "redestv",  matches1[i][1] , matches1[i][0] , "thumbnail" , "")
+            #xbmctools.addnewvideo( __channel__ , "buscavideos" , category, matches1[i][1] , matches1[i][0] , "thumbnail" , "")
+            xbmctools.addnewvideo( __channel__ , "buscavideos" , category , "redestv",  matches1[i][1] , matches1[i][0] , "thumbnail" , "")
  
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -148,8 +152,8 @@ def orden(params,url,category):
     scrapertools.printMatches(matches)
     if len(matches)>0:
         for i in range(len(matches)):
-            xbmctools.addnewvideo( CHANNELNAME , "buscavideos" , category , "redestv",  matches[i][1] + " - " + matches[i][2], matches[i][0] , "thumbnail" , "")
-            #xbmctools.addnewfolder( CHANNELNAME , "parseweb" , category, matches[i][1] , matches[i][0] , "" , "")
+            xbmctools.addnewvideo( __channel__ , "buscavideos" , category , "redestv",  matches[i][1] + " - " + matches[i][2], matches[i][0] , "thumbnail" , "")
+            #xbmctools.addnewfolder( __channel__ , "parseweb" , category, matches[i][1] , matches[i][0] , "" , "")
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -170,7 +174,7 @@ def buscavideos(params,url,category):
     #mediaurl = bliptv.geturl(matches[0])
     #logger.info("mediaurl="+mediaurl)
     
-    xbmctools.play_video(CHANNELNAME,"bliptv",matches[0],"","","","")
+    xbmctools.play_video(__channel__,"bliptv",matches[0],"","","","")
 
 def novedades(params,url,category):
     logger.info("[redestv.py] parseweb")
@@ -190,7 +194,7 @@ def novedades(params,url,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG:
         scrapertools.printMatches(matches)
-    #xbmctools.addnewfolder( CHANNELNAME , "buscavideos" , category, "redestv" , "http://www.redes-tv.com"+matches[0][0] , "" , "")
+    #xbmctools.addnewfolder( __channel__ , "buscavideos" , category, "redestv" , "http://www.redes-tv.com"+matches[0][0] , "" , "")
     #scrapertools.printMatches(matches)
  
     #    patronvideos1 = 'src="http://www.megavideo.com/v/(.{8}).+?".+?></embed>.*?<p>(.+?)</p><div'
@@ -199,7 +203,7 @@ def novedades(params,url,category):
     #        scrapertools.printMatches(matches1)
  
     for i in range(len(matches)):
-        xbmctools.addnewvideo( CHANNELNAME , "buscavideos" , category , "redestv" , matches[i][1] , matches[i][0] , "thumbnail" , "")
+        xbmctools.addnewvideo( __channel__ , "buscavideos" , category , "redestv" , matches[i][1] , matches[i][0] , "thumbnail" , "")
  
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
@@ -295,7 +299,7 @@ def listmirrors(params,url,category):
             videotitle = video[0]
             scrapedurl = video[1]
             server = video[2]
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip()+" "+match[1]+" "+match[2]+" "+videotitle , scrapedurl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip()+" "+match[1]+" "+match[2]+" "+videotitle , scrapedurl , thumbnail , plot )
  
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
@@ -320,7 +324,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
  
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
  
 def addfolder(nombre,url,accion):
     logger.info('[redestv.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')

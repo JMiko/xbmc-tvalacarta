@@ -13,8 +13,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "dlmore"
-DEBUG = True
+__channel__ = "dlmore"
+__category__ = "S"
+__type__ = "generic"
+__title__ = "DL-More (FR)"
+__language__ = "FR"
+__creationdate__ = "20111014"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,7 +29,7 @@ def mainlist(item):
     logger.info("[dlmore.py] mainlist")
     
     itemlist=[]
-    itemlist.append( Item(channel=CHANNELNAME, title="TV Shows - Full listing"   , action="series" , url="http://www.dl-more.eu/series.html"))
+    itemlist.append( Item(channel=__channel__, title="TV Shows - Full listing"   , action="series" , url="http://www.dl-more.eu/series.html"))
 
     return itemlist
 
@@ -52,7 +58,7 @@ def series(item):
     
         scrapedurl = urlparse.urljoin(item.url,match[0])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -79,7 +85,7 @@ def episodios(item):
         
         # Assigns channel name and appends season to episode title
         for videoitem in videoitems:
-            videoitem.channel=CHANNELNAME
+            videoitem.channel=__channel__
             videoitem.title = scrapedtitle + videoitem.title
         
         # All episodes from all seasons in the same list

@@ -14,9 +14,13 @@ from core import logger
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "delatv"
-DEBUG = True
+__channel__ = "delatv"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "DeLaTV"
+__language__ = "ES"
 
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -26,9 +30,9 @@ def mainlist(item):
     logger.info("[pelispekes.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"        , title="Novedades"                      , url="http://delatv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="Categorias"        , title="Categorias"                      , url="http://delatv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME , action="Abecedario"        , title="Abecedario"                      , url="http://delatv.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Generico"        , title="Novedades"                      , url="http://delatv.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Categorias"        , title="Categorias"                      , url="http://delatv.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Abecedario"        , title="Abecedario"                      , url="http://delatv.com/"))
     
 
     return itemlist
@@ -112,7 +116,7 @@ def detail(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
 
 
 

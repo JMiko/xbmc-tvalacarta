@@ -22,12 +22,18 @@ from core import decrypt21
 from platformcode.xbmc import xbmctools
 from core import scrapertools
 
-CHANNELNAME = "peliculas21"
+__channel__ = "peliculas21"
+__category__ = "F"
+__type__ = "xbmc"
+__title__ = "Peliculas21"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Traza el inicio del canal
 logger.info("[peliculas21.py] init")
 
-DEBUG = True
+
 IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images','posters' ) )
 
 def mainlist(params,url,category):
@@ -38,16 +44,16 @@ def mainlist(params,url,category):
     puntuacion = "http://www.peliculas21.com/ajaxs/ajax_periodos.php?valor=puntuacion&periodo=0&idgenero=0&idactor=0&listado_style=2&pagina=&periodos_ajax=&valorperiodo=4"
     # Añade al listado de XBMC
 
-    xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , "Películas - Novedades"            ,novedades,"","")
-    xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , "Películas - Mas Vistos"           ,MasVistos,"","")
-    xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , "Películas - Mejor Puntuadas"      ,puntuacion,"","")
-    xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"     , category , "Películas - Busqueda por Año de Estreno"             ,"http://www.peliculas21.com/estrenos/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listsimple"       , category , "Trailers  - Próximos Estrenos"    ,"http://www.peliculas21.com/trailers/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "peliscat"         , category , "Películas - Lista por categorías" ,"http://www.peliculas21.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "pelisalfa"        , category , "Peliculas - Lista alfabética"     ,"","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listaActoresMasBuscados" , category , "Actores   - Lista Los Más Buscados"     ,"http://www.peliculas21.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "buscaporletraActor" , category , "Actores   - Lista Alfabética"     ,"http://www.peliculas21.com/actores/","","")    
-    xbmctools.addnewfolder( CHANNELNAME , "search"           , category , "Películas - Buscar"               ,"","","")
+    xbmctools.addnewfolder( __channel__ , "listsimpleMirror" , category , "Películas - Novedades"            ,novedades,"","")
+    xbmctools.addnewfolder( __channel__ , "listsimpleMirror" , category , "Películas - Mas Vistos"           ,MasVistos,"","")
+    xbmctools.addnewfolder( __channel__ , "listsimpleMirror" , category , "Películas - Mejor Puntuadas"      ,puntuacion,"","")
+    xbmctools.addnewfolder( __channel__ , "buscaporanyo"     , category , "Películas - Busqueda por Año de Estreno"             ,"http://www.peliculas21.com/estrenos/","","")
+    xbmctools.addnewfolder( __channel__ , "listsimple"       , category , "Trailers  - Próximos Estrenos"    ,"http://www.peliculas21.com/trailers/","","")
+    xbmctools.addnewfolder( __channel__ , "peliscat"         , category , "Películas - Lista por categorías" ,"http://www.peliculas21.com/","","")
+    xbmctools.addnewfolder( __channel__ , "pelisalfa"        , category , "Peliculas - Lista alfabética"     ,"","","")
+    xbmctools.addnewfolder( __channel__ , "listaActoresMasBuscados" , category , "Actores   - Lista Los Más Buscados"     ,"http://www.peliculas21.com/","","")
+    xbmctools.addnewfolder( __channel__ , "buscaporletraActor" , category , "Actores   - Lista Alfabética"     ,"http://www.peliculas21.com/actores/","","")    
+    xbmctools.addnewfolder( __channel__ , "search"           , category , "Películas - Buscar"               ,"","","")
 
 
     # Label (top-right)...
@@ -57,33 +63,33 @@ def mainlist(params,url,category):
 
 def pelisalfa(params, url, category):
 
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "0-9","http://www.peliculas21.com/0-9/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "A","http://www.peliculas21.com/a/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "B","http://www.peliculas21.com/b/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "C","http://www.peliculas21.com/c/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "D","http://www.peliculas21.com/d/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "E","http://www.peliculas21.com/e/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "F","http://www.peliculas21.com/f/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "G","http://www.peliculas21.com/g/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "H","http://www.peliculas21.com/h/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "I","http://www.peliculas21.com/i/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "J","http://www.peliculas21.com/j/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "K","http://www.peliculas21.com/k/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "L","http://www.peliculas21.com/l/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "M","http://www.peliculas21.com/m/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "N","http://www.peliculas21.com/n/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "O","http://www.peliculas21.com/o/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "P","http://www.peliculas21.com/p/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "Q","http://www.peliculas21.com/q/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "R","http://www.peliculas21.com/r/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "S","http://www.peliculas21.com/s/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "T","http://www.peliculas21.com/t/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "U","http://www.peliculas21.com/u/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "V","http://www.peliculas21.com/v/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "W","http://www.peliculas21.com/w/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "X","http://www.peliculas21.com/x/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "Y","http://www.peliculas21.com/y/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listsimpleMirror", category , "Z","http://www.peliculas21.com/z/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "0-9","http://www.peliculas21.com/0-9/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "A","http://www.peliculas21.com/a/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "B","http://www.peliculas21.com/b/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "C","http://www.peliculas21.com/c/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "D","http://www.peliculas21.com/d/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "E","http://www.peliculas21.com/e/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "F","http://www.peliculas21.com/f/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "G","http://www.peliculas21.com/g/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "H","http://www.peliculas21.com/h/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "I","http://www.peliculas21.com/i/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "J","http://www.peliculas21.com/j/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "K","http://www.peliculas21.com/k/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "L","http://www.peliculas21.com/l/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "M","http://www.peliculas21.com/m/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "N","http://www.peliculas21.com/n/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "O","http://www.peliculas21.com/o/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "P","http://www.peliculas21.com/p/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "Q","http://www.peliculas21.com/q/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "R","http://www.peliculas21.com/r/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "S","http://www.peliculas21.com/s/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "T","http://www.peliculas21.com/t/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "U","http://www.peliculas21.com/u/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "V","http://www.peliculas21.com/v/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "W","http://www.peliculas21.com/w/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "X","http://www.peliculas21.com/x/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "Y","http://www.peliculas21.com/y/","","")
+    xbmctools.addnewfolder( __channel__ ,"listsimpleMirror", category , "Z","http://www.peliculas21.com/z/","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -187,7 +193,7 @@ def performsearch(texto):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "listvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+        resultados.append( [__channel__ , "listvideos" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
 
@@ -211,7 +217,7 @@ def peliscat(params,url,category):
         genero = match[1]
     
     
-        xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , genero ,url,"","")
+        xbmctools.addnewfolder( __channel__ , "listsimpleMirror" , category , genero ,url,"","")
 
     
     # Label (top-right)...
@@ -318,7 +324,7 @@ def listsimple(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot, context =5 )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot, context =5 )
         #<div class="pagination" align="center" ><p><span  class='current'>1</span><a  href='/estrenos/2/'>2</a><a  href='/estrenos/2/'>Siguiente &raquo;</a><a  href='/estrenos/2/'></a>
     # Extrae la marca de siguiente página
 
@@ -332,7 +338,7 @@ def listsimple(params,url,category):
         scrapedurl = urlparse.urljoin(url1,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart = scrapedthumbnail )
+        xbmctools.addnewfolder( __channel__ , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart = scrapedthumbnail )
 
     # Label (top-right)...
     xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
@@ -421,7 +427,7 @@ def listsimpleMirror(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , context=5)
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , context=5)
         #<div class="pagination" align="center" ><p><span  class='current'>1</span><a  href='/estrenos/2/'>2</a><a  href='/estrenos/2/'>Siguiente &raquo;</a><a  href='/estrenos/2/'></a>
     # Extrae la marca de siguiente página
     
@@ -440,7 +446,7 @@ def listsimpleMirror(params,url,category):
         scrapedurl = "http://www.peliculas21.com/ajaxs/ajax_periodos.php?valor=%s&periodo=%s&idgenero=%s&idactor=%s&listado_style=%s&pagina=%s&periodos_ajax=%s&valorperiodo=%s" %(paramsurl["valor"],paramsurl["periodo"],paramsurl["idgenero"],paramsurl["idactor"],paramsurl["listado_style"],sigtepag[6],paramsurl["periodos_ajax"],paramsurl["valorperiodo"])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
         
     else:
         
@@ -452,7 +458,7 @@ def listsimpleMirror(params,url,category):
             scrapedurl   = urlparse.urljoin(url1,matches[0])
             scrapedthumbnail = ""
             scrapedplot  = ""
-            xbmctools.addnewfolder( CHANNELNAME , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart = scrapedthumbnail)
+            xbmctools.addnewfolder( __channel__ , "listsimpleMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , fanart = scrapedthumbnail)
             
     # Label (top-right)...
     xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
@@ -521,7 +527,7 @@ def listvideos(params,url,category):
     if len(matchtrailer)>0:
         for match in matchtrailer:
         # Añade al listado de XBMC
-            xbmctools.addnewvideo( CHANNELNAME , "youtubeplay" , category ,"Directo", "Ver El Trailer de : "+title , match , thumbnail, plot )
+            xbmctools.addnewvideo( __channel__ , "youtubeplay" , category ,"Directo", "Ver El Trailer de : "+title , match , thumbnail, plot )
     else:
         #import core.trailertools
         print title
@@ -560,14 +566,14 @@ def listvideos(params,url,category):
                 logger.info("scrapedthumbnail="+scrapedthumbnail)
 
             # Añade al listado de XBMC
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category ,"Megavideo", scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewvideo( __channel__ , "play" , category ,"Megavideo", scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
     if len(matches)==0:
         listavideos = servertools.findvideos(data)
         encontrados = set()
         for titulo,scrapedurl,servidor in listavideos:
             if scrapedurl.strip() not in encontrados:
                 encontrados.add(scrapedurl.strip())
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category ,servidor, title+ " - %s" % titulo  , scrapedurl , thumbnail, plot )        
+                xbmctools.addnewvideo( __channel__ , "play" , category ,servidor, title+ " - %s" % titulo  , scrapedurl , thumbnail, plot )        
     '''
     <span class="bloque-uploader">Anónimo</span>
     <span class="bloque-doblaje"><img src="../images/esp.gif" class="bandera" /></span>
@@ -621,9 +627,9 @@ def listvideos(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewvideo( __channel__ , "play" , category ,server, scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
         if part2:
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle2 , scrapedurl2 , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewvideo( __channel__ , "play" , category ,server, scrapedtitle2 , scrapedurl2 , scrapedthumbnail, scrapedplot )
     # Extrae las entradas (videos) directos
     patronvideos = 'flashvars="file=([^\&]+)\&amp;controlbar=over'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -638,12 +644,12 @@ def listvideos(params,url,category):
         
         for match in matches:
             # Añade al listado de XBMC
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title +" -  ["+match[0]+"]"+ " (Directo)" , match[1] , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title +" -  ["+match[0]+"]"+ " (Directo)" , match[1] , thumbnail , plot )
             
     # Busca otras peliculas relacionadas con los actores
     if len(matchesactores)>0:
         titulo = "Busca otros Films de los actores de esta pelicula"
-        xbmctools.addnewfolder( CHANNELNAME , "listaractores" , category , titulo , matchesBK , thumbnail, actores )
+        xbmctools.addnewfolder( __channel__ , "listaractores" , category , titulo , matchesBK , thumbnail, actores )
         
     # Lista peliculas relacionadas
     titulo = "Ver Peliculas Relacionadas" 
@@ -651,7 +657,7 @@ def listvideos(params,url,category):
     plot2 = "PELICULAS RELACIONADAS :\n\n"
     for match in matches:
         plot2 = plot2 + "-"+match[1]+"\n"
-    xbmctools.addnewfolder( CHANNELNAME , "listarelacionados" , category , titulo , matchesBK , thumbnail, plot2 , fanart = thumbnail )
+    xbmctools.addnewfolder( __channel__ , "listarelacionados" , category , titulo , matchesBK , thumbnail, plot2 , fanart = thumbnail )
     
     # Label (top-right)...
     xbmcplugin.setContent(int( sys.argv[ 1 ] ),"movies")
@@ -667,7 +673,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
     logger.info("[peliculas21.py] youtubeplay")
@@ -789,7 +795,7 @@ def listaActoresMasBuscados(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
         
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -833,7 +839,7 @@ def listActoresAlfab(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listsimple" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
         
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )

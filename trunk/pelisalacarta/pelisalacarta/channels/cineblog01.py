@@ -14,9 +14,13 @@ from core import logger
 from core import config
 from core.item import Item
 
-CHANNELNAME = "cineblog01"
+__channel__ = "cineblog01"
+__category__ = "F,S,A"
+__type__ = "generic"
+__title__ = "Cineblog01 (IT)"
+__language__ = "IT"
 
-DEBUG = True
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -26,12 +30,12 @@ def mainlist(item):
     itemlist = []
 
     # Main options
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos", title="Film - Novità" , url="http://cineblog01.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisalfa", title="Film - Per Lettera" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliscat", title="Film - Per Categoria" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="searchmovie", title="Film - Cerca" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="listserie", title="Serie" , url="http://cineblog01.info/serietv/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="listserie", title="Anime" , url="http://cineblog01.info/anime/" ))
+    itemlist.append( Item(channel=__channel__, action="listvideos", title="Film - Novità" , url="http://cineblog01.com/" ))
+    itemlist.append( Item(channel=__channel__, action="pelisalfa", title="Film - Per Lettera" ))
+    itemlist.append( Item(channel=__channel__, action="peliscat", title="Film - Per Categoria" ))
+    itemlist.append( Item(channel=__channel__, action="searchmovie", title="Film - Cerca" ))
+    itemlist.append( Item(channel=__channel__, action="listserie", title="Serie" , url="http://cineblog01.info/serietv/" ))
+    itemlist.append( Item(channel=__channel__, action="listserie", title="Anime" , url="http://cineblog01.info/anime/" ))
 
     return itemlist
 
@@ -40,33 +44,33 @@ def pelisalfa(item):
     itemlist = []
 
     # Alphabetic menu
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="0-9", url="http://cineblog01.com/category/numero"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="A", url="http://cineblog01.com/category/a"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="B", url="http://cineblog01.com/category/b"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="C", url="http://cineblog01.com/category/c"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="D", url="http://cineblog01.com/category/d"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="E", url="http://cineblog01.com/category/e"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="F", url="http://cineblog01.com/category/f"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="G", url="http://cineblog01.com/category/g"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="H", url="http://cineblog01.com/category/h"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="I", url="http://cineblog01.com/category/i"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="J", url="http://cineblog01.com/category/j"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="K", url="http://cineblog01.com/category/k"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="L", url="http://cineblog01.com/category/l"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="M", url="http://cineblog01.com/category/m"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="N", url="http://cineblog01.com/category/n"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="O", url="http://cineblog01.com/category/o"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="P", url="http://cineblog01.com/category/p"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Q", url="http://cineblog01.com/category/q"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="R", url="http://cineblog01.com/category/r"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="S", url="http://cineblog01.com/category/s"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="T", url="http://cineblog01.com/category/t"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="U", url="http://cineblog01.com/category/u"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="V", url="http://cineblog01.com/category/v"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="W", url="http://cineblog01.com/category/w"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="X", url="http://cineblog01.com/category/x"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Y", url="http://cineblog01.com/category/y"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Z", url="http://cineblog01.com/category/z"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="0-9", url="http://cineblog01.com/category/numero"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="A", url="http://cineblog01.com/category/a"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="B", url="http://cineblog01.com/category/b"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="C", url="http://cineblog01.com/category/c"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="D", url="http://cineblog01.com/category/d"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="E", url="http://cineblog01.com/category/e"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="F", url="http://cineblog01.com/category/f"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="G", url="http://cineblog01.com/category/g"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="H", url="http://cineblog01.com/category/h"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="I", url="http://cineblog01.com/category/i"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="J", url="http://cineblog01.com/category/j"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="K", url="http://cineblog01.com/category/k"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="L", url="http://cineblog01.com/category/l"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="M", url="http://cineblog01.com/category/m"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="N", url="http://cineblog01.com/category/n"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="O", url="http://cineblog01.com/category/o"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="P", url="http://cineblog01.com/category/p"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Q", url="http://cineblog01.com/category/q"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="R", url="http://cineblog01.com/category/r"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="S", url="http://cineblog01.com/category/s"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="T", url="http://cineblog01.com/category/t"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="U", url="http://cineblog01.com/category/u"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="V", url="http://cineblog01.com/category/v"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="W", url="http://cineblog01.com/category/w"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="X", url="http://cineblog01.com/category/x"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Y", url="http://cineblog01.com/category/y"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Z", url="http://cineblog01.com/category/z"))
 
     return itemlist
 
@@ -74,33 +78,33 @@ def peliscat(item):
     logger.info("[cineblog01.py] mainlist")
     itemlist = []
 
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Animazione", url="http://cineblog01.com/category/animazione/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Avventura", url="http://cineblog01.com/category/avventura/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Azione", url="http://cineblog01.com/category/azione/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Biografico", url="http://cineblog01.com/category/biografico/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Comico", url="http://cineblog01.com/category/comico/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Commedia", url="http://cineblog01.com/category/commedia/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Corti", url="http://cineblog01.com/category/solo-cortometraggio/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Cult", url="http://cineblog01.com/category/cult/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Documentario", url="http://cineblog01.com/category/documentario/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Drammatico", url="http://cineblog01.com/category/drammatico/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Erotico", url="http://cineblog01.com/category/erotico/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Fantascienza", url="http://cineblog01.com/category/fantascienza/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Fantasy", url="http://cineblog01.com/category/fantasyfantastico/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Gangster", url="http://cineblog01.com/category/gangster/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Grottesco", url="http://cineblog01.com/category/grottesco/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Guerra", url="http://cineblog01.com/category/guerra/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Horror", url="http://cineblog01.com/category/horror/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Megavideo", url="http://cineblog01.com/category/solo-megavideo/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Megaupload", url="http://cineblog01.com/?cat=410"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Musical", url="http://cineblog01.com/category/musicale/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Noir", url="http://cineblog01.com/category/noir/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Poliziesco", url="http://cineblog01.com/category/poliziesco/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Sentimentale", url="http://cineblog01.com/category/sentimentale/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Storico", url="http://cineblog01.com/category/storico/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Thriller", url="http://cineblog01.com/category/thriller/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Tutto Totò", url="http://cineblog01.com/category/st-toto/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcat", title="Western", url="http://cineblog01.com/category/western/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Animazione", url="http://cineblog01.com/category/animazione/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Avventura", url="http://cineblog01.com/category/avventura/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Azione", url="http://cineblog01.com/category/azione/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Biografico", url="http://cineblog01.com/category/biografico/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Comico", url="http://cineblog01.com/category/comico/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Commedia", url="http://cineblog01.com/category/commedia/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Corti", url="http://cineblog01.com/category/solo-cortometraggio/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Cult", url="http://cineblog01.com/category/cult/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Documentario", url="http://cineblog01.com/category/documentario/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Drammatico", url="http://cineblog01.com/category/drammatico/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Erotico", url="http://cineblog01.com/category/erotico/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Fantascienza", url="http://cineblog01.com/category/fantascienza/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Fantasy", url="http://cineblog01.com/category/fantasyfantastico/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Gangster", url="http://cineblog01.com/category/gangster/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Grottesco", url="http://cineblog01.com/category/grottesco/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Guerra", url="http://cineblog01.com/category/guerra/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Horror", url="http://cineblog01.com/category/horror/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Megavideo", url="http://cineblog01.com/category/solo-megavideo/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Megaupload", url="http://cineblog01.com/?cat=410"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Musical", url="http://cineblog01.com/category/musicale/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Noir", url="http://cineblog01.com/category/noir/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Poliziesco", url="http://cineblog01.com/category/poliziesco/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Sentimentale", url="http://cineblog01.com/category/sentimentale/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Storico", url="http://cineblog01.com/category/storico/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Thriller", url="http://cineblog01.com/category/thriller/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Tutto Totò", url="http://cineblog01.com/category/st-toto/"))
+    itemlist.append( Item(channel=__channel__, action="listcat", title="Western", url="http://cineblog01.com/category/western/"))
 
     return itemlist
 
@@ -142,7 +146,7 @@ def listcat(item):
         scrapedthumbnail = urlparse.urljoin(item.url,match[0])
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Remove the next page mark
     patronvideos = '<a href="(http://www.cineblog01.com/category/[0-9a-zA-Z]+/page/[0-9]+/)">Avanti >'
@@ -156,7 +160,7 @@ def listcat(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="listcat" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listcat" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -186,7 +190,7 @@ def listvideos(item):
         scrapedthumbnail = urlparse.urljoin(item.url,match[0])
         scrapedplot = scrapertools.unescape(match[3])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Remove the next page mark <a href="http://cineblog01.com/page/2/">Avanti
     patronvideos = '<a href="(http://[www/.]*cineblog01.com/page/[0-9]+)/">Avanti >'
@@ -200,7 +204,7 @@ def listvideos(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -229,7 +233,7 @@ def listserie(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Remove the next page mark
     patronvideos = '<a href="(http://www.cineblog01.info/[^\/]+/page/[0-9]+)">&gt;'
@@ -243,6 +247,6 @@ def listserie(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="listserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist

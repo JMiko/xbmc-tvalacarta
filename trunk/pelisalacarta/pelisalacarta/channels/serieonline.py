@@ -13,8 +13,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "serieonline"
-DEBUG = True
+__channel__ = "serieonline"
+__category__ = "F,S,D"
+__type__ = "generic"
+__title__ = "Serieonline"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,10 +28,10 @@ def mainlist(item):
     logger.info("[serieonline.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"    , action="novedades", url="http://www.serieonline.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"       , action="series"   , url="http://www.serieonline.net/series/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas"    , action="peliculas", url="http://www.serieonline.net/peliculas/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales" , action="peliculas", url="http://www.serieonline.net/documentales/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"    , action="novedades", url="http://www.serieonline.net/"))
+    itemlist.append( Item(channel=__channel__, title="Series"       , action="series"   , url="http://www.serieonline.net/series/"))
+    itemlist.append( Item(channel=__channel__, title="Películas"    , action="peliculas", url="http://www.serieonline.net/peliculas/"))
+    itemlist.append( Item(channel=__channel__, title="Documentales" , action="peliculas", url="http://www.serieonline.net/documentales/"))
     
     return itemlist
 
@@ -51,7 +56,7 @@ def novedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<div class="paginacion-num"><a href="([^"]+)">'
@@ -61,7 +66,7 @@ def novedades(item):
     if len(matches)>0:
         scrapedtitle = "Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -89,7 +94,7 @@ def peliculas(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<div class="paginacion-num"><a href="([^"]+)">'
@@ -99,7 +104,7 @@ def peliculas(item):
     if len(matches)>0:
         scrapedtitle = "Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title=scrapedtitle , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -145,7 +150,7 @@ def series(item,paginacion=True):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<div class="paginacion-num">\d+</div><div class="paginacion-num"><a href="([^"]+)">'
@@ -155,7 +160,7 @@ def series(item,paginacion=True):
     if len(matches)>0:
         scrapedtitle = ">> Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        newitem = Item(channel=CHANNELNAME, action="series", title=scrapedtitle , url=scrapedurl , folder=True)
+        newitem = Item(channel=__channel__, action="series", title=scrapedtitle , url=scrapedurl , folder=True)
         if paginacion:
             itemlist.append( newitem )
         else:
@@ -190,6 +195,6 @@ def episodios(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , show=item.show, plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , show=item.show, plot=scrapedplot , folder=True) )
 
     return itemlist

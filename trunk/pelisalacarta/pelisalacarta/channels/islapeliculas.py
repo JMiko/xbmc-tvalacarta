@@ -14,8 +14,14 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "islapeliculas"
-DEBUG = True
+__channel__ = "islapeliculas"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "IslaPelículas"
+__language__ = "ES"
+__creationdate__ = "20110509"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -24,11 +30,11 @@ def mainlist(item):
     logger.info("[islapeliculas.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="novedades", url="http://www.islapeliculas.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Listado por Categorías", action="cat", url="http://www.islapeliculas.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Estrenos" , action="estrenos", url="http://www.islapeliculas.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Película", action="search", url = "http://www.islapeliculas.com/buscar-pelicula-%s") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar por Actor", action="search", url = "http://www.islapeliculas.com/actor-%s") )
+    itemlist.append( Item(channel=__channel__, title="Novedades", action="novedades", url="http://www.islapeliculas.com/"))
+    itemlist.append( Item(channel=__channel__, title="Listado por Categorías", action="cat", url="http://www.islapeliculas.com/"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos" , action="estrenos", url="http://www.islapeliculas.com/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar por Película", action="search", url = "http://www.islapeliculas.com/buscar-pelicula-%s") )
+    itemlist.append( Item(channel=__channel__, title="Buscar por Actor", action="search", url = "http://www.islapeliculas.com/actor-%s") )
 
     return itemlist
 
@@ -66,7 +72,7 @@ def novedades(item):
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="listapelis", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="listapelis", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
               
     # Extrae la marca de siguiente página
     patronvideos = '<td width="69">.*?<table.*?<a href="([^"]+)".*?>'
@@ -77,7 +83,7 @@ def novedades(item):
         scrapedtitle = "Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
-        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
 
@@ -103,7 +109,7 @@ def listapelis(item):
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
             
     return itemlist
             
@@ -129,7 +135,7 @@ def videos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
 
     return itemlist
 
@@ -159,7 +165,7 @@ def cat(item):
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
         
     return itemlist
     
@@ -187,5 +193,5 @@ def estrenos(item):
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     return itemlist

@@ -23,7 +23,13 @@ from servers import vk
 
 from pelisalacarta import buscador
 
-CHANNELNAME = "sonolatino"
+__channel__ = "sonolatino"
+__category__ = "M"
+__type__ = "xbmc"
+__title__ = "Sonolatino"
+__language__ = ""
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -33,21 +39,20 @@ except:
 
 logger.info("[sonolatino.py] init")
 
-DEBUG = True
 IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images' , 'posters' ) )
 
 
 def mainlist(params,url,category):
     logger.info("[sonolatino.py] mainlist")
     
-    xbmctools.addnewfolder( CHANNELNAME , "Videosnuevos"  , category , "Videos Musicales - Nuevos"           ,"http://www.sonolatino.com/newvideos.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "TipoVideo"     , category , "Videos Musicales - Categorias"       ,"","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "tagvideos"  , category , "Tag de Videos","http://www.sonolatino.com/index.html",os.path.join(IMAGES_PATH, 'tag.png'),"")
-    xbmctools.addnewfolder( CHANNELNAME , "topVideos"     , category , "Top Videos Musicales Online"         ,"http://www.sonolatino.com/topvideos.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listatipoVideo", category , "Videos Musicales Siendo Vistas Ahora","http://www.sonolatino.com/index.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "Videodeldia"   , category , "Video Musical del dia"               ,"http://www.sonolatino.com/index.html","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search"          , category , "Buscar"                              ,"","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "creartag"           , category , "Crear la lista de categorias","http://www.sonolatino.com/",tecleadoultimo,os.path.join(IMAGES_PATH, 'search_icon.png'),"")
+    xbmctools.addnewfolder( __channel__ , "Videosnuevos"  , category , "Videos Musicales - Nuevos"           ,"http://www.sonolatino.com/newvideos.html","","")
+    xbmctools.addnewfolder( __channel__ , "TipoVideo"     , category , "Videos Musicales - Categorias"       ,"","","")
+    #xbmctools.addnewfolder( __channel__ , "tagvideos"  , category , "Tag de Videos","http://www.sonolatino.com/index.html",os.path.join(IMAGES_PATH, 'tag.png'),"")
+    xbmctools.addnewfolder( __channel__ , "topVideos"     , category , "Top Videos Musicales Online"         ,"http://www.sonolatino.com/topvideos.html","","")
+    xbmctools.addnewfolder( __channel__ , "listatipoVideo", category , "Videos Musicales Siendo Vistas Ahora","http://www.sonolatino.com/index.html","","")
+    xbmctools.addnewfolder( __channel__ , "Videodeldia"   , category , "Video Musical del dia"               ,"http://www.sonolatino.com/index.html","","")
+    xbmctools.addnewfolder( __channel__ , "search"          , category , "Buscar"                              ,"","","")
+    #xbmctools.addnewfolder( __channel__ , "creartag"           , category , "Crear la lista de categorias","http://www.sonolatino.com/",tecleadoultimo,os.path.join(IMAGES_PATH, 'search_icon.png'),"")
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -104,7 +109,7 @@ def performsearch(texto):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+        resultados.append( [__channel__ , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
 
@@ -144,7 +149,7 @@ def searchresults2(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
 
 
         #llama a la rutina paginasiguiente
@@ -166,55 +171,55 @@ def searchresults2(params,url,category):
 def TipoVideo(params, url, category):
     logger.info("[sonolatino.py] TipoVideo")
     
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Bachata","http://www.sonolatino.com/bachata","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Best Rock Songs","http://www.sonolatino.com/toprock","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Blues","http://www.sonolatino.com/blues","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Champeta","http://www.sonolatino.com/champeta","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Country Pop","http://www.sonolatino.com/countrypop","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Cumbia","http://www.sonolatino.com/cumbia","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Dance","http://www.sonolatino.com/dance","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Dance Punk","http://www.sonolatino.com/dancepunk","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Duranguense","http://www.sonolatino.com/duranguense","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Electro hop","http://www.sonolatino.com/electro-hop","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Electro pop","http://www.sonolatino.com/electropop","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Electronica","http://www.sonolatino.com/electronica","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Emo","http://www.sonolatino.com/emo","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Especiales","http://www.sonolatino.com/especiales","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Flamenco","http://www.sonolatino.com/flamenco","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Folklorica","http://www.sonolatino.com/folklorica","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Funk Rock","http://www.sonolatino.com/funkrock","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Grupera","http://www.sonolatino.com/grupera","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Grupos Nuevos","http://www.sonolatino.com/grupos-nuevos","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Hard rock","http://www.sonolatino.com/Hard-rock","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Hip Hop","http://www.sonolatino.com/hiphop","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "House","http://www.sonolatino.com/house","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Humor","http://www.sonolatino.com/humor","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Indie pop","http://www.sonolatino.com/indie-pop","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Indie Rock","http://www.sonolatino.com/indierock","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Jazz","http://www.sonolatino.com/jazz","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Merengue","http://www.sonolatino.com/merengue","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Merengue Urbano","http://www.sonolatino.com/merengue-urbano","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Metal","http://www.sonolatino.com/metal","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Modelos","http://www.sonolatino.com/modelos","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Neo Soul","http://www.sonolatino.com/neosoul","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "New Wave","http://www.sonolatino.com/newwave","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Norteña","http://www.sonolatino.com/nortena","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Pop","http://www.sonolatino.com/pop","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Pop Punk","http://www.sonolatino.com/poppunk","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Pop Rap","http://www.sonolatino.com/poprap","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Pop Rock","http://www.sonolatino.com/poprock","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Post grunge","http://www.sonolatino.com/Post-grunge","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Post Hardcore","http://www.sonolatino.com/posthardcore","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Punk","http://www.sonolatino.com/punk","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "R'n'B","http://www.sonolatino.com/rnb","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Ranchera","http://www.sonolatino.com/ranchera","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Rap","http://www.sonolatino.com/rap","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Reggae Fusion","http://www.sonolatino.com/reggaefusion","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Reggaeton","http://www.sonolatino.com/reggaeton","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Rock & Alternative","http://www.sonolatino.com/rock","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Salsa","http://www.sonolatino.com/salsa","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Chicas","http://www.sonolatino.com/chicas","","")
-    xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "Chicos","http://www.sonolatino.com/chicos","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Bachata","http://www.sonolatino.com/bachata","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Best Rock Songs","http://www.sonolatino.com/toprock","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Blues","http://www.sonolatino.com/blues","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Champeta","http://www.sonolatino.com/champeta","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Country Pop","http://www.sonolatino.com/countrypop","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Cumbia","http://www.sonolatino.com/cumbia","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Dance","http://www.sonolatino.com/dance","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Dance Punk","http://www.sonolatino.com/dancepunk","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Duranguense","http://www.sonolatino.com/duranguense","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Electro hop","http://www.sonolatino.com/electro-hop","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Electro pop","http://www.sonolatino.com/electropop","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Electronica","http://www.sonolatino.com/electronica","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Emo","http://www.sonolatino.com/emo","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Especiales","http://www.sonolatino.com/especiales","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Flamenco","http://www.sonolatino.com/flamenco","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Folklorica","http://www.sonolatino.com/folklorica","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Funk Rock","http://www.sonolatino.com/funkrock","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Grupera","http://www.sonolatino.com/grupera","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Grupos Nuevos","http://www.sonolatino.com/grupos-nuevos","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Hard rock","http://www.sonolatino.com/Hard-rock","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Hip Hop","http://www.sonolatino.com/hiphop","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "House","http://www.sonolatino.com/house","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Humor","http://www.sonolatino.com/humor","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Indie pop","http://www.sonolatino.com/indie-pop","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Indie Rock","http://www.sonolatino.com/indierock","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Jazz","http://www.sonolatino.com/jazz","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Merengue","http://www.sonolatino.com/merengue","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Merengue Urbano","http://www.sonolatino.com/merengue-urbano","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Metal","http://www.sonolatino.com/metal","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Modelos","http://www.sonolatino.com/modelos","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Neo Soul","http://www.sonolatino.com/neosoul","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "New Wave","http://www.sonolatino.com/newwave","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Norteña","http://www.sonolatino.com/nortena","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Pop","http://www.sonolatino.com/pop","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Pop Punk","http://www.sonolatino.com/poppunk","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Pop Rap","http://www.sonolatino.com/poprap","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Pop Rock","http://www.sonolatino.com/poprock","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Post grunge","http://www.sonolatino.com/Post-grunge","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Post Hardcore","http://www.sonolatino.com/posthardcore","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Punk","http://www.sonolatino.com/punk","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "R'n'B","http://www.sonolatino.com/rnb","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Ranchera","http://www.sonolatino.com/ranchera","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Rap","http://www.sonolatino.com/rap","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Reggae Fusion","http://www.sonolatino.com/reggaefusion","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Reggaeton","http://www.sonolatino.com/reggaeton","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Rock & Alternative","http://www.sonolatino.com/rock","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Salsa","http://www.sonolatino.com/salsa","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Chicas","http://www.sonolatino.com/chicas","","")
+    xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "Chicos","http://www.sonolatino.com/chicos","","")
 
 
     # Label (top-right)...
@@ -291,7 +296,7 @@ def listaseries(params,url,category):
                     logger.info("scrapedurl="+scrapedurl)
                     logger.info("scrapedthumbnail="+scrapedthumbnail)
                         # Añade al listado de XBMC
-                xbmctools.addnewfolder( CHANNELNAME , "listatipodocumental" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )                    
+                xbmctools.addnewfolder( __channel__ , "listatipodocumental" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )                    
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -352,7 +357,7 @@ def listatipoVideo(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
  #  -------------------------------------------
  #     Busqueda de la siguiente pagina
     
@@ -443,8 +448,8 @@ def Videosnuevoslist(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-            #xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle, scrapedurl , scrapedthumbnail, "detail" )
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle ,scrapedurl , scrapedthumbnail , scrapedplot )
+            #xbmctools.addthumbnailfolder( __channel__ , scrapedtitle, scrapedurl , scrapedthumbnail, "detail" )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle ,scrapedurl , scrapedthumbnail , scrapedplot )
     
 
     # Busca enlaces de paginas siguientes...
@@ -492,7 +497,7 @@ def Videodeldia(params,url,category):
             logger.info("scrapedurl="+scrapedurl)
             logger.info("scrapedthumbnail="+scrapedthumbnail)
  
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot ) 
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot ) 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
@@ -588,9 +593,9 @@ def toplist(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        #    xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "directo" , match[0]+") "+scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
+        #    xbmctools.addnewvideo( __channel__ , "detail" , category , "directo" , match[0]+") "+scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
 
-        xbmctools.addthumbnailfolder( CHANNELNAME , match[0]+") "+scrapedtitle+" - "+scrapedplot, scrapedurl , scrapedthumbnail, "detail" )
+        xbmctools.addthumbnailfolder( __channel__ , match[0]+") "+scrapedtitle+" - "+scrapedplot, scrapedurl , scrapedthumbnail, "detail" )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -652,10 +657,10 @@ def detail(params,url,category):
         if  url.endswith(".jpg"):break
         server = video[2]
         if server=="Megavideo" or "Veoh":
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace("(Megavideo)","").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip().replace("(Megavideo)","").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
             
         else:
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url1 , thumbnail , plot )
 
 
         
@@ -718,15 +723,15 @@ def detail(params,url,category):
             matches = re.compile(patron,re.DOTALL).findall(url)
             url = uri
             titulo = "Ver Videos Relacionados"
-            xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos videos relacionados con el mismo video musical" )
+            xbmctools.addnewfolder( __channel__ , "Relacionados" , category , titulo , url , "" , "Lísta algunos videos relacionados con el mismo video musical" )
                     
             url = "http://www.sonolatino.com/ajax.php?p=detail&do=show_more_best&vid="+matches[0]
             titulo = "Ver Videos mas vistos"
-            xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos mas vistos relacionados con el video musical" )
+            xbmctools.addnewfolder( __channel__ , "Relacionados" , category , titulo , url , "" , "Lísta algunos mas vistos relacionados con el video musical" )
         
             titulo = "Ver Videos del mismo Artista"
             url = "http://www.sonolatino.com/ajax.php?p=detail&do=show_more_artist&vid="+matches[0]
-            xbmctools.addnewfolder( CHANNELNAME , "Relacionados" , category , titulo , url , "" , "Lísta algunos videos relacionados con el mismo Artista" )
+            xbmctools.addnewfolder( __channel__ , "Relacionados" , category , titulo , url , "" , "Lísta algunos videos relacionados con el mismo Artista" )
     except:
             pass
     patron  = '<h1 class="h2_artistnuevo">([^<]+)</h1>'
@@ -760,9 +765,9 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
             if "youtube.com" in  matches[0]:
                 from youtube import Extract_id
                 url = Extract_id(matches[0])
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Youtube" , "%s [YOUTUBE]" %title , url , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Youtube" , "%s [YOUTUBE]" %title , url , thumbnail , plot )
             else:
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , "%s [Directo]" %title, matches[0] , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , "%s [Directo]" %title, matches[0] , thumbnail , plot )
 
         elif servidor == "Veoh":
         
@@ -775,7 +780,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
                     resultado = advertencia.ok('El Video Video' , title , 'no existe en Veoh','visite la pagina www.sonolatino.com para reportarlo' )
                     return
                 logger.info(" newmatches = "+veohurl)
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, veohurl , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title, veohurl , thumbnail , plot )
             else:
                 advertencia = xbmcgui.Dialog()
                 resultado = advertencia.ok('El Video Video' , title , 'no existe en Veoh')
@@ -789,7 +794,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
             newmatches = re.compile(newpatron,re.DOTALL).findall(data1)
             if len(newmatches)>0:
                 logger.info(" newmatches = "+newmatches[0])
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title, newmatches[0] , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title, newmatches[0] , thumbnail , plot )
 
         elif servidor == "Stagevu":
             url= "http://stagevu.com/video/"+matches[0]
@@ -800,7 +805,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
             
             videotitle = "Video en Stagevu"
             server = servidor
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title.strip().replace(server,"").replace("  "," ") + " - " + videotitle , url , thumbnail , plot )
         
         elif servidor == "izlesene":
             url = "http://www.izlesene.com/actions/video/embed.php?video="+matches[0]
@@ -810,7 +815,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
             if len(newmatches)>0:
                 logger.info(" izlesene furl = "+newmatches[0][0])
                 url = "http://dcdn.nokta.com/%s%s" %(newmatches[0][0], "_1_5_1.xml")
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "izlesene" , "%s (%s) [IZLESENE]" %(title,newmatches[0][1]) , url , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "izlesene" , "%s (%s) [IZLESENE]" %(title,newmatches[0][1]) , url , thumbnail , plot )
         
         elif servidor == "Dailymotion":
             if "/" in matches[0]:
@@ -827,7 +832,7 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
                 
                     
                 subtitle = "[FLV-Directo-Dailymotion]"
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
             
             # Busca el enlace al video con formato HQ (H264)        
             Highres=re.compile('%22hqURL%22%3A%22(.+?)%22').findall(data2)
@@ -837,11 +842,11 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
                 
                         
                 subtitle = "[h264-Directo-Dailymotion-este video no es soportado en versiones antiguas o xbox plataforma]"
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
         
         elif servidor == "Vimeo":
             subtitle = "[Vimeo]"
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Vimeo" , title + " - "+subtitle, matches[0] , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Vimeo" , title + " - "+subtitle, matches[0] , thumbnail , plot )
         ## -------------------------
         
         elif servidor == "Yahoo":
@@ -850,9 +855,9 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
             video_url = yahoo.geturl(matches[0])
             if len(video_url)>0:
                 if "rtmp" in video_url:
-                    addnewvideo( CHANNELNAME , "playRtmp" , category , "Directo" , title + " - "+subtitle, video_url , thumbnail , plot )
+                    addnewvideo( __channel__ , "playRtmp" , category , "Directo" , title + " - "+subtitle, video_url , thumbnail , plot )
                 else:
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, video_url , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, video_url , thumbnail , plot )
 #############----------------------------------------------------------#############
 
 def play(params,url,category):
@@ -885,7 +890,7 @@ def play(params,url,category):
         if len(matches)>0:
             url = matches[0]
             server = "Directo"
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 
 def playRtmp(params,url,category):
@@ -948,16 +953,16 @@ def paginasiguientes(patronvideos,data,category,cat):
 
         if cat == 'tipo':   
         # Añade al listado de XBMC
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "listatipoVideo" )
+            xbmctools.addthumbnailfolder( __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail, "listatipoVideo" )
         elif cat == 'nuevo':
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "Videosnuevoslist" )
+            xbmctools.addthumbnailfolder( __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail, "Videosnuevoslist" )
         elif cat == 'tag':
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , "http://www.sonolatino.com.es/series"+match , scrapedthumbnail, "tagdocumentaleslist" )
+            xbmctools.addthumbnailfolder( __channel__ , scrapedtitle , "http://www.sonolatino.com.es/series"+match , scrapedthumbnail, "tagdocumentaleslist" )
         elif cat == 'busca':
-            xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "searchresults" )
+            xbmctools.addthumbnailfolder( __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail, "searchresults" )
                
 
-    #xbmctools.addthumbnailfolder( CHANNELNAME , menutitle , menurl , "", "volvermenu" )
+    #xbmctools.addthumbnailfolder( __channel__ , menutitle , menurl , "", "volvermenu" )
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
 
@@ -1021,7 +1026,7 @@ def verRelacionados(params,data,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle+" - "+scrapeddescription , scrapedurl , scrapedthumbnail , scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle+" - "+scrapeddescription , scrapedurl , scrapedthumbnail , scrapedplot )
 
         # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -1078,7 +1083,7 @@ def creartag(params,url,category):
             filetag = open(nombrefichero,"w")
             
             for match in matches2:
-                filetag.write('xbmctools.addnewfolder(CHANNELNAME , "listatipoVideo" , category , "%s","%s","","")\n' %(match[1],match[0]))
+                filetag.write('xbmctools.addnewfolder(__channel__ , "listatipoVideo" , category , "%s","%s","","")\n' %(match[1],match[0]))
                 
             filetag.flush();
             filetag.close()            

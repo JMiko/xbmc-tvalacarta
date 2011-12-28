@@ -20,7 +20,13 @@ from servers import servertools
 from servers import youtube
 from servers import vk
 
-CHANNELNAME = "peliculasonlineflv"
+__channel__ = "peliculasonlineflv"
+__category__ = "F,D"
+__type__ = "xbmc"
+__title__ = "Peliculas Online FLV"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Esto permite su ejecución en modo emulado
 try:
@@ -31,18 +37,16 @@ except:
 # Traza el inicio del canal
 logger.info("[peliculasonlineflv.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[peliculasonlineflv.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , "Peliculas - Novedades"            ,"http://peliculasonlineflv.org/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListCat"    , category , "Peliculas - Generos" ,"http://peliculasonlineflv.org/","","")
-    #xbmctools.addnewfolder( CHANNELNAME , "DocuSeries" , category , "Documentales - Series Disponibles" ,"http://peliculasonlineflv.wordpress.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "DocuTag"    , category , "Peliculas - Tag" ,"http://peliculasonlineflv.org/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "DocuARCHIVO", category , "Peliculas - Archivo" ,"http://peliculasonlineflv.org/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search"     , category , "Buscar..."                           ,"","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos" , category , "Peliculas - Novedades"            ,"http://peliculasonlineflv.org/","","")
+    xbmctools.addnewfolder( __channel__ , "ListCat"    , category , "Peliculas - Generos" ,"http://peliculasonlineflv.org/","","")
+    #xbmctools.addnewfolder( __channel__ , "DocuSeries" , category , "Documentales - Series Disponibles" ,"http://peliculasonlineflv.wordpress.com/","","")
+    xbmctools.addnewfolder( __channel__ , "DocuTag"    , category , "Peliculas - Tag" ,"http://peliculasonlineflv.org/","","")
+    xbmctools.addnewfolder( __channel__ , "DocuARCHIVO", category , "Peliculas - Archivo" ,"http://peliculasonlineflv.org/","","")
+    xbmctools.addnewfolder( __channel__ , "search"     , category , "Buscar..."                           ,"","","")
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -85,7 +89,7 @@ def SearchResult(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -118,7 +122,7 @@ def performsearch(texto):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        resultados.append( [CHANNELNAME , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
+        resultados.append( [__channel__ , "detail" , "buscador" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot ] )
         
     return resultados
 def DocuSeries(params,url,category):
@@ -144,7 +148,7 @@ def DocuSeries(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -172,7 +176,7 @@ def DocuTag(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -200,7 +204,7 @@ def DocuARCHIVO(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -229,7 +233,7 @@ def ListCat(params,url,category):
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
                 # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -272,7 +276,7 @@ def listvideos(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Extrae la marca de siguiente página
     patronvideos = '<div class="left"><a href="([^"]+)" ><span>&laquo;</span> Entradas Anteriores</a></div>'
@@ -284,7 +288,7 @@ def listvideos(params,url,category):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -322,7 +326,7 @@ def listvideosMirror(params,url,category):
                 #scrapedplot = scrapedplot.replace("â€¦","")
                 if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
                 # Añade al listado de XBMC
-                xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+                xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Extrae la marca de siguiente página
     patronvideos = "<a class='blog-pager-older-link' href='([^']+)'"
@@ -334,7 +338,7 @@ def listvideosMirror(params,url,category):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -377,7 +381,7 @@ def detail(params,url,category):
         
         url = video[1].replace("&amp;","&")
         server = video[2]
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     # ------------------------------------------------------------------------------------
     ## --------------------------------------------------------------------------------------##
     #               Busca enlaces a videos .flv o (.mp4 dentro de un xml)                     #
@@ -410,11 +414,11 @@ def detail(params,url,category):
                     if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
                     # Añade al listado de XBMC
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
+                    xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
             else:
                 
                 c +=1    
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - Parte %d/%d " %(c,len(matches))+subtitle, match , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - Parte %d/%d " %(c,len(matches))+subtitle, match , thumbnail , plot )
     
     
     patronvideos = 'src="(http://vk[^/]+/video_ext.php[^"]+)"'
@@ -430,7 +434,7 @@ def detail(params,url,category):
             server = "Directo"
             
             
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - [VKServer]" , scrapedurl , thumbnail, plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category ,server, scrapedtitle+" - [VKServer]" , scrapedurl , thumbnail, plot )
             
     
     patronvideos = 'http://www.yaflix.com/.+?key=([^"]+)"'
@@ -453,7 +457,7 @@ def detail(params,url,category):
             server = "Directo"
             
             
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - [YAFLIX]" , scrapedurl , thumbnail, plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category ,server, scrapedtitle+" - [YAFLIX]" , scrapedurl , thumbnail, plot )
                 
     patronvideos = 'http://www.videoinet.ru/incs/incplaylist.html\?lkn=([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -469,7 +473,7 @@ def detail(params,url,category):
         scrapedtitle = title
         server = "Directo"
         
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category ,server, scrapedtitle+" - [videoinet]" , scrapedurl , thumbnail, plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category ,server, scrapedtitle+" - [videoinet]" , scrapedurl , thumbnail, plot )
     
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
@@ -488,7 +492,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
 
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def youtubeplay(params,url,category):
     logger.info("[peliculasonlineflv.py] youtubeplay")

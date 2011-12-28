@@ -13,8 +13,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "dibujosanimadosgratis"
-DEBUG = True
+__channel__ = "dibujosanimadosgratis"
+__category__ = "A"
+__type__ = "generic"
+__title__ = "dibujosanimadosgratis"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,8 +28,8 @@ def mainlist(item):
     logger.info("[dibujosanimadosgratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades" , url="http://dibujosanimadosgratis.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Categorías" , action="categorias", url="http://dibujosanimadosgratis.net/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"  , action="novedades" , url="http://dibujosanimadosgratis.net/"))
+    itemlist.append( Item(channel=__channel__, title="Categorías" , action="categorias", url="http://dibujosanimadosgratis.net/"))
     
     return itemlist
 
@@ -42,7 +47,7 @@ def categorias(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
@@ -67,7 +72,7 @@ def novedades(item):
             scrapedthumbnail = matchesthumb[0]
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     patron  = '<a href="([^"]+)" >&laquo; videos anteriores'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -78,6 +83,6 @@ def novedades(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist

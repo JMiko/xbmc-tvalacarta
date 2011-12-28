@@ -16,9 +16,15 @@ from servers import servertools
 
 #from pelisalacarta import buscador
 
-CHANNELNAME = "documentariestv"
+__channel__ = "documentariestv"
+__category__ = "D"
+__type__ = "generic"
+__title__ = "DocumentariesTV"
+__language__ = "EN"
+
+DEBUG = config.get_setting("debug")
+
 tecleadoultimo = ""
-DEBUG = True
 IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'documaniatv' )
 
 def isGeneric():
@@ -28,13 +34,13 @@ def mainlist(item):
     logger.info("[documentariestv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="documentalesnuevos"  , title="New documentaries" , url="http://www.documentariestv.net/newvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
-    itemlist.append( Item(channel=CHANNELNAME, action="TipoDocumental"      , title="By type"           , url="http://www.documentariestv.net/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
-    itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentales"     , title="By tag"            , url="http://www.documentariestv.net/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tag.png')))
-    #itemlist.append( Item(channel=CHANNELNAME, action="topdocumentales"     , title="Top documentales online"          , url="http://www.documaniatv.com/topvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'top.png')))
-    #itemlist.append( Item(channel=CHANNELNAME, action="listatipodocumental" , title="Documentales siendo vistos ahora" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'viendose.png')))
-    #itemlist.append( Item(channel=CHANNELNAME, action="documentaldeldia"    , title="Documental del dia"               , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'deldia.png')))
-    #itemlist.append( Item(channel=CHANNELNAME, action="search"              , title="Buscar"                           , url="http://www.cinetube.es/peliculas/",thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
+    itemlist.append( Item(channel=__channel__, action="documentalesnuevos"  , title="New documentaries" , url="http://www.documentariestv.net/newvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
+    itemlist.append( Item(channel=__channel__, action="TipoDocumental"      , title="By type"           , url="http://www.documentariestv.net/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    itemlist.append( Item(channel=__channel__, action="tagdocumentales"     , title="By tag"            , url="http://www.documentariestv.net/index.html",thumbnail=os.path.join(IMAGES_PATH, 'tag.png')))
+    #itemlist.append( Item(channel=__channel__, action="topdocumentales"     , title="Top documentales online"          , url="http://www.documaniatv.com/topvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'top.png')))
+    #itemlist.append( Item(channel=__channel__, action="listatipodocumental" , title="Documentales siendo vistos ahora" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'viendose.png')))
+    #itemlist.append( Item(channel=__channel__, action="documentaldeldia"    , title="Documental del dia"               , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'deldia.png')))
+    #itemlist.append( Item(channel=__channel__, action="search"              , title="Buscar"                           , url="http://www.cinetube.es/peliculas/",thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
     return itemlist
 
 def documentalesnuevos(item):
@@ -63,7 +69,7 @@ def documentalesnuevos(item):
         tipo = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Busca enlaces de paginas siguientes...
     cat = "nuevo"
@@ -89,7 +95,7 @@ def TipoDocumental(item):
     patron = '<li><a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME , action="listatipodocumental" , title=match[1],url=match[0]))
+        itemlist.append( Item(channel=__channel__ , action="listatipodocumental" , title=match[1],url=match[0]))
     
     return itemlist
 
@@ -124,7 +130,7 @@ def listatipodocumental(item):
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle + " - " + scrapedplot , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle + " - " + scrapedplot , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if cat == "tipo":
         patron_pagina_sgte = '</span><a href="([^"]+)"'
@@ -140,7 +146,7 @@ def tagdocumentales(item):
     patron = '<a href="([^"]+)" class="tag_cloud_link" style="[^>]+">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME , action="tagdocumentaleslist" , title=match[1],url=match[0]))
+        itemlist.append( Item(channel=__channel__ , action="tagdocumentaleslist" , title=match[1],url=match[0]))
     
     return itemlist
 
@@ -167,14 +173,14 @@ def tagdocumentaleslist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="detail", title=scrapedtitle + " - " + scrapeddescription , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle + " - " + scrapeddescription , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     
     # Página siguiente
     patron = '<a href="([^"]+)">next &raquo;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)         
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title="Página siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="tagdocumentaleslist", title="Página siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
     
     return itemlist
 
@@ -205,13 +211,13 @@ def detail(item):
     # Busca los enlaces a los videos de : "Megavideo"
     video_itemlist = servertools.find_video_items(data=data)
     for video_item in video_itemlist:
-        itemlist.append( Item(channel=CHANNELNAME , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=video_item.thumbnail, plot=video_item.plot, folder=False))
+        itemlist.append( Item(channel=__channel__ , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=video_item.thumbnail, plot=video_item.plot, folder=False))
 
     # Extrae los enlaces a los vídeos (Directo)
     patronvideos = "file: '([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
-        itemlist.append( Item(channel=CHANNELNAME , action="play" , server="Directo", title=title+" [directo]",url=matches[0], thumbnail=thumbnail, plot=plot))
+        itemlist.append( Item(channel=__channel__ , action="play" , server="Directo", title=title+" [directo]",url=matches[0], thumbnail=thumbnail, plot=plot))
 
     return itemlist
 
@@ -254,8 +260,8 @@ def documentalesnuevoslist(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        #xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle, scrapedurl , scrapedthumbnail, "detail" )
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle ,scrapedurl , scrapedthumbnail , scrapedplot )
+        #xbmctools.addthumbnailfolder( __channel__ , scrapedtitle, scrapedurl , scrapedthumbnail, "detail" )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle ,scrapedurl , scrapedthumbnail , scrapedplot )
 
         # Busca enlaces de paginas siguientes...
         cat = "nuevo"
@@ -302,7 +308,7 @@ def documentaldeldia(params,url,category):
             logger.info("scrapedurl="+scrapedurl)
             logger.info("scrapedthumbnail="+scrapedthumbnail)
         
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot ) 
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot ) 
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
 
     # Disable sorting...
@@ -426,9 +432,9 @@ def toplist(params,url,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
 
         # Añade al listado de XBMC
-        #        xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "directo" , match[0]+") "+scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
+        #        xbmctools.addnewvideo( __channel__ , "detail" , category , "directo" , match[0]+") "+scrapedtitle + " - " + scrapedplot , scrapedurl , scrapedthumbnail , scrapedplot )
 
-        xbmctools.addthumbnailfolder( CHANNELNAME , match[0]+") "+scrapedtitle+" - "+scrapedplot, scrapedurl , scrapedthumbnail, "detail" )
+        xbmctools.addthumbnailfolder( __channel__ , match[0]+") "+scrapedtitle+" - "+scrapedplot, scrapedurl , scrapedthumbnail, "detail" )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -455,13 +461,13 @@ def paginasiguientes(patronvideos,data,category,cat):
         scrapedthumbnail = os.path.join(IMAGES_PATH, 'next.png')
 
         if cat == 'tipo':
-            itemlist.append( Item(channel=CHANNELNAME, action="listatipodocumental", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="listatipodocumental", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
         elif cat == 'nuevo':
-            itemlist.append( Item(channel=CHANNELNAME, action="documentalesnuevos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="documentalesnuevos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
         elif cat == 'tag':
-            itemlist.append( Item(channel=CHANNELNAME, action="tagdocumentaleslist", title=scrapedtitle , url="http://www.documentariestv.net"+match , thumbnail=scrapedthumbnail , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="tagdocumentaleslist", title=scrapedtitle , url="http://www.documentariestv.net"+match , thumbnail=scrapedthumbnail , folder=True) )
         elif cat == 'busca':
-            itemlist.append( Item(channel=CHANNELNAME, action="searchresults", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="searchresults", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
 
     return itemlist
 
@@ -520,7 +526,7 @@ def verRelacionados(params,data,category):
             logger.info("scrapedthumbnail="+scrapedthumbnail)
     
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle+" - "+scrapeddescription , scrapedurl , scrapedthumbnail , scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle+" - "+scrapeddescription , scrapedurl , scrapedthumbnail , scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

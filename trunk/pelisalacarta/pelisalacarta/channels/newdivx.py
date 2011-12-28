@@ -19,23 +19,27 @@ from core.item import Item
 from servers import servertools
 from servers import vk
 
-CHANNELNAME = "newdivx"
+__channel__ = "newdivx"
+__category__ = "F,D"
+__type__ = "xbmc"
+__title__ = "NewDivx"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 # Traza el inicio del canal
 logger.info("[newdivx.py] init")
-
-DEBUG = True
 
 def mainlist(params,url,category):
     logger.info("[newdivx.py] mainlist")
 
     # Añade al listado de XBMC
-    xbmctools.addnewfolder( CHANNELNAME , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.newdivx.net/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListaCat"         , category , "Listado por Categorias"    ,"http://www.newdivx.net/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListvideosMirror" , category , "Estrenos","http://www.newdivx.net/peliculas-online/estrenos/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListvideosMirror" , category , "Documentales","http://www.newdivx.net/peliculas-online/documentales/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "ListvideosMirror" , category , "Peliculas V.O.S.","http://www.newdivx.net/peliculas-online/peliculas-vos/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "search" , category , "Buscar","http://www.newdivx.net/index.php","","")
+    xbmctools.addnewfolder( __channel__ , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.newdivx.net/","","")
+    xbmctools.addnewfolder( __channel__ , "ListaCat"         , category , "Listado por Categorias"    ,"http://www.newdivx.net/","","")
+    xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , "Estrenos","http://www.newdivx.net/peliculas-online/estrenos/","","")
+    xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , "Documentales","http://www.newdivx.net/peliculas-online/documentales/","","")
+    xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , "Peliculas V.O.S.","http://www.newdivx.net/peliculas-online/peliculas-vos/","","")
+    xbmctools.addnewfolder( __channel__ , "search" , category , "Buscar","http://www.newdivx.net/index.php","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -86,7 +90,7 @@ def searchresults(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Propiedades
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -97,22 +101,22 @@ def searchresults(params,url,category):
 def ListaCat(params,url,category):
     logger.info("[newdivx.py] ListaCat")
     
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Acción","http://www.newdivx.net/peliculas-online/accion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Adolescencia","http://www.newdivx.net/peliculas-online/adolescencia/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Animación","http://www.newdivx.net/peliculas-online/animacion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Aventuras","http://www.newdivx.net/peliculas-online/aventuras/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Belico","http://www.newdivx.net/peliculas-online/belico/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Ciencia-Ficción","http://www.newdivx.net/peliculas-online/ciencia-ficcion/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideosMirror", category , "Comedia","http://www.newdivx.net/peliculas-online/comedia/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Drama","http://www.newdivx.net/peliculas-online/drama/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Fantastico","http://www.newdivx.net/peliculas-online/fantastico/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Intriga","http://www.newdivx.net/peliculas-online/intriga/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Infantil","http://www.newdivx.net/peliculas-online/infantil/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Musical","http://www.newdivx.net/peliculas-online/musical/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Romantico","http://www.newdivx.net/peliculas-online/romantico/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Terror","http://www.newdivx.net/peliculas-online/terror/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Thriller","http://www.newdivx.net/peliculas-online/thriller/","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"ListvideosMirror", category , "Western","http://www.newdivx.net/peliculas-online/western/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Acción","http://www.newdivx.net/peliculas-online/accion/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Adolescencia","http://www.newdivx.net/peliculas-online/adolescencia/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Animación","http://www.newdivx.net/peliculas-online/animacion/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Aventuras","http://www.newdivx.net/peliculas-online/aventuras/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Belico","http://www.newdivx.net/peliculas-online/belico/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Ciencia-Ficción","http://www.newdivx.net/peliculas-online/ciencia-ficcion/","","")
+    xbmctools.addnewfolder( __channel__ ,"listvideosMirror", category , "Comedia","http://www.newdivx.net/peliculas-online/comedia/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Drama","http://www.newdivx.net/peliculas-online/drama/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Fantastico","http://www.newdivx.net/peliculas-online/fantastico/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Intriga","http://www.newdivx.net/peliculas-online/intriga/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Infantil","http://www.newdivx.net/peliculas-online/infantil/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Musical","http://www.newdivx.net/peliculas-online/musical/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Romantico","http://www.newdivx.net/peliculas-online/romantico/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Terror","http://www.newdivx.net/peliculas-online/terror/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Thriller","http://www.newdivx.net/peliculas-online/thriller/","","")
+    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Western","http://www.newdivx.net/peliculas-online/western/","","")
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -144,7 +148,7 @@ def ListvideosMirror(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     #Extrae la marca de siguiente página
     patronvideos  = '</span> <a href="(http://www.newdivx.net/peliculas-online/[^\/]+/page/[^"]+)"'
@@ -156,7 +160,7 @@ def ListvideosMirror(params,url,category):
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "ListvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Asigna el título, desactiva la ordenación, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -195,7 +199,7 @@ def listvideos(params,url,category):
 
         
             # Añade al listado de XBMC
-            xbmctools.addnewfolder( CHANNELNAME , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     #Extrae la marca de siguiente página
     patronvideos  = '</span> <a href="(http://www.newdivx.net/videos/page/[^"]+)"'
@@ -207,7 +211,7 @@ def listvideos(params,url,category):
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( CHANNELNAME , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( __channel__ , "listvideos" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -242,7 +246,7 @@ def detail(params,url,category):
             videotitle = video[0]
             url = video[1]
             server = video[2]
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
     # ------------------------------------------------------------------------------------
         #--- Busca los videos Directos
     ## ------------------------------------------------------------------------------------##
@@ -254,7 +258,7 @@ def detail(params,url,category):
         if len(matches)>0:
             if len(matches)==1:
                 subtitle = "[Divx-Directo-Przeklej]"
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, matches[0] , thumbnail , plot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, matches[0] , thumbnail , plot )
                  
             else:
                 parte = 0
@@ -262,7 +266,7 @@ def detail(params,url,category):
                 for match in matches:
                     logger.info(" matches = "+match)
                     parte = parte + 1
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle+" "+str(parte), match , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle+" "+str(parte), match , thumbnail , plot )
                     
    ## --------------------------------------------------------------------------------------##
    #                   Busca enlaces en el servidor Fishker                                    #
@@ -278,7 +282,7 @@ def detail(params,url,category):
         if len(matches2)>0:
             videourl = matches2[0].replace("&amp;","&")
             subtitle = "[FLV-Directo-Fishker]"
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
             
    ## --------------------------------------------------------------------------------------##
    #                   Busca enlaces en el servidor Cinshare                                  #
@@ -298,7 +302,7 @@ def detail(params,url,category):
         import cinshare
         videourl = matches[0]
         subtitle = "[divx-Directo-Cinshare]"
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category ,"Cinshare", title + " - "+subtitle, videourl , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category ,"Cinshare", title + " - "+subtitle, videourl , thumbnail , plot )
     '''
     
     ## --------------------------------------------------------------------------------------##
@@ -329,10 +333,10 @@ def detail(params,url,category):
                 if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
                 # Añade al listado de XBMC
-                xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
+                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , scrapedtitle, scrapedurl , scrapedthumbnail, scrapedplot )
         else:
             
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, matches[0] , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, matches[0] , thumbnail , plot )
             
     ## --------------------------------------------------------------------------------------##
     #            Busca enlaces a video en el servidor Dailymotion                             #
@@ -361,7 +365,7 @@ def detail(params,url,category):
                 videourl = videourl + "|" + subtit
                 playWithSubt = "play2"
             subtitle = "[FLV-Directo-Dailymotion]"
-            xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
         
         # Busca el enlace al video con formato HQ (H264)        
         Highres=re.compile('%22hqURL%22%3A%22(.+?)%22').findall(data2)
@@ -372,7 +376,7 @@ def detail(params,url,category):
                 videourl = videourl + "|" + subtit
                 playWithSubt = "play2"            
             subtitle = "[h264-Directo-Dailymotion-este video no es soportado en versiones antiguas o xbox plataforma]"
-            xbmctools.addnewvideo( CHANNELNAME , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , playWithSubt , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
     ## --------------------------------------------------------------------------------------##
     #            Busca enlaces a video en el servidor Gigabyteupload.com                      #
     ## --------------------------------------------------------------------------------------##
@@ -385,7 +389,7 @@ def detail(params,url,category):
         videourl = giga.geturl(matches[0])
         if len(videourl)>0:
             subtitle = "[Divx-Directo-Gigabyteupload]"
-            xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
+            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+subtitle, videourl , thumbnail , plot )
     ## --------------------------------------------------------------------------------------##
     #            Busca enlaces de videos para el servidor vk.com                             #
     ## --------------------------------------------------------------------------------------##
@@ -401,7 +405,7 @@ def detail(params,url,category):
     if len(matches)>0:
         print " encontro VKServer :%s" %matches[0]
         videourl =     vk.geturl(matches[0])
-        xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VKServer]", videourl , thumbnail , plot )
+        xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+"[VKServer]", videourl , thumbnail , plot )
             
         data2 = scrapertools.cachePage(matches[0])
         print data2
@@ -417,14 +421,14 @@ def detail(params,url,category):
                 if match[3].strip() == "0":
                     tipo = "flv"
                     videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
                 else:
                     tipo = "360.mp4"
                     videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
                     tipo = "240.mp4"
                     videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                    xbmctools.addnewvideo( CHANNELNAME , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
+                    xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " - "+"[VK] [%s]" %tipo, videourl , thumbnail , plot )
         '''    
     
     # Label (top-right)...
@@ -446,7 +450,7 @@ def play(params,url,category):
     plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
     server = params["server"]
     
-    xbmctools.play_video(CHANNELNAME,server,url,category,title,thumbnail,plot)
+    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
 
 def play2(params,url,category):
     logger.info("[newdivx.py] play")

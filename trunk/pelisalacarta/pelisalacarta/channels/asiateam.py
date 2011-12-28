@@ -18,9 +18,15 @@ from core import downloadtools
 from servers import servertools
 import xbmc,xbmcgui
 
-CHANNELNAME = "asiateam"
-DEBUG = True
-SUB_PATH = os.path.join( config.get_data_path() , "subtitulos" , "asiateam" )
+__category__ = "F,S"
+__type__ = "generic"
+__title__ = "Asia-Team"
+__channel__ = "asiateam"
+__language__ = "ES"
+__creationdate__ = "20110520"
+
+DEBUG = config.get_setting("debug")
+
 
 if not os.path.exists(os.path.join( config.get_data_path() , "subtitulos" )):
     os.mkdir( os.path.join( config.get_data_path() , "subtitulos" ) )
@@ -37,8 +43,8 @@ def mainlist(item):
     logger.info("[asiateam.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas", action="peliculas", url="http://www.asia-team.net/foros/forumdisplay.php?f=119"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series", action="series", url="http://www.asia-team.net/foros/forumdisplay.php?f=44"))    
+    itemlist.append( Item(channel=__channel__, title="Películas", action="peliculas", url="http://www.asia-team.net/foros/forumdisplay.php?f=119"))
+    itemlist.append( Item(channel=__channel__, title="Series", action="series", url="http://www.asia-team.net/foros/forumdisplay.php?f=44"))    
 
     return itemlist
 
@@ -46,15 +52,15 @@ def peliculas(item):
     logger.info("[asiateam.py] tipo peliculas")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Estrenos" , url="http://www.asia-team.net/foros/forumdisplay.php?f=120" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Acción / Sci-Fi" , url="http://www.asia-team.net/foros/forumdisplay.php?f=121" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Artes Marciales / Samurai / Epicas" , url="http://www.asia-team.net/foros/forumdisplay.php?f=122" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Aventuras / Comedia / Familiares" , url="http://www.asia-team.net/foros/forumdisplay.php?f=123" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Drama / Romance" , url="http://www.asia-team.net/foros/forumdisplay.php?f=124" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Documentales / Musicales" , url="http://www.asia-team.net/foros/forumdisplay.php?f=176" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Terror / Horror / Gore" , url="http://www.asia-team.net/foros/forumdisplay.php?f=125" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_p", title="Thriller / Crimen" , url="http://www.asia-team.net/foros/forumdisplay.php?f=126" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Índice", action="indice_peliculas"))
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Estrenos" , url="http://www.asia-team.net/foros/forumdisplay.php?f=120" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Acción / Sci-Fi" , url="http://www.asia-team.net/foros/forumdisplay.php?f=121" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Artes Marciales / Samurai / Epicas" , url="http://www.asia-team.net/foros/forumdisplay.php?f=122" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Aventuras / Comedia / Familiares" , url="http://www.asia-team.net/foros/forumdisplay.php?f=123" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Drama / Romance" , url="http://www.asia-team.net/foros/forumdisplay.php?f=124" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Documentales / Musicales" , url="http://www.asia-team.net/foros/forumdisplay.php?f=176" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Terror / Horror / Gore" , url="http://www.asia-team.net/foros/forumdisplay.php?f=125" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_p", title="Thriller / Crimen" , url="http://www.asia-team.net/foros/forumdisplay.php?f=126" , folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Índice", action="indice_peliculas"))
 
     return itemlist
 
@@ -62,9 +68,9 @@ def series(item):
     logger.info("[asiateam.py] tipo series")
     
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_s", title="Series en Curso" , url="http://www.asia-team.net/foros/forumdisplay.php?f=45" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="lista_s", title="Series Finalizadas" , url="http://www.asia-team.net/foros/forumdisplay.php?f=46" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Índice", action="indice_series"))    
+    itemlist.append( Item(channel=__channel__, action="lista_s", title="Series en Curso" , url="http://www.asia-team.net/foros/forumdisplay.php?f=45" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="lista_s", title="Series Finalizadas" , url="http://www.asia-team.net/foros/forumdisplay.php?f=46" , folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Índice", action="indice_series"))    
 
     return itemlist    
 
@@ -96,7 +102,7 @@ def lista_p(item):
                 scrapedthumbnail = "http://imagenes.asia-team.net/afiche/"+match[1]+".jpg"
 
                 # Añade al listado
-                itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+                itemlist.append( Item(channel=__channel__, action="videos_p", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
               
     # Extrae la marca de siguiente página
     patronvideos  = '<!-- controls below thread list -->(.*?)<!-- / controls below thread list -->'
@@ -111,7 +117,7 @@ def lista_p(item):
             scrapedurl = "http://www.asia-team.net/foros/"+matches2[0]
             scrapedurl = scrapedurl.replace('amp;','')
             scrapedthumbnail = ""
-            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="lista_p" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="lista_p" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
     
@@ -139,7 +145,7 @@ def lista_s(item):
                 scrapedthumbnail = "http://imagenes.asia-team.net/afiche/"+match[1]+".jpg"
 
                 # Añade al listado
-                itemlist.append( Item(channel=CHANNELNAME, action="videos_s", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
+                itemlist.append( Item(channel=__channel__, action="videos_s", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , folder=True) )
               
     # Extrae la marca de siguiente página
     patronvideos  = '<!-- controls below thread list -->(.*?)<!-- / controls below thread list -->'
@@ -154,7 +160,7 @@ def lista_s(item):
             scrapedurl = "http://www.asia-team.net/foros/"+matches2[0]
             scrapedurl = scrapedurl.replace('amp;','')
             scrapedthumbnail = ""
-            itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="lista_s" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="lista_s" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
 
@@ -203,7 +209,7 @@ def videos_p(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
     
     #Añade opcion para filestube y asianmovielink
     if re.search('asia-team.net',item.url)!=None:
@@ -213,7 +219,7 @@ def videos_p(item):
         else:
             buscar = title
         
-        itemlist.append( Item(channel=CHANNELNAME, action="search", title="Buscar Película en FilesTube",  extra=buscar , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="search", title="Buscar Película en FilesTube",  extra=buscar , folder=True) )
         
     return itemlist
     
@@ -271,7 +277,7 @@ def videos_s(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="sub", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=server , category=subtitulo , folder=True) )
     
     #Añade opcion para filestube
     if re.search('asia-team.net',item.url)!=None:
@@ -281,7 +287,7 @@ def videos_s(item):
         else:
             buscar = title
         
-        itemlist.append( Item(channel=CHANNELNAME, action="search", title="Buscar Serie en FilesTube",  extra=buscar , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="search", title="Buscar Serie en FilesTube",  extra=buscar , folder=True) )
         
     return itemlist
 
@@ -326,7 +332,7 @@ def filestube(item,teclado):
             logger.info(scrapedtitle)
 
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title=scrapedtitle , url=scrapedurl , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="videos_p", title=scrapedtitle , url=scrapedurl , folder=True) )
     
     # Extrae la marca de siguiente página
     patronvideos = '<span class="resultsLink3a">.*?</span>.*?<a href="(.*?)".*?>'
@@ -336,7 +342,7 @@ def filestube(item,teclado):
         scrapedtitle = "Página siguiente"
         scrapedurl = matches[0]
         scrapedurl = scrapedurl.replace('amp;','')
-        itemlist.append( Item( channel=CHANNELNAME , title=scrapedtitle , action="filestube" , url=scrapedurl , folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="filestube" , url=scrapedurl , folder=True ) )
         
     return itemlist
     
@@ -353,7 +359,7 @@ def sub(item):
     
     # Los vídeos de Asia-Team están protegidos con el password "www.Asia-Team.net"
 
-    itemlist.append( Item(channel=CHANNELNAME, action="play", title=item.title , url=item.url , thumbnail=item.thumbnail , plot=item.plot , server=item.extra ,folder=False, password="www.Asia-Team.net") )
+    itemlist.append( Item(channel=__channel__, action="play", title=item.title , url=item.url , thumbnail=item.thumbnail , plot=item.plot , server=item.extra ,folder=False, password="www.Asia-Team.net") )
     return itemlist
     
 def download_subtitles (url):
@@ -476,8 +482,8 @@ def indice_series(item):
     logger.info("[asiateam.py] indice de series")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_s", title="Series en Curso" , url="http://www.asia-team.net/index.php?page=Series1" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_s", title="Series Finalizadas" , url="http://www.asia-team.net/index.php?page=Series2" , folder=True) )        
+    itemlist.append( Item(channel=__channel__, action="indice_s", title="Series en Curso" , url="http://www.asia-team.net/index.php?page=Series1" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_s", title="Series Finalizadas" , url="http://www.asia-team.net/index.php?page=Series2" , folder=True) )        
 
     return itemlist    
     
@@ -485,8 +491,8 @@ def indice_peliculas(item):
     logger.info("[asiateam.py] indice de peliculas")
     
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_completo", title="Lista Completa" , url="http://www.asia-team.net/index.php?page=CineConSubTodos" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="cat_p", title="Por Categorías" , folder=True) )    
+    itemlist.append( Item(channel=__channel__, action="indice_completo", title="Lista Completa" , url="http://www.asia-team.net/index.php?page=CineConSubTodos" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="cat_p", title="Por Categorías" , folder=True) )    
             
     return itemlist    
     
@@ -502,7 +508,7 @@ def indice_completo(item):
         scrapedtitle = match[1].split(' [')
         scrapedtitle = scrapedtitle[0]
         scrapedurl = urlparse.urljoin("http://www.asia-team.net/", match[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="videos_p", title= scrapedtitle , url= scrapedurl, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos_p", title= scrapedtitle , url= scrapedurl, folder=True) )
         
     return itemlist    
     
@@ -518,7 +524,7 @@ def indice_s(item):
         scrapedtitle = match[1].split(' [')
         scrapedtitle = scrapedtitle[0]
         scrapedurl = urlparse.urljoin("http://www.asia-team.net/", match[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="videos_s", title= scrapedtitle , url= scrapedurl, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos_s", title= scrapedtitle , url= scrapedurl, folder=True) )
         
     return itemlist    
     
@@ -526,13 +532,13 @@ def cat_p(item):
     logger.info("[asiateam.py] categorias peliculas")
     
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Estrenos" , url="http://www.asia-team.net/index.php?page=CineConSub1" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Acción / Sci-fi" , url="http://www.asia-team.net/index.php?page=CineConSub2",  folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p" ,title="Artes Marciales / Samurai / Épicas",  url="http://www.asia-team.net/index.php?page=CineConSub3", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Aventuras / Comedia / Familiares" , url="http://www.asia-team.net/index.php?page=CineConSub4" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Drama / Romance" , url="http://www.asia-team.net/index.php?page=CineConSub5",  folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p" ,title="Documentales / Musicales",  url="http://www.asia-team.net/index.php?page=CineConSub6", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p", title="Terror / Horror / Gore" , url="http://www.asia-team.net/index.php?page=CineConSub7",  folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, action="indice_p" ,title="Thiller / Crimen",  url="http://www.asia-team.net/index.php?page=CineConSub8", folder=True) )    
+    itemlist.append( Item(channel=__channel__, action="indice_p", title="Estrenos" , url="http://www.asia-team.net/index.php?page=CineConSub1" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p", title="Acción / Sci-fi" , url="http://www.asia-team.net/index.php?page=CineConSub2",  folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p" ,title="Artes Marciales / Samurai / Épicas",  url="http://www.asia-team.net/index.php?page=CineConSub3", folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p", title="Aventuras / Comedia / Familiares" , url="http://www.asia-team.net/index.php?page=CineConSub4" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p", title="Drama / Romance" , url="http://www.asia-team.net/index.php?page=CineConSub5",  folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p" ,title="Documentales / Musicales",  url="http://www.asia-team.net/index.php?page=CineConSub6", folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p", title="Terror / Horror / Gore" , url="http://www.asia-team.net/index.php?page=CineConSub7",  folder=True) )
+    itemlist.append( Item(channel=__channel__, action="indice_p" ,title="Thiller / Crimen",  url="http://www.asia-team.net/index.php?page=CineConSub8", folder=True) )    
             
     return itemlist

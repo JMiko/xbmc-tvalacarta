@@ -14,8 +14,13 @@ from core.item import Item
 from servers import servertools
 from core import DecryptYonkis as Yonkis
 
-CHANNELNAME = "documentalesyonkis"
-DEBUG = True
+__channel__ = "documentalesyonkis"
+__category__ = "D"
+__type__ = "generic"
+__title__ = "Documentalesyonkis"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -25,8 +30,8 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=CHANNELNAME, action="lastvideolist" , title="Últimos documentales",url="http://documentales.videosyonkis.com/ultimos-videos.php"))
-    itemlist.append( Item(channel=CHANNELNAME, action="allvideolist"  , title="Listado completo",url="http://documentales.videosyonkis.com/lista-videos.php"))
+    itemlist.append( Item(channel=__channel__, action="lastvideolist" , title="Últimos documentales",url="http://documentales.videosyonkis.com/ultimos-videos.php"))
+    itemlist.append( Item(channel=__channel__, action="allvideolist"  , title="Listado completo",url="http://documentales.videosyonkis.com/lista-videos.php"))
 
     return itemlist
 
@@ -54,7 +59,7 @@ def lastvideolist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -82,7 +87,7 @@ def allvideolist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -111,8 +116,8 @@ def findvideos(item):
         url=id
         if (item.title == "") :
             item.title = "Megavideo"
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="Megavideo", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="Megavideo", folder=False))
     else:
-        itemlist.append( Item(channel=CHANNELNAME, action="" , title="VIDEO NO DISPONIBLE" , url="", thumbnail="", plot=""))
+        itemlist.append( Item(channel=__channel__, action="" , title="VIDEO NO DISPONIBLE" , url="", thumbnail="", plot=""))
 
     return itemlist

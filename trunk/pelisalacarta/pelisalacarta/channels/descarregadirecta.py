@@ -14,8 +14,14 @@ from core import logger
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "descarregadirecta"
-DEBUG = True
+__channel__ = "descarregadirecta"
+__category__ = "F,S,D,A"
+__type__ = "generic"
+__title__ = "Descarrega Directa (CAT)"
+__language__ = "CAT"
+__creationdate__ = "20111019"
+
+DEBUG = config.get_setting("debug")
 
 SESION = config.get_setting("session","descarregadirecta")
 
@@ -31,23 +37,23 @@ def mainlist(item):
     logger.info("[descarregadirecta.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"        , title="Anime"                      , url="http://www.descarregadirecta.com/browse-anime-videos-1-date.html"))
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"         , title="Dibuixos"            , url="http://www.descarregadirecta.com/browse-dibuixos-videos-1-date.html"))
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"        , title="Documentales"          , url="http://www.descarregadirecta.com/browse-documentals-videos-1-date.html" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"         , title="Esports"               , url="http://www.descarregadirecta.com/browse-esports-videos-1-date.html" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"         , title="Series"               , url="http://www.descarregadirecta.com/browse-series-videos-1-date.html" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="Generico"         , title="Pel·licules per Génere (Registre Necessàri)"               , url="http://www.descarregadirecta.com/browse-pelicules-videos-1-artist.html" ))
-    itemlist.append( Item(channel=CHANNELNAME , action="buscavideos"         , title="Totes Les Pel·licules (Registre Necessàri)"               , url="http://www.descarregadirecta.com/browse-pelicules-videos-1-artist.html" ))
+    itemlist.append( Item(channel=__channel__ , action="Generico"        , title="Anime"                      , url="http://www.descarregadirecta.com/browse-anime-videos-1-date.html"))
+    itemlist.append( Item(channel=__channel__ , action="Generico"         , title="Dibuixos"            , url="http://www.descarregadirecta.com/browse-dibuixos-videos-1-date.html"))
+    itemlist.append( Item(channel=__channel__ , action="Generico"        , title="Documentales"          , url="http://www.descarregadirecta.com/browse-documentals-videos-1-date.html" ))
+    itemlist.append( Item(channel=__channel__ , action="Generico"         , title="Esports"               , url="http://www.descarregadirecta.com/browse-esports-videos-1-date.html" ))
+    itemlist.append( Item(channel=__channel__ , action="Generico"         , title="Series"               , url="http://www.descarregadirecta.com/browse-series-videos-1-date.html" ))
+    itemlist.append( Item(channel=__channel__ , action="Generico"         , title="Pel·licules per Génere (Registre Necessàri)"               , url="http://www.descarregadirecta.com/browse-pelicules-videos-1-artist.html" ))
+    itemlist.append( Item(channel=__channel__ , action="buscavideos"         , title="Totes Les Pel·licules (Registre Necessàri)"               , url="http://www.descarregadirecta.com/browse-pelicules-videos-1-artist.html" ))
     
     if SESION=="true":
 
         perform_login(LOGIN,PASSWORD)
 
-        itemlist.append( Item(channel=CHANNELNAME, title="Tancar sessió("+LOGIN+")", action="logout"))
+        itemlist.append( Item(channel=__channel__, title="Tancar sessió("+LOGIN+")", action="logout"))
 
     else:
 
-        itemlist.append( Item(channel=CHANNELNAME, title="Iniciar sessió", action="login"))
+        itemlist.append( Item(channel=__channel__, title="Iniciar sessió", action="login"))
     
     return itemlist
 
@@ -163,7 +169,7 @@ def detail(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
 
 
 
@@ -193,7 +199,7 @@ def login(item):
 
 
 
-    nombre_fichero_config_canal = os.path.join( config.get_data_path() , CHANNELNAME+".xml" )
+    nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
 
     config_canal = open( nombre_fichero_config_canal , "w" )
 
@@ -205,7 +211,7 @@ def login(item):
 
     itemlist = []
 
-    itemlist.append( Item(channel=CHANNELNAME, title="Sessió iniciada", action="mainlist"))
+    itemlist.append( Item(channel=__channel__, title="Sessió iniciada", action="mainlist"))
 
     return itemlist
 

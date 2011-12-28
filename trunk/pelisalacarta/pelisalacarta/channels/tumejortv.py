@@ -12,8 +12,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "tumejortv"
-DEBUG = True
+__channel__ = "tumejortv"
+__category__ = "F,S"
+__type__ = "generic"
+__title__ = "tumejortv.com"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,13 +28,13 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist"           , title="Novedades" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="moviecategorylist" , title="Películas - Por categorías" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="moviealphalist"    , title="Películas - Por orden alfabético" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="serienewlist"      , title="Series - Novedades" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="seriealllist"      , title="Series - Todas" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="seriealphalist"    , title="Series - Por orden alfabético" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"            , title="Buscar", url="http://www.tumejortv.com/buscar/%s"))
+    itemlist.append( Item(channel=__channel__, action="newlist"           , title="Novedades" , url="http://www.tumejortv.com/"))
+    itemlist.append( Item(channel=__channel__, action="moviecategorylist" , title="Películas - Por categorías" , url="http://www.tumejortv.com/"))
+    itemlist.append( Item(channel=__channel__, action="moviealphalist"    , title="Películas - Por orden alfabético" , url="http://www.tumejortv.com/"))
+    itemlist.append( Item(channel=__channel__, action="serienewlist"      , title="Series - Novedades" , url="http://www.tumejortv.com/"))
+    itemlist.append( Item(channel=__channel__, action="seriealllist"      , title="Series - Todas" , url="http://www.tumejortv.com/"))
+    itemlist.append( Item(channel=__channel__, action="seriealphalist"    , title="Series - Por orden alfabético" , url="http://www.tumejortv.com/"))
+    itemlist.append( Item(channel=__channel__, action="search"            , title="Buscar", url="http://www.tumejortv.com/buscar/%s"))
 
     return itemlist
 
@@ -86,7 +91,7 @@ def newlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
     patron = '<a href="([^"]+)" >&raquo;</a>'
@@ -101,7 +106,7 @@ def newlist(item):
         scrapeddescription = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="newlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -133,7 +138,7 @@ def shortlist(item):
             action="detailserie"
         else:
             action="findvideos"
-        itemlist.append( Item(channel=CHANNELNAME, action=action , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action=action , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
     patron = '<a href="([^"]+)" >&raquo;</a>'
@@ -147,7 +152,7 @@ def shortlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -194,7 +199,7 @@ def get_pagina(data):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
     
     return itemlist
 
@@ -219,7 +224,7 @@ def moviecategorylist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -245,7 +250,7 @@ def moviealphalist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -271,7 +276,7 @@ def seriealphalist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="shortlistserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="shortlistserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -297,7 +302,7 @@ def serienewlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -323,7 +328,7 @@ def seriealllist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -350,7 +355,7 @@ def findvideos(item):
         scrapedthumbnail = item.thumbnail
         scrapedplot = item.plot
         server = video[2]
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server=server, folder=False))
 
     return itemlist
 
@@ -433,6 +438,6 @@ def detailserie(item):
 
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
 
     return itemlist

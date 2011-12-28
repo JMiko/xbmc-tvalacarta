@@ -13,8 +13,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "animeid"
-DEBUG = True
+DEBUG = config.get_setting("debug")
+
+__category__ = "A"
+__type__ = "generic"
+__title__ = "Animeid"
+__channel__ = "animeid"
+__language__ = "ES"
 
 def isGeneric():
     return True
@@ -23,46 +28,46 @@ def mainlist(item):
     logger.info("[animeid.py] mainlist")
     
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="destacados", title="Destacados"               , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist"   , title="Últimas series agregadas" , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="chaplist"  , title="Últimos capítulos"        , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="airlist"   , title="Series en emisión"        , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="fulllist"  , title="Lista completa de animes" , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="genrelist" , title="Listado por genero"       , url="http://animeid.com/" ))
-    itemlist.append( Item(channel=CHANNELNAME, action="alphalist" , title="Listado alfabetico"       , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="destacados", title="Destacados"               , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="newlist"   , title="Últimas series agregadas" , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="chaplist"  , title="Últimos capítulos"        , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="airlist"   , title="Series en emisión"        , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="fulllist"  , title="Lista completa de animes" , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="genrelist" , title="Listado por genero"       , url="http://animeid.com/" ))
+    itemlist.append( Item(channel=__channel__, action="alphalist" , title="Listado alfabetico"       , url="http://animeid.com/" ))
 
     return itemlist
 
 def alphalist(item):
     logger.info("[animeid.py] alphalist")
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="0-9", url="http://animeid.com/letras/0-9.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="A"  , url="http://animeid.com/letras/a.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="B"  , url="http://animeid.com/letras/b.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="C"  , url="http://animeid.com/letras/c.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="D"  , url="http://animeid.com/letras/d.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="E"  , url="http://animeid.com/letras/e.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="F"  , url="http://animeid.com/letras/f.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="G"  , url="http://animeid.com/letras/g.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="H"  , url="http://animeid.com/letras/h.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="I"  , url="http://animeid.com/letras/i.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="J"  , url="http://animeid.com/letras/j.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="K"  , url="http://animeid.com/letras/k.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="L"  , url="http://animeid.com/letras/l.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="M"  , url="http://animeid.com/letras/m.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="N"  , url="http://animeid.com/letras/n.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="O"  , url="http://animeid.com/letras/o.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="P"  , url="http://animeid.com/letras/p.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="Q"  , url="http://animeid.com/letras/q.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="R"  , url="http://animeid.com/letras/r.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="S"  , url="http://animeid.com/letras/s.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="T"  , url="http://animeid.com/letras/t.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="U"  , url="http://animeid.com/letras/u.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="V"  , url="http://animeid.com/letras/v.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="W"  , url="http://animeid.com/letras/w.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="X"  , url="http://animeid.com/letras/x.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="Y"  , url="http://animeid.com/letras/y.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title="Z"  , url="http://animeid.com/letras/z.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="0-9", url="http://animeid.com/letras/0-9.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="A"  , url="http://animeid.com/letras/a.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="B"  , url="http://animeid.com/letras/b.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="C"  , url="http://animeid.com/letras/c.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="D"  , url="http://animeid.com/letras/d.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="E"  , url="http://animeid.com/letras/e.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="F"  , url="http://animeid.com/letras/f.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="G"  , url="http://animeid.com/letras/g.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="H"  , url="http://animeid.com/letras/h.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="I"  , url="http://animeid.com/letras/i.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="J"  , url="http://animeid.com/letras/j.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="K"  , url="http://animeid.com/letras/k.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="L"  , url="http://animeid.com/letras/l.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="M"  , url="http://animeid.com/letras/m.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="N"  , url="http://animeid.com/letras/n.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="O"  , url="http://animeid.com/letras/o.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="P"  , url="http://animeid.com/letras/p.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="Q"  , url="http://animeid.com/letras/q.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="R"  , url="http://animeid.com/letras/r.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="S"  , url="http://animeid.com/letras/s.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="T"  , url="http://animeid.com/letras/t.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="U"  , url="http://animeid.com/letras/u.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="V"  , url="http://animeid.com/letras/v.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="W"  , url="http://animeid.com/letras/w.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="X"  , url="http://animeid.com/letras/x.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="Y"  , url="http://animeid.com/letras/y.html"))
+    itemlist.append( Item(channel=__channel__, action="newlist" , title="Z"  , url="http://animeid.com/letras/z.html"))
 
     return itemlist
 
@@ -108,7 +113,7 @@ def genrelist(item):
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
     
-            itemlist.append( Item(channel=CHANNELNAME, action="newlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+            itemlist.append( Item(channel=__channel__, action="newlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -142,7 +147,7 @@ def fulllist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -176,7 +181,7 @@ def airlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -210,7 +215,7 @@ def animelist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -239,7 +244,7 @@ def chaplist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -269,7 +274,7 @@ def newlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -305,7 +310,7 @@ def destacados(item):
         scrapedplot = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -336,6 +341,6 @@ def serie(item):
         #scrapedplot = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist

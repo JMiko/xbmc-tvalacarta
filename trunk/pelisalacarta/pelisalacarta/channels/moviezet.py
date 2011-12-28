@@ -13,8 +13,15 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "moviezet"
-DEBUG = True
+__channel__ = "moviezet"
+__category__ = "F.S"
+__type__ = "generic"
+__title__ = "Moviezet"
+__language__ = "ES"
+__creationdate__ = "20111001"
+
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -23,9 +30,9 @@ def mainlist(item):
     logger.info("[moviezet.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Películas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Series"     , action="series",    url="http://www.moviezet.com/shows/?page_id=2853"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"   , action="search", url="http://www.moviezet.com/?s="))
+    itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
+    itemlist.append( Item(channel=__channel__, title="Series"     , action="series",    url="http://www.moviezet.com/shows/?page_id=2853"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"   , action="search", url="http://www.moviezet.com/?s="))
     
     return itemlist
 
@@ -33,12 +40,12 @@ def peliculas(item):
     logger.info("[moviezet.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=date&order=desc"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Mas Populares"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=desc&meta_key=views"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Generos"  , action="generos", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Por Año"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_year"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=title&order=desc"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=date&order=desc"))
+    itemlist.append( Item(channel=__channel__, title="Mas Populares"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=desc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Generos"  , action="generos", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Por Año"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_year"))
+    itemlist.append( Item(channel=__channel__, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=title&order=desc"))
 
     return itemlist
 
@@ -46,22 +53,22 @@ def generos(item):
     logger.info("[moviezet.py] generos")
     itemlist = []
      
-    itemlist.append( Item(channel=CHANNELNAME, title="Accion"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Acci%C3%B3n"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Animacion"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Aventura"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Aventura"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Belica"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=B%C3%A9lica"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Ciencia Ficcion"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Ciencia%20Ficci%C3%B3n"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Comedia"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Comedia"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Comedia Romantica"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Comedia%20Rom%C3%A1ntica"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Crimen"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Crimen"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Documental"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Documental"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Drama"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Drama"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Fantasia"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Fantas%C3%ADa"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Musical"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Musical"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Romance"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Romance"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Suspense"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Suspenso"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Terror"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Terror"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Western"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Western"))
+    itemlist.append( Item(channel=__channel__, title="Accion"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Acci%C3%B3n"))
+    itemlist.append( Item(channel=__channel__, title="Animacion"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Aventura"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Aventura"))
+    itemlist.append( Item(channel=__channel__, title="Belica"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=B%C3%A9lica"))
+    itemlist.append( Item(channel=__channel__, title="Ciencia Ficcion"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Ciencia%20Ficci%C3%B3n"))
+    itemlist.append( Item(channel=__channel__, title="Comedia"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Comedia"))
+    itemlist.append( Item(channel=__channel__, title="Comedia Romantica"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Comedia%20Rom%C3%A1ntica"))
+    itemlist.append( Item(channel=__channel__, title="Crimen"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Crimen"))
+    itemlist.append( Item(channel=__channel__, title="Documental"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Documental"))
+    itemlist.append( Item(channel=__channel__, title="Drama"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Drama"))
+    itemlist.append( Item(channel=__channel__, title="Fantasia"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Fantas%C3%ADa"))
+    itemlist.append( Item(channel=__channel__, title="Musical"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Musical"))
+    itemlist.append( Item(channel=__channel__, title="Romance"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Romance"))
+    itemlist.append( Item(channel=__channel__, title="Suspense"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Suspenso"))
+    itemlist.append( Item(channel=__channel__, title="Terror"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Terror"))
+    itemlist.append( Item(channel=__channel__, title="Western"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Western"))
     
     return itemlist
 
@@ -93,7 +100,7 @@ def novedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # AÃ±ade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     #<div class="pagination"><a href="http://www.moviezet.com/movies/page/2/?cat=1&orderby=date&order=desc" class="next">
@@ -103,7 +110,7 @@ def novedades(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="novedades", title="Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -129,7 +136,7 @@ def series(item):
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle , folder=True, extra=scrapedtitle) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle , folder=True, extra=scrapedtitle) )
 
     return itemlist
 
@@ -155,7 +162,7 @@ def temporadas(item):
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"] show="+item.show)
 
-        itemlist.append( Item(channel=CHANNELNAME, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show , folder=True, extra=item.extra + "|" + temporada) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=item.show , folder=True, extra=item.extra + "|" + temporada) )
 
     return itemlist
 
@@ -190,7 +197,7 @@ def episodios(item):
             scrapedthumbnail = item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
-            itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , folder=True) )
 
     if config.get_platform().startswith("xbmc"):
         itemlist.append( Item(channel=item.channel, title="AÃ±adir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -256,7 +263,7 @@ def findvideos(item):
         scrapedtitle = item.title + " [" + server + "]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, subtitle=suburl, folder=False))
 
     return itemlist
   
@@ -306,7 +313,7 @@ def listar(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # AÃ±ade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     patronvideos  = "<a class='next' href='([^']+)' title='Siguiente'>"
@@ -315,6 +322,6 @@ def listar(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, action="listar", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="listar", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist

@@ -12,8 +12,13 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-CHANNELNAME = "cinegratis"
-DEBUG = True
+__channel__ = "cinegratis"
+__category__ = "F,S,A,D"
+__type__ = "generic"
+__title__ = "Cinegratis"
+__language__ = "ES"
+
+DEBUG = config.get_setting("debug")
 
 def isGeneric():
     return True
@@ -22,17 +27,17 @@ def mainlist(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Películas - Novedades"            , url="http://www.cinegratis.net/index.php?module=peliculas"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Películas - Estrenos"             , url="http://www.cinegratis.net/index.php?module=estrenos"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliscat"   , title="Películas - Lista por categorías" , url="http://www.cinegratis.net/index.php?module=generos"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisalfa"  , title="Películas - Lista alfabética"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title="Series - Novedades"               , url="http://www.cinegratis.net/index.php?module=series"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Series - Todas"                   , url="http://www.cinegratis.net/index.php?module=serieslist"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title="Dibujos - Novedades"              , url="http://www.cinegratis.net/index.php?module=anime"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Dibujos - Todos"                  , url="http://www.cinegratis.net/index.php?module=animelist"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title="Documentales - Novedades"         , url="http://www.cinegratis.net/index.php?module=documentales"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Documentales - Todos"             , url="http://www.cinegratis.net/index.php?module=documentaleslist"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"     , title="Buscar"                           , url="http://www.cinegratis.net/index.php?module=search&title=%s"))
+    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Películas - Novedades"            , url="http://www.cinegratis.net/index.php?module=peliculas"))
+    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Películas - Estrenos"             , url="http://www.cinegratis.net/index.php?module=estrenos"))
+    itemlist.append( Item(channel=__channel__, action="peliscat"   , title="Películas - Lista por categorías" , url="http://www.cinegratis.net/index.php?module=generos"))
+    itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Lista alfabética"))
+    itemlist.append( Item(channel=__channel__, action="listseries" , title="Series - Novedades"               , url="http://www.cinegratis.net/index.php?module=series"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Series - Todas"                   , url="http://www.cinegratis.net/index.php?module=serieslist"))
+    itemlist.append( Item(channel=__channel__, action="listseries" , title="Dibujos - Novedades"              , url="http://www.cinegratis.net/index.php?module=anime"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Dibujos - Todos"                  , url="http://www.cinegratis.net/index.php?module=animelist"))
+    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Documentales - Novedades"         , url="http://www.cinegratis.net/index.php?module=documentales"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Documentales - Todos"             , url="http://www.cinegratis.net/index.php?module=documentaleslist"))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"                           , url="http://www.cinegratis.net/index.php?module=search&title=%s"))
 
     return itemlist
 
@@ -40,33 +45,33 @@ def pelisalfa(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="0-9", url="http://www.cinegratis.net/index.php?module=peliculaslist&init="))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="A", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=a"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="B", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=b"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="C", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=c"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="D", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=d"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="E", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=e"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="F", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=f"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="G", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=g"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="H", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=h"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="I", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=i"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="J", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=j"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="K", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=k"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="L", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=l"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="M", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=m"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="N", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=n"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="O", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=o"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="P", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=p"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="Q", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=q"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="R", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=r"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="S", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=s"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="T", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=t"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="U", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=u"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="V", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=v"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="W", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=w"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="X", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=x"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="Y", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=y"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple", title="Z", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=z"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="0-9", url="http://www.cinegratis.net/index.php?module=peliculaslist&init="))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="A", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=a"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="B", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=b"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="C", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=c"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="D", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=d"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="E", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=e"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="F", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=f"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="G", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=g"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="H", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=h"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="I", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=i"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="J", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=j"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="K", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=k"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="L", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=l"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="M", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=m"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="N", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=n"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="O", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=o"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="P", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=p"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="Q", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=q"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="R", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=r"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="S", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=s"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="T", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=t"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="U", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=u"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="V", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=v"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="W", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=w"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="X", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=x"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="Y", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=y"))
+    itemlist.append( Item(channel=__channel__, action="listsimple", title="Z", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=z"))
 
     return itemlist
 
@@ -104,8 +109,8 @@ def peliscat(item):
     url = item.url
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Versión original" , url="http://www.cinegratis.net/index.php?module=search&title=subtitulado"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listsimple" , title="Versión latina"   , url="http://www.cinegratis.net/index.php?module=search&title=latino"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Versión original" , url="http://www.cinegratis.net/index.php?module=search&title=subtitulado"))
+    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Versión latina"   , url="http://www.cinegratis.net/index.php?module=search&title=latino"))
 
     # Descarga la página
     data = scrapertools.cachePage(url)
@@ -127,7 +132,7 @@ def peliscat(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -155,7 +160,7 @@ def listsimple(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -186,7 +191,7 @@ def listvideos(item):
         scrapedplot = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
 
     # Extrae la marca de siguiente página
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -198,7 +203,7 @@ def listvideos(item):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -226,7 +231,7 @@ def listseries(item):
         scrapedplot = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la marca de siguiente página
     patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
@@ -238,7 +243,7 @@ def listseries(item):
         scrapedurl = urlparse.urljoin(url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listseries" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="listseries" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
     
@@ -273,7 +278,7 @@ def listsimple_documentales(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 

@@ -183,13 +183,13 @@ def marcarVisto(idFile):
          where idFile = ?  """, [idFile])
           
     conn.commit()
-    #print 'Marcando como visto el ' + idFile
+    print 'Marcando como visto el ' + idFile
 
 def seriesyonkis(item):
     logger.info("[libreriaXBMC.py] seriesyonkis")
     itemlist = []
     #archivo = findFile(findURL(item.url))
-    #print 'Marcamos como visto'
+    print 'Marcamos como visto'
     marcarVisto(getParam(item.url,'idFile'))
    
     data = scrapertools.cachePage(item.url)

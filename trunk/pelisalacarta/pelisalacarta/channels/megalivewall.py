@@ -24,8 +24,15 @@ from servers import megalive
 
 import simplejson as json
 
+__channel__ = "megalivewall"
+__category__ = "G"
+__type__ = "xbmc"
+__title__ = "Megalive"
+__language__ = ""
+
+DEBUG = config.get_setting("debug")
+
 __plugin__ = "plugin.video.pelisalacarta"
-CHANNELNAME = "megalivewall"
 PLUGIN_PATH = config.get_runtime_path()
 
 _VALID_URL = r'http\:\/\/www.megalive\.com/(?:(?:v/)|\?(?:s=.+?&(?:amp;)?)?((?:(?:v\=)))?)?([A-Z0-9]{8})'
@@ -40,8 +47,6 @@ except:
 # Traza el inicio del canal
 logger.info("[megalivewall.py] init")
 
-DEBUG = True
-
 def mainlist(params,url,category):
     logger.info("[megalivewall.py] mainlist")
     
@@ -52,10 +57,10 @@ def getmainlist(params,url,category):
     logger.info("[cinetube.py] getmainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30401)    , action="listWall", url="http://www.megalive.com/"      , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title= config.get_localized_string(30402)      , action="listcategory", url="http://www.megalive.com/?c=streams", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30403) , action="listfavorites"     , url=""                                       , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title=config.get_localized_string(30404)   , action="playByID"             , url=""       , folder=True) )
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30401)    , action="listWall", url="http://www.megalive.com/"      , folder=True) )
+    itemlist.append( Item(channel=__channel__, title= config.get_localized_string(30402)      , action="listcategory", url="http://www.megalive.com/?c=streams", folder=True) )
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30403) , action="listfavorites"     , url=""                                       , folder=True) )
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30404)   , action="playByID"             , url=""       , folder=True) )
     
     return itemlist
     
@@ -100,7 +105,7 @@ def getplayByID(params,url,category):
     if len(tecleado)>0:
         url,thumbnail = megalive.getLiveUrl(tecleado,1)
         if len(url)>0:
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=tecleado , url=tecleado, thumbnail=thumbnail, plot="", show = tecleado, folder=False , context = "1" ))
+            itemlist.append( Item(channel=__channel__, action="play" , title=tecleado , url=tecleado, thumbnail=thumbnail, plot="", show = tecleado, folder=False , context = "1" ))
     return itemlist
             
 def getlistWall(params,url,category):
@@ -153,8 +158,8 @@ def getlistWall(params,url,category):
                 logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # AÒade al listado de XBMC
-            #addnewvideo( CHANNELNAME , "play" , category ,"Directo", scrapedtitle+hq , scrapedurl , scrapedthumbnail , scrapedplot )
-            itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = "1"))
+            #addnewvideo( __channel__ , "play" , category ,"Directo", scrapedtitle+hq , scrapedurl , scrapedthumbnail , scrapedplot )
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = "1"))
 
         return itemlist
 
@@ -181,7 +186,7 @@ def getlistcategory(params,url,category):
         for count,item in enumerate(subitems):
             scrapedurl = url+ "&cat="+ str(count)
             item = item.replace("+%26+"," ")
-            itemlist.append( Item(channel=CHANNELNAME, action="listOrderBy", title=item , url=scrapedurl  , folder=True , extra = datajson) )
+            itemlist.append( Item(channel=__channel__, action="listOrderBy", title=item , url=scrapedurl  , folder=True , extra = datajson) )
             
         return itemlist
 
@@ -234,7 +239,7 @@ def getlistchannel(params,url,category):
             logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
             
-        itemlist.append( Item(channel=CHANNELNAME, action="play" , title=scrapedtitle + hd , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = "1"))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle + hd , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show = scrapedtitle, folder=False , context = "1"))
     return itemlist
     
 def saveChannelFavorites(params,url,category):
@@ -401,7 +406,7 @@ def getlistfavorites(params,url,category):
         
     if len(datadict)>0:
         for item in datadict:
-            itemlist.append( Item(channel=CHANNELNAME, action="play_fav" , title=item["title"] , url=item["url"], thumbnail=item["thumbnail"], plot=item["plot"], show = item["title"], folder=False , context = "2"))
+            itemlist.append( Item(channel=__channel__, action="play_fav" , title=item["title"] , url=item["url"], thumbnail=item["thumbnail"], plot=item["plot"], show = item["title"], folder=False , context = "2"))
         return itemlist
     else:
             return ""

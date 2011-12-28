@@ -21,9 +21,14 @@ from core.item import Item
 
 #from pelisalacarta import buscador
 
-CHANNELNAME = "divxonline"
+__channel__ = "divxonline"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Divx Online"
+__language__ = "ES"
 
-DEBUG = True
+DEBUG = config.get_setting("debug")
+
 Generate = False # poner a true para generar listas de peliculas
 Notas = False # indica si hay que añadir la nota a las películas
 LoadThumbs = True # indica si deben cargarse los carteles de las películas; en MacOSX cuelga a veces el XBMC
@@ -35,12 +40,12 @@ def mainlist(item):
     logger.info("[divxonline.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas"     , title="Películas - Novedades",url="http://www.divxonline.info/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="categorias"    , title="Películas - Categorías",url="http://www.divxonline.info/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="peliculas"     , title="Películas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisporletra" , title="Películas - A-Z"))
-    itemlist.append( Item(channel=CHANNELNAME, action="pelisporanio"  , title="Películas - Por año de estreno"))
-    itemlist.append( Item(channel=CHANNELNAME, action="search"        , title="Buscar"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas - Novedades",url="http://www.divxonline.info/"))
+    itemlist.append( Item(channel=__channel__, action="categorias"    , title="Películas - Categorías",url="http://www.divxonline.info/"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
+    itemlist.append( Item(channel=__channel__, action="pelisporletra" , title="Películas - A-Z"))
+    itemlist.append( Item(channel=__channel__, action="pelisporanio"  , title="Películas - Por año de estreno"))
+    itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar"))
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -71,7 +76,7 @@ def search(item,texto):
         
         scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
 
-        itemlist.append( Item(channel=CHANNELNAME, title = match[1], fulltitle=match[1], url=scrapedurl, action="findvideos", plot=scrapedplot, thumbnail=scrapedthumbnail ) )
+        itemlist.append( Item(channel=__channel__, title = match[1], fulltitle=match[1], url=scrapedurl, action="findvideos", plot=scrapedplot, thumbnail=scrapedthumbnail ) )
     
     return itemlist
 
@@ -99,7 +104,7 @@ def peliculas(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
@@ -108,7 +113,7 @@ def peliculas(item):
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculas", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
 
     return itemlist
 
@@ -139,16 +144,16 @@ def peliculasb(item): # fichas con formato en entradas alfabéticas
         scrapedplot = scrapertools.htmlclean(match[2])
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # añade siguiente página
     #
     patron = '<a href="([^"]+)" class="paginacion"[^>]+>\&gt\;\&gt\;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if len(matches)>0:
-    #    itemlist.append( Item(channel=CHANNELNAME, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+    #    itemlist.append( Item(channel=__channel__, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
     if len(matches)>0:
-        newitem = Item(channel=CHANNELNAME, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True)
+        newitem = Item(channel=__channel__, action="peliculasb", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True)
         itemlist.extend( peliculasb(newitem) )
 
     return itemlist
@@ -176,7 +181,7 @@ def peliculasc(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
     #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
@@ -185,7 +190,7 @@ def peliculasc(item):
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculasc", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculasc", title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
 
     return itemlist
 
@@ -196,7 +201,7 @@ def categorias(item):
     patron = '<a href="(/peliculas.*?-megavideo/)">([^<]+)</a><br>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=CHANNELNAME, action="movielist", title=match[1], url = urlparse.urljoin(item.url,match[0])))
+        itemlist.append( Item(channel=__channel__, action="movielist", title=match[1], url = urlparse.urljoin(item.url,match[0])))
 
     return itemlist
 
@@ -224,7 +229,7 @@ def pelisporletra(item):
 
     letras = "9ABCDEFGHIJKLMNÑOPQRSTUVWXYZ" # el 9 antes era 1, que curiosamente está mal en la web divxonline (no funciona en el navegador)
     for letra in letras:
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculasb", title=str(letra), url = "http://www.divxonline.info/verpeliculas/"+str(letra)+"_pagina_1.html"))
+        itemlist.append( Item(channel=__channel__, action="peliculasb", title=str(letra), url = "http://www.divxonline.info/verpeliculas/"+str(letra)+"_pagina_1.html"))
 
     return itemlist
 
@@ -234,7 +239,7 @@ def pelisporanio(item):
 
     #for anio in range(2009,1915,-1):
     for anio in range(datetime.datetime.today().year,1915,-1):
-        itemlist.append( Item(channel=CHANNELNAME, action="peliculasc", title=str(anio), url = "http://www.divxonline.info/peliculas-anho/"+str(anio)+"/1.html"))
+        itemlist.append( Item(channel=__channel__, action="peliculasc", title=str(anio), url = "http://www.divxonline.info/peliculas-anho/"+str(anio)+"/1.html"))
 
     return itemlist
 
@@ -291,7 +296,7 @@ def movielist(item): # pelis sin ficha (en listados por género)
             f.write(fareg+"\n")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if (Generate):
         f.close()
@@ -333,7 +338,7 @@ def findvideos(item):
     for videoitem in itemlist:
         videoitem.title = "Mirror %d%s" % (i,videoitem.title)
         videoitem.fulltitle = item.fulltitle
-        videoitem.channel=channel=CHANNELNAME
+        videoitem.channel=channel=__channel__
         i=i+1
     
     return itemlist
