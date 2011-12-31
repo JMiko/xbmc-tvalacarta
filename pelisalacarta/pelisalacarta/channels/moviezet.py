@@ -40,12 +40,12 @@ def peliculas(item):
     logger.info("[moviezet.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=__channel__, title="Novedades"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=date&order=desc"))
-    itemlist.append( Item(channel=__channel__, title="Mas Populares"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=__channel__, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=desc&meta_key=views"))
-    itemlist.append( Item(channel=__channel__, title="Generos"  , action="generos", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=__channel__, title="Por Año"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_year"))
-    itemlist.append( Item(channel=__channel__, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=title&order=desc"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Últimas películas"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=date&order=desc"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Más Populares"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Generos"  , action="generos", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_genre"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Por Año"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=title&order=asc"))
 
     return itemlist
 
@@ -73,10 +73,10 @@ def generos(item):
     return itemlist
 
 def novedades(item):
-    if (DEBUG): logger.info("[moviezet.py] novedades login")
+    if (DEBUG): logger.info("[moviezet.py] novedades")
     
     data = scrapertools.cache_page(item.url)
-    logger.info(data)
+    #logger.info(data)
     # Extrae las entradas
     '''
     <td valign="top">
@@ -242,7 +242,7 @@ def findvideos(item):
     if serieOpelicula:
         suburl = "http://www.moviezet.com/files/s/sub/"+code
     else:
-        suburl = "http://www.moviezet.com/files/sub/"+code
+        suburl = "http://www.moviezet.com/files/s/sub/"+code
     logger.info("suburl="+suburl)
     
     # Elimina el archivo subtitulo.srt de alguna reproduccion anterior
