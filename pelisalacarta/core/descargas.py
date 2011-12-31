@@ -116,7 +116,7 @@ def errores(item):
 
             # Crea la entrada
             # En la categoría va el nombre del fichero para poder borrarlo
-            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
+            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( ERROR_PATH, fichero ), folder=False ))
 
         except:
             pass
@@ -268,8 +268,8 @@ def delete_error_bookmark(fullfilename,deletepath=ERROR_PATH):
 
 def mover_descarga_error_a_pendiente(fullfilename):
     # La categoría es el nombre del fichero en favoritos, así que lee el fichero
-    canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos,readbookmarkfile(fullfilename,"")
+    canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fullfilename,"")
     # Lo añade a la lista de descargas
-    descargas.savebookmark(canal,title,url,thumbnail,server,plot,fulltitle)
+    savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle)
     # Y lo borra de la lista de errores
-    os.remove(urllib.unquote_plus( extra ))
+    os.remove(fullfilename)

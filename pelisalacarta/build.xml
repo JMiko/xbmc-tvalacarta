@@ -10,7 +10,7 @@
     <!-- Para versiones finales usar: -->
     <!--property name="version" value="3.2.5"/-->
     
-    <property name="versionboxee" value="3.5"/>
+    <property name="versionboxee" value="3.6"/>
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
 
