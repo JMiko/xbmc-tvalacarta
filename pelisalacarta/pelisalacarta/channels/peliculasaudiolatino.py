@@ -81,14 +81,13 @@ def listarpeliculas(item):
     return itemlist
 
 def videos(item):
-
     logger.info("[peliculasaudiolatino.py] videos")
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     title = item.title
     scrapedthumbnail = item.thumbnail
     itemlist = []
-    patron = "tr>.*?window.open[\D]'([^']+)'.*?Enlace: ([^<]+)<.*?Audio: ([^<]+)<.*?Calidad: ([^<]+)<.*?Formato: ([^<]+)</font>"
+    patron = "tr>.*?window.open[\D]'([^']+)'.*?Servidor: ([^<]+)<.*?Audio: ([^<]+)<.*?Calidad: ([^<]+)<.*?Formato: ([^<]+)</font>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
     for match in matches:
