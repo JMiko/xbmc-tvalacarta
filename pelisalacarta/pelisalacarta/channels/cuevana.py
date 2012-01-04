@@ -126,8 +126,11 @@ def listadoAlfabetico(item):
 
 def novedades(item):
     logger.info("[cuevana.py] login")
+    itemlist = []
+    
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
+    
     # Extrae las entradas
     patron  = '<script type="text/javascript">(.*?)</script>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -135,7 +138,7 @@ def novedades(item):
     data = data.replace("\\","")
     patron  = '\{\"(.*?)}'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    itemlist = []
+
     for datos in matches:
         try:
             scrapedtitle  = re.compile('"tit":"([^"]+)"',re.DOTALL).findall(datos)[0]
@@ -158,27 +161,27 @@ def novedades(item):
 
 def series(item):
     logger.info("[cuevana.py] series")
+    itemlist = []
     
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
-    patron  = '<script type="text/javascript">(.*?)</script>'
+    patron  = '<a href="([^"]+)">[^<]+'
+    patron += '<div class="img"><img src="([^"]+)" /></div>[^<]+'
+    patron += '<div class="box">[^<]+'
+    patron += '<div class="rate"><span[^<]+</span></div>[^<]+'
+    patron += '<div class="tit">([^>]+)</div>[^<]+'
+    patron += '<div class="ano">([^<]+)</div>[^<]+'
+    patron += '<div class="txt">(.*?)</div>[^<]+'
+    patron += '<div class="in">(.*?)</div>'
+
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
-    data = matches[0]
     
-    #{"id":"3478","url":"#!\/series\/3478\/american-dad","tit":"American Dad!","duracion":"30","ano":"2005","temporadas":"7","episodios":"120","rate":"3.9887976646423340","genero":"Animaci\u00f3n","idioma":"Ingl\u00e9s"}
-    # {"url":"#!\/series\/3622\/game-of-thrones","tit":"Game of Thrones","duracion":"60","temporadas":"1","episodios":"10","genero":" Fantas\u00eda"}
-    data = data.replace("\\","")
-    # patron  = '{"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","ano":"([^"]+)","temporadas":"([^"]+)","episodios":"([^"]+)","rate":"([^"]+)","genero":"([^"]+)","idioma":"([^"]+)"}'
-    patron  = '{(.*?)"url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)",(.*?)"temporadas":"([^"]+)","episodios":"([^"]+)",(.*?)"genero":"([^"]+)"(.*?)}'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    itemlist = []
-    for id,url,tit,duracion,ano,temporadas,episodios,rate,genero,idioma in matches:
+    for url,thumbnail,tit,anyo,plot,plot2 in matches:
         scrapedtitle = tit
-        scrapedplot = ""
+        scrapedplot = anyo+" "+plot+" "+plot2
+        
         # url es "#!/series/3478/american-dad"
         # el destino es "http://www.cuevana.tv/web/series?&3478&american-dad"
         
@@ -190,11 +193,20 @@ def series(item):
         #   http://www.cuevana.tv/web/series?&3478&american-dad
 
         # scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
-        scrapedthumbnail = scrapedurl.replace("http://www.cuevana.tv/web/series?&","http://sc.cuevana.tv/box/")
-        scrapedthumbnail = scrapedthumbnail.replace("&",".jpg?")
+        scrapedthumbnail = thumbnail
         #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
         itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+
+    # Paginación
+    # Enlace: <span class="actual">1</span><a href="page:2">
+    # URL: http://www.cuevana.tv/web/series?&todas&page=2
+    patron  = '<span class="actual">[^<]+</span><a href="([^"]+)">'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        parametro = matches[0].replace(":","=")
+        scrapedurl = "http://www.cuevana.tv/web/series?&todas&"+parametro
+        itemlist.append( Item(channel=__channel__, action="series", title="Página siguiente >>" , url=scrapedurl) )
 
     return itemlist
 
