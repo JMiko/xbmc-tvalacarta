@@ -170,9 +170,8 @@ def findvideos(data):
     devuelve.extend(vk.find_videos(data))
 
     # wupload
-    if config.get_setting("fileniumpremium")=="true":
-        import wupload
-        devuelve.extend(wupload.find_videos(data))
+    import wupload
+    devuelve.extend(wupload.find_videos(data))
 
     # ---------------------------
 
