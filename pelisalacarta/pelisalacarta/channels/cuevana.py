@@ -29,7 +29,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
-    itemlist.append( Item(channel=__channel__, title="Series"     , action="seriesMenu",    url="http://www.cuevana.tv/web/series?&todas"))
+    itemlist.append( Item(channel=__channel__, title="Series"     , action="seriesMenu", url="http://www.cuevana.tv/web/series?&todas"))
     #itemlist.append( Item(channel=__channel__, title="Buscar"     , action="search_options") )
     
     return itemlist
@@ -125,38 +125,49 @@ def listadoAlfabetico(item):
     return itemlist
 
 def novedades(item):
-    logger.info("[cuevana.py] login")
+    logger.info("[cuevana.py] novedades")
     itemlist = []
     
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
     
     # Extrae las entradas
-    patron  = '<script type="text/javascript">(.*?)</script>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    data = matches[0]
-    data = data.replace("\\","")
-    patron  = '\{\"(.*?)}'
-    matches = re.compile(patron,re.DOTALL).findall(data)
+    patron  = '<a href="([^"]+)">[^<]+'
+    patron += '<div class="img"><img src="([^"]+)" /></div>[^<]+'
+    patron += '<div class="box">[^<]+'
+    patron += '<div class="rate"><span[^<]+</span></div>[^<]+'
+    patron += '<div class="tit">([^>]+)</div>[^<]+'
+    patron += '<div class="ano">([^<]+)</div>[^<]+'
+    patron += '<div class="txt">(.*?)</div>'
 
-    for datos in matches:
-        try:
-            scrapedtitle  = re.compile('"tit":"([^"]+)"',re.DOTALL).findall(datos)[0]
-        except:
-            scrapedtitle  = ""
-        try:
-            scrapedplot   = re.compile('"txt":"([^"]+)"',re.DOTALL).findall(datos)[0]
-        except:
-            scrapedplot   = ""
-        try:
-            scrapedurl    = re.compile('url":"([^"]+)"',re.DOTALL).findall(datos)[0]
-            scrapedurl = re.compile('peliculas/([^/]+)',re.DOTALL).findall(scrapedurl)[0]
-            scrapedthumbnail = "http://sc.cuevana.tv/box/"+scrapedurl+".jpg"
-        except:
-            scrapedurl    = ""
-            scrapedthumbnail = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, context="4|5", extra="pelicula") )
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    for url,thumbnail,tit,anyo,plot in matches:
+        scrapedtitle = tit
+        scrapedplot = anyo+" "+plot        
+        # url es "#!/peliculas/4437/mammuth"
+        scrapedurl = re.compile('peliculas/([^/]+)',re.DOTALL).findall(url)[0]
+        scrapedthumbnail = thumbnail
+        #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+
+    # Paginación
+    # Enlace: <span class="actual">1</span><a href="page:2">
+    # URL: http://www.cuevana.tv/#!/peliculas/page:2
+    # Página 1: http://www.cuevana.tv/web/peliculas?&estrenos
+    # Página 2: http://www.cuevana.tv/web/peliculas?&estrenos&page=2
+    patron  = '<span class="actual">[^<]+</span><a href="([^"]+)">'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        parametro = matches[0].replace(":","=")
+        if "page=" in item.url:
+            baseurl = re.compile('(http\://.*?)\&page=',re.DOTALL).findall(item.url)[0]
+        else:
+            baseurl = item.url
+        scrapedurl = baseurl + "&"+parametro
+        logger.info("[cuevana.py] Página siguiente: "+scrapedurl)
+        itemlist.append( Item(channel=__channel__, action="novedades", title="Página siguiente >>" , url=scrapedurl) )
+
     return itemlist
 
 def series(item):
