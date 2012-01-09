@@ -27,51 +27,81 @@ def mainlist(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Películas - Novedades"            , url="http://www.cinegratis.net/index.php?module=peliculas"))
-    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Películas - Estrenos"             , url="http://www.cinegratis.net/index.php?module=estrenos"))
-    itemlist.append( Item(channel=__channel__, action="peliscat"   , title="Películas - Lista por categorías" , url="http://www.cinegratis.net/index.php?module=generos"))
-    itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Lista alfabética"))
-    itemlist.append( Item(channel=__channel__, action="listseries" , title="Series - Novedades"               , url="http://www.cinegratis.net/index.php?module=series"))
-    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Series - Todas"                   , url="http://www.cinegratis.net/index.php?module=serieslist"))
-    itemlist.append( Item(channel=__channel__, action="listseries" , title="Dibujos - Novedades"              , url="http://www.cinegratis.net/index.php?module=anime"))
-    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Dibujos - Todos"                  , url="http://www.cinegratis.net/index.php?module=animelist"))
-    itemlist.append( Item(channel=__channel__, action="listvideos" , title="Documentales - Novedades"         , url="http://www.cinegratis.net/index.php?module=documentales"))
-    itemlist.append( Item(channel=__channel__, action="listsimple" , title="Documentales - Todos"             , url="http://www.cinegratis.net/index.php?module=documentaleslist"))
-    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"                           , url="http://www.cinegratis.net/index.php?module=search&title=%s"))
+    itemlist.append( Item(channel=__channel__, action="estrenos"   , title="Películas - Estrenos DVD/BluRay" , url="http://www.cinegratis.net/estrenos-dvd-bluray/", extra="Estrenos+DVD%2FBLURAY"))
+    itemlist.append( Item(channel=__channel__, action="estrenos"   , title="Películas - Estrenos cine"       , url="http://www.cinegratis.net/estrenos-de-cine/", extra="Estrenos+de+Cine"))
+    #itemlist.append( Item(channel=__channel__, action="peliscat"   , title="Películas - Géneros"             , url="http://www.cinegratis.net/index.php?module=generos"))
+    #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Idiomas"             , url="http://www.cinegratis.net/index.php?module=peliculas"))
+    #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Calidades"           , url="http://www.cinegratis.net/index.php?module=peliculas"))
+    #itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"                          , url="http://www.cinegratis.net/index.php?module=search&title=%s"))
 
     return itemlist
 
-def pelisalfa(item):
-    logger.info("[cinegratis.py] mainlist")
+def estrenos(item):
+    logger.info("[cinegratis.py] estrenos")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    # Extrae los items
+    patron  = "<td class='asd2'.*?"
+    patron += "<table.*?<a.*?href='([^']+)'>([^<]+)</a>.*?"
+    patron += "<img src='([^']+)'"#.*?"
+    #patron += "<table>(.*?)</table>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for url,titulo,thumbnail in matches:
+        plot=""
+        if not url.startswith("/"):
+            url = "/"+url
+        scrapedtitle = unicode(titulo,"iso-8859-1").encode("utf-8")
+        scrapedurl = urlparse.urljoin(item.url,url.replace("\n",""))
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        scrapedplot = scrapertools.htmlclean(plot)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
+
+    # Extrae la marca de siguiente página
+    patron = "<input class='boton' type='button' value='[^']+' style='[^']+'><input class='boton' style='[^']+' type='button' value='[^']+' onclick='document.homesearch.pag.value\=(\d+)\;"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    if len(matches)>0:
+        scrapedtitle = "Página siguiente >>"
+        scrapedurl = "http://www.cinegratis.net/index.php?hstype=t%EDtulo&hstitle=Todos...&hscat=Todos&hslanguage=Todos&hsquality=Todas&hsestreno="+item.extra+"&hsyear1=Desde...&hsyear2=...Hasta&pag="+matches[0]+"&hsletter=&tesths=1"
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        itemlist.append( Item(channel=__channel__, action="estrenos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra=item.extra))
+
+    return itemlist
+
+def listsimple(item):
+    logger.info("[cinegratis.py] listsimple")
+
+    url = item.url
+
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+
+    # Extrae los items
+    patronvideos  = "<a href='(index.php\?module\=player[^']+)'[^>]*>(.*?)</a>"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="0-9", url="http://www.cinegratis.net/index.php?module=peliculaslist&init="))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="A", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=a"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="B", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=b"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="C", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=c"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="D", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=d"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="E", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=e"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="F", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=f"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="G", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=g"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="H", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=h"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="I", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=i"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="J", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=j"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="K", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=k"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="L", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=l"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="M", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=m"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="N", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=n"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="O", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=o"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="P", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=p"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="Q", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=q"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="R", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=r"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="S", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=s"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="T", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=t"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="U", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=u"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="V", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=v"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="W", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=w"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="X", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=x"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="Y", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=y"))
-    itemlist.append( Item(channel=__channel__, action="listsimple", title="Z", url="http://www.cinegratis.net/index.php?module=peliculaslist&init=z"))
+    for match in matches:
+        # Atributos
+        scrapedtitle = match[1]
+        scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
+        scrapedtitle = scrapedtitle.replace("</span>","")
+        scrapedurl = urlparse.urljoin(url,match[0])
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -132,77 +162,6 @@ def peliscat(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-def listsimple(item):
-    logger.info("[cinegratis.py] listsimple")
-
-    url = item.url
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-
-    # Extrae los items
-    patronvideos  = "<a href='(index.php\?module\=player[^']+)'[^>]*>(.*?)</a>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        # Atributos
-        scrapedtitle = match[1]
-        scrapedtitle = scrapedtitle.replace("<span class='style4'>","")
-        scrapedtitle = scrapedtitle.replace("</span>","")
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-def listvideos(item):
-    logger.info("[cinegratis.py] listvideos")
-
-    url = item.url
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae los items
-    patronvideos  = "<table.*?<td.*?>([^<]+)<span class='style1'>\(Visto.*?"
-    patronvideos += "<div align='justify'>(.*?)</div>.*?"
-    patronvideos += "<a href='(.*?)'.*?"
-    patronvideos += "<img src='(.*?)'"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[0]
-        if url.startswith('http://www.cinegratis.net/genero'):
-            url="http://www.cinegratis.net/"
-        scrapedurl = urlparse.urljoin(url,match[2])
-        scrapedthumbnail = urlparse.urljoin(url,match[3])
-        scrapedplot = match[1]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
-
-    # Extrae la marca de siguiente página
-    patronvideos  = "<a href='[^']+'><u>[^<]+</u></a> <a href='([^']+)'>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        scrapedtitle = "Página siguiente"
-        scrapedurl = urlparse.urljoin(url,matches[0])
-        scrapedthumbnail = ""
-        scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
