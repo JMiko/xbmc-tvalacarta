@@ -10,6 +10,9 @@ sys.path.append ("lib")
 from core import platform_name
 platform_name.PLATFORM_NAME="developer"
 
+from core import config
+config.set_setting("debug","true")
+
 from core import scrapertools
 from core.item import Item
 from servers import servertools
@@ -19,81 +22,36 @@ def test_one_channel(channelid):
         exec "from pelisalacarta.channels import "+channelid+" as channelmodule"
         resultado = channelmodule.test()
     except:
+        import traceback
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                print line_split
+
         resultado = False
 
     return resultado
 
 def test_channels():
     
+    para_probar = [ "animeflv", "animeid" , "buenaisla" , "cineadicto" ]
     funcionan = []
     no_funcionan = []
-    no_probados = []
-    
-    #animeforos - xbmc only
-    no_probados.append("animeforos")
+    no_probados = [ "asiateam", "casttv" , "cineblog01" ]
 
-    # animeflv
-    resultado = test_one_channel("animeflv")
-    if resultado:
-        funcionan.append("animeflv")
-    else:
-        no_funcionan.append("animeflv")
+    # Verifica los canales
+    for canal in para_probar:
+        resultado = test_one_channel(canal)
+        if resultado:
+            funcionan.append(canal)
+        else:
+            no_funcionan.append(canal)
 
-    # animeid
-    try:
-        from pelisalacarta.channels import animeid
-        itemlist = animeid.mainlist(Item())
-        itemlist = animeid.destacados(itemlist[0])  # Destacados -> lista de series
-        itemlist = animeid.serie(itemlist[0])  # Primera serie destacada -> lista de episodios
-        itemlist = servertools.find_video_items(itemlist[0]) # Primer episodios -> lista de vídeos
-    except:
-        itemlist=[]
 
-    if len(itemlist)>0: funcionan.append("animeid")
-    else: no_funcionan.append("animeid")
-
-    # asiateam
-    no_probados.append("asiateam")
-
-    # buenaisla
-    try:
-        from pelisalacarta.channels import buenaisla
-        itemlist = buenaisla.mainlist(Item())    
-        itemlist = buenaisla.novedades(itemlist[0])  # Novedades -> lista de episodios
-        itemlist = buenaisla.videos(itemlist[0])
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("buenaisla")
-    else: no_funcionan.append("buenaisla")
-
-    # casttv
-    no_probados.append("casttv")
-    
-    # cineadicto
-    try:
-        from pelisalacarta.channels import cineadicto
-        itemlist = cineadicto.mainlist(Item())    
-        itemlist = cineadicto.listvideos(itemlist[0])  # Novedades -> lista de episodios
-        itemlist = cineadicto.detail(itemlist[4])
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("cineadicto")
-    else: no_funcionan.append("cineadicto")
-    
-    # cineblog01
-    try:
-        from pelisalacarta.channels import cineblog01
-        itemlist = cineblog01.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = cineblog01."+itemlist[0].action+"(itemlist[0])"  # Novedades -> lista de pelis
-        itemlist = servertools.find_video_items(itemlist[0]) # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("cineblog01")
-    else: no_funcionan.append("cineblog01")
-
+    '''
     # cinegratis
     try:
         from pelisalacarta.channels import cinegratis
@@ -283,7 +241,8 @@ def test_channels():
 
     if len(itemlist)>0: funcionan.append("islapeliculas")
     else: no_funcionan.append("islapeliculas")
-
+    '''
+    
     print "------------------------------------"
     print " funcionan: %d" % len(funcionan)
     for canal in funcionan:
@@ -457,6 +416,7 @@ def test_videobb():
     import base64
     import binascii
 
+    '''
     sece2="621aa94bf809e87900e9e90799bedc281e81e2587e7bb6bb7a15f5a4ec9f0713"
     rkts="130979"
     c = videobb.decrypt32byte(sece2, int(rkts), int(base64.decodestring("MjI2NTkz")));
@@ -470,6 +430,14 @@ def test_videobb():
     print c
     #  b61f6fe75a78ca7e6c00a428bd1847eb1e81e2587e7bb6bb7a15f5a4ec9f0713
     #->edc96268979da2615d5cfdb56b569ac31e81e2587e7bb6bb7a15f5a4ec9f0713
+    '''
+    #videobb.get_video_url("http://videobb.com/e/itQbKhPJueqk")
+
+def test_wupload():
+
+    from servers import wupload
+    #wupload.get_video_url("http://www.wupload.es/file/2610051647")
+    wupload.get_video_url("http://www.wupload.es/file/2615687672")
 
 if __name__ == "__main__":
     #test_server_connectors()
@@ -479,4 +447,4 @@ if __name__ == "__main__":
     #test_fileserver_premium()
     #test_filenium()
     #test_json()
-    #test_videobb() 
+    #test_wupload()
