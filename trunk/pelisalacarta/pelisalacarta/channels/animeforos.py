@@ -16,7 +16,7 @@ import xbmcplugin
 from servers import servertools
 from core import scrapertools
 from platformcode.xbmc import xbmctools
-
+from core import config
 import casttv
 
 DEBUG = config.get_setting("debug")
@@ -26,7 +26,7 @@ __type__ = "xbmc"
 __title__ = "Anime Foros"
 __channel__ = "animeforos"
 __language__ = "ES"
-__working__= false
+__working__= "false"
 
 # Esto permite su ejecución en modo emulado
 try:

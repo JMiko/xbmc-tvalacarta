@@ -178,8 +178,7 @@ def listvideos(item):
     # Extrae las entradas (carpetas)
     patronvideos  = '<div id="covershot".*?<a.*?<img src="(.*?)".*?'
     patronvideos += '<div id="post-title"><a href="(.*?)".*?'
-    patronvideos += '<h3>(.*?)</h3>.*?&#160;'
-    patronvideos += '&#160;(.*?)</p>'
+    patronvideos += '<h3>(.*?)</h3>(.*?)</p>'
     #patronvideos += '<div id="description"><p>(.?*)</div>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)

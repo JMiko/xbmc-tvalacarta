@@ -31,8 +31,8 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="newlist" , title="Novedades"                         , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="Lista2"  , title="Ultimas Series Agregadas o Subidas", url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="airlist" , title="Animes en Emision"                 , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="Lista2"  , title="Ultimas series agregadas o subidas", url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="airlist" , title="Animes en emision"                 , url="http://animeflv.net/" ))
     itemlist.append( Item(channel=__channel__, action="ListA"   , title="Listado Alfabetico"                , url="http://animeflv.net/" ))
     itemlist.append( Item(channel=__channel__, action="genero"  , title="Listado por Genero"                , url="http://animeflv.net/" ))
     itemlist.append( Item(channel=__channel__, action="completo", title="Listado Completo de Animes"        , url="http://animeflv.net/" ))
@@ -260,12 +260,17 @@ def airlist(item):
 def test():
     bien = True
     
-    itemlist = mainlist()
-    lista_series = newlist(item[0]) # Novedades
-    lista_mirror = findvideos(item[0])
-    if len(lista_mirror)==0:
-        bien = True
-    else:
-        bien = False
-        
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    episodios_items = newlist(mainlist_items[0])
+    
+    bien = False
+    for episodio_item in episodios_items:
+        mirrors = servertools.find_video_items(item=episodio_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
     return bien
