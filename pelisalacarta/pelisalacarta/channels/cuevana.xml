@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>20</tag>
-	<date>08/01/2012</date>
-	<changes>Arregladas las pelis</changes>
+	<tag>22</tag>
+	<date>10/01/2012</date>
+	<changes>Añadido soporte para más idiomas</changes>
 </version>

@@ -307,6 +307,7 @@ def findvideos(item):
     url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo="+tipo
 
     data = scrapertools.cache_page(url)
+    logger.info("data="+data)
     
     # Fuentes
     patron = 'var sources \= (.*?)\;'
@@ -329,6 +330,15 @@ def findvideos(item):
     language_labels = {}
     language_labels["1"]="Espanol"
     language_labels["2"]="Ingles"
+    language_labels["3"]="Portugues"
+    language_labels["4"]="Aleman"
+    language_labels["5"]="Frances"
+    language_labels["6"]="Coreano"
+    language_labels["7"]="Italiano"
+    language_labels["8"]="Tailandes"
+    language_labels["9"]="Ruso"
+    language_labels["10"]="Mongol"
+    language_labels["11"]="Polaco"
 
     # Presenta las opciones
     itemlist = []
