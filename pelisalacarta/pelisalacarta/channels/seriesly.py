@@ -89,8 +89,8 @@ def series(item):
     auth_token = data.strip()
 
     # UserToken
-    url = "http://series.ly/api/api_login.php?lg_login="+LOGIN+"&lg_pass="+PASSWORD+"&auth_token="+auth_token
-    post = "lg_login=%s&lg_pass=%s" % (LOGIN, PASSWORD)
+    url = "http://series.ly/scripts/login/login.php"
+    post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s" % (LOGIN, PASSWORD, auth_token)
     data = scrapertools.cache_page(url,post=post)
     logger.info("****")
     logger.info(data)
@@ -150,8 +150,8 @@ def mispelis(item):
     auth_token = data.strip()
 
     # UserToken
-    url = "http://series.ly/api/api_login.php?lg_login="+LOGIN+"&lg_pass="+PASSWORD+"&auth_token="+auth_token
-    post = "lg_login=%s&lg_pass=%s" % (LOGIN, PASSWORD)
+    url = "http://series.ly/scripts/login/login.php"
+    post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s" % (LOGIN, PASSWORD, auth_token)
     data = scrapertools.cache_page(url,post=post)
     logger.info("****")
     logger.info(data)
