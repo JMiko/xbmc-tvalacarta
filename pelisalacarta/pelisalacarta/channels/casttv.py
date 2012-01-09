@@ -807,7 +807,8 @@ def casttvoptions(data,filter):
     # ------------------------------------------------------
     patronvideos = '<select id="'+filter+'"(.*?)</select>'
     matches = re.compile(patronvideos,re.DOTALL).search(data)
-    if (matches):
+    if (matches):
+
         data = matches.group(1)
     else:
         return options,listoptions
@@ -1968,7 +1969,8 @@ def findseriesyonkis(title,todos,titlesearch,tptitlesearch):
     # Extrae el bloque de las series
     patronvideos = '<h4><a.*?id="series".*?<ul>(.*?)</ul>.*?<h4><a.*?id="miniseries".*?<ul>(.*?)</ul>'
     matches = re.compile(patronvideos,re.DOTALL).search(data)
-    if (matches):
+    if (matches):
+
         data = matches.group(1)+matches.group(2)
 
     # Extrae las entradas (carpetas)
@@ -2626,7 +2628,8 @@ def futonoptions(data,filter):
     # ------------------------------------------------------
     patronvideos = '<select name="'+filter+'">(.*?)</select>'
     matches = re.compile(patronvideos,re.DOTALL).search(data)
-    if (matches):
+    if (matches):
+
         data = matches.group(1)
     else:
         return options,listoptions

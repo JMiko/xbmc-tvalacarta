@@ -368,3 +368,22 @@ def find_video_items_cineadicto(item,data,plot):
             print scrapedurl
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    episodios_items = listvideos(mainlist_items[0])
+    
+    bien = False
+    for episodio_item in episodios_items:
+        mirrors = detail(episodio_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien

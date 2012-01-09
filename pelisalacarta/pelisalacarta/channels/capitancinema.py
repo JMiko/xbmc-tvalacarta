@@ -18,7 +18,7 @@ __category__ = "P"
 __type__ = "generic"
 __title__ = "Capitan Cinema"
 __language__ = "ES"
-__working__= false
+__working__= "false"
 
 DEBUG = config.get_setting("debug")
 
