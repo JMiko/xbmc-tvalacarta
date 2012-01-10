@@ -377,9 +377,9 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
             # then we get the HTTPCookieProcessor
             # and install the opener in urllib2
             if not follow_redirects:
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+                opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=True),urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
             else:
-                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+                opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=True),urllib2.HTTPCookieProcessor(cj))
             urllib2.install_opener(opener)
 
         else:
@@ -409,7 +409,7 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     # Añade las cabeceras
     logger.info("[scrapertools.py] ---------------------------")
     for header in headers:
-        logger.info("[scrapertools.py] header=%s" % str(header[0]))
+        logger.info("[scrapertools.py] header %s=%s" % (str(header[0]),str(header[1])) )
         txheaders[header[0]]=header[1]
     logger.info("[scrapertools.py] ---------------------------")
 
@@ -692,6 +692,10 @@ def printMatches(matches):
     for match in matches:
         logger.info("[scrapertools.py] %d %s" % (i , match))
         i = i + 1
+        
+def get_match(data,patron,index=0):
+    matches = re.findall( patron , data , flags=re.DOTALL )
+    return matches[index]
 
 def entityunescape(cadena):
     return unescape(cadena)
