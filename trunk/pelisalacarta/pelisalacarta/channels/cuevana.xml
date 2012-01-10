@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>22</tag>
-	<date>10/01/2012</date>
-	<changes>Añadido soporte para más idiomas</changes>
+	<tag>23</tag>
+	<date>11/01/2012</date>
+	<changes>Ya salen las pelis en HD</changes>
 </version>

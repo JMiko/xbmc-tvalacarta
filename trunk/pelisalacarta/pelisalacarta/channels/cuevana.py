@@ -130,10 +130,10 @@ def novedades(item):
     
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    
+
     # Extrae las entradas
     patron  = '<a href="([^"]+)">[^<]+'
-    patron += '<div class="img"><img src="([^"]+)" /></div>[^<]+'
+    patron += '<div class="img"><img src="([^"]+)".*?'
     patron += '<div class="box">[^<]+'
     patron += '<div class="rate"><span[^<]+</span></div>[^<]+'
     patron += '<div class="tit">([^>]+)</div>[^<]+'
