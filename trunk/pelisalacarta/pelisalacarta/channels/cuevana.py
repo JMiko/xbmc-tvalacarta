@@ -465,3 +465,37 @@ def listar(item, categoria="*"):
         itemlist.append( Item(channel=__channel__, action="listar", title="Página siguiente" , url=scrapedurl) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    peliculas_items = peliculas(mainlist_items[0])
+
+    # Comprueba primero las películas "Recientes" a ver si alguna tiene mirrors
+    novedades_items = novedades(peliculas_items[1])
+    
+    bien = False
+    for pelicula_item in novedades_items:
+        mirrors = findvideos(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    if not bien:
+        return bien
+
+    # Comprueba luego las series
+    seriesmenu_items = seriesMenu(mainlist_items[1])
+    series_items = series(seriesmenu_items[0])
+    episodios_items = episodios(series_items[0])
+    bien = False
+    for episodio_item in episodios_items:
+        mirrors = findvideos(item=episodio_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
