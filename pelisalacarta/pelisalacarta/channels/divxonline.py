@@ -376,3 +376,23 @@ def Procesa (key, pt):
             s[j] = x;
             ct += chr(ord(pt[y]) ^ s[(s[i] + s[j]) % 256]);
     return ct
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = peliculas(mainlist_items[0])
+    
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = findvideos(pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
