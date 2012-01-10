@@ -25,6 +25,7 @@
 	<string id="30010">Logos de canales:</string>
 	<string id="30011">Poster (vertical)</string>
 	<string id="30012">Banner (horizontal)</string>
+	<string id="30200">Cuadrado</string>
 
 	<!-- Cuenta Megavideo -->
 	<string id="30013">Modo premium Megavideo/Megaupload:</string>
@@ -151,7 +152,7 @@
 	<string id="30164">Borrar este fichero</string>
 
 	<!-- =============================================================== -->
-	<!-- De 30100 a 30999: Canales individuales                          -->
+	<!-- De 30200 a 30999: Canales individuales                          -->
 	<!-- =============================================================== -->
 
     <!-- Context menu strings -->

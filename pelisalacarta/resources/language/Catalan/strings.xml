@@ -24,7 +24,8 @@
 	<string id="30010">Logos de canals:</string>
 	<string id="30011">Poster (vertical)</string>
 	<string id="30012">Banner (horitzontal)</string>
- 
+ 	<string id="30200">Cuadrado</string>
+
 	<!-- Cuenta Megavideo -->
 	<string id="30013">Mode premium Megavideo/Megaupload:</string>
 	<string id="30014">Usuari:</string>
