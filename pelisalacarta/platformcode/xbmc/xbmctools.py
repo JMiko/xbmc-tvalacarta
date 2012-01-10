@@ -207,7 +207,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
     else:
         # Muestra un diálogo de progreso
-        if config.get_setting("player_mode")=="0" and not strmfile:
+        if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":
             import xbmcgui
             progreso = xbmcgui.DialogProgress()
             progreso.create( "pelisalacarta" , "Conectando con %s..." % server)
@@ -237,7 +237,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             video_urls.append( [ "[filenium]", video_gen ] )
 
         # Cierra el diálogo de progreso
-        if config.get_setting("player_mode")=="0" and not strmfile:
+        if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":
             progreso.close()
 
     # El vídeo está
@@ -759,23 +759,24 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
 
             if item.folder :
                 if len(item.extra)>0:
-                    addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = item.totalItems, fanart=item.fanart , context=item.context, show=item.show, fulltitle=item.fulltitle )
+                    addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = len(itemlist), fanart=item.fanart , context=item.context, show=item.show, fulltitle=item.fulltitle )
                 else:
-                    addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = item.totalItems , fanart = item.fanart, context = item.context, show=item.show, fulltitle=item.fulltitle )
+                    addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = len(itemlist) , fanart = item.fanart, context = item.context, show=item.show, fulltitle=item.fulltitle )
             else:
                 if config.get_setting("player_mode")=="1": # SetResolvedUrl debe ser siempre "isPlayable = true"
                     isPlayable = "true"
                 
 
                 if item.duration:
-                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" ,  duration = item.duration , fanart = item.fanart, IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = item.totalItems, show=item.show, password = item.password, extra = item.extra, fulltitle=item.fulltitle )
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" ,  duration = item.duration , fanart = item.fanart, IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = len(itemlist), show=item.show, password = item.password, extra = item.extra, fulltitle=item.fulltitle )
                 else:    
-                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, fanart = item.fanart, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = item.totalItems, show=item.show , password = item.password , extra=item.extra, fulltitle=item.fulltitle )
-    
+                    addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, fanart = item.fanart, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = len(itemlist), show=item.show , password = item.password , extra=item.extra, fulltitle=item.fulltitle )
+
         # Cierra el directorio
         xbmcplugin.setContent(pluginhandle,"Movies")
         xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
         xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def wait2second():
