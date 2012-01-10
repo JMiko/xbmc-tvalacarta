@@ -37,10 +37,26 @@ def test_one_channel(channelid):
 
 def test_channels():
     
-    para_probar = [ "animeflv", "animeid" , "buenaisla" , "cineadicto" ]
+    para_probar = []
+    para_probar.append("animeflv")
+    para_probar.append("animeid")
+    para_probar.append("buenaisla")
+    para_probar.append("cineadicto")
+    para_probar.append("cineblog01")
+    para_probar.append("cinegratis")
+    para_probar.append("cinetube")
+    para_probar.append("cuevana")
+    para_probar.append("dlmore")
+    para_probar.append("delatv")
+    para_probar.append("descargacineclasico")
+    para_probar.append("descargapelis")
+    para_probar.append("descarregadirecta")
+    para_probar.append("discoverymx")
+    para_probar.append("divxonline")
+    
     funcionan = []
     no_funcionan = []
-    no_probados = [ "asiateam", "casttv" , "cineblog01" ]
+    no_probados = [ "asiateam", "casttv" ]
 
     # Verifica los canales
     for canal in para_probar:
@@ -52,115 +68,6 @@ def test_channels():
 
 
     '''
-    # cinegratis
-    try:
-        from pelisalacarta.channels import cinegratis
-        itemlist = cinegratis.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = cinegratis."+itemlist[0].action+"(itemlist[0])"  # Novedades -> lista de pelis
-        itemlist = servertools.find_video_items(itemlist[0]) # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("cinetube")
-    else: no_funcionan.append("cinetube")
-
-    # cinetube
-    try:
-        from pelisalacarta.channels import cinetube
-        itemlist = cinetube.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = cinetube.peliculas(itemlist[0],paginacion=True)"  # Novedades -> lista de pelis
-        exec "itemlist = cinetube."+itemlist[0].action+"(itemlist[0])"  ## Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("cinetube")
-    else: no_funcionan.append("cinetube")
-
-    # cuevana
-    try:
-        from pelisalacarta.channels import cuevana
-        itemlist = cuevana.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = cuevana."+itemlist[0].action+"(itemlist[0])"  # Peliculas -> lista de opciones de peliculas
-        exec "itemlist = cuevana."+itemlist[0].action+"(itemlist[1])"  # Novedades -> lista de pelis
-        exec "itemlist = cuevana."+itemlist[0].action+"(itemlist[1])"  # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("cuevana")
-    else: no_funcionan.append("cuevana")
-
-    # delatv
-    try:
-        from pelisalacarta.channels import delatv
-        itemlist = delatv.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = delatv."+itemlist[0].action+"(itemlist[0])"  # Novedades -> lista de pelis
-        exec "itemlist = delatv."+itemlist[0].action+"(itemlist[0])"  # peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("delatv")
-    else: no_funcionan.append("delatv")
-
-    # descargacineclasico
-    try:
-        from pelisalacarta.channels import descargacineclasico
-        itemlist = descargacineclasico.mainlist(Item()) # -> lista categorias
-        exec "itemlist = descargacineclasico."+itemlist[0].action+"(itemlist[0])"  # categoria -> lista de pelis
-        itemlist = servertools.find_video_items(itemlist[0]) # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("descargacineclasico")
-    else: no_funcionan.append("descargacineclasico")
-
-    # descargapelis
-    try:
-        from pelisalacarta.channels import descargapelis
-        itemlist = descargapelis.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = descargapelis."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de pelis
-        exec "itemlist = descargapelis."+itemlist[0].action+"(itemlist[0])" # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("descargapelis")
-    else: no_funcionan.append("descargapelis")
-
-    # dibujosanimadosgratis
-    try:
-        from pelisalacarta.channels import dibujosanimadosgratis
-        itemlist = dibujosanimadosgratis.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = dibujosanimadosgratis."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de pelis
-        itemlist = servertools.find_video_items(itemlist[0]) # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("dibujosanimadosgratis")
-    else: no_funcionan.append("dibujosanimadosgratis")
-
-    # discoverymx
-    try:
-        from pelisalacarta.channels import discoverymx
-        itemlist = discoverymx.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = discoverymx."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de documentales
-        exec "itemlist = discoverymx."+itemlist[0].action+"(itemlist[0])" # Primer documental -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("discoverymx")
-    else: no_funcionan.append("discoverymx")
-
-    # divxonline
-    try:
-        from pelisalacarta.channels import divxonline
-        itemlist = divxonline.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = divxonline."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de pelis
-        exec "itemlist = divxonline."+itemlist[0].action+"(itemlist[0])" # Primera peli -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("divxonline")
-    else: no_funcionan.append("divxonline")
-
     # documaniatv
     try:
         from pelisalacarta.channels import documaniatv
