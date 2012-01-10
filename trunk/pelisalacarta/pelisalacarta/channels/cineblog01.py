@@ -249,3 +249,23 @@ def listserie(item):
         itemlist.append( Item(channel=__channel__, action="listserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = listvideos(mainlist_items[0])
+    
+    bien = False
+    for pelicula_item in peliculas_items:
+        from servers import servertools
+        mirrors = servertools.find_video_items(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
