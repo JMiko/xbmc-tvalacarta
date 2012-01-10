@@ -123,7 +123,7 @@ def buscavideos(item):
             scrapedthumbnail = match2[2].replace(" ","%20")
             scrapedplot = match2[0]
             
-            itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
+            itemlist.append( Item(channel=item.channel , action="findvideos"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
     
     #Extrae la marca de siguiente p�gina
     #<span class='current'>1</span><a href='http://delatv.com/page/2' class='page'>2</a>
@@ -145,84 +145,59 @@ def buscavideos(item):
 
     return itemlist
 
-def detail(item):
-    logger.info("[Descarregadirecta.py] detail")
-
-    title = item.title
-    thumbnail = item.thumbnail
-    plot = item.plot
-    scrapedurl = ""
-    url = item.url
-
-    itemlist = []
-
-    # Descarga la p�gina
-    data = scrapertools.cachePage(url)
-    
-    # Usa findvideos    
-    listavideos = servertools.findvideos(data)
-    
-    itemlist = []
-    
-    for video in listavideos:
-        server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
-        scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
-
-
-
-    return itemlist
-
 def login(item):
-
     import xbmc
-
     keyboard = xbmc.Keyboard("","Login")
-
     keyboard.doModal()
-
     if (keyboard.isConfirmed()):
-
         login = keyboard.getText()
 
-
-
     keyboard = xbmc.Keyboard("","Password")
-
     keyboard.doModal()
-
     if (keyboard.isConfirmed()):
-
         password = keyboard.getText()
 
-
-
     nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
-
     config_canal = open( nombre_fichero_config_canal , "w" )
-
     config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
-
     config_canal.close();
 
-
-
     itemlist = []
-
     itemlist.append( Item(channel=__channel__, title="Sessió iniciada", action="mainlist"))
-
     return itemlist
 
 def perform_login(login,password):
-    
     logger.info("[Descarregadirecta.py] performlogin")
-
     # Invoca al login, y con eso se quedarán las cookies de sesión necesarias
-
     login = login.replace("@","%40")
-
     data = scrapertools.cache_page("http://www.descarregadirecta.com/login.php",post="username=%s&pass=%s&remember=%s&ref=&Login=%s" % (login,password,"1","Iniciar+Sessi%C3%B3"))
+
+# Verificacion automatica de canales: Esta funcion debe devolver "True" si todo esta ok en el canal.
+def test():
+    bien = True
     
+    # mainlist
+    mainlist_items = mainlist(Item())
+    mainlist_item = None
+    for item in mainlist_items:
+        if item.title=="Series":
+            mainlist_item = item
+            break
     
+    # Da por bueno el canal si alguno de los videos de la serie "Bon dia, bonica" devuelve mirrors :)
+    series_items = Generico(mainlist_item)
+    serie_item = None
+    for item in series_items:
+        if item.title.startswith("Bon dia, bonica"):
+            serie_item = item
+            break
+
+    episodios_items = buscavideos(serie_item)
+    bien = False
+    for episodio_item in episodios_items:
+        mirrors = servertools.find_video_items(item=episodio_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
