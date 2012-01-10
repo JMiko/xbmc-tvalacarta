@@ -25,21 +25,18 @@ DEBUG = config.get_setting("debug")
 def isGeneric():
     return True
 
-
 def mainlist(item):
-    logger.info("[pelispekes.py] mainlist")
+    logger.info("[delatv.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=__channel__ , action="Generico"        , title="Novedades"                      , url="http://delatv.com/"))
+    itemlist.append( Item(channel=__channel__ , action="peliculas"         , title="Novedades"                      , url="http://delatv.com/"))
     itemlist.append( Item(channel=__channel__ , action="Categorias"        , title="Categorias"                      , url="http://delatv.com/"))
     itemlist.append( Item(channel=__channel__ , action="Abecedario"        , title="Abecedario"                      , url="http://delatv.com/"))
     
-
     return itemlist
 
-
-def Generico(item):
-    logger.info("[filmixt.py] Generico")
+def peliculas(item):
+    logger.info("[delatv.py] peliculas")
 
     url = item.url
                 
@@ -50,7 +47,6 @@ def Generico(item):
     patron = 'class="filmgal">(.*?)<strong>DuraciÃ³n: </strong>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     logger.info("hay %d matches" % len(matches))
-    
 
     itemlist = []
     for match in matches:
@@ -69,7 +65,7 @@ def Generico(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             
             # Aï¿½ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="buscavideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+            itemlist.append( Item(channel=item.channel , action="findvideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
     
     # ------------------------------------------------------
     # Extrae la p?gina siguiente
@@ -87,43 +83,13 @@ def Generico(item):
         scrapeddescription = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=item.channel , action="Generico"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=item.channel , action="peliculas"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
     
     
-    return itemlist
-
-def detail(item):
-    logger.info("[Descarregadirecta.py] detail")
-
-    title = item.title
-    thumbnail = item.thumbnail
-    plot = item.plot
-    scrapedurl = ""
-    url = item.url
-
-    itemlist = []
-
-    # Descarga la pï¿½gina
-    data = scrapertools.cachePage(url)
-    
-    # Usa findvideos    
-    listavideos = servertools.findvideos(data)
-    
-    itemlist = []
-    
-    for video in listavideos:
-        server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
-        scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
-
-
-
     return itemlist
 
 def Categorias(item):
-    logger.info("[filmixt.py] Categorias")
+    logger.info("[delatv.py] Categorias")
 
     url = item.url
                 
@@ -150,12 +116,12 @@ def Categorias(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             
             # Aï¿½ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="Generico"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+            itemlist.append( Item(channel=item.channel , action="peliculas"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
         
     return itemlist
 
 def Abecedario(item):
-    logger.info("[filmixt.py] Abecedario")
+    logger.info("[delatv.py] Abecedario")
 
     url = item.url
                 
@@ -182,8 +148,25 @@ def Abecedario(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             
             # Aï¿½ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="Generico"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+            itemlist.append( Item(channel=item.channel , action="peliculas"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
         
     return itemlist
 
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
     
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = peliculas(mainlist_items[0])
+    
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = servertools.find_video_items(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
