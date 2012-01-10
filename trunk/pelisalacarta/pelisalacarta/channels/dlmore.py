@@ -68,7 +68,7 @@ def episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    patron  = '<a href="(\./ajax/fiche_serie.ajax.php\?id=[^"]+)" name="lien" class="autres">([^<]+)</a>'
+    patron  = '<a href="(\./ajax/fiche_serie.ajax.php\?id=[^"]+)" name="lien" class="[^"]+">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     for match in matches:
@@ -92,3 +92,22 @@ def episodios(item):
         itemlist.extend( videoitems )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de las series en "Destacados" devuelve mirrors
+    series_items = series(mainlist_items[0])
+    episodios_items = episodios(series_items[0])
+    bien = False
+    for episodio_item in episodios_items:
+        mirrors = servertools.find_video_items(item=episodio_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
