@@ -62,6 +62,7 @@ class Item(object):
         devuelve = devuelve + self.channel + separator
         devuelve = devuelve + self.action + separator
         devuelve = devuelve + self.server + separator
+        devuelve = devuelve + self.extra + separator
         return devuelve
     
     def deserialize(self,cadena):
@@ -71,6 +72,7 @@ class Item(object):
         self.channel = trozos[2]
         self.action = trozos[3]
         self.server = trozos[4]
+        self.extra = trozos[5]
 
 if __name__ == "__main__":
     item = Item(title="bla b", url="http://bla")

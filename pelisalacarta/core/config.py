@@ -94,6 +94,7 @@ def get_setting(name,channel=""):
     return dev
 
 def set_setting(name,value):
+    #print "core set_setting ",name,value
     try:
         exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
