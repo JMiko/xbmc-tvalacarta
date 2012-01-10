@@ -50,12 +50,12 @@ def mainlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
-        itemlist.append( Item(channel=__channel__, action="movielist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
     
     return itemlist
 
-def movielist(item):
-    logger.info("[descargacineclasico.py] mainlist")
+def peliculas(item):
+    logger.info("[descargacineclasico.py] peliculas")
 
     itemlist = []
 
@@ -109,3 +109,22 @@ def movielist(item):
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = peliculas(mainlist_items[0])
+    
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = servertools.find_video_items(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
