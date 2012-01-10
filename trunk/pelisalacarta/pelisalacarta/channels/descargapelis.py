@@ -30,7 +30,7 @@ def mainlist(item):
     logger.info("[descargapelis.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=__channel__ , action="newlist"           , title="Nuevas incorporaciones"            , url="http://www.descargapelis.net/"))
+    itemlist.append( Item(channel=__channel__ , action="peliculas"          , title="Nuevas incorporaciones"            , url="http://www.descargapelis.net/"))
     itemlist.append( Item(channel=__channel__ , action="moviecategorylist" , title="Películas - Por categorías"            , url="http://www.descargapelis.net/"))
     itemlist.append( Item(channel=__channel__ , action="moviealphalist"    , title="Películas - Por orden alfabético"            , url="http://www.descargapelis.net/"))
     itemlist.append( Item(channel=__channel__ , action="estrenos"          , title="Películas de estreno"            , url="http://www.descargapelis.net/estreno.php"))
@@ -128,8 +128,8 @@ def hayquever(item):
 
     return itemlist
 
-def newlist(item):
-    logger.info("[descargapelis.py] newlist")
+def peliculas(item):
+    logger.info("[descargapelis.py] peliculas")
     itemlist=[]
 
     # Descarga la página
@@ -172,9 +172,7 @@ def moviecategorylist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        #xbmctools.addnewfolder( __channel__ , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=__channel__ , action="newlist" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__ , action="peliculas" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -197,9 +195,7 @@ def moviealphalist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        #xbmctools.addnewfolder( __channel__ , "newlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-        itemlist.append( Item(channel=__channel__ , action="newlist" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__ , action="peliculas" , extra=item.extra , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
@@ -230,3 +226,22 @@ def findvideos(item):
         itemlist.append( Item(channel=__channel__ , action="play" , extra=item.extra , title=title + " [" + video_server + "]" , server=video_server, url=video_url, thumbnail=thumbnail, plot=plot, folder=False))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = peliculas(mainlist_items[0])
+    
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = servertools.find_video_items(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
