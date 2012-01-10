@@ -25,6 +25,7 @@
     <string id="30010">Channel icons view:</string>
     <string id="30011">Poster (vertical)</string>
     <string id="30012">Banner (horizontal)</string>
+	<string id="30200">Square</string>
 
     <!-- Megavideo account -->
     <string id="30013">Megavideo/Megaupload premium mode:</string>
