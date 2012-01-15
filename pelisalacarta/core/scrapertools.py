@@ -18,12 +18,13 @@
 
 import urlparse,urllib2,urllib
 import time
-import md5
+import hashlib
 import os
 import config
 import logger
 import re
 import downloadtools
+import socket
 
 logger.info("[scrapertools.py] init")
 
@@ -36,12 +37,12 @@ logger.info("[scrapertools.py] CACHE_PATH="+CACHE_PATH)
 
 DEBUG = False
 
-def cache_page(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modo_cache=CACHE_ACTIVA):
+def cache_page(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modo_cache=CACHE_ACTIVA, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
     return cachePage(url,post,headers,modo_cache)
 
 # TODO: (3.1) Quitar el parámetro modoCache (ahora se hace por configuración)
 # TODO: (3.2) Usar notación minusculas_con_underscores para funciones y variables como recomienda Python http://www.python.org/dev/peps/pep-0008/
-def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modoCache=CACHE_ACTIVA):
+def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modoCache=CACHE_ACTIVA, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
     logger.info("[scrapertools.py] cachePage url="+url)
     modoCache = config.get_setting("cache.mode")
 
@@ -66,7 +67,7 @@ def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; 
     if modoCache == CACHE_NUNCA or post is not None:
         logger.info("[scrapertools.py] MODO_CACHE=2 (no cachear)")
         
-        data = downloadpage(url,post,headers)
+        data = downloadpage(url,post,headers, timeout=timeout)
     
     # CACHE_SIEMPRE: Siempre descarga de cache, sin comprobar fechas, excepto cuando no está
     elif modoCache == CACHE_SIEMPRE:
@@ -156,8 +157,7 @@ def getCacheFileNames(url):
     siteCachePath = getSiteCachePath(url)
         
     # Obtiene el ID de la cache (md5 de la URL)
-    import binascii
-    cacheId = binascii.hexlify(md5.new(url).digest())
+    cacheId = hashlib.md5().update(url).hexdigest()
     logger.debug("[scrapertools.py] cacheId="+cacheId)
 
     # Timestamp actual
@@ -300,7 +300,7 @@ class NoRedirectHandler(urllib2.HTTPRedirectHandler):
     http_error_303 = http_error_302
     http_error_307 = http_error_302
 
-def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],follow_redirects=True):
+def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],follow_redirects=True, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
     logger.info("[scrapertools.py] downloadpage")
     logger.info("[scrapertools.py] url="+url)
     
@@ -414,7 +414,7 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     logger.info("[scrapertools.py] ---------------------------")
 
     req = Request(url, post, txheaders)
-    handle = urlopen(req)
+    handle = urlopen(req, timeout=timeout)
     
     # Actualiza el almacén de cookies
     cj.save(ficherocookies)
@@ -747,7 +747,6 @@ def unescape(text):
     # Convierte los codigos html "&ntilde;" y lo reemplaza por "ñ" caracter unicode utf-8
 def decodeHtmlentities(string):
     string = entitiesfix(string)
-    import re
     entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
 
     def substitute_entity(match):
@@ -906,7 +905,6 @@ def slugify(title):
         title = title [1:]
     
     if title=="":
-        import time
         title = "-"+str(time.time())
 
     return title
@@ -926,7 +924,6 @@ def remove_show_from_title(title,show):
             title = title[ 1: ].strip()
     
         if title=="":
-            import time
             title = str( time.time() )
         
         # Vuelve a utf-8
@@ -936,7 +933,7 @@ def remove_show_from_title(title,show):
     return title
 
 def getRandom(str):
-    return binascii.hexlify(md5.new(str).digest())
+    return hashlib.md5().update(str).hexdigest()
 
 def getLocationHeaderFromResponse(url):
     return get_header_from_response(url,header_to_get="location")

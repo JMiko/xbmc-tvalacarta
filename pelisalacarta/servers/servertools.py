@@ -46,7 +46,12 @@ def findvideos(data):
     # Megavideo
     import megavideo
     devuelve.extend(megavideo.find_videos(data))
-        
+    
+    # Megavideo
+    import cineraculo
+    # Dups megavideo links with cineraculo server
+    devuelve.extend(cineraculo.add_videos(devuelve))
+    
     # Megaupload
     import megaupload
     devuelve.extend(megaupload.find_videos(data))
