@@ -30,7 +30,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.cuevana.tv/web/peliculas?&todas"))
     itemlist.append( Item(channel=__channel__, title="Series"     , action="seriesMenu", url="http://www.cuevana.tv/web/series?&todas"))
-    #itemlist.append( Item(channel=__channel__, title="Buscar"     , action="search_options") )
+    itemlist.append( Item(channel=__channel__, title="Buscar"     , action="search") )
     
     return itemlist
     
@@ -392,15 +392,6 @@ def play(item):
 
     return itemlist
 
-def search_options(item):
-    logger.info("[cuevana.py] search_options")
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Titulo"   , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Titulo"))
-    itemlist.append( Item(channel=__channel__, title="Episodio" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Episodio"))
-    itemlist.append( Item(channel=__channel__, title="Actor"    , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Actor"))
-    itemlist.append( Item(channel=__channel__, title="Director" , action="search", url="http://www.cuevana.tv/buscar/?q=%s&cat=Director"))
-    return itemlist
-
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto, categoria="*"):
     logger.info("[cuevana.py] search")
@@ -408,14 +399,33 @@ def search(item,texto, categoria="*"):
     try:
         # La URL puede venir vacía, por ejemplo desde el buscador global
         if item.url=="":
-            item.url="http://www.cuevana.tv/buscar/?q=%s&cat=Titulo"
+            item.url="http://www.cuevana.tv/web/buscar?&q="+texto+"#!/buscar/q:"+texto
     
-        # Reemplaza el texto en la cadena de búsqueda
-        item.url = item.url % texto
+        # Descarga la pagina
+    	data = scrapertools.cache_page(item.url)
 
-        # Devuelve los resultados
-        return listar(item, categoria)
-        
+    	# Extrae las entradas
+    	patron = '\[(.*?)\]'
+    	matches = re.compile(patron,re.DOTALL).findall(data)
+	data = matches[0]
+
+	#Json
+	import simplejson as json
+    	jsondata = eval("("+data+")")
+	
+	#Listar
+
+	itemlist = []
+	for resultado in jsondata:
+		
+		scrapedtitle=resultado['tit'].encode('utf-8')
+		scrapedurl = resultado['id']
+		scrapedthumbnail = "http://sc.cuevana.tv/box/"+resultado['id']+".jpg"
+		scrapedplot = resultado['txt']
+		itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+	
+	return itemlist
+
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys
