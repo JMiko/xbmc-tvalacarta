@@ -119,7 +119,7 @@ def perform_login(login,password):
     auth_token = data.strip()
     
     # UserToken
-    url = "http://series.ly/scripts/login/login.php?"
+    url = "http://series.ly/scripts/login/login.php"
     post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s&autologin=" % ( qstr(login), qstr(password), qstr(auth_token) )
     data = scrapertools.cache_page(url,post=post)
     logger.info("****")
@@ -494,9 +494,9 @@ def search(item,texto, categoria="*"):
 def search_series(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search")
     
-    post = 'auth_token=%s&search=%s' % ( qstr(auth_token), qstr(texto) )
+    post = 'auth_token=%s' % ( qstr(auth_token) )
     
-    url = 'http://series.ly/api/search.php?type=serie&format=json'
+    url = 'http://series.ly/api/search.php?search=%s&type=serie&format=json' % ( qstr(texto) )
     
     # Extrae las entradas (carpetas)
     #¬†[{"idSerie":"?","title":"?","seasons":?d,"episodes":?d,"poster":"http://?","thumb":"http://?","small_thumb":"http://?"}
@@ -525,9 +525,9 @@ def search_series(auth_token, user_token, item, texto):
 def search_films(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search_films")
     
-    post = 'auth_token=%s&search=%s' % ( qstr(auth_token), qstr(texto) )
+    post = 'auth_token=%s' % ( qstr(auth_token) )
     
-    url = 'http://series.ly/api/search.php?type=film&format=json'
+    url = 'http://series.ly/api/search.php?search=%s&type=film&format=json' % ( qstr(texto) )
     
     # Extrae las entradas (carpetas)
     # [{"idFilm":"?","title":"?","year":"?","genre":"?","poster":"http://?","thumb":"http://?","small_thumb":"http://?"}

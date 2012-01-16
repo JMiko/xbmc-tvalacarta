@@ -3,5 +3,5 @@
 	<name>seriesly</name>
 	<tag>6</tag>
 	<date>17/01/2012</date>
-	<changes>Mezclado con rev. anterior. Fix:inconsistencia al codificar urls</changes>
+	<changes>Mezclado con rev. anterior. Fix:inconsistencia al codificar urls. Fix: busquedas</changes>
 </version>
