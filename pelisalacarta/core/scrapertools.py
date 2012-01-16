@@ -38,7 +38,7 @@ logger.info("[scrapertools.py] CACHE_PATH="+CACHE_PATH)
 DEBUG = False
 
 def cache_page(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],modo_cache=CACHE_ACTIVA, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
-    return cachePage(url,post,headers,modo_cache)
+    return cachePage(url,post,headers,modo_cache,timeout=timeout)
 
 # TODO: (3.1) Quitar el parámetro modoCache (ahora se hace por configuración)
 # TODO: (3.2) Usar notación minusculas_con_underscores para funciones y variables como recomienda Python http://www.python.org/dev/peps/pep-0008/

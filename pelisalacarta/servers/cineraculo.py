@@ -7,7 +7,7 @@
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
-import sys,os
+import sys,os,traceback
 
 from core import scrapertools
 from core import logger
@@ -28,7 +28,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         code2 = urllib.quote(matches[0][1]).replace("/","%2F")
         url=urllib.quote(page_url).replace("/","%2F")
         post = "__VIEWSTATE=%s&__EVENTVALIDATION=%s&txt_megavideo_url=%s&txt_movie_title=&btn_watch=Ver" % (code1,code2,url)
-        data = scrapertools.cache_page("http://www.cineraculo.com/vermegavideolink.aspx", post = post , headers=[ua, referer2], timeout=10000)
+        data = scrapertools.cache_page("http://www.cineraculo.com/vermegavideolink.aspx", post = post , headers=[ua, referer2], timeout=20000)
 
         patron = "unescape\('([^']+)'"
         matches = re.compile(patron,re.DOTALL).findall(data)
@@ -58,6 +58,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             return [["(Free)", url + '|User-Agent=' + ua[1] ]]
     except Exception as ex :
         logger.error("[cineracylo.py] Error al obtener la url del flujo: " + str(ex) )
+        traceback.print_exc(file=sys.stdout)
     
     # FIXME: ugly
     return []
