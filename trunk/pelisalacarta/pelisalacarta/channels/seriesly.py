@@ -4,9 +4,12 @@
 # Canal para series.ly
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
-import os, sys
-import base64
+import re
+import sys
+import os
+import json
+import traceback
+import urllib2
 
 from core import logger
 from core import config
@@ -28,23 +31,44 @@ SESION = config.get_setting("session","seriesly")
 LOGIN = config.get_setting("login","seriesly")
 PASSWORD = config.get_setting("password","seriesly")
 
+def load_json(data):
+    # callback to transform json string values to utf8
+    def to_utf8(dct):
+        rdct = {}
+        for k, v in dct.items() :
+            if isinstance(v, (str, unicode)) :
+                rdct[k] = v.encode('utf8', 'ignore')
+            else :
+                rdct[k] = v
+        return rdct
+    try :
+        return json.loads(data, object_hook=to_utf8)
+    except Exception as ex :
+        logger.error("[seriesly.py] unable to load data: " + str(ex))
+        traceback.print_exc(file=sys.stderr)
+
+''' URLEncode a string '''
+def qstr(string):
+    return urllib2.quote(string)   
+
 def isGeneric():
     return True
 
 def mainlist(item):
     logger.info("[seriesly.py] mainlist")
-	
+    
     itemlist = []
 
-    data = perform_login(LOGIN,PASSWORD)
-    auth_token = data.split("|")[0]
-    user_token = data.split("|")[1]
+    auth_token, user_token = perform_login(LOGIN,PASSWORD)
+    
+    extra_params = '%s|%s' % ( auth_token, user_token )
 
-    itemlist.append( Item(channel=__channel__, title="Mis series", action="series",extra=auth_token+"|"+user_token))
-    itemlist.append( Item(channel=__channel__, title="Mis pelis", action="mispelis",extra=auth_token+"|"+user_token))
-    itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="masvistas",extra=auth_token+"|"+user_token))
-    itemlist.append( Item(channel=__channel__, title="Series Mas Votadas", action="masvotadas",extra=auth_token+"|"+user_token))
-    itemlist.append( Item(channel=__channel__, title="Ultimas Pelis Modificadas", action="modificadas",extra=auth_token+"|"+user_token))
+    itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
+    itemlist.append( Item(channel=__channel__, title="Mis series", action="mis_series", extra=extra_params ) )
+    itemlist.append( Item(channel=__channel__, title="Mis pelis", action="mis_pelis", extra=extra_params ) )
+    itemlist.append( Item(channel=__channel__, title="Series Mas Votadas", action="series_mas_votadas", extra=extra_params ) )
+    itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="pelis_mas_vistas", extra=extra_params ) )
+    itemlist.append( Item(channel=__channel__, title="Ultimas Pelis Modificadas", action="ultimas_pelis_modificadas", extra=extra_params ) )
 
     if SESION=="true":
         itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
@@ -86,402 +110,445 @@ def login(item):
 
 def perform_login(login,password):
 
-	# AuthToken
-	url = "http://series.ly/api/auth.php?api=8&secret=N5X54c4OeDUwU8dWBbMW"
-	data = scrapertools.cache_page(url)
-	logger.info("****")
-	logger.info(data)
-	logger.info("****")
-	auth_token = data.strip()
-
-	# UserToken
-	url = "http://series.ly/scripts/login/login.php?"
-	post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s&autologin=" % (login, password,auth_token)
-	data = scrapertools.cache_page(url,post=post)
-	logger.info("****")
-	logger.info(data)
-	logger.info("****")
-	user_token=data.strip()
+    # AuthToken
+    url = "http://series.ly/api/auth.php?api=8&secret=N5X54c4OeDUwU8dWBbMW"
+    data = scrapertools.cache_page(url)
+    logger.info("****")
+    logger.info(data)
+    logger.info("****")
+    auth_token = data.strip()
     
-	info = auth_token+"|"+user_token	
-
-	return info
-
-def series(item):
-
-	logger.info("[seriesly.py] Mis Series")
-
-	#Logueamos
-    	auth_token = item.extra.split("|")[0]
-	user_token = item.extra.split("|")[1]
+    # UserToken
+    url = "http://series.ly/scripts/login/login.php?"
+    post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s&autologin=" % ( qstr(login), qstr(password), qstr(auth_token) )
+    data = scrapertools.cache_page(url,post=post)
+    logger.info("****")
+    logger.info(data)
+    logger.info("****")
+    user_token=data.strip()
     
-    
-    	url= "http://series.ly/api/userSeries.php?format=xml"
-    	post = "auth_token="+auth_token+"&user_token="+user_token
-    	data = scrapertools.cache_page(url,post=post)
-        
-    	# Extrae las entradas (carpetas)
-   
-    	patron = '<item>(.*?)</item>'
-    	matches = re.compile(patron,re.DOTALL).findall(data)
-    	logger.info("hay %d matches" % len(matches))
-    
+    return [auth_token,user_token]
 
-    	itemlist = []
-    	for match in matches:
-    	    data2 = match
-    	    patron  = '<idSerie>(.*?)</idSerie>'
-    	    patron  += '<title>(.*?)</title>'
-    	    patron  += '<seasons>(.*?)</seasons>'
-    	    patron  += '<episodes>(.*?)</episodes>'
-    	    patron  += '<poster>(.*?)</poster>'
-    	    patron  += '<thumb>(.*?)</thumb>'
-    	    patron  += '<small_thumb>(.*?)</small_thumb>'
-    	    patron  += '<status>(.*?)</status>'
-    	    
-    	    matches2 = re.compile(patron,re.DOTALL).findall(data2)
-    	    logger.info("hay %d matches2" % len(matches2))
-	
-    	    for match2 in matches2:
-    	    # Atributos
-    	        scrapedurl = "http://series.ly/api/detailSerie.php?caps=1&auth_token="+auth_token+"&idSerie="+match2[0]+"&user_token="+user_token+"&format=xml"
-    	        scrapedtitle =match2[1]+" ("+match2[2]+" Temporadas) ("+match2[3]+" Episodios)"
-    	        scrapedthumbnail = match2[4]
-    	        scrapedplot = ""
-    	        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-	
-    	        # Aï¿½ade al listado de XBMC
-    	        itemlist.append( Item(channel=item.channel , action="capitulos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot,extra=auth_token+"|"+user_token ))
-    	
-	return itemlist
-
-def capitulos(item):
-
-    logger.info("[seriesly.py] Capitulos")
+def mis_series(item):
     
-    # TOKENS
+    logger.info("[seriesly.py] mis_series")
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
-    data = scrapertools.cache_page(item.url)
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    
+    #Series Usuario
+    url='http://series.ly/api/userSeries.php?type=&format=json'
     
     # Extrae las entradas (carpetas)
-   
-    patron = '<episode>(.*?)</episode>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    # {"idSerie":"?", "title":"?", "seasons":?d, "episodes":?d, "poster":"http:?", "thumb":"http:?, "small_thumb":"http:?", "status":"Pending/Watching/Finished"}
+    
+    serieList = load_json(scrapertools.cache_page(url, post=post))
+    if serieList == None : serieList = []
+    
+    logger.info('[seriesly.py] hay %d series' % len(serieList))
     
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<idc>(.*?)</idc>'
-        patron  += '<title>(.*?)</title>'
-        patron  += '<season>(.*?)</season>'
-        patron  += '<viewed>(.*?)</viewed>'
-                
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+    for serieItem in serieList:
+        status = serieItem['status'] 
+        if status == 'Pending' : serieItem['estado'] = 'Pendiente'
+        elif status == 'Watching' : serieItem['estado'] = 'Viendo'
+        elif status == 'Finished' : serieItem['estado'] = 'Finalizada'
+        else : serieItem['estado'] = '?'
+        # Añade al listado de XBMC
+        itemlist.append(
+            Item(channel=item.channel,
+                 action = 'serie_capitulos',
+                 title = '%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem,
+                 url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
+                 thumbnail = serieItem['thumb'],
+                 plot = "",
+                 extra = item.extra
+            )
+        )
+    return itemlist
 
-        for match2 in matches2:
-        # Atributos
-            scrapedurl = "http://series.ly/api/linksCap.php?auth_token="+auth_token+"&idCap="+match2[0]+"&user_token="+user_token+"&format=xml"
-            scrapedtitle = match2[2]+" - "+match2[1]
-            scrapedthumbnail = item.thumbnail
-            scrapedplot = ""
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="buscavideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token+"|"+str(match2[0]) ))
+def serie_capitulos(item):
     
+    logger.info('[seriesly.py] serie_capitulos')
+    
+    # TOKENS
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    
+    # Extrae las entradas (carpetas)
+    
+    # {"title":"?", "ids":"?", "synopsis":"?", "seriesly_score":?d, "participants_score":"?d", "poster":"http:?, "thumb":"http:?", "small_thumb":"http:?", "episode":
+    #           [   {"idc":"?","title":"?","season":"?","viewed":"1/0"} ]
+    
+    serieInfo = load_json(scrapertools.cache_page(item.url, post=post))
+    if serieInfo == None : serieInfo = {}
+    if (not serieInfo.has_key('episode')) or serieInfo['episode'] == None : serieInfo['episode'] = []
+    
+    logger.info('hay %d capitulos' % len(serieInfo['episode']))
+  
+    itemlist = []
+    for episode in serieInfo['episode'] :
+        if episode.has_key('viewed'):
+            viewed = episode['viewed'] 
+            if viewed == '0' : episode['estado'] = ' [Visto]'
+            elif viewed == '1' : episode['estado'] = ' [Pte]'
+            else : episode['estado'] = ' [?]'
+        else:
+            episode['estado'] = ''
+        
+        itemlist.append(
+            Item(channel=item.channel,
+                action = 'capitulo_links',
+                title = '%(season)s - %(title)s%(estado)s' % episode,
+                url = 'http://series.ly/api/linksCap.php?idCap=%(idc)s&format=json' % episode,
+                thumbnail = item.thumbnail,
+                plot = "",
+                extra = item.extra
+            )
+        )
     
     return itemlist
 
-def buscavideos(item):
+def capitulo_links(item):
 
-    logger.info("[seriesly.py] Buscavideos")
+    logger.info("[seriesly.py] capitulo_links")
     
     # TOKENS
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
-    idc = item.extra.split("|")[2]
-    
-    url = "http://series.ly/api/episodeToggle.php?auth_token="+auth_token+"&user_token="+user_token+"&idc="+idc+"&action=1&format=json"
-    post = ""
-    data = scrapertools.cache_page(url,post=post)
-    logger.info(data)
-
-
-    data = scrapertools.cache_page(item.url)
-    
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+     
     # Extrae las entradas (carpetas)
-   
-    patron = '<item>(.*?)</item>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    # [ {"language":"?","subtitles":"?","hd":"0/1","url_cineraculo":"http://?","url_megavideo":"http://?"} ]
+    
+    linkList = load_json(scrapertools.cache_page(item.url, post=post))
+    if linkList == None : linkList = []
+    
+    logger.info("hay %d videos" % len(linkList))
     
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<language>(.*?)</language>'
-        patron  += '<subtitles>(.*?)</subtitles>'
-        patron  += '<hd>(.*?)</hd>.*?'
-        patron  += '<url_megavideo>(.*?)</url_megavideo>'
+    for link in linkList:
         
-               
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+        hd = link['hd']
+        if hd == '0' : link['hdtag'] = ''
+        elif hd == '1' : link['hdtag'] = ' (HD)'
+        else : link['hdtag'] = ' (?)'
+        
+        link['titletag'] = item.title; 
+        
+        itemlist.append(
+            Item(channel=item.channel,
+                action = "links",
+                title = '%(titletag)s (%(language)s(Sub: %(subtitles)s)%(hdtag)s' % link,
+                url = link['url_megavideo'],
+                thumbnail = item.thumbnail,
+                plot = "",
+                extra = ''
+            )
+        )
 
-        for match2 in matches2:
-        # Atributos
-            scrapedurl= match2[3].replace("&amp;","&")
-            scrapedtitle = item.title+" ("+match2[0]+")(Subtítulos "+match2[1]+")"
-            if match2[2]=="1": scrapedtitle += " (HD)"
-            scrapedthumbnail = item.thumbnail
-            scrapedplot = ""
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="links"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token+"|"+str(match[3]) ))
-    
     return itemlist
 
 def links(item):
     
     data = scrapertools.cachePage(item.url)
-    logger.info(data)
     
-    listavideos = servertools.findvideos(data)
-            
     itemlist = []
     
-    for video in listavideos:
+    for video in servertools.findvideos(data) :
         #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
-        scrapedtitle = video[0]
-        srapedtitle = scrapertools.htmlclean(scrapedtitle)
+        scrapedtitle = scrapertools.htmlclean(video[0])
         scrapedurl = video[1]
         server = video[2]
             
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
-    
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle, url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
     
     return itemlist
 
-def mispelis(item):
-
-	auth_token = item.extra.split("|")[0]
-        user_token = item.extra.split("|")[1]
-
-	itemlist = []
-
-	itemlist.append( Item(channel=__channel__, title="Vistas", action="pelis",extra=auth_token+"|"+user_token+"|Watched"))
-	itemlist.append( Item(channel=__channel__, title="Favoritas", action="pelis",extra=auth_token+"|"+user_token+"|Favourite"))
-	itemlist.append( Item(channel=__channel__, title="Pendientes", action="pelis",extra=auth_token+"|"+user_token+"|Pending"))
-
-
-	return itemlist
-
-def pelis(item):
-
-    logger.info("[seriesly.py]  Pelis")
-
-    # TOKENS
+def mis_pelis(item):
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
-    estado = item.extra.split("|")[2]
+    # TOKENS
+    auth_token, user_token = item.extra.split('|')
     
     #Peliculas Usuario
     
-    url="http://series.ly/api/userMovies.php?format=xml"
-    post = "auth_token="+auth_token+"&user_token="+user_token
-    data = scrapertools.cache_page(url,post=post)
+    itemlist = []
+    
+    itemlist.append( Item(channel=__channel__, title="Vistas", action="mis_pelis_categoria", extra='%s|%s|%s' % (auth_token, user_token, 'Watched')) )
+    itemlist.append( Item(channel=__channel__, title="Favoritas", action="mis_pelis_categoria", extra='%s|%s|%s' % (auth_token, user_token, 'Favourite')) )
+    itemlist.append( Item(channel=__channel__, title="Pendientes", action="mis_pelis_categoria", extra='%s|%s|%s' % (auth_token, user_token, 'Pending')) )
+    
+    return itemlist
 
-    logger.info(data)
+def mis_pelis_categoria(item):
+
+    logger.info("[seriesly.py] mis_pelis_categoria")
+
+    # TOKENS
+    auth_token, user_token, cat_filter = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    
+    #Peliculas Usuario (Filtradas por categoria)
+    
+    url='http://series.ly/api/userMovies.php?format=json'
     
     # Extrae las entradas (carpetas)
-   
-    patron = '<item>(.*?)</item>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    #¬†[ {"idFilm":"?","title":"?","year":"?","genre":"?","poster":"http://?","thumb":"http://?","small_thumb":"http://?","status":"Watched/Favourite/Pending"} ]
     
+    movieList = load_json(scrapertools.cache_page(url, post=post))
+    if movieList == None : movieList = []
+    
+    logger.info("hay %d peliculas" % len(movieList))
+
+    # compare function
+    def movie_compare_criteria( x, y) :
+        strx = x['title'].strip().lower()
+        stry = y['title'].strip().lower()
+        if strx == stry :
+            return 0
+        elif strx < stry :
+            return -1
+        else :
+            return 1
 
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<idFilm>(.*?)</idFilm>'
-        patron  += '<title>(.*?)</title>'       
-        patron  += '<year>(.*?)</year>'
-        patron  += '<genre>(.*?)</genre>'
-        patron  += '<poster>(.*?)</poster>'
-        patron  += '<thumb>(.*?)</thumb>'
-        patron  += '<small_thumb>(.*?)</small_thumb>'
-        patron  += '<status>(.*?)</status>'
+    for movieItem in sorted(movieList, lambda x, y: movie_compare_criteria(x, y)):
+        status = movieItem['status']
+        if status == cat_filter:
+            if status == 'Pending' : movieItem['estado'] = 'Pendiente';
+            elif status == 'Watched' : movieItem['estado'] = 'Vista';
+            elif status == 'Favourite' : movieItem['estado'] = 'Favorita';
+            else : movieItem['estado'] = '?';
+            # A√±ade al listado de XBMC
+            itemlist.append(
+                Item(channel=item.channel,
+                     action = "peli_links",
+                     title = '%(title)s (%(year)s) [%(estado)s]' % movieItem,
+                     url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['idFilm']),
+                     thumbnail = movieItem['poster'],
+                     plot = "",
+                     extra = '%s|%s' % ( qstr(auth_token), qstr(user_token) )
+                )
+            )
+    
+    return itemlist
+
+def peli_links(item):
+
+    logger.info("[seriesly.py] peli_links")
+    
+    # TOKENS
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    
+    # Extrae las entradas (carpetas)
+    #¬†{"title":"?","idp":"?", "synopsis":"?", "year":"?", "seriesly_score":?d, "participants_score":"?", "genre":"terror", "poster":"http://?","thumb":"http://?","small_thumb":"http://?","links":
+    #   [{"language":"?","subtitles":"yes/no","quality":"?","part":"?","uploader":"?","highDef":"0/1","server":"?","url_cineraculo":"?","url_megavideo":"?"}]
+    # }
+    
+    movieInfo = load_json(scrapertools.cache_page(item.url, post=post))
+    if movieInfo == None : movieInfo = {}
+    if (not movieInfo.has_key('links')) or movieInfo['links'] == None : movieInfo['links'] = []
+    
+    logger.info("hay %d links" % len(movieInfo['links']))
+    
+    itemlist = []
+    for link in movieInfo['links']:
+        link['titleTag'] = movieInfo['title']
+        link['yearTag'] = movieInfo['year']
         
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
-
-        for match2 in matches2:
-        # Atributos
-            scrapedurl = "http://series.ly/api/detailMovie.php?auth_token="+auth_token+"&idFilm="+match2[0]+"&user_token="+user_token+"&format=xml"
-            scrapedtitle =match2[1]+" ("+match2[2]+")"
-            scrapedthumbnail = match2[4]
-            scrapedplot = ""
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            # Aï¿½ade al listado de XBMC
-	    if (match2[7]== estado):
-            	itemlist.append( Item(channel=item.channel , action="buscapelis"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot,extra=auth_token+"|"+user_token ))
-    
+        part = link['part']
+        if part == '0' : link['partTag'] = ''
+        else : link['partTag'] = '(Parte %(part)s)' % link 
+        
+        hd = link['highDef']
+        if hd == '0' : link['hdTag'] = ''
+        elif hd == '1' : link['hdTag'] = ' (HD)'
+        else : link['hdTag'] = ' (?)'
+        
+        itemlist.append(
+            Item(channel=item.channel,
+                action = "links",
+                title = '%(titleTag)s (%(yearTag)s) (%(quality)s) (%(language)s)(Sub: %(subtitles)s)%(partTag)s%(hdTag)s' % link,
+                url = 'http://series.ly/api/goLink.php?auth_token=%s&user_token=%s&enc=%s' % ( qstr(auth_token), qstr(user_token), qstr(link['url_megavideo'].strip()) ),
+                thumbnail = item.thumbnail,
+                plot = movieInfo['synopsis'],
+                extra = ''
+            )
+        )
+        
     return itemlist
 
-def buscapelis(item):
+def series_mas_votadas(item):
 
-    logger.info("[seriesly.py] Pelis")
+    logger.info("[seriesly.py] series_mas_votadas")
     
     # TOKENS
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
+    url="http://series.ly/api/top.php?&format=json&id=1"
+    
     # Extrae las entradas (carpetas)
+    # {series_mes_votades":[{"nom_serie":"?", "vots":"?", "id_serie":"?"}]}
     
-    data = scrapertools.cache_page(item.url)
-    patron = '<links>(.*?)</links>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    topInfo = load_json(scrapertools.cache_page(url, post=post))
+    if topInfo == None : topInfo = {}
+    if topInfo['series_mes_votades'] == None : topInfo['series_mes_votades'] = []
+    
+    logger.info("hay %d series" % len(topInfo['series_mes_votades']))
     
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<language>(.*?)</language>'
-        patron  += '<subtitles>(.*?)</subtitles>'        
-        patron  += '<quality>(.*?)</quality>'
-        patron  += '<part>(.*?)</part>'
-        patron  += '<uploader>(.*?)</uploader>'
-        patron  += '<highDef>(.*?)</highDef>'
-        patron  += '<server>(.*?)</server>.*?'
-        patron  += '<url_megavideo>(.*?)</url_megavideo>'
-               
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
-
-        for match2 in matches2:
-        # Atributos
-            scrapedurl= "http://series.ly/api/goLink.php?auth_token="+auth_token+"&user_token="+user_token+"&enc="+match2[7].strip()
-            scrapedtitle = item.title+" ("+match2[2]+") ("+match2[0]+")(Subtítulos "+match2[1]+") (Parte "+match2[3]+")"
-            if match2[5]=="1": scrapedtitle += " (HD)"
-            scrapedthumbnail = ""
-            scrapedplot = ""
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="links"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token+"|"+str(match[3]) ))
-    
+    for serieItem in topInfo['series_mes_votades']:
+        # Añade al listado de XBMC
+        itemlist.append(
+            Item(channel=item.channel,
+                 action = 'serie_capitulos',
+                 title = '%(nom_serie)s [%(vots)s Votos)' % serieItem,
+                 url = 'http://series.ly/api/detailSerie.php?idSerie=%s&caps=1&format=json' % qstr(serieItem['id_serie']),
+                 thumbnail = '',
+                 plot = "",
+                 extra = item.extra
+            )
+        )  
     return itemlist
 
-def masvotadas(item):
+def pelis_mas_vistas(item):
 
-    logger.info("[seriesly.py] Mas Votadas")
+    logger.info("[seriesly.py] pelis_mas_vistas")
     
     # TOKENS
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
-    url="http://series.ly/api/top.php?&format=xml&id=1"
-    post="auth_token="+auth_token+"&user_token="+user_token
-    data = scrapertools.cache_page(url,post=post)
-
-
-    patron = '<item>(.*?)</item>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    url="http://series.ly/api/top.php?&format=json&id=2"
+    
+    # Extrae las entradas (carpetas)
+    # {pelis_mes_vistes":[{"nom_peli":"?", "id_peli":"?"}]}
+    
+    topInfo = load_json(scrapertools.cache_page(url, post=post))
+    if topInfo == None : topInfo = {}
+    if topInfo['pelis_mes_vistes'] == None : topInfo['pelis_mes_vistes'] = []
+    
+    logger.info("hay %d pelis" % len(topInfo['pelis_mes_vistes']))
     
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<nom_serie>(.*?)</nom_serie>'
-        patron  += '<vots>(.*?)</vots>'
-        patron  += '<id_serie>(.*?)</id_serie>'
-
-	matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
-
-        for match2 in matches2:
-		scrapedurl = "http://series.ly/api/detailSerie.php?caps=1&auth_token="+auth_token+"&idSerie="+match2[2]+"&user_token="+user_token+"&format=xml"
-		scrapedtitle = match2[0]+" ["+match2[1]+" Votos]"
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		itemlist.append( Item(channel=item.channel , action="capitulos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token))
-    	   
+    for movieItem in topInfo['pelis_mes_vistes']:
+        # Añade al listado de XBMC
+        itemlist.append(
+            Item(channel=item.channel,
+                 action = 'peli_links',
+                 title = '%(nom_peli)s' % movieItem,
+                 url = 'http://series.ly/api/detailMovie.php?idMovie=%s&format=json' % qstr(movieItem['id_peli']),
+                 thumbnail = '',
+                 plot = "",
+                 extra = item.extra
+            )
+        )  
     return itemlist
 
-def modificadas(item):
+def ultimas_pelis_modificadas(item):
 
-    logger.info("[seriesly.py] Mas Votadas")
+    logger.info("[seriesly.py] ultimas_pelis_modificadas")
     
     # TOKENS
+    auth_token, user_token = item.extra.split('|')
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
-    url="http://series.ly/api/top.php?&format=xml&id=3"
-    post="auth_token="+auth_token+"&user_token="+user_token
-    data = scrapertools.cache_page(url,post=post)
-
-
-    patron = '<item>(.*?)</item>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    url="http://series.ly/api/top.php?&format=json&id=3"
+    
+    # Extrae las entradas (carpetas)
+    # {ultimes_pelis":[{"nom_peli":"?", "id_peli":"?"}]}
+    
+    topInfo = load_json(scrapertools.cache_page(url, post=post))
+    if topInfo == None : topInfo = {}
+    if topInfo['ultimes_pelis'] == None : topInfo['ultimes_pelis'] = []
+    
+    logger.info("hay %d pelis" % len(topInfo['ultimes_pelis']))
     
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<id_peli>(.*?)</id_peli>'
-        patron  += '<nom_peli>(.*?)</nom_peli>'
-        patron  += '<any>(.*?)</any>'
-
-	matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
-
-        for match2 in matches2:
-		scrapedurl = "http://series.ly/api/detailMovie.php?auth_token="+auth_token+"&idFilm="+match2[0]+"&user_token="+user_token+"&format=xml"
-		scrapedtitle = match2[1]+" ["+match2[2]+"]"
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		itemlist.append( Item(channel=item.channel , action="buscapelis"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token))
-    	   
+    for movieItem in topInfo['ultimes_pelis']:
+        # Añade al listado de XBMC
+        itemlist.append(
+            Item(channel=item.channel,
+                 action = 'peli_links',
+                 title = '%(nom_peli)s [%(any)s]' % movieItem,
+                 url = 'http://series.ly/api/detailMovie.php?idMovie=%s&format=json' % qstr(movieItem['id_peli']),
+                 thumbnail = '',
+                 plot = "",
+                 extra = item.extra
+            )
+        )  
     return itemlist
 
-def masvistas(item):
 
-    logger.info("[seriesly.py] Mas Votadas")
+def search(item,texto, categoria="*"):
     
-    # TOKENS
+    auth_token,user_token = perform_login(LOGIN,PASSWORD)
     
-    auth_token = item.extra.split("|")[0]
-    user_token = item.extra.split("|")[1]
-    url="http://series.ly/api/top.php?&format=xml&id=2"
-    post="auth_token="+auth_token+"&user_token="+user_token
-    data = scrapertools.cache_page(url,post=post)
-
-
-    patron = '<item>(.*?)</item>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
+    res = search_series(auth_token, user_token, item, texto)
+    res.extend(search_films(auth_token, user_token, item, texto))
+    
+    return res
+    
+def search_series(auth_token, user_token, item, texto):
+    logger.info("[seriesly.py] search")
+    
+    post = 'auth_token=%s&search=%s' % ( qstr(auth_token), qstr(texto) )
+    
+    url = 'http://series.ly/api/search.php?type=serie&format=json'
+    
+    # Extrae las entradas (carpetas)
+    #¬†[{"idSerie":"?","title":"?","seasons":?d,"episodes":?d,"poster":"http://?","thumb":"http://?","small_thumb":"http://?"}
+    
+    serieList = load_json(scrapertools.cache_page(url, post=post))
+    if serieList == None : serieList = []
+    
+    logger.info("hay %d series" % len(serieList))
     
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '<nom_peli>(.*?)</nom_peli>'
-        patron  += '<id_peli>(.*?)</id_peli>'
+    for serieItem in serieList:
+        
+        itemlist.append(
+            Item(channel=item.channel,
+                action = 'serie_capitulos',
+                title = 'Serie: %(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % serieItem,
+                url = "http://series.ly/api/detailSerie.php?caps=1&auth_token=" + auth_token + "&user_token=" + user_token + "&idSerie=" + serieItem['idSerie'] + "&format=json",
+                thumbnail = serieItem['poster'],
+                plot = '',
+                extra = '%s|%s' % (auth_token, user_token)
+            )
+        )
+          
+    return itemlist
 
-	matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
-
-        for match2 in matches2:
-		scrapedurl = "http://series.ly/api/detailMovie.php?auth_token="+auth_token+"&idFilm="+match2[1]+"&user_token="+user_token+"&format=xml"
-		scrapedtitle = match2[0]
-		scrapedthumbnail = ""
-		scrapedplot = ""
-		itemlist.append( Item(channel=item.channel , action="buscapelis"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=auth_token+"|"+user_token))
-    	   
+def search_films(auth_token, user_token, item, texto):
+    logger.info("[seriesly.py] search_films")
+    
+    post = 'auth_token=%s&search=%s' % ( qstr(auth_token), qstr(texto) )
+    
+    url = 'http://series.ly/api/search.php?type=film&format=json'
+    
+    # Extrae las entradas (carpetas)
+    # [{"idFilm":"?","title":"?","year":"?","genre":"?","poster":"http://?","thumb":"http://?","small_thumb":"http://?"}
+    
+    movieList = load_json(scrapertools.cache_page(url, post=post))
+    if movieList == None : movieList = []
+    
+    logger.info("hay %d peliculas" % len(movieList))
+    
+    itemlist = []
+    for movieItem in movieList:
+        
+        itemlist.append(
+            Item(channel=item.channel,
+                action = 'peli_links',
+                title = 'Peli: %(title)s (%(year)s) (%(genre)s)' % movieItem,
+                url = "http://series.ly/api/detailMovie.php?idFilm=" + movieItem['idFilm'] + "&format=json",
+                thumbnail = movieItem['poster'],
+                plot = '',
+                extra = '%s|%s' % (auth_token, user_token)
+            )
+        )
+          
     return itemlist
