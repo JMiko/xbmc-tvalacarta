@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>5</tag>
-	<date>16/01/2012</date>
-	<changes>Mezclado con rev. anterior</changes>
+	<tag>6</tag>
+	<date>17/01/2012</date>
+	<changes>Mezclado con rev. anterior. Fix:inconsistencia al codificar urls</changes>
 </version>

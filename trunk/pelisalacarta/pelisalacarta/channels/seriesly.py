@@ -49,7 +49,7 @@ def load_json(data):
 
 ''' URLEncode a string '''
 def qstr(string):
-    return urllib2.quote(string)   
+    return string # urllib2.quote(string)   
 
 def isGeneric():
     return True
