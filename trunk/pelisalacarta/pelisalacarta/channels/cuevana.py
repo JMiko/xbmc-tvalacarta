@@ -383,6 +383,11 @@ def play(item):
     headers.append( ["Cache-Control","no-cache"])
 
     data = scrapertools.cache_page(url=url, post=post)
+    logger.info("data=#"+data+"#")
+    if "http://go.cuevana.tv/?" in data:
+        data = urllib.unquote(data[22:])
+    else:
+        logger.info("data no startswith")
     logger.info("data="+data)
 
     itemlist = servertools.find_video_items(data=data)
