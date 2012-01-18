@@ -354,7 +354,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # Megavideo - Vídeos sin título
-    patronvideos  = 'http\:\/\/www.megavideo.com/\?v\=([A-Z0-9a-z]{8})'
+    patronvideos  = 'http\:\/\/www.megavideo.com/.*?\?v\=([A-Z0-9a-z]{8})'
     logger.info("[megavideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
