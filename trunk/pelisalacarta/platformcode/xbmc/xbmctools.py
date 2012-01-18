@@ -219,6 +219,8 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
                 video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword"), video_password=video_password )
             elif server=="fileserve":
                 video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("fileservepremium")=="true") , user=config.get_setting("fileserveuser") , password=config.get_setting("fileservepassword"), video_password=video_password )
+            elif server=="wupload":
+                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("wuploadpremium")=="true") , user=config.get_setting("wuploaduser") , password=config.get_setting("wuploadpassword"), video_password=video_password )
             else:
                 video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
         except:
