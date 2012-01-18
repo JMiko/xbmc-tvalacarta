@@ -309,11 +309,11 @@ def play(item):
         location = scrapertools.getLocationHeaderFromResponse(playurl)
         logger.info("[seriesyonkis.py] play location="+location)
 
-        if "fileserve.com" in location:
-            logger.info("[seriesyonkis.py] play USING fileserve")
-            itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
-        else:
-            if location<>"":
+        if location<>"":
+            logger.info("[seriesyonkis.py] Busca videos conocidos en la url")
+            videos = servertools.findvideos(location)
+            
+            if len(videos)==0:
                 logger.info("[seriesyonkis.py] play downloading location")
                 data = scrapertools.cache_page(location)
                 logger.info("------------------------------------------------------------")
@@ -322,48 +322,48 @@ def play(item):
                 videos = servertools.findvideos(data) 
                 logger.info(str(videos))
                 logger.info("------------------------------------------------------------")
-            else:
-                logger.info("[seriesyonkis.py] play location vacía")
-                videos=[]
+        else:
+            logger.info("[seriesyonkis.py] play location vacía")
+            videos=[]
 
-            if(len(videos)>0): 
-                url = videos[0][1]
-                server=videos[0][2]                   
-                itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
-            else:
-                data = scrapertools.cache_page(playurl)
-                patron='<ul class="form-login">(.*?)</ul'
-                matches = re.compile(patron, re.S).findall(data)
-                if(len(matches)>0):
-                    if "xbmc" in config.get_platform():
-                        data = matches[0]
-                        #buscamos la public key
-                        patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
-                        pkeys = re.compile(patron, re.S).findall(data)
-                        if(len(pkeys)>0):
-                            pkey=pkeys[0]
-                            #buscamos el id de challenge
-                            data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
-                            patron="challenge.*?'([^']+)'"
-                            challenges = re.compile(patron, re.S).findall(data)
-                            if(len(challenges)>0):
-                                challenge = challenges[0]
-                                image = "http://www.google.com/recaptcha/api/image?c="+challenge
-                                
-                                #CAPTCHA
-                                exec "import pelisalacarta.captcha as plugin"
-                                tbd = plugin.Keyboard("","",image)
-                                tbd.doModal()
-                                confirmed = tbd.isConfirmed()
-                                if (confirmed):
-                                    tecleado = tbd.getText()
-                                    sendcaptcha(playurl,challenge,tecleado)
-                                del tbd 
-                                #tbd ya no existe
-                                if(confirmed and tecleado != ""):
-                                    itemlist = play(item)
-                    else:
-                        itemlist.append( Item(channel=__channel__, action="error", title="El sitio web te requiere un captcha") )
+        if(len(videos)>0): 
+            url = videos[0][1]
+            server=videos[0][2]                   
+            itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+        else:
+            data = scrapertools.cache_page(playurl)
+            patron='<ul class="form-login">(.*?)</ul'
+            matches = re.compile(patron, re.S).findall(data)
+            if(len(matches)>0):
+                if "xbmc" in config.get_platform():
+                    data = matches[0]
+                    #buscamos la public key
+                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
+                    pkeys = re.compile(patron, re.S).findall(data)
+                    if(len(pkeys)>0):
+                        pkey=pkeys[0]
+                        #buscamos el id de challenge
+                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
+                        patron="challenge.*?'([^']+)'"
+                        challenges = re.compile(patron, re.S).findall(data)
+                        if(len(challenges)>0):
+                            challenge = challenges[0]
+                            image = "http://www.google.com/recaptcha/api/image?c="+challenge
+                            
+                            #CAPTCHA
+                            exec "import pelisalacarta.captcha as plugin"
+                            tbd = plugin.Keyboard("","",image)
+                            tbd.doModal()
+                            confirmed = tbd.isConfirmed()
+                            if (confirmed):
+                                tecleado = tbd.getText()
+                                sendcaptcha(playurl,challenge,tecleado)
+                            del tbd 
+                            #tbd ya no existe
+                            if(confirmed and tecleado != ""):
+                                itemlist = play(item)
+                else:
+                    itemlist.append( Item(channel=__channel__, action="error", title="El sitio web te requiere un captcha") )
 
     except:
         import sys
