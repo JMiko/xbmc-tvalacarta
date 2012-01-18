@@ -1031,6 +1031,88 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
 
     return location_header
 
+def get_headers_from_response(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']]):
+    return_headers = []
+    logger.info("[scrapertools.py] get_headers_from_response url="+url)
+
+    if post is not None:
+        logger.info("[scrapertools.py] post="+post)
+    else:
+        logger.info("[scrapertools.py] post=None")
+    
+    #  Inicializa la librería de las cookies
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
+
+    cj = None
+    ClientCookie = None
+    cookielib = None
+
+    import cookielib
+    # importing cookielib worked
+    urlopen = urllib2.urlopen
+    Request = urllib2.Request
+    cj = cookielib.LWPCookieJar()
+    # This is a subclass of FileCookieJar
+    # that has useful load and save methods
+
+    if os.path.isfile(ficherocookies):
+        logger.info("[scrapertools.py] Leyendo fichero cookies")
+        # if we have a cookie file already saved
+        # then load the cookies into the Cookie Jar
+        try:
+            cj.load(ficherocookies)
+        except:
+            logger.info("[scrapertools.py] El fichero de cookies existe pero es ilegible, se borra")
+            os.remove(ficherocookies)
+
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+    urllib2.install_opener(opener)
+
+    # Contador
+    inicio = time.clock()
+
+    # Diccionario para las cabeceras
+    txheaders = {}
+
+    # Traza la peticion
+    if post is None:
+        logger.info("[scrapertools.py] petición GET")
+    else:
+        logger.info("[scrapertools.py] petición POST")
+    
+    # Array de cabeceras
+    logger.info("[scrapertools.py] ---------------------------")
+    for header in headers:
+        logger.info("[scrapertools.py] header=%s" % str(header[0]))
+        txheaders[header[0]]=header[1]
+    logger.info("[scrapertools.py] ---------------------------")
+
+    # Construye el request
+    req = Request(url, post, txheaders)
+    handle = urlopen(req)
+    
+    # Actualiza el almacén de cookies
+    cj.save(ficherocookies)
+
+    # Lee los datos y cierra
+    #data=handle.read()
+    info = handle.info()
+    logger.info("[scrapertools.py] Respuesta")
+    logger.info("[scrapertools.py] ---------------------------")
+    location_header=""
+    for header in info:
+        logger.info("[scrapertools.py] "+header+"="+info[header])
+        return_headers.append( [header,info[header]] )
+    handle.close()
+    logger.info("[scrapertools.py] ---------------------------")
+
+    # Tiempo transcurrido
+    fin = time.clock()
+    logger.info("[scrapertools.py] Descargado en %d segundos " % (fin-inicio+1))
+
+    return return_headers
+
 def unseo(cadena):
     if cadena.upper().startswith("VER GRATIS LA PELICULA "):
         cadena = cadena[23:]
