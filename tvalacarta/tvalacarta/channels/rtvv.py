@@ -105,10 +105,10 @@ def play(item):
     url = item.url
     
     # Descarga pagina detalle
-    #file: "/bbtcontent/playlist/RTVVID20110207_0082/",
-    #http://www.rtvv.es/bbtcontent/playlist/RTVVID20110207_0082/
+    #file: "/rtvvcontent/playlist/RTVVID20110207_0082/",
+    #http://www.rtvv.es/rtvvcontent/playlist/RTVVID20110207_0082/
     data = scrapertools.cachePage(url)
-    patron = 'file: "(/bbtcontent/playlist/[^"]+)",'
+    patron = 'file: "(/rtvvcontent/playlist/[^"]+)",'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
         url = urlparse.urljoin(url,matches[0])
