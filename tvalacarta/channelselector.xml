@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>channelselector</name>
-	<tag>5</tag>
-	<date>15/05/2011</date>
-	<changes>Nuevo canal para Telecinco</changes>
+	<tag>6</tag>
+	<date>25/01/2012</date>
+	<changes>Nuevos canales para Aragón TV y Telefe</changes>
 </version>

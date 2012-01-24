@@ -114,7 +114,10 @@ def filterchannels(category):
 
 def channels_history_list():
     channelslist = []
-    channelslist.append([ "Telecinco (15/05/2011)"                  , "telecinco"            , "" , "ES" , "N" , "xbmc"  ])  # beesop 29/03/2011
+    channelslist.append([ "Aragón TV (25/01/2012)"                  , "aragontv"               , "" , "ES" , "A" , "generic"  ])  # jesus 25/01/2012
+    channelslist.append([ "Telefe (22/01/2012)"                     , "telefe"               , "" , "ES" , "N" , "generic"  ])  # jesus 22/01/2012
+    #channelslist.append([ "Cuatro (02/09/2011)"                     , "cuatro"               , "" , "ES" , "N" , "generic"  ])  # jesus 02/09/2011
+    channelslist.append([ "Telecinco (15/05/2011)"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
     channelslist.append([ "UPV TV (29/03/2011)"                     , "upvtv"                , "" , "ES" , "T" , "xbmc"  ])  # beesop 29/03/2011
     channelslist.append([ "La Sexta (07/02/2011)"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "Boing (07/02/2011)"                      , "boing"                , "" , "ES" , "T" , "generic"  ])  # juanfran 07/02/2011
@@ -128,11 +131,13 @@ def channels_list():
     channelslist.append([ "7RM (Murcia)"               , "sieterm"              , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "ADNStream"                  , "adnstream"            , "" , "ES" , "I" , "generic" ])
     channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
+    channelslist.append([ "Aragón TV"                  , "aragontv"             , "" , "ES" , "A" , "generic"  ])  # jesus 25/01/2012
     channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
     channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
     channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
     channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
     channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
+    #channelslist.append([ "Cuatro"                     , "cuatro"               , "" , "ES" , "N" , "generic" ]) # jesus 02/09/2011
     channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
     channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
@@ -149,8 +154,10 @@ def channels_list():
     channelslist.append([ "RTVA (Andalucia)"           , "rtva"                 , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "RTVV (Comunidad Valenciana)", "rtvv"                 , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "Skai folders"               , "skai_folders"         , "" , "GR" , "N" , "generic"  ])  # dusan 04/12/2011
     channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "Telecinco"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
+    channelslist.append([ "Telefe"                     , "telefe"               , "" , "ES" , "N" , "generic"  ])  # jesus 28/10/2011
     channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
     #addfolder("TV Azteca","tva","mainlist")
     #addfolder("Terra TV","terratv","mainlist")
