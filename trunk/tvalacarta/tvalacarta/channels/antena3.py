@@ -35,6 +35,7 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Series"         , action="series"       , url="http://www.antena3.com/videos/series.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Noticias"       , action="noticias"     , url="http://www.antena3.com/videos/noticias.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Programas"      , action="programas"    , url="http://www.antena3.com/videos/programas.html", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Infantil"       , action="series"       , url="http://www.antena3.com/videos/series-infantiles.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="TV Movies"      , action="tvmovies"     , url="http://www.antena3.com/videos/tv-movies.html", folder=True) )
 
     return itemlist
