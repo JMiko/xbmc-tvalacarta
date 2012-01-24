@@ -142,6 +142,10 @@ def findvideos(data):
     import veoh
     devuelve.extend(veoh.find_videos(data))
 
+    # veevr
+    import veevr
+    devuelve.extend(veevr.find_videos(data))
+
     # videobam
     import videobam
     devuelve.extend(videobam.find_videos(data))
