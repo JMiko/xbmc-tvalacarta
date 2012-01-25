@@ -219,8 +219,9 @@ def capitulo_links(item):
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
      
     # Extrae las entradas (carpetas)
-    # [ {"language":"?","subtitles":"?","hd":"0/1","url_cineraculo":"http://?","url_megavideo":"http://?"} ]
-    
+    # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
+    #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
+
     linkList = load_json(scrapertools.cache_page(item.url, post=post))
     if linkList == None : linkList = []
     
@@ -239,8 +240,8 @@ def capitulo_links(item):
         itemlist.append(
             Item(channel=item.channel,
                 action = "links",
-                title = '%(titletag)s (%(language)s(Sub: %(subtitles)s)%(hdtag)s' % link,
-                url = link['url_megavideo'],
+                title = '%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link,
+                url = link['url'],
                 thumbnail = item.thumbnail,
                 plot = "",
                 extra = ''
