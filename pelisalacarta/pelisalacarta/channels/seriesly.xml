@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>4</tag>
+	<tag>8</tag>
 	<date>25/01/2012</date>
 	<changes>Soporte a nuevos servidores</changes>
 </version>
