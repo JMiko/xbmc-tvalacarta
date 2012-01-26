@@ -13,26 +13,32 @@ from core import logger
 from core import config
 
 # Returns an array of possible video url's from the page_url
-def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
     logger.info("[videoweed.py] get_video_url(page_url='%s')" % page_url)
 
-    video_urls = []
-
-    # Descarga la página de linkbucks
-    data = scrapertools.cachePage(page_url)
-
-    # Extrae la URL real
-    patronvideos  = 'flashvars.file="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    data = scrapertools.cache_page(page_url)
+    patron = 'flashvars.file="(.*?)";'
+    matches = re.compile(patron).findall(data)
+    for match in matches:
+    	logger.info("File = "+match)
+	flashvarsfile = match
+    patron = 'flashvars.filekey="(.*?)";'
+    matches = re.compile(patron).findall(data)
+    for match in matches:
+    	logger.info("Key = "+match)
+	flashvarsfilekey = match
+    post="key="+flashvarsfilekey+"&user=undefined&codes=1&pass=undefined&file="+flashvarsfile
+    url = "http://www.videoweed.es/api/player.api.php?"+post
+    data = scrapertools.cache_page(url, post=post)
+    logger.info(data)
+    patron = 'url=(.*?)&title='
+    matches = re.compile(patron).findall(data)
     scrapertools.printMatches(matches)
     
     video_urls = []
-    for match in matches:
-        video_urls.append(["[videoweed]",match])
-
-    for video_url in video_urls:
-        logger.info("[videoweed.py] %s - %s" % (video_url[0],video_url[1]))
-
+    logger.info(matches[0])
+    video_urls.append( ["FLV [videoweed]",matches[0]])
+	
     return video_urls
 
 # Encuentra vídeos del servidor en el texto pasado
