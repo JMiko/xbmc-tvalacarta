@@ -115,6 +115,10 @@ def findvideos(data):
     # movshare
     import movshare
     devuelve.extend(movshare.find_videos(data))
+
+    # novamov
+    import novamov
+    devuelve.extend(novamov.find_videos(data))
  
     # stagevu
     import stagevu
