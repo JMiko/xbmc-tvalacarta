@@ -43,7 +43,7 @@
     
     <setting type="sep" />
     <setting id="justin_login" type="text" label="30418" default=""/>
-    <setting id="privatepassword" type="text" option="hidden" label="30424" enable="!eq(-1,)" default=""/>
+    <setting id="justin_password" type="text" option="hidden" label="30424" enable="!eq(-1,)" default=""/>
   </category>
 
   <!-- Path downloads and subtitles -->

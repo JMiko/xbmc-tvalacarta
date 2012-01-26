@@ -170,20 +170,21 @@
     <string id="30405">Input channel ID code</string>
     
     <!-- Justin.tv Category menu strings -->
-    <string id="30407">Producers</string>
-    <string id="30408">Social</string>
-    <string id="30409">Entertainment</string>
-    <string id="30410">Games</string>
-    <string id="30411">Sports</string>
-    <string id="30412">News & Events</string>
-    <string id="30413">Animals</string>
-    <string id="30414">Science & Tech</string>
-    <string id="30415">More</string>
-    <string id="30416">Favourites</string>
+    <string id="30406">Add to Jtv Favorites</string>
+    <string id="30407">Remove from Jtv Favorites</string>
+    <string id="30408"> (archives)</string>
+    <string id="30409">Video channels archives</string>
+    <string id="30410">Watch channels live</string>
+    <string id="30411">The channel does not exist or is offline</string>
+    <string id="30412">The channel no have archived videos</string>
+    <string id="30413">Archived Videos</string>
+    <string id="30414">Channels Live</string>
+    <string id="30415">Enter Channel Name</string>
+    <string id="30416">Favorites</string>
     <string id="30417">Search</string>
     <string id="30418">Justin tv Login</string>
     <string id="30419">All Languages</string>
-    <string id="30420">Choice Language</string>
+    <string id="30420">Filter by Language(s)</string>
     <string id="30421">All</string>
     <string id="30422">  Enter Justin tv Login</string>
     <string id="30423">The channel [%s] is offline in this moment</string>
