@@ -179,6 +179,7 @@ def channels_list():
     itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D" , type="generic"  ))
     itemlist.append( Item( title="Cineblog01 (IT)"       , channel="cineblog01"           , language="IT"    , category="F,S,A"   , type="generic"  ))
     itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES"    , category="F,S"     , type="generic"  ))
+    itemlist.append( Item( title="CineVOS"               , channel="cinevos"             , language="ES"    , category="F,A,D" , type="generic"  ))
     itemlist.append( Item( title="DeLaTV"                , channel="delatv"               , language="ES"    , category="F"       , type="generic"  ))
     itemlist.append( Item( title="Descarga Cine Clásico" , channel="descargacineclasico"  , language="ES"    , category="F,S"     , type="generic"  ))
     itemlist.append( Item( title="Descargapelis"         , channel="descargapelis"        , language="ES"    , category="F"       , type="generic"  ))
