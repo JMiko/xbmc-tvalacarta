@@ -30,7 +30,7 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 #   (SÓLO VERSIONES XBMC COMPILADAS CON BUGFIX INCLUIDO)
 
 DEBUG = True
-
+_addon_ = config.get_runtime_path()
 # TODO: (3.2) Esto es un lío, hay que unificar
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context="", show="",fulltitle=""):
     if fulltitle=="":
@@ -86,6 +86,18 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     if "5" in context:
         trailerCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
         contextCommands.append((config.get_localized_string(30162),trailerCommand))
+    if "6" in context:
+        justinCommand = "XBMC.PlayMedia(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "playVideo" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30410),justinCommand))
+
+    if "8" in context:# Añadir canal a favoritos justintv
+        justinCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "addToFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30406),justinCommand))
+
+    if "9" in context:# Remover canal de favoritos justintv
+        justinCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "removeFromFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30407),justinCommand))
+
 
     if len (contextCommands) > 0:
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
@@ -110,7 +122,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
         except:
             logger.info('[xbmctools.py] addnewvideo(<unicode>)')
     listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-    listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal } )
+    listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal, "Genre" : category } )
 
     if fanart!="":
         logger.info("fanart :%s" %fanart)
@@ -128,7 +140,24 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
         addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s&password=%s&extradata=%s)" % ( sys.argv[ 0 ] , canal , "deleteSavedChannel" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus( show), urllib.quote_plus( password) , urllib.quote_plus(extra) )
         contextCommands.append((config.get_localized_string(30302),addItemCommand))
         addItemCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&show=%s&password=%s&extradata=%s)" % ( sys.argv[ 0 ] , canal , "renameChannelTitle" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie, urllib.quote_plus( show),urllib.quote_plus( password) , urllib.quote_plus(extra) )
-        contextCommands.append((config.get_localized_string(30303),addItemCommand))    
+        contextCommands.append((config.get_localized_string(30303),addItemCommand))
+            
+    if "6" in context:# Ver canal en vivo en justintv
+        justinCommand = "XBMC.PlayMedia(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "playVideo" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot )  )
+        contextCommands.append((config.get_localized_string(30410),justinCommand))
+
+    if "7" in context:# Listar videos archivados en justintv
+        justinCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "listarchives" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30409),justinCommand))
+
+    if "8" in context:# Añadir canal a favoritos justintv
+        justinCommand = "XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "addToFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30406),justinCommand))
+
+    if "9" in context:# Remover canal de favoritos justintv
+        justinCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "removeFromFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
+        contextCommands.append((config.get_localized_string(30407),justinCommand))
+
     if len (contextCommands) > 0:
         listitem.addContextMenuItems ( contextCommands, replaceItems=False)
     try:
@@ -330,9 +359,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         return
 
     if opciones[seleccion]==config.get_localized_string(30158): # "Enviar a JDownloader"
-        d = {"web": url}
+        #d = {"web": url}urllib.urlencode(d)
         from core import scrapertools
-        data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/"+urllib.urlencode(d)+ " " +thumbnail)
+        data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/web="+url+ " " +thumbnail)
         return
 
     elif opciones[seleccion]==config.get_localized_string(30164): # Borrar archivo en descargas
@@ -546,9 +575,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
         elif config.get_setting("player_mode")=="1":
             logger.info("b9")
-            xlistitem.setProperty('IsPlayable', 'true')
-            xlistitem.setProperty('path', mediaurl)
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, xlistitem)
+            #xlistitem.setProperty('IsPlayable', 'true')
+            #xlistitem.setProperty('path', mediaurl)
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, xbmcgui.ListItem(path=mediaurl))
         
         elif config.get_setting("player_mode")=="2":
             logger.info("b10")

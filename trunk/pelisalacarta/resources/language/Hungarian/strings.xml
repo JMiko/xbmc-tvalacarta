@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<!-- Available id from 30000 to 30999 -->
 
@@ -10,7 +10,7 @@
 	<string id="30000">Lejátszó</string>
 	<string id="30001">Frissítések keresése</string>
     <string id="30004">Automatic update channels:</string>
-	<string id="30002">Felnőtt mód engedélyezése</string>
+	<string id="30002">Felnott mód engedélyezése</string>
 	<string id="30003">Részletes napló</string>
     <string id="30043">Forzar el modo de vista:</string>
 
@@ -18,12 +18,12 @@
 	<string id="30005">Lejátszáskor:</string>
 	<string id="30006">Rákérdez</string>
 	<string id="30007">Megnéz</string>
-	<string id="30008">Megnéz jó minőségben</string>
+	<string id="30008">Megnéz jó minoségben</string>
 	<string id="30008">Send to jDownloader</string>
 
 	<!-- Logo visualization for channels -->
 	<string id="30010">Csatorna logók:</string>
-	<string id="30011">Poszter (függőleges)</string>
+	<string id="30011">Poszter (függoleges)</string>
 	<string id="30012">Hírdetéssáv (vízszintes)</string>
 	<string id="30200">Square</string>
 
@@ -44,7 +44,7 @@
 	<!-- Other -->
 	<string id="30017">Letöltési hely:</string>
 	<string id="30018">Letöltési lista helye:</string>
-	<string id="30020">Legjobb minőség (Youtube)</string>
+	<string id="30020">Legjobb minoség (Youtube)</string>
 	<string id="30021">Felirat engedélyezése</string>
 	<string id="30022">JDownloader cím:</string>
 	<string id="30024">Ennyi keresést mentsen</string>
@@ -148,6 +148,30 @@
     <string id="30404">Play channel Live by ID</string>
     <string id="30405">Input channel ID code</string>
 
+    <!-- Justin.tv Category menu strings -->
+
+    <!-- Justin.tv Category menu strings -->
+    <string id="30406">Add to Jtv Favorites</string>
+    <string id="30407">Remove from Jtv Favorites</string>
+    <string id="30408"> (archives)</string>
+    <string id="30409">List channels archives</string>
+    <string id="30410">Watch live channel</string>
+    <string id="30411">The channel does not exist or is offline</string>
+    <string id="30412">The channel no have archived videos</string>
+    <string id="30413">Archived Videos</string>
+    <string id="30414">Live Channels</string>
+    <string id="30415">Enter Channel Name</string>
+    <string id="30416">Favourites</string>
+    <string id="30417">Search</string>
+    <string id="30418">Justin tv Login</string>
+    <string id="30419">All Languages</string>
+    <string id="30420">Filter by Language(s)</string>
+    <string id="30421">All</string>
+    <string id="30422">  Enter Justin tv Login</string>
+    <string id="30423">The channel [%s] is offline in this moment</string>
+    <string id="30424">Justin.tv Password</string>
+    <string id="30425">en</string>
+    
     <!-- LetMeWatchThis -->
     <string id="40001">Filmek - most hozzáadva</string>
     <string id="40002">TV musorok - most hozzáadva</string>
