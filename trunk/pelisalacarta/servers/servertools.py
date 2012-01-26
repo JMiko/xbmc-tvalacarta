@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Utilidades para detectar vídeos de los diferentes conectores
@@ -112,6 +112,10 @@ def findvideos(data):
     import gigabyteupload
     devuelve.extend(gigabyteupload.find_videos(data))
 
+    # modovideo
+    import modovideo
+    devuelve.extend(modovideo.find_videos(data))
+
     # movshare
     import movshare
     devuelve.extend(movshare.find_videos(data))
@@ -119,7 +123,24 @@ def findvideos(data):
     # novamov
     import novamov
     devuelve.extend(novamov.find_videos(data))
- 
+
+    # ovfile
+    import ovfile
+    devuelve.extend(ovfile.find_videos(data))
+
+    # putlocker
+    import putlocker
+    devuelve.extend(putlocker.find_videos(data))
+
+    # royalvids
+    import royalvids
+    devuelve.extend(royalvids.find_videos(data))
+
+    # sockshare
+    import sockshare
+    devuelve.extend(sockshare.find_videos(data))
+
+
     # stagevu
     import stagevu
     devuelve.extend(stagevu.find_videos(data))
