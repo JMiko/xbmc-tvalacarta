@@ -79,6 +79,11 @@ def findvideos(data):
     import bliptv
     devuelve.extend(bliptv.find_videos(data))
 
+    # depositfiles
+    if config.get_setting("fileniumpremium")=="true":
+        import depositfiles
+        devuelve.extend(depositfiles.find_videos(data))
+
     # divxstage
     import divxstage
     devuelve.extend(divxstage.find_videos(data))
