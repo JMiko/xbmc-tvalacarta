@@ -34,7 +34,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     if len(matches)==0:
         # "scaling":"fit","url":"http:\/\/f10.videobam.com\/storage\/11\/videos\/a\/aa\/AaUsV\/encoded.mp4
         
-        patron = '[\W]scaling[\W]:[\W]fit[\W],[\W]url[\W]:[\W](.*?.mp4)'
+        patron = '[\W]scaling[\W]:[\W]fit[\W],[\W]url"\:"([^"]+)"'
         matches = re.compile(patron,re.DOTALL).findall(data)
         for match in matches:
             videourl = match.replace('\/','/')
