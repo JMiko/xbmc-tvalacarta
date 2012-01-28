@@ -47,12 +47,29 @@ def find_videos(data):
     devuelve = []
 
     patronvideos = '(http://www.novamov.com/video/[a-z0-9]{13})'
-    logger.info("[wupload.py] find_videos #"+patronvideos+"#")
+    logger.info("[novamov.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
         titulo = "[novamov]"
         url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'novamov' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # http://embed.novamov.com/embed.php?width=568&height=340&v=zadsdfoc0pirx&px=1
+    # http://embed.novamov.com/embed.php?width=620&amp;height=348&amp;v=4f21e91a1f2f7&amp;px=1&amp;px=1
+    patronvideos = 'http://embed.novamov.com/embed.php.*?v=([a-z0-9]{13})'
+    logger.info("[novamov.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[novamov]"
+        url = "http://www.novamov.com/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
