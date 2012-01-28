@@ -24,6 +24,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     post = "hash="+matches[0]+"&confirm=Continue as Free User"
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
+    logger.info("data="+data)
     # Extrae el trozo cifrado
     patron = "playlist: '(.+?)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -33,7 +34,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         xmlurl = urlparse.urljoin(page_url,matches[0])
         logger.info("[sockshare.py] Playlis="+xmlurl)
     else:
-        logger.info("[sockshare.py] No encuentra Playlist="+xmlurl)
+        logger.info("[sockshare.py] No encuentra Playlist=")
 
         return []
     
@@ -76,7 +77,7 @@ def find_videos(text):
             logger.info("  url duplicada="+url)
             
     # http://www.sockshare.com/embed/CEE0B3A7DDFED758
-    patronvideos  = '(http://www.sockshare.com/(?:file|embed)/[A-Z0-9]+)'
+    patronvideos  = 'http://www.sockshare.com/(?:file|embed)/([A-Z0-9]+)'
     logger.info("[sockshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
