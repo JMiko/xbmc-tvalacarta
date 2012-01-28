@@ -24,11 +24,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     post = "hash="+matches[0]+"&confirm=Continue as Free User"
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
-    # Extrae el trozo cifrado
+    # extrae 
     patron = "playlist: '(.+?)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
-    data = ""
+
     if len(matches)>0:
         xmlurl = urlparse.urljoin(page_url,matches[0])
         logger.info("[putlocker.py] Playlis="+xmlurl)
@@ -75,8 +75,8 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
             
-    # http://www.putlocker.com/embed/CEE0B3A7DDFED758
-    patronvideos  = '(http://www.putlocker.com/(?:file|embed)/[A-Z0-9]+)'
+    # http://www.putlocker.com/embed/CEE0B3A7DDFED758 | http://www.putlocker.com/file/CEE0B3A7DDFED758
+    patronvideos  = 'http://www.putlocker.com/(?:file|embed)/([A-Z0-9]+)'
     logger.info("[putlocker.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
