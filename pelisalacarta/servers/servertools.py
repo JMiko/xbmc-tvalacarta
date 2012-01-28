@@ -122,6 +122,10 @@ def findvideos(data):
     import gigabyteupload
     devuelve.extend(gigabyteupload.find_videos(data))
 
+    # hdplay
+    import hdplay
+    devuelve.extend(hdplay.find_videos(data))
+
     # mediafire
     import mediafire
     devuelve.extend(mediafire.find_videos(data))
