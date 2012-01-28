@@ -157,8 +157,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     else:
         # Hace el login y consigue la cookie
-        login_url = "http://www.wupload.es/account/login"
+        #login_url = "http://www.wupload.es/account/login"
+        login_url = "http://www.wupload.mx/account/login"
         post = "email="+user.replace("@","%40")+"&redirect=%2F&password="+password+"&rememberMe=1"
+        location = scrapertools.get_header_from_response( url=login_url, header_to_get="location", post=post)
+        logger.info("location="+location)
+        
+        if location!="":
+            login_url = location
+
         data = scrapertools.cache_page(url=login_url, post=post)
 
         # Obtiene la URL final
@@ -206,6 +213,23 @@ def find_videos(data):
     for match in matches:
         titulo = "[wupload]"
         url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'wupload' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # Encontrado en animeflv
+    #s=mediafire.com%2F%3F7fsmmq2144fx6t4|-|wupload.com%2Ffile%2F2653904582
+    patronvideos = 'wupload.com\%2Ffile\%2F(\d+)'
+    logger.info("[wupload.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[wupload]"
+        url = "http://www.wupload.com/file/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
