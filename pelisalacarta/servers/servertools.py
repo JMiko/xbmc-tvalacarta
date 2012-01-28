@@ -145,6 +145,10 @@ def findvideos(data):
     import royalvids
     devuelve.extend(royalvids.find_videos(data))
 
+    # rutube
+    import rutube
+    devuelve.extend(rutube.find_videos(data))
+
     # sockshare
     import sockshare
     devuelve.extend(sockshare.find_videos(data))
@@ -189,16 +193,16 @@ def findvideos(data):
     devuelve.extend(vidbux.find_videos(data))
 
     # videobb
-    import videobb
-    devuelve.extend(videobb.find_videos(data))
+    #import videobb
+    #devuelve.extend(videobb.find_videos(data))
 
     # videoweed
     import videoweed
     devuelve.extend(videoweed.find_videos(data))
 
     # videozer
-    import videozer
-    devuelve.extend(videozer.find_videos(data))
+    #import videozer
+    #devuelve.extend(videozer.find_videos(data))
 
     # vidxden
     import vidxden
