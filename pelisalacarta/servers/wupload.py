@@ -158,12 +158,12 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     else:
         # Hace el login y consigue la cookie
         #login_url = "http://www.wupload.es/account/login"
-        login_url = "http://www.wupload.mx/account/login"
+        login_url = "http://www.wupload.es/account/login"
         post = "email="+user.replace("@","%40")+"&redirect=%2F&password="+password+"&rememberMe=1"
         location = scrapertools.get_header_from_response( url=login_url, header_to_get="location", post=post)
         logger.info("location="+location)
         
-        if location!="":
+        if location!="" and location!="/":
             login_url = location
 
         data = scrapertools.cache_page(url=login_url, post=post)

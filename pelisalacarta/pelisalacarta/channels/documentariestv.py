@@ -217,7 +217,8 @@ def detail(item):
     patronvideos = "file: '([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
-        itemlist.append( Item(channel=__channel__ , action="play" , server="Directo", title=title+" [directo]",url=matches[0], thumbnail=thumbnail, plot=plot))
+        if not "www.youtube" in matches[0]:
+            itemlist.append( Item(channel=__channel__ , action="play" , server="Directo", title=item.title+" [directo]",url=matches[0], thumbnail=item.thumbnail, plot=item.plot))
 
     return itemlist
 

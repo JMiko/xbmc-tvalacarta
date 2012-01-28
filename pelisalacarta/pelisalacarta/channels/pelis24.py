@@ -1,20 +1,15 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para pelis24
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
+import os, sys
 
-from core import scrapertools
-from core import config
 from core import logger
-from platformcode.xbmc import xbmctools
+from core import config
+from core import scrapertools
 from core.item import Item
 from servers import servertools
 
@@ -26,216 +21,55 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
+def isGeneric():
+    return True
 
-logger.info("[pelis24.py] init")
-
-def mainlist(params,url,category):
+def mainlist(item):
     logger.info("[pelis24.py] mainlist")
 
-    # Añade al listado de XBMC
-    xbmctools.addnewfolder( __channel__ , "list", category , "Peliculas","http://pelis24.com/peliculas/","","")
-    xbmctools.addnewfolder( __channel__ , "list", category , "Peliculas VOSE","http://pelis24.com/peliculasvose/","","")
-    xbmctools.addnewfolder( __channel__ , "list", category , "Series","http://pelis24.com/series/","","")
-    xbmctools.addnewfolder( __channel__ , "list", category , "Novedades","http://pelis24.com/","","")
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Novedades"    , action="peliculas", url="http://pelis24.com/"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos"    , action="peliculas", url="http://pelis24.com/estrenos/"))
+    itemlist.append( Item(channel=__channel__, title="Castellano"    , action="peliculas", url="http://pelis24.com/pelicula-ca/"))
+    itemlist.append( Item(channel=__channel__, title="Latino"    , action="peliculas", url="http://pelis24.com/pelicula-latino/"))
+    itemlist.append( Item(channel=__channel__, title="Subtituladas"    , action="peliculas", url="http://pelis24.com/peliculasvose/"))
+    itemlist.append( Item(channel=__channel__, title="Recomendadas"    , action="peliculas", url="http://pelis24.com/pelicula-re/"))
+    
+    return itemlist
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def list(params,url,category):
-    logger.info("[pelis24.py] list")
+def peliculas(item):
+    logger.info("[pelis24.py] peliculas")
+    itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
     '''
-    <div class="yjnewsflash_title"><a href="http://www.pelis24.com/peliculas/12554-el-castor-2011castellano.html">El castor (2011)(castellano)</a> </div>
-    <p><br>
-    <br>
-    <div id='news-id-12554'><!--dle_image_begin:http://x-peliculas.net/images/ba20e6b6e9.jpg|left--><img src="http://x-peliculas.net/images/ba20e6b6e9.jpg" align="left" alt="El castor (2011)(castellano)" title="El castor (2011)(castellano)"  /><!--dle_image_end--><br />Sinopsis:<br /><br />Water Black (Mel Gibson) está sumido en una profunda depresión. Su vida se viene abajo y ni su mujer (Jodie Foster) ni sus hijos saben cómo ayudarle. Un día, ya al límite de la desesperación, encuentra una marioneta con forma de castor en un cubo de basura. A partir de ese momento la vida de Walter da un giro radical.<br /></div><span class="yjnewsflash_date">Hoy, 17:09 | <a href="http://www.pelis24.com/peliculas/">Peliculas</a> | </span></p>
-    <div class="linksw"><br /><a href="http://www.pelis24.com/peliculas/12554-el-castor-2011castellano.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (0)</a> &nbsp;<a href="http://www.pelis24.com/peliculas/12554-el-castor-2011castellano.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
+    <!--TBegin--><a href="http://www.pelis24.com/uploads/posts/2012-01/1327670351_dime_con_cuantos-301100490-large.jpg" onclick="return hs.expand(this)" ><img align="left" src="http://www.pelis24.com/uploads/posts/2012-01/thumbs/1327670351_dime_con_cuantos-301100490-large.jpg" alt='Dime con cuántos (2011) - Latino' title='Dime con cuántos (2011) - Latino'
+    ...
+    <div class="mlink">		<span class="argmore"><a href="http://www.pelis24.com/peliculas/12513-dime-con-cubntos-2011castellano-mic.html">
     '''
-    patron  = '<div class="yjnewsflash_title"><a href="([^"]+)">([^<]+)</a> </div>[^<]+'
-    patron += '<p><br>[^<]+'
-    patron += '<br>[^<]+'
-    patron += '<div[^>]+><!--TBegin--><a href="([^"]+)".*?'
-    patron += '<!--TEnd-->([^<]+)<' #,*?<a'#.*?<a href="([^"]+)">'
+    patron = '<!--TBegin--><a href="([^"]+)"[^<]+'
+    patron += '<img align="left" src="[^"]+" alt=\'([^\']+)\'.*?'
+    patron += '<div class="mlink">[^<]+<span class="argmore"><a href="([^"]+)">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = match[2]
-        scrapedplot = match[3]
+    for scrapedthumbnail,scrapedtitle,scrapedurl in matches:
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        xbmctools.addnewfolder( __channel__ , "detail" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
-
-    '''
-    <div class="yjnewsflash_title"><a href="http://www.pelis24.com/series/424-el-mentalista-espanol-online.html">El Mentalista Español Temporada 1</a> </div>
-    <p><br>
-    <br>
-    <div id='news-id-424'><div align="center"><img src="http://i40.tinypic.com/33392ck.jpg" style="border: none;" alt='El Mentalista Español Temporada 1' title='El Mentalista Español Temporada 1' /><br /><br />La historia de El Mentalista comienza cuando Patrick Jane, un hombre que se ganaba la vida como médium televisivo, sufre un duro golpe al perder a su mujer y su hija a manos de un asesino. A partir de ese momento, Patrick Jane toma la determinación de dedicarse de lleno a sus habilidades como detective y trabajar en el Departamento de Investigación de Crímenes de California en la resolución de los casos de asesinato. Él no ve, observa. No oye, escucha. No toca, percibe. No falla.</div></div><span class="yjnewsflash_date">9 enero 2009 | <a href="http://www.pelis24.com/series/">Series</a> | </span></p>
-    <div class="linksw"><br /><a href="http://www.pelis24.com/series/424-el-mentalista-espanol-online.html#comment"><img src="/templates/Pelis/img/com.png" border="0" />Comentarios (7)</a> &nbsp;<a href="http://www.pelis24.com/series/424-el-mentalista-espanol-online.html"><img src="/templates/Pelis/images/arr2.png" width="13" height="9" border="0" /><strong>Ver Pelicula Online!</strong></a></div></div><div class="yjnewsflash">
-    '''
-    patron  = '<div class="yjnewsflash_title"><a href="([^"]+)">([^<]+)<.*?'
-    patron  = '<div class="yjnewsflash_title"><a href="([^"]+)">([^<]+)</a> </div>[^<]+'
-    patron += '<p><br>[^<]+'
-    patron += '<br>[^<]+'
-    patron += '<div[^>]+><div[^>]+><img src="([^"]+)".*?>([^<]+)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        # Titulo
-        scrapedtitle = match[1]
-
-        # URL
-        scrapedurl = urlparse.urljoin(url,match[0])
-        
-        # Thumbnail
-        scrapedthumbnail = match[2]
-        
-        # procesa el resto
-        scrapedplot = match[3]
-
-        # Depuracion
-        if (DEBUG):
-            logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
 
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "detail" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
-
-    # Extrae la entrada para la siguiente página
-    patronvideos  = '<div id="right"><a href="([^"]+)">Siguiente P.gina</a>'
+    # Extrae el paginador
+    patronvideos  = '<a href="([^"]+)"><span class="thide pnext">Siguiente</span></a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for match in matches:
-        # Titulo
-        scrapedtitle = "!Página siguiente"
-
-        # URL
-        scrapedurl = match
-        
-        # Thumbnail
-        scrapedthumbnail = ""
-        
-        # procesa el resto
-        scrapeddescription = ""
-
-        # Depuracion
-        if (DEBUG):
-            logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "list" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail , scrapeddescription )
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def detail(params,url,category):
-    logger.info("[pelis24.py] detail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Busca los enlaces a los mirrors, o a los capítulos de las series...
-    patronvideos  = '<a href="([^"]+)">Sigu'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    for match in matches:
-        xbmctools.addnewfolder( __channel__ , "list", category , "!Página siguiente",urlparse.urljoin(url,match),"","")
-
-    patronvideos  = 'file\=(http\://www.pelis24.com/xml[^\&]+)\&'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
-        if ("xml" in matches[0]):
-            data2 = scrapertools.cachePage(matches[0])
-            logger.info("data2="+data2)
-            patronvideos  = '<track>[^<]+'
-            patronvideos += '<creator>([^<]+)</creator>[^<]+'
-            patronvideos += '<location>([^<]+)</location>.*?'
-            patronvideos += '</track>'
-            matches = re.compile(patronvideos,re.DOTALL).findall(data2)
-            scrapertools.printMatches(matches)
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
 
-            for match in matches:
-                 
-                if "vid" not in match[1]: 
-                    scrapedtitle = match[0]
-                else: 
-                    scrapedtitle = match[0]+" no funciona en xbmc"
-                scrapedurl = match[1].strip()
-                scrapedthumbnail = thumbnail
-                scrapedplot = plot
-                if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-                # Añade al listado de XBMC
-                xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , scrapedtitle + " [Directo]", scrapedurl , scrapedthumbnail, scrapedplot )
-        else:
-            # Añade al listado de XBMC
-            xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title + " [Directo]", matches[0] , thumbnail, plot )
-    
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a videos directos
-    # ------------------------------------------------------------------------------------
-
-    patronvideos  = "url:'([^']+)'"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    i = 1
-    for match in matches:
-        xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , title +" %d - [Directo]" % i, match, thumbnail , "" )
-
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
-    
-    i = 1
-    for video in listavideos:
-        xbmctools.addnewvideo( __channel__ , "play" , category , video[2] , (title +" %d - "+video[0]) % i, video[1], thumbnail , "" )
-        i = i + 1
-    # ------------------------------------------------------------------------------------
-
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-        
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def play(params,url,category):
-    logger.info("[pelis24.py] play")
-
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-    
-    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
+    return itemlist

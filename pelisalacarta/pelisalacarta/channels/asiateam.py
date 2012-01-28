@@ -26,7 +26,7 @@ __language__ = "ES"
 __creationdate__ = "20110520"
 
 DEBUG = config.get_setting("debug")
-
+SUB_PATH = os.path.join( config.get_data_path() , "subtitulos" , "asiateam" )
 
 if not os.path.exists(os.path.join( config.get_data_path() , "subtitulos" )):
     os.mkdir( os.path.join( config.get_data_path() , "subtitulos" ) )

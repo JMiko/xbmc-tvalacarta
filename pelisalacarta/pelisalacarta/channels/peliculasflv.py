@@ -7,18 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 __channel__ = "peliculasflv"
 __category__ = "F"
@@ -47,44 +40,24 @@ def listado(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-    patron = "<div class='post hentry uncustomized-post-template'>(.*?)<div id=\"latency-"
+    patron = '<div class="item"[^<]+<div[^<]+<img src="([^"]+)" alt="([^"]+)".*?<a href="([^"]+)">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
 
-    for elemento in matches:
-        '''
-        <a href='http://www.peliculas-flv.com/2010/11/enredados-espanol.html'>
-        <div id='summary5995647639525095152'>
-        <img style="float:left; margin:0 10px 10px 0;" width="120" src="http://1.bp.blogspot.com/_s25JOvnW5sA/TPP677-EmhI/AAAAAAAABzg/9bKdrI7lU-Y/s200/Enredados-poster-en-grande-de-la-pelicula.jpg" />Cuando el más buscado -y encantador- bandido del reino, Flynn Rider, se esconde en una misteriosa torre, toma por rehén a Rapunzel, una bella y avispada adolescente con una cabellera dorada de 21 metros de largo, que está encerrada en la torre. La singular prisionera, buscando el pasaporte que la saque del encierro donde ha permanecido durante años, sella un pacto con el guapo ladrón. Así es como el dúo se lanza a una travesía llena de acción, con un caballo súper-policía, un camaleón sobreprotector y una ruda pandilla de matones.<br /><br /><div class="player"><div class="player-titulo"><h1>Enredados - Español (TS-Screener)</h1></div><div class="player-contenido"><center><iframe src="http://peliculas-flv.hostzi.com/reproflv.php?url=http://taringa.bligoo.com/media/users/7/396271/files/27203/Enredados-esp.xml"
-        '''
-        patron  = "<a href='([^']+)'[^>]+>(.*?)<"
-        patron += "<DIV id='summary[^<]+"
-        patron += '<img.*?src="([^"]+)"[^>]+>(.*?)<div class="player"><div.*?class="player-titulo"><h1>([^<]+)</h1></div><div class="player-contenido"><center><iframe src="http://255.14.14.98.ciberanime.com/reproflv.php.url=([^"]+)"'
-    
-        matches2 = re.compile(patron,re.DOTALL).findall(elemento)
-        if DEBUG: scrapertools.printMatches(matches)
-    
-        for match in matches2:
-            scrapedtitle = match[1]
-            scrapedplot = match[3]
-            scrapedurl = urlparse.urljoin(item.url,match[5])
-            scrapedthumbnail = urlparse.urljoin(item.url,match[2])
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-    
-            # Añade al listado de XBMC
-            itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+    for scrapedthumbnail,scrapedtitle,scrapedurl in matches:
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
-    patronvideos  = "<a class='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Siguiente'>"
+    patronvideos  = "<a href='([^']+)'>\&raquo\;</a>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        #http://www.somosmovies.com/search/label/Peliculas?updated-max=2010-12-20T08%3A27%3A00-06%3A00&max-results=12
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        scrapedurl = scrapedurl.replace("%3A",":")
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="listado", title="Página siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 

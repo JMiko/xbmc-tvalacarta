@@ -40,12 +40,12 @@ def peliculas(item):
     logger.info("[moviezet.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=CHANNELNAME, title="Últimas películas"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=date&order=desc"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Más Populares"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Generos"  , action="generos", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_genre"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Por Año"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=title&order=asc"))
+    itemlist.append( Item(channel=__channel__, title="Últimas películas"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=date&order=desc"))
+    itemlist.append( Item(channel=__channel__, title="Más Populares"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Generos"  , action="generos", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_genre"))
+    itemlist.append( Item(channel=__channel__, title="Por Año"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
+    itemlist.append( Item(channel=__channel__, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=title&order=asc"))
 
     return itemlist
 

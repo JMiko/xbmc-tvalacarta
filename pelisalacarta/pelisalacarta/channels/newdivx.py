@@ -1,172 +1,76 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para newdivx.net by Bandavi
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
+import os, sys
 
-from core import scrapertools
-from core import config
 from core import logger
-from platformcode.xbmc import xbmctools
+from core import config
+from core import scrapertools
 from core.item import Item
 from servers import servertools
-from servers import vk
 
 __channel__ = "newdivx"
 __category__ = "F,D"
-__type__ = "xbmc"
+__type__ = "generic"
 __title__ = "NewDivx"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-# Traza el inicio del canal
-logger.info("[newdivx.py] init")
+def isGeneric():
+    return True
 
-def mainlist(params,url,category):
+def mainlist(item):
     logger.info("[newdivx.py] mainlist")
 
-    # Añade al listado de XBMC
-    xbmctools.addnewfolder( __channel__ , "listvideos"       , category , "Ultimas Películas Añadidas"    ,"http://www.newdivx.net/","","")
-    xbmctools.addnewfolder( __channel__ , "ListaCat"         , category , "Listado por Categorias"    ,"http://www.newdivx.net/","","")
-    xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , "Estrenos","http://www.newdivx.net/peliculas-online/estrenos/","","")
-    xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , "Documentales","http://www.newdivx.net/peliculas-online/documentales/","","")
-    xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , "Peliculas V.O.S.","http://www.newdivx.net/peliculas-online/peliculas-vos/","","")
-    xbmctools.addnewfolder( __channel__ , "search" , category , "Buscar","http://www.newdivx.net/index.php","","")
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Novedades", action="peliculas", url="http://www.newdivx.net"))
+    return itemlist
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def search(params,url,category):
-    logger.info("[newdivx.py] search")
-
-    keyboard = xbmc.Keyboard()
-    #keyboard.setDefault('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)>0:
-            #convert to HTML
-            tecleado = tecleado.replace(" ", "+")
-            searchUrl = "http://www.newdivx.net/index.php?do=search&subaction=search&story="+tecleado
-            searchresults(params,searchUrl,category)
-
-def searchresults(params,url,category):
-    logger.info("[newdivx.py] SearchResult")
-    
-    #post = {"do": "search","subaction":"search","story":tecleado}
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #print data
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<td class="copy" valign="top" colspan="2"><a href="([^"]+)" >'
-    patronvideos += '<[^>]+><[^>]+><img src="([^"]+)" '
-    patronvideos += "alt=.*?title='([^']+)' /></div>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        # Atributos
-        scrapedurl = match[0]
-        
-        scrapedtitle =match[2]
-        scrapedtitle = scrapedtitle.replace("&#8211;","-")
-        scrapedtitle = scrapedtitle.replace("&nbsp;"," ")
-        scrapedthumbnail = match[1]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-            
-
-def ListaCat(params,url,category):
-    logger.info("[newdivx.py] ListaCat")
-    
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Acción","http://www.newdivx.net/peliculas-online/accion/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Adolescencia","http://www.newdivx.net/peliculas-online/adolescencia/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Animación","http://www.newdivx.net/peliculas-online/animacion/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Aventuras","http://www.newdivx.net/peliculas-online/aventuras/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Belico","http://www.newdivx.net/peliculas-online/belico/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Ciencia-Ficción","http://www.newdivx.net/peliculas-online/ciencia-ficcion/","","")
-    xbmctools.addnewfolder( __channel__ ,"listvideosMirror", category , "Comedia","http://www.newdivx.net/peliculas-online/comedia/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Drama","http://www.newdivx.net/peliculas-online/drama/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Fantastico","http://www.newdivx.net/peliculas-online/fantastico/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Intriga","http://www.newdivx.net/peliculas-online/intriga/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Infantil","http://www.newdivx.net/peliculas-online/infantil/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Musical","http://www.newdivx.net/peliculas-online/musical/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Romantico","http://www.newdivx.net/peliculas-online/romantico/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Terror","http://www.newdivx.net/peliculas-online/terror/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Thriller","http://www.newdivx.net/peliculas-online/thriller/","","")
-    xbmctools.addnewfolder( __channel__ ,"ListvideosMirror", category , "Western","http://www.newdivx.net/peliculas-online/western/","","")
-
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-        
-def ListvideosMirror(params,url,category):
-    logger.info("[newdivx.py] ListvideosMirror")
+def peliculas(item):
+    logger.info("[newdivx.py] peliculas")
+    itemlist=[]
 
     # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
+    data = scrapertools.cachePage(item.url)
+    '''
+    <td align="center" valign="middle" width="20%" class="short"> 
+    <a href="http://www.newdivx.net/peliculas-online/comedia/4716-la-oportunidad-de-mi-vida-2010-lat.html"><img src="http://www.newhd.org/uploads/thumbs/1327685908_La_oportunidad_de_mi_vida-184333983-large.jpg"  alt='La oportunidad de mi vida (2010) [LAT]' title='La oportunidad de mi vida (2010) [LAT]'  style="max-width: 190px; "></a>
+    <div><a href="http://www.newdivx.net/peliculas-online/comedia/4716-la-oportunidad-de-mi-vida-2010-lat.html">La oportunidad de mi vida (2010) [LAT]</a></div>
+    '''
 
     # Patron de las entradas
-    patronvideos  = '<td class="copy" align="left" valign="top" ><[^>]+><[^>]+><a href="([^"]+)"' # URL
-    patronvideos += '></span><[^>]+><[^>]+><img src="([^"]+)" '                                   # TUMBNAIL
-    patronvideos += "alt=.*?title='([^']+)' /></div>"                                             # TITULO 
+    patronvideos  = '<td align="center" valign="middle" width="20%" class="short">[^<]+'
+    patronvideos += '<a href="([^"]+)"><img src="([^"]+)"[^<]+</a>[^<]+'
+    patronvideos += '<div><a [^>]+>([^<]+)<'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     # Añade las entradas encontradas
-    for match in matches:
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         # Atributos
-        scrapedtitle = match[2]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "detail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     #Extrae la marca de siguiente página
-    patronvideos  = '</span> <a href="(http://www.newdivx.net/peliculas-online/[^\/]+/page/[^"]+)"'
+    #<span>1</span> <a href="http://www.newdivx.net/peliculas-online/animacion/page/2/">2</a>
+    patronvideos  = '</span> <a href="(http://www.newdivx.net.*?page/[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "Página siguiente"
+        scrapedtitle = "Página siguiente >>"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( __channel__ , "ListvideosMirror" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-        
+    return itemlist
 
 def listvideos(params,url,category):
     logger.info("[newdivx.py] listvideos")

@@ -257,7 +257,11 @@ def saveSubtitleName(item):
         title = item.title
     else:
         title = item.show + " - " + item.title
-    title = _normalize(title)
+    try:
+        title = _normalize(title)
+    except:
+        pass
+
     tvshow_title,season,episode = regex_tvshow(False,title)
     if episode!="":
         #title = "% %sx%s" %(tvshow_title,season,episode)
