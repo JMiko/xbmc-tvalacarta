@@ -44,7 +44,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[uploaded.to]"
-        url = match
+        url = match.replace("http://ul.to/","http://uploaded.to/file/")
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'uploadedto' ] )
