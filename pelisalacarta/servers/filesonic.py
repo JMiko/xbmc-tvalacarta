@@ -23,7 +23,7 @@ def find_videos(data):
     devuelve = []
 
     # http://www.filesonic.es/file/4300755655
-    patronvideos  = '(http://www.filesonic.es/file/[0-9]+)'
+    patronvideos  = '(http://www.filesonic.es/file/[0-9a-zA-Z]+)'
     logger.info("[filesonic.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
