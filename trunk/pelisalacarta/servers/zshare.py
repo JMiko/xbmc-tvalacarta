@@ -8,18 +8,10 @@
 import urlparse,urllib2,urllib,re
 import os
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-    from core import unpackerjs2
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import unpackerjs2
-
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
+from core import scrapertools
+from core import logger
+from core import config
+from core import unpackerjs2
 
 def geturl(urlvideo):
     logger.info("[zshare.py] url="+urlvideo)

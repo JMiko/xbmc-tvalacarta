@@ -36,6 +36,5 @@ def find_videos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-            
-            
+
     return devuelve

@@ -14,15 +14,19 @@ from core import config
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[mediafire.py] get_video_url(page_url='%s')" % page_url)
+    video_urls=[]
     
     data = scrapertools.cache_page(page_url)
     #logger.info("data="+data)
     patron = '<a href="([^"]+)" onclick="avh\(this\)[^"]+">Download'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        return [ ["[mediafire]",matches[0] ] ]
-    else:
-        return []
+        video_urls.append( ["[mediafire]",matches[0] ] )
+
+    for video_url in video_urls:
+        logger.info("[mediafire.py] %s - %s" % (video_url[0],video_url[1]))
+
+    return video_urls        
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):

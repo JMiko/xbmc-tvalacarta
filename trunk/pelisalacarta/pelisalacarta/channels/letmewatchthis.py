@@ -28,8 +28,8 @@ def mainlist(item):
     logger.info("[letmewatchthis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Movies"   ,url="http://www.letmewatchthis.com/"))
-    itemlist.append( Item(channel=__channel__, action="series"    , title="TV Shows" ,url="http://www.letmewatchthis.com/?tv"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Movies"   ,url="http://www.letmewatchthis.com/watch-movies"))
+    itemlist.append( Item(channel=__channel__, action="series"    , title="TV Shows" ,url="http://www.letmewatchthis.com/watch-tv-shows"))
     #itemlist.append( Item(channel=__channel__, action=""search"     , category , "Buscar"                           ,"","","")
 
     return itemlist
@@ -53,19 +53,10 @@ def listaconcaratulas(item,action):
     #logger.info(data)
 
     '''
-    <div class="index_item index_item_ie"><a href="/watch-356059-Here-Come-the-Co-eds" title="Watch Here Come the Co-eds (1945) - 37 views"><img src="http://images.letmewatchthis.com/thumbs/356059_Here_Come_the_Co_eds_1945.jpg" border="0" alt="Watch Here Come the Co-eds"><h2>Here Come the Co-.. (1945)</h2></a><div class="index_ratings">
-    <div id="unit_long356059">
-    <ul style="width: 100px;" class="unit-rating">
-    <li style="width: 60px;" class="current-rating">Current rating.</li> <li class="r1-unit"></li>
-    <li class="r2-unit"></li>
-    <li class="r3-unit"></li>
-    <li class="r4-unit"></li>
-    <li class="r5-unit"></li>
-    </ul>
-    </div>
-    </div><div class="item_categories"><a href="/?genre=Comedy">Comedy</a> <a href="/?genre=Musical">Musical</a> </div></div>
+    <div class="index_item index_item_ie">
+    <a href="http://www.watchfreemovies.ch/watch-movies/2011/watch-fathers-day-222717/" title="Watch Father's Day (2011)"><img src="http://static.watchfreemovies.ch/thumbs/fathers-day-222717.jpg" border="0" width="150" height="225" alt="Watch Father's Day"><h2>Father's Day (2011)</h2></a>
     '''
-    patronvideos  = '<div class="index_item index_item_ie"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
+    patronvideos  = '<div class="index_item index_item_ie">[^<]+<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -82,14 +73,13 @@ def listaconcaratulas(item,action):
         itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
-    #<span class=current>1</span> <a href="/index.php?page=2">2</a>
-    patronvideos  = '<span class=current>[^<]+</span> <a href="([^"]+)">'
+    patronvideos  = '<a href="([^"]+)" rel="last">\&gt\;\&gt\;</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Next page" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Next page >>" , url=scrapedurl , folder=True) )
     
     return itemlist
 
@@ -101,16 +91,18 @@ def listepisodes(item):
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
     '''
-    <div class="tv_episode_item"> <a href="/tv-11033-Storm-Chasers/season-1-episode-1">Episode 1                                <span class="tv_episode_name"> - Episode 1</span>
-    </a> </div>
+    <div class="tv_episode_item">
+    <a href="http://www.watchfreemovies.ch/watch-tv-shows/2007/watch-gossip-girl-13842/season-1/episode-8/" title="Watch Gossip Girl Season 1 Episode 8 - Seventeen Candles for FREE">Episode 8
+    <span class="tv_episode_name"> - Seventeen Candles</span>
+    </a>
     '''
-    patronvideos  = '<div class="tv_episode_item"> <a href="([^"]+)">([^<]+)<span class="tv_episode_name">([^<]+)</span>'
+    patronvideos  = '<div class="tv_episode_item">[^<]+<a href="([^"]+)" title="([^"]+)'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = match[1].strip()+" "+match[2].strip()
+        scrapedtitle = match[1]
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
@@ -127,12 +119,17 @@ def listmirrors(item):
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
     '''
-    <a href="/external.php?title=Tangled&url=aHR0cDovL3d3dy5zb2Nrc2hhcmUuY29tL2ZpbGUvNlBKODNDMjA1UU84V0tX&domain=c29ja3NoYXJlLmNvbQ==&loggedin=0" onClick="return  addHit('1886628137', '1')" rel="nofollow" target="_blank"> Watch Version 3</a>
-    </span></td>
-    <td align="center" width="115" valign="middle"><span class="version_host"><img src=/images/host_45.gif></span>
+    <tr>
+    <td align="center" width="40" valign="middle"><span class=quality_dvd></span></td>
+    <td align="left" valign="middle">
+    <span class="movie_version_link"><a href="/external.html?url=aHR0cDovL3d3dy5oZHBsYXkub3JnL3hHeWx6OA==" onClick="return addHit('1647242', '1')" rel="noindex, nofollow" title="Watch Version 2 of The Lie" target="_blank"><span style="font-size:9px">Watch <u>The Lie</u> Online</span> | Version 2</a></span>
+    </td>
+    <td align="center" width="115" valign="middle">
+    <span class="version_host">
+    <script type="text/javascript">document.writeln('hdplay.org');</script>
     '''
 
-    patronvideos  = '<a href="(/external.php[^"]+)"[^>]+>(.*?)</a>.*?'
+    patronvideos  = '<a href="(/external.html[^"]+)"[^>]+>(.*?)</a>.*?'
     patronvideos += '<span class="version_host">(.*?)</span>'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -147,11 +144,22 @@ def listmirrors(item):
         servidor = servidor.replace(">","")
         servidor = servidor.strip()
         # Titulo
-        scrapedtitle = match[1]+" ("+servidor+")"
+        scrapedtitle = scrapertools.htmlclean(match[1])+" ("+servidor+")"
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
+    return itemlist
+
+def play(item):
+    logger.info("[letmewatchthis.py] play")
+    
+    itemlist=[]
+    
+    location = scrapertools.get_header_from_response(url=item.url, header_to_get="location")
+    if location!="":
+        itemlist = servertools.find_video_items(data=location)
+    
     return itemlist
