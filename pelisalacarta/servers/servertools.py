@@ -153,10 +153,13 @@ def findvideos(data):
     import sockshare
     devuelve.extend(sockshare.find_videos(data))
 
-
     # stagevu
     import stagevu
     devuelve.extend(stagevu.find_videos(data))
+ 
+    # stagero
+    import stagero
+    devuelve.extend(stagero.find_videos(data))
  
     # tutv
     import tutv
