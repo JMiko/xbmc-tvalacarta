@@ -169,6 +169,7 @@ def channels_list():
     #itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES"    , category="A"       , type="xbmc"    ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES"    , category="F,S"     , type="generic"  ))
+    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Beeg"             , channel="beeg"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""      , category="F,S,D,A" , type="wiimc"    ))
     itemlist.append( Item( title="Buena Isla"            , channel="buenaisla"            , language="ES"    , category="A"       , type="generic"  ))
     #temlist.append( Item( title="Capitan Cinema"        , channel="capitancinema"        , language="ES"    , category="F"       , type="generic"  ))
