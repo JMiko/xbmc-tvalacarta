@@ -44,17 +44,17 @@ def findvideos(data):
     devuelve = []
 
     # Megavideo
-    import megavideo
-    devuelve.extend(megavideo.find_videos(data))
+    #import megavideo
+    #devuelve.extend(megavideo.find_videos(data))
     
     # Megavideo
-    import cineraculo
+    #import cineraculo
     # Dups megavideo links with cineraculo server
-    devuelve.extend(cineraculo.add_videos(devuelve))
+    #devuelve.extend(cineraculo.add_videos(devuelve))
     
     # Megaupload
-    import megaupload
-    devuelve.extend(megaupload.find_videos(data))
+    #import megaupload
+    #devuelve.extend(megaupload.find_videos(data))
 
     # ---------------------------
     
@@ -69,6 +69,11 @@ def findvideos(data):
     if config.get_setting("fileniumpremium")=="true":
         import bitshare
         devuelve.extend(bitshare.find_videos(data))
+
+    # allmyvideos
+    if config.get_setting("fileniumpremium")=="true":
+        import allmyvideos
+        devuelve.extend(allmyvideos.find_videos(data))
 
     # blip.tv
     import bliptv
@@ -87,18 +92,18 @@ def findvideos(data):
     devuelve.extend(facebook.find_videos(data))
 
     # filejungle
-    if config.get_setting("fileniumpremium")=="true":
-        import filejungle
-        devuelve.extend(filejungle.find_videos(data))
+    #if config.get_setting("fileniumpremium")=="true":
+    #    import filejungle
+    #    devuelve.extend(filejungle.find_videos(data))
 
     # fileserve
-    import fileserve
-    devuelve.extend(fileserve.find_videos(data))
+    #import fileserve
+    #devuelve.extend(fileserve.find_videos(data))
 
     # filesonic
-    if config.get_setting("fileniumpremium")=="true":
-        import filesonic
-        devuelve.extend(filesonic.find_videos(data))
+    #if config.get_setting("fileniumpremium")=="true":
+    #    import filesonic
+    #    devuelve.extend(filesonic.find_videos(data))
 
     # fourshared
     import fourshared
@@ -111,6 +116,10 @@ def findvideos(data):
     # gigabyteupload
     import gigabyteupload
     devuelve.extend(gigabyteupload.find_videos(data))
+
+    # mediafire
+    import mediafire
+    devuelve.extend(mediafire.find_videos(data))
 
     # modovideo
     import modovideo
@@ -159,9 +168,9 @@ def findvideos(data):
         devuelve.extend(uploadedto.find_videos(data))
 
     # uploadstation
-    if config.get_setting("fileniumpremium")=="true":
-        import uploadstation
-        devuelve.extend(uploadstation.find_videos(data))
+    #if config.get_setting("fileniumpremium")=="true":
+    #    import uploadstation
+    #    devuelve.extend(uploadstation.find_videos(data))
 
     # veoh
     import veoh
