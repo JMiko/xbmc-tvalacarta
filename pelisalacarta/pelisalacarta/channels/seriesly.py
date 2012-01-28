@@ -7,7 +7,6 @@
 import re
 import sys
 import os
-import json
 import traceback
 import urllib2
 
@@ -41,11 +40,14 @@ def load_json(data):
             else :
                 rdct[k] = v
         return rdct
-    try :
-        return json.loads(data, object_hook=to_utf8)
-    except Exception as ex :
-        logger.error("[seriesly.py] unable to load data: " + str(ex))
-        traceback.print_exc(file=sys.stderr)
+    try :        
+        from lib import simplejson
+        json_data = simplejson.loads(data)
+        return json_data
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line ) 
 
 ''' URLEncode a string '''
 def qstr(string):
@@ -158,7 +160,7 @@ def mis_series(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'serie_capitulos',
-                 title = '%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem,
+                 title = ('%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem).encode('utf-8'),
                  url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
                  thumbnail = serieItem['thumb'],
                  plot = "",
@@ -199,7 +201,7 @@ def serie_capitulos(item):
         itemlist.append(
             Item(channel=item.channel,
                 action = 'capitulo_links',
-                title = '%(season)s - %(title)s%(estado)s' % episode,
+                title = ('%(season)s - %(title)s%(estado)s' % episode).encode('utf-8'),
                 url = 'http://series.ly/api/linksCap.php?idCap=%(idc)s&format=json' % episode,
                 thumbnail = item.thumbnail,
                 plot = "",
@@ -240,7 +242,7 @@ def capitulo_links(item):
         itemlist.append(
             Item(channel=item.channel,
                 action = "links",
-                title = '%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link,
+                title = ('%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link).encode('utf-8'),
                 url = link['url'],
                 thumbnail = item.thumbnail,
                 plot = "",
@@ -324,7 +326,7 @@ def mis_pelis_categoria(item):
             itemlist.append(
                 Item(channel=item.channel,
                      action = "peli_links",
-                     title = '%(title)s (%(year)s) [%(estado)s]' % movieItem,
+                     title = ('%(title)s (%(year)s) [%(estado)s]' % movieItem).encode('utf-8'),
                      url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['idFilm']),
                      thumbnail = movieItem['poster'],
                      plot = "",
@@ -370,7 +372,7 @@ def peli_links(item):
         itemlist.append(
             Item(channel=item.channel,
                 action = "links",
-                title = '%(titleTag)s (%(yearTag)s) (%(quality)s) (%(language)s)(Sub: %(subtitles)s)%(partTag)s%(hdTag)s' % link,
+                title = ('%(titleTag)s (%(yearTag)s) (%(quality)s) (%(language)s)(Sub: %(subtitles)s)%(partTag)s%(hdTag)s' % link).encode('utf-8'),
                 url = 'http://series.ly/api/goLink.php?auth_token=%s&user_token=%s&enc=%s' % ( qstr(auth_token), qstr(user_token), qstr(link['url_megavideo'].strip()) ),
                 thumbnail = item.thumbnail,
                 plot = movieInfo['synopsis'],
@@ -405,7 +407,7 @@ def series_mas_votadas(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'serie_capitulos',
-                 title = '%(nom_serie)s [%(vots)s Votos)' % serieItem,
+                 title = ('%(nom_serie)s [%(vots)s Votos]' % serieItem).encode('utf-8'),
                  url = 'http://series.ly/api/detailSerie.php?idSerie=%s&caps=1&format=json' % qstr(serieItem['id_serie']),
                  thumbnail = '',
                  plot = "",
@@ -439,7 +441,7 @@ def pelis_mas_vistas(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'peli_links',
-                 title = '%(nom_peli)s' % movieItem,
+                 title = ('%(nom_peli)s' % movieItem).encode('utf-8'),
                  url = 'http://series.ly/api/detailMovie.php?idMovie=%s&format=json' % qstr(movieItem['id_peli']),
                  thumbnail = '',
                  plot = "",
@@ -473,7 +475,7 @@ def ultimas_pelis_modificadas(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'peli_links',
-                 title = '%(nom_peli)s [%(any)s]' % movieItem,
+                 title = ('%(nom_peli)s [%(any)s]' % movieItem).encode('utf-8'),
                  url = 'http://series.ly/api/detailMovie.php?idMovie=%s&format=json' % qstr(movieItem['id_peli']),
                  thumbnail = '',
                  plot = "",
@@ -513,7 +515,7 @@ def search_series(auth_token, user_token, item, texto):
         itemlist.append(
             Item(channel=item.channel,
                 action = 'serie_capitulos',
-                title = 'Serie: %(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % serieItem,
+                title = ('Serie: %(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % serieItem).encode('utf-8'),
                 url = "http://series.ly/api/detailSerie.php?caps=1&auth_token=" + auth_token + "&user_token=" + user_token + "&idSerie=" + serieItem['idSerie'] + "&format=json",
                 thumbnail = serieItem['poster'],
                 plot = '',
@@ -544,7 +546,7 @@ def search_films(auth_token, user_token, item, texto):
         itemlist.append(
             Item(channel=item.channel,
                 action = 'peli_links',
-                title = 'Peli: %(title)s (%(year)s) (%(genre)s)' % movieItem,
+                title = ('Peli: %(title)s (%(year)s) (%(genre)s)' % movieItem).encode('utf-8'),
                 url = "http://series.ly/api/detailMovie.php?idFilm=" + movieItem['idFilm'] + "&format=json",
                 thumbnail = movieItem['poster'],
                 plot = '',
