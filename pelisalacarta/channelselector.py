@@ -176,7 +176,7 @@ def channels_list():
     # DESACTIVADO - SIN MANTENIMIENTO itemlist.append( Item( title="CastTV"                , channel="casttv"               , language="ES,EN" , category="S"       , type="xbmc"     ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cine-Adicto"           , channel="cineadicto"           , language="ES"    , category="F,D"     , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cinegratis"            , channel="cinegratis"           , language="ES"    , category="F,S,A,D" , type="generic"  ))
-    itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D" , type="generic"  ))
+    #itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D" , type="generic"  ))
     itemlist.append( Item( title="Cineblog01 (IT)"       , channel="cineblog01"           , language="IT"    , category="F,S,A"   , type="generic"  ))
     itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES"    , category="F,S"     , type="generic"  ))
     itemlist.append( Item( title="CineVOS"               , channel="cinevos"             , language="ES"    , category="F,A,D" , type="generic"  ))
