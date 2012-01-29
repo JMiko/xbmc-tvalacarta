@@ -150,9 +150,14 @@ def findvideos(data):
     import putlocker
     devuelve.extend(putlocker.find_videos(data))
 
+    # rapidtube
+    import rapidtube
+    devuelve.extend(rapidtube.find_videos(data))
+
     # royalvids
     import royalvids
     devuelve.extend(royalvids.find_videos(data))
+
 
     # rutube
     import rutube

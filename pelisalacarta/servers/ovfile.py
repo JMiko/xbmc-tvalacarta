@@ -16,6 +16,9 @@ from core import unpackerjs
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[ovfile.py] url="+page_url)
 
+    if page_url.starstwith('http'):
+        page_url = extract_id(page_url)
+        if page_url=="":return []
     page_url = 'http://ovfile.com/embed-'+page_url+'-600x340.html'
     # Lo pide una vez
     data = scrapertools.cache_page( page_url)
@@ -91,4 +94,29 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
 
+    # http://ovfile.com/embed-ijohcc1dvs5m-600x340.html
+    patronvideos  = 'http://ovfile.com/embed-([\w]+)-600x340.html'
+    logger.info("[ovfile.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[ovfile]"
+        url = "http://www.ovfile.com/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'ovfile' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     return devuelve
+
+def extract_id(url):
+    return get_match(url, 'ovfile\.com/([\w]+)')
+
+def get_match(data, regex) :
+    match = "";
+    m = re.search(regex, data)
+    if m != None :
+        match = m.group(1)
+    return match

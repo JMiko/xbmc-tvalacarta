@@ -72,7 +72,7 @@ def videos(item):
 	siguiente = re.compile(patronvideos,re.DOTALL).findall(data)
 	scrapertools.printMatches(siguiente)
 	if len(siguiente)>0:
-		itemlist.append( Item(channel=__channel__, action=item.action , title="!Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!Página siguiente") )
+		itemlist.append( Item(channel=__channel__, action='videos' , title="!Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!Página siguiente") )
 	else:
 		paginador = None
 
