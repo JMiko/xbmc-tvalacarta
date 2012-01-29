@@ -32,9 +32,10 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Español", action="idioma", url="http://www.newhd.org/"))
-    #itemlist.append( Item(channel=__channel__, title="Inglés",  action="idioma", url="http://www.newhd.org/en/"))
-    #itemlist.append( Item(channel=__channel__, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
-
+    itemlist.append( Item(channel=__channel__, title="Inglés",  action="idioma", url="http://www.newhd.org/en/"))
+    itemlist.append( Item(channel=__channel__, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
+    itemlist.append( Item(channel=__channel__, title="VOS",     action="novedades", url="http://www.newhd.org/sub/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"  ,action="search" , url="http://www.newhd.org/"))
     return itemlist
 
 def idioma(item):
@@ -47,6 +48,13 @@ def idioma(item):
 
     return itemlist
 
+def search(item,texto):
+    logger.info("[newhd.py] search")
+    itemlist = []
+    item.url = "http://www.newhd.org/index.php?do=search&subaction=search&story=%s" %texto
+    itemlist.extend(searchlist(item))
+    return itemlist
+    
 def novedades(item):
     logger.info("[newhd.py] novedades")
 
@@ -88,25 +96,39 @@ def novedades(item):
     <li><a href="#" title="Excellent" class="r5-unit" onclick="dleRate('5', '911'); return false;">5</a></li>
     </ul>
     </div>
-    '''
+    
     patron  = '<table width="100\%" border="0" cellspacing="0" cellpadding="0".*?'
     patron += '<font[^<]+<a>([^<]+)</a>.*?'
     patron += '<a href="(http://www.newhd.org/online/[^"]+)"><img.*?<img.*?'
     patron += '<img src="([^"]+)".*?'
     patron += '<div id="news-id[^"]+" style="display\:inline\;">([^<]+)<'
+    '''
+    patron = '<tr valign="middle">(.*?)</a></font></td>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
-        scrapedurl = match[1]
-        scrapedtitle = match[0]
-        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
-        scrapedplot = match[3]
+        try:
+            scrapedurl = re.compile(r'href="(.+?)"').findall(match)[0]
+        except:continue
+        try:
+            scrapedtitle = re.compile(r'<a>(.+?)</a>').findall(match)[0]
+        except:
+            scrapedtitle = "untitle"
+        try:
+            scrapedthumbnail = urlparse.urljoin(item.url,re.compile(r'html"><img src="([^"]+)" width=').findall(match)[0])
+        except:
+            scrapedthumbnail = ""
+        try:
+            scrapedplot = re.compile(r'(<td height="122".+?)<').findall(match)[0]
+            scrapedplot = re.sub("<[^>]+>"," ",scrapedplot).strip()
+        except:
+            scrapedplot = ""
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ,context='4', folder=True) )
 
     # Extrae la marca de siguiente página
     patronvideos = '<a href="([^"]+)"><span class="thide pnext">Next</span>'
@@ -194,5 +216,40 @@ def cat(item):
 
         # Añade al listado
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        
+    return itemlist
+
+def searchlist(item):
+    logger.info("[newhd.py] searchlist")
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    
+    # Extrae las entradas
+    patronvideos  = 'class="newstitle">N&deg(.*?)</div></td>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    
+    itemlist = []
+    for match in matches:
+        try:
+            scrapedurl = re.compile(r'href="(.+?)"').findall(match)[0]
+        except:continue
+        try:
+            scrapedtitle = re.compile(r'html" >(.+?)</a>').findall(match)[0]
+        except:
+            scrapedtitle = "untitle"
+        try:
+            scrapedthumbnail = urlparse.urljoin(item.url,re.compile(r'<img src="([^"]+)" width=').findall(match)[0])
+        except:
+            scrapedthumbnail = ""
+        try:
+            scrapedplot = re.compile(r'(<div id=.+?)</div></td>').findall(match)[0]
+            scrapedplot = re.sub("<[^>]+>"," ",scrapedplot).strip()
+        except:
+            scrapedplot = ""
+        logger.info(scrapedtitle)
+
+        # Añade al listado
+        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ,context='4' , folder=True) )
         
     return itemlist

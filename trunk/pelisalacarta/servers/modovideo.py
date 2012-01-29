@@ -41,7 +41,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
     #http://www.modovideo.com/frame.php?v=qzyrxqsxacbq3q43ssyghxzqkp35t8rh
-    patronvideos  = 'http://www.modovideo.com/frame.php\?v=([a-zA-Z0-9]+)' 
+    patronvideos  = 'http://www.modovideo.com/(?:frame|video)\.php\?v=([a-zA-Z0-9]+)' 
     logger.info("[modovideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

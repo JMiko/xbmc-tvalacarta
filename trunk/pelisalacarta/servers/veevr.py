@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para videos externos de veevr
@@ -22,6 +22,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     patron  = "url[\W] '([^']+)'[\W][\W]+"
     patron += "provider[\W]"
     matches = re.compile(patron,re.DOTALL).findall(data)
+    # si no encuentra lo intentamos con el embed
+    if len(matches)==0:
+        page_url = page_url.replace("videos","embed") +"?w=607&h=280"
+        data = scrapertools.cache_page(page_url)
+        matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for match in matches:
         videourl = match
