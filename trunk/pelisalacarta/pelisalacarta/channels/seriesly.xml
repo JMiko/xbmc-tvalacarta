@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>8</tag>
-	<date>25/01/2012</date>
-	<changes>Soporte a nuevos servidores</changes>
+	<tag>9</tag>
+	<date>02/02/2012</date>
+	<changes>Arreglado películas y apaño en sistema de credenciales</changes>
 </version>
