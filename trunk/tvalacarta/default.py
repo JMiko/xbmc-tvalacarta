@@ -9,8 +9,8 @@
 __plugin__  = "tvalacarta"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/"
-__date__    = "14 Febrero 2011"
-__version__ = "3.0.1"
+__date__    = "1 Febrero 2012"
+__version__ = "3.1"
 
 import os
 import sys
@@ -23,5 +23,5 @@ librerias = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'lib' )
 sys.path.append (librerias)
 
 # Runs xbmc launcher
-from platform.xbmc import launcher
+from platformcode.xbmc import launcher
 launcher.run()
