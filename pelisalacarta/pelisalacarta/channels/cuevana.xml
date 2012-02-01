@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cuevana</name>
-	<tag>24</tag>
-	<date>17/01/2012</date>
-	<changes>Arreglado fallo megaupload, incluido buscador de mrfloffy</changes>
+	<tag>25</tag>
+	<date>01/02/2012</date>
+	<changes>Se agrego el captcha previo a wupload</changes>
 </version>

@@ -384,13 +384,38 @@ def play(item):
 
     data = scrapertools.cache_page(url=url, post=post)
     logger.info("data=#"+data+"#")
-    if "http://go.cuevana.tv/?" in data:
-        data = urllib.unquote(data[22:])
+    patron = "recaptcha\/api\/challenge\?k\="
+    matches = re.compile(patron).findall(data)
+    if len(matches)>0:
+        logger.info("[wupload.py] está pidiendo el captcha")
+        recaptcha_key = get_match( data , 'recaptcha\/api\/challenge\?k\=([^&]+)')
+        logger.info("[wupload.py] recaptcha_key="+recaptcha_key)
+    
+        data_recaptcha = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+recaptcha_key)
+        patron="challenge.*?'([^']+)'"
+        challenges = re.compile(patron, re.S).findall(data_recaptcha)
+        if(len(challenges)>0):
+            challenge = challenges[0]
+            image = "http://www.google.com/recaptcha/api/image?c="+challenge
+            
+            #CAPTCHA
+            exec "import pelisalacarta.captcha as plugin"
+            tbd = plugin.Keyboard("","",image)
+            tbd.doModal()
+            confirmed = tbd.isConfirmed()
+            if (confirmed):
+               tecleado = tbd.getText()
+            
+            #logger.info("")
+            #tecleado = raw_input('Grab ' + image + ' : ')
+        url = url + "?" + post
+        post = "recaptcha_challenge_field=%s&recaptcha_response_field=%s" % (challenge,tecleado.replace(" ","+"))
+        location = scrapertools.get_header_from_response( url=url, header_to_get="location", post=post)
+        logger.info("ANDRES location="+location)
     else:
-        logger.info("data no startswith")
-    logger.info("data="+data)
-
-    itemlist = servertools.find_video_items(data=data)
+        logger.info("[wupload.py] no encontrado captcha")
+    
+    itemlist = servertools.find_video_items(data=location)
     for returnitem in itemlist:
         returnitem.channel=item.channel
         returnitem.subtitle=item.subtitle
@@ -480,6 +505,13 @@ def listar(item, categoria="*"):
         itemlist.append( Item(channel=__channel__, action="listar", title="Página siguiente" , url=scrapedurl) )
 
     return itemlist
+
+def get_match(data, regex) :
+    match = "";
+    m = re.search(regex, data)
+    if m != None :
+        match = m.group(1)
+    return match
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
