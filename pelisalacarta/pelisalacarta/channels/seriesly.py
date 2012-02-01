@@ -42,7 +42,7 @@ def load_json(data):
         return rdct
     try :        
         from lib import simplejson
-        json_data = simplejson.loads(data)
+        json_data = simplejson.loads(data, object_hook=to_utf8)
         return json_data
     except:
         import sys
@@ -131,11 +131,34 @@ def perform_login(login,password):
     
     return [auth_token,user_token]
 
+def getCredentials(auth_token, user_token):
+    old_auth_token = auth_token
+    old_user_token = user_token
+    try:
+        count = 0
+        exit = False
+        while (not exit and count<5):
+            post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+            url='http://series.ly/api/userSeries.php?type=&format=json'
+            data = scrapertools.cache_page(url, post=post)
+            patron = "User not logged.*?"
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            if (len(matches)>0):
+                auth_token,user_token = perform_login(LOGIN,PASSWORD)
+                count = count + 1
+            else:
+                exit=True
+    except:
+        return [old_auth_token,old_user_token]  
+    
+    return [auth_token,user_token]
+
 def mis_series(item):
     
     logger.info("[seriesly.py] mis_series")
     
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     #Series Usuario
@@ -160,7 +183,7 @@ def mis_series(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'serie_capitulos',
-                 title = ('%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem).encode('utf-8'),
+                 title = '%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem,
                  url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
                  thumbnail = serieItem['thumb'],
                  plot = "",
@@ -175,6 +198,7 @@ def serie_capitulos(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     # Extrae las entradas (carpetas)
@@ -201,7 +225,7 @@ def serie_capitulos(item):
         itemlist.append(
             Item(channel=item.channel,
                 action = 'capitulo_links',
-                title = ('%(season)s - %(title)s%(estado)s' % episode).encode('utf-8'),
+                title = '%(season)s - %(title)s%(estado)s' % episode,
                 url = 'http://series.ly/api/linksCap.php?idCap=%(idc)s&format=json' % episode,
                 thumbnail = item.thumbnail,
                 plot = "",
@@ -212,44 +236,48 @@ def serie_capitulos(item):
     return itemlist
 
 def capitulo_links(item):
-
-    logger.info("[seriesly.py] capitulo_links")
-    
-    # TOKENS
-    
-    auth_token, user_token = item.extra.split('|')
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-     
-    # Extrae las entradas (carpetas)
-    # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
-    #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
-
-    linkList = load_json(scrapertools.cache_page(item.url, post=post))
-    if linkList == None : linkList = []
-    
-    logger.info("hay %d videos" % len(linkList))
-    
-    itemlist = []
-    for link in linkList:
+    try:
+        logger.info("[seriesly.py] capitulo_links")
         
-        hd = link['hd']
-        if hd == '0' : link['hdtag'] = ''
-        elif hd == '1' : link['hdtag'] = ' (HD)'
-        else : link['hdtag'] = ' (?)'
+        # TOKENS
         
-        link['titletag'] = item.title; 
+        auth_token, user_token = item.extra.split('|')
+        auth_token, user_token = getCredentials(auth_token, user_token)
+        post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+        # Extrae las entradas (carpetas)
+        # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
+        #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
+        data = scrapertools.cache_page(item.url, post=post)
+        linkList = load_json(data)
+        if linkList == None : linkList = []
         
-        itemlist.append(
-            Item(channel=item.channel,
-                action = "links",
-                title = ('%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link).encode('utf-8'),
-                url = link['url'],
-                thumbnail = item.thumbnail,
-                plot = "",
-                extra = ''
+        logger.info("hay %d videos" % len(linkList))
+        
+        itemlist = []
+        for link in linkList:
+            
+            hd = link['hd']
+            if hd == '0' : link['hdtag'] = ''
+            elif hd == '1' : link['hdtag'] = ' (HD)'
+            else : link['hdtag'] = ' (?)'
+            
+            link['titletag'] = item.title; 
+            
+            itemlist.append(
+                Item(channel=item.channel,
+                    action = "links",
+                    title = '%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link,
+                    url = link['url'],
+                    thumbnail = item.thumbnail,
+                    plot = "",
+                    extra = ''
+                )
             )
-        )
-
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+                
     return itemlist
 
 def links(item):
@@ -272,6 +300,7 @@ def mis_pelis(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     
     #Peliculas Usuario
     
@@ -289,16 +318,16 @@ def mis_pelis_categoria(item):
 
     # TOKENS
     auth_token, user_token, cat_filter = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-    
     #Peliculas Usuario (Filtradas por categoria)
     
     url='http://series.ly/api/userMovies.php?format=json'
     
     # Extrae las entradas (carpetas)
     #¬†[ {"idFilm":"?","title":"?","year":"?","genre":"?","poster":"http://?","thumb":"http://?","small_thumb":"http://?","status":"Watched/Favourite/Pending"} ]
-    
-    movieList = load_json(scrapertools.cache_page(url, post=post))
+    data = scrapertools.cache_page(url, post=post)
+    movieList = load_json(data)
     if movieList == None : movieList = []
     
     logger.info("hay %d peliculas" % len(movieList))
@@ -326,7 +355,7 @@ def mis_pelis_categoria(item):
             itemlist.append(
                 Item(channel=item.channel,
                      action = "peli_links",
-                     title = ('%(title)s (%(year)s) [%(estado)s]' % movieItem).encode('utf-8'),
+                     title = '%(title)s (%(year)s) [%(estado)s]' % movieItem,
                      url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['idFilm']),
                      thumbnail = movieItem['poster'],
                      plot = "",
@@ -342,43 +371,41 @@ def peli_links(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     # Extrae las entradas (carpetas)
     #¬†{"title":"?","idp":"?", "synopsis":"?", "year":"?", "seriesly_score":?d, "participants_score":"?", "genre":"terror", "poster":"http://?","thumb":"http://?","small_thumb":"http://?","links":
     #   [{"language":"?","subtitles":"yes/no","quality":"?","part":"?","uploader":"?","highDef":"0/1","server":"?","url_cineraculo":"?","url_megavideo":"?"}]
     # }
+    data = scrapertools.cache_page(item.url, post=post)
+    linkList = load_json(data)
+    if linkList == None : linkList = []
     
-    movieInfo = load_json(scrapertools.cache_page(item.url, post=post))
-    if movieInfo == None : movieInfo = {}
-    if (not movieInfo.has_key('links')) or movieInfo['links'] == None : movieInfo['links'] = []
-    
-    logger.info("hay %d links" % len(movieInfo['links']))
-    
+    logger.info("hay %d videos" % len(linkList))
     itemlist = []
-    for link in movieInfo['links']:
-        link['titleTag'] = movieInfo['title']
-        link['yearTag'] = movieInfo['year']
-        
-        part = link['part']
-        if part == '0' : link['partTag'] = ''
-        else : link['partTag'] = '(Parte %(part)s)' % link 
-        
-        hd = link['highDef']
-        if hd == '0' : link['hdTag'] = ''
-        elif hd == '1' : link['hdTag'] = ' (HD)'
-        else : link['hdTag'] = ' (?)'
-        
-        itemlist.append(
-            Item(channel=item.channel,
-                action = "links",
-                title = ('%(titleTag)s (%(yearTag)s) (%(quality)s) (%(language)s)(Sub: %(subtitles)s)%(partTag)s%(hdTag)s' % link).encode('utf-8'),
-                url = 'http://series.ly/api/goLink.php?auth_token=%s&user_token=%s&enc=%s' % ( qstr(auth_token), qstr(user_token), qstr(link['url_megavideo'].strip()) ),
-                thumbnail = item.thumbnail,
-                plot = movieInfo['synopsis'],
-                extra = ''
+    try:
+        for link in linkList['links']:
+            
+            hd = link['highDef']
+            if hd == '0' : link['hdtag'] = ''
+            elif hd == '1' : link['hdtag'] = ' (HD)'
+            else : link['hdtag'] = ' (?)'
+            
+            link['titletag'] = item.title; 
+            
+            itemlist.append(
+                Item(channel=item.channel,
+                    action = "links",
+                    title = '%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link,
+                    url = 'http://series.ly/api/goLink.php?auth_token=%s&user_token=%s&enc=%s' % ( qstr(auth_token), qstr(user_token), qstr(link['url'].strip()) ),
+                    thumbnail = item.thumbnail,
+                    plot = linkList['synopsis'],
+                    extra = ''
+                )
             )
-        )
+    except:
+        return []
         
     return itemlist
 
@@ -388,6 +415,7 @@ def series_mas_votadas(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     url="http://series.ly/api/top.php?&format=json&id=1"
@@ -407,7 +435,7 @@ def series_mas_votadas(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'serie_capitulos',
-                 title = ('%(nom_serie)s [%(vots)s Votos]' % serieItem).encode('utf-8'),
+                 title = '%(nom_serie)s [%(vots)s Votos]' % serieItem,
                  url = 'http://series.ly/api/detailSerie.php?idSerie=%s&caps=1&format=json' % qstr(serieItem['id_serie']),
                  thumbnail = '',
                  plot = "",
@@ -422,6 +450,7 @@ def pelis_mas_vistas(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     url="http://series.ly/api/top.php?&format=json&id=2"
@@ -441,8 +470,8 @@ def pelis_mas_vistas(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'peli_links',
-                 title = ('%(nom_peli)s' % movieItem).encode('utf-8'),
-                 url = 'http://series.ly/api/detailMovie.php?idMovie=%s&format=json' % qstr(movieItem['id_peli']),
+                 title = '%(nom_peli)s' % movieItem,
+                 url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['id_peli']),
                  thumbnail = '',
                  plot = "",
                  extra = item.extra
@@ -456,6 +485,7 @@ def ultimas_pelis_modificadas(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     url="http://series.ly/api/top.php?&format=json&id=3"
@@ -475,8 +505,8 @@ def ultimas_pelis_modificadas(item):
         itemlist.append(
             Item(channel=item.channel,
                  action = 'peli_links',
-                 title = ('%(nom_peli)s [%(any)s]' % movieItem).encode('utf-8'),
-                 url = 'http://series.ly/api/detailMovie.php?idMovie=%s&format=json' % qstr(movieItem['id_peli']),
+                 title = '%(nom_peli)s [%(any)s]' % movieItem,
+                 url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['id_peli']),
                  thumbnail = '',
                  plot = "",
                  extra = item.extra
@@ -515,7 +545,7 @@ def search_series(auth_token, user_token, item, texto):
         itemlist.append(
             Item(channel=item.channel,
                 action = 'serie_capitulos',
-                title = ('Serie: %(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % serieItem).encode('utf-8'),
+                title = 'Serie: %(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % serieItem,
                 url = "http://series.ly/api/detailSerie.php?caps=1&auth_token=" + auth_token + "&user_token=" + user_token + "&idSerie=" + serieItem['idSerie'] + "&format=json",
                 thumbnail = serieItem['poster'],
                 plot = '',
@@ -546,7 +576,7 @@ def search_films(auth_token, user_token, item, texto):
         itemlist.append(
             Item(channel=item.channel,
                 action = 'peli_links',
-                title = ('Peli: %(title)s (%(year)s) (%(genre)s)' % movieItem).encode('utf-8'),
+                title = 'Peli: %(title)s (%(year)s) (%(genre)s)' % movieItem,
                 url = "http://series.ly/api/detailMovie.php?idFilm=" + movieItem['idFilm'] + "&format=json",
                 thumbnail = movieItem['poster'],
                 plot = '',
