@@ -67,7 +67,7 @@ def programas_principales(item):
 
     # Crea una lista con las entradas
     for match in matches:
-        scrapedtitle = scrapertools.entityunescape(match[0]).strip()
+        scrapedtitle = scrapertools.unescape(match[0]).strip()
         scrapedurl = urlparse.urljoin(item.url,match[1])
         
         if scrapedurl == "http://www.mitele.telecinco.es/t5/estaticos/aida/":
@@ -79,10 +79,11 @@ def programas_principales(item):
             scrapedurl="http://www.telecinco.es/becarios/indiceSite/indiceSite2670.shtml"
         elif scrapedurl == "http://www.telecinco.es/sexoenchueca":
             scrapedurl = "http://www.telecinco.es/sexoenchueca/indiceSite/indiceSite818.shtml"
-
-        if scrapedurl == "http://www.telecinco.es/adoptaunfamoso":
+        elif scrapedurl == "http://www.telecinco.es/adoptaunfamoso":
             scrapedurl = ""
-        
+        elif scrapedurl == "http://www.telecinco.es/piratas/":
+            scrapedurl = "http://www.telecinco.es/piratas/indiceSite/indiceSite3591.shtml"
+
         #becarios, aida, adoptaunfamoso,sexoenchueca,
         # TODO: aida está temporada por temporada... 
         # TODO: becarios está temporada por temporada... 
@@ -130,7 +131,7 @@ def programas_secundarios(item):
 
     # Crea una lista con las entradas
     for match in matches:
-        scrapedtitle = scrapertools.entityunescape(match[2]).strip()
+        scrapedtitle = scrapertools.unescape(match[2]).strip()
         scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -167,7 +168,7 @@ def videos(item):
 
     # Crea una lista con las entradas
     for match in matches:
-        scrapedtitle = scrapertools.entityunescape(match[0]).strip()
+        scrapedtitle = scrapertools.unescape(match[0]).strip()
         scrapedurl = urlparse.urljoin(item.url,match[1])
         
         if len(scrapedtitle)==0:

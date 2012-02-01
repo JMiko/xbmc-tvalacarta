@@ -63,6 +63,13 @@ def get_library_path():
     return ""
 
 def get_temp_file(filename):
-    # Una forma rápida de lanzar un error 
-    import noexiste
-    return ""
+    return os.path.join(get_data_path(),filename)
+
+def get_data_path():
+    data_path = os.path.join( os.path.expanduser("~") , ".developer" )
+    if not os.path.exists(data_path):
+        os.mkdir(data_path)
+    return data_path
+
+def get_runtime_path():
+    return os.getcwd()

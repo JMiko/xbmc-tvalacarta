@@ -14,10 +14,13 @@
 import xbmc
 
 def info(texto):
-    xbmc.output(texto)
+    #xbmc.output(texto)
+    print texto
 
 def debug(texto):
-    xbmc.output(texto)
+    #xbmc.output(texto)
+    print texto
 
 def error(texto):
-    xbmc.output(texto)
+    #xbmc.output(texto)
+    print texto
