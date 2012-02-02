@@ -137,7 +137,7 @@ def getCredentials(auth_token, user_token):
     try:
         count = 0
         exit = False
-        while (not exit and count<5):
+        while (not exit and count<3):
             post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
             url='http://series.ly/api/userSeries.php?type=&format=json'
             data = scrapertools.cache_page(url, post=post)
@@ -236,24 +236,24 @@ def serie_capitulos(item):
     return itemlist
 
 def capitulo_links(item):
+    logger.info("[seriesly.py] capitulo_links")
+    
+    # TOKENS
+    
+    auth_token, user_token = item.extra.split('|')
+    auth_token, user_token = getCredentials(auth_token, user_token)
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    # Extrae las entradas (carpetas)
+    # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
+    #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
+    data = scrapertools.cache_page(item.url, post=post)
+    linkList = load_json(data)
+    if linkList == None : linkList = []
+    
+    logger.info("hay %d videos" % len(linkList))
+    
+    itemlist = []        
     try:
-        logger.info("[seriesly.py] capitulo_links")
-        
-        # TOKENS
-        
-        auth_token, user_token = item.extra.split('|')
-        auth_token, user_token = getCredentials(auth_token, user_token)
-        post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-        # Extrae las entradas (carpetas)
-        # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
-        #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
-        data = scrapertools.cache_page(item.url, post=post)
-        linkList = load_json(data)
-        if linkList == None : linkList = []
-        
-        logger.info("hay %d videos" % len(linkList))
-        
-        itemlist = []
         for link in linkList:
             
             hd = link['hd']
@@ -405,7 +405,9 @@ def peli_links(item):
                 )
             )
     except:
-        return []
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
         
     return itemlist
 
