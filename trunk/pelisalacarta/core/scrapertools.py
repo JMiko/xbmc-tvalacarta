@@ -29,6 +29,10 @@ import binascii
 
 logger.info("[scrapertools.py] init")
 
+# True - Muestra las cabeceras HTTP en el log
+# False - No las muestra
+DEBUG_LEVEL = False
+
 CACHE_ACTIVA = "0"  # Automatica
 CACHE_SIEMPRE = "1" # Cachear todo
 CACHE_NUNCA = "2"   # No cachear nada
@@ -378,9 +382,9 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
             # then we get the HTTPCookieProcessor
             # and install the opener in urllib2
             if not follow_redirects:
-                opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=True),urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+                opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=DEBUG_LEVEL),urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
             else:
-                opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=True),urllib2.HTTPCookieProcessor(cj))
+                opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=DEBUG_LEVEL),urllib2.HTTPCookieProcessor(cj))
             urllib2.install_opener(opener)
 
         else:
