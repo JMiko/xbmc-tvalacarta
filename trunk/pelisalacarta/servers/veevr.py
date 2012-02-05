@@ -44,7 +44,22 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def find_videos(data):
     encontrados = set()
     devuelve = []
+    
+    # veevr http://veevr.com/videos/kgDAMC4Btp"
+    patronvideos  = 'http://veevr.[\w]+/videos/([\w]+)'
+    logger.info("[veevr.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
+    for match in matches:
+        titulo = "[veevr]"
+        url = "http://veevr.com/videos/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'veevr' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+    
     # veevr http://veevr.com/embed/kgDAMC4Btp"
     patronvideos  = 'http://veevr.[\w]+/embed/([\w]+)'
     logger.info("[veevr.py] find_videos #"+patronvideos+"#")

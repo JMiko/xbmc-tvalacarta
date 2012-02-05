@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>10</tag>
+	<tag>11</tag>
 	<date>05/02/2012</date>
-	<changes>Correcciones en la autenticación y se muestran mensajes cuando no se esta autenticado</changes>
+	<changes>Cambio en la forma de obtener los links</changes>
 </version>
