@@ -2,54 +2,43 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+from core import scrapertools
 from core import config
 from core import logger
-from core.item import Item
 
 DEBUG = True
 CHANNELNAME = "channelselector"
 
 def getmainlist():
-    logger.info("[channelselector.py] getmainlist")
-    itemlist = []
-
-    # Añade los canales que forman el menú principal
-    itemlist.append( Item(title=config.get_localized_string(30118) , channel="channelselector" , action="channeltypes" ) )
-    itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
-    if config.get_platform() in ("wiimc","rss") :itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist") )
-    if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist") )
-
-    try:
-        from core import descargas
-        itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist") )
-    except:
-        logger.error("[channelselector.py] no encuentra core/descargas.py, se deshabilitan las descargas")
-    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
-    
-    #if config.get_library_support():
-    #if config.get_platform()!="rss": itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
-    return itemlist
+    # TODO: (3.1) PMS no acepta arrays, hay que usar itemlists para que los coja el cerealizer
+    channelslist = []
+    channelslist.append( [ config.get_localized_string(30118) , "channelselector" , "channeltypes" ])
+    #channelslist.append( [ config.get_localized_string(30103) , "buscador"       , "mainlist" ])
+    channelslist.append( [ config.get_localized_string(30102) , "favoritos"        , "mainlist" ])
+    if config.get_setting("download.enabled")=="true":
+        channelslist.append( [ config.get_localized_string(30101) , "descargados" , "mainlist" ])
+    channelslist.append( [ config.get_localized_string(30100) , "configuracion"   , "mainlist" ])
+    #channelslist.append( [ config.get_localized_string(30104) , "ayuda" , "mainlist" ])
+    return channelslist
 
 def mainlist(params,url,category):
     logger.info("[channelselector.py] mainlist")
 
     # Verifica actualizaciones solo en el primer nivel
-    if config.get_platform()!="boxee":
-        try:
-            from core import updater
-        except ImportError:
-            logger.info("[channelselector.py] No disponible modulo actualizaciones")
+    try:
+        from core import updater
+    except ImportError:
+        logger.info("[channelselector.py] No disponible modulo actualizaciones")
+    else:
+        if config.get_setting("updatecheck2") == "true":
+            logger.info("[channelselector.py] Verificar actualizaciones activado")
+            updater.checkforupdates()
         else:
-            if config.get_setting("updatecheck2") == "true":
-                logger.info("[channelselector.py] Verificar actualizaciones activado")
-                updater.checkforupdates()
-            else:
-                logger.info("[channelselector.py] Verificar actualizaciones desactivado")
+            logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
-    itemlist = getmainlist()
-    for elemento in itemlist:
-        logger.info("[channelselector.py] item="+elemento.title)
-        addfolder(elemento.title,elemento.channel,elemento.action)
+    lista = getmainlist()
+    for elemento in lista:
+        addfolder(elemento[0],elemento[1],elemento[2])
 
     # Label (top-right)...
     import xbmcplugin
@@ -58,23 +47,22 @@ def mainlist(params,url,category):
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
 def getchanneltypes():
-    logger.info("[channelselector.py] getchanneltypes")
-    itemlist = []
-    itemlist.append( Item( title=config.get_localized_string(30121) , channel="channelselector" , action="listchannels" , category="*"   , thumbnail="channelselector"))
-    itemlist.append( Item( title=config.get_localized_string(30129) , channel="channelselector" , action="listchannels" , category="N"   , thumbnail="nacionales"))
-    itemlist.append( Item( title=config.get_localized_string(30130) , channel="channelselector" , action="listchannels" , category="A"   , thumbnail="autonomicos"))
-    itemlist.append( Item( title=config.get_localized_string(30131) , channel="channelselector" , action="listchannels" , category="L"   , thumbnail="locales"))
-    itemlist.append( Item( title=config.get_localized_string(30132) , channel="channelselector" , action="listchannels" , category="T"   , thumbnail="tematicos"))
-    itemlist.append( Item( title=config.get_localized_string(30133) , channel="channelselector" , action="listchannels" , category="I"   , thumbnail="internet"))
-    itemlist.append( Item( title=config.get_localized_string(30134) , channel="channelselector" , action="listchannels" , category="NEW"   , thumbnail="novedades"))
-    return itemlist
+    channelslist = []
+    channelslist.append( [ config.get_localized_string(30121) , "channelselector" , "listchannels" , "*"   , "channelselector"])
+    channelslist.append( [ config.get_localized_string(30129) , "channelselector" , "listchannels" , "N"   , "nacionales"])
+    channelslist.append( [ config.get_localized_string(30130) , "channelselector" , "listchannels" , "A"   , "autonomicos"])
+    channelslist.append( [ config.get_localized_string(30131) , "channelselector" , "listchannels" , "L"   , "locales"])
+    channelslist.append( [ config.get_localized_string(30132) , "channelselector" , "listchannels" , "T"   , "tematicos"])
+    channelslist.append( [ config.get_localized_string(30133) , "channelselector" , "listchannels" , "I"   , "internet"])
+    channelslist.append( [ config.get_localized_string(30134) , "channelselector" , "listchannels" , "NEW" , "novedades"])
+    return channelslist
     
 def channeltypes(params,url,category):
     logger.info("[channelselector.py] channeltypes")
 
     lista = getchanneltypes()
-    for item in lista:
-        addfolder(item.title,item.channel,item.action,item.category,item.thumbnail)
+    for elemento in lista:
+        addfolder(elemento[0],elemento[1],elemento[2],elemento[3],elemento[4])
 
     # Label (top-right)...
     import xbmcplugin
@@ -87,8 +75,7 @@ def listchannels(params,url,category):
 
     lista = filterchannels(category)
     for channel in lista:
-        if channel.type=="xbmc" or channel.type=="generic":
-            addfolder(channel.title , channel.channel , "mainlist" , channel.channel)
+        addfolder(channel[0] , channel[1] , "mainlist" , channel[2])
 
     # Label (top-right)...
     import xbmcplugin
@@ -99,21 +86,26 @@ def listchannels(params,url,category):
 def filterchannels(category):
     returnlist = []
 
+    idiomav=""
+
     if category=="NEW":
         channelslist = channels_history_list()
         for channel in channelslist:
+            # Pasa si no ha elegido "todos" y no está en el idioma elegido
+            if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
+                #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
+                continue
             returnlist.append(channel)
     else:
-		idiomav=""
         channelslist = channels_list()
     
         for channel in channelslist:
             # Pasa si no ha elegido "todos" y no está en la categoría elegida
-            if category<>"*" and category not in channel.category:
+            if category<>"*" and category not in channel[4]:
                 #logger.info(channel[0]+" no entra por tipo #"+channel[4]+"#, el usuario ha elegido #"+category+"#")
                 continue
             # Pasa si no ha elegido "todos" y no está en el idioma elegido
-            if channel.language<>"" and idiomav<>"" and idiomav not in channel.language:
+            if channel[3]<>"" and idiomav<>"" and idiomav not in channel[3]:
                 #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
                 continue
             returnlist.append(channel)
@@ -121,47 +113,60 @@ def filterchannels(category):
     return returnlist
 
 def channels_history_list():
-    itemlist = []
-    itemlist.append( Item( title="Aragón TV (25/01/2012)"               , channel="aragontv"    , language="ES" , category="A" , type="generic"  )) # jesus 25/01/2012
-    itemlist.append( Item( title="Telefe (22/01/2012)"                  , channel="telefe"      , language=""   , category="N" , type="generic"  )) # jesus 22/01/2012
-    return itemlist
+    channelslist = []
+    channelslist.append([ "Aragón TV (25/01/2012)"                  , "aragontv"               , "" , "ES" , "A" , "generic"  ])  # jesus 25/01/2012
+    channelslist.append([ "Telefe (22/01/2012)"                     , "telefe"               , "" , "ES" , "N" , "generic"  ])  # jesus 22/01/2012
+    #channelslist.append([ "Cuatro (02/09/2011)"                     , "cuatro"               , "" , "ES" , "N" , "generic"  ])  # jesus 02/09/2011
+    channelslist.append([ "Telecinco (15/05/2011)"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
+    channelslist.append([ "UPV TV (29/03/2011)"                     , "upvtv"                , "" , "ES" , "T" , "xbmc"  ])  # beesop 29/03/2011
+    channelslist.append([ "La Sexta (07/02/2011)"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "Boing (07/02/2011)"                      , "boing"                , "" , "ES" , "T" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "IB3 (Islas Baleares) (20/01/2011)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Giralda TV (Sevilla) (20/01/2011)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Solidaria TV (20/01/2011)"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
+    return channelslist
 
 def channels_list():
-    itemlist = []
+    channelslist = []
+    channelslist.append([ "7RM (Murcia)"               , "sieterm"              , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "ADNStream"                  , "adnstream"            , "" , "ES" , "I" , "generic" ])
+    channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
+    channelslist.append([ "Aragón TV"                  , "aragontv"             , "" , "ES" , "A" , "generic"  ])  # jesus 25/01/2012
+    channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
+    channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
+    channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
+    channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
+    channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
+    #channelslist.append([ "Cuatro"                     , "cuatro"               , "" , "ES" , "N" , "generic" ]) # jesus 02/09/2011
+    channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
+    channelslist.append([ "Euronews"                   , "euronews"             , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "Extremadura TV"             , "extremaduratv"        , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Hogarutil"                  , "hogarutil"            , "" , "ES" , "T" , "generic"  ])
+    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
+    channelslist.append([ "Mallorca TV"                , "tvmallorca"           , "" , "ES" , "L" , "xbmc"  ])
+    channelslist.append([ "Meristation"                , "meristation"          , "" , "ES" , "T" , "xbmc"  ])
+    #addfolder("Plus TV","plus","mainlist")
+    channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
+    channelslist.append([ "RTVA (Andalucia)"           , "rtva"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "RTVV (Comunidad Valenciana)", "rtvv"                 , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
+    channelslist.append([ "Skai folders"               , "skai_folders"         , "" , "GR" , "N" , "generic"  ])  # dusan 04/12/2011
+    channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
+    channelslist.append([ "Telecinco"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
+    channelslist.append([ "Telefe"                     , "telefe"               , "" , "ES" , "N" , "generic"  ])  # jesus 28/10/2011
+    channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
+    #addfolder("TV Azteca","tva","mainlist")
+    #addfolder("Terra TV","terratv","mainlist")
+    channelslist.append([ "Turbonick"                  , "turbonick"            , "" , "ES" , "T" , "generic"  ])
+    channelslist.append([ "TV3 (Cataluña)"             , "tv3"                  , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "TVG (Galicia)"              , "tvg"                  , "" , "ES" , "A" , "generic"  ])
+    channelslist.append([ "UPV TV (29/03/2011)"        , "upvtv"                , "" , "ES" , "T" , "xbmc"  ])  # beesop 29/03/2011
 
-    itemlist.append( Item( title="7RM (Murcia)"               , channel="sieterm"             , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="ADNStream"                  , channel="adnstream"           , language="ES"    , category="I" , type="generic" ))
-    itemlist.append( Item( title="Antena3"                    , channel="antena3"             , language=""      , category="N" , type="generic" ))
-    itemlist.append( Item( title="Buena Isla"                 , channel="buenaisla"           , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="Aragón TV"                  , channel="aragontv"            , language="ES"    , category="A" , type="generic" )) # jesus 25/01/2012
-    itemlist.append( Item( title="Argia Multimedia (Euskera)" , channel="argia"               , language="ES"    , category="L" , type="generic" ))
-    itemlist.append( Item( title="Barcelona TV"               , channel="barcelonatv"         , language="ES"    , category="L" , type="generic" ))
-    itemlist.append( Item( title="Boing"                      , channel="boing"               , language="ES"    , category="T" , type="generic" ))
-    itemlist.append( Item( title="Clan TVE"                   , channel="clantve"             , language="ES"    , category="T" , type="generic" ))
-    itemlist.append( Item( title="EITB (País vasco)"          , channel="eitb"                , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="Earth TV"                   , channel="earthtv"             , language="ES"    , category="T" , type="xbmc" ))
-    itemlist.append( Item( title="El cine de las 3 mellizas"  , channel="tresmellizas"        , language="ES"    , category="I" , type="generic" ))
-    itemlist.append( Item( title="Euronews"                   , channel="euronews"            , language="ES"    , category="T" , type="xbmc" ))
-    itemlist.append( Item( title="Extremadura TV"             , channel="extremaduratv"       , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="Giralda TV (Sevilla)"       , channel="giraldatv"           , language="ES"    , category="L" , type="generic" ))
-    itemlist.append( Item( title="Hogarutil"                  , channel="hogarutil"           , language="ES"    , category="T" , type="generic" ))
-    itemlist.append( Item( title="IB3 (Islas Baleares)"       , channel="ib3"                 , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="Internautas TV"             , channel="internautastv"       , language="ES"    , category="I" , type="xbmc" ))
-    itemlist.append( Item( title="Mallorca TV"                , channel="tvmallorca"          , language="ES"    , category="L" , type="xbmc" ))
-    itemlist.append( Item( title="Meristation"                , channel="meristation"         , language="ES"    , category="L" , type="xbmc" ))
-    itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"           , language="ES"    , category="I" , type="xbmc" ))
-    itemlist.append( Item( title="RTVA (Andalucia)"           , channel="rtva"                , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="RTVV (Comunidad Valenciana)", channel="rtvv"                , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="La Sexta"                   , channel="lasexta"             , language="ES"    , category="N" , type="generic" ))
-    itemlist.append( Item( title="Skai folders"               , channel="skai_folders"        , language="GR"    , category="N" , type="generic" ))
-    itemlist.append( Item( title="Telecinco"                  , channel="telecinco"           , language="ES"    , category="N" , type="generic" ))
-    itemlist.append( Item( title="Telefe"                     , channel="telefe"              , language="ES"    , category="N" , type="generic" ))
-    itemlist.append( Item( title="TVE"                        , channel="rtve"                , language="ES"    , category="N" , type="generic" ))
-    itemlist.append( Item( title="Turbonick"                  , channel="turbonick"           , language="ES"    , category="T" , type="generic" ))
-    itemlist.append( Item( title="TV3 (Cataluña)"             , channel="tv3"                 , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="TVG (Galicia)"              , channel="tvg"                 , language="ES"    , category="A" , type="generic" ))
-    itemlist.append( Item( title="UPV TV"                     , channel="upvtv"               , language="ES"    , category="T" , type="xbmc" ))
-    return itemlist
+    return channelslist
 
 def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     if category == "":
@@ -174,19 +179,17 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     
     #print "thumbnail_type="+config.get_setting("thumbnail_type")
     if config.get_setting("thumbnail_type")=="0":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
-    elif config.get_setting("thumbnail_type")=="1":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
-    elif config.get_setting("thumbnail_type")=="2":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'squares' ) )
+        IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
+    else:
+        IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
     
     if config.get_setting("thumbnail_type")=="0":
-        WEB_PATH = "http://tvalacarta.mimediacenter.info/posters/"
+        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
     else:
-        WEB_PATH = "http://tvalacarta.mimediacenter.info/banners/"
+        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/banners/"
 
     if config.get_platform()=="boxee":
-        IMAGES_PATH="http://tvalacarta.mimediacenter.info/posters/"
+        IMAGES_PATH="http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
 
     if thumbnailname=="":
         thumbnailname = channelname
