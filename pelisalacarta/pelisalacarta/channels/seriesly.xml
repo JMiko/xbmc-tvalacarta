@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>9</tag>
-	<date>02/02/2012</date>
-	<changes>Arreglado películas y apaño en sistema de credenciales</changes>
+	<tag>10</tag>
+	<date>05/02/2012</date>
+	<changes>Correcciones en la autenticación y se muestran mensajes cuando no se esta autenticado</changes>
 </version>

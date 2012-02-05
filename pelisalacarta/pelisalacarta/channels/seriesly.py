@@ -83,7 +83,12 @@ def logout(item):
     nombre_fichero_config_canal = os.path.join( config.get_data_path() ,__channel__+".xml" )
     config_canal = open( nombre_fichero_config_canal , "w" )
     config_canal.write("<settings>\n<session>false</session>\n<login></login>\n<password></password>\n</settings>")
-    config_canal.close();
+    config_canal.close();    
+    
+    #Refrescamos variables globales
+    SESION = config.get_setting("session","seriesly")
+    LOGIN = config.get_setting("login","seriesly")
+    PASSWORD = config.get_setting("password","seriesly")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Sesión finalizada", action="mainlist"))
@@ -101,12 +106,23 @@ def login(item):
     if (keyboard.isConfirmed()):
         password = keyboard.getText()
 
+
+    itemlist = []
+    auth_token,user_token = perform_login(login,password)
+    if(user_token == "invalid login"):
+        itemlist.append( Item(channel=__channel__, title=user_token, action="mainlist"))
+        return itemlist
+    
     nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
     config_canal = open( nombre_fichero_config_canal , "w" )
     config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
     config_canal.close();
+    
+    #Refrescamos variables globales
+    SESION = config.get_setting("session","seriesly")
+    LOGIN = config.get_setting("login","seriesly")
+    PASSWORD = config.get_setting("password","seriesly")
 
-    itemlist = []
     itemlist.append( Item(channel=__channel__, title="Sesión iniciada", action="mainlist"))
     return itemlist
 
@@ -132,33 +148,44 @@ def perform_login(login,password):
     return [auth_token,user_token]
 
 def getCredentials(auth_token, user_token):
+    logged = False
     old_auth_token = auth_token
     old_user_token = user_token
     try:
+        if SESION != "true":
+            return [old_auth_token,old_user_token, logged, "Sesión no iniciada"]
+        
         count = 0
-        exit = False
-        while (not exit and count<3):
+        while (not logged and count<3):
+            if(count > 0):
+                auth_token,user_token = perform_login(LOGIN,PASSWORD)
             post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
             url='http://series.ly/api/userSeries.php?type=&format=json'
             data = scrapertools.cache_page(url, post=post)
             patron = "User not logged.*?"
             matches = re.compile(patron,re.DOTALL).findall(data)
-            if (len(matches)>0):
-                auth_token,user_token = perform_login(LOGIN,PASSWORD)
+            patron2 = "ERROR: Auth required"
+            matches2 = re.compile(patron2,re.DOTALL).findall(data)
+            
+            if (len(matches)>0 or len(matches2)>0):
                 count = count + 1
             else:
-                exit=True
+                logged=True
     except:
-        return [old_auth_token,old_user_token]  
+        return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]  
     
-    return [auth_token,user_token]
+    return [auth_token,user_token, logged, user_token]
 
 def mis_series(item):
     
     logger.info("[seriesly.py] mis_series")
     
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     #Series Usuario
@@ -198,7 +225,11 @@ def serie_capitulos(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     # Extrae las entradas (carpetas)
@@ -241,7 +272,11 @@ def capitulo_links(item):
     # TOKENS
     
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     # Extrae las entradas (carpetas)
     # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
@@ -300,7 +335,11 @@ def mis_pelis(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     
     #Peliculas Usuario
     
@@ -318,7 +357,11 @@ def mis_pelis_categoria(item):
 
     # TOKENS
     auth_token, user_token, cat_filter = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     #Peliculas Usuario (Filtradas por categoria)
     
@@ -371,7 +414,11 @@ def peli_links(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     # Extrae las entradas (carpetas)
@@ -417,7 +464,11 @@ def series_mas_votadas(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     url="http://series.ly/api/top.php?&format=json&id=1"
@@ -452,7 +503,11 @@ def pelis_mas_vistas(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     url="http://series.ly/api/top.php?&format=json&id=2"
@@ -487,7 +542,11 @@ def ultimas_pelis_modificadas(item):
     
     # TOKENS
     auth_token, user_token = item.extra.split('|')
-    auth_token, user_token = getCredentials(auth_token, user_token)
+    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     url="http://series.ly/api/top.php?&format=json&id=3"
@@ -519,7 +578,11 @@ def ultimas_pelis_modificadas(item):
 
 def search(item,texto, categoria="*"):
     
-    auth_token,user_token = perform_login(LOGIN,PASSWORD)
+    auth_token, user_token, logged, nologgedmessage = getCredentials("","")
+    if (not logged):
+        itemlist = []
+        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
+        return itemlist 
     
     res = search_series(auth_token, user_token, item, texto)
     res.extend(search_films(auth_token, user_token, item, texto))
