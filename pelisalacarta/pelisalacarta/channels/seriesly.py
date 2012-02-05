@@ -315,20 +315,33 @@ def capitulo_links(item):
                 
     return itemlist
 
-def links(item):
-    
-    data = scrapertools.cachePage(item.url)
-    
+def links(item):    
+        
     itemlist = []
-    
-    for video in servertools.findvideos(data) :
-        #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
-        scrapedtitle = scrapertools.htmlclean(video[0])
-        scrapedurl = video[1]
-        server = video[2]
-            
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle, url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
-    
+    try:
+        count = 0
+        exit = False
+        while(not exit and count < 5):
+            #A veces da error al intentar acceder
+            try:
+                page = urllib2.urlopen(item.url)
+                urlvideo = "\"" + page.geturl() + "\""
+                exit = True
+            except:
+                count = count + 1
+        
+        for video in servertools.findvideos(urlvideo) :
+            #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
+            scrapedtitle = scrapertools.htmlclean(video[0])
+            scrapedurl = video[1]
+            server = video[2]                
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle, url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    except:  
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line ) 
+                
+        
     return itemlist
 
 def mis_pelis(item):
