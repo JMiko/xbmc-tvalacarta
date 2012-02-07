@@ -32,6 +32,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     <![CDATA[rtmp://video-13-7.rutube.ru/rutube_vod_2/mp4:n2vol1/movies/91/20/91203fc46405f06c2cadb98c9052dd68.mp4?e=1327761052&s=fc2477835e2ee7cf6e9fb437d6eb8341]]>
     </finalAddress></response>
     '''
+    '''
+    <response status="302"><finalAddress>
+    <![CDATA[rtmp://video-12-9.rutube.ru/rutube_vod_1/mp4:n1vol1/movies/4c/b0/4cb0b5b76105084987be355f5c0cf5cc.mp4?e=1328574823&s=7ce76180534e1f8d5a88f81095d3e133]]>
+    </finalAddress></response>
+    '''
     patron = "<finalAddress>[^<]+<\!\[CDATA\[([^\]]+)\]\]>"
     matches = re.compile(patron,re.DOTALL).findall(data)
 
@@ -41,8 +46,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         
         # Code adapted from http://code.google.com/p/xbmc-xstream-plugin/
         sRtmpFile = matches[0]
-            
-        aSplitt = sRtmpFile.split('rutube_vod_2/')
+        
+        if "rutube_vod_1" in sRtmpFile:
+            aSplitt = sRtmpFile.split('rutube_vod_1/')
+        else:
+            aSplitt = sRtmpFile.split('rutube_vod_2/')
         sPlaypath = aSplitt[1]
             
         aSplitt = sRtmpFile.split('.ru/')
