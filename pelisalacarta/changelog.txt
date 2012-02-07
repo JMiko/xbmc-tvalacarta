@@ -1,3 +1,47 @@
+3.2.5
+
+- First version after megaupload close
+- New server connectors
+
+    Novamov (@mrfloffy)
+    Videoweed (actualizado por @mrfloffy)
+    Modovideo (@bandavi)
+    Ovfile (@bandavi)
+    Putlocker (@bandavi)
+    Royalvids (@bandavi)
+    Sockshare (@bandavi)
+    Mediafire (@jesus)
+    Rutube (@jesus)
+    Stagero (@jesus)
+    Wupload Premium (@jesus, de momento sigue sin funcionar el modo “free”)
+    Dep0sitfiles (@jesus, sólo con Filenium)
+    Allmyvideos (@jesus, sólo con Filenium)
+    Hdplay (@jesus)
+
+- New channels
+	
+	cinevos
+	beeg
+	
+- Erased channels
+
+	Asia Team
+	Cine Adicto
+	Cinegratis
+	DeLaTV
+	Descargapelis
+	DL-More
+	Documentalesyonkis
+	Filmixt
+	FilmesonlineBr
+	IslaPelículas
+	Liberateca
+	NoLoMires
+	Peliculas21
+	Pelis Pekes
+	Redes TV
+	Series 21
+
 3.2.3
 
 - Added captcha keyboard for seriesyonkis
