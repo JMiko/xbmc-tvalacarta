@@ -17,10 +17,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[modovideo.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
-
-    # Descarga la página de linkbucks
     page_url = 'http://www.modovideo.com/frame.php?v='+page_url
     data = scrapertools.cachePage(page_url)
+    logger.info("data")
 
     # Extrae la URL real
     patronvideos  = 'player5plugin.video=([^&]+)&'
