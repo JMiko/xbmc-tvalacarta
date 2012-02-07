@@ -27,13 +27,18 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         page_url = page_url.replace("videos","embed") +"?w=607&h=280"
         data = scrapertools.cache_page(page_url)
         matches = re.compile(patron,re.DOTALL).findall(data)
+
     scrapertools.printMatches(matches)
+    encontrados = set()
     for match in matches:
         videourl = match
         logger.info(match)
         videourl = videourl.replace('%5C','')
         videourl = urllib.unquote(videourl)
-        video_urls.append( [ "[veevr]" , videourl ] )
+
+        if videourl not in encontrados:
+            video_urls.append( [ "[veevr]" , videourl ] )
+            encontrados.add(videourl)
 
     for video_url in video_urls:
         logger.info("[veevr.py] %s - %s" % (video_url[0],video_url[1]))
