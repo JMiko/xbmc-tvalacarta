@@ -53,37 +53,40 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     CALIDADES = {'5':'240p','34':'360p','18':'360p','35':'480p','22':'720p','84':'720p','37':'1080p','38':'3072p','17':'144p','43':'360p','44':'480p','45':'720p'}
 
     for i in range(len(fmt_list_array)):
-        video_url = urllib.unquote(fmt_stream_map_array[i])
-        video_url = urllib.unquote(video_url[4:])
-        video_url = video_url.split(";")[0]
-        logger.info(" [%s] - %s" % (fmt_list_array[i],video_url))
-        
-        calidad = fmt_list_array[i].split("/")[0]
-        video_url = video_url.replace("flv&itag="+calidad,"flv")
-        video_url = video_url.replace("="+calidad+"&url=","")
-        resolucion = fmt_list_array[i].split("/")[1]
-
-        formato = ""
-        patron = '&type\=video/([a-z0-9\-]+)'
-        matches = re.compile(patron,re.DOTALL).findall(video_url)
-        if len(matches)>0:
-            formato = matches[0]
-            if formato.startswith("x-"):
-                formato = formato[2:]
-            formato = formato.upper()
-
-        etiqueta = ""
         try:
-            etiqueta = CALIDADES[calidad]
+            video_url = urllib.unquote(fmt_stream_map_array[i])
+            video_url = urllib.unquote(video_url[4:])
+            video_url = video_url.split(";")[0]
+            logger.info(" [%s] - %s" % (fmt_list_array[i],video_url))
+            
+            calidad = fmt_list_array[i].split("/")[0]
+            video_url = video_url.replace("flv&itag="+calidad,"flv")
+            video_url = video_url.replace("="+calidad+"&url=","")
+            resolucion = fmt_list_array[i].split("/")[1]
+    
+            formato = ""
+            patron = '&type\=video/([a-z0-9\-]+)'
+            matches = re.compile(patron,re.DOTALL).findall(video_url)
+            if len(matches)>0:
+                formato = matches[0]
+                if formato.startswith("x-"):
+                    formato = formato[2:]
+                formato = formato.upper()
+    
+            etiqueta = ""
+            try:
+                etiqueta = CALIDADES[calidad]
+            except:
+                pass
+            
+            if formato!="":
+                etiqueta = etiqueta + " (%s a %s) [youtube]" % (formato,resolucion)
+            else:
+                etiqueta = etiqueta + " (%s) [youtube]" % (resolucion)
+    
+            video_urls.append( [ etiqueta , video_url ])
         except:
             pass
-        
-        if formato!="":
-            etiqueta = etiqueta + " (%s a %s) [youtube]" % (formato,resolucion)
-        else:
-            etiqueta = etiqueta + " (%s) [youtube]" % (resolucion)
-
-        video_urls.append( [ etiqueta , video_url ])
     
     for video_url in video_urls:
         logger.info(str(video_url))
