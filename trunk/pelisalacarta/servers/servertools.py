@@ -224,8 +224,8 @@ def findvideos(data):
     #devuelve.extend(videobb.find_videos(data))
 
     # videoweed
-    #import videoweed
-    #devuelve.extend(videoweed.find_videos(data))
+    import videoweed
+    devuelve.extend(videoweed.find_videos(data))
 
     # videozer
     #import videozer
