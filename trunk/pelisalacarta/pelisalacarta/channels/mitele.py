@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para seriesyonkis
+# Canal para mitele
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Por Truenon y Jesus, modificada por Boludiko
 # v11
@@ -30,116 +30,131 @@ def mainlist(item):
     logger.info("[seriesyonkis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Series"    , action="series"    , thumbnail = "" , url="http://www.mitele.es/series-online/"))
-    itemlist.append( Item(channel=__channel__, title="Programas" , action="series" , thumbnail = "" , url="http://www.mitele.es/programas-tv/"))
-    itemlist.append( Item(channel=__channel__, title="TV Movies"   , action="series" , thumbnail = "" , url="http://www.mitele.es/tv-movies/"))
-    itemlist.append( Item(channel=__channel__, title="TV Infantil"   , action="series" , thumbnail = "" , url="http://www.mitele.es/tv-infantil/"))
-    #itemlist.append( Item(channel=__channel__, title="Directo"   , action="directo" , thumbnail = "" , url="http://www.mitele.es/directo/"))
+    itemlist.append( Item(channel=__channel__, title="Series"    , action="series"  , category="series"    , thumbnail = "" , url="http://www.mitele.es/series-online/"))
+    itemlist.append( Item(channel=__channel__, title="Programas" , action="series"  , category="programas" , thumbnail = "" , url="http://www.mitele.es/programas-tv/"))
+    itemlist.append( Item(channel=__channel__, title="TV Movies" , action="series"  , category="series"    , thumbnail = "" , url="http://www.mitele.es/tv-movies/"))
+    itemlist.append( Item(channel=__channel__, title="Infantil"  , action="series"  , category="infantil"  , thumbnail = "" , url="http://www.mitele.es/tv-infantil/"))
+    itemlist.append( Item(channel=__channel__, title="V.O."      , action="series"  , thumbnail = "" , url="http://www.mitele.es/mitele-vo/"))
+    itemlist.append( Item(channel=__channel__, title="Directo"   , action="directo" , thumbnail = "" , url="http://www.mitele.es/directo/"))
     return itemlist
 
 def series(item):
     logger.info("[mitele.py] series")
     itemlist = []
-    data = scrapertools.cachePage(item.url)
-        
+    
     # Extrae los programas
-    patron  = '<div class="programList">(.*?)</div>'
-    matches = re.findall(patron,data,re.DOTALL)
-    if DEBUG: scrapertools.printMatches(matches)
+    if item.extra=="":
+        item.extra="1"
 
-    if len(matches)>0:
-        subdata = matches[0]
-    else:
-        return itemlist
-    
+    headers=[]
+    headers.append(["Content-Type","application/x-www-form-urlencoded; charset=UTF-8"])
+    headers.append(["Referer",item.url])
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0) Gecko/20100101 Firefox/10.0"])
+    headers.append(["X-Requested-With","XMLHttpRequest"])
+
+    data = scrapertools.cache_page(item.url , post="pag="+item.extra, headers=headers)
+    logger.info("data="+data)
     patron  = '<li.*?</li>'
-    matches = re.findall(patron,subdata,re.DOTALL)
-    if DEBUG: scrapertools.printMatches(matches)
+    matches = re.findall(patron,data,re.DOTALL)
+    #if DEBUG: scrapertools.printMatches(matches)
     
-    if len(matches)>0:
-        for subdata in matches:
-            patron  = 'href="([^"]+)".*?title="([^"]+)".*?src="([^"]+)"'
-            matches2 = re.findall(patron,subdata,re.DOTALL)
-            for match in matches2:
-                scrapedurl = "http://www.mitele.es" + match[0]
-                scrapedtitle = match[1]
-                scrapedthumbnail = match[2]
-                scrapedplot = ""
-                itemlist.append( Item(channel=__channel__, action="temporadas" , title=scrapedtitle,  fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
-    else:
+    for subdata in matches:
+        patron  = 'href="([^"]+)".*?title="([^"]+)".*?src="([^"]+)"'
+        matches2 = re.findall(patron,subdata,re.DOTALL)
+        for match in matches2:
+            scrapedurl = "http://www.mitele.es" + match[0]
+            scrapedtitle = match[1]
+            scrapedthumbnail = match[2]
+            scrapedplot = ""
+            itemlist.append( Item(channel=__channel__, action="temporadas" , title=scrapedtitle,  fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, category=item.category))
+
+    if len(itemlist)==0:
         return []
+
+    if item.extra=="":
+        item.extra="2"
+    else:
+        item.extra = str(int(item.extra)+1)
+    itemlist.extend( series(item) )
+
     return itemlist
 
 def temporadas(item):
     logger.info("[mitele.py] Temporadas")
 
-    url = item.url
-                
-    data = scrapertools.cachePage(url)
-
-    # Extrae las entradas (carpetas)
-   
-    patron = 'temporadas:.*?[(.*?)]'
+    # Extrae las temporadas
+    data = scrapertools.cachePage(item.url)
+    patron = 'temporadasBrowser\({\s+temporadas(.*?)\)'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
+    scrapertools.printMatches(matches)
+
+    data_json = '{"temporadas"'+matches[0]
+    temporadas_json = load_json(data_json)
+    if temporadas_json == None : temporadas_json = []
 
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '{"ID":"(.*?)","post_title":"(.*?)","post_name":".*?"}'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+    for temporada in temporadas_json['temporadas']:
+        scrapedurl = "http://www.mitele.es/temporadasbrowser/getCapitulos/"+temporada['ID']+"/"
+        scrapedtitle = temporada['post_title']
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        for match2 in matches2:
-        # Atributos
-            scrapedurl = "http://www.mitele.es/temporadasbrowser/getCapitulos/"+match2[0]+"/"
-            scrapedtitle =match2[1]
-            scrapedthumbnail = ""
-            scrapedplot = ""
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="capitulos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=item.channel , action="capitulos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot, category=item.category, show=item.show ))
     
     return itemlist
 
 def capitulos(item):
     logger.info("[mitele.py] Capitulos")
 
-    url = item.url
-                
-    data = scrapertools.cachePage(url)
+    if item.extra=="":
+        item.extra="1"
 
-    # Extrae las entradas (carpetas)
-   
-    patron = '{(.*?)}'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
+    data = scrapertools.cachePage(item.url+"/"+item.extra)
+    capitulos_json = load_json(data)
+    if capitulos_json == None : capitulos_json = []
 
     itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '"ID":"(.*?)".*?'
-        patron  += '"post_title":"(.*?)","post_subtitle":"(.*?)".*?'
-        patron  += '"post_content":"(.*?)".*?'
-        patron  += '"image":"(.*?)".*?'
-        patron  += '"url":"(.*?)".*?'
+    for capitulo in capitulos_json['episodes']:
+
+        if item.title.startswith("Temporada "):
+            numero_temporada = item.title[10:]
+        else:
+            numero_temporada = ""
+
+        if capitulo['post_title'].startswith("Capítulo "):
+            numero_episodio = capitulo['post_title'][10:]
+        elif capitulo['post_title'].startswith("Captítulo "):
+            numero_episodio = capitulo['post_title'][11:]
+        elif capitulo['post_title'].startswith("Programa "):
+            numero_episodio = capitulo['post_title'][9:]
+        else:
+            numero_episodio = ""
+
+        if len(numero_episodio)==1:
+            numero_episodio = "0"+numero_episodio
         
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+        if capitulo['post_subtitle'] is None:
+            titulo_episodio = ""
+        else:
+            titulo_episodio = capitulo['post_subtitle']
 
-        for match2 in matches2:
-        # Atributos
-            scrapedurl = "http://www.mitele.es"+match2[5].replace("\\","")
-            scrapedtitle = match2[1] +": "+ match2[2]
-            scrapedthumbnail = match2[4].replace("\\","")
-            scrapedplot = match2[3]
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        if numero_temporada!="" and numero_episodio!="":
+            scrapedtitle = numero_temporada + "x" + numero_episodio+" "+titulo_episodio
+        else:
+            scrapedtitle = capitulo['post_title']+": "+titulo_episodio
 
-            # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="capitulo"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        scrapedurl = "http://www.mitele.es"+capitulo['url'].replace("\\","")
+        scrapedthumbnail = capitulo['image'] #.replace("\\","")
+        scrapedplot = capitulo['post_content'].replace("<!--more-->","")
+        scrapedplot = scrapertools.htmlclean(scrapedplot)
+
+        itemlist.append( Item(channel=item.channel, action="capitulo", title=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, category=item.category, show=item.show ))
+    
+    if capitulos_json['hasNext']:
+        item.extra = str(int(item.extra)+1)
+        itemlist.extend( capitulos(item) )
     
     return itemlist
 
@@ -253,14 +268,27 @@ def directo (item):
         return []
     return itemlist
 
-    
-
-
-
-
-
-
-
-
-
+def load_json(data):
+    # callback to transform json string values to utf8
+    def to_utf8(dct):
+        rdct = {}
+        for k, v in dct.items() :
+            if isinstance(v, (str, unicode)) :
+                rdct[k] = v.encode('utf8', 'ignore')
+            else :
+                rdct[k] = v
+        return rdct
+    try :        
+        from lib import simplejson
+        json_data = simplejson.loads(data, object_hook=to_utf8)
+        return json_data
+    except:
+        try:
+            import json
+            json_data = json.loads(data, object_hook=to_utf8)
+            return json_data
+        except:
+            import sys
+            for line in sys.exc_info():
+                logger.error("%s" % line)
 
