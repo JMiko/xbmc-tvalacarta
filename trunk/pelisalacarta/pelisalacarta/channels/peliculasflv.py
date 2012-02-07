@@ -83,23 +83,3 @@ def tags(item):
         itemlist.append( Item(channel=__channel__, action="listado", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
-
-def findvideos(item):
-    logger.info("[peliculasflv.py] findvideos")
-
-    # Descarga la pagina
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-    
-    patronvideos  = '<title>([^<]+)</title>[^<]+'
-    patronvideos += '<media.content url="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[0]+" [directo]"
-        scrapedurl = match[1]
-        server="directo"
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
-
-    return itemlist
