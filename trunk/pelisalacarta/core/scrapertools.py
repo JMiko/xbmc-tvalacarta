@@ -72,7 +72,10 @@ def cachePage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; 
     if modoCache == CACHE_NUNCA or post is not None:
         logger.info("[scrapertools.py] MODO_CACHE=2 (no cachear)")
         
-        data = downloadpage(url,post,headers, timeout=timeout)
+        try:
+            data = downloadpage(url,post,headers, timeout=timeout)
+        except:
+            data=""
     
     # CACHE_SIEMPRE: Siempre descarga de cache, sin comprobar fechas, excepto cuando no está
     elif modoCache == CACHE_SIEMPRE:
