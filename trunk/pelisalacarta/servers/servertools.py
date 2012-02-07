@@ -150,6 +150,11 @@ def findvideos(data):
     import putlocker
     devuelve.extend(putlocker.find_videos(data))
 
+    # rapidshare
+    if config.get_setting("fileniumpremium")=="true":
+        import rapidshare
+        devuelve.extend(rapidshare.find_videos(data))
+
     # rapidtube
     import rapidtube
     devuelve.extend(rapidtube.find_videos(data))
@@ -174,12 +179,17 @@ def findvideos(data):
     # stagero
     import stagero
     devuelve.extend(stagero.find_videos(data))
- 
+    
+    # turbobit
+    if config.get_setting("fileniumpremium")=="true":
+        import turbobit
+        devuelve.extend(turbobit.find_videos(data))
+
     # tutv
     import tutv
     devuelve.extend(tutv.find_videos(data))
-    
-    # tutv
+
+    # userporn
     import userporn
     devuelve.extend(userporn.find_videos(data))
 
