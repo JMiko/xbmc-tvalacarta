@@ -253,9 +253,14 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             else:
                 video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
         except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line )
+            import traceback
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
 
         if config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
             exec "from servers import filenium as gen_conector"
