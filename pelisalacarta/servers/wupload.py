@@ -34,23 +34,27 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
         # Obtiene la URL final
         headers = scrapertools.get_headers_from_response(page_url)
-        location = ""
+        location1 = ""
         for header in headers:
             logger.info("header1="+str(header))
             
             if header[0]=="location":
-                location = header[1]
+                location1 = header[1]
                 logger.info("location1="+str(header))
 
         # Obtiene la URL final
         headers = scrapertools.get_headers_from_response(location)
-        location = ""
+        location2 = ""
         content_disposition = ""
         for header in headers:
             logger.info("header2="+str(header))
             
             if header[0]=="location":
-                location = header[1]
+                location2 = header[1]
+    
+        location = location2
+        if location=="":
+            location = location1
 
         return [ ["(Premium) [wupload]",location + "|" + "User-Agent="+urllib.quote("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12") ] ]
 
