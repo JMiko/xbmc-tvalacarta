@@ -112,8 +112,39 @@ def extract_video_id(url):
         return ""
 
 # Encuentra vídeos del servidor en el texto pasado
-def find_videos(data):
+def find_videos(text):
     encontrados = set()
     devuelve = []
 
+    #"http://player.vimeo.com/video/17555432?title=0&amp;byline=0&amp;portrait=0
+    patronvideos  = 'http://player.vimeo.com/video/([0-9]+)'
+    logger.info("[vimeo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[vimeo]"
+        url = "http://vimeo.com/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vimeo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
+
+    #"http://vimeo.com/17555432
+    patronvideos  = 'http://vimeo.com/([0-9]+)'
+    logger.info("[vimeo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[vimeo]"
+        url = "http://vimeo.com/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vimeo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
     return devuelve
