@@ -16,9 +16,10 @@ from core import unpackerjs
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[ovfile.py] url="+page_url)
 
-    if page_url.starstwith('http'):
+    if page_url.startswith('http'):
         page_url = extract_id(page_url)
         if page_url=="":return []
+
     page_url = 'http://ovfile.com/embed-'+page_url+'-600x340.html'
     # Lo pide una vez
     data = scrapertools.cache_page( page_url)
