@@ -299,11 +299,12 @@ def playdirecto(item):
     # Extraemos datos xml
     try:
         data = scrapertools.cachePage(xml)
-        from xml.dom.minidom import parse
-        dom1 = parse(xml)
+    
+        from xml.dom import minidom
+        dom1 = minidom.parseString(data)
         id = dom1.getElementsByTagName("url")[1].firstChild.data            
         logger.info("Datos xml = "+startTime+";"+endTime+";"+id)
-  
+    
         #Datos clock.php
         
         data = scrapertools.cachePage("http://www.mitele.es/media/clock.php")
