@@ -342,8 +342,10 @@ def playdirecto(item):
         file = matches[0]
         
         rtmp = rtmp0 + "/" + file + rtmp1
+    
+        xbmcrtmp = rtmp0 + " playpath=" + file+rtmp1 + " swfUrl=\"http://static1.tele-cinco.net/comun/swf/playerMitele.swf\" pageUrl=\"" + item.url + "\" live=true"
         
-        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=rtmp, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=xbmcrtmp, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():
