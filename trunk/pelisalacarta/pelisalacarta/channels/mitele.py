@@ -263,9 +263,91 @@ def directo (item):
                     scrapedtitle = matches2[0]
                 scrapedthumbnail = match[1]
                 scrapedplot = ""
-                itemlist.append( Item(channel=__channel__, action="" , title=scrapedtitle,  fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+                itemlist.append( Item(channel=__channel__, action="playdirecto" , title=scrapedtitle,  fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
     else:
         return []
+    return itemlist
+
+
+
+def playdirecto(item):
+    logger.info("[mitele.py] Capitulo")
+
+    url = item.url
+    data = scrapertools.cachePage(url)
+
+    # Extrae las entradas (carpetas)
+   
+    patron = 'var flashvars = {(.*?)}'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    logger.info("hay %d matches" % len(matches))
+    
+
+    itemlist = []
+    for match in matches:
+        data2 = match
+        patron  = '"host":"(.*?)".*?'
+        matches2 = re.compile(patron,re.DOTALL).findall(data2)
+
+        for match2 in matches2:
+        # Atributos
+            xml = match2.replace("\\","")
+            logger.info("XML = "+xml)
+    id="XX"
+    startTime = "0"
+    endTime = "0"       
+    # Extraemos datos xml
+    try:
+        data = scrapertools.cachePage(xml)
+        from xml.dom.minidom import parse
+        dom1 = parse(xml)
+        id = dom1.getElementsByTagName("url")[1].firstChild.data            
+        logger.info("Datos xml = "+startTime+";"+endTime+";"+id)
+  
+        #Datos clock.php
+        
+        data = scrapertools.cachePage("http://www.mitele.es/media/clock.php")
+        serverTime = data.strip();
+        logger.info("Server Time ="+serverTime)
+        
+        data = serverTime+";"+id+";"+startTime+";"+endTime
+        logger.info("Data = "+data)
+    
+        AES = aes.AES()                   
+        ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHNXp9cA',256)      
+                
+        #metodo 1
+        url = 'http://servicios.telecinco.es/tokenizer/tk2.php'
+        values = {'force_http' : '1',
+          'directo' : ciphertext,
+          'id' : id,
+          'startTime' : '0',
+          'endTime': '0'}
+
+        search_data = urllib.urlencode(values,doseq=True)
+        request = urllib2.Request(url,search_data)
+        request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
+        response = urllib2.urlopen(request)
+        data = response.read()
+        response.close()        
+        
+        patron = '<stream>([^?]+)?([^<]+)</stream>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        rtmp0 = matches[0][0]
+        rtmp1 = matches[0][1]
+        
+        patron = '<file>([^<]+)</file>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        file = matches[0]
+        
+        rtmp = rtmp0 + "/" + file + rtmp1
+        
+        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=rtmp, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+
     return itemlist
 
 def load_json(data):
