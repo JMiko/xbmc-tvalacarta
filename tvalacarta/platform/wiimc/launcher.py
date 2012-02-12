@@ -77,7 +77,19 @@ class MyHandler(BaseHTTPRequestHandler):
             
             import urllib
             for item in itemlist:
-                if item.folder or item.action=="play":
+                if item.action=="search":
+                    logger.info("  Buscador")
+                    if item.server=="": item.server="none"
+                    if item.url=="": item.url="none"
+                    url = "http://%s/%s/%s/%s/%s/%s/%s/%s/%s/playlist.plx" % ( host+"/wiimc" , item.channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle) )
+                    respuesta += "type=search\n"
+                    respuesta += "name=%s\n" % item.title
+                    if item.thumbnail != "":
+                        respuesta += "thumb=%s\n" % item.thumbnail
+                    respuesta += "URL=%s\n" % url
+                    respuesta += "\n"
+            
+                elif item.folder or item.action=="play":
                     if item.server=="": item.server="none"
                     if item.url=="": item.url="none"
                     if item.title=="": item.title="Ver el video-"

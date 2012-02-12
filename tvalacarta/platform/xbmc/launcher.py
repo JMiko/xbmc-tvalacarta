@@ -172,6 +172,18 @@ def run():
                         for line in sys.exc_info():
                             logger.error( "%s" % line )
                         xbmctools.playvideo(params.get("channel"),server,url,category,title,thumbnail,plot)
+                elif action=="search":
+                    logger.info("[launcher.py] search")
+                    import xbmc
+                    keyboard = xbmc.Keyboard("")
+                    keyboard.doModal()
+                    if (keyboard.isConfirmed()):
+                        tecleado = keyboard.getText()
+                        tecleado = tecleado.replace(" ", "+")
+                        itemlist = channel.search(item,tecleado)
+                    else:
+                        itemlist = []
+                    xbmctools.renderItems(itemlist, params, url, category)
                 else:
                     if action!="findvideos":
                         exec "itemlist = channel."+action+"(item)"
