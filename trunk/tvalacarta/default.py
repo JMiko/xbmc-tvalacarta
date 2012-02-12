@@ -23,5 +23,5 @@ librerias = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'lib' )
 sys.path.append (librerias)
 
 # Runs xbmc launcher
-from platformcode.xbmc import launcher
+from platform.xbmc import launcher
 launcher.run()
