@@ -102,8 +102,8 @@ def findvideos(data):
     #    devuelve.extend(filejungle.find_videos(data))
 
     # fileserve
-    #import fileserve
-    #devuelve.extend(fileserve.find_videos(data))
+    import fileserve
+    devuelve.extend(fileserve.find_videos(data))
 
     # filesonic
     #if config.get_setting("fileniumpremium")=="true":
@@ -162,7 +162,6 @@ def findvideos(data):
     # royalvids
     import royalvids
     devuelve.extend(royalvids.find_videos(data))
-
 
     # rutube
     import rutube
