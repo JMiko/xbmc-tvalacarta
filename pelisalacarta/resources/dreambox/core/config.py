@@ -10,7 +10,7 @@
 # Licencia: GPL (http://www.gnu.org/licenses/gpl-3.0.html)
 #-------------------------------------------------------------------------------
 
-print "Using DREAMBOX config 3.2.3"
+print "Using DREAMBOX config 3.2.6"
 
 def get_system_platform():
     return "dreambox"
