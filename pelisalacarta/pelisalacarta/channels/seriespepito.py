@@ -273,6 +273,7 @@ def findvideos(item):
                 videos = servertools.findvideos(scrapedurl)
                 if len(videos)>0:
                     servidor = videos[0][2]
+                    scrapedurl = videos[0][1]
                 else:
                     servidor = ""
             #print servidor

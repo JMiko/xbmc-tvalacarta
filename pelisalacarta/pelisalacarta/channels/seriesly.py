@@ -329,12 +329,13 @@ def links(item):
                 exit = True
             except:
                 count = count + 1
-        
+
+        logger.info("urlvideo="+urlvideo)
         for video in servertools.findvideos(urlvideo) :
             #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
             scrapedtitle = scrapertools.htmlclean(video[0])
             scrapedurl = video[1]
-            server = video[2]                
+            server = video[2]
             itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle, url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
     except:  
         import sys
