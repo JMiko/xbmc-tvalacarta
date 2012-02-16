@@ -143,8 +143,13 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="Ver-series (15/12/2011)"             , channel="verseries"            , language="ES" , category="S" , type="generic"  )) # jesus 15/12/2011
-    itemlist.append( Item( title="Justin.tv (12/12/2011)"              , channel="justintv"             , language=""      , category="G"       , type="generic"  )) # bandavi 12/12/2011
+    itemlist.append( Item( title="Gnula (15/12/2011)"                   , channel="gnula"                , language="ES" , category="F" , type="generic"  )) # vcalvo 15/12/2011
+    itemlist.append( Item( title="Series ID (15/12/2011)"               , channel="seriesid"             , language="ES" , category="S" , type="generic"  )) # vcalvo 15/12/2011
+    itemlist.append( Item( title="Bajui (14/12/2011)"                   , channel="bajui"                , language="ES" , category="F,S,D", type="generic")) # vcalvo 14/12/2011
+    itemlist.append( Item( title="Shurweb (14/12/2011)"                 , channel="shurweb"              , language="ES" , category="F,S,D,A", type="generic")) # vcalvo 14/12/2011
+    itemlist.append( Item( title="ShurHD (14/12/2011)"                  , channel="shurhd"               , language="ES" , category="F" , type="generic"  )) # vcalvo 14/12/2011
+    itemlist.append( Item( title="Ver-series (15/12/2011)"              , channel="verseries"            , language="ES" , category="S" , type="generic"  )) # jesus 15/12/2011
+    itemlist.append( Item( title="Justin.tv (12/12/2011)"               , channel="justintv"             , language=""      , category="G"       , type="generic"  )) # bandavi 12/12/2011
     itemlist.append( Item( title="Series.ly (19/11/2011)"              ,channel="seriesly"              , language="ES" , category="S" , type="generic" )) # jesus/mrfloffy 19/11/2011
     itemlist.append( Item( title="Teledocumentales (19/10/2011)"       ,channel="teledocumentales"      , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
     itemlist.append( Item( title="Descarrega Directa (CAT) (19/10/2011)",channel="descarregadirecta"    , language="CAT" , category="F,S,D,A" , type="generic" )) # mrfloffy 19/10/2011
@@ -165,7 +170,7 @@ def channels_history_list():
 def channels_list():
     itemlist = []
 
-    itemlist.append( Item( title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
+    #itemlist.append( Item( title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Animeflv"              , channel="animeflv"             , language="ES"    , category="A"       , type="generic"  ))
     #itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES"    , category="A"       , type="xbmc"    ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
@@ -195,6 +200,7 @@ def channels_list():
     itemlist.append( Item( title="DocumentariesTV"       , channel="documentariestv"      , language="EN"    , category="D"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Filmixt"               , channel="filmixt"              , language="ES"    , category="F"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="FilmesOnlineBr"        , channel="filmesonlinebr"       , language="PT"    , category="F"       , type="xbmc"     ))
+    itemlist.append( Item( title="Gnula"                   , channel="gnula"                , language="ES" , category="F" , type="generic"  )) # vcalvo 15/12/2011
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Gratisdocumentales"    , channel="gratisdocumentales"   , language="ES"    , category="D"       , type="generic"  ))
     #itemlist.append( Item( title="Internapoli City (IT)" , channel="internapoli"          , language="IT"    , category="F"       , type="generic"  )) 
     itemlist.append( Item( title="Italia film (IT)"      , channel="italiafilm"           , language="IT"    , category="F,S,A"   , type="xbmc"     ))
@@ -231,13 +237,14 @@ def channels_list():
     itemlist.append( Item( title="Robinfilm (IT)"        , channel="robinfilm"            , language="IT" , category="F"          , type="generic"  )) # jesus 16/05/2011
     #itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A"      , type="generic"  ))
     itemlist.append( Item( title="Serieonline"           , channel="serieonline"          , language="ES" , category="F,S,D"      , type="generic"  ))
+    itemlist.append( Item( title="Series ID"             , channel="seriesid"             , language="ES" , category="S" , type="generic"  )) # vcalvo 15/12/2011
     itemlist.append( Item( title="Series.ly"             , channel="seriesly"             , language="ES" , category="S,A"        , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     # DESACTIVADO - SIN CONTENIDO itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S"          , type="xbmc"  ))
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S"          , type="generic" ))
     itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S"          , type="generic" ))
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A"        , type="generic" , extra="Series" ))
-    itemlist.append( Item( title="Shurhd"       , channel="shurhd"             , language="ES"      , category="F" , type="generic"    ))
+    itemlist.append( Item( title="ShurHD"       , channel="shurhd"             , language="ES"      , category="F" , type="generic"    ))
     itemlist.append( Item( title="Shurweb"       , channel="shurweb"             , language="ES"      , category="F,S,D,A" , type="generic"    ))
     #itemlist.append( Item( title="Sofacine"              , channel="sofacine"             , language="ES" , category="F"          , type="generic"  ))
     itemlist.append( Item( title="Somosmovies"           , channel="somosmovies"          , language="ES" , category="F,S,D,A"    , type="generic"  ))
