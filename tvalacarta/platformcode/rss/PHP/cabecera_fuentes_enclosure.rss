@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding="UTF-8" ?> 
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"> 
+
+<!--
+#   CABECERA_FUENTES_ENCLOSURE.RSS
+-->
+
+<script> 
+   itemCount = getPageInfo("itemCount");
+   if( itemCount == 1 )
+   {
+      setRefreshTime(500);
+      setFocusItemIndex(0);
+      playItemURL(-1, 0, "mediaDisplay", "previewWindow");
+   }
+</script> 
+
+<onEnter>
+	screenXp = 16;
+	screenYp = 9;
+</onEnter>
+	
+<mediaDisplay name="threePartsView"
+	suffixWidthPC="0" sideLeftWidthPC="0" sideRightWidthPC="0" headerCapWidthPC="0" menuWidthPC="0"
+	showHeader="no"   showDefaultInfo="no"
+
+	itemXPC="4"  itemWidthPC="48"
+	itemYPC="25" itemHeightPC="8"
+	itemBackgroundColor="56:70:102"
+	forceFocusOnItem="yes"
+	itemGap="2"
+
+	imageUnFocus="null"
+  	imageFocus="null"
+
+	backgroundColor="28:35:51"
+	itemPerPage="5"
+>
+     <image offsetXPC=23 offsetYPC=3.5 widthPC=54 heightPC=9>image/bg-column-item.png</image> <!--  infobar.png</image> -->
+     <image offsetXPC=82 offsetYPC=2 widthPC=15 heightPC=15>image/pelisalacartalogo.png</image>
+     <image offsetXPC=4 offsetYPC=2 widthPC=15 heightPC=15><script>"/opt/pelisalacarta/resources/images/posters/"+getPageInfo("pageTitle")+".png";</script></image>
+     <image offsetXPC=68 offsetYPC=20 widthPC=30 heightPC=70>
+         <script>idx = getQueryItemIndex(); getItemInfo(idx, "image");</script>
+     </image>
+     <text align="center" redraw="yes" offsetXPC=20 offsetYPC=5 widthPC=60 heightPC=6 fontSize=20 backgroundColor=-1:-1:-1 foregroundColor=200:200:200>
+       <script>idx = getQueryItemIndex(); getItemInfo(idx, "title");</script>
+     </text>
+     <text lines=7 redraw="yes" align="left" offsetXPC=4 offsetYPC=60 widthPC=60 heightPC=30 backgroundColor="200:200:220" foregroundColor="28:35:51" fontSize=13>
+	    <script>idx = getQueryItemIndex(); getItemInfo(idx, "description");</script>
+     </text>
+     
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_01.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_02.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_03.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_04.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_05.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_06.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_07.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_08.png </idleImage>
+
+	<itemDisplay>
+		<text align="left" lines="1" offsetXPC=0 offsetYPC=10 widthPC=100 heightPC=80 backgroundColor="-1:-1:-1" >
+			<script>
+				idx = getQueryItemIndex();
+				focus = getFocusItemIndex();
+				getItemInfo(idx, "fulltitle");
+			</script>
+			<fontSize><script>if(focus==idx) "15"; else "13";</script></fontSize>
+		  	<backgroundColor><script>if(focus==idx) "84:105:153"; else "-1:-1:-1";</script></backgroundColor>
+		  	<foregroundColor><script>if(focus==idx) "255:255:255"; else "180:180:180";</script></foregroundColor>
+		</text>
+		
+	</itemDisplay>
+
+</mediaDisplay> 
+

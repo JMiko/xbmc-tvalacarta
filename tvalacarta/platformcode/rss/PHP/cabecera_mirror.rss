@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<!--
+#   CABECERA_MIRROR.RSS
+-->
+
+<onEnter>
+	itemCountMove = getPageInfo("itemCount");
+	columnCount = 5;
+</onEnter>	
+<!-- 
+	itemBackgroundColor="0:0:0"
+	backgroundColor="0:0:0"
+
+-->
+<mediaDisplay name="threePartsView"
+	suffixXPC="2"
+	sideLeftWidthPC="0"
+	sideColorRight="28:35:51"
+	sideRightXPC="90"
+
+	showHeader="no"
+	headerCapWidthPC="0"
+
+	itemXPC="2"
+	itemYPC="20"
+	itemHeightPC="6"
+	itemWidthPC="60"
+	itemBackgroundColor="56:70:102"
+	itemGap="1"
+	rollItems="yes"
+	sliding="yes"
+
+	imageUnFocus="null"
+  	imageFocus="null"
+	menuWidthPC="0"
+
+	backgroundColor="28:35:51"
+	selectMenuOnRight="no"
+	forceFocusOnItem="yes"
+	forceFocusOnMenu="no"
+	showDefaultInfo="no"
+	itemPerPage="8"
+	infoYPC="90"
+>
+     <image offsetXPC=23 offsetYPC=3.5 widthPC=54 heightPC=9>image/bg-column-item.png</image> <!--  infobar.png</image> -->
+     <image offsetXPC=82 offsetYPC=2 widthPC=15 heightPC=15>image/pelisalacartalogo.png</image>
+     <image offsetXPC=4 offsetYPC=2 widthPC=15 heightPC=15><script>"/opt/pelisalacarta/resources/images/posters/"+getPageInfo("pageTitle")+".png";</script></image>
+     <image offsetXPC=68 offsetYPC=20 widthPC=27 heightPC=52><script>getItemInfo(0, "image");</script></image>
+     <text align="center" redraw="yes" offsetXPC=20 offsetYPC=5 widthPC=60 heightPC=6 fontSize=20 backgroundColor=-1:-1:-1 foregroundColor=200:200:200>
+       <script>getItemInfo(0, "fulltitle");</script>
+     </text>
+     <text lines=7 redraw="yes" align="left" offsetXPC=4 offsetYPC=76 widthPC=92 heightPC=30 backgroundColor="250:250:250" foregroundColor="28:35:51" fontSize=13>
+	    <script>getItemInfo(0, "description");</script>
+     </text>
+
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_01.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_02.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_03.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_04.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_05.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_06.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_07.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_08.png </idleImage>
+	<!-- backgroundDisplay>       
+		<image offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100">image/videos.jpg</image>    
+	</backgroundDisplay -->
+
+	<itemDisplay>
+		<text lines=1 offsetXPC="0" offsetYPC="10" widthPC="100" heightPC="85" backgroundColor="56:70:102"> 
+			<script>
+  				idx = getQueryItemIndex();
+  				focus = getFocusItemIndex();
+				getItemInfo(-1, "title");
+			</script> 
+			<fontSize><script>if(focus==idx) "15"; else "13";</script></fontSize>
+		  	<backgroundColor><script>if(focus==idx) "84:105:153"; else "-1:-1:-1";</script></backgroundColor>
+		  	<foregroundColor><script>if(focus==idx) "255:255:255"; else "180:180:180";</script></foregroundColor>
+		</text>
+	</itemDisplay>
+
+	<onUserInput>
+		<script>
+			ret = "false";
+			userInput = currentUserInput();
+			majorContext = getPageInfo("majorContext");
+      
+			print("*** majorContext=",majorContext);
+			print("*** userInput=",userInput);
+      
+			if (userInput == "pagedown" || userInput == "pageup" || userInput == "PD" || userInput == "PG")
+			{
+				idx = Integer(getFocusItemIndex());
+				if (userInput == "pagedown" || userInput == "PD")
+				{
+					idx -= -columnCount;
+					if(idx &gt;= itemCountMove)
+						idx = itemCountMove-1;
+				}
+				else
+				{
+					idx -= columnCount;
+					if(idx &lt; 0)
+					idx = 0;
+				}
+				setFocusItemIndex(idx);
+				setItemFocus(idx);
+				redrawDisplay();
+				ret = "true";
+			}
+			ret;
+		</script>
+	</onUserInput>
+</mediaDisplay>
+
