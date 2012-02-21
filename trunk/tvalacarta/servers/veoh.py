@@ -5,68 +5,79 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
+import os
 import urlparse,urllib2,urllib,re
-import os.path
-import sys
-import xbmc
-import scrapertools
-import config
 
-def getvideo(code):
-	xbmc.output("[veoh.py] code="+code)
-	url = 'http://www.flashvideodownloader.org/download.php?u=http://www.veoh.com/browse/videos/category/entertainment/watch/'+code
-	xbmc.output("[veoh.py] url="+url)
-	data = scrapertools.cachePage(url)
-	#xbmc.output("[veoh.py] data="+data)
-	patronvideos  = '<a href="(http://content.veoh.com.*?)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	movielink=""
-	if len(matches)>0:
-		movielink = matches[0]
-	xbmc.output("[veoh.py] movielink="+movielink)
-	
-	import httplib
-	parsedurl = urlparse.urlparse(movielink)
-	#xbmc.output("[veoh.py] parsedurl="+parsedurl)
-	print "parsedurl=",parsedurl
+from core import scrapertools
+from core import logger
+from core import config
 
-	try:
-		xbmc.output("[veoh.py] 1")
-		host = parsedurl.netloc
-	except:
-		xbmc.output("[veoh.py] 2")
-		host = parsedurl[1]
-	xbmc.output("[veoh.py] host="+host)
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[veoh.py] get_video_url(page_url='%s')" % page_url)
 
-	try:
-		xbmc.output("[veoh.py] 1")
-		query = parsedurl.path+parsedurl.query
-	except:
-		xbmc.output("[veoh.py] 2")
-		query = parsedurl[2]+parsedurl[3]
-	xbmc.output("[veoh.py] query = " + query)
-	query = urllib.unquote( query )
-	xbmc.output("[veoh.py] query = " + query)
+    video_urls = []
 
-	try:
-		xbmc.output("[veoh.py] 1")
-		params = parsedurl.params
-	except:
-		xbmc.output("[veoh.py] 2")
-		params = parsedurl[4]
-	xbmc.output("[veoh.py] params = " + params)
+    # Lo extrae a partir de flashvideodownloader.org
+    if page_url.startswith("http://"):
+        url = 'http://www.flashvideodownloader.org/download.php?u='+page_url
+    else:
+        url = 'http://www.flashvideodownloader.org/download.php?u=http://www.veoh.com/watch/'+page_url
+    logger.info("[veoh.py] url="+url)
+    data = scrapertools.cachePage(url)
+    
+    # Extrae el vídeo
+    patronvideos  = '<a href="(http://content.veoh.com.*?)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        video_urls.append( ["[veoh]",matches[0]] )
+    
+    for video_url in video_urls:
+        logger.info("[veoh.py] %s - %s" % (video_url[0],video_url[1]))
 
-	import httplib
-	conn = httplib.HTTPConnection(host)
-	conn.request("GET", query+"?"+params)
-	response = conn.getresponse()
-	location = response.getheader("location")
-	conn.close()
+    return video_urls
 
-	if location!=None:
-		xbmc.output("[veoh.py] Encontrado header location")
-		xbmc.output("[veoh.py] location="+location)
-	else:
-		location=""
-	
-	return location
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    patronvideos  = '"http://www.veoh.com/.*?permalinkId=([^"]+)"'
+    logger.info("[veoh.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[veoh]"
+        if match.count("&")>0:
+            primera = match.find("&")
+            url = match[:primera]
+        else:
+            url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'veoh' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos = 'var embed_code[^>]+>   <param name="movie" value="http://www.veoh.com/static/swf/webplayer/WebPlayer.swf.*?permalinkId=(.*?)&player=videodetailsembedded&videoAutoPlay=0&id=anonymous"></param>'
+    logger.info("[veoh.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[veoh]"
+        if match.count("&")>0:
+            primera = match.find("&")
+            url = match[:primera]
+        else:
+            url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'veoh' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

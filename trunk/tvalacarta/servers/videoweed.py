@@ -5,32 +5,76 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
-import re, sys, os
-import urlparse, urllib, urllib2
-import os.path
-import sys
-import xbmc
-import xbmcplugin
-import xbmcgui
-import megavideo
-import scrapertools
-import config
+import re, urlparse, urllib, urllib2
+import os
 
-DEBUG = True
+from core import scrapertools
+from core import logger
+from core import config
 
-# Obtiene la URL que hay detrás de un enlace a linkbucks
-def geturl(url):
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
+    logger.info("[videoweed.py] get_video_url(page_url='%s')" % page_url)
 
-	# Descarga la página de linkbucks
-	data = scrapertools.cachePage(url)
-
-	# Extrae la URL real
-	patronvideos  = '"file","([^"]+)"'
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)
+    data = scrapertools.cache_page(page_url)
+    patron = 'flashvars.file="(.*?)";'
+    matches = re.compile(patron).findall(data)
+    for match in matches:
+    	logger.info("File = "+match)
+	flashvarsfile = match
+    patron = 'flashvars.filekey="(.*?)";'
+    matches = re.compile(patron).findall(data)
+    for match in matches:
+    	logger.info("Key = "+match)
+	flashvarsfilekey = match
+    post="key="+flashvarsfilekey+"&user=undefined&codes=1&pass=undefined&file="+flashvarsfile
+    url = "http://www.videoweed.es/api/player.api.php?"+post
+    data = scrapertools.cache_page(url, post=post)
+    logger.info(data)
+    patron = 'url=(.*?)&title='
+    matches = re.compile(patron).findall(data)
+    scrapertools.printMatches(matches)
+    
+    video_urls = []
+    logger.info(matches[0])
+    video_urls.append( ["FLV [videoweed]",matches[0]])
 	
-	devuelve = "";
-	if len(matches)>0:
-		devuelve = matches[0]
+    return video_urls
 
-	return devuelve
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    patronvideos  = '(http://www.videoweed.[a-z]+/file/[a-zA-Z0-9]+)'
+    logger.info("[videoweed.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[Videoweed]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videoweed' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #logger.info("1) Videoweed formato islapeliculas") #http://embed.videoweed.com/embed.php?v=h56ts9bh1vat8
+    patronvideos  = "(http://embed.videoweed.*?)&"
+    logger.info("[videoweed.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[Videoweed]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videoweed' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

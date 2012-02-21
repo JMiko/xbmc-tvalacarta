@@ -25,9 +25,9 @@ from _ClientCookie import VERSION, __doc__, \
 from _LWPCookieJar import LWPCookieJar, lwp_cookie_str
 from _MozillaCookieJar import MozillaCookieJar
 try:
-	from _MSIECookieJar import MSIECookieJar
+    from _MSIECookieJar import MSIECookieJar
 except:
-	pass
+    pass
 try:
     import bsddb
 except ImportError:

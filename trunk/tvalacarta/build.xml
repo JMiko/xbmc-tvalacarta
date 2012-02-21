@@ -20,6 +20,33 @@
 			<format property="hoy" pattern="yyyyMMdd" locale="es,ES"/>
 		</tstamp>
 	</target>
+    
+    <target name="copy-from-pelisalacarta">
+        <copy todir="core" overwrite="yes">
+            <fileset dir="../pelisalacarta/core">
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+			</fileset>
+        </copy>
+        <copy todir="lib" overwrite="yes">
+            <fileset dir="../pelisalacarta/lib">
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+			</fileset>
+        </copy>
+        <copy todir="platformcode" overwrite="yes">
+            <fileset dir="../pelisalacarta/platformcode">
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+			</fileset>
+        </copy>
+        <copy todir="servers" overwrite="yes">
+            <fileset dir="../pelisalacarta/servers">
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+			</fileset>
+        </copy>
+    </target>
 
     <!-- clean =============================================== -->
     <target name="clean" description="Erases target directory" depends="init">

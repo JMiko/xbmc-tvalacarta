@@ -98,12 +98,12 @@ except:
 
     # Return 1 for leap years, 0 for non-leap years
     def isleap(year):
-	return year % 4 == 0 and (year % 100 <> 0 or year % 400 == 0)
+    return year % 4 == 0 and (year % 100 <> 0 or year % 400 == 0)
 
     # Return number of leap years in range [y1, y2)
     # Assume y1 <= y2 and no funny (non-leap century) years
     def leapdays(y1, y2):
-	return (y2+3)/4 - (y1+3)/4
+    return (y2+3)/4 - (y1+3)/4
 
     EPOCH = 1970
     def timegm(tuple):
@@ -220,12 +220,12 @@ def _str2time(day, mon, yr, hr, min, sec, tz):
     sec = int(sec)
 
     if yr < 1000:
-	# find "obvious" year
-	cur_yr = time.localtime(time.time())[0]
-	m = cur_yr % 100
-	tmp = yr
-	yr = yr + cur_yr - m
-	m = m - tmp
+    # find "obvious" year
+    cur_yr = time.localtime(time.time())[0]
+    m = cur_yr % 100
+    tmp = yr
+    yr = yr + cur_yr - m
+    m = m - tmp
         if abs(m) > 50:
             if m > 0: yr = yr + 100
             else: yr = yr - 100
@@ -257,7 +257,7 @@ loose_http_re = re.compile(
         (?:\s+|[-\/])
     (\d+)              # year
     (?:
-	  (?:\s+|:)    # separator before clock
+      (?:\s+|:)    # separator before clock
        (\d\d?):(\d\d)  # hour:min
        (?::(\d\d))?    # optional seconds
     )?                 # optional clock

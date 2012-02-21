@@ -138,7 +138,7 @@ def videolist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = item.show , page=scrapedpage, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="directo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = item.show , page=scrapedpage, folder=False) )
 
     patron = '<a class="list-siguientes" href="([^"]+)" title="Ver siguientes archivos">'
     matches = re.compile(patron,re.DOTALL).findall(data)

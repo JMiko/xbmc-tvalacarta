@@ -6,50 +6,104 @@
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
-import xbmc
-import config
+import os
 
-def Tutv(url):
-	xbmc.output("[tutv.py] url="+url)
+from core import scrapertools
+from core import logger
+from core import config
 
-	if url.startswith("http://"):
-		patronvideos  = '"http://tu.tv.*?\&xtp\=([^"]+)"'
-		matches = re.compile(patronvideos,re.DOTALL).findall('"'+url+'"')
-		i = 0
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[tutv.py] get_video_url(page_url='%s')" % page_url)
 
-		if len(matches)==0:
-			patronvideos  = '"http://www.tu.tv.*?\&xtp\=([^"]+)"'
-			matches = re.compile(patronvideos,re.DOTALL).findall('"'+url+'"')
+    # Busca el ID en la URL
+    id = extract_id(page_url)
+    
+    # Si no lo tiene, lo extrae de la página
+    if id=="":
+        # La descarga
+        data = scrapertools.cache_page(page_url)
+        patron = '<link rel="video_src" href="([^"]+)"/>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if len(matches)>0:
+            id = extract_id(matches[0])
+        else:
+            id = ""
 
-		i = 0
-		codigo = matches[0]
-	else:
-		codigo = url
+    # Descarga el descriptor
+    url = "http://tu.tv/visualizacionExterna2.php?web=undefined&codVideo="+id
+    data = scrapertools.cache_page(url)
 
-	#for match in matches:
-	#    print "%d %s" % (i , match)
-	#    i = i + 1
+    # Obtiene el enlace al vídeo
+    patronvideos  = 'urlVideo0=([^\&]+)\&'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #scrapertools.printMatches(matches)
+    url = urllib.unquote_plus( matches[0] )
+    video_urls = [ ["[tu.tv]",url] ]
 
-	url = "http://tu.tv/visualizacionExterna2.php?web=undefined&codVideo="+codigo
-	#print "-------------------------------------------------------"
-	#print url
-	#print "-------------------------------------------------------"
+    for video_url in video_urls:
+        logger.info("[tutv.py] %s - %s" % (video_url[0],video_url[1]))
 
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	data=response.read()
-	response.close()
-	#print data
+    return video_urls
 
-	patronvideos  = 'urlVideo0=([^\&]+)\&'
+def extract_id(text):
+    patron = "xtp\=([a-zA-Z0-9]+)"
+    matches = re.compile(patron,re.DOTALL).findall(text)
+    if len(matches)>0:
+        devuelve = matches[0]
+    else:
+        devuelve = ""
+    
+    return devuelve
 
-	matches = re.compile(patronvideos,re.DOTALL).findall(data)
-	i = 0
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
 
-	#for match in matches:
-	#    print "%d %s" % (i , match)
-	#    i = i + 1
-	url = urllib.unquote_plus( matches[0] )
+    patronvideos  = '<param name="movie" value="(http://tu.tv[^"]+)"'
+    logger.info("[tutv.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-	return url
+    for match in matches:
+        titulo = "[tu.tv]"
+        url = match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'tutv' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = '<param name="movie" value="(http://www.tu.tv[^"]+)"'
+    logger.info("[tutv.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[tut.v]"
+        url = match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'tutv' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = '<embed src="(http://tu.tv/[^"]+)"'
+    logger.info("[tutv.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[tut.v]"
+        url = match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'tutv' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

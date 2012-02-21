@@ -11,17 +11,40 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-from core import config
+try:
+    from core import config
+except:
+    import config
 
-exec "import platform."+config.get_platform()+".logger as platformlogger"
+try:
+    exec "import platformcode."+config.get_platform()+".logger as platformlogger"
+    default = False
+except:
+    default = True
 
 loggeractive = (config.get_setting("debug")=="true")
 
+def log_enable(active):
+    global loggeractive
+    loggeractive = active
+
 def info(texto):
-    if loggeractive: platformlogger.info(texto)
+    if loggeractive:
+        if not default:
+            platformlogger.info(texto)
+        else:
+            print texto
 
 def debug(texto):
-    if loggeractive: platformlogger.info(texto)
+    if loggeractive:
+        if not default:
+            platformlogger.info(texto)
+        else:
+            print texto
 
 def error(texto):
-    if loggeractive: platformlogger.info(texto)
+    if loggeractive:
+        if not default:
+            platformlogger.info(texto)
+        else:
+            print texto

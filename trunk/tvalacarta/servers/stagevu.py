@@ -6,37 +6,86 @@
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
-import config
+import os
 
-def Stagevu(url):
-    #print "-------------------------------------------------------"
-    #print url
-    #print "-------------------------------------------------------"
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    response = urllib2.urlopen(req)
-    data=response.read()
-    response.close()
-    #print data
+from core import scrapertools
+from core import logger
+from core import config
 
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[stagevu.py] get_video_url(page_url='%s')" % page_url)
+
+    video_urls = []
+
+    # Descarga la página del vídeo
+    data = scrapertools.cache_page( page_url )
+
+    # Busca el vídeo de dos formas distintas
     patronvideos  = '<param name="src" value="([^"]+)"'
-
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    i = 0
-
-    #for match in matches:
-    #    print "%d %s" % (i , match)
-    #    i = i + 1
+    
     if len(matches) > 0:
-      return matches[0]
+        video_urls = [[ "[stagevu]" , matches[0] , 30 ]]
     else:
-#      patronvideos = 'type="video/divx" src="([^"]+)"'
-      patronvideos = 'src="([^"]+stagevu.com/[^i][^"]+)"' #Forma src="XXXstagevu.com/ y algo distinto de i para evitar images e includes
-      matches = re.findall(patronvideos,data)
-      if len(matches)>0:
-        return matches[0]
-      else:
-        return "ERROR"
-#print "-------------------------------------------------------"
-#url="http://stagevu.com/video/jnukfujabtdl"
-#print Stagevu(url)
+        patronvideos = 'src="([^"]+stagevu.com/[^i][^"]+)"' #Forma src="XXXstagevu.com/ y algo distinto de i para evitar images e includes
+        matches = re.findall(patronvideos,data)
+        if len(matches)>0:
+            video_urls = [[ "[stagevu]" , matches[0] , 30 ]]
+
+    for video_url in video_urls:
+        logger.info("[stagevu.py] %s - %s" % (video_url[0],video_url[1]))
+
+    return video_urls
+
+# Encuentra vídeos del servidor en el texto pasado
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    patronvideos  = '(http://stagevu.com/video/[A-Z0-9a-z]+)'
+    logger.info("[stagevu.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[stagevu]"
+        url = match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'stagevu' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = 'http://stagevu.com.*?uid\=([A-Z0-9a-z]+)'
+    logger.info("[stagevu.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[stagevu]"
+        url = "http://stagevu.com/video/"+match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'stagevu' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = 'http://[^\.]+\.stagevu.com/v/[^/]+/(.*?).avi'
+    logger.info("[stagevu.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[stagevu]"
+        url = "http://stagevu.com/video/"+match
+    
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'stagevu' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

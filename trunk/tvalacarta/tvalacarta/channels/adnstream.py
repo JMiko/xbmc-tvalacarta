@@ -8,15 +8,9 @@ import urlparse,re
 import urllib
 import os
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 logger.info("[adnstream.py] init")
 
@@ -24,7 +18,7 @@ DEBUG = False
 CHANNELNAME = "adnstream"
 
 IMAGES_PATH = os.path.join( os.getcwd(), 'resources' , 'images' , 'adnstream' )
-ADNURL = 'http://www.adnstream.tv/canales.php?prf=box'
+ADNURL = 'http://www.adnstream.com/canales.php?prf=box'
 
 MAX_SEARCH_RESULTS = "50"
 
@@ -77,10 +71,10 @@ def mainlist(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     if primera:
-        itemlist.append( Item(channel=CHANNELNAME, title="Los más valorados" , thumbnail=os.path.join(IMAGES_PATH, "masvalorados.jpg"), url="http://www.adnstream.tv/canal_magico.new.php?i=0&n=30&c=masvalorados" , action="mainlist" , folder=True) )
-        itemlist.append( Item(channel=CHANNELNAME, title="Los más vistos" , thumbnail=os.path.join(IMAGES_PATH, "masvistos.jpg") , url="http://www.adnstream.tv/canal_magico.new.php?i=0&n=30&c=masvistos" , action="mainlist" , folder=True) )
-        itemlist.append( Item(channel=CHANNELNAME, title="Novedades" , thumbnail=os.path.join(IMAGES_PATH, "New.jpg") , url="http://www.adnstream.tv/canal_magico.new.php?i=0&n=30&c=novedades" , action="mainlist" , folder=True) )
-        itemlist.append( Item(channel=CHANNELNAME, title="Destacados" , thumbnail=os.path.join(IMAGES_PATH, "Destacados.jpg") , url="http://www.adnstream.tv/canales.php?c=destacados" , action="mainlist" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title="Los más valorados" , thumbnail=os.path.join(IMAGES_PATH, "masvalorados.jpg"), url="http://www.adnstream.com/canal_magico.new.php?i=0&n=30&c=masvalorados" , action="mainlist" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title="Los más vistos" , thumbnail=os.path.join(IMAGES_PATH, "masvistos.jpg") , url="http://www.adnstream.com/canal_magico.new.php?i=0&n=30&c=masvistos" , action="mainlist" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title="Novedades" , thumbnail=os.path.join(IMAGES_PATH, "New.jpg") , url="http://www.adnstream.com/canal_magico.new.php?i=0&n=30&c=novedades" , action="mainlist" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title="Destacados" , thumbnail=os.path.join(IMAGES_PATH, "Destacados.jpg") , url="http://www.adnstream.com/canales.php?c=destacados" , action="mainlist" , folder=True) )
 
 
     return itemlist
@@ -106,7 +100,7 @@ def searchresults(term):
     itemlist = []
 
     term = term.replace(" ", "+")
-    url = "http://www.adnstream.tv/adn/buscador.php?q="+term+"&n="+MAX_SEARCH_RESULTS+"&i=0&cachebuster=1243592712726"
+    url = "http://www.adnstream.com/adn/buscador.php?q="+term+"&n="+MAX_SEARCH_RESULTS+"&i=0&cachebuster=1243592712726"
     logger.info("url="+url)
 
     # Descarga la página
