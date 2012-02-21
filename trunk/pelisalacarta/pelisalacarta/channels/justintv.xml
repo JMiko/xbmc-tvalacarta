@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<version>
+	<name>justintv</name>
+	<tag>1</tag>
+	<date>21/02/2012</date>
+	<changes>Fixed issue 46, 
+	         No reproduce canal en vivo despues de hacer una busqueda 
+	</changes>
+</version>
