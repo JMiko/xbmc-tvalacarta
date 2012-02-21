@@ -1,28 +1,23 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para blip.tv
+# Conector para bliptv
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import re
 import urllib
 
-try:
-    from core import scrapertools
-    from core import logger
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
+from core import scrapertools
+from core import logger
 
-# Resuelve los videos de blip.tv que se usan en el embed
-# 
-def geturl(bliptv_url,recurse=True):
-    logger.info("[bliptv.py] bliptv_url="+bliptv_url)
+# Returns an array of possible video url's from the page_url
+def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
+    logger.info("[bliptv.py] get_video_url(page_url='%s')" % page_url)
 
-    devuelve = ""
+    video_urls = []
 
-    if bliptv_url.startswith("http://blip.tv/play"):    
-        redirect = scrapertools.getLocationHeaderFromResponse(bliptv_url)
+    if page_url.startswith("http://blip.tv/play"):    
+        redirect = scrapertools.get_header_from_response(page_url,header_to_get="location")
         logger.info("[bliptv.py] redirect="+redirect)
         
         patron='file\=(.*?)$'
@@ -47,7 +42,32 @@ def geturl(bliptv_url,recurse=True):
             scrapertools.printMatches(matches)
 
             for match in matches:
-                logger.info("url="+str(match[0]))
-                devuelve = match[0]
+                video_url = ["%s [blip.tv]" % match[1] , match[0]]
+                video_urls.append( video_url )
+
+    for video_url in video_urls:
+        logger.info("[bliptv.py] %s - %s" % (video_url[0],video_url[1]))
+
+    return video_urls
+
+# Encuentra vídeos de este servidor en el texto pasado
+def find_videos(text):
+    encontrados = set()
+    devuelve = []
+
+    # Código embed de Blip.tv
+    patronvideos  = '(http://blip.tv/play/[A-Z0-9a-z]+.html)'
+    logger.info("[bliptv.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[blip.tv]"
+        url = match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'bliptv' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
     return devuelve

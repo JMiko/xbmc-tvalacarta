@@ -21,7 +21,6 @@ import re
 import urllib,urllib2
 import time
 import socket
-import gzip,StringIO
 import config
 import logger
 
@@ -326,97 +325,6 @@ entitydefs3 = {
     u'æ':       u'ae'
 }
 
-def getDownloadPath():
-    
-    # La ruta de descarga es un parámetro
-    downloadpath = config.get_setting("downloadpath")
-    
-    # No está fijada, intenta forzarla
-    try:
-        if downloadpath == "":
-            logger.info("[downloadtools.py] downloadpath está vacio")
-            
-            # Busca un setting del skin (Telebision)
-            try:
-                import xbmc
-                downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-                logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
-            except:
-                downloadpath = ""
-            
-            # No es Telebision, fuerza el directorio home de XBMC
-            if downloadpath == "":
-                downloadpath = os.path.join (config.get_data_path(),"downloads")
-                logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-                if not os.path.exists(downloadpath):
-                    logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
-                    os.mkdir(downloadpath)
-                config.setSetting("downloadpath",downloadpath)
-            
-            # Es Telebision, lo pone en el skin
-            else:
-                # guardar setting del skin en setting del plugin
-                downloadpath = xbmc.translatePath( downloadpath )
-                logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
-                config.setSetting("downloadpath", downloadpath)
-    except:
-        pass
-    
-    logger.info("[downloadtools.py] downloadpath="+downloadpath)
-    
-    try:
-        os.mkdir(downloadpath)
-    except:
-        pass
-
-    return downloadpath
-
-def getDownloadListPath():
-    
-    # La ruta de la lista de descargas es un parámetro
-    downloadpath = config.get_setting("downloadlistpath")
-    
-    # No está fijada, intenta forzarla
-    try:
-        if downloadpath == "":
-            logger.info("[downloadtools.py] downloadpath está vacio")
-            
-            # Busca un setting del skin (Telebision)
-            try:
-                import xbmc
-                downloadpath = xbmc.getInfoLabel('Skin.String(downloadpath)')
-                logger.info("[downloadtools.py] downloadpath en el skin es "+downloadpath)
-            except:
-                pass
-            
-            # No es Telebision, fuerza el directorio home de XBMC
-            if downloadpath == "":
-                downloadpath = os.path.join (config.get_data_path(),"downloads","list")
-                logger.info("[downloadtools.py] getDownloadPath: downloadpath=%s" % downloadpath)
-                if not os.path.exists(downloadpath):
-                    logger.info("[downliadtools.py] download path doesn't exist:"+downloadpath)
-                    os.mkdir(downloadpath)
-                config.setSetting("downloadlistpath",downloadpath)
-            
-            # Es Telebision, lo pone en el skin
-            else:
-                # guardar setting del skin en setting del plugin
-                downloadpath = os.path.join( downloadpath , "list" )
-                downloadpath = xbmc.translatePath( downloadpath )
-                logger.info("[downloadtools.py] downloadpath nativo es "+downloadpath)
-                config.setSetting("downloadlistpath", downloadpath)
-    except:
-        pass
-    
-    logger.info("[downloadtools.py] downloadlistpath="+downloadpath)
-    
-    try:
-        os.mkdir(downloadpath)
-    except:
-        pass
-
-    return downloadpath
-
 def limpia_nombre_caracteres_especiales(s):
     if not s:
         return ''
@@ -438,47 +346,57 @@ def limpia_nombre_excepto_1(s):
         return ''
 
     # Titulo de entrada
+    '''
     try:
         logger.info("s1="+urllib.quote_plus(s))
     except:
         logger.info("s1=no printable")
+    '''
 
     # Convierte a unicode
     try:
         s = unicode( s, "utf-8" )
     except:
-        logger.info("no es utf-8")
+        #logger.info("no es utf-8")
         try:
             s = unicode( s, "iso-8859-1" )
         except:
-            logger.info("no es iso-8859-1")
+            #logger.info("no es iso-8859-1")
             pass
+    '''
     try:
         logger.info("s2="+urllib.quote_plus(s))
     except:
         logger.info("s2=no printable")
+    '''
 
     # Elimina acentos
     s = limpia_nombre_sin_acentos(s)
+    '''
     try:
         logger.info("s3="+urllib.quote_plus(s))
     except:
-        logger.info("s3=no printable")    
+        logger.info("s3=no printable")
+    '''
 
     # Elimina caracteres prohibidos
     validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~."
     stripped = ''.join(c for c in s if c in validchars)
+    '''
     try:
         logger.info("s4="+urllib.quote_plus(stripped))
     except:
         logger.info("s4=no printable")
+    '''
     
     # Convierte a iso
     s = stripped.encode("iso-8859-1")
+    '''
     try:
         logger.info("s5="+urllib.quote_plus(s))
     except:
         logger.info("s5=no printable")
+    '''
 
     return s;
 
@@ -502,9 +420,23 @@ def getfilefromtitle(url,title):
         nombrefichero = limpia_nombre_excepto_1(nombrefichero)
     else:
         nombrefichero = title + url[-4:]
+        if "videobb" in url or "videozer" in url:
+            nombrefichero = title + ".flv"
+        if "videobam" in url:
+            nombrefichero = title+"."+url.rsplit(".",1)[1][0:3]
+        if "filenium" in url:
+            # Content-Disposition	filename="filenium_El.Gato.con.Botas.TSScreener.Latino.avi"
+            import scrapertools
+            content_disposition_header = scrapertools.get_header_from_response(url,header_to_get="Content-Disposition")
+            logger.info("content_disposition="+content_disposition_header)
+            partes=content_disposition_header.split("=")
+            nombrefichero = title + partes[1][-5:-1]
+
+        nombrefichero = limpia_nombre_caracteres_especiales(nombrefichero)
 
     logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
-    fullpath = os.path.join( getDownloadPath() , nombrefichero )
+
+    fullpath = os.path.join( config.get_setting("downloadpath") , nombrefichero )
     logger.info("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
     
     return fullpath
@@ -513,7 +445,7 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
-def downloadfile(url,nombrefichero):
+def downloadfile(url,nombrefichero,headers=[]):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
     # antes
@@ -542,15 +474,27 @@ def downloadfile(url,nombrefichero):
     try:
         import xbmcgui
         progreso = xbmcgui.DialogProgress()
-        progreso.create( config.get_setting("plugin.name") , "Descargando..." , url , nombrefichero )
+        progreso.create( "plugin" , "Descargando..." , url , nombrefichero )
+        #progreso.create( "plugin" , "Descargando..." , os.path.basename(nombrefichero)+" desde "+urlparse.urlparse(url).hostname )
     except:
         progreso = ""
+
+    # Login y password Filenium
+    # http://abcd%40gmail.com:mipass@filenium.com/get/Oi8vd3d3/LmZpbGVz/ZXJ2ZS5j/b20vZmls/ZS9kTnBL/dm11/b0/?.zip
+    if "filenium" in url:
+        from servers import filenium
+        url , authorization_header = filenium.extract_authorization_header(url)
+        headers.append( [ "Authorization", authorization_header ] )
 
     # Timeout del socket a 60 segundos
     socket.setdefaulttimeout(10)
 
     h=urllib2.HTTPHandler(debuglevel=0)
     request = urllib2.Request(url)
+    for header in headers:
+        logger.info("[downloadtools.py] Header="+header[0]+": "+header[1])
+        request.add_header(header[0],header[1])
+
     if existSize > 0:
         request.add_header('Range', 'bytes=%d-' % (existSize, ))
 
@@ -617,6 +561,7 @@ def downloadfile(url,nombrefichero):
                             tiempofalta=0
                         #logger.info(sec_to_hms(tiempofalta))
                         try:
+                            #progreso.update( percent , "Descargando %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent),"Falta %s - Velocidad %.2f Kb/s" % ( sec_to_hms(tiempofalta) , velocidad/1024 ), os.path.basename(nombrefichero) )
                             progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
                         except:
                             pass
@@ -730,9 +675,9 @@ def downloadfileGzipped(url,pathfichero):
             return -2
     nombreficheroBase = os.path.basename(nombrefichero)
     if len(nombreficheroBase) == 0:
-        print "Buscando nombre en el Headers de respuesta"
+        logger.info("Buscando nombre en el Headers de respuesta")
         nombreBase = connexion.headers["Content-Disposition"]
-        print nombreBase
+        logger.info(nombreBase)
         patron = 'filename="([^"]+)"'
         matches = re.compile(patron,re.DOTALL).findall(nombreBase)
         if len(matches)>0:
@@ -740,8 +685,7 @@ def downloadfileGzipped(url,pathfichero):
             titulo = GetTitleFromFile(titulo)
             nombrefichero = os.path.join(pathfichero,titulo)
         else:
-            print "Nombre del fichero no encontrado"
-            print "Colocando nombre temporal :sin_nombre.txt"
+            logger.info("Nombre del fichero no encontrado, Colocando nombre temporal :sin_nombre.txt")
             titulo = "sin_nombre.txt"
             nombrefichero = os.path.join(pathfichero,titulo)            
     totalfichero = int(connexion.headers["Content-Length"])
@@ -763,7 +707,9 @@ def downloadfileGzipped(url,pathfichero):
     bloqueleido = connexion.read(blocksize)
     
     try:
+        import StringIO
         compressedstream = StringIO.StringIO(bloqueleido)
+        import gzip
         gzipper = gzip.GzipFile(fileobj=compressedstream)
         bloquedata = gzipper.read()
         gzipper.close()
@@ -793,6 +739,8 @@ def downloadfileGzipped(url,pathfichero):
                     before = time.time()
                     bloqueleido = connexion.read(blocksize)
                     
+                    import gzip
+                    import StringIO
                     compressedstream = StringIO.StringIO(bloqueleido)
                     gzipper = gzip.GzipFile(fileobj=compressedstream)
                     bloquedata = gzipper.read()

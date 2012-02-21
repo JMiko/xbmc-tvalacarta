@@ -133,12 +133,12 @@ def channels_list():
     channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
     channelslist.append([ "Aragón TV"                  , "aragontv"             , "" , "ES" , "A" , "generic"  ])  # jesus 25/01/2012
     channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
-    channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
-    channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
-    channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
+    #channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
+    #channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
+    #channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
     channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
     #channelslist.append([ "Cuatro"                     , "cuatro"               , "" , "ES" , "N" , "generic" ]) # jesus 02/09/2011
-    channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
+    #channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
     channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
     channelslist.append([ "Euronews"                   , "euronews"             , "" , "ES" , "T" , "xbmc"  ])
@@ -149,6 +149,7 @@ def channels_list():
     channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
     channelslist.append([ "Mallorca TV"                , "tvmallorca"           , "" , "ES" , "L" , "xbmc"  ])
     channelslist.append([ "Meristation"                , "meristation"          , "" , "ES" , "T" , "xbmc"  ])
+    channelslist.append([ "Mitele"                     , "mitele"               , "" , "ES" , "T" , "generic"  ])
     #addfolder("Plus TV","plus","mainlist")
     channelslist.append([ "Publico.tv"                 , "publicotv"            , "" , "ES" , "I" , "xbmc"  ])
     channelslist.append([ "RTVA (Andalucia)"           , "rtva"                 , "" , "ES" , "A" , "generic"  ])
@@ -169,6 +170,7 @@ def channels_list():
     return channelslist
 
 def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
+    #print "addfolder"
     if category == "":
         try:
             category = unicode( nombre, "utf-8" ).encode("iso-8859-1")
@@ -176,20 +178,23 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
             pass
     
     import xbmc
-    
-    #print "thumbnail_type="+config.get_setting("thumbnail_type")
+
     if config.get_setting("thumbnail_type")=="0":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'posters' ) )
-    else:
-        IMAGES_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources' , 'images' , 'banners' ) )
+        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
+    elif config.get_setting("thumbnail_type")=="1":
+        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
+    elif config.get_setting("thumbnail_type")=="2":
+        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'squares' ) )
     
     if config.get_setting("thumbnail_type")=="0":
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
-    else:
-        WEB_PATH = "http://www.mimediacenter.info/xbmc/tvalacarta/banners/"
+        WEB_PATH = "http://tvalacarta.mimediacenter.info/posters/"
+    elif config.get_setting("thumbnail_type")=="1":
+        WEB_PATH = "http://tvalacarta.mimediacenter.info/banners/"
+    elif config.get_setting("thumbnail_type")=="2":
+        WEB_PATH = "http://tvalacarta.mimediacenter.info/squares/"
 
     if config.get_platform()=="boxee":
-        IMAGES_PATH="http://www.mimediacenter.info/xbmc/tvalacarta/posters/"
+        IMAGES_PATH="http://tvalacarta.mimediacenter.info/posters/"
 
     if thumbnailname=="":
         thumbnailname = channelname
@@ -208,6 +213,7 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
 
     import xbmcgui
     import xbmcplugin
+    #logger.info("thumbnail="+thumbnail)
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
     itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
     xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)

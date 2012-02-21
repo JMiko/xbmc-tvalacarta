@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para Youtube
@@ -7,26 +7,99 @@
 import urlparse,urllib2,urllib,re,httplib
 from core import config
 from core import logger
-
 from core import scrapertools
-
-import gdata.youtube
-import gdata.youtube.service
-
 from core.item import Item
 
-_VALID_URL = r'^((?:http://)?(?:\w+\.)?youtube\.com/(?:(?:v/)|(?:(?:watch(?:\.php)?)?\?(?:.+&)?v=)))?([0-9A-Za-z_-]+)(?(1).+)?$'
-AVAILABLE_FORMATS  = ['13','17','5','34','18','35','22','37']
-AVAILABLE_FORMATS2 = {'13':'Baja','17':'Media (3gp)','5':'240p (FLV)','34':'360p (FLV)','18':'360p (MP4)','35':'480p (FLV)','22':'720p (HD)','37':'1080p (HD)'}
-std_headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2',
-    'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
-    'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
-    'Accept-Language': 'en-us,en;q=0.5',
-}
+def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+    logger.info("[youtube.py] get_video_url(page_url='%s')" % page_url)
+    video_urls = []
 
+    #page_url = "http://www.youtube.com/get_video_info?&video_id=zlZgGlwBgro"
+    if not page_url.startswith("http"):
+        page_url = "http://www.youtube.com/watch?v=%s" % page_url
+        
+    # Descarga
+    data = scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3']] , )
+    #logger.info("-------------------------------------------------------------------------------------------")
+    #logger.info(data)
+    #logger.info("-------------------------------------------------------------------------------------------")
+
+    options = data.split("&")
+    logger.info("-------------------------------------------------------------------------------------------")
+    for option in options:
+        logger.info(option)
+    logger.info("-------------------------------------------------------------------------------------------")
+    
+    patron = 'fmt_list=([^\&]+)\&'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)==0:
+        return
+    fmt_list = urllib.unquote(matches[0])
+    logger.info(fmt_list)
+    fmt_list_array = fmt_list.split(",")
+
+    patron = 'fmt_stream_map=([^\&]+)\&'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)==0:
+        return
+    fmt_stream_map = urllib.unquote(matches[0])
+    logger.info(fmt_stream_map)
+    fmt_stream_map_array = fmt_stream_map.split(",")
+
+    logger.info("-------------------------------------------------------------------------------------------")
+    logger.info("len(fmt_list_array)=%d" % len(fmt_list_array))
+    logger.info("len(fmt_stream_map_array)=%d" % len(fmt_stream_map_array))
+
+    CALIDADES = {'5':'240p','34':'360p','18':'360p','35':'480p','22':'720p','84':'720p','37':'1080p','38':'3072p','17':'144p','43':'360p','44':'480p','45':'720p'}
+
+    for i in range(len(fmt_list_array)):
+        try:
+            video_url = urllib.unquote(fmt_stream_map_array[i])
+            video_url = urllib.unquote(video_url[4:])
+            video_url = video_url.split(";")[0]
+            logger.info(" [%s] - %s" % (fmt_list_array[i],video_url))
+            
+            calidad = fmt_list_array[i].split("/")[0]
+            video_url = video_url.replace("flv&itag="+calidad,"flv")
+            video_url = video_url.replace("="+calidad+"&url=","")
+            resolucion = fmt_list_array[i].split("/")[1]
+    
+            formato = ""
+            patron = '&type\=video/([a-z0-9\-]+)'
+            matches = re.compile(patron,re.DOTALL).findall(video_url)
+            if len(matches)>0:
+                formato = matches[0]
+                if formato.startswith("x-"):
+                    formato = formato[2:]
+                formato = formato.upper()
+    
+            etiqueta = ""
+            try:
+                etiqueta = CALIDADES[calidad]
+            except:
+                pass
+            
+            if formato!="":
+                etiqueta = etiqueta + " (%s a %s) [youtube]" % (formato,resolucion)
+            else:
+                etiqueta = etiqueta + " (%s) [youtube]" % (resolucion)
+    
+            video_urls.append( [ etiqueta , video_url ])
+        except:
+            pass
+    
+    for video_url in video_urls:
+        logger.info(str(video_url))
+    
+    return video_urls
+    
+    
+    
 def getuploads(user,startindex,maxresults,channel="",action="play"):
     logger.info("[youtube.py] getuploads")
+
+    import gdata.youtube
+    import gdata.youtube.service
 
     # Obtiene el feed según el API de YouTube
     url = "http://gdata.youtube.com/feeds/api/users/%s/uploads?orderby=updated&start-index=%d&max-results=%d" % (user,startindex,maxresults)
@@ -68,6 +141,8 @@ def getuploads(user,startindex,maxresults,channel="",action="play"):
 
 def getplaylists(user,startindex,maxresults,channel="",action="playlist"):
     logger.info("[youtube.py] getplaylists")
+    import gdata.youtube
+    import gdata.youtube.service
 
     # Obtiene el feed segun el API de YouTube
     url = "http://gdata.youtube.com/feeds/api/users/%s/playlists?start-index=%d&max-results=%d" % (user,startindex,maxresults)
@@ -84,11 +159,14 @@ def getplaylists(user,startindex,maxresults,channel="",action="playlist"):
 
 def getplaylistvideos(url,startindex,maxresults,channel="",action="play"):
     logger.info("[youtube.py] getplaylistvideos")
+    import gdata.youtube
+    import gdata.youtube.service
+
     # Extrae el ID de la playlist
     patron = 'http://.*?/([^/]+)/$'
     matches = re.compile(patron,re.DOTALL).findall(url+"/")
     idplaylist = matches[0]
-    print idplaylist
+    logger.info(idplaylist)
     
     # Obtiene el feed segun el API de YouTube
     url = "http://gdata.youtube.com/feeds/api/playlists/%s?start-index=%d&max-results=%d" % (idplaylist,startindex,maxresults)
@@ -102,97 +180,6 @@ def getplaylistvideos(url,startindex,maxresults,channel="",action="play"):
         itemlist.append( item )
     
     return itemlist
-
-#### Busca las Urls originales de los formatos de calidad del video
-def geturls(id,data):
-    reglink = re.compile(r'fmt_stream_map=([^\&]+)\&')
-    match = reglink.search(data)
-    print 'Encontrado : %s'%str(match)
-    if match is not None:
-        reglink = match.group(1)
-        reglink = urllib.unquote_plus(reglink)
-        print 'los links : %s' %reglink
-        reglinks= reglink.split(",")
-        opciones = []
-        links = []
-        format = []
-        for link in reglinks:
-            try:
-                fmt = link.replace("|http","*http").split('*')
-                opciones.append("Calidad %s" %AVAILABLE_FORMATS2[fmt[0]])
-                links.append(fmt[1])
-                format.append(fmt[0])
-            except:
-                pass
-
-        import xbmcgui,xbmc                
-        dia = xbmcgui.Dialog()
-        seleccion = dia.select("Elige una Calidad", opciones)
-        logger.info("seleccion=%d calidad : (%s) %s " % (seleccion,format[seleccion],AVAILABLE_FORMATS2[format[seleccion]]))
-        if seleccion == -1:
-            return "Esc"
-        return links[seleccion]
-    else:
-        alertaNone()
-    return "Esc"
-    
-    
-def geturl( id ):
-    print '[pelisalacarta] youtube.py Modulo: geturl(%s)' %id
-    quality = int(config.get_setting("quality_youtube"))
-    if id != "":
-        url = "http://www.youtube.com/watch?v=%s" % id
-        print 'esta es la url: %s'%url
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        response=urllib2.urlopen(req)
-        data = response.read()
-        response.close()
-        if data != "":
-            print "Calidad encontrada es :%s" %quality
-            if quality == 8:
-                videourl = geturls(id,data)
-                return videourl
-            
-            regexp = re.compile(r'fmt_stream_map=([^\&]+)\&')
-            match = regexp.search(data)
-            print 'match : %s'%str(match)
-            videourl = ""
-            if match is not None:
-                fmt_stream_map = urllib.unquote_plus(match.group(1))
-                print "fmt_stream_map :%s" %fmt_stream_map
-                
-                videourls = dict (nvp.replace("|http","*http").split("*") for nvp in fmt_stream_map.split(","))
-                print videourls
-                
-                while True:
-                    Tquality = AVAILABLE_FORMATS[quality]
-                    print "AVAILABLE FORMAT :%s %s" %(Tquality,AVAILABLE_FORMATS2[Tquality])
-                    #videourl1 = "http://www.youtube.com/get_video?t=%s&video_id=%s&fmt=%s" % (  tParam ,id,Tquality)
-                    try:
-                        #videourl = verify_url( videourl1.encode( 'utf-8' ) ).decode( 'utf-8' )
-                        videourl = videourls[Tquality]
-                        break
-                    except:
-                        
-                        quality -= 1
-                        if quality == -1:
-                            break
-                try:
-                    print "Quality Found: (%s) %s " % (AVAILABLE_FORMATS[quality],AVAILABLE_FORMATS2[AVAILABLE_FORMATS[quality]])
-                except:
-                    print "Quality not available, result : -1"
-                if videourl == "":
-                    alertaCalidad()
-                    return "Esc" 
-                return videourl
-            else:
-                alertaNone()
-        else:
-            alertaNone()
-        
-    
-    return "Esc"
 
 def GetYoutubeVideoInfo(videoID,eurl=None):
     '''
@@ -226,7 +213,7 @@ def Extract_id(url):
     # Extract video id from URL
     mobj = re.match(_VALID_URL, url)
     if mobj is None:
-        print 'ERROR: URL invalida: %s' % url
+        logger.info('ERROR: URL invalida: %s' % url)
         alertaIDerror(url)
         return ""
     id = mobj.group(2)
@@ -234,22 +221,93 @@ def Extract_id(url):
 
 def verify_url( url ):
     # Extract real URL to video
-        request = urllib2.Request(url, None, std_headers)
-        data = urllib2.urlopen(request)
-        data.read(1)
-        url = data.geturl()
-        data.close()
-        return url
+    request = urllib2.Request(url, None, std_headers)
+    data = urllib2.urlopen(request)
+    data.read(1)
+    url = data.geturl()
+    data.close()
+    return url
         
 
 def alertaCalidad():
+    import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "La calidad elegida en configuracion",'no esta disponible o es muy baja',"elija otra calidad distinta y vuelva a probar")
     
 def alertaNone():
+    import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "!Aviso¡","El video no se encuentra disponible",'es posible que haya sido removido')
     
 def alertaIDerror(url):
+    import xbmcgui
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID de la URL"," %s" %url,'la URL es invalida ')
+
+def find_videos(data):
+    encontrados = set()
+    devuelve = []
+
+    #<a href="http://www.youtube.com/watch?v=je-692ngMY0" target="_blank">parte 1</a>
+    patronvideos = '<a href="(http://www.youtube.com/watch\?v\=[^"]+)".*?>(.*?)</a>'
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = match[1]
+        url = match[0]
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos = "<param name='movie' value='http://www.youtube.com/v/([^']+)'"
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = match[1]
+        url = "http://www.youtube.com/watch?v="+match[0]
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[YouTube]"
+        url = "http://www.youtube.com/watch?v="+match
+        
+        if url!='':
+            if url not in encontrados:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'youtube' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
+    
+    patronvideos  = 'www.youtube.*?v(?:=|%3D)([0-9A-Za-z_-]{11})'
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[YouTube]"
+        url = "http://www.youtube.com/watch?v="+match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    return devuelve

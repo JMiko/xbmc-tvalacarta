@@ -257,7 +257,6 @@ def getVideos(item):
 
             if (scrapedVideoUrl.startswith("rtmp")):
                 scrapedVideoUrl = scrapedVideoUrl.replace("mp4:", " playpath=mp4:")
-                scrapedVideoUrl = scrapedVideoUrl + " swfvfy=true swfurl=http://www.lasexta.com/media/swf/reproductor_sextatv/player_overlay.swf"
 
                 itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=scrapedVideoUrl, thumbnail=scrapedthumbnail, plot=scrapedplot, folder=False) )
             else:
