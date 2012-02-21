@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<!--
+#   CABECERA_MENUS.RSS
+-->
+
+<onEnter>
+	itemCountMove = getPageInfo("itemCount");
+	columnCount = 5;
+</onEnter>	
+<!-- 
+	itemBackgroundColor="0:0:0"
+	backgroundColor="0:0:0"
+
+-->
+<mediaDisplay name="threePartsView"
+	suffixXPC="2"
+	sideLeftWidthPC="0"
+	sideColorRight="28:35:51"
+	sideRightXPC="90"
+
+	showHeader="no"
+	headerCapWidthPC="0"
+
+	itemXPC="4"
+	itemYPC="15"
+	itemHeightPC="14"
+	itemWidthPC="70"
+	itemBackgroundColor="56:70:102"
+	itemGap="2"
+	rollItems="yes"
+	sliding="yes"
+
+	imageUnFocus="null"
+  	imageFocus="null"
+	menuWidthPC="0"
+
+	backgroundColor="28:35:51"
+	selectMenuOnRight="no"
+	forceFocusOnItem="yes"
+	forceFocusOnMenu="no"
+	showDefaultInfo="no"
+	itemPerPage="5"
+	infoYPC="90"
+>
+   <image offsetXPC=23 offsetYPC=3.5 widthPC=54 heightPC=9>image/bg-column-item.png</image> <!--  infobar.png</image> -->
+   <image offsetXPC=82 offsetYPC=3.5 widthPC=15 heightPC=15>image/pelisalacartalogo.png</image>
+   <text align="center" redraw="yes" offsetXPC=20 offsetYPC=5 widthPC=60 heightPC=6 fontSize=28 backgroundColor=-1:-1:-1 foregroundColor=200:200:200>
+       <script>getPageInfo("pageTitle");</script>
+   </text>
+   <image offsetXPC=75 offsetYPC=35 widthPC=25 heightPC=40><script>"/opt/pelisalacarta/resources/images/posters/"+getPageInfo("pageTitle")+".png";</script></image>
+
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_01.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_02.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_03.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_04.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_05.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_06.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_07.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_08.png </idleImage>
+	<!-- backgroundDisplay>       
+		<image offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100">image/videos.jpg</image>    
+	</backgroundDisplay -->
+
+     <text redraw="yes" align="center" offsetXPC=0 offsetYPC=90 widthPC=100 heightPC=8 fontSize=20 foregroundColor="250:250:250" backgroundColor="28:35:51">
+	   <script>idx = getQueryItemIndex(); getItemInfo(idx, "fulltitle");</script>
+     </text>
+     
+	<itemDisplay>
+		<text offsetXPC="10" offsetYPC="25" widthPC="85" heightPC="50" fontSize="16" backgroundColor="56:70:102"> 
+			<script>
+  				idx = getQueryItemIndex();
+  				focus = getFocusItemIndex();
+				getItemInfo(-1, "title");
+			</script> 
+			<fontSize><script>if(focus==idx) "20"; else "14";</script></fontSize>
+		  	<backgroundColor><script>if(focus==idx) "84:105:153"; else "-1:-1:-1";</script></backgroundColor>
+		  	<foregroundColor><script>if(focus==idx) "255:255:255"; else "180:180:180";</script></foregroundColor>
+		</text>
+  		<image offsetXPC="1" offsetYPC="1" widthPC="10" heightPC="90" backgroundColor="56:70:102" foregroundColor="150:0:0"> 
+			<script> 
+				getItemInfo(-1, "image");
+			</script> 
+		</image>       
+	</itemDisplay>
+
+	<onUserInput>
+		<script>
+			ret = "false";
+			userInput = currentUserInput();
+			majorContext = getPageInfo("majorContext");
+      
+			print("*** majorContext=",majorContext);
+			print("*** userInput=",userInput);
+      
+			if (userInput == "pagedown" || userInput == "pageup" || userInput == "PD" || userInput == "PG")
+			{
+				idx = Integer(getFocusItemIndex());
+				if (userInput == "pagedown" || userInput == "PD")
+				{
+					idx -= -columnCount;
+					if(idx &gt;= itemCountMove)
+						idx = itemCountMove-1;
+				}
+				else
+				{
+					idx -= columnCount;
+					if(idx &lt; 0)
+					idx = 0;
+				}
+				setFocusItemIndex(idx);
+				setItemFocus(idx);
+				redrawDisplay();
+				ret = "true";
+			}
+			ret;
+		</script>
+	</onUserInput>
+</mediaDisplay>
+

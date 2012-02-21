@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<!--
+#   CABECERA_CARATULAS.RSS
+-->
+
+<onEnter>
+	itemCountMove = getPageInfo("itemCount");
+	columnCount = 5;
+</onEnter>	
+
+<mediaDisplay name="photoFocusView" 
+		backgroundColor="56:70:102" 
+		focusItem="1" 		
+		rowCount="1" 
+		columnCount="5" 
+		drawItemText="no" 
+		fontSize="15"
+
+	     sideColorTop="28:35:51"
+	     sideTopHeightPC=15
+		showHeader="yes" 
+		headerXPC="5" headerYPC="10"
+
+		sideColorBottom="100:0:0" 
+		bottomYPC="100" 
+		showDefaultInfo="no" 		 
+
+		itemOffsetXPC="2"                itemOffsetYPC="27" 
+		itemWidthPC="15" 		        itemHeightPC="34" 
+		itemBackgroundWidthPC="15"       itemBackgroundHeightPC="34"
+		itemBackgroundColor="-1:-1:-1" 
+		itemGapXPC="2" 
+	     imageBorderPC="0"
+		itemBorderColor="-1:-1:-1" 
+
+		                                  focusItemOffsetYPC="21" 		
+		focusItemWidthPC="20.43"          focusItemHeightPC="48"        
+		focusItemBackgroundWidthPC="0"    focusItemBackgroundHeightPC="0"
+		
+		idleImageXPC="40" 
+		idleImageYPC="40" 
+		idleImageWidthPC="15" 
+		idleImageHeightPC="20"
+>
+
+     <image offsetXPC=23 offsetYPC=3.5 widthPC=54 heightPC=9>image/bg-column-item.png</image> <!--  infobar.png</image> -->
+     <image offsetXPC=82 offsetYPC=0 widthPC=15 heightPC=15>image/pelisalacartalogo.png</image>
+     <image offsetXPC=2 offsetYPC=0 widthPC=15 heightPC=15><script>"/opt/pelisalacarta/resources/images/posters/"+getPageInfo("pageTitle")+".png";</script></image>		
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_01.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_02.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_03.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_04.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_05.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_06.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_07.png </idleImage>
+	<idleImage idleImageWidthPC="10" idleImageHeightPC="10"> image/POPUP_LOADING_08.png </idleImage>
+
+     <text align="center" redraw="yes" offsetXPC="20" offsetYPC="3.9" widthPC="60" heightPC="6" fontSize="20" backgroundColor="-1:-1:-1" foregroundColor="200:200:200">
+         <script>getPageInfo("pageTitle");</script>
+     </text>		
+     <text redraw="yes" align="center" offsetXPC=4 offsetYPC=15 widthPC=90 heightPC=8 fontSize="20" backgroundColor="56:70:102" foregroundColor="250:250:250">
+	    <script>idx = getQueryItemIndex(); getItemInfo(idx, "title");</script>
+     </text>
+     <text redraw="yes" align="left" lines=1 offsetXPC=4 offsetYPC=72 widthPC=92 heightPC=8 foregroundColor="250:250:250" backgroundColor="28:35:51" fontSize=18>
+	    <script>idx = getQueryItemIndex(); getItemInfo(idx, "fulltitle");</script>
+     </text>
+     <text lines=5 redraw="yes" align="left" offsetXPC=4 offsetYPC=80 widthPC=92 heightPC=16 backgroundColor="250:250:250" foregroundColor="28:35:51" fontSize=13>
+	    <script>idx = getQueryItemIndex(); getItemInfo(idx, "description");</script>
+     </text>
+
+	<!--backgroundDisplay><image offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100">image/videos.jpg</image></backgroundDisplay-->
+
+	<itemDisplay>
+  		<!--image redraw=no offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100" backgroundColor="-1:-1:-1"> 
+			/usr/local/bin/image/focusItemBackground.png 
+		</image-->       
+  		<image redraw=yes offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100" backgroundColor="-1:-1:-1"> 
+			<script> 
+				getItemInfo(-1, "image");
+			</script> 
+		</image>
+	</itemDisplay>
+
+
+	<onUserInput>
+		<script>
+			ret = "false";
+			userInput = currentUserInput();
+			majorContext = getPageInfo("majorContext");
+      
+			print("*** majorContext=",majorContext);
+			print("*** userInput=",userInput);
+      
+			if (userInput == "pagedown" || userInput == "pageup" || userInput == "PD" || userInput == "PG")
+			{
+				idx = Integer(getFocusItemIndex());
+				if (userInput == "pagedown" || userInput == "PD")
+				{
+					idx -= -columnCount;
+					if(idx &gt;= itemCountMove)
+						idx = itemCountMove-1;
+				}
+				else
+				{
+					idx -= columnCount;
+					if(idx &lt; 0)
+					idx = 0;
+				}
+				setFocusItemIndex(idx);
+				setItemFocus(idx);
+				redrawDisplay();
+				ret = "true";
+			}
+			ret;
+		</script>
+	</onUserInput>
+</mediaDisplay>
+
