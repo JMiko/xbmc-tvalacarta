@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para justin.tv
+# Canal para justin.tv by Bandavi
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -24,7 +24,7 @@ __category__ = "G"
 __type__ = "generic"
 __title__ = "Justin.tv"
 __language__ = ""
-__creationdate__ = "20111212"
+__creationdate__ = "20111128"
 
 DEBUG = config.get_setting("debug")
 pluginhandle = int(sys.argv[1])
@@ -83,7 +83,7 @@ def mainlist(item):
         lang = languages[idx]
     
 
-    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30420) + ' (%s)' %lang, action="_language"     ,url = "", thumbnail =WEB_PATH+ "language.jpg",fanart = fanart,folder=False))
+    itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30420) + ' (%s)' %lang, action="_language"     ,url = "", thumbnail =WEB_PATH+ "language.jpg",fanart = fanart, folder = False))
     itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30414), action="listcategory"     ,url = "true", thumbnail='http://www-cdn.jtvnw.net/images/redesign/fp_vector_camera.png',fanart = fanart))
     itemlist.append( Item(channel=__channel__, title=config.get_localized_string(30413), action="listcategory"     ,url = "false", thumbnail='',fanart = fanart))
     return itemlist
@@ -120,7 +120,7 @@ def search(item,texto):
     item.title = 'search'
     item.url = url =  'http://api.justin.tv/api/stream/search/'+texto+'.json?offset=0&limit='+str(limit)
     itemlist = getlistchannel(item)
-    if config.get_setting('livestream')=='true':
+    if config.get_setting('streamlive')=='true':
         xbmctools.renderItems(itemlist, [], '', 'Movies',isPlayable='true')
     else:
         return itemlist
@@ -294,29 +294,30 @@ def getlistchannel(item):
             if title is None or title == '':
                 raise
         except:
-            title = ''
+            title = name
                 
         try:
-            title1 = scrapertools.unescape(match['channel']['tags'])
-            if title1 is None or title1 == '':
+            tags = scrapertools.unescape(match['channel']['tags'])
+            if tags is None or tags == '':
                 raise
         except:
             try:
-                title1 = scrapertools.unescape(match['tags']).strip()
-                if title1 is None or title1 == '':
+                tags = scrapertools.unescape(match['tags']).strip()
+                if tags is None or tags == '':
                     raise
             except:
-                try:
-                    title1 = scrapertools.unescape(match['channel']['status']).strip()
-                    if title1 is None or title1 == '':
-                        raise
-                except:
-                    try:
-                        title1 = scrapertools.unescape(match['status']).strip()
-                        if title1 is None or title1 == '':
-                            raise
-                    except:
-                        title1 = ''
+                tags = ''
+        try:
+            status = scrapertools.unescape(match['channel']['status']).strip()
+            if status is None or status == '':
+                raise
+        except:
+            try:
+                status = scrapertools.unescape(match['status']).strip()
+                if status is None or status == '':
+                    raise
+            except:
+                status = ''
         try:
             subcat = match['channel']['category_title']
             if subcat is None or subcat == '':
@@ -360,7 +361,7 @@ def getlistchannel(item):
         
         idx = abbrev.index(lang)
         lang = languages[idx].decode('utf-8')
-        scrapedplot = title +'\nTags: '+title1+ '\nChannel Name: '+name+'\nBitrate: '+bitrate+'\nLanguage: '+lang+'\nViews: '+views
+        scrapedplot = title +'\nStatus: '+status+'\nTags: '+tags+ '\nChannel Name: '+name+'\nBitrate: '+bitrate+'\nLanguage: '+lang+'\nViews: '+views
 
         if config.get_setting("streamlive") == "true":
             scrapedtitle =title + ' [%s] BitRate: %s  (%s)' %(name,bitrate,lang)
@@ -411,6 +412,7 @@ def listarchives(item):
         url = 'http://api.justin.tv/api/channel/archives/'+item.url+'.json?offset=0&limit='+str(limit)
     try:
         data = scrapertools.cache_page(url)
+        if len(data)==0:raise
     except:
         if item.action == 'getplayByID':
             return
@@ -422,11 +424,25 @@ def listarchives(item):
     itemlist = []
 
     for match in datadict:
-        video_url = match['video_file_url']
-        broadcast_part = match['broadcast_part']
-        start_time = match['start_time']
-        thumbnail = match['image_url_medium']
-        duration = match['length']
+        try:
+            video_url = match['video_file_url']
+        except:continue
+        try:
+            broadcast_part = match['broadcast_part']
+        except:
+            broadvast_part = ''
+        try:
+            start_time = match['start_time']
+        except:
+            start_time = ''
+        try:
+            thumbnail = match['image_url_medium']
+        except:
+            thumbnail = ''
+        try:
+            duration = match['length']
+        except:
+            duration = ''
         #print 'duration: '+duration
         try:
             title = match['title']
@@ -480,10 +496,15 @@ def playVideo(item):
         channeloffline(channelname)
 
 def _language(item):
-    
+    _language_(item)
+    return
+
+def _language_(item):
     lang = config.get_setting('justin_lang')
     if "," in lang:
         lang = lang.split(",")
+    elif lang == "":
+        lang = ["all"]
     else:
         lang = [lang]
     lenguajes = languages
@@ -499,8 +520,8 @@ def _language(item):
     dia = xbmcgui.Dialog()
     seleccion = dia.select("Choice a language", lenguajes)
     if seleccion == -1:return
-    print "seleccion :",seleccion
-    abb = abbrev[seleccion]
+    abb = languages[seleccion]
+    logger.info("seleccion : %s %s" %(seleccion,abb))
     lang = ''
     for count,i in enumerate(lenguajes):
         if seleccion == 0:
@@ -522,8 +543,8 @@ def _language(item):
     config.set_setting('justin_lang',lang)
     logger.info("lenguajes configurados: "+lang)
     xbmc.executebuiltin( "Container.Refresh" )
-    return
-    
+    return 
+
 def channelEmpty():
     return xbmcgui.Dialog().ok("Pelisalacarta - Justin TV" ," "*18+config.get_localized_string(30411))
 def LoginEmpty():
