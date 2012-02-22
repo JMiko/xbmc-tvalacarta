@@ -17,7 +17,13 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls=[]
     
     data = scrapertools.cache_page(page_url)
-    #logger.info("data="+data)
+
+    # Espera un segundo y vuelve a cargar
+    logger.info("[mediafire.py] waiting 1 secs")
+    import time
+    time.sleep(1)
+
+    data = scrapertools.cache_page(page_url)
     patron = '<a href="([^"]+)" onclick="avh\(this\)[^"]+">Download'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
