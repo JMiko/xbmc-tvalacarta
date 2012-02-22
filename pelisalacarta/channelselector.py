@@ -170,7 +170,7 @@ def channels_history_list():
 def channels_list():
     itemlist = []
 
-    #itemlist.append( Item( title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
+    itemlist.append( Item( title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Animeflv"              , channel="animeflv"             , language="ES"    , category="A"       , type="generic"  ))
     #itemlist.append( Item( title="Anime Foros"           , channel="animeforos"           , language="ES"    , category="A"       , type="xbmc"    ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
@@ -183,7 +183,7 @@ def channels_list():
     # DESACTIVADO - SIN MANTENIMIENTO itemlist.append( Item( title="CastTV"                , channel="casttv"               , language="ES,EN" , category="S"       , type="xbmc"     ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cine-Adicto"           , channel="cineadicto"           , language="ES"    , category="F,D"     , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cinegratis"            , channel="cinegratis"           , language="ES"    , category="F,S,A,D" , type="generic"  ))
-    #itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D" , type="generic"  ))
+    itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D" , type="generic"  ))
     itemlist.append( Item( title="Cineblog01 (IT)"       , channel="cineblog01"           , language="IT"    , category="F,S,A"   , type="generic"  ))
     itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES"    , category="F,S"     , type="generic"  ))
     itemlist.append( Item( title="CineVOS"               , channel="cinevos"             , language="ES"    , category="F,A,D" , type="generic"  ))
@@ -306,8 +306,10 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     
     if config.get_setting("thumbnail_type")=="0":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/posters/"
-    else:
+    elif config.get_setting("thumbnail_type")=="1":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/banners/"
+    elif config.get_setting("thumbnail_type")=="2":
+        WEB_PATH = "http://pelisalacarta.mimediacenter.info/squares/"
 
     if config.get_platform()=="boxee":
         IMAGES_PATH="http://pelisalacarta.mimediacenter.info/posters/"
