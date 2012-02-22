@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para allmyvideos
+# Conector para letitbit
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -13,25 +13,26 @@ from core import logger
 from core import config
 
 def test_video_exists( page_url ):
-    logger.info("[allmyvideos.py] test_video_exists(page_url='%s')" % page_url)
+    logger.info("[letitbit.py] test_video_exists(page_url='%s')" % page_url)
 
-    # No existe / borrado: http://allmyvideos.net/8jcgbrzhujri
+    # Existe: http://letitbit.net/download/12300.151ef074afcb8f56a43d97bd64ef/Nikita.S02E15.HDTV.XviD-ASAP.avi.html
+    # No existe: 
     data = scrapertools.cache_page(page_url)
-    #logger.info("data="+data)
-    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data:
-        return False,"No existe o ha sido borrado de allmyvideos"
+    patron  = '<h1 class="file-info[^"]+" title="[^"]+">File: <a href="[^"]+" target="_blank"><span>([^<]+)</span>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    
+    if len(matches)>0:
+        return True,""
     else:
-        # Existe: http://allmyvideos.net/6ltw8v1zaa7o
-        patron  = '<META NAME="description" CONTENT="(Archivo para descargar[^"]+)">'
+        patron  = '<p style="color:#000">(File not found)</p>'
         matches = re.compile(patron,re.DOTALL).findall(data)
-        
         if len(matches)>0:
-            return True,""
+            return False,"File not found"
     
     return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[allmyvideos.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[letitbit.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
     return video_urls
 
@@ -40,17 +41,18 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    # http://allmyvideos.net/fg85ovidfwxx
-    patronvideos  = '(http://allmyvideos.net/[a-z0-9]+)'
-    logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
+    #http://letitbit.net/download/12300.151ef074afcb8f56a43d97bd64ef/Nikita.S02E15.HDTV.XviD-ASAP.avi.html
+    #http://www.letitbit.net/download/33293.34678a8198db5c640085f0386d60/kells.part2.rar.html
+    patronvideos  = '(letitbit.net/download/.*?\.html)'
+    logger.info("[letitbit.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[allmyvideos]"
-        url = match
+        titulo = "[letitbit]"
+        url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'allmyvideos' ] )
+            devuelve.append( [ titulo , url , 'letitbit' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)

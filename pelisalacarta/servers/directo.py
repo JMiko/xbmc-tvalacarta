@@ -40,4 +40,82 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
 
+    patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
+    logger.info("[directo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[Directo]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'Directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = '(http://[^\.]+\.myspacecdn.*?\.flv)'
+    logger.info("[directo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[Directo]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'Directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = '(http://api.ning.com.*?\.flv)'
+    logger.info("[directo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[Directo]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'Directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #file=http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv&
+    #http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv
+    patronvideos  = "file\=(http\:\/\/es.video.netlogstatic[^\&]+)\&"
+    logger.info("[directo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[Directo]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    patronvideos  = "file=http.*?mangaid.com(.*?)&amp;backcolor="
+    logger.info("[directo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+    cont = 0
+    for match in matches:
+        cont = cont + 1 
+        titulo = " Parte %s [Directo]" % (cont)
+        url = "http://mangaid.com"+match
+        url = url.replace('%2F','/').replace('%3F','?').replace('%23','#')
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'directo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+    
     return devuelve

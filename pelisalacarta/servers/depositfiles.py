@@ -23,13 +23,14 @@ def find_videos(data):
     devuelve = []
 
     # http://depositfiles.com/files/jdxpu4cze
-    patronvideos  = '(http://depositfiles.com/files/[a-z0-9]+)'
+    # http://www.depositfiles.com/files/zqeggnpa6
+    patronvideos  = '(depositfiles.com/files/[a-z0-9]+)'
     logger.info("[depositfiles.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[depositfiles]"
-        url = match
+        url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'depositfiles' ] )

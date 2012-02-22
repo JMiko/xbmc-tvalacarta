@@ -10,6 +10,25 @@ from core import scrapertools
 from core import config
 from core import logger
 
+# Todos los servidores
+ALL_SERVERS = []
+ALL_SERVERS.extend(['directo','adnstream','bitshare','allmyvideos','bliptv','depositfiles','divxstage','downupload','facebook','fileserve','fourshared'])
+ALL_SERVERS.extend(['googlevideo','gigabyteupload','hotfile','hdplay','letitbit','mediafire','modovideo','movshare','novamov','ovfile','putlocker','rapidshare'])
+ALL_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','turbobit','tutv','userporn','uploadedto','veoh','veevr','videobam'])
+ALL_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','wupload'])
+
+# Todos los servidores soportados por Filenium
+FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
+
+# Los servidores que SÓLO funcionan con Filenium
+FILENIUM_ONLY_SERVERS = ['linkto','uploadedto','gigasize','filepost','hotfile','rapidshare','turbobit','bitshare','depositfiles','oron','allmyvideos','fooget','letitbit','shareonline']
+
+# Todos los servidores que funcionan con cuenta premium
+PREMIUM_SERVERS = ['wupload','fileserve']
+
+# Todos los servidores que SÓLo funcionan con cuenta premium
+PREMIUM_ONLY_SERVERS = ['wupload','fileserve']
+
 # Función genérica para encontrar vídeos en una página
 def find_video_items(item=None, data=None):
     logger.info("[launcher.py] findvideos")
@@ -43,320 +62,11 @@ def findvideos(data):
     encontrados = set()
     devuelve = []
 
-    # Megavideo
-    #import megavideo
-    #devuelve.extend(megavideo.find_videos(data))
-    
-    # Megavideo
-    #import cineraculo
-    # Dups megavideo links with cineraculo server
-    #devuelve.extend(cineraculo.add_videos(devuelve))
-    
-    # Megaupload
-    #import megaupload
-    #devuelve.extend(megaupload.find_videos(data))
+    # Ejecuta el findvideos en cada servidor
+    for serverid in ALL_SERVERS:
+        exec "import "+serverid
+        exec "devuelve.extend("+serverid+".find_videos(data))"
 
-    # ---------------------------
-    
-    import directo
-    devuelve.extend(directo.find_videos(data))
-    
-    # adnstream
-    import adnstream
-    devuelve.extend(adnstream.find_videos(data))
-
-    # bitshare
-    if config.get_setting("fileniumpremium")=="true":
-        import bitshare
-        devuelve.extend(bitshare.find_videos(data))
-
-    # allmyvideos
-    if config.get_setting("fileniumpremium")=="true":
-        import allmyvideos
-        devuelve.extend(allmyvideos.find_videos(data))
-
-    # blip.tv
-    import bliptv
-    devuelve.extend(bliptv.find_videos(data))
-
-    # depositfiles
-    if config.get_setting("fileniumpremium")=="true":
-        import depositfiles
-        devuelve.extend(depositfiles.find_videos(data))
-
-    # divxstage
-    import divxstage
-    devuelve.extend(divxstage.find_videos(data))
-
-    # downupload
-    import downupload
-    devuelve.extend(downupload.find_videos(data))
-
-    # facebook
-    import facebook
-    devuelve.extend(facebook.find_videos(data))
-
-    # filejungle
-    #if config.get_setting("fileniumpremium")=="true":
-    #    import filejungle
-    #    devuelve.extend(filejungle.find_videos(data))
-
-    # fileserve
-    import fileserve
-    devuelve.extend(fileserve.find_videos(data))
-
-    # filesonic
-    #if config.get_setting("fileniumpremium")=="true":
-    #    import filesonic
-    #    devuelve.extend(filesonic.find_videos(data))
-
-    # fourshared
-    import fourshared
-    devuelve.extend(fourshared.find_videos(data))
-
-    # googlevideo
-    import googlevideo
-    devuelve.extend(googlevideo.find_videos(data))
-
-    # gigabyteupload
-    import gigabyteupload
-    devuelve.extend(gigabyteupload.find_videos(data))
-
-    # hdplay
-    import hdplay
-    devuelve.extend(hdplay.find_videos(data))
-
-    # mediafire
-    import mediafire
-    devuelve.extend(mediafire.find_videos(data))
-
-    # modovideo
-    import modovideo
-    devuelve.extend(modovideo.find_videos(data))
-
-    # movshare
-    import movshare
-    devuelve.extend(movshare.find_videos(data))
-
-    # novamov
-    import novamov
-    devuelve.extend(novamov.find_videos(data))
-
-    # ovfile
-    import ovfile
-    devuelve.extend(ovfile.find_videos(data))
-
-    # putlocker
-    import putlocker
-    devuelve.extend(putlocker.find_videos(data))
-
-    # rapidshare
-    if config.get_setting("fileniumpremium")=="true":
-        import rapidshare
-        devuelve.extend(rapidshare.find_videos(data))
-
-    # rapidtube
-    import rapidtube
-    devuelve.extend(rapidtube.find_videos(data))
-
-    # royalvids
-    import royalvids
-    devuelve.extend(royalvids.find_videos(data))
-
-    # rutube
-    import rutube
-    devuelve.extend(rutube.find_videos(data))
-
-    # sockshare
-    import sockshare
-    devuelve.extend(sockshare.find_videos(data))
-
-    # stagevu
-    import stagevu
-    devuelve.extend(stagevu.find_videos(data))
- 
-    # stagero
-    import stagero
-    devuelve.extend(stagero.find_videos(data))
-    
-    # turbobit
-    if config.get_setting("fileniumpremium")=="true":
-        import turbobit
-        devuelve.extend(turbobit.find_videos(data))
-
-    # tutv
-    import tutv
-    devuelve.extend(tutv.find_videos(data))
-
-    # userporn
-    import userporn
-    devuelve.extend(userporn.find_videos(data))
-
-    # uploaded.to
-    if config.get_setting("fileniumpremium")=="true":
-        import uploadedto
-        devuelve.extend(uploadedto.find_videos(data))
-
-    # uploadstation
-    #if config.get_setting("fileniumpremium")=="true":
-    #    import uploadstation
-    #    devuelve.extend(uploadstation.find_videos(data))
-
-    # veoh
-    import veoh
-    devuelve.extend(veoh.find_videos(data))
-
-    # veevr
-    import veevr
-    devuelve.extend(veevr.find_videos(data))
-
-    # videobam
-    import videobam
-    devuelve.extend(videobam.find_videos(data))
-
-    # vidbux
-    import vidbux
-    devuelve.extend(vidbux.find_videos(data))
-
-    # videobb
-    #import videobb
-    #devuelve.extend(videobb.find_videos(data))
-
-    # videoweed
-    import videoweed
-    devuelve.extend(videoweed.find_videos(data))
-
-    # videozer
-    #import videozer
-    #devuelve.extend(videozer.find_videos(data))
-
-    # vidxden
-    import vidxden
-    devuelve.extend(vidxden.find_videos(data))
-
-    # vimeo
-    import vimeo
-    devuelve.extend(vimeo.find_videos(data))
-
-    # vk
-    import vk
-    devuelve.extend(vk.find_videos(data))
-
-    # wupload
-    import wupload
-    devuelve.extend(wupload.find_videos(data))
-
-    # ---------------------------
-
-    logger.info("0) Directo - myspace")
-    patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Directo]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Directo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Directo - myspace")
-    patronvideos  = '(http://[^\.]+\.myspacecdn.*?\.flv)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Directo]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Directo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Directo - ning")
-    patronvideos  = '(http://api.ning.com.*?\.flv)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Directo]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'Directo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) YouTube...")
-    patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[YouTube]"
-        url = match
-        
-        if url!='':
-            if url not in encontrados:
-                logger.info("  url="+url)
-                devuelve.append( [ titulo , url , 'youtube' ] )
-                encontrados.add(url)
-            else:
-                logger.info("  url duplicada="+url)
-    
-    logger.info(") YouTube formato buenaisla")  #www.youtube.com%2Fwatch%3Fv%3DKXpGe0ds5r4
-    patronvideos  = 'www.youtube.*?v(?:=|%3D)([0-9A-Za-z_-]{11})'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[YouTube]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'youtube' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    #file=http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv&
-    #http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv
-    logger.info("0) netlogicstat...")
-    patronvideos  = "file\=(http\:\/\/es.video.netlogstatic[^\&]+)\&"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[Directo]"
-        url = match
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'directo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    logger.info("0) Videos animeid...") #http%3A%2F%2Fmangaid.com%2Ff.php%3Fh3eqiGdkh3akY2GaZJ6KpqyDaWmJ%23.mp4
-    patronvideos  = "file=http.*?mangaid.com(.*?)&amp;backcolor="
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    cont = 0
-    for match in matches:
-        cont = cont + 1 
-        titulo = " Parte %s [Directo]" % (cont)
-        url = "http://mangaid.com"+match
-        url = url.replace('%2F','/').replace('%3F','?').replace('%23','#')
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'directo' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)    
-            
     return devuelve
     
 def findurl(code,server):
