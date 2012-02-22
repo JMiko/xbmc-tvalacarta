@@ -24,6 +24,8 @@ except:
 
 LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 
+# TODO: Actualizar automáticamente servidores soportados desde http://www.filenium.com/domains
+
 #LIBRARY_CATEGORIES = ['Cine','Series'] #Valor developers (descomentar para activar)
 # Para test de programadores. Se pueden añadir aquellos canales de cine que 
 #   queramos que tengan opción de añadir a la biblioteca.
@@ -31,6 +33,7 @@ LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
 
 DEBUG = True
 _addon_ = config.get_runtime_path()
+
 # TODO: (3.2) Esto es un lío, hay que unificar
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context="", show="",fulltitle=""):
     if fulltitle=="":
@@ -195,6 +198,7 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
 
 # FIXME: ¿Por qué no pasar el item en lugar de todos los parámetros?
 def play_video(channel="",server="",url="",category="",title="", thumbnail="",plot="",extra="",desdefavoritos=False,desdedescargados=False,desderrordescargas=False,strmfile=False,Serie="",subtitle="", video_password="",fulltitle=""):
+    from servers import servertools
     import sys
     try:
         logger.info("[xbmctools.py] play_video(channel=%s, server=%s, url=%s, category=%s, title=%s, thumbnail=%s, plot=%s, desdefavoritos=%s, desdedescargados=%s, desderrordescargas=%s, strmfile=%s, Serie=%s, subtitle=%s" % (channel,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile,Serie,subtitle))
@@ -234,6 +238,14 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     if server=="directo" or server=="local":
         video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
+    elif server in servertools.FILENIUM_ONLY_SERVERS and config.get_setting("fileniumpremium")=="false":
+        video_urls = []
+        existe = False
+        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con una cuenta de Filenium"
+    elif server in servertools.PREMIUM_ONLY_SERVERS and config.get_setting(server+"premium")=="false":
+        video_urls = []
+        existe = False
+        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con cuenta premium o con cuenta de Filenium"
     else:
         # Muestra un diálogo de progreso
         if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":
@@ -241,17 +253,21 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             progreso = xbmcgui.DialogProgress()
             progreso.create( "pelisalacarta" , "Conectando con %s..." % server)
 
+        existe = True
+        motivo = ""
         try:
             # Extrae todos los enlaces posibles
             exec "from servers import "+server+" as server_connector"
-            if server=="megavideo" or server=="megaupload":
-                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword"), video_password=video_password )
-            elif server=="fileserve":
-                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("fileservepremium")=="true") , user=config.get_setting("fileserveuser") , password=config.get_setting("fileservepassword"), video_password=video_password )
-            elif server=="wupload":
-                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("wuploadpremium")=="true") , user=config.get_setting("wuploaduser") , password=config.get_setting("wuploadpassword"), video_password=video_password )
-            else:
-                video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
+
+            # Primero averigua si existe
+            if hasattr(server_connector, 'test_video_exists'):
+                existe,motivo = server_connector.test_video_exists( page_url=url )
+
+            if existe:
+                if server in servertools.PREMIUM_SERVERS:
+                    video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting(server+"premium")=="true") , user=config.get_setting(server+"user") , password=config.get_setting(server+"password"), video_password=video_password )
+                else:
+                    video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
         except:
             import traceback
             from pprint import pprint
@@ -262,12 +278,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
                 for line_split in line_splits:
                     logger.error(line_split)
 
-        if config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
+        if existe and server in servertools.FILENIUM_SERVERS and config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
             exec "from servers import filenium as gen_conector"
             
-            # Parche para solucionar el problema habitual de que un vídeo http://www.megavideo.com/?d=XXX no está, pero http://www.megaupload.com/?d=XXX si
-            url = url.replace("http://www.megavideo.com/?d","http://www.megaupload.com/?d")
-
             video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
             logger.info("[xbmctools.py] filenium url="+video_gen)
             video_urls.append( [ "[filenium]", video_gen ] )
@@ -318,10 +331,15 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # El vídeo no está
     else:
+        import xbmcgui
         if server!="":
-            alertnodisponibleserver(server)
+            advertencia = xbmcgui.Dialog()
+            if "<br/>" in motivo:
+                resultado = advertencia.ok( "No puedes ver ese vídeo porque...",motivo.split("<br/>")[0],motivo.split("<br/>")[1],url)
+            else:
+                resultado = advertencia.ok( "No puedes ver ese vídeo porque...",motivo,url)
         else:
-            alertUnsopportedServer()
+            resultado = advertencia.ok( "No puedes ver ese vídeo porque...","El servidor donde está alojado no está","soportado en pelisalacarta todavía",url)
 
         if channel=="favoritos": 
             opciones.append(config.get_localized_string(30154)) # "Quitar de favoritos"

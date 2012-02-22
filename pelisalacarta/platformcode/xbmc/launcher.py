@@ -89,6 +89,8 @@ def run():
                 import pelisalacarta.buscador as channel
             elif os.path.exists( regular_channel_path ):
                 exec "import pelisalacarta.channels."+channel_name+" as channel"
+            elif os.path.exists( regular_channel_path ):
+                exec "import tvalacarta.channels."+channel_name+" as channel"
             elif os.path.exists( core_channel_path ):
                 exec "from core import "+channel_name+" as channel"
 
