@@ -26,7 +26,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     if match is not None:
         vkid = match.group(1)
     else:
-        logger.info("no encontro vkid")
+        data2 = data.replace("\\","")
+        patron = '"vkid":"([^"]+)"'
+        matches = re.compile(patron,re.DOTALL).findall(data2)
+        if len(matches)>0:
+            vkid = matches[0]
+        else:
+            logger.info("no encontro vkid")
+    
+    logger.info("vkid="+vkid)
     
     # Extrae los parámetros del vídeo y añade las calidades a la lista
     patron  = "var video_host = '([^']+)'.*?"
@@ -36,50 +44,71 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     patron += "var video_max_hd = '([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
+    
+    if len(matches)>0:
+        #01:44:52 T:2957156352  NOTICE: video_host=http://cs509601.vk.com/, video_uid=149623387, video_vtag=1108941f4c, video_no_flv=1, video_max_hd=1
+
+        video_host = matches[0][0]
+        video_uid = matches[0][1]
+        video_vtag = matches[0][2]
+        video_no_flv = matches[0][3]
+        video_max_hd = matches[0][4]
+    else:
+        #{"uid":"97482389","vid":"161509127\",\"oid\":\"97482389\","host":"507214",\"vtag\":\"99bca9d028\",\"ltag\":\"l_26f55018\",\"vkid\":\"161509127\",\"md_title\":\"El Libro de La Selva - 1967 - tetelx - spanish\",\"md_author\":\"Tetelx Tete\",\"hd\":1,\"no_flv\":1,\"hd_def\":-1,\"dbg_on\":0,\"t\":\"\",\"thumb\":\"http:\\\/\\\/cs507214.vkontakte.ru\\\/u97482389\\\/video\\\/l_26f55018.jpg\",\"hash\":\"3a576695e9f0bfe3093eb21239bd322f\",\"hash2\":\"be750b8971933dd6\",\"is_vk\":\"1\",\"is_ext\":\"0\",\"lang_add\":\"Add to My Videos\",\"lang_share\":\"Share\",\"lang_like\":\"Like\",\"lang_volume_on\":\"Unmute\",\"lang_volume_off\":\"Mute\",\"lang_volume\":\"Volume\",\"lang_hdsd\":\"Change Video Quality\",\"lang_fullscreen\":\"Full Screen\",\"lang_window\":\"Minimize\",\"lang_rotate\":\"Rotate\",\"video_play_hd\":\"Watch in HD\",\"video_stop_loading\":\"Stop Download\",\"video_player_version\":\"VK Video Player\",\"video_player_author\":\"Author - Alexey Kharkov\",\"goto_orig_video\":\"Go to Video\",\"video_get_video_code\":\"Copy vdeo code\",\"video_load_error\":\"The video has not uploaded yet or the server is not available\",\"video_get_current_url\":\"Copy frame link\",\"nologo\":1,\"liked\":0,\"add_hash\":\"67cd39a080ad6e0ad7\",\"added\":1,\"use_p2p\":0,\"p2p_group_id\":\"fb2d8cfdcbea4f3c\"}
+        #01:46:05 T:2955558912  NOTICE: video_host=507214, video_uid=97482389, video_vtag=99bca9d028, video_no_flv=1, video_max_hd=1
+        data2 = data.replace("\\","")
+        video_host = scrapertools.get_match(data2,'"host":"([^"]+)"')
+        video_uid = scrapertools.get_match(data2,'"uid":"([^"]+)"')
+        video_vtag = scrapertools.get_match(data2,'"vtag":"([^"]+)"')
+        video_no_flv = scrapertools.get_match(data2,'"no_flv":([0-9]+)')
+        video_max_hd = scrapertools.get_match(data2,'"hd":([0-9]+)')
+        
+        if not video_host.startswith("http://"):
+            video_host = "http://cs"+video_host+".vk.com/"
+
+    logger.info("video_host="+video_host+", video_uid="+video_uid+", video_vtag="+video_vtag+", video_no_flv="+video_no_flv+", video_max_hd="+video_max_hd)
 
     video_urls = []
 
-    if len(matches)>0:    
-        for match in matches:
-            if match[3].strip() == "0" and match[1] != "0":
-                tipo = "flv"
-                if "http://" in match[0]:
-                    videourl = "%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                else:
-                    videourl = "http://%s/u%s/video/%s.%s" % (match[0],match[1],match[2],tipo)
-                
-                # Lo añade a la lista
-                video_urls.append( ["FLV [vk]",videourl])
+    if video_no_flv.strip() == "0" and video_uid != "0":
+        tipo = "flv"
+        if "http://" in video_host:
+            videourl = "%s/u%s/video/%s.%s" % (video_host,video_uid,video_vtag,tipo)
+        else:
+            videourl = "http://%s/u%s/video/%s.%s" % (video_host,video_uid,video_vtag,tipo)
+        
+        # Lo añade a la lista
+        video_urls.append( ["FLV [vk]",videourl])
 
-            elif match[1]== "0" and vkid != "":     #http://447.gt3.vkadre.ru/assets/videos/2638f17ddd39-75081019.vk.flv 
-                tipo = "flv"
-                if "http://" in match[0]:
-                    videourl = "%s/assets/videos/%s%s.vk.%s" % (match[0],match[2],vkid,tipo)
-                else:
-                    videourl = "http://%s/assets/videos/%s%s.vk.%s" % (match[0],match[2],vkid,tipo)
-                
-                # Lo añade a la lista
-                video_urls.append( ["FLV [vk]",videourl])
-                
-            else:                                   #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
-                #Si la calidad elegida en el setting es HD se reproducira a 480 o 720, caso contrario solo 360, este control es por la xbox
-                if match[4]=="0":
-                    video_urls.append( ["240p [vk]",get_mp4_video_link(match[0],match[1],match[2],"240.mp4")])
-                elif match[4]=="1":
-                    video_urls.append( ["240p [vk]",get_mp4_video_link(match[0],match[1],match[2],"240.mp4")])
-                    video_urls.append( ["360p [vk]",get_mp4_video_link(match[0],match[1],match[2],"360.mp4")])
-                elif match[4]=="2":
-                    video_urls.append( ["240p [vk]",get_mp4_video_link(match[0],match[1],match[2],"240.mp4")])
-                    video_urls.append( ["360p [vk]",get_mp4_video_link(match[0],match[1],match[2],"360.mp4")])
-                    video_urls.append( ["480p [vk]",get_mp4_video_link(match[0],match[1],match[2],"480.mp4")])
-                elif match[4]=="3":
-                    video_urls.append( ["240p [vk]",get_mp4_video_link(match[0],match[1],match[2],"240.mp4")])
-                    video_urls.append( ["360p [vk]",get_mp4_video_link(match[0],match[1],match[2],"360.mp4")])
-                    video_urls.append( ["480p [vk]",get_mp4_video_link(match[0],match[1],match[2],"480.mp4")])
-                    video_urls.append( ["720p [vk]",get_mp4_video_link(match[0],match[1],match[2],"720.mp4")])
-                else:
-                    video_urls.append( ["240p [vk]",get_mp4_video_link(match[0],match[1],match[2],"240.mp4")])
-                    video_urls.append( ["360p [vk]",get_mp4_video_link(match[0],match[1],match[2],"360.mp4")])
+    elif video_uid== "0" and vkid != "":     #http://447.gt3.vkadre.ru/assets/videos/2638f17ddd39-75081019.vk.flv 
+        tipo = "flv"
+        if "http://" in video_host:
+            videourl = "%s/assets/videos/%s%s.vk.%s" % (video_host,video_vtag,vkid,tipo)
+        else:
+            videourl = "http://%s/assets/videos/%s%s.vk.%s" % (video_host,video_vtag,vkid,tipo)
+        
+        # Lo añade a la lista
+        video_urls.append( ["FLV [vk]",videourl])
+        
+    else:                                   #http://cs12385.vkontakte.ru/u88260894/video/d09802a95b.360.mp4
+        #Si la calidad elegida en el setting es HD se reproducira a 480 o 720, caso contrario solo 360, este control es por la xbox
+        if video_max_hd=="0":
+            video_urls.append( ["240p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"240.mp4")])
+        elif video_max_hd=="1":
+            video_urls.append( ["240p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"240.mp4")])
+            video_urls.append( ["360p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"360.mp4")])
+        elif video_max_hd=="2":
+            video_urls.append( ["240p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"240.mp4")])
+            video_urls.append( ["360p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"360.mp4")])
+            video_urls.append( ["480p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"480.mp4")])
+        elif video_max_hd=="3":
+            video_urls.append( ["240p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"240.mp4")])
+            video_urls.append( ["360p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"360.mp4")])
+            video_urls.append( ["480p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"480.mp4")])
+            video_urls.append( ["720p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"720.mp4")])
+        else:
+            video_urls.append( ["240p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"240.mp4")])
+            video_urls.append( ["360p [vk]",get_mp4_video_link(video_host,video_uid,video_vtag,"360.mp4")])
 
     for video_url in video_urls:
         logger.info("[vk.py] %s - %s" % (video_url[0],video_url[1]))
@@ -113,7 +142,24 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    # otro alternativo
     patronvideos  = '(http\:\/\/vk.+?\/video_ext\.php[^"]+)"'
+    logger.info("[vk.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #print data
+    for match in matches:
+        titulo = "[vk]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vk' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # http://vk.com/video97482389_161509127?section=all
+    patronvideos  = '(http\:\/\/vk.+?\/video[0-9]+_[0-9]+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #print data

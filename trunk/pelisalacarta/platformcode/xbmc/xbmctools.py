@@ -236,13 +236,16 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     default_action = config.get_setting("default_action")
     logger.info("default_action="+default_action)
 
+    # Si el vídeo es "directo", no hay que buscar más
     if server=="directo" or server=="local":
         video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
+    # Si el vídeo está en un servidor "sólo filenium", te avisa en caso de que no tengas cuenta
     elif server in servertools.FILENIUM_ONLY_SERVERS and config.get_setting("fileniumpremium")=="false":
         video_urls = []
         existe = False
         motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con una cuenta de Filenium"
-    elif server in servertools.PREMIUM_ONLY_SERVERS and config.get_setting(server+"premium")=="false":
+    # Si el vídeo está en un servidor "sólo premium", te avisa en caso de que no tengas cuenta
+    elif server in servertools.PREMIUM_ONLY_SERVERS and config.get_setting(server+"premium")=="false" and config.get_setting("fileniumpremium")=="false":
         video_urls = []
         existe = False
         motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con cuenta premium o con cuenta de Filenium"
@@ -259,15 +262,22 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             # Extrae todos los enlaces posibles
             exec "from servers import "+server+" as server_connector"
 
-            # Primero averigua si existe
+            # Si tiene una función para ver si el vídeo existe, lo comprueba ahora
             if hasattr(server_connector, 'test_video_exists'):
                 existe,motivo = server_connector.test_video_exists( page_url=url )
 
+            # Si el vídeo existe según la función anterior, saca el enlace ahora
             if existe:
                 if server in servertools.PREMIUM_SERVERS:
                     video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting(server+"premium")=="true") , user=config.get_setting(server+"user") , password=config.get_setting(server+"password"), video_password=video_password )
                 else:
                     video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
+
+                # Si el vídeo no existe, y el servidor no es "sólo filenium", lo marca como "existe=False" para que no de opción a reproducir con Filenium
+                if len(video_urls)==0 and server not in servertools.FILENIUM_ONLY_SERVERS and server not in servertools.PREMIUM_ONLY_SERVERS:
+                    existe = False
+                    motivo = "El vídeo no existe o ha sido borrado"
+                
         except:
             import traceback
             from pprint import pprint

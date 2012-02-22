@@ -12,6 +12,11 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[veevr.py] test_video_exists(page_url='%s')" % page_url)
+
+    return False,"El conector con veevr no funciona<br/>bien en pelisalacarta"
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[veevr.py] get_video_url(page_url='%s')" % page_url)
 
