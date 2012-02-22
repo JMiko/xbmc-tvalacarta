@@ -197,9 +197,11 @@ def findvideos(item):
             scrapedtitle = match[1]
             scrapedtitle = scrapertools.htmlclean(scrapedtitle)
             scrapedurl = match[0]
-            server = match[1]
-
-            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
+            videoitems = servertools.find_video_items(data=scrapedurl)
+            if len(videoitems)>0:
+                server = videoitems[0].server
+                scrapedurl = videoitems[0].url
+                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():
@@ -228,9 +230,13 @@ def findcapitulos(item):
             if len(match[1]):
                 scrapedtitle = match[1]
                 scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+            
             scrapedurl = match[5]
-            server = match[5]
-            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
+            videoitems = servertools.find_video_items(data=scrapedurl)
+            if len(videoitems)>0:
+                server = videoitems[0].server
+                scrapedurl = videoitems[0].url
+                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
 #        Segunda pasada duplicara alguno pero asi nos aseguramos que los tenemos todos
         patronvideos = '<li><a href="(http://([^/]+)([^"]+))" target="_blank" id="[^"]+">[^<]+</a> </li>'
         matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -238,8 +244,11 @@ def findcapitulos(item):
             scrapedtitle = match[1]
             scrapedtitle = scrapertools.htmlclean(scrapedtitle)
             scrapedurl = match[0]
-            server = match[1]
-            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
+            videoitems = servertools.find_video_items(data=scrapedurl)
+            if len(videoitems)>0:
+                server = videoitems[0].server
+                scrapedurl = videoitems[0].url
+                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
 
     except:
         import sys
