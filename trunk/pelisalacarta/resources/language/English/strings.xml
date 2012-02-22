@@ -28,10 +28,10 @@
 	<string id="30200">Square</string>
 
     <!-- Megavideo account -->
-    <string id="30013">Megavideo/Megaupload premium mode:</string>
+    <string id="30013"></string>
     <string id="30014">Username:</string>
     <string id="30015">Password:</string>
-    <string id="30045">Fileserve premium mode:</string>
+    <string id="30045"></string>
     <string id="30048">Filenium premium mode(All in 1):</string>
     <string id="30049">Use Filenium for downloads</string>
     <string id="30031">Video Quality (FLV)</string>

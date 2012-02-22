@@ -28,10 +28,10 @@
     <string id="30200">Cuadrado</string>
 
     <!-- Cuenta Megavideo -->
-    <string id="30013">Modo premium Megavideo/Megaupload:</string>
+    <string id="30013"></string>
     <string id="30014">Usuario:</string>
     <string id="30015">Password:</string>
-    <string id="30045">Modo premium Fileserve:</string>
+    <string id="30045"></string>
     <string id="30048">Modo premium Filenium (Todo en 1):</string>
     <string id="30049">Usar Filenium para descargas</string>
     <string id="30031">Calidad de videos (FLV)</string>
