@@ -256,6 +256,29 @@ def airlist(item):
 
     return itemlist
 
+def findvideos(item):
+    logger.info("[animeid.py] findvideos")
+
+    # Busca el argumento
+    data = scrapertools.cache_page(item.url)
+    patron = '<img src="[^"]+" class="simg" align="left"[^>]+>(.*?)</div>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        scrapedplot = matches[0]
+    else:
+        scrapedplot = item.plot
+    
+    # Ahora busca los vídeos
+    itemlist = servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+        videoitem.plot = scrapedplot
+        videoitem.thumbnail = item.thumbnail
+        videoitem.fulltitle = item.title
+        videoitem.title = item.title + videoitem.title
+    
+    return itemlist
+
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     bien = True
