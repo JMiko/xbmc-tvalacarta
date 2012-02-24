@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para mitele
@@ -14,6 +14,10 @@ from core import scrapertools
 from core import aes          
 from core.item import Item
 from servers import servertools
+from StringIO import StringIO
+import gzip
+import xml.parsers.expat
+
 
 __channel__ = "mitele"
 __category__ = "S,F,A"
@@ -198,21 +202,24 @@ def capitulo(item):
         
     #Datos clock.php
     
-    data = scrapertools.cachePage("http://www.mitele.es/media/clock.php")
-    serverTime = data.strip();
-    logger.info("Server Time ="+serverTime)
-    
+    request = urllib2.Request('http://servicios.telecinco.es/tokenizer/clock.php/')
+    request.add_header('Accept-encoding', 'gzip')
+    response = urllib2.urlopen(request)
+   
+    if response.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO( response.read())
+        f = gzip.GzipFile(fileobj=buf)
+        serverTime = f.read()
+
     data = serverTime+";"+id+";"+startTime+";"+endTime
     logger.info("Data = "+data)
-    
-    try:
-        AES = aes.AES()                   
-        ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHNXp9cA',256)      
-                
+
+    try:  
+        ciphertext = aes.encrypt(data,'xo85kT+QHz3fRMcHMXp9cA',256)      
         #metodo 1
-        url = 'http://servicios.mitele.es/tokenizer/tk2.php'
+        url = 'http://servicios.telecinco.es/tokenizer/tk3.php'
         values = {'force_http' : '1',
-          'sec' : ciphertext,
+          'hash' : ciphertext,
           'id' : id}
 
         search_data = urllib.urlencode(values,doseq=True)
@@ -221,13 +228,48 @@ def capitulo(item):
         response = urllib2.urlopen(request)
         data = response.read()
         response.close()
-        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=data, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+
+        patron = '<file>([^<]+)</file>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        file = unescape(matches[0])
+        
+        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=file, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():
             logger.error("%s" % line)
+           
 
     return itemlist
+
+#unescapes all the xml formatted characters
+def unescape(s):
+    want_unicode = False
+    if isinstance(s, unicode):
+        s = s.encode("utf-8")
+        want_unicode = True
+
+    # the rest of this assumes that `s` is UTF-8
+    list = []
+
+    # create and initialize a parser object
+    p = xml.parsers.expat.ParserCreate("utf-8")
+    p.buffer_text = True
+    p.returns_unicode = want_unicode
+    p.CharacterDataHandler = list.append
+
+    # parse the data wrapped in a dummy element
+    # (needed so the "document" is well-formed)
+    p.Parse("<e>", 0)
+    p.Parse(s, 0)
+    p.Parse("</e>", 1)
+
+    # join the extracted strings and return
+    es = ""
+    if want_unicode:
+        es = u""
+    return es.join(list)
+
 
 def directo (item):
     logger.info("[mitele.py] directo")
@@ -318,7 +360,7 @@ def playdirecto(item):
         ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHNXp9cA',256)      
                 
         #metodo 1
-        url = 'http://servicios.telecinco.es/tokenizer/tk2.php'
+        url = 'http://servicios.telecinco.es/tokenizer/tk3.php'
         values = {'force_http' : '1',
           'directo' : ciphertext,
           'id' : id,
