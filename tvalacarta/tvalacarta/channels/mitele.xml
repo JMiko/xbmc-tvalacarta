@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<version>
+	<name>mitele</name>
+	<tag>3</tag>
+	<date>25/02/2012</date>
+	<changes>Pasado a tvalacarta, arreglado bug al invocar al cifrador</changes>
+</version>
