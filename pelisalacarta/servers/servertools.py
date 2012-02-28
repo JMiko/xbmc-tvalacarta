@@ -84,8 +84,13 @@ def findvideos(data):
 
     # Ejecuta el findvideos en cada servidor
     for serverid in ALL_SERVERS:
-        exec "import "+serverid
-        exec "devuelve.extend("+serverid+".find_videos(data))"
+        try:
+            exec "import "+serverid
+            exec "devuelve.extend("+serverid+".find_videos(data))"
+        except:
+            import sys
+            for line in sys.exc_info():
+                logger.error( "%s" % line ) 
 
     return devuelve
     
