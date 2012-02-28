@@ -14,7 +14,7 @@ from core import config
 
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
-    logger.info("[bliptv.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[rapidtube.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
 
@@ -42,7 +42,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    patronvideos  = '(http://www.rapidtube.com/[a-zA-Z0-9]+)'
+    patronvideos  = '(http://(?:\w+\.)?rapidtube.com/[a-zA-Z0-9]+)'
     logger.info("[rapidtube.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

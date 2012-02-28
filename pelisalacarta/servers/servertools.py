@@ -12,7 +12,7 @@ from core import logger
 
 # Todos los servidores
 ALL_SERVERS = []
-ALL_SERVERS.extend(['directo','adnstream','bitshare','allmyvideos','bliptv','depositfiles','divxstage','downupload','facebook','fileserve','fourshared'])
+ALL_SERVERS.extend(['directo','adnstream','bayfiles','bitshare','allmyvideos','bliptv','depositfiles','divxstage','downupload','facebook','filebox','fileserve','fourshared'])
 ALL_SERVERS.extend(['googlevideo','gigabyteupload','hotfile','hdplay','letitbit','mediafire','modovideo','movshare','novamov','ovfile','putlocker','rapidshare'])
 ALL_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','turbobit','tutv','userporn','uploadedto','veoh','veevr','videobam'])
 ALL_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','wupload'])
@@ -22,6 +22,26 @@ FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfi
 
 # Los servidores que SÓLO funcionan con Filenium
 FILENIUM_ONLY_SERVERS = ['linkto','uploadedto','gigasize','filepost','hotfile','rapidshare','turbobit','bitshare','depositfiles','oron','allmyvideos','fooget','letitbit','shareonline']
+
+# Todos los servidores soportados por Real-Debrid
+REALDEBRID_SERVERS = ['10upload','1fichier','2shared','4fastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbs.com','cramit','crocko','cwtv','dailymotion','dateito',
+                    'dengee','depositfiles','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
+                   'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
+                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
+                   'novamov','przeklej','purevid','putlocker','rapidgator','redtube','rapidshare','rutube','scribd','sendspace','share-online','shareflare','shragle','slingfile','sockshare',
+                   'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
+                   'userporn','videobb','videoweed','videozer','vidxden','vimeo','vip-file','wattv','wupload','youporn','youtube','yunfile','zippyshare','zshare'
+                   ]
+
+# Los servidores que SÓLO funcionan con Real-Debrid
+REALDEBRID_ONLY_SERVERS = ['10upload','1fichier','2shared','4fastfile','abc','bayfiles','badongo','bitshare','bulletupload','cbs.com','cramit','crocko','cwtv','dailymotion','dateito',
+                    'dengee','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
+                   'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
+                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
+                   'novamov','przeklej','purevid','rapidgator','rapidshare','redtube','scribd','sendspace','share-online','shareflare','shragle','slingfile',
+                   'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
+                   'vip-file','wattv','youporn','yunfile','zippyshare','zshare'
+                   ]
 
 # Todos los servidores que funcionan con cuenta premium
 PREMIUM_SERVERS = ['wupload','fileserve']

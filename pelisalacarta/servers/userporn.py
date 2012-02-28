@@ -11,18 +11,23 @@ import base64
 from core import scrapertools
 from core import logger
 from core import config
-
+HOSTER_KEY="NTI2NzI5Cgo="
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[userporn.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
-
+    # Espera un poco como hace el player flash
+    logger.info("[userporn.py] waiting 3 secs")
+    import time
+    time.sleep(3)
+    
     # Obtiene el id
     code = Extract_id(page_url)
     
     # Descarga el json con los detalles del vídeo
-    controluri = "http://userporn.com/player_control/settings.php?v=" + code
+    #http://www.userporn.com/player_control/settings.php?v=dvthddkC7l4J&em=TRUE&fv=v1.1.45
+    controluri = "http://userporn.com/player_control/settings.php?v=" + code + "&em=TRUE&fv=v1.1.45"
     datajson = scrapertools.cachePage(controluri)
     #logger.info("response="+datajson);
 
@@ -37,8 +42,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     for formato in formatos:
         uri = base64.decodestring(formato["u"])
         resolucion = formato["l"]
-    
-        video_urls.append( ["%s [userporn]" % resolucion , uri ])
+        import videobb
+        video_url = videobb.build_url(uri,HOSTER_KEY,datajson)
+        video_urls.append( ["%s [userporn]" % resolucion , video_url.replace(":80","") ])
 
     for video_url in video_urls:
         logger.info("[userporn.py] %s - %s" % (video_url[0],video_url[1]))
@@ -69,7 +75,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[userporn]"
-        url = match
+        url = "http://www.userporn.com/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -86,7 +92,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[userporn]"
-        url = match
+        url = "http://www.userporn.com/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -103,7 +109,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[userporn]"
-        url = match
+        url = "http://www.userporn.com/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -112,13 +118,13 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    patronvideos  = "(http\:\/\/(?:www\.)?userporn.com\/(?:(?:e/|flash/)|(?:(?:video/|f/)))?[a-zA-Z0-9]{0,12})"
+    patronvideos  = "http\:\/\/(?:www\.)?userporn.com\/(?:(?:e/|flash/)|(?:(?:video/|f/)))?([a-zA-Z0-9]{0,12})"
     logger.info("[userporn.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #print data
     for match in matches:
         titulo = "[Userporn]"
-        url = match
+        url = "http://www.userporn.com/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)

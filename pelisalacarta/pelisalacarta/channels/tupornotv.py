@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Canal para tupornotv
@@ -60,8 +60,7 @@ def novedades(item):
     <a href="/videos/cogiendo-en-el-bosque"><img src="imagenes/videos//c/o/cogiendo-en-el-bosque_imagen2.jpg" alt="Cogiendo en el bosque" border="0" align="top" /></a>
     <h2><a href="/videos/cogiendo-en-el-bosque">Cogiendo en el bosque</a></h2>
     '''
-    patronvideos  = '(?:<table border="0" cellpadding="0" cellspacing="0" ><tr><td align="center" width="100." valign="top" height="160px">|<td align="center" valign="top" width="25%">)[^<]+'
-    patronvideos += '<a href="(.videos[^"]+)"><img src="([^"]+)" alt="([^"]+)"(.*?)</td>'
+    patronvideos  = '<div class="relative">(.*?)</div><div class="video'
     
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
@@ -69,12 +68,24 @@ def novedades(item):
     itemlist = []
     for match in matches:
         # Titulo
-        scrapedtitle = match[2]
-        scrapedurl = urlparse.urljoin(url,match[0])
-        scrapedthumbnail = urlparse.urljoin(url,match[1])
+        try:
+            scrapedtitle = re.compile('title="(.+?)"').findall(match)[0]
+            
+        except:
+            scrapedtitle = ''
+        try:
+            scrapedurl = re.compile('href="(.+?)"').findall(match)[0]
+            scrapedurl = urlparse.urljoin(url,scrapedurl)
+        except:
+            continue
+        try:
+            scrapedthumbnail = re.compile('src="(.+?)"').findall(match)[0]
+            scrapedthumbnail = urlparse.urljoin(url,scrapedthumbnail)
+        except:
+            scrapedthumbnail = ''
         scrapedplot = ""
         try:
-            duracion = re.compile('n: (.+?)</span>').findall(match[3])[0]
+            duracion = re.compile('<div class="duracion">(.+?)<').findall(match)[0]
         except:
             try:
                 duracion = re.compile('\((.+?)\)<br').findall(match[3])[0]
@@ -83,25 +94,20 @@ def novedades(item):
              
         #logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], duracion=["+duracion+"]")
         # Añade al listado de XBMC
-        trozos = scrapedurl.split("/")
-        id = trozos[len(trozos)-1]
-        videos = "http://149.12.64.129/videoscodiH264/"+id[0:1]+"/"+id[1:2]+"/"+id+".flv"
-        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" ["+duracion+"]" , url=videos , thumbnail=scrapedthumbnail , plot=scrapedplot, server="Directo", folder=False) )
+        #trozos = scrapedurl.split("/")
+        #id = trozos[len(trozos)-1]
+        #videos = "http://149.12.64.129/videoscodiH264/"+id[0:1]+"/"+id[1:2]+"/"+id+".flv"
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" ["+duracion+"]" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, server="Directo", folder=False) )
 
     # ------------------------------------------------------
     # Extrae el paginador
     # ------------------------------------------------------
     #<a href="/topVideos/todas/mes/2/" class="enlace_si">Siguiente </a>
-    patronsiguiente = '<a href="([^"]+)" class="enlace_si">Siguiente </a>'
+    patronsiguiente = '<a href="(.+?)" class="enlace_si">Siguiente </a>'
     siguiente = re.compile(patronsiguiente,re.DOTALL).findall(data)
     if len(siguiente)>0:
-        patronultima = '<!--HV_SIGUIENTE_ENLACE'
-        ultpagina = re.compile(patronultima,re.DOTALL).findall(data)
-        scrapertools.printMatches(siguiente)
-    
-        if len(ultpagina)>0:
-            scrapedurl = urlparse.urljoin(url,siguiente[0])
-            itemlist.append( Item(channel=__channel__, action="novedades", title="!Next page" , url=scrapedurl , folder=True) )
+        scrapedurl = urlparse.urljoin(url,siguiente[0])
+        itemlist.append( Item(channel=__channel__, action="novedades", title="!Next page" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -190,10 +196,8 @@ def getsearch(item):
             scrapedthumbnail = urlparse.urljoin("http://tuporno.tv/",match[1])
             scrapedplot = ""
             duracion = match[4]
-            trozos = scrapedurl.split("/")
-            id = trozos[len(trozos)-1]
-            videos = "http://149.12.64.129/videoscodiH264/"+id[0:1]+"/"+id[1:2]+"/"+id+".flv"
-            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" ["+duracion+"]" , url=videos , thumbnail=scrapedthumbnail , plot=scrapedplot, server="Directo", folder=False) )
+
+            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" ["+duracion+"]" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot, server="Directo", folder=False) )
     
         '''<a href="/buscador/?str=busqueda&desde=HV_PAGINA_SIGUIENTE" class="enlace_si">Siguiente </a>'''
         patronsiguiente = '<a href="([^"]+)" class="enlace_si">Siguiente </a>'
@@ -206,5 +210,22 @@ def getsearch(item):
             if len(ultpagina)==0:
                 scrapedurl = urlparse.urljoin(item.url,siguiente[0])
                 itemlist.append( Item(channel=__channel__, action="getsearch", title="!Next page" , url=scrapedurl , folder=True) )
-        
+    return itemlist
+
+def play(item):
+    logger.info("[tupornotv.py] play")
+    itemlist = []
+    
+    data = scrapertools.cachePage(item.url)
+    patronvideos  = "RunPlayer\('bm92YWxpZGFkbw==','1','(.+?)'\)"
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        url = "http://tuporno.tv/flvurl.php?codVideo=%s" %matches[0]
+        data = scrapertools.cachePage(url)
+        patron = "&kpt=(.+?)&"
+        matches = re.compile(patron).findall(data)
+        if len(matches)>0:
+            import base64
+            url = base64.decodestring(matches[0])
+            itemlist.append( Item(channel=__channel__, action="play", title=item.title , url=url , thumbnail=item.thumbnail , plot=item.plot, server="Directo", folder=False) )
     return itemlist

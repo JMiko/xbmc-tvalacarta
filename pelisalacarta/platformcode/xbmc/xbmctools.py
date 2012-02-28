@@ -240,15 +240,15 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     if server=="directo" or server=="local":
         video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
     # Si el vídeo está en un servidor "sólo filenium", te avisa en caso de que no tengas cuenta
-    elif server in servertools.FILENIUM_ONLY_SERVERS and config.get_setting("fileniumpremium")=="false":
+    elif (server in servertools.FILENIUM_ONLY_SERVERS and config.get_setting("fileniumpremium")=="false") and (server in servertools.REALDEBRID_ONLY_SERVERS and config.get_setting("realdebridpremium")=="false"):
         video_urls = []
         existe = False
-        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con una cuenta de Filenium"
+        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con una cuenta en Filenium Real-Debrid"
     # Si el vídeo está en un servidor "sólo premium", te avisa en caso de que no tengas cuenta
-    elif server in servertools.PREMIUM_ONLY_SERVERS and config.get_setting(server+"premium")=="false" and config.get_setting("fileniumpremium")=="false":
+    elif server in servertools.PREMIUM_ONLY_SERVERS and config.get_setting(server+"premium")=="false" and config.get_setting("fileniumpremium")=="false" and config.get_setting("realdebridpremium")=="false":
         video_urls = []
         existe = False
-        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con cuenta premium o con cuenta de Filenium"
+        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con cuenta premium o con cuenta en Filenium o Real-Debrid"
     else:
         # Muestra un diálogo de progreso
         if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":
@@ -274,7 +274,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
                     video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
 
                 # Si el vídeo no existe, y el servidor no es "sólo filenium", lo marca como "existe=False" para que no de opción a reproducir con Filenium
-                if len(video_urls)==0 and server not in servertools.FILENIUM_ONLY_SERVERS and server not in servertools.PREMIUM_ONLY_SERVERS:
+                if len(video_urls)==0 and server not in servertools.FILENIUM_ONLY_SERVERS and server not in servertools.REALDEBRID_ONLY_SERVERS  and server not in servertools.PREMIUM_ONLY_SERVERS:
                     existe = False
                     motivo = "El vídeo no existe o ha sido borrado"
                 
@@ -294,6 +294,17 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
             logger.info("[xbmctools.py] filenium url="+video_gen)
             video_urls.append( [ "[filenium]", video_gen ] )
+
+        if existe and server in servertools.REALDEBRID_SERVERS and config.get_setting("realdebridpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
+            exec "from servers import realdebrid as gen_conector"
+            
+            video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("realdebridpremium")=="true") , user=config.get_setting("realdebriduser") , password=config.get_setting("realdebridpassword"), video_password=video_password )
+            logger.info("[xbmctools.py] realdebrid url="+video_gen)
+            if not "REAL-DEBRID" in video_gen:
+                video_urls.append( [ "."+video_gen.rsplit('.',1)[1]+" [realdebrid]", video_gen ] )
+            else:
+                motivo = video_gen
+                
 
         # Cierra el diálogo de progreso
         if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":

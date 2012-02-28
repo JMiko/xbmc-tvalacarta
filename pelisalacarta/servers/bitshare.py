@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para bitshare
@@ -57,4 +57,20 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
             
             
+
+
+    #http://bitshare.com/?f=idwml58s
+    patronvideos  = '(bitshare.com/\?f=[\w+]+)'
+    logger.info("[bitshare.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[bitshare]"
+        url = "http://"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'bitshare' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
     return devuelve
