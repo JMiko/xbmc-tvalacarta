@@ -411,6 +411,7 @@ def play(item):
         url = url + "?" + post
         post = "recaptcha_challenge_field=%s&recaptcha_response_field=%s" % (challenge,tecleado.replace(" ","+"))
         location = scrapertools.get_header_from_response( url=url, header_to_get="location", post=post)
+        location = urllib.unquote_plus(location)
         logger.info("ANDRES location="+location)
     else:
         logger.info("[wupload.py] no encontrado captcha")
