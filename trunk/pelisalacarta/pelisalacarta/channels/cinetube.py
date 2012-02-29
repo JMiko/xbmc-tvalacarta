@@ -565,25 +565,20 @@ def temporadas(item):
     
     patron  = '<tr><td[^>]+></td>[^<]+'
     patron += '<td><a href="([^"]+)">([^<]+)</a></td>[^<]+'
-    patron += '<td>([^<]+)</td>[^<]+'
-    patron += '<td><img src="[^"]+" alt="([^"]+)"'
+    patron += '<td>([^<]+)</td>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for match in matches:
-        scrapedtitle = match[1].strip()+" ("+match[2]+", "+match[3]+")"
+    for url,titulo,num_episodios in matches:
+        scrapedtitle = titulo.strip()+" ("+num_episodios+")"
         # directory = match[1].strip()
-        extra = match[1].strip()
-        scrapedurl = urlparse.urljoin(item.url,match[0])
+        extra = titulo.strip()
+        scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, category=item.category , plot=scrapedplot, extra=extra, show=item.show) )
 
-    # Opcion de añadir serie a Wiideoteca
-    if len(itemlist)>0 and config.get_platform() in ("wiimc","rss") and item.channel<>"wiideoteca":
-        itemlist.append( Item(channel=__channel__, action="add_serie_to_wiideoteca", title=">> Agregar Serie a Wiideoteca <<", fulltitle=fulltitle , url=item.url , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=match[1].strip()) )
-   
     # Una trampa, si la serie enlaza no con la temporada sino con la lista de episodios, se resuelve aquí
     if len(itemlist)==0:
         itemlist = episodios(item)
@@ -592,18 +587,13 @@ def temporadas(item):
     if len(itemlist)==0:
         itemlist.extend(findvideos(item))
 
+    # Opcion de añadir serie a Wiideoteca
+    if len(itemlist)>0 and config.get_platform() in ("wiimc","rss") and item.channel<>"wiideoteca":
+        itemlist.append( Item(channel=__channel__, action="add_serie_to_wiideoteca", title=">> Agregar Serie a Wiideoteca <<", fulltitle=fulltitle , url=item.url , thumbnail=scrapedthumbnail, plot=scrapedplot, extra=match[1].strip()) )
+   
     return itemlist
 
 def episodios(item):
-    '''
-    <li>
-    <span class="link"><a href="/series/star-wars-las-guerras-clon/temporada-1/capitulo-13/">Star Wars: Las Guerras Clon 1x13 </a></span>
-    <dl>
-    <dt>Información</dt>
-    <dd class="n"><img src="http://caratulas.cinetube.es/img/cont/espanol.png" alt="Español" /></dd><dd class="n"><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="megavideo.png" /></dd><dd class="n"><img src="http://caratulas.cinetube.es/img/cont/ddirecta.png" alt="Descarga" /></dd>											</dl>
-    <p><span><a id="novisto_27325" class="novisto" onclick="cap_yavisto('27325',1,1)">No Visto</a></span> <span><a href="/series/star-wars-las-guerras-clon/temporada-1/capitulo-13/">Ver Ficha</a></span></p>
-        </li>
-    '''
     logger.info("[cinetube.py] episodios")
     extra = item.extra
     # directory = item.directory
@@ -643,89 +633,64 @@ def episodios(item):
 def findvideos(item):
     logger.info("[cinetube.py] findvideos")
 
-    try:
-        url = item.url
-        title = item.title
-        fulltitle = item.fulltitle
-        extra = item.extra
-        thumbnail = item.thumbnail
-        plot = item.plot
+    # Descarga la pagina
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
     
-        # Descarga la pagina
-        data = scrapertools.cachePage(url)
-        #logger.info(data)
-        
-        # Busca el argumento
-        patronvideos  = '<meta name="description" content="([^"]+)"'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        if len(matches)>0:
-            plot = scrapertools.htmlclean(matches[0])
-            logger.info("plot actualizado en detalle");
-        else:
-            logger.info("plot no actualizado en detalle");
-    
-        # Busca los enlaces a los mirrors, o a los capitulos de las series...
-        '''
-        FORMATO EN SERIES
-        <div class="tit_opts"><a href="/series/hawai-five/temporada-1/capitulo-13/212498.html">
-        <p>Opción 1: Ver online en Megavideo <span class="bold"></span></p>
-        <p><span>IDIOMA: SUB</span></p>
-        <p class="v_ico"><img src="http://caratulas.cinetube.es/img/cont/megavideo.png" alt="Megavideo" /></p>
-        '''
-        patronvideos = '<div class="tit_opts"><a href="([^"]+)"[^>]*>[^<]+'
-        patronvideos += '<p>(.*?)</p>[^<]+'
-        patronvideos += '<p><span>(.*?)</span>'
-        '''
-        patronvideos = '<div class="tit_opts"><a href="([^"]+)".*?>[^<]+'
-        patronvideos += '<p>([^<]+)</p>[^<]+'
-        patronvideos += '<p><span>(.*?)</span>'
-        '''
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-        itemlist = []
-        for match in matches:
-            logger.info("Encontrado iframe mirrors "+match[0])
-            # Lee el iframe
-            mirror = urlparse.urljoin(url,match[0].replace(" ","%20"))
-            data = scrapertools.cache_page(mirror)
-            #logger.info("-------------------------------------------------------------------------------------")
-            #logger.info(data)
-            #logger.info("-------------------------------------------------------------------------------------")
-            '''
-            req = urllib2.Request(mirror)
-            req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-            response = urllib2.urlopen(req)
-            data=response.read()
-            response.close()
-            '''
-            patron='ct_url_decode\("([^"]+)"\)'
-            matches = re.compile(patron,re.DOTALL).findall(data)
-            if len(matches)>0:
-                data = matches[0]
-                logger.info("daots -------------------------------------------------------------------------------------")
-                logger.info(data)
-                logger.info("-------------------------------------------------------------------------------------")
-                data = ct_url_decode(data)
-                logger.info("-------------------------------------------------------------------------------------")
-                logger.info(data)
-                logger.info("-------------------------------------------------------------------------------------")
-    
-            listavideos = servertools.findvideos(data)
-            
-            for video in listavideos:
-                #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
-                scrapedtitle = match[1] + " " + match[2] + " " + video[0]
-                scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-                scrapedurl = video[1]
-                server = video[2]
-                
-                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        
+    # Busca el argumento
+    patronvideos  = '<meta name="description" content="([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        item.plot = scrapertools.htmlclean(matches[0])
+        logger.info("plot actualizado en detalle");
+    else:
+        logger.info("plot no actualizado en detalle");
+
+    # Busca los enlaces a los mirrors, o a los capitulos de las series...
+    patronvideos = '<div class="tit_opts"><a href="([^"]+)"[^>]*>[^<]+'
+    patronvideos += '<p>(.*?)</p>[^<]+'
+    patronvideos += '<p><span>(.*?)</span>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    itemlist = []
+    for match in matches:
+        logger.info("Encontrado iframe mirrors "+match[0])
+        scrapedtitle = scrapertools.htmlclean(match[1] + " " + match[2]).strip()
+        scrapedurl = urlparse.urljoin(item.url,match[0].replace(" ","%20"))
+        scrapedthumbnail = ""
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, category=item.category , extra=item.extra+" "+scrapedtitle, plot=item.plot, show=item.show, context="4", folder=False) )
+
     return itemlist
+
+def play(item):
+    logger.info("[cinetube.py] play")
+
+    # Lee el iframe
+    data = scrapertools.cache_page(item.url)
+    patron = 'ct_url_decode\("([^"]+)"\)'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    # Decodifica el bloque donde están los enlaces
+    if len(matches)>0:
+        data = matches[0]
+        logger.info("-------------------------------------------------------------------------------------")
+        logger.info(data)
+        logger.info("-------------------------------------------------------------------------------------")
+        data = ct_url_decode(data)
+
+    logger.info("-------------------------------------------------------------------------------------")
+    logger.info(data)
+    logger.info("-------------------------------------------------------------------------------------")
+
+    itemlist = servertools.find_video_items(data=data)
+    
+    for videoitem in itemlist:
+        videoitem.title = item.title
+        videoitem.fulltitle = item.fulltitle
+        videoitem.thumbnail = item.thumbnail
+        videoitem.channel = __channel__
+
+    return itemlist    
 
 def ct_url_decode(C):
     if not(C):
