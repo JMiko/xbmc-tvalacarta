@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>cinetube</name>
-	<tag>14</tag>
-	<date>03/11/2011</date>
-	<changes>Ligero cambio para autenticar en RSS</changes>
+	<tag>15</tag>
+	<date>01/03/2012</date>
+	<changes>Actualización</changes>
 </version>
