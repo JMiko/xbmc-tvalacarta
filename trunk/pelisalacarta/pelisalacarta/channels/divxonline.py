@@ -41,11 +41,11 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas - Novedades",url="http://www.divxonline.info/"))
-    itemlist.append( Item(channel=__channel__, action="categorias"    , title="Películas - Categorías",url="http://www.divxonline.info/"))
-    itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
-    itemlist.append( Item(channel=__channel__, action="pelisporletra" , title="Películas - A-Z"))
-    itemlist.append( Item(channel=__channel__, action="pelisporanio"  , title="Películas - Por año de estreno"))
-    itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar"))
+    #itemlist.append( Item(channel=__channel__, action="categorias"    , title="Películas - Categorías",url="http://www.divxonline.info/"))
+    #itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
+    #itemlist.append( Item(channel=__channel__, action="pelisporletra" , title="Películas - A-Z"))
+    #itemlist.append( Item(channel=__channel__, action="pelisporanio"  , title="Películas - Por año de estreno"))
+    #itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar"))
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -89,18 +89,20 @@ def peliculas(item):
     #logger.info(data)
 
     # Extrae las entradas
-    patron  = '<td class="contenido"><a href="([^"]+)"><img src="([^"]+)".*?title="([^"]+)"[^>]+>.*?'
-    patron += '<b>Sinopsis:</b>([^<]+)<'
+    patron  = '<div class="ficha margen-inf1">[^<]+'
+    patron += '<h2><a href="([^"]+)">([^<]+)</a></h2>[^<]+'
+    patron += '<div class="foto-link">[^<]+'
+    patron += '<img src="([^"]+)".*?'
+    patron += '<li><span class="color_azul-ficha">Sinopsis:</span>(.*?)</li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for match in matches:
+    for url,title,thumbnail,plot in matches:
         # Titulo
-        scrapedtitle = match[2]
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la página de reproducción
-        scrapedthumbnail = match[1]
-        scrapedplot = match[3]
+        scrapedtitle = title
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = thumbnail
+        scrapedplot = plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
@@ -108,7 +110,7 @@ def peliculas(item):
 
     # Extrae el paginador
     #<a href="peliculas-online-divx-2.html" class="paginacion" style="color: #000000; background-color: #cad9ea;" class="paginacion" onmouseover="javascript:style.backgroundColor='#ececd9';" onmouseout="javascript:style.backgroundColor='#cad9ea';">&gt;&gt;</a>
-    patron = '<a href="([^"]+)" class="paginacion" style="color[^>]+>\&gt\;\&gt\;</a>'
+    patron = '<a href="([^"]+)">&gt;&gt;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -305,17 +307,59 @@ def movielist(item): # pelis sin ficha (en listados por género)
 
 def findvideos(item):
     logger.info("[divxonline.py] findvideos(%s)" % item.tostring())
+    itemlist = []
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url.replace("pelicula","pelicula-divx"))
+    patron = '<table class="parrillaDescargas">(.*?)</table>'
+    data = scrapertools.get_match(data,patron)
+    
+    patron  = '<td class="numMirror">[^<]+</td>[^<]+'
+    patron += '<td class="hostParrilla"><a target="_blank" href="([^"]+)"><img src="([^"]+)"[^>]+></a></td>[^<]+'
+    patron += '<td class="uploaderParrilla">[^<]+</td>[^<]+'
+    patron += '<td class="partesParrilla">([^<]+)</td>'
+    
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for url,thumbnail,partes in matches:
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedtitle = url
+        try:
+            scrapedtitle = scrapedtitle.split("/")[2]
+        except:
+            pass
+        
+        scrapedtitle = "Ver online "+scrapedtitle + " ("+partes+" partes)"
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.title , url=scrapedurl , thumbnail=thumbnail , plot=item.plot , folder=False) )
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    logger.info("***********************************************************************************************************************")
-    patron = "<title>([^<]+)</title>"
+    data = scrapertools.cachePage(item.url.replace("pelicula","descarga-directa"))
+    patron = '<table class="parrillaDescargas">(.*?)</table>'
+    data = scrapertools.get_match(data,patron)
+    
+    patron  = '<td class="numMirror">[^<]+</td>[^<]+'
+    patron += '<td class="hostParrilla"><a target="_blank" href="([^"]+)"><img src="([^"]+)"[^>]+></a></td>[^<]+'
+    patron += '<td class="uploaderParrilla">[^<]+</td>[^<]+'
+    patron += '<td class="partesParrilla">([^<]+)</td>'
+    
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        cadena = matches[0]
-        validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'()-@[]^_`{}~.<>"
-        cadena = ''.join(c for c in cadena if c in validchars)
-        logger.info(  cadena  )
+    for url,thumbnail,partes in matches:
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedtitle = url
+        try:
+            scrapedtitle = scrapedtitle.split("/")[2]
+        except:
+            pass
+        
+        scrapedtitle = "Descarga directa "+scrapedtitle + " ("+partes+" partes)"
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.title , url=scrapedurl , thumbnail=thumbnail , plot=item.plot , folder=False) )
+
+    return itemlist
+
+def play(item):
+    logger.info("[divxonline.py] play")
+    itemlist=[]
+    data = scrapertools.cachePage(item.url)
+    logger.info("data="+data)
 
     logger.info("***********************************************************************************************************************")
     patron  = "decodeBase64\('(.+?)'\)"
@@ -340,9 +384,9 @@ def findvideos(item):
         videoitem.fulltitle = item.fulltitle
         videoitem.channel=channel=__channel__
         i=i+1
-    
+
     return itemlist
-    
+
 def decryptinks(text):
     patronvideos  = "decodeBase64\('(.+?)'\)"
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
