@@ -43,7 +43,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
                 logger.info("location1="+str(header))
 
         # Obtiene la URL final
-        headers = scrapertools.get_headers_from_response(location)
+        headers = scrapertools.get_headers_from_response(location1)
         location2 = ""
         content_disposition = ""
         for header in headers:
