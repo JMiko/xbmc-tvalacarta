@@ -20,6 +20,9 @@ __title__ = "Shurhd"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
+SESION = config.get_setting("session","shurhd")
+LOGIN = config.get_setting("login","shurhd")
+PASSWORD = config.get_setting("password","shurhd")
 
 def isGeneric():
     return True
@@ -30,7 +33,59 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Novedades"                , action="scrapping"   , url="http://www.shurhd.com/"))
     itemlist.append( Item(channel=__channel__, title="Películas"                , action="menupeliculas"))
 #    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
+    if SESION=="true":
+        perform_login(LOGIN,PASSWORD)
+        itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
+    else:
+        itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
+
     return itemlist
+
+def perform_login(login,password):
+    # Invoca al login, y con eso se quedarán las cookies de sesión necesarias
+    url="http://www.shurhd.com/wp-login.php"
+    data = scrapertools.cache_page(url,post="log="+LOGIN+"&pwd="+PASSWORD+"&rememberme=forever&wp-submit=Acceder&redirect_to=http%3A%2F%2Fwww.shurhd.com%2Fwp-admin%2F&testcookie=1")
+
+def logout(item):
+    nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
+    config_canal = open( nombre_fichero_config_canal , "w" )
+    config_canal.write("<settings>\n<session>false</session>\n<login></login>\n<password></password>\n</settings>")
+    config_canal.close();
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Sesión finalizada", action="mainlist"))
+    return itemlist
+
+def login(item):
+    if config.get_platform() in ("wiimc", "rss"):
+        if LOGIN<>"" and PASSWORD<>"":
+            perform_login(LOGIN,PASSWORD)
+            itemlist = []
+            itemlist.append( Item(channel=__channel__, title="Sesión iniciada", action="mainlist"))
+    else:
+        import xbmc
+        keyboard = xbmc.Keyboard("","Login")
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            login = keyboard.getText()
+
+        keyboard = xbmc.Keyboard("","Password")
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            password = keyboard.getText()
+
+        nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
+        config_canal = open( nombre_fichero_config_canal , "w" )
+        config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
+        config_canal.close();
+
+        if LOGIN<>"" and PASSWORD<>"":
+            perform_login(LOGIN,PASSWORD)
+            itemlist = []
+            itemlist.append( Item(channel=__channel__, title="Sesión iniciada", action="mainlist"))
+
+    return itemlist
+
 
 def menupeliculas(item):
     logger.info("[shurweb.py] menupeliculas")
