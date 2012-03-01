@@ -1,3 +1,6 @@
+3.2.6
+
+
 3.2.5
 
 - First version after megaupload close
