@@ -254,7 +254,7 @@ def find_videos(data):
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
-        titulo = match[1]
+        titulo = scrapertools.htmlclean(match[1]).strip()+" [youtube]"
         url = match[0]
 
         if url not in encontrados:

@@ -158,6 +158,22 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    # otro alternativo
+    patronvideos  = "(http://(?:www.)vk.+?\/video_ext\.php[^']+)'"
+    logger.info("[vk.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    #print data
+    for match in matches:
+        titulo = "[vk]"
+        url = match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vk' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     # http://vk.com/video97482389_161509127?section=all
     patronvideos  = '(http\:\/\/vk.+?\/video[0-9]+_[0-9]+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")

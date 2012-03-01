@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para Wupload (solo filenium)
+# Conector para Wupload
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -11,6 +11,37 @@ import os
 from core import scrapertools
 from core import logger
 from core import config
+
+def test_video_exists( page_url ):
+    logger.info("[wupload.py] test_video_exists(page_url='%s')" % page_url)
+
+    # Existe: http://www.wupload.com/file/2666595132
+    # No existe: http://www.wupload.es/file/2668162342
+    location = scrapertools.get_header_from_response(page_url,header_to_get="location")
+    logger.info("location="+location)
+    if location!="":
+        page_url = location
+
+    data = scrapertools.downloadpageWithoutCookies(page_url)
+    logger.info("data="+data)
+    patron  = '<p class="fileInfo filename"><span>Filename: </span> <strong>([^<]+)</strong></p>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    if len(matches)>0:
+        return True,""
+    else:
+        patron  = '<p class="deletedFile">(Sorry, this file has been removed.)</p>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if len(matches)>0:
+            return False,matches[0]
+        
+        patron = '<div class="section CL3 regDownloadMessage"> <h3>(File does not exist)</h3> </div>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if len(matches)>0:
+            return False,matches[0]
+    
+    return True,""
+    
 
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):

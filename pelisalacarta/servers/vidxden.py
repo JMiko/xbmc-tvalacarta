@@ -14,6 +14,7 @@ from core import config
 from core import unpackerjs
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
+
     logger.info("[vidxden.py] url="+page_url)
     if ".html" not in page_url:
         logger.info("[vidxden.py] URL incompleta")
@@ -21,7 +22,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         patron = '<input name="fname" type="hidden" value="([^"]+)">'
         matches = re.compile(patron,re.DOTALL).findall(data)
         page_url = page_url+"/"+matches[0]+".html"
-
+        logger.info("[vidxden.py] url="+page_url)
         
     # Lo pide una vez
     scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
@@ -38,9 +39,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         codigo = matches[0][0]
         nombre = matches[0][1]
 
-    post = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Free+Stream"
+    #op=download1&usr_login=&id=kmxlztxqio5a&fname=No_Estas_Sola__2007__DVDRip_.avi&referer=&method_free=Continue+to+Video
+    post = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Continue+to+Video"
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
-    
+
     # Extrae el trozo cifrado
     patron = '<div id="embedcontmvshre"[^>]+>(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -63,11 +65,16 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     patron = '<param name="src"value="([^"]+)"/>'
     matches = re.compile(patron,re.DOTALL).findall(descifrado)
     scrapertools.printMatches(matches)
+    if len(matches)==0:
+        descifrado = descifrado.replace("\\","")
+        patron = "file','([^']+)'"
+        matches = re.compile(patron,re.DOTALL).findall(descifrado)
+        scrapertools.printMatches(matches)
     
     video_urls = []
     
     if len(matches)>0:
-        video_urls.append( ["."+matches[0].rsplit('.',1)[1]+" [vidxden]",matches[0]])
+        video_urls.append( ["."+matches[0].rsplit('.',1)[1]+" [vidxden]",matches[0]+"|Referer="+page_url])
 
     for video_url in video_urls:
         logger.info("[vidxden.py] %s - %s" % (video_url[0],video_url[1]))

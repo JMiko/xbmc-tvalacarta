@@ -10,44 +10,33 @@ from core import scrapertools
 from core import config
 from core import logger
 
-# Todos los servidores
-ALL_SERVERS = []
-ALL_SERVERS.extend(['directo','adnstream','bayfiles','bitshare','allmyvideos','bliptv','depositfiles','divxstage','downupload','facebook','filebox','fileserve','fourshared'])
-ALL_SERVERS.extend(['googlevideo','gigabyteupload','hotfile','hdplay','letitbit','mediafire','modovideo','movshare','novamov','ovfile','putlocker','rapidshare'])
-ALL_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','turbobit','tutv','userporn','uploadedto','veoh','veevr','videobam'])
-ALL_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','wupload'])
+# Listas de servidores empleadas a la hora de reproducir para explicarle al usuario por qué no puede ver un vídeo
 
-# Todos los servidores soportados por Filenium
+# Lista de los servidores que se pueden ver sin cuenta premium de ningún tipo
+FREE_SERVERS = []
+FREE_SERVERS.extend(['directo','adnstream','bliptv','divxstage','downupload','facebook','fourshared'])
+FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','mediafire','modovideo','movshare','novamov','ovfile','putlocker'])
+FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
+FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
+
+# Lista de TODOS los servidores que funcionan con cuenta premium individual
+PREMIUM_SERVERS = ['wupload','fileserve','uploadedto']
+
+# Lista de TODOS los servidores soportados por Filenium
 FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
 
-# Los servidores que SÓLO funcionan con Filenium
-FILENIUM_ONLY_SERVERS = ['linkto','uploadedto','gigasize','filepost','hotfile','rapidshare','turbobit','bitshare','depositfiles','oron','allmyvideos','fooget','letitbit','shareonline']
-
-# Todos los servidores soportados por Real-Debrid
-REALDEBRID_SERVERS = ['10upload','1fichier','2shared','4fastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbs.com','cramit','crocko','cwtv','dailymotion','dateito',
+# Lista de TODOS los servidores soportados por Real-Debrid
+REALDEBRID_SERVERS = ['tenupload','onefichier','twoshared','fourfastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
                     'dengee','depositfiles','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
                    'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
                    'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
-                   'novamov','przeklej','purevid','putlocker','rapidgator','redtube','rapidshare','rutube','scribd','sendspace','share-online','shareflare','shragle','slingfile','sockshare',
+                   'novamov','przeklej','purevid','putlocker','rapidgator','redtube','rapidshare','rutube','scribd','sendspace','shareonline','shareflare','shragle','slingfile','sockshare',
                    'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
-                   'userporn','videobb','videoweed','videozer','vidxden','vimeo','vip-file','wattv','wupload','youporn','youtube','yunfile','zippyshare','zshare'
-                   ]
+                   'userporn','videoweed','vidxden','vimeo','vipfile','wattv','wupload','youporn','youtube','yunfile','zippyshare','zshare']
 
-# Los servidores que SÓLO funcionan con Real-Debrid
-REALDEBRID_ONLY_SERVERS = ['10upload','1fichier','2shared','4fastfile','abc','bayfiles','badongo','bitshare','bulletupload','cbs.com','cramit','crocko','cwtv','dailymotion','dateito',
-                    'dengee','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
-                   'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
-                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
-                   'novamov','przeklej','purevid','rapidgator','rapidshare','redtube','scribd','sendspace','share-online','shareflare','shragle','slingfile',
-                   'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
-                   'vip-file','wattv','youporn','yunfile','zippyshare','zshare'
-                   ]
-
-# Todos los servidores que funcionan con cuenta premium
-PREMIUM_SERVERS = ['wupload','fileserve']
-
-# Todos los servidores que SÓLo funcionan con cuenta premium
-PREMIUM_ONLY_SERVERS = ['wupload','fileserve']
+# Lista completa de todos los servidores soportados por pelisalacarta, usada para buscar patrones
+ALL_SERVERS = list( set(FREE_SERVERS) | set(FILENIUM_SERVERS) | set(REALDEBRID_SERVERS) )
+ALL_SERVERS.sort()
 
 # Función genérica para encontrar vídeos en una página
 def find_video_items(item=None, data=None):
@@ -85,12 +74,20 @@ def findvideos(data):
     # Ejecuta el findvideos en cada servidor
     for serverid in ALL_SERVERS:
         try:
-            exec "import "+serverid
+            exec "from servers import "+serverid
             exec "devuelve.extend("+serverid+".find_videos(data))"
+        except ImportError:
+            logger.info("No existe conector para "+serverid)
         except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line ) 
+            logger.info("Error en el conector "+serverid)
+            import traceback,sys
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
 
     return devuelve
     

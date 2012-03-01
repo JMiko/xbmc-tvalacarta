@@ -243,3 +243,7 @@ def geturl(urlvideo):
     
     logger.info("[zshare.py] url="+url)
     return url
+
+
+def find_videos(data):
+    return []

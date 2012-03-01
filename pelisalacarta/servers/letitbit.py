@@ -19,7 +19,7 @@ def test_video_exists( page_url ):
     # No existe: 
     data = scrapertools.cache_page(page_url)
     patron  = '<h1 class="file-info[^"]+" title="[^"]+">File: <a href="[^"]+" target="_blank"><span>([^<]+)</span>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patron,re.DOTALL).findall(data)
     
     if len(matches)>0:
         return True,""

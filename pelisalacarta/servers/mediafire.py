@@ -27,7 +27,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     patron = '<a href="([^"]+)" onclick="avh\(this\)[^"]+">Download'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        video_urls.append( ["[mediafire]",matches[0] ] )
+        video_urls.append( [matches[0][-4:]+" [mediafire]",matches[0] ] )
 
     for video_url in video_urls:
         logger.info("[mediafire.py] %s - %s" % (video_url[0],video_url[1]))
