@@ -82,13 +82,16 @@ def find_videos(text):
     devuelve = []
 
     # http://bayfiles.com/file/3R2P/8QqLEo/A.Gifted.Man.S01E15.HDTV.XviD-2HD.mp4
-    patronvideos  = '(http://bayfiles.com/file/[\w+\.\/\%\-\_\=&]+)'
+    # http://www.bayfiles.com/file/3yUL/NQ6Kl0/hu60.mp4
+    # linkto?url=http://bayfiles.com/file/4pMd/Mhu9Ht/Megamente.720p-Latino.mp4?cid=3154&ctipo=pelicula&cdef=720
+
+    patronvideos  = '(bayfiles.com/file/[a-zA-Z0-9]+/[a-zA-Z0-9]+/[^&^"^\'^<\?]+)'
     logger.info("[bayfiles.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
     for match in matches:
         titulo = "[bayfiles]"
-        url = match
+        url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'bayfiles' ] )

@@ -21,12 +21,17 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page(page_url)
     
     # La descarga de nuevo como si hubiera pulsado el botón "Ver"
-    # http://srv.hdplay.org/storage/flv/xGylz8.flv?token=703acade4b51aa6b26ad264327c4a4cf
     data = scrapertools.cache_page(page_url,post="agree=")
-    patron = 'var movieURL  \= "([^"]+)"\;'
+
+    # var movieURL  = "http://srv.hdplay.org/stream-6cc8d4a77c177f1d36a8f91ef226cc63/";
+    # var fileName = "Ns3rwy.flv";
+    patron = 'var movieURL  \= "([^"]+)"\;\W+'
+    patron += 'var fileName \= "([^"]+)"\;'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        video_urls.append( ["[hdplay]",matches[0] ] )
+        #http://srv.hdplay.org/stream-6cc8d4a77c177f1d36a8f91ef226cc63/?file=Ns3rwy.flv&start=0
+        url = matches[0][0]+"?file="+matches[0][1]+"&start=0"
+        video_urls.append( ["[hdplay]",url ] )
 
     for video_url in video_urls:
         logger.info("[hdplay.py] %s - %s" % (video_url[0],video_url[1]))

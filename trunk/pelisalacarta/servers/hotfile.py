@@ -19,9 +19,9 @@ def test_video_exists( page_url ):
     # No existe: http://hotfile.com/dl/57978410/73e1090/08_Coolly_Hotty_Tension.mp4.html
     data = scrapertools.cache_page(page_url)
     patron  = '<table border="0" cellpadding="0" cellspacing="0" id="download_file" style="margin-bottom. 0.">[^<]+'
-    patron  = '<tr>[^<]+'
-    patron  = '<td colspan="3" class="first_row"><div class="arrow_down">'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    patron += '<tr>[^<]+'
+    patron += '<td colspan="3" class="first_row"><div class="arrow_down">'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     
     if len(matches)>0:
         return True,""

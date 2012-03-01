@@ -14,18 +14,19 @@ from core import config
 
 def test_video_exists( page_url ):
     logger.info("[veevr.py] test_video_exists(page_url='%s')" % page_url)
-
+    
     return False,"El conector con veevr no funciona<br/>bien en pelisalacarta"
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[veevr.py] get_video_url(page_url='%s')" % page_url)
 
     data = scrapertools.cache_page(page_url)
+    logger.info("data="+data)
 
     video_urls = []
     #Busca video url: 'http://hwcdn.net/q7r3a8u2/cds/03254f3d816f4aef88159cf43ea0a004.mp4%3Fbitrate=1327434002%26token=bf5c0721f08fdc99f1a8485fcbe04faa', //provider: 'rtmp',
-    patron  = "url[\W] '([^']+)'[\W][\W]+"
-    patron += "provider[\W]"
+    patron  = "url: '([^']+)',\W+"
+    patron += "urlResolvers"
     matches = re.compile(patron,re.DOTALL).findall(data)
     # si no encuentra lo intentamos con el embed
     if len(matches)==0:

@@ -46,8 +46,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         
         location = scrapertools.get_header_from_response( page_url , header_to_get = "location")
         logger.info("location="+location)
+        #Set-Cookie3: auth=3315964ab4fac585fdd9d4228dc70264a1756ba; path="/"; domain=".uploaded.to"; path_spec; domain_dot; expires="2015-02-25 18:35:37Z"; version=0
+        #Set-Cookie3: login="%26id%3D3315964%26pw%3Dde135af0befa087e897ee6bfa78f2511a1ed093f%26cks%3D854cca559368"; path="/"; domain=".uploaded.to"; path_spec; domain_dot; expires="2013-02-25 18:35:37Z"; version=0
+        
+        cookie_data=config.get_cookie_data()
+        #logger.info("cookies="+cookie_data)
+        auth = scrapertools.get_match( cookie_data , 'auth=([a-z0-9]+)\; path="\/"\; domain=".uploaded.to"' )
+        logger.info("auth="+auth)
+        login = scrapertools.get_match( cookie_data , 'login="([^"]+)"; path="/"; domain=".uploaded.to"' )
+        logger.info("login="+login)
+
+        location = location + "|Cookie="+urllib.quote('auth='+auth+';login="'+login+'"')
     
-        video_urls.append( ["(Premium) [uploaded.to]" , page_url] )
+        video_urls.append( ["(Premium) [uploaded.to]" , location] )
 
     for video_url in video_urls:
         logger.info("[uploadedto.py] %s - %s" % (video_url[0],video_url[1]))

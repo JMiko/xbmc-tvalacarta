@@ -26,12 +26,12 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
     if len(matches) > 0:
-        video_urls = [[ "[stagevu]" , matches[0] , 30 ]]
+        video_urls = [[ "[stagevu]" , matches[0] ]]
     else:
         patronvideos = 'src="([^"]+stagevu.com/[^i][^"]+)"' #Forma src="XXXstagevu.com/ y algo distinto de i para evitar images e includes
         matches = re.findall(patronvideos,data)
         if len(matches)>0:
-            video_urls = [[ "[stagevu]" , matches[0] , 30 ]]
+            video_urls = [[ "[stagevu]" , matches[0] ]]
 
     for video_url in video_urls:
         logger.info("[stagevu.py] %s - %s" % (video_url[0],video_url[1]))

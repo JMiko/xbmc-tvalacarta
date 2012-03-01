@@ -17,14 +17,22 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[sockshare.py] url="+page_url)
     data = scrapertools.cache_page(page_url)
 
-    patron = 'value="([0-9a-f]+?)" name="hash"'
+    patron  = '<form method="post">[^<]+'
+    patron += '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
+    patron += '<input name="confirm" type="submit" value="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)==0:return []
+    scrapertools.printMatches(matches)
+    if len(matches)==0: return []
 
+    post = matches[0][1]+"="+matches[0][0]+"&confirm="+(matches[0][2].replace(" ","+"))
+    headers = []
+    headers.append( ['User-Agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20100101 Firefox/10.0.2'] )
+    headers.append( [ "Accept" , "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ])
+    headers.append( ['Referer',page_url] )
 
-    post = "hash="+matches[0]+"&confirm=Continue as Free User"
-    data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
+    data = scrapertools.cache_page( page_url , post=post, headers=headers )
     logger.info("data="+data)
+
     # Extrae el trozo cifrado
     patron = "playlist: '(.+?)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
