@@ -129,7 +129,7 @@ def listmirrors(item):
     <script type="text/javascript">document.writeln('hdplay.org');</script>
     '''
 
-    patronvideos  = '<a href="(/external.html[^"]+)"[^>]+>(.*?)</a>.*?'
+    patronvideos  = '<a href="(/external[^"]+)" rel="noindex, nofollow" title="([^"]+)".*?'
     patronvideos += '<span class="version_host">(.*?)</span>'
 
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -137,19 +137,14 @@ def listmirrors(item):
 
     for match in matches:
         # Servidor
-        servidor = match[2]
-        servidor = servidor.replace('<script type="text/javascript">document.writeln(','')
-        servidor = servidor.replace(");</script>","")
-        servidor = servidor.replace("<img src=/images/","")
-        servidor = servidor.replace(">","")
-        servidor = servidor.strip()
+        servidor = match[2].strip()
         # Titulo
         scrapedtitle = scrapertools.htmlclean(match[1])+" ("+servidor+")"
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
 
     return itemlist
 
