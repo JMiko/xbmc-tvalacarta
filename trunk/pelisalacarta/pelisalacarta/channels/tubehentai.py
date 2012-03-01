@@ -9,81 +9,38 @@ import os
 import sys
 
 from core import scrapertools
-from core import logger
 from core import config
+from core import logger
 from core.item import Item
-from platformcode.xbmc import xbmctools
-from pelisalacarta import buscador
-
 from servers import servertools
-from servers import vk
-
-import xbmc
-import xbmcgui
-import xbmcplugin
 
 __channel__ = "tubehentai"
-__category__ = "F"
-__type__ = "xbmc"
+__category__ = "A"
+__type__ = "generic"
 __title__ = "tubehentai"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
+def isGeneric():
+    return True
 
-# Traza el inicio del canal
-logger.info("[tubehentai.py] init")
-
-def mainlist(params,url,category):
-    logger.info("[tubehentai.py] mainlist")
-    
-    itemlist = getmainlist(params,url,category)
-    xbmctools.renderItems(itemlist, params, url, category)
-
-def getmainlist(params,url,category):
-    logger.info("[tubehentai.py] getmainlist")
+def mainlist(item):
+    logger.info("[veranime.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item( channel=__channel__ , title="Novedades" , action="novedades" , url="http://tubehentai.com/" , folder=True ) )
-    
+    itemlist.append( Item(channel=__channel__, title="Novedades" , action="novedades" , url="http://tubehentai.com/" ) )
+
     return itemlist
 
-def novedades(params,url,category):
-    logger.info("[tubehentai.py] novedades")
-
-    itemlist = getnovedades(params,url,category)
-    xbmctools.renderItems(itemlist, params, url, category)
-
-def getnovedades(params,url,category):
+def novedades(item):
     logger.info("[tubehentai.py] getnovedades")
 
-    # ------------------------------------------------------
     # Descarga la página
-    # ------------------------------------------------------
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # ------------------------------------------------------
-    # Extrae las entradas
-    # ------------------------------------------------------
-    # seccion novedades
-    '''
-        <a href="http://www.tubehentai.com/videos/1167/teen-fuck-in-hospital.html" target="_self">
-            <img src="http://media.tubehentai.com/thumbs/4cbb3700dbdd91.avi/4cbb3700dbdd91.avi-3.jpg" alt="Teen Fuck in Hospital" name="4cbb3700dbdd91.avi" id="4cbb3700dbdd91.avi" onmouseover='startm("4cbb3700dbdd91.avi","http://media.tubehentai.com/thumbs/4cbb3700dbdd91.avi/4cbb3700dbdd91.avi-",".jpg");' onmouseout='endm("4cbb3700dbdd91.avi"); this.src="http://media.tubehentai.com/thumbs/4cbb3700dbdd91.avi/4cbb3700dbdd91.avi-3.jpg";' height="164" width="218" border="0">
-        </a>
-    '''
-
-    #patronvideos  = '<p style="text-align: center;">.*?'
-    patronvideos = '<a href="(http://www.tubehentai.com/videos/[^"]+)"[^>]*?>[^<]*?'
-    patronvideos += '<img src="(http://media.tubehentai.com/thumbs/[^"]+)" alt="([^"]+)"[^>]+>[^<]*?</a>'
-
-
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    data = scrapertools.cachePage(item.url)
+    #<a href="http://tubehentai.com/videos/slave_market_¨c_ep1-595.html"><img class="img" width="145" src="http://tubehentai.com/media/thumbs/5/9/5/./f/595/595.flv-3.jpg" alt="Slave_Market_&Acirc;&uml;C_Ep1" id="4f4fbf26f36
+    patron = '<a href="(http://tubehentai.com/videos/[^"]+)"><img.*?src="(http://tubehentai.com/media/thumbs/[^"]+)" alt="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
@@ -107,29 +64,34 @@ def getnovedades(params,url,category):
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedurl = urlparse.urljoin(url,"/" + matches[0])
+        scrapedurl = urlparse.urljoin(item.url,"/" + matches[0])
         logger.info("[tubehentai.py] " + scrapedurl)
-        itemlist.append( Item(channel=__channel__, action="novedades", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="!Página siguiente" , url=scrapedurl) )
 
 
     return itemlist
 
-def play(params,url,category):
+def play(item):
     logger.info("[tubehentai.py] detail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    patron = 's1.addParam\("flashvars","settings=http\://www.tubehentai.com/playerConfig.php\?([^"]+)"\)'
+    itemlist=[]
+    
+    data = scrapertools.cachePage(item.url)
+    logger.info("data="+data)
+    #settings=http://tubehentai.com/playerConfig.php?725.flv
+    #725
+    #http://tubehentai.com/media/videos/7/2/5/f/725.flv?start=0
+    patron = 'settings\=http\://tubehentai.com/playerConfig.php\?(\d+).flv'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        url = "http://media.tubehentai.com/videos/" + matches[0]
-        server="Directo"
-        xbmctools.play_video(channel=__channel__,server=server,url=url,category=category,title=title,thumbnail=thumbnail,plot=plot)
 
-    # ------------------------------------------------------------------------------------
+    if len(matches)>0:
+        id=matches[0]
+        logger.info("id="+id)
+        url = "http://tubehentai.com/media/videos/"
+        for letra in id:
+            url = url + letra + "/"
+        url = url + "f/"+id+".flv?start=0"
+        logger.info("url="+url)
+        server="Directo"
+        itemlist.append( Item(channel=__channel__, title="" , url=url , server=server, folder=False) )
+
+    return itemlist

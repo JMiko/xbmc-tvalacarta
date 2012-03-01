@@ -118,62 +118,6 @@ def novedades(item):
 
     return itemlist
 
-def findvideos(item):
-    logger.info("[documentalesatonline2.py] findvideos")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    patronvideos0  = '- [0-9]+? de [0-9]+?:(.+)'
-    #- 1 de 3:
-    matches0 = re.compile(patronvideos0).findall(data)
-    
-    if len(matches0)==0:
-        patronvideos0  = 'Episodio \d+(.+)'
-        #- Episodio 03:
-        matches0 = re.compile(patronvideos0).findall(data)
-        #logger.info(matches0)
-    
-    if len(matches0)>0:
-        listavideos = servertools.findvideos(data)
-        if (2*len(matches0))==len(listavideos):
-            logger.info("es el doble, vamos a anadir un link de megavideo y uno de megaupload por cada fideo")
-            length=len(matches0)
-            for i in range(len(matches0)):
-                title=listavideos[0+i][0]
-                url=listavideos[0+i][1]
-                server=listavideos[0+i][2]
-                #logger.info(matches0)
-                itemlist.append( Item(channel=__channel__, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[0+i][0] , url=listavideos[0+i][1] , server=listavideos[0+i][2] , folder=False ))
-                itemlist.append( Item(channel=__channel__, action="play", title=strip_ml_tags(matches0[i]).replace(":","").strip() + " " + listavideos[length+i][0] , url=listavideos[length+i][1] , server=listavideos[length+i][2] , folder=False ))
-        elif len(listavideos)>0:
-            for video in listavideos:
-                itemlist.append( Item(channel=__channel__, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
-        else:
-            logger.info("vamos a ponerlos con el nombre del titulo todos, el mismo que el por defecto")
-            logger.info("no hay capitulos")
-            patronvideos  = '(.+?)\('
-            matches = re.compile(patronvideos).findall(category)
-            listavideos = servertools.findvideos(data)
-            
-            for video in listavideos:
-                itemlist.append( Item(channel=__channel__, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2], folder=False ))
-    else: 
-        logger.info("no hay capitulos")
-        patronvideos  = '(.+?)\('
-        matches = re.compile(patronvideos).findall(category)
-        # Busca los enlaces a los videos
-        listavideos = servertools.findvideos(data)
-        
-        for video in listavideos:
-            itemlist.append( Item(channel=__channel__, action="play", title=matches[0] +  video[0] , url=video[1] , server=video[2] , folder=False ))
-
-    patronvideos  = '<a rel="bookmark" href="../(.+?)">(.+?)<'
-    matches = re.compile(patronvideos).findall(data)
-    for z in matches:
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=z[1], url=urlparse.urljoin(item.url,z[0]) , folder=True ))
-
-    return itemlist
-
 def strip_ml_tags(in_text):
     #source http://code.activestate.com/recipes/440481-strips-xmlhtml-tags-from-string/
     s_list = list(in_text)
