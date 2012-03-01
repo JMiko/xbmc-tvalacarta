@@ -448,6 +448,7 @@ def downloadtitle(url,title):
 def downloadfile(url,nombrefichero,headers=[]):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+
     # antes
     #f=open(nombrefichero,"wb")
     try:
@@ -485,6 +486,22 @@ def downloadfile(url,nombrefichero,headers=[]):
         from servers import filenium
         url , authorization_header = filenium.extract_authorization_header(url)
         headers.append( [ "Authorization", authorization_header ] )
+
+    if "|" in url:
+        additional_headers = urllib.unquote(url.split("|")[1])
+        if "&" in additional_headers:
+            additional_headers = additional_headers.split("&")
+        else:
+            additional_headers = [ additional_headers ]
+
+        for additional_header in additional_headers:
+            logger.info("[downloadtools.py] additional_header: "+additional_header)
+            name = re.findall( "(.*?)=.*?" , additional_header )[0]
+            value = re.findall( ".*?=(.*?)$" , additional_header )[0]
+            headers.append( [ name,value ] )
+
+        url = url.split("|")[0]
+        logger.info("[downloadtools.py] downloadfile: url="+url)
 
     # Timeout del socket a 60 segundos
     socket.setdefaulttimeout(10)
