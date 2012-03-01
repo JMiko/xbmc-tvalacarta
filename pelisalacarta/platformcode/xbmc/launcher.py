@@ -285,14 +285,16 @@ def run():
                     if action!="findvideos":
                         exec "itemlist = channel."+action+"(item)"
                     else:
+
                         # Intenta ejecutar una posible funcion "findvideos" del canal
-                        try:
+                        if hasattr(channel, 'findvideos'):
                             exec "itemlist = channel."+action+"(item)"
                         # Si no funciona, lanza el método genérico para detectar vídeos
-                        except:
+                        else:
                             logger.info("[launcher.py] no channel 'findvideos' method, executing core method")
                             from servers import servertools
                             itemlist = servertools.find_video_items(item)
+
                         from core import subtitletools
                         subtitletools.saveSubtitleName(item)
 
@@ -306,9 +308,15 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
 
     except urllib2.URLError,e:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
+        import traceback
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                logger.error(line_split)
+
         import xbmcgui
         ventana_error = xbmcgui.Dialog()
         # Agarra los errores surgidos localmente enviados por las librerias internas
