@@ -281,38 +281,31 @@ def capitulo_links(item):
     # Extrae las entradas (carpetas)
     # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
     #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
-    data = scrapertools.cache_page(item.url, post=post)
+    data = scrapertools.cache_page(item.url+"&"+post)
     linkList = load_json(data)
     if linkList == None : linkList = []
     
     logger.info("hay %d videos" % len(linkList))
     
     itemlist = []        
-    try:
-        for link in linkList:
-            
-            hd = link['hd']
-            if hd == '0' : link['hdtag'] = ''
-            elif hd == '1' : link['hdtag'] = ' (HD)'
-            else : link['hdtag'] = ' (?)'
-            
-            link['titletag'] = item.title; 
-            
-            itemlist.append(
-                Item(channel=item.channel,
-                    action = "links",
-                    title = '%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link,
-                    url = link['url'],
-                    thumbnail = item.thumbnail,
-                    plot = "",
-                    extra = ''
-                )
+    for link in linkList:
+
+        #hd = link['hd']
+        #if hd == '0' : link['hdtag'] = ''
+        #elif hd == '1' : link['hdtag'] = ' (HD)'
+        #else : link['hdtag'] = ' (?)'
+
+        itemlist.append(
+            Item(channel=item.channel,
+                action = "links",
+                title = '%(info)s - %(host)s - %(lang)s(sub %(sub)s)' % link,
+                url = link['url'],
+                thumbnail = item.thumbnail,
+                plot = "",
+                extra = ''
             )
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-                
+        )
+
     return itemlist
 
 def links(item):    
