@@ -26,8 +26,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         link = urlencode({'filez':page_url})
         location = scrapertools.cache_page("http://filenium.com/?filenium&" + link)
         user = user.replace("@","%40")
-        location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
-    
+        #location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
+        #?user=bla%40gmail.com&passwd=123456
+        location = location + "?user="+user+"&password="+password
+
     return location
 
 def extract_authorization_header(url):
