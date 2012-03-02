@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>mitele</name>
-	<tag>2</tag>
-	<date>11/02/2012</date>
-	<changes>Arreglado el formato RTMP de XBMC para los directos (Gran Hermano, Cuatro, ...)</changes>
+	<tag>3</tag>
+	<date>02/03/2012</date>
+	<changes>Arreglado el tema del clock (gzip) y paso a token3 para series</changes>
 </version>

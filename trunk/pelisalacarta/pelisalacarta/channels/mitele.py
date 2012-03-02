@@ -215,7 +215,8 @@ def capitulo(item):
     logger.info("Data = "+data)
 
     try:  
-        ciphertext = aes.encrypt(data,'xo85kT+QHz3fRMcHMXp9cA',256)      
+        AES = aes.AES()  
+        ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHMXp9cA',256)      
         #metodo 1
         url = 'http://servicios.telecinco.es/tokenizer/tk3.php'
         values = {'force_http' : '1',
@@ -349,8 +350,15 @@ def playdirecto(item):
     
         #Datos clock.php
         
-        data = scrapertools.cachePage("http://www.mitele.es/media/clock.php")
-        serverTime = data.strip();
+        request = urllib2.Request('http://servicios.telecinco.es/tokenizer/clock.php/')
+        request.add_header('Accept-encoding', 'gzip')
+        response = urllib2.urlopen(request)
+       
+        if response.info().get('Content-Encoding') == 'gzip':
+            buf = StringIO( response.read())
+            f = gzip.GzipFile(fileobj=buf)
+            serverTime = f.read()
+        
         logger.info("Server Time ="+serverTime)
         
         data = serverTime+";"+id+";"+startTime+";"+endTime
@@ -360,7 +368,7 @@ def playdirecto(item):
         ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHNXp9cA',256)      
                 
         #metodo 1
-        url = 'http://servicios.telecinco.es/tokenizer/tk3.php'
+        url = 'http://servicios.telecinco.es/tokenizer/tk2.php'
         values = {'force_http' : '1',
           'directo' : ciphertext,
           'id' : id,
