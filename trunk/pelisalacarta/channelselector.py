@@ -45,6 +45,34 @@ def getmainlist():
 def mainlist(params,url,category):
     logger.info("[channelselector.py] mainlist")
 
+    logger.info("[channelselector.py] platform="+config.get_platform())
+    if config.get_platform()=="xbmceden":
+        import xbmc,xbmcgui
+        advancedsettings = xbmc.translatePath("special://userdata/advancedsettings.xml")
+        logger.info("[channelselector.py] advancedsettings="+advancedsettings)
+        if not os.path.exists(advancedsettings):
+            logger.info("[channelselector.py] no existe el fichero advancedsettings.xml")
+            dialog = xbmcgui.Dialog()
+            if dialog.yesno("plugin", "Tu XBMC Eden no está optimizado para streaming","¿Quieres optimizarlo ahora?"):
+                
+                # Copia el advancedsettings.xml desde el directorio resources al userdata
+                fichero = open( os.path.join(config.get_runtime_path(),"resources","advancedsettings.xml") )
+                texto = fichero.read()
+                fichero.close()
+                
+                fichero = open(advancedsettings,"w")
+                fichero.write(texto)
+                fichero.close()
+                
+                dialog2 = xbmcgui.Dialog()
+                dialog2.ok("plugin", "Se ha creado un fichero advancedsettings.xml","con la configuración óptima para el streaming.")
+
+            else:
+                # Crea un advancedsettings.xml vacío para no volver a preguntar
+                fichero = open(advancedsettings,"w")
+                fichero.write(" ")
+                fichero.close()
+
     # Verifica actualizaciones solo en el primer nivel
     if config.get_platform()!="boxee":
         try:
@@ -144,18 +172,19 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="Gnula (15/12/2011)"                   , channel="gnula"                , language="ES" , category="F" , type="generic"  )) # vcalvo 15/12/2011
-    itemlist.append( Item( title="Series ID (15/12/2011)"               , channel="seriesid"             , language="ES" , category="S,VOS" , type="generic"  )) # vcalvo 15/12/2011
-    itemlist.append( Item( title="Bajui (14/12/2011)"                   , channel="bajui"                , language="ES" , category="F,S,D,VOS", type="generic")) # vcalvo 14/12/2011
-    itemlist.append( Item( title="Shurweb (14/12/2011)"                 , channel="shurweb"              , language="ES" , category="F,S,D,A", type="generic")) # vcalvo 14/12/2011
-    itemlist.append( Item( title="ShurHD (14/12/2011)"                  , channel="shurhd"               , language="ES" , category="F" , type="generic"  )) # vcalvo 14/12/2011
-    itemlist.append( Item( title="Justin.tv (12/12/2011)"               , channel="justintv"             , language=""      , category="G"       , type="generic"  )) # bandavi 12/12/2011
-    itemlist.append( Item( title="Series.ly (19/11/2011)"              ,channel="seriesly"              , language="ES" , category="S,A,VOS" , type="generic" )) # jesus/mrfloffy 19/11/2011
-    itemlist.append( Item( title="Teledocumentales (19/10/2011)"       ,channel="teledocumentales"      , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
-    itemlist.append( Item( title="Peliculasaudiolatino (14/10/2011)"   , channel="peliculasaudiolatino" , language="ES" , category="F"   , type="generic" )) # Dalim 14/10/2011
-    itemlist.append( Item( title="Animeflv (14/10/2011)"               , channel="animeflv"             , language="ES" , category="A,VOS"   , type="generic" )) # MarioXD 14/10/2011
-    itemlist.append( Item( title="Moviezet (01/10/2011)"               , channel="moviezet"             , language="ES" , category="F,S,VOS" , type="generic" )) # mrfluffy 01/10/2011
-    itemlist.append( Item( title="NewHD (05/05/2011)"                  , channel="newhd"                , language="ES" , category="F"   , type="generic" )) # xextil 05/05/2011
+    itemlist.append( Item( title="Sipeliculas (02/03/2012)"          , channel="sipeliculas"          , language="ES" , category="F" , type="generic"    )) # miguel 2/3/2012
+    itemlist.append( Item( title="Gnula (15/12/2011)"                , channel="gnula"                , language="ES" , category="F" , type="generic"  )) # vcalvo 15/12/2011
+    itemlist.append( Item( title="Series ID (15/12/2011)"            , channel="seriesid"             , language="ES" , category="S,VOS" , type="generic"  )) # vcalvo 15/12/2011
+    itemlist.append( Item( title="Bajui (14/12/2011)"                , channel="bajui"                , language="ES" , category="F,S,D,VOS", type="generic")) # vcalvo 14/12/2011
+    itemlist.append( Item( title="Shurweb (14/12/2011)"              , channel="shurweb"              , language="ES" , category="F,S,D,A", type="generic")) # vcalvo 14/12/2011
+    itemlist.append( Item( title="ShurHD (14/12/2011)"               , channel="shurhd"               , language="ES" , category="F" , type="generic"  )) # vcalvo 14/12/2011
+    itemlist.append( Item( title="Justin.tv (12/12/2011)"            , channel="justintv"             , language=""   , category="G"       , type="generic"  )) # bandavi 12/12/2011
+    itemlist.append( Item( title="Series.ly (19/11/2011)"            , channel="seriesly"             , language="ES" , category="S,A,VOS" , type="generic" )) # jesus/mrfloffy 19/11/2011
+    itemlist.append( Item( title="Teledocumentales (19/10/2011)"     , channel="teledocumentales"     , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
+    itemlist.append( Item( title="Peliculasaudiolatino (14/10/2011)" , channel="peliculasaudiolatino" , language="ES" , category="F"   , type="generic" )) # Dalim 14/10/2011
+    itemlist.append( Item( title="Animeflv (14/10/2011)"             , channel="animeflv"             , language="ES" , category="A,VOS"   , type="generic" )) # MarioXD 14/10/2011
+    itemlist.append( Item( title="Moviezet (01/10/2011)"             , channel="moviezet"             , language="ES" , category="F,S,VOS" , type="generic" )) # mrfluffy 01/10/2011
+    itemlist.append( Item( title="NewHD (05/05/2011)"                , channel="newhd"                , language="ES" , category="F"   , type="generic" )) # xextil 05/05/2011
     return itemlist
 
 def channels_list():
@@ -205,7 +234,7 @@ def channels_list():
     #itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
     #itemlist.append( Item( title="Megaupload Premium (FR)", channel="megauploadpremiumfr"  , language="FR"    , category="S"       , type="generic"  ))
     #itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""      , category="G"       , type="xbmc"  ))
-    #itemlist.append( Item( title="Mi tele"             , channel="mitele"             , language="ES" , category="S,F"        , type="generic"  ))
+    itemlist.append( Item( title="Mi tele"             , channel="mitele"             , language="ES" , category="S,F"        , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Moviezet"              , channel="moviezet"             , language="ES"    , category="F,S,VOS"     , type="generic" )) # mrfluffy 01/10/2011
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
@@ -237,6 +266,7 @@ def channels_list():
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A,VOS"        , type="generic" , extra="Series" ))
     itemlist.append( Item( title="ShurHD"       , channel="shurhd"             , language="ES"      , category="F" , type="generic"    ))
     itemlist.append( Item( title="Shurweb"       , channel="shurweb"             , language="ES"      , category="F,S,D,A" , type="generic"    ))
+    itemlist.append( Item( title="Sipeliculas"       , channel="sipeliculas"             , language="ES"      , category="F" , type="generic"    )) # miguel 2/3/2012
     #itemlist.append( Item( title="Sofacine"              , channel="sofacine"             , language="ES" , category="F"          , type="generic"  ))
     #itemlist.append( Item( title="Somosmovies"           , channel="somosmovies"          , language="ES" , category="F,S,D,A,VOS"    , type="generic"  ))
     itemlist.append( Item( title="Sonolatino"            , channel="sonolatino"           , language=""   , category="M"          , type="xbmc"  ))

@@ -20,10 +20,11 @@ FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','sta
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
-PREMIUM_SERVERS = ['wupload','fileserve','uploadedto']
+PREMIUM_SERVERS = ['wupload','fileserve']#,'uploadedto']
 
 # Lista de TODOS los servidores soportados por Filenium
-FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
+FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron',
+                    'downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
 
 # Lista de TODOS los servidores soportados por Real-Debrid
 REALDEBRID_SERVERS = ['tenupload','onefichier','twoshared','fourfastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbscom','cramit','crocko','cwtv','dailymotion','dateito',

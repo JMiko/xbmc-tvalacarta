@@ -100,13 +100,13 @@ def find_videos(data):
     devuelve = []
 
     # http://allmyvideos.net/fg85ovidfwxx
-    patronvideos  = '(http://allmyvideos.net/[a-z0-9]+)'
+    patronvideos  = '(allmyvideos.net/[a-z0-9]+)'
     logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = match
+        url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -115,13 +115,13 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # http://allmyvideos.net/ugk8qqbywuk8/alc103.mp4.html
-    patronvideos  = '(http://allmyvideos.net/[A-Z0-9a-z]+/.*?html)'
+    patronvideos  = '(allmyvideos.net/[A-Z0-9a-z]+/.*?html)'
     logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = match
+        url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
