@@ -642,10 +642,10 @@ def get_video_urls(server,url,video_password,strmfile):
     
                 # Lista de las cuentas que soportan este servidor
                 listapremium = ""
-                if server in servertools.REALDEBRID_SERVERS: listapremium+="Real-Debrid o"
-                if server in servertools.FILENIUM_SERVERS: listapremium+="Filenium o"
-                if server in servertools.PREMIUM_SERVERS: listapremium+=server+", "
-                listapremium = listapremium[:-2]
+                if server in servertools.REALDEBRID_SERVERS: listapremium+="Real-Debrid o "
+                if server in servertools.FILENIUM_SERVERS: listapremium+="Filenium o "
+                if server in servertools.PREMIUM_SERVERS: listapremium+=server+" o "
+                listapremium = listapremium[:-3]
     
                 return video_urls,False,"Para ver un vídeo en "+server+" necesitas<br/>una cuenta en "+listapremium
 
