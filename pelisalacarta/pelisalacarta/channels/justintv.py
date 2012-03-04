@@ -47,7 +47,7 @@ languages = [all,'Arabic','Català','Cerky','Dansk','Deutsch','Greek','English',
 abbrev   = ['all','ar','ca','cs','da','de','el','en','es','et','fi','fr','hi','hr','id','it','iw','ja','ko','lt','nl','no','pl','pt',
             'ro','ru','sr','sv','tl','tr','vi','zh-CN','zh-TW']
 limit = 50
-URL_CATEGORY_MENU = 'http://%s.justin.tv/directory/dropmenu/category?order=hot&amp;lang=%s'
+URL_CATEGORY_MENU = 'http://%s.justin.tv/directory/dropmenu/category?lang=%s&amp;order=hot'
 URL_SUBCATEGORY_MENU = 'http://%s.justin.tv/directory/dropmenu/subcategory/%s?order=hot&amp;lang=%s'
 MenuLang = {'English':'en','Spanish':'es','Italian':'it','Catalan':'ca','French':'fr','Portuguese':'pt','German':'de'}
 try:
@@ -106,7 +106,7 @@ def listcategory(item):
     
 def getlistcategory():
     data = scrapertools.cache_page(URL_CATEGORY_MENU %(language_menu,language_menu))
-    patron = '<li class="category"><a href="/directory/([^\?]+)\?order=.+?">(.+?)</a></li>'
+    patron = '<li class="category"><a href="/directory/([^\?]+)\?.+?">(.+?)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     list = []
@@ -172,7 +172,7 @@ def subCategories(item):
     data = scrapertools.cache_page(url)
     logger.info(data)
     itemlist = []
-    patron = '<li class="subcategory"><a href="/directory/'+category+'/([^\?]+)\?order=.+?">(.+?)</a></li>'
+    patron = '<li class="subcategory"><a href="/directory/'+category+'/([^\?]+)\?.+?">(.+?)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     scrapedthumbnail = ""
@@ -464,36 +464,50 @@ def listarchives(item):
     
 def playVideo(item):
     logger.info("[justin.tv.py] playVideo")
-    
+
     channelname=item.url
     if channelname.endswith('.flv'):
         channelname = item.plot
-    req = urllib2.Request('http://justin.tv/')
-    response = urllib2.urlopen(req)
-    link=response.read()
-    response.close()
-    match = re.compile('swfobject.embedSWF\("(.+?)"').findall(link)
-    swf = ' swfUrl='+str(match[0])
-    req = urllib2.Request('http://usher.justin.tv/find/'+channelname+'.json?type=live')
-    req.addheaders = ('Referer', 'http://justin.tv/')
-    response = urllib2.urlopen(req)
-    link=response.read()
-    response.close()
-    logger.info(link)
-    datadict = json.loads(link)
+    rtmp = ""
     try:
-        token = ' jtv='+datadict[0]["token"].replace('\\','\\5c').replace('"','\\22').replace(' ','\\20')
-        connect = datadict[0]["connect"]+'/'+datadict[0]["play"]
-        Pageurl = ' Pageurl=http://www.justin.tv/'+channelname
-        rtmp = connect+token+swf+Pageurl
-        logger.info('rtmp = %s'%rtmp)
+        if config.get_setting('realdebridpremium')=="true":
+            from servers import realdebrid
+            url = "http://justin.tv/"+channelname
+            rtmp = realdebrid.get_video_url( page_url=url , premium=(config.get_setting("realdebridpremium")=="true") , user=config.get_setting("realdebriduser") , password=config.get_setting("realdebridpassword"), video_password="" )
+            logger.info('rtmp = %s'%rtmp)
+    except:pass
+    
+    if rtmp.startswith('rtmp'):
         listItem = xbmcgui.ListItem(path = rtmp)
         listItem.setProperty('IsPlayable', 'true')
         xbmcplugin.setResolvedUrl(pluginhandle, True, listItem)
-    except:
-        logger.info('canal %s esta offline'%channelname)
-        xbmcplugin.setResolvedUrl(pluginhandle, False, xbmcgui.ListItem())
-        channeloffline(channelname)
+    else:
+        req = urllib2.Request('http://justin.tv/')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        match = re.compile('swfobject.embedSWF\("(.+?)"').findall(link)
+        swf = ' swfUrl='+str(match[0])
+        req = urllib2.Request('http://usher.justin.tv/find/'+channelname+'.json?type=live')
+        req.addheaders = ('Referer', 'http://justin.tv/')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        logger.info(link)
+        datadict = json.loads(link)
+        try:
+            token = ' jtv='+datadict[0]["token"].replace('\\','\\5c').replace('"','\\22').replace(' ','\\20')
+            connect = datadict[0]["connect"]+'/'+datadict[0]["play"]
+            Pageurl = ' Pageurl=http://www.justin.tv/'+channelname
+            rtmp = connect+token+swf+Pageurl
+            logger.info('rtmp = %s'%rtmp)
+            listItem = xbmcgui.ListItem(path = rtmp)
+            listItem.setProperty('IsPlayable', 'true')
+            xbmcplugin.setResolvedUrl(pluginhandle, True, listItem)
+        except:
+            logger.info('canal %s esta offline'%channelname)
+            xbmcplugin.setResolvedUrl(pluginhandle, False, xbmcgui.ListItem())
+            channeloffline(channelname)
 
 def _language(item):
     _language_(item)
