@@ -165,28 +165,7 @@ def capitulos(item):
 def capitulo(item):
     logger.info("[mitele.py] Capitulo")
 
-    url = item.url
-    data = scrapertools.cachePage(url)
-
-    # Extrae las entradas (carpetas)
-   
-    patron = 'var flashvars = {(.*?)}'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
-
-    itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '"host":"(.*?)".*?'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-
-        for match2 in matches2:
-        # Atributos
-            xml = match2.replace("\\","")
-            logger.info("XML = "+xml)
-           
-    # Extraemos datos xml
+    xml = getXML(item.url)
     
     data = scrapertools.cachePage(xml)
     patron = '<link start="(.*?)" end="(.*?)">(.*?)</link>'
@@ -194,82 +173,77 @@ def capitulo(item):
     id="XX"
     startTime = "0"
     endTime = "0"
+    rtmp = False
+    
     for match in matches:
         startTime = match[0]
         endTime = match[1]
         id = match[2]
         logger.info("Datos xml = "+startTime+";"+endTime+";"+id)
         
-    #Datos clock.php
-    
-    request = urllib2.Request('http://servicios.telecinco.es/tokenizer/clock.php/')
-    request.add_header('Accept-encoding', 'gzip')
-    response = urllib2.urlopen(request)
-   
-    if response.info().get('Content-Encoding') == 'gzip':
-        buf = StringIO( response.read())
-        f = gzip.GzipFile(fileobj=buf)
-        serverTime = f.read()
+    if(id == "XX"):
+        from xml.dom import minidom
+        dom1 = minidom.parseString(data)
+        id = dom1.getElementsByTagName("url")[1].firstChild.data            
+        rtmp = True
+        logger.info("Datos xml = "+startTime+";"+endTime+";"+id)
 
-    data = serverTime+";"+id+";"+startTime+";"+endTime
-    logger.info("Data = "+data)
-
-    try:  
-        AES = aes.AES()  
-        ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHMXp9cA',256)      
-        #metodo 1
-        url = 'http://servicios.telecinco.es/tokenizer/tk3.php'
-        values = {'force_http' : '1',
-          'hash' : ciphertext,
-          'id' : id}
-
-        search_data = urllib.urlencode(values,doseq=True)
-        request = urllib2.Request(url,search_data)
-        request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
-        response = urllib2.urlopen(request)
-        data = response.read()
-        response.close()
-
-        patron = '<file>([^<]+)</file>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        file = unescape(matches[0])
-        
-        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=file, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    try: 
+        #TOKEN 2
+        ciphertext = getciphertext(id, startTime, endTime)
+        data = getvideo(id, ciphertext, 2)
+        if(data<>""):
+            if rtmp :
+                return playrtmptoken2(item,data)
+            else:
+                return playvideo(item,data)
+        #TOKEN 3
+        ciphertext = getciphertext(id, startTime, endTime)
+        data = getvideo(id, ciphertext, 3)
+        if(data<>""):
+            if rtmp :
+                return playrtmptoken3(item,data)
+            else:
+                return playvideo(item,data) 
     except:
         import sys
         for line in sys.exc_info():
             logger.error("%s" % line)
-           
-
     return itemlist
 
-#unescapes all the xml formatted characters
-def unescape(s):
-    want_unicode = False
-    if isinstance(s, unicode):
-        s = s.encode("utf-8")
-        want_unicode = True
 
-    # the rest of this assumes that `s` is UTF-8
-    list = []
+def playdirecto(item):
+    itemlist = []
+    try:
+        startTime = "0"
+        endTime = "0"
+        xml = getXML(item.url)
+        data = scrapertools.cachePage(xml)
+        
+        patron = '<link start="(.*?)" end="(.*?)">(.*?)</link>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        from xml.dom import minidom
+        dom1 = minidom.parseString(data)
+        id = dom1.getElementsByTagName("url")[1].firstChild.data        
+        logger.info("Datos xml = "+startTime+";"+endTime+";"+id)
+        
+        #TOKEN 2
+        ciphertext = getciphertext(id, startTime, endTime)
+        data = getrtmp(id,ciphertext, 2)
+        if(data<>""):
+            return playrtmptoken2(item,data)
+        #TOKEN 3
+        ciphertext = getciphertext(id, startTime, endTime)
+        data = getrtmp(id,ciphertext, 3)
+        if(data<>""):
+            return playrtmptoken3(item,data)
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+            
+    return itemlist
 
-    # create and initialize a parser object
-    p = xml.parsers.expat.ParserCreate("utf-8")
-    p.buffer_text = True
-    p.returns_unicode = want_unicode
-    p.CharacterDataHandler = list.append
-
-    # parse the data wrapped in a dummy element
-    # (needed so the "document" is well-formed)
-    p.Parse("<e>", 0)
-    p.Parse(s, 0)
-    p.Parse("</e>", 1)
-
-    # join the extracted strings and return
-    es = ""
-    if want_unicode:
-        es = u""
-    return es.join(list)
 
 
 def directo (item):
@@ -311,45 +285,34 @@ def directo (item):
         return []
     return itemlist
 
-
-
-def playdirecto(item):
-    logger.info("[mitele.py] Capitulo")
-
-    url = item.url
-    data = scrapertools.cachePage(url)
-
-    # Extrae las entradas (carpetas)
-   
-    patron = 'var flashvars = {(.*?)}'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
-
-    itemlist = []
-    for match in matches:
-        data2 = match
-        patron  = '"host":"(.*?)".*?'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-
-        for match2 in matches2:
-        # Atributos
-            xml = match2.replace("\\","")
-            logger.info("XML = "+xml)
-    id="XX"
-    startTime = "0"
-    endTime = "0"       
-    # Extraemos datos xml
+def getXML(url):
+    xml = ""
     try:
-        data = scrapertools.cachePage(xml)
+        data = scrapertools.cachePage(url)
     
-        from xml.dom import minidom
-        dom1 = minidom.parseString(data)
-        id = dom1.getElementsByTagName("url")[1].firstChild.data            
-        logger.info("Datos xml = "+startTime+";"+endTime+";"+id)
+        # Extrae las entradas (carpetas)       
+        patron = 'var flashvars = {(.*?)}'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        logger.info("hay %d matches" % len(matches))        
     
-        #Datos clock.php
-        
+        itemlist = []
+        for match in matches:
+            data2 = match
+            patron  = '"host":"(.*?)".*?'
+            matches2 = re.compile(patron,re.DOTALL).findall(data2)
+    
+            for match2 in matches2:
+                xml = match2.replace("\\","")
+                logger.info("XML = "+xml)
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+    return xml 
+
+def getciphertext(id, startTime, endTime):
+    ciphertext = ""
+    try:  
         request = urllib2.Request('http://servicios.telecinco.es/tokenizer/clock.php/')
         request.add_header('Accept-encoding', 'gzip')
         response = urllib2.urlopen(request)
@@ -358,30 +321,77 @@ def playdirecto(item):
             buf = StringIO( response.read())
             f = gzip.GzipFile(fileobj=buf)
             serverTime = f.read()
-        
-        logger.info("Server Time ="+serverTime)
-        
-        data = serverTime+";"+id+";"+startTime+";"+endTime
-        logger.info("Data = "+data)
+            
+            data = serverTime+";"+id+";"+startTime+";"+endTime
+            logger.info("Data = "+data)
     
-        AES = aes.AES()                   
-        ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHNXp9cA',256)      
-                
-        #metodo 1
-        url = 'http://servicios.telecinco.es/tokenizer/tk2.php'
-        values = {'force_http' : '1',
-          'directo' : ciphertext,
-          'id' : id,
-          'startTime' : '0',
-          'endTime': '0'}
+            AES = aes.AES()  
+            ciphertext = AES.encrypt(data,'xo85kT+QHz3fRMcHMXp9cA',256)       
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+    return ciphertext 
 
+def getvideo(id,ciphertext,token):
+    try:
+        url = 'http://servicios.telecinco.es/tokenizer/tk' + str(token) + '.php'
+        values = {'force_http' : '1',
+          'hash' : ciphertext,
+          'id' : id}
         search_data = urllib.urlencode(values,doseq=True)
         request = urllib2.Request(url,search_data)
         request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
         response = urllib2.urlopen(request)
         data = response.read()
-        response.close()        
+        response.close()   
+        return data
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+    return ""      
         
+def playvideo(item, data):
+    itemlist = []
+    
+    try:
+        patron = '<file>([^<]+)</file>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        file = unescape(matches[0])
+        
+        itemlist.append( Item(channel=__channel__, action="play" , title="play video", url=file, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+    return itemlist
+            
+def getrtmp(id, ciphertext, token):
+    try:
+        url = 'http://servicios.telecinco.es/tokenizer/tk' + str(token) + '.php'
+        values = {'force_http' : '1',
+          'directo' : ciphertext,
+          'id' : id,
+          'startTime' : '0',
+          'endTime': '0'}
+        search_data = urllib.urlencode(values,doseq=True)
+        request = urllib2.Request(url,search_data)
+        request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
+        response = urllib2.urlopen(request)
+        data = response.read()
+        response.close()   
+        return data
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+    return ""  
+          
+def playrtmptoken2(item, data):
+    itemlist = []
+    
+    try:
         patron = '<stream>([^?]+)?([^<]+)</stream>'
         matches = re.compile(patron,re.DOTALL).findall(data)
         rtmp0 = matches[0][0]
@@ -389,13 +399,18 @@ def playdirecto(item):
         
         patron = '<file>([^<]+)</file>'
         matches = re.compile(patron,re.DOTALL).findall(data)
-        file = matches[0]
+        if len(matches)>0 :
+            file = unescape(matches[0])
+        else:
+            patron = '<file[^>]+>[^:]+:([^<]+)</file>'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            file = unescape(matches[0])
         
         rtmp = rtmp0 + "/" + file + rtmp1
     
         xbmcrtmp = rtmp0 + " playpath=" + file+rtmp1 + " swfUrl=\"http://static1.tele-cinco.net/comun/swf/playerMitele.swf\" pageUrl=\"" + item.url + "\" live=true"
         
-        itemlist.append( Item(channel=__channel__, action="play" , title="play", url=xbmcrtmp, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title="play rtmp", url=xbmcrtmp, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
     except:
         import sys
         for line in sys.exc_info():
@@ -403,6 +418,63 @@ def playdirecto(item):
 
     return itemlist
 
+def playrtmptoken3(item, data):
+    itemlist = []
+    
+    try:
+        patron = '<stream>([^?]+)</stream>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        stream = matches[0]
+        
+        patron = '<file>([^<]+)</file>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if len(matches)>0 :
+            file = unescape(matches[0])
+        else:
+            patron = '<file[^>]+>[^:]+:([^<]+)</file>'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            file = unescape(matches[0])
+        
+        rtmp = stream + "/" + file
+    
+        xbmcrtmp = stream + " playpath=" + file + " swfUrl=\"http://static1.tele-cinco.net/comun/swf/playerMitele.swf\" pageUrl=\"" + item.url + "\" live=true"
+        
+        itemlist.append( Item(channel=__channel__, action="play" , title="play rtmp", url=xbmcrtmp, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+
+    return itemlist
+
+
+#unescapes all the xml formatted characters
+def unescape(s):
+    want_unicode = False
+    if isinstance(s, unicode):
+        s = s.encode("utf-8")
+        want_unicode = True
+
+    # the rest of this assumes that `s` is UTF-8
+    list = []
+
+    # create and initialize a parser object
+    p = xml.parsers.expat.ParserCreate("utf-8")
+    p.buffer_text = True
+    p.returns_unicode = want_unicode
+    p.CharacterDataHandler = list.append
+
+    # parse the data wrapped in a dummy element
+    # (needed so the "document" is well-formed)
+    p.Parse("<e>", 0)
+    p.Parse(s, 0)
+    p.Parse("</e>", 1)
+
+    # join the extracted strings and return
+    es = ""
+    if want_unicode:
+        es = u""
+    return es.join(list)
 def load_json(data):
     # callback to transform json string values to utf8
     def to_utf8(dct):
