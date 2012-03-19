@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>12</tag>
-	<date>01/03/2012</date>
-	<changes>Cambio en la forma de obtener los links</changes>
+	<tag>13</tag>
+	<date>19/03/2012</date>
+	<changes>Arreglado el problema con los links de las películas by neofreno</changes>
 </version>

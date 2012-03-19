@@ -418,16 +418,16 @@ def mis_pelis_categoria(item):
 def peli_links(item):
 
     logger.info("[seriesly.py] peli_links")
-    
+   
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
     if (not logged):
         itemlist = []
         itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
+        return itemlist
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-    
+   
     # Extrae las entradas (carpetas)
     #¬†{"title":"?","idp":"?", "synopsis":"?", "year":"?", "seriesly_score":?d, "participants_score":"?", "genre":"terror", "poster":"http://?","thumb":"http://?","small_thumb":"http://?","links":
     #   [{"language":"?","subtitles":"yes/no","quality":"?","part":"?","uploader":"?","highDef":"0/1","server":"?","url_cineraculo":"?","url_megavideo":"?"}]
@@ -435,24 +435,25 @@ def peli_links(item):
     data = scrapertools.cache_page(item.url, post=post)
     linkList = load_json(data)
     if linkList == None : linkList = []
-    
+   
     logger.info("hay %d videos" % len(linkList))
     itemlist = []
     try:
         for link in linkList['links']:
-            
-            hd = link['highDef']
-            if hd == '0' : link['hdtag'] = ''
-            elif hd == '1' : link['hdtag'] = ' (HD)'
-            else : link['hdtag'] = ' (?)'
-            
-            link['titletag'] = item.title; 
-            
+           
+            #hd = link['highDef']
+            #if hd == '0' : link['hdtag'] = ''
+            #elif hd == '1' : link['hdtag'] = ' (HD)'
+            #else : link['hdtag'] = ' (?)'
+           
+            #Neofreno: Cambio a partir de aquí
+            link['titletag'] =linkList['title'];
+           
             itemlist.append(
                 Item(channel=item.channel,
                     action = "links",
-                    title = '%(titletag)s - %(server)s - %(language)s(sub %(subtitles)s)%(hdtag)s' % link,
-                    url = 'http://series.ly/api/goLink.php?auth_token=%s&user_token=%s&enc=%s' % ( qstr(auth_token), qstr(user_token), qstr(link['url'].strip()) ),
+                    title = '%(host)s - %(lang)s %(quality)s' % link,
+                    url = qstr(link['url'].strip()),
                     thumbnail = item.thumbnail,
                     plot = linkList['synopsis'],
                     extra = ''
@@ -462,9 +463,8 @@ def peli_links(item):
         import sys
         for line in sys.exc_info():
             logger.error( "%s" % line )
-        
+       
     return itemlist
-
 def series_mas_votadas(item):
 
     logger.info("[seriesly.py] series_mas_votadas")
