@@ -336,9 +336,15 @@ def getciphertext(id, startTime, endTime):
 def getvideo(id,ciphertext,token):
     try:
         url = 'http://servicios.telecinco.es/tokenizer/tk' + str(token) + '.php'
-        values = {'force_http' : '1',
-          'hash' : ciphertext,
+        if token == 2:
+            values = {'force_http' : '1',
+          'sec' : ciphertext,
           'id' : id}
+        else:
+            values = {'force_http' : '1',
+              'hash' : ciphertext,
+              'id' : id}
+        
         search_data = urllib.urlencode(values,doseq=True)
         request = urllib2.Request(url,search_data)
         request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
@@ -356,7 +362,7 @@ def playvideo(item, data):
     itemlist = []
     
     try:
-        patron = '<file>([^<]+)</file>'
+        patron = '<file[^>]+>([^<]+)</file>'
         matches = re.compile(patron,re.DOTALL).findall(data)
         file = unescape(matches[0])
         
