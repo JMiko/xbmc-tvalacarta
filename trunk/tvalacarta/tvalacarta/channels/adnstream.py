@@ -18,7 +18,7 @@ DEBUG = False
 CHANNELNAME = "adnstream"
 
 IMAGES_PATH = os.path.join( os.getcwd(), 'resources' , 'images' , 'adnstream' )
-ADNURL = 'http://www.adnstream.com/canales.php?prf=box'
+ADNURL = 'http://api.adnstream.com/canales.php'
 
 MAX_SEARCH_RESULTS = "50"
 
@@ -40,42 +40,76 @@ def mainlist(item):
 
     logger.info("url="+url)
 
-    # Buscador
-    if primera:
-        itemlist.append( Item(channel=CHANNELNAME, title="Buscar..." , thumbnail=os.path.join(IMAGES_PATH, "busqueda.jpg") , action="search" , folder=True) )
-
     # Descarga la página
     data = scrapertools.cache_page(url)
     #print data
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<channel title\="([^"]+)" media\:thumbnail\="([^"]+)" clean_name\="([^"]+)"></channel>'
+    patronvideos  = '<canal>[^<]+'
+    patronvideos += '<idcanal>[^<]*</idcanal>[^<]+'
+    patronvideos += '<nombre>([^<]+)</nombre>[^<]+'
+    patronvideos += '<nombrelimpio>([^<]+)</nombrelimpio>[^<]+'
+    patronvideos += '<thumbnails>.*?'
+    patronvideos += '<thumb[^>]+>([^<]+)</thumb>[^<]+'
+    patronvideos += '</thumbnails>'
+
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    for match in matches:
-        scrapedtitle = match[0]
-        scrapedurl = ADNURL+'&c='+match[2]
-        scrapedthumbnail = match[1]
+    for nombre,nombrelimpio,thumbnail in matches:
+        scrapedtitle = nombre
+        scrapedurl = 'http://api.adnstream.com/canales.php?canal='+nombrelimpio
+        scrapedthumbnail = thumbnail
         
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="mainlist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot="" , folder=True) )
 
     # Extrae las entradas (Vídeos)
-    patronvideos  = '<item>[^<]+<guid>([^<]+)</guid>[^<]+<title>([^<]+)</title>[^<]+<description>([^<]+)</description>[^<]+<enclosure type="([^"]+)" url="([^"]+)"/>[^<]+<media\:thumbnail type="[^"]+" url="([^"]+)"/>[^<]+<link>[^<]+</link>([^<]+<minimum_age>18</minimum_age>)?[^<]+(<featured>1</featured>[^<]+)?</item>'
+    patronvideos  = '<video>[^<]+'
+    patronvideos += '<idvideo>([^<]+)</idvideo>[^<]+'
+    patronvideos += '<nombre>([^<]+)</nombre>[^<]+'
+    patronvideos += '<descripcion>(.*?)</descripcion>[^<]+'
+    patronvideos += '<duracion>([^<]+)</duracion>[^<]+'
+    patronvideos += '<link>([^<]+)</link>[^<]+'
+    patronvideos += '<thumbnails>.*?'
+    patronvideos += '<thumb[^>]+>([^<]+)</thumb>[^<]+'
+    patronvideos += '</thumbnails>'
+    
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedplot = match[2]
-        scrapedurl = match[4]
-        scrapedthumbnail = match[5]
+    for idvideo,nombre,descripcion,duracion,link,thumbnail in matches:
+        scrapedtitle = nombre+" ("+duracion+")"
+        scrapedplot = descripcion
+        scrapedurl = "http://api.adnstream.com/video.php?video="+idvideo
+        scrapedthumbnail = thumbnail
         
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
-    if primera:
-        itemlist.append( Item(channel=CHANNELNAME, title="Los más valorados" , thumbnail=os.path.join(IMAGES_PATH, "masvalorados.jpg"), url="http://www.adnstream.com/canal_magico.new.php?i=0&n=30&c=masvalorados" , action="mainlist" , folder=True) )
-        itemlist.append( Item(channel=CHANNELNAME, title="Los más vistos" , thumbnail=os.path.join(IMAGES_PATH, "masvistos.jpg") , url="http://www.adnstream.com/canal_magico.new.php?i=0&n=30&c=masvistos" , action="mainlist" , folder=True) )
-        itemlist.append( Item(channel=CHANNELNAME, title="Novedades" , thumbnail=os.path.join(IMAGES_PATH, "New.jpg") , url="http://www.adnstream.com/canal_magico.new.php?i=0&n=30&c=novedades" , action="mainlist" , folder=True) )
-        itemlist.append( Item(channel=CHANNELNAME, title="Destacados" , thumbnail=os.path.join(IMAGES_PATH, "Destacados.jpg") , url="http://www.adnstream.com/canales.php?c=destacados" , action="mainlist" , folder=True) )
+    return itemlist
 
+def play(item):
+    logger.info("[adnstream.py] mainlist")
+
+    itemlist = []
+    data = scrapertools.cache_page(item.url)
+    patronvideos  = '<video>[^<]+'
+    patronvideos += '<idvideo>([^<]+)</idvideo>[^<]+'
+    patronvideos += '<nombre>([^<]+)</nombre>[^<]+'
+    patronvideos += '<descripcion>(.*?)</descripcion>[^<]+'
+    patronvideos += '<duracion>([^<]+)</duracion>[^<]+'
+    patronvideos += '<thumbnails>.*?'
+    patronvideos += '<thumb[^>]+>([^<]+)</thumb>[^<]+'
+    patronvideos += '</thumbnails>[^<]+'
+    patronvideos += '<urls>.*?'
+    patronvideos += '<url[^>]+>([^<]+)</url>[^<]+'
+    patronvideos += '</urls>'
+    
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for idvideo,nombre,descripcion,duracion,thumbnail,mediaurl in matches:
+        scrapedtitle = nombre+" ("+duracion+")"
+        scrapedplot = descripcion
+        scrapedurl = mediaurl
+        scrapedthumbnail = thumbnail
+        
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     return itemlist
 
@@ -100,7 +134,7 @@ def searchresults(term):
     itemlist = []
 
     term = term.replace(" ", "+")
-    url = "http://www.adnstream.com/adn/buscador.php?q="+term+"&n="+MAX_SEARCH_RESULTS+"&i=0&cachebuster=1243592712726"
+    url = "http://www.adnstream.tv/adn/buscador.php?q="+term+"&n="+MAX_SEARCH_RESULTS+"&i=0&cachebuster=1243592712726"
     logger.info("url="+url)
 
     # Descarga la página
