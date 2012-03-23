@@ -36,7 +36,7 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Noticias"       , action="noticias"     , url="http://www.antena3.com/videos/noticias.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Programas"      , action="programas"    , url="http://www.antena3.com/videos/programas.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Infantil"       , action="series"       , url="http://www.antena3.com/videos/series-infantiles.html", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="TV Movies"      , action="tvmovies"     , url="http://www.antena3.com/videos/tv-movies.html", folder=True) )
+    #itemlist.append( Item(channel=CHANNELNAME, title="TV Movies"      , action="tvmovies"     , url="http://www.antena3.com/videos/tv-movies.html", folder=True) )
 
     return itemlist
 
@@ -250,14 +250,48 @@ def capitulos(item):
         </a>
         </li>
         '''
-        patron  = '<li[^<]+'
-        patron += '<a.*?href="([^"]+)" >([^<]+)</a>'
+        patron  = '<li[^<]+<a\s+title="([^"]+)"\s+href="([^"]+)"[^>]*>([^<]+)</a>'
         matches = re.compile(patron,re.DOTALL).findall(subdata)
         
         #if DEBUG: scrapertools.printMatches(matches)
-        for match in matches:
-            scrapedtitle = "Temporada "+match[1].strip()
-            scrapedurl = urlparse.urljoin(item.url,match[0])
+        for titulo,url,etiqueta in matches:
+            if "emporada" in titulo:
+                scrapedtitle = "Temporada "+etiqueta.strip()
+            else:
+                scrapedtitle = etiqueta.strip()
+            scrapedurl = urlparse.urljoin(item.url,url)
+            scrapedthumbnail = item.thumbnail
+            scrapedplot = ""
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
+
+    # Otras temporadas
+    patron = '<dd class="seleccion">(.*?)</dd>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(matches)
+    if len(matches)>0:
+        subdata = matches[0]
+        
+        '''
+        <dd class="seleccion">
+        <ul>
+        <li  class="active" ><a title="Vídeos de El Hormiguero 3.0 - Año 2012" href="/videos/el-hormiguero.html" >2012</a></li>
+        <li ><a title="Vídeos de El Hormiguero 3.0 - Año 2011" href="/videos/el-hormiguero/2011.html" >2011</a></li>
+        </ul>
+        </dd>
+        '''
+        patron  = '<li[^<]+<a\s+title="([^"]+)"\s+href="([^"]+)"[^>]*>([^<]+)</a>'
+        matches = re.compile(patron,re.DOTALL).findall(subdata)
+        
+        #if DEBUG: scrapertools.printMatches(matches)
+        for titulo,url,etiqueta in matches:
+            if "emporada" in titulo:
+                scrapedtitle = "Temporada "+etiqueta.strip()
+            else:
+                scrapedtitle = etiqueta.strip()
+            scrapedurl = urlparse.urljoin(item.url,url)
             scrapedthumbnail = item.thumbnail
             scrapedplot = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
