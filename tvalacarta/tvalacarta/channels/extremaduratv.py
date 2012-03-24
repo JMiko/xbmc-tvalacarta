@@ -4,183 +4,128 @@
 # Canal para Extremadura TV
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
+import urlparse,re
+import urllib
 
-import urlparse,urllib,re
+from core import logger
+from core import scrapertools
+from core.item import Item
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
-
-logger.info("[extremaduratv.py] init")
-
-DEBUG = True
+DEBUG = False
 CHANNELNAME = "extremaduratv"
-CHANNELCODE = "extremaduratv"
 
 def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[extremaduratv.py] channel")
+    logger.info("[extremaduratv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Por categorías" , action="categorias" , url="http://extremaduratv.canalextremadura.es/tv-a-la-carta", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Por programas"  , action="programas"  , url="http://extremaduratv.canalextremadura.es/tv-a-la-carta", folder=True) )
-
-    return itemlist
-
-def categorias(item):
-    logger.info("[extremaduratv.py] categorias")
-
-    # --------------------------------------------------------
-    # Descarga la página
-    # --------------------------------------------------------
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # --------------------------------------------------------
-    # Extrae los programas
-    # --------------------------------------------------------
-    patron = '<select name="categoria"(.*?)</select>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    data = matches[0]
-    patron = '<option value="(\d+)">([^<]+)</option>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = "http://extremaduratv.canalextremadura.es/search/videos/programa%3A" + match[0] + "+categoria%3A0"
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Informativos"   , action="programas"    , url="http://alacarta.canalextremadura.es/tv/informativos/alfabetico") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Programas"      , action="programas"    , url="http://alacarta.canalextremadura.es/tv/programas/alfabetico") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Deportes"       , action="programas"    , url="http://alacarta.canalextremadura.es/tv/deportes/alfabetico") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Archivo"        , action="programas"    , url="http://alacarta.canalextremadura.es/tv/archivo/alfabetico") )
 
     return itemlist
 
 def programas(item):
-    logger.info("[extremaduratv.py] programas")
-
-    # --------------------------------------------------------
-    # Descarga la página
-    # --------------------------------------------------------
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # --------------------------------------------------------
-    # Extrae los programas
-    # --------------------------------------------------------
-    patron = ' <select name="programa"(.*?)</select>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    data = matches[0]
-    patron = '<option value="(\d+)">([^<]+)</option>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
+    logger.info("[extremaduratv.py] categorias")
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = "http://extremaduratv.canalextremadura.es/search/videos/programa%3A" + match[0] + "+categoria%3A0"
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    patron = '<span class="field-content"><a href="([^"]+)" title="Ver ficha del programa">([^<]+)</a></span>'
+    matches = re.findall(patron,data,re.DOTALL)
+
+    for url,titulo in matches:
+        scrapedtitle = titulo
+        scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, show=scrapedtitle) )
 
     return itemlist
 
-def videolist(item):
-    logger.info("[extremaduratv.py] videolist")
-
-    # --------------------------------------------------------
-    # Descarga la página
-    # --------------------------------------------------------
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # --------------------------------------------------------
-    # Extrae los programas
-    # --------------------------------------------------------
-    patron  = '<div class="item_busqueda">\W*<div class="foto">\W*<img src="([^"]+)" alt="" title=""\W*/>\W*</div>\W*<div class="datos">\W*<div class="titulo"><a href="([^"]+)">(.*?)</a>.*?-->(.*?)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
+def episodios(item):
+    logger.info("[extremaduratv.py] episodios")
     itemlist = []
-    
-    for match in matches:
-        # Datos
-        #'<span class="color_1">extremadura</span><span class="miniespacio"> </span><span class="color_2">desde</span><span class="miniespacio"> </span><span class="color_3">el</span><span class="miniespacio"> </span><span class="color_1">aire:</span><span class="miniespacio"> </span><span class="color_2">llega</span><span class="miniespacio"> </span><span class="color_1">aire</span><span class="miniespacio"> </span><span class="color_3">con</span><span class="miniespacio"> </span><span class="color_1">olores</span><span class="miniespacio"> </span><span class="color_2">portugueses</span><span class="miniespacio"> </span>'
-        #'extremadura desde el aire: llega aire con olores portugueses '
-        scrapedtitle = match[2]
-        scrapedtitle = scrapedtitle.replace('<span class="color_1">','')
-        scrapedtitle = scrapedtitle.replace('<span class="color_2">','')
-        scrapedtitle = scrapedtitle.replace('<span class="color_3">','')
-        scrapedtitle = scrapedtitle.replace('</span>','')
-        scrapedtitle = scrapedtitle.replace('<span class="miniespacio">','')
-        scrapedurl = "http://tv.canalextremadura.es%s" % match[1]
-        scrapedurl = scrapedurl.replace("#","%")
-        scrapedthumbnail = match[0].replace(" ","%20")
-        #'\n\t  \n\t\tApenas\xc2\xa0 30 kil\xc3\xb3metros en l\xc3\xadnea recta separan la...\t\t\n\t\t<div>\n\t\td\xc3\xada de emisi\xc3\xb3n_<span class="date-display-single">11Mayo09</span>\t\t')
-        #Apenas\xc2\xa0 30 kil\xc3\xb3metros en l\xc3\xadnea recta separan la...\t\t\n\t\t<div>\n\t\td\xc3\xada de emisi\xc3\xb3n_<span class="date-display-single">11Mayo09</span>')
-        scrapedplot = match[3].strip()
-        scrapedplot = scrapertools.htmlclean(scrapedplot)
 
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    '''
+    <li class="views-row views-row-5 views-row-odd">  
+    <div class="views-field-field-video-imagen-fid">
+    <span class="field-content"><a href="/tv/videos/extremadura-desde-el-aire-1" class="imagecache imagecache-imagen_carrusel_pie imagecache-linked imagecache-imagen_carrusel_pie_linked"><img src="http://alacarta.canalextremadura.es/sites/default/files/imagecache/imagen_carrusel_pie/S-B4885-005_0.jpg" alt="Ver video o escuchar audio" title="Ver video o escuchar audio"  class="imagecache imagecache-imagen_carrusel_pie" width="416" height="234" /></a></span>
+    </div>    
+    <div class="views-field-title">
+    <span class="field-content"><a href="/tv/videos/extremadura-desde-el-aire-1" title="Ver video o escuchar audio">Extremadura desde el aire</a></span>
+    </div>
+    <div class="views-field-field-video-descripcion-corta-value">
+    <div class="field-content"><p>UN CANTO DE CERCANIAS</p></div>
+    </div>
+    </li>
+    '''
+    '''
+    <div class="views-field-field-video-imagen-fid">
+    <span class="field-content"><a href="/tv/videos/esfera-180312" class="imagecache imagecache-imagen_carrusel_pie imagecache-linked imagecache-imagen_carrusel_pie_linked"><img src="http://alacarta.canalextremadura.es/sites/default/files/imagecache/imagen_carrusel_pie/PROG00054173_2.jpg" alt="" title=""  class="imagecache imagecache-imagen_carrusel_pie" width="416" height="234" /></a></span>
+    </div>
+    <div class="views-field-title">
+    <span class="field-content"><a href="/tv/videos/esfera-180312" title="Ver video o escuchar audio">Esfera (18/03/12)</a></span>
+    </div>    
+    <div class="views-field-field-video-descripcion-corta-value">
+    <div class="field-content"></div>
+    </div>
+    '''
+    patron  = '<img src="([^"]+)".*?'
+    patron += '<div class="views-field-title">[^<]+'
+    patron += '<span class="field-content"><a href="([^"]+)" title="Ver video o escuchar audio">([^<]+)</a></span>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '<div class="views-field-field-video-descripcion-corta-value">[^<]+'
+    patron += '<div class="field-content">(.*?)</div>[^<]+'
+    patron += '</div>'
+    matches = re.findall(patron,data,re.DOTALL)
+
+    for thumbnail,url,titulo,subtitulo in matches:
+        scrapedtitle = titulo + " - " + scrapertools.htmlclean(subtitulo).strip()
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = thumbnail
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
-        #addvideo( scrapedtitle , scrapedurl , category )
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="getvideo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail = scrapedthumbnail, show=item.show, folder=False) )
+
+    patron = '<li class="pager-next"><a href="([^"]+)" title="Ir a la p'
+    matches = re.findall(patron,data,re.DOTALL)
+
+    for url in matches:
+        scrapedurl = urlparse.urljoin(item.url,url)
+        itemlist.append( Item(channel=CHANNELNAME, title=">> Página siguiente" , action="episodios" , url=scrapedurl, show=item.show) )
+
 
     return itemlist
 
-def getvideo(item):
+def play(item):
     logger.info("[extremaduratv.py] play")
-
-    # --------------------------------------------------------
-    # Descarga pagina detalle
-    # --------------------------------------------------------
-    data = scrapertools.cachePage(item.url)
-    patron = 'fluURL\: "([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    try:
-        url = matches[0].replace(' ','%20')
-    except:
-        url = ""
-    logger.info("[extremaduratv.py] play url="+url)
-    
-    # Construye un plot más completo
-    matches = re.compile("<div class=\"view-field view-data-title\">([^<]+)<",re.DOTALL).findall(data)
-    descripcion1 = matches[0]
-    matches = re.compile("<div class=\"view-field view-data-body\">([^<]+)<",re.DOTALL).findall(data)
-    descripcion2 = matches[0]
-    matches = re.compile("<div class=\"view-field view-data-created\">([^<]+)<",re.DOTALL).findall(data)
-    descripcion3 = matches[0]
-    matches = re.compile("<div class=\"view-field view-data-duracion\">([^<]+)<",re.DOTALL).findall(data)
-    descripcion4 = matches[0]
-    descripcioncompleta = descripcion1[0].strip() + " " + descripcion2[0].strip() + " " + descripcion3[0].strip() + " " + descripcion4[0].strip()
-    descripcioncompleta = descripcioncompleta.replace("\t","");
-    descripcioncompleta = unicode( descripcioncompleta, "utf-8" ).encode("iso-8859-1")
-    plot = descripcioncompleta
-
-    data = scrapertools.cache_page(url)
-    print data
-    patron = "(http[^\?]+)\?"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    url = matches[0]
-
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=plot , show=item.show , folder=False) )
+
+    # Descarga la página
+    '''
+    data = scrapertools.cachePage(item.url)
+    patron  = '<div id="mediaplayer" rel="([^"]+)"></div>'
+    matches = re.findall(patron,data,re.DOTALL)
+
+    for url in matches:
+        itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail = item.thumbnail, show=item.show, folder=False) )
+    '''
+    headers = []
+    headers.append( ["User-Agent","Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"] )
+    data = scrapertools.cachePage(item.url,headers=headers)
+    patron = "<video.*?src ='([^']+)'"
+    matches = re.findall(patron,data,re.DOTALL)
+
+    for url in matches:
+        itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail = item.thumbnail, show=item.show, folder=False) )
 
     return itemlist
