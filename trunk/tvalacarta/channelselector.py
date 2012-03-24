@@ -132,14 +132,14 @@ def channels_list():
     channelslist.append([ "ADNStream"                  , "adnstream"            , "" , "ES" , "I" , "generic" ])
     channelslist.append([ "Antena3"                    , "antena3"              , "" , "ES" , "N" , "generic" ])
     channelslist.append([ "Aragón TV"                  , "aragontv"             , "" , "ES" , "A" , "generic"  ])  # jesus 25/01/2012
-    channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
+    #channelslist.append([ "Argia Multimedia (Euskera)" , "argia"                , "" , "ES" , "L" , "generic"  ])
     #channelslist.append([ "Barcelona TV"               , "barcelonatv"          , "" , "ES" , "L" , "generic" ])
     #channelslist.append([ "Berria TB (Euskera)"        , "berriatb"             , "" , "ES" , "L" , "generic"  ])
     #channelslist.append([ "Boing"                      , "boing"                , "" , "ES" , "T" , "generic"  ])   # juanfran 07/02/2011
     channelslist.append([ "Clan TVE"                   , "clantve"              , "" , "ES" , "T" , "generic" ])
     #channelslist.append([ "Cuatro"                     , "cuatro"               , "" , "ES" , "N" , "generic" ]) # jesus 02/09/2011
     #channelslist.append([ "EITB (País vasco)"          , "eitb"                 , "" , "ES" , "A" , "generic"  ])
-    channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
+    #channelslist.append([ "Earth TV"                   , "earthtv"              , "" , "ES" , "T" , "xbmc"  ])
     channelslist.append([ "El cine de las 3 mellizas"  , "tresmellizas"         , "" , "ES" , "I" , "generic"  ])
     channelslist.append([ "Euronews"                   , "euronews"             , "" , "ES" , "T" , "xbmc"  ])
     channelslist.append([ "Extremadura TV"             , "extremaduratv"        , "" , "ES" , "A" , "generic"  ])
