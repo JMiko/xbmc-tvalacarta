@@ -36,6 +36,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Series"    , action="series"  , category="series"    , thumbnail = "" , url="http://www.mitele.es/series-online/"))
     itemlist.append( Item(channel=__channel__, title="Programas" , action="series"  , category="programas" , thumbnail = "" , url="http://www.mitele.es/programas-tv/"))
+    itemlist.append( Item(channel=__channel__, title="Moto GP" , action="series"  , category="programas" , thumbnail = "" , url="http://www.mitele.es/motogp/"))
     itemlist.append( Item(channel=__channel__, title="TV Movies" , action="series"  , category="series"    , thumbnail = "" , url="http://www.mitele.es/tv-movies/"))
     itemlist.append( Item(channel=__channel__, title="Infantil"  , action="series"  , category="infantil"  , thumbnail = "" , url="http://www.mitele.es/tv-infantil/"))
     itemlist.append( Item(channel=__channel__, title="V.O."      , action="series"  , thumbnail = "" , url="http://www.mitele.es/mitele-vo/"))
@@ -362,9 +363,14 @@ def playvideo(item, data):
     itemlist = []
     
     try:
-        patron = '<file[^>]+>([^<]+)</file>'
+        patron = '<file>([^<]+)</file>'
         matches = re.compile(patron,re.DOTALL).findall(data)
-        file = unescape(matches[0])
+        if len(matches)>0 :
+            file = unescape(matches[0])
+        else:
+            patron = '<file[^>]+>([^<]+)</file>'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            file = unescape(matches[0])
         
         itemlist.append( Item(channel=__channel__, action="play" , title="play video", url=file, thumbnail=item.thumbnail, plot="", server="directo", extra="", category=item.category, fanart=item.thumbnail, folder=False))
     except:
