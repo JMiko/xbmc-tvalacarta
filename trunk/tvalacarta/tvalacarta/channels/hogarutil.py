@@ -7,15 +7,9 @@
 
 import urlparse,urllib,re
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 logger.info("[hogarutil.py] init")
 
@@ -28,244 +22,187 @@ def isGeneric():
 def mainlist(item):
     logger.info("[hogarutil.py] channel")
 
-    itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Cocina"     , action="videococinalist"    , url="http://www.hogarutil.com/Cocina/Recetas+en+v%C3%ADdeo", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Bricolaje"  , action="videobricolajelist" , url="http://www.hogarutil.com/Bricomania/Tareas+en+v%C3%ADdeo", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Decoración" , action="videobricolajelist" , url="http://www.hogarutil.com/Decogarden/Trabajos+en+v%C3%ADdeo", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Jardineria" , action="videobricolajelist" , url="http://www.hogarutil.com/Jardineria/Trabajos+en+v%C3%ADdeo", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Buscar"     , action="search"             , folder=True) )
+    item.url = "http://www.hogarutil.com/tv/programas/"
+    return programas(item)
 
-    return itemlist
-
-def search(item):
-    logger.info("[hogarutil.py] search")
-
-    itemlist = []
-
-    import xbmc
-    keyboard = xbmc.Keyboard('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)>0:
-            itemlist = searchresults(tecleado)
+def programas(item):
+    logger.info("[hogarutil.py] programas")
     
-    return itemlist
-
-def searchresults(term):
-    logger.info("[hogarutil.py] searchresults")
+    #print item.tostring()
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    patron  = '<img src="([^"]+)" alt="([^"]+)"/>[^<]*<h2 class="ms-titulo"><a href="([^"]+)">([^<]+)</a></h2>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
+    for thumbnail,alt,url,title in matches:
+        scrapedtitle = title.strip()
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = thumbnail
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-    #convert to HTML
-    tecleado = term.replace(" ", "+")
-    url = "http://www.hogarutil.com/fwk_googleminitools/GoogleServlet?tipoBusqueda=cabecera&cadenaABuscar="+urllib.quote_plus("vídeo "+tecleado)+"&siteDondeBuscar=&urlBuscador=http%3A%2F%2Fwww.hogarutil.com%2Fportal%2Fsite%2FPortalUtil%2Fmenuitem.c4c49aecb2a32733c4a69810843000a0"
-    logger.info("url="+url)
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
 
+    return itemlist
+
+def episodios(item):
+    logger.info("[hogarutil.py] episodios")
+    
     # Descarga la página
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    # Extrae las entradas (carpetas)
-    #<li><font size="-2"><b></b></font> <a href="http://www.hogarutil.com/Jardineria/Trabajos+en+v%C3%ADdeo/Palmera+de+Roebelen?q=palmera&start=0&urlBuscador=http://www.hogarutil.com/portal/site/PortalUtil/menuitem.c4c49aecb2a32733c4a69810843000a0&site=Delivery"><span>Palmera de Roebelen</span></a>
-    patronvideos  = '<li[^>]+><font size="-2"><b></b></font> <a href="([^\?]+)\?[^"]+"><span>([^<]+)</span></a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    # episodios
+    '''
+    <span>
+    <img src="/archivos/201203/bricomania-686-mesa-revistero-xl-173x125x80xX.jpg?1" alt="Crear mesa revistero" />							<h3 class="ms-antetitulo">Bricomanía</h3>
+    <h3 class="ms-antetitulo" style="text-align: right; color: #89BA2A;">24/03/2012</h3>
+    <h2 class="ms-titulo"><a href="/tv/programas/bricomania/201203/24/index.html" title="Crear mesa revistero">Crear mesa revistero</a></h2>
+    </span>
+    '''
 
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
+    patron  = '<span>[^<]+'
+    patron += '<img src="([^"]+)" alt="[^"]+"[^>]+>[^<]*<h3 class="ms-antetitulo">([^<]+)</h3>[^<]+'
+    patron += '<h3 class="ms-antetitulo" style="[^"]+">([^<]+)</h3>[^<]+'
+    patron += '<h2 class="ms-titulo"><a href="([^"]+)" title="[^"]+">([^<]+)</a></h2>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for thumbnail,show,fecha,url,titulo in matches:
+        scrapedtitle = titulo + " " + fecha
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            
-        if scrapedurl.find("Trabajos+en+v%C3%ADdeo")!=-1 or scrapedurl.find("Recetas+en+v%C3%ADdeo")!=-1:
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="getvideo" , url=scrapedurl, folder=True) )
+
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="detalle" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=True) )
+
+    # Otras temporadas
+    '''
+    <dl id="fechas-programas">
+    <dt class="ms-anno">AÑO</dt>
+    <dd class="seleccion">
+    <ul class="anos">
+    <li class="ano 2011"><a href="/tv/programas/decogarden/index.html?201106" title="Vídeos de Decogarden - Año 2011">2011</a></li>
+    <li class="ano 2012"><a href="/tv/programas/decogarden/index.html?201201" title="Vídeos de Decogarden - Año 2012">2012</a></li>
+    </ul>
+    </dd>
+    <dt class="ms-anno"></dt>
+    <dd class="ms-paginar">
+    <ul class="meses 2011" style="display: none;">
+    <li class="mes 06"><a title="Vídeos de Decogarden - Año 2011 - Mes Junio" href="/tv/programas/decogarden/index.html?201106">Junio</a></li>
+    <li class="mes 09"><a title="Vídeos de Decogarden - Año 2011 - Mes Septiembre" href="/tv/programas/decogarden/index.html?201109">Septiembre</a></li>
+    <li class="mes 10"><a title="Vídeos de Decogarden - Año 2011 - Mes Octubre" href="/tv/programas/decogarden/index.html?201110">Octubre</a></li>
+    <li class="mes 11"><a title="Vídeos de Decogarden - Año 2011 - Mes Noviembre" href="/tv/programas/decogarden/index.html?201111">Noviembre</a></li>
+    <li class="mes 12"><a title="Vídeos de Decogarden - Año 2011 - Mes Diciembre" href="/tv/programas/decogarden/index.html?201112">Diciembre</a></li>
+    </ul>
+    <ul class="meses 2012" style="display: none;">
+    <li class="mes 01"><a title="Vídeos de Decogarden - Año 2012 - Mes Enero" href="/tv/programas/decogarden/index.html?201201">Enero</a></li>
+    <li class="mes 02"><a title="Vídeos de Decogarden - Año 2012 - Mes Febrero" href="/tv/programas/decogarden/index.html?201202">Febrero</a></li>
+    <li class="mes 03"><a title="Vídeos de Decogarden - Año 2012 - Mes Marzo" href="/tv/programas/decogarden/index.html?201203">Marzo</a></li>
+    </ul>
+    </dd>
+    </dl>
+    '''
+    patron = '<dd class="ms-paginar">(.*?)</dd>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #if DEBUG: scrapertools.printMatches(matches)
+    if len(matches)>0:
+        subdata = matches[0]
+        patron  = '<li[^<]+<a\s+title="([^"]+)"\s+href="([^"]+)"[^>]*>([^<]+)</a>'
+        matches = re.compile(patron,re.DOTALL).findall(subdata)
+        
+        #if DEBUG: scrapertools.printMatches(matches)
+        for titulo,url,etiqueta in matches:
+            scrapedtitle = titulo
+            scrapedurl = urlparse.urljoin(item.url,url)
+            scrapedthumbnail = item.thumbnail
+            scrapedplot = ""
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
 
     return itemlist
 
-
-def videococinalist(item):
-    logger.info("[hogarutil.py] videolist")
-    
-    itemlist = []
-
-    if not item.extra == "":
-        baseurl = item.extra
-    else:
-        baseurl = item.url
-    logger.info("[hogarutil.py] baseurl="+baseurl)
+def detalle(item):
+    logger.info("[hogarutil.py] detalle")
+    itemlist=[]
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+    patron  = 'GENERAL.videoKewego.".ms-player2-in-([^"]+)","([^"]+)","100.","100.","".'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-    # Extrae las entradas (carpetas)
-    patronvideos = '<li.*?><span[^>]+><img.*?src="/staticFiles/logo-hogarutil-video.gif"[^>]+>([^<]+)</span><a title="([^"]+)" href="([^"]+)">[^<]+</a></li>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        # Titulo
-        scrapedtitle = match[1]+" ("+match[0]+")"
-        try:
-            scrapedtitle = unicode( scrapedtitle, "utf-8" ).encode("iso-8859-1")
-        except:
-            pass
-
-        scrapedurl = urlparse.urljoin("http://www.hogarutil.com",urllib.quote(match[2]))
-        scrapedthumbnail = ""
+    for parte,id in matches:
+        scrapedtitle = "Parte "+parte
+        scrapedurl = "http://www.hogarutil.com/backend/kewego.php?accion=player&id="+id+"&ancho=100%25&alto=100%25&preview="
+        scrapedthumbnail = item.thumbnail
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , server="directo" , folder=False) )
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-    # Extrae el enlace a la página siguiente
-    patronvideos = '<span.*?class="pagActual">[^<]+</span><a.*?href="([^"]+)".*?>([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = "Ir a página "+match[1]
-        scrapedurl = baseurl+match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videococinalist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=baseurl) )
-
-    return itemlist
-
-def videobricolajelist(item):
-    logger.info("[hogarutil.py] videolist")
-
-    itemlist = []
-    if not item.extra == "":
-        baseurl = item.extra
-    else:
-        baseurl = item.url
-    logger.info("[hogarutil.py] baseurl="+baseurl)
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=False) )
     
-    # Extrae las entradas (carpetas)
-    patronvideos = '<li.*?><span.*?><img src="/staticFiles/logo-hogarutil-video.gif"/></span><a href="([^"]+)">([^<]+)</a></li>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = match[1]
-        try:
-            scrapedtitle = unicode( scrapedtitle, "utf-8" ).encode("iso-8859-1")
-        except:
-            pass
-        scrapedurl = urlparse.urljoin("http://www.hogarutil.com",urllib.quote(match[0]))
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , server="directo" , folder=False) )
-
-    # Extrae el enlace a la página siguiente
-    patronvideos = '<span.*?class="pagActual">[^<]+</span><a.*?href="([^"]+)".*?>([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = "Ir a página "+match[1]
-        scrapedurl = baseurl+match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videobricolajelist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=baseurl) )
-
     return itemlist
 
 def play(item):
     logger.info("[hogarutil.py] play")
-
-    itemlist = []
-
-    logger.info("url="+item.url)
-
-    # Averigua la descripcion (plot)
-    data = scrapertools.cachePage(item.url)
-    patronvideos = '<meta name="BNT_RECETA_DESC" content="([^"]+)" />'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    try:
-        infoplot = matches[0]
-    except:
-        infoplot = ""
-    logger.info("[hogarutil.py] infoplot="+infoplot)
-
-    # Averigua el thumbnail
-    patronvideos = '<img class="fotoreceta" alt="[^"]*" src="([^"]+)"/>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    try:
-        infothumbnail = scrapedurl = urlparse.urljoin("http://www.hogarutil.com",urllib.quote(matches[0]))
-    except:
-        infothumbnail = ""
-    logger.info("[hogarutil.py] infothumbnail="+infothumbnail)
-
-    # Averigua la URL del video
-    patronvideos = '\&urlVideo=([^\&]+)\&'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    try:
-        mediaurl = matches[0]
-    except:
-        mediaurl = ""
-    logger.info("[hogarutil.py] mediaurl="+mediaurl)
-
+    itemlist=[]
+    
+    # De esta URL
+    # http://www.hogarutil.com/backend/kewego.php?accion=player&id=fc0d7bbd18es&ancho=100%25&alto=100%25&preview=
+    # Saco el playerkey y el sig
     '''
-    listitem.setProperty("SWFPlayer", "http://www.hogarutil.com/staticFiles/static/player/BigBainetPlayer.swf")
-    listitem.setInfo( "video", { "Title": infotitle, "Plot" : infoplot , "Studio" : CHANNELNAME , "Genre" : category } )
-    playlist.add( mediaurl, listitem )
+    <div id="flash_kplayer_fc0d7bbd18es" class="flash_kplayer" name="flash_kplayer" data-sig="fc0d7bbd18es" data-playerkey="d09a64ff5131" style="width:100%px; height:100%px;"><object  width="100%" height="100%" type="application/x-shockwave-flash" data="http://sa.kewego.com/swf/kp.swf" name="kplayer_fc0d7bbd18es" id="kplayer_fc0d7bbd18es"><param name="bgcolor" value="0x000000" />
+    <param name="allowfullscreen" value="true" />
+    <param name="allowscriptaccess" value="always" />
+    <param name="flashVars" value="language_code=es&amp;playerKey=d09a64ff5131&amp;configKey=&amp;suffix=&amp;sig=fc0d7bbd18es&amp;autostart=false" />
+    <param name="movie" value="http://sa.kewego.com/swf/kp.swf" />
+    <param name="wmode" value="opaque" /><video  poster="http://api.kewego.com/video/getHTML5Thumbnail/?playerKey=d09a64ff5131&amp;sig=fc0d7bbd18es" height="100%" width="100%" preload="none"  controls="controls"></video><script src="http://sa.kewego.com/embed/assets/kplayer-standalone.js"></script><script defer="defer">kitd.html5loader("flash_kplayer_fc0d7bbd18es");</script></object></div>
     '''
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=mediaurl, thumbnail=infothumbnail , plot=infoplot , server = "directo" , folder=False) )
+    data = scrapertools.cache_page(item.url)
+    player_key = scrapertools.get_match(data,'data-playerkey="([^"]+)"')
+    sig = scrapertools.get_match(data,'data-sig="([^"]+)"')
+    
+    # De esta URL
+    # http://api.kewego.com/config/getStreamInit/ con POST "playerKey=d09a64ff5131&request%5Fverbose=false&player%5Ftype=kp&sig=fc0d7bbd18es&language%5Fcode=es"
+    # Saco el apptoken
+    '''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <kewego_response>
+    <message><type>kp</type><playerAppToken>2f9c9e5dff567e05a6a820fb630166f91667eefda9080c0303898e2ed29601be0fefd9b3fc15e20d9d611a333218f5d5fc5e8621728584c469c880bbb53023f8</playerAppToken>
+    '''
+    url = "http://api.kewego.com/config/getStreamInit/"
+    data = scrapertools.cache_page(url,post="playerKey="+player_key+"&request%5Fverbose=false&player%5Ftype=kp&sig="+sig+"&language%5Fcode=es")
+    app_token = scrapertools.get_match(data,'<playerAppToken>([^<]+)</playerAppToken>')
+
+    # De esta URL
+    # http://api.kewego.com/video/getStream/?appToken=2f9c9e5dff567e05a6a820fb630166f91667eefda9080c0303898e2ed29601be0fefd9b3fc15e20d9d611a333218f5d5fc5e8621728584c469c880bbb53023f8&sig=fc0d7bbd18es&format=sd&v=101610
+    # Saco el vídeo del location
+    # Location	http://v.kewego.com/v/5/0733/G3EDLB9Y.mp4?key%3D2a194af64a517e64
+    url = "http://api.kewego.com/video/getStream/?appToken="+app_token+"&sig="+sig+"&format=sd&v=101610"
+    location = scrapertools.get_header_from_response(url,header_to_get="location")
+
+    #Esto sí funciona
+    from core import downloadtools, config
+    import thread
+    temp_file = config.get_temp_file("hogarutil.mp4")
+    thread.start_new_thread(downloadtools.downloadfile, (location,temp_file), {'silent':True})
+    import xbmc
+    logger.info("sleep")
+    xbmc.sleep(1000)
+    logger.info("fin sleep")
+
+    # Añade al listado
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title,  action="play" , url=temp_file, thumbnail=item.thumbnail, plot=item.plot, show=item.show) )
+    
     return itemlist
-
-def directplay(item):
-
-    # Playlist vacia
-    playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-    playlist.clear()
-
-    # Crea la entrada y la añade al playlist
-    listitem = xbmcgui.ListItem( "Emision en directo", iconImage="DefaultVideo.png" )
-    listitem.setProperty("SWFPlayer", "http://www.hogarutil.com/staticFiles/static/player/BigBainetPlayer.swf")
-    listitem.setInfo( "video", { "Title": "Emision en directo", "Studio" : CHANNELNAME , "Genre" : category } )
-    playlist.add( url, listitem )
-
-    # Reproduce
-    xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
-    xbmcPlayer.play(playlist)   
-
-def addfolder(nombre,url,accion):
-    logger.info('[hogarutil.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
-    listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
-    itemurl = '%s?channel=hogarutil&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url) )
-    xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
-
-def addpagina(nombre,url,baseurl,accion):
-    logger.info('[hogarutil.py] addfolder( "'+nombre+'" , "' + url + '" , "'+accion+'")"')
-    listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png")
-    itemurl = '%s?channel=hogarutil&action=%s&category=%s&url=%s&baseurl=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus(nombre) , urllib.quote_plus(url)  , urllib.quote_plus(baseurl) )
-    xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
-
-def addvideo(nombre,url,category):
-    logger.info('[hogarutil.py] addvideo( "'+nombre+'" , "' + url + '" , "'+category+'")"')
-    listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
-    listitem.setInfo( "video", { "Title" : nombre, "Plot" : nombre } )
-    itemurl = '%s?channel=hogarutil&action=play&category=%s&url=%s' % ( sys.argv[ 0 ] , category , urllib.quote_plus(url) )
-    xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
-
-def addvideodirecto(nombre,url,category):
-    logger.info('[hogarutil.py] addvideodirecto( "'+nombre+'" , "' + url + '" , "'+category+'")"')
-    listitem = xbmcgui.ListItem( nombre, iconImage="DefaultVideo.png" )
-    listitem.setInfo( "video", { "Title" : nombre, "Plot" : "Emision en directo" } )
-    itemurl = '%s?channel=hogarutil&action=directplay&category=%s&url=%s' % ( sys.argv[ 0 ] , category , urllib.quote_plus(url) )
-    xbmcplugin.addDirectoryItem( handle=pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
-
-def addthumbnailfolder( scrapedtitle , scrapedurl , scrapedthumbnail , accion ):
-    logger.info('[hogarutil.py] addthumbnailfolder( "'+scrapedtitle+'" , "' + scrapedurl + '" , "'+scrapedthumbnail+'" , "'+accion+'")"')
-    listitem = xbmcgui.ListItem( scrapedtitle, iconImage="DefaultFolder.png", thumbnailImage=scrapedthumbnail )
-    itemurl = '%s?channel=hogarutil&action=%s&category=%s&url=%s' % ( sys.argv[ 0 ] , accion , urllib.quote_plus( scrapedtitle ) , urllib.quote_plus( scrapedurl ) )
-    xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
-
-#mainlist(None,"","mainlist")
-#videolist(None,"http://www.hogarutil.com/Cocina/Recetas+en+vídeo","Cocina")
-#play(None,"http://www.hogarutil.com/Cocina/Recetas+en+v%C3%ADdeo/Sepia+con+arroz+negro","")
