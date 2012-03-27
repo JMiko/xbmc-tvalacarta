@@ -194,8 +194,10 @@ def play(item):
 
     #Esto sí funciona
     from core import downloadtools, config
-    import thread
+    import thread,os
     temp_file = config.get_temp_file("hogarutil.mp4")
+    if os.path.exists(temp_file):
+        os.remove(temp_file)
     thread.start_new_thread(downloadtools.downloadfile, (location,temp_file), {'silent':True})
     import xbmc
     logger.info("sleep")
