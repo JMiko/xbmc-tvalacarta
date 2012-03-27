@@ -145,7 +145,7 @@ def channels_list():
     channelslist.append([ "Extremadura TV"             , "extremaduratv"        , "" , "ES" , "A" , "generic"  ])
     channelslist.append([ "Giralda TV (Sevilla)"       , "giraldatv"            , "" , "ES" , "L" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "Hogarutil"                  , "hogarutil"            , "" , "ES" , "T" , "generic"  ])
-    channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
+    #channelslist.append([ "IB3 (Islas Baleares)"       , "ib3"                  , "" , "ES" , "A" , "generic"  ])  # jesus 20/01/2010
     channelslist.append([ "Internautas TV"             , "internautastv"        , "" , "ES" , "I" , "xbmc"  ])
     channelslist.append([ "Mallorca TV"                , "tvmallorca"           , "" , "ES" , "L" , "xbmc"  ])
     channelslist.append([ "Meristation"                , "meristation"          , "" , "ES" , "T" , "xbmc"  ])
@@ -157,7 +157,7 @@ def channels_list():
     channelslist.append([ "La Sexta"                   , "lasexta"              , "" , "ES" , "N" , "generic"  ])  # juanfran 07/02/2011
     channelslist.append([ "Skai folders"               , "skai_folders"         , "" , "GR" , "N" , "generic"  ])  # dusan 04/12/2011
     channelslist.append([ "Solidaria TV"               , "solidariatv"          , "" , "ES" , "I" , "generic"  ])  # jesus 20/01/2010
-    channelslist.append([ "Telecinco"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
+    #channelslist.append([ "Telecinco"                  , "telecinco"            , "" , "ES" , "N" , "generic"  ])  # jesus 15/05/2011
     channelslist.append([ "Telefe"                     , "telefe"               , "" , "ES" , "N" , "generic"  ])  # jesus 28/10/2011
     channelslist.append([ "TVE"                        , "rtve"                 , "" , "ES" , "N" , "generic"  ])
     #addfolder("TV Azteca","tva","mainlist")
