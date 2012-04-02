@@ -571,10 +571,8 @@ def listvideosTVmirror(params,url,category):
     for video in listavideos:
         #logger.info("")
         if video[2] == "tu.tv":
-            url = urllib.unquote_plus(servertools.findurl(video[1],video[2]))
-            xbmctools.addnewvideo( CHANNELNAME , "detail" , category , "Directo" , title +" - "+video[0], url, thumbnail , "" )
-        else:
-            xbmctools.addnewvideo( CHANNELNAME , "detail" , category , video[2] , title +" - "+video[0], video[1], thumbnail , "" )
+            video[2]="tutv"
+        xbmctools.addnewvideo( CHANNELNAME , "detail" , category , video[2] , title +" - "+video[0], video[1], thumbnail , "" )
     # ------------------------------------------------------------------------------------
 
     # Label (top-right)...
