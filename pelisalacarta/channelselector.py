@@ -45,34 +45,6 @@ def getmainlist():
 def mainlist(params,url,category):
     logger.info("[channelselector.py] mainlist")
 
-    logger.info("[channelselector.py] platform="+config.get_platform())
-    if config.get_platform()=="xbmceden":
-        import xbmc,xbmcgui
-        advancedsettings = xbmc.translatePath("special://userdata/advancedsettings.xml")
-        logger.info("[channelselector.py] advancedsettings="+advancedsettings)
-        if not os.path.exists(advancedsettings):
-            logger.info("[channelselector.py] no existe el fichero advancedsettings.xml")
-            dialog = xbmcgui.Dialog()
-            if dialog.yesno("plugin", "Tu XBMC Eden no está optimizado para streaming","¿Quieres optimizarlo ahora?"):
-                
-                # Copia el advancedsettings.xml desde el directorio resources al userdata
-                fichero = open( os.path.join(config.get_runtime_path(),"resources","advancedsettings.xml") )
-                texto = fichero.read()
-                fichero.close()
-                
-                fichero = open(advancedsettings,"w")
-                fichero.write(texto)
-                fichero.close()
-                
-                dialog2 = xbmcgui.Dialog()
-                dialog2.ok("plugin", "Se ha creado un fichero advancedsettings.xml","con la configuración óptima para el streaming.")
-
-            else:
-                # Crea un advancedsettings.xml vacío para no volver a preguntar
-                fichero = open(advancedsettings,"w")
-                fichero.write(" ")
-                fichero.close()
-
     # Verifica actualizaciones solo en el primer nivel
     if config.get_platform()!="boxee":
         try:
@@ -319,22 +291,26 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     import xbmc
     
     #print "thumbnail_type="+config.get_setting("thumbnail_type")
-    if config.get_setting("thumbnail_type")=="0":
+    thumbnail_type = config.get_setting("thumbnail_type")
+    if thumbnail_type=="":
+        thumbnail_type="2"
+    logger.info("thumbnail_type="+thumbnail_type)
+    if thumbnail_type=="0":
         IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
-    elif config.get_setting("thumbnail_type")=="1":
+    elif thumbnail_type=="1":
         IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
-    elif config.get_setting("thumbnail_type")=="2":
+    elif thumbnail_type=="2":
         IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'squares' ) )
     
-    if config.get_setting("thumbnail_type")=="0":
+    if thumbnail_type=="0":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/posters/"
-    elif config.get_setting("thumbnail_type")=="1":
+    elif thumbnail_type=="1":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/banners/"
-    elif config.get_setting("thumbnail_type")=="2":
+    elif thumbnail_type=="2":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/squares/"
 
-    if config.get_platform()=="boxee":
-        IMAGES_PATH="http://pelisalacarta.mimediacenter.info/posters/"
+    #if config.get_platform()=="boxee":
+    #    IMAGES_PATH="http://pelisalacarta.mimediacenter.info/posters/"
 
     if thumbnailname=="":
         thumbnailname = channelname

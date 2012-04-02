@@ -1,5 +1,12 @@
+3.2.7
+
+- Bugfix release
+- Solved a problem with Filenium in XBMC
+- First release of new connector system in boxee and plex media server
+
 3.2.6
 
+- New connector system for better handling errors
 
 3.2.5
 
