@@ -23,7 +23,7 @@ import logging
 logging.config.fileConfig("logging.conf")
 logger=logging.getLogger("wiimc")
 
-logger.info("wiimc config 3.2")
+logger.info("wiimc config 3.2.7")
 
 def get_system_platform():
     return "wiimc"
@@ -32,18 +32,20 @@ def open_settings():
     return
 
 def get_setting(name):
+    dev = ""
     try:
         if name in overrides:
             dev = overrides[name]
-            #print "Overrides: ",name,"=",dev
         else:
-            dev=configfile.get("General",name)
-            #print "Config file: ",name,"=",dev
-        #print "get_setting",name,dev
-        return dev
+            dev = configfile.get("General",name)
     except:
-        #print "get_setting",name,"(vacío)"
-        return ""
+        dev = ""
+    
+    # Las rutas por defecto devuelven el directorio de datos
+    if dev=="" and name in ["LIBRARY_PATH","LIBRARY_BD","downloadpath","downloadlistpath","bookmarkpath"]:
+        dev = get_data_path()
+
+    return dev
     
 def set_setting(name,value):
     #print "set_setting",name,value
