@@ -12,6 +12,16 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[putlocker.py] test_video_exists(page_url='%s')" % page_url)
+
+    location = scrapertools.get_header_from_response( url = page_url , header_to_get = "location")
+    if location=="":
+        return True,""
+    elif "&404" in location:
+        return False,"El archivo no existe<br/>en putlocker o ha sido borrado."
+    else:
+        return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[putlocker.py] url="+page_url)

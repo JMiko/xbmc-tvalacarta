@@ -26,9 +26,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         link = urlencode({'filez':page_url})
         location = scrapertools.cache_page("http://filenium.com/?filenium&" + link)
         user = user.replace("@","%40")
-        #location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
-        #?user=bla%40gmail.com&passwd=123456
-        location = location + "?user="+user+"&password="+password
+
+        if "xbmc" in config.get_platform():
+            location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
+        else:
+            location = location.replace("/?.zip","")
+            user = user.replace(".","%2e")
+            location = location + "?user="+user+"&passwd="+password
+
+        logger.info("location="+location)
 
     return location
 
