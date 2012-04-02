@@ -147,7 +147,7 @@ def play(item):
     video_urls = get_video_url(item.url)
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=video_urls[0][1], thumbnail=item.thumbnail , plot=item.plot , server = "directo" , show = item.show , category = item.category , folder=False) )
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=video_urls[1][1], thumbnail=item.thumbnail , plot=item.plot , server = "directo" , show = item.show , category = item.category , folder=False) )
 
     return itemlist
 
