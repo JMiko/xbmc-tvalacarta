@@ -38,6 +38,9 @@ def mainlist(item):
     logger.info("[ayuda.py] mainlist")
     itemlist = []
     from core import platform_name
+    if platform_name.PLATFORM_NAME=="xbmceden":
+        itemlist.append( Item(channel=CHANNELNAME, action="force_creation_advancedsettings" , title="Crear fichero advancedsettings.xml optimizado"))
+        
     if platform_name.PLATFORM_NAME!="xbmceden":
         itemlist.append( Item(channel=CHANNELNAME, action="updatebiblio" , title="Buscar nuevos episodios y actualizar biblioteca"))
         
@@ -80,6 +83,26 @@ def mainlist(item):
             itemlist.append( Item(channel=CHANNELNAME, action="play", server="megavideo", title=title + " [megavideo]", url=url, thumbnail=image , folder=False ) )
 
     return itemlist
+
+def force_creation_advancedsettings(item):
+
+    # Ruta del advancedsettings
+    import xbmc,xbmcgui,os
+    advancedsettings = xbmc.translatePath("special://userdata/advancedsettings.xml")
+
+    # Copia el advancedsettings.xml desde el directorio resources al userdata
+    fichero = open( os.path.join(config.get_runtime_path(),"resources","advancedsettings.xml") )
+    texto = fichero.read()
+    fichero.close()
+    
+    fichero = open(advancedsettings,"w")
+    fichero.write(texto)
+    fichero.close()
+                
+    dialog2 = xbmcgui.Dialog()
+    dialog2.ok("plugin", "Se ha creado un fichero advancedsettings.xml","con la configuración óptima para el streaming.")
+
+    return []
 
 def updatebiblio(item):
     import library_service

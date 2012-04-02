@@ -770,8 +770,8 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
                 xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , "%s [Directo]" %title, matches[0] , thumbnail , plot )
 
         elif servidor == "Veoh":
-        
-            veohurl = servertools.findurl(matches[0],"veoh")
+            from servers import veoh
+            veohurl = veoh.get_video_url(matches[0])
             logger.info(" veohurl = " +veohurl)
 
             if len(veohurl)>0:
@@ -798,7 +798,8 @@ def extraevideos(patronvideos,data,category,title,thumbnail,plot,servidor):
 
         elif servidor == "Stagevu":
             url= "http://stagevu.com/video/"+matches[0]
-            url = servertools.findurl(url,servidor)
+            from servers import stagevu
+            url = stagevu.get_video_url(url)
             
             logger.info(" url = "+url)
             
