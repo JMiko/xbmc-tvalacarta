@@ -91,13 +91,20 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         justinCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "removeFromFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
         contextCommands.append((config.get_localized_string(30407),justinCommand))
 
-
-    if len (contextCommands) > 0:
-        listitem.addContextMenuItems ( contextCommands, replaceItems=False)
-    if totalItems == 0:
+    if config.get_platform()=="boxee":
+        logger.info("Modo boxee")
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
     else:
-        ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
+        logger.info("Modo xbmc")
+        if len(contextCommands) > 0:
+            listitem.addContextMenuItems ( contextCommands, replaceItems=False)
+        else:
+            logger.info("Ignora menu contextual, es Boxee")
+    
+        if totalItems == 0:
+            ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+        else:
+            ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
     return ok
 
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = "", subtitle="", totalItems = 0, show="", password="", extra="",fulltitle=""):
@@ -190,6 +197,7 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
 def play_video(channel="",server="",url="",category="",title="", thumbnail="",plot="",extra="",desdefavoritos=False,desdedescargados=False,desderrordescargas=False,strmfile=False,Serie="",subtitle="", video_password="",fulltitle=""):
     from servers import servertools
     import sys
+    import xbmcgui
     try:
         logger.info("[xbmctools.py] play_video(channel=%s, server=%s, url=%s, category=%s, title=%s, thumbnail=%s, plot=%s, desdefavoritos=%s, desdedescargados=%s, desderrordescargas=%s, strmfile=%s, Serie=%s, subtitle=%s" % (channel,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile,Serie,subtitle))
     except:
@@ -215,8 +223,11 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     default_action = config.get_setting("default_action")
     logger.info("default_action="+default_action)
 
+    # Si no es el modo normal, no muestra el diálogo porque cuelga XBMC
+    muestra_dialogo = (config.get_setting("player_mode")=="0" and not strmfile)
+
     # Extrae las URL de los vídeos, y si no puedes verlo te dice el motivo
-    video_urls,puedes,motivo = get_video_urls(server,url,video_password,strmfile)
+    video_urls,puedes,motivo = servertools.resolve_video_urls_for_playing(server,url,video_password,muestra_dialogo)
 
     # Si puedes ver el vídeo, presenta las opciones
     if puedes:
@@ -448,6 +459,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             return
 
     # Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
+    import xbmcgui
     if strmfile:
         logger.info("b3")
         xlistitem = getLibraryInfo(mediaurl)
@@ -541,131 +553,6 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         subtitletools.set_Subtitle()
         if subtitle!="":
             xbmc.Player().setSubtitles(subtitle)
-
-def get_video_urls(server,url,video_password,strmfile):
-
-    video_urls = []
-
-    # Si no es el modo normal, no muestra el diálogo porque cuelga XBMC
-    muestra_dialogo = (config.get_setting("player_mode")=="0" and not strmfile)
-
-    # Si el vídeo es "directo", no hay que buscar más
-    if server=="directo" or server=="local":
-        video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
-        return video_urls,True,""
-
-    # Averigua las URL de los vídeos
-    else:
-
-        # Carga el conector
-        try:
-            # Muestra un diálogo de progreso
-            if muestra_dialogo:
-                import xbmcgui
-                progreso = xbmcgui.DialogProgress()
-                progreso.create( "pelisalacarta" , "Conectando con "+server)
-
-            exec "from servers import "+server+" as server_connector"
-    
-            progreso.update( 25 , "Conectando con "+server)
-
-            # Si tiene una función para ver si el vídeo existe, lo comprueba ahora
-            if hasattr(server_connector, 'test_video_exists'):
-                puedes,motivo = server_connector.test_video_exists( page_url=url )
-
-                # Si la funcion dice que no existe, fin
-                if not puedes:
-                    if muestra_dialogo: progreso.close()
-                    return video_urls,puedes,motivo
-        
-            # Obtiene enlaces free
-            if server in servertools.FREE_SERVERS:
-                video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
-                
-                # Si no se encuentran vídeos en modo free, es porque el vídeo no existe
-                if len(video_urls)==0:
-                    if muestra_dialogo: progreso.close()
-                    return video_urls,False,"No se puede encontrar el vídeo en "+server
-
-            # Obtiene enlaces premium si tienes cuenta en el server
-            if server in servertools.PREMIUM_SERVERS and config.get_setting(server+"premium")=="true":
-                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting(server+"premium")=="true") , user=config.get_setting(server+"user") , password=config.get_setting(server+"password"), video_password=video_password )
-                
-                # Si no se encuentran vídeos en modo premium directo, es porque el vídeo no existe
-                if len(video_urls)==0:
-                    if muestra_dialogo: progreso.close()
-                    return video_urls,False,"No se puede encontrar el vídeo en "+server
-    
-            # Obtiene enlaces filenium si tienes cuenta
-            if server in servertools.FILENIUM_SERVERS and config.get_setting("fileniumpremium")=="true":
-    
-                # Muestra un diálogo de progreso
-                if muestra_dialogo:
-                    progreso.update( 50 , "Conectando con Filenium")
-    
-                exec "from servers import filenium as gen_conector"
-                
-                video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
-                logger.info("[xbmctools.py] filenium url="+video_gen)
-                video_urls.append( [ "[filenium]", video_gen ] )
-
-            # Obtiene enlaces realdebrid si tienes cuenta
-            if server in servertools.REALDEBRID_SERVERS and config.get_setting("realdebridpremium")=="true":
-    
-                # Muestra un diálogo de progreso
-                if muestra_dialogo:
-                    progreso.update( 75 , "Conectando con Real-Debrid")
-
-                exec "from servers import realdebrid as gen_conector"
-                video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("realdebridpremium")=="true") , user=config.get_setting("realdebriduser") , password=config.get_setting("realdebridpassword"), video_password=video_password )
-                logger.info("[xbmctools.py] realdebrid url="+video_gen)
-                if not "REAL-DEBRID" in video_gen:
-                    video_urls.append( [ "."+video_gen.rsplit('.',1)[1]+" [realdebrid]", video_gen ] )
-                else:
-                    if muestra_dialogo: progreso.close()
-                    # Si RealDebrid da error pero tienes un enlace válido, no te dice nada
-                    if len(video_urls)==0:
-                        return video_urls,False,video_gen
-
-                if muestra_dialogo:
-                    progreso.update( 100 , "Proceso finalizado")
-
-                # Cierra el diálogo de progreso
-                if muestra_dialogo: progreso.close()
-
-            # Llegas hasta aquí y no tienes ningún enlace para ver, así que no vas a poder ver el vídeo
-            if len(video_urls)==0:
-                # ¿Cual es el motivo?
-                
-                # 1) No existe -> Ya está controlado
-                # 2) No tienes alguna de las cuentas premium compatibles
-    
-                # Lista de las cuentas que soportan este servidor
-                listapremium = ""
-                if server in servertools.REALDEBRID_SERVERS: listapremium+="Real-Debrid o "
-                if server in servertools.FILENIUM_SERVERS: listapremium+="Filenium o "
-                if server in servertools.PREMIUM_SERVERS: listapremium+=server+" o "
-                listapremium = listapremium[:-3]
-    
-                return video_urls,False,"Para ver un vídeo en "+server+" necesitas<br/>una cuenta en "+listapremium
-
-        except:
-            try:
-                progreso.close()
-            except:
-                pass
-            import traceback
-            from pprint import pprint
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
-            for line in lines:
-                line_splits = line.split("\n")
-                for line_split in line_splits:
-                    logger.error(line_split)
-
-            return video_urls,False,"Se ha producido un error en<br/>el conector con "+server
-
-    return video_urls,True,""
 
 def handle_wait(time_to_wait,title,text):
     logger.info ("[xbmctools.py] handle_wait(time_to_wait=%d)" % time_to_wait)

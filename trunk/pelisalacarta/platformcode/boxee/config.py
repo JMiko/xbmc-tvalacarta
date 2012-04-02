@@ -11,7 +11,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] boxee config 4.0 (3.2.6)"
+print "[config.py] boxee config 4.1 (3.2.7)"
 
 import os,re
 import xbmc
@@ -20,7 +20,7 @@ import mc
 PLUGIN_NAME = "pelisalacarta"
 
 def get_version():
-    return "3.8"
+    return "4.1"
 
 def get_system_platform():
     return "boxee"
@@ -37,16 +37,14 @@ def get_setting(name):
         return "2"
     elif name=="debug":
         return "true"
-    elif name=="thumbnail_type":
-        return "0"
     elif name=="default_action":
         return "0"
     elif name=="download.enabled":
         return "false"
     elif name=="subtitulo":
         return "false"
-    elif name=="player_type":
-        return "0"
+    #elif name=="player_type":
+    #    return "0"
     else:
         import xbmcplugin
         return xbmcplugin.getSetting(name)
