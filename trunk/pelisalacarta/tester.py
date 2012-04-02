@@ -346,12 +346,18 @@ def test_wupload():
     #wupload.get_video_url("http://www.wupload.es/file/2610051647")
     wupload.get_video_url("http://www.wupload.es/file/2615687672")
 
+def test_encode():
+    url = "http://cdn.filenium.com/get/Oi8vbGV0/aXRiaXQu/bmV0L2Rv/d25sb2Fk/LzQzMzc0/LjRhOTNj/MjE1N2Y3/MmJhZDg0/NTBlZTE5/ZTkxYzcv/Q2FzdGxl/Ky0rNHgx/NystK09u/Y2UrdXBv/bithK2Ny/aW1lJTVC/Vk8uSERU/Vi5YdmlE/LUZRTSU1/RCU1Qnd3/dy5zZXJp/ZW9ubGlu/ZS5uZXQl/NUQuYXZp/Lmh0bWw_/3D/b0?user=tvalacarta%40gmail%2ecom&passwd=secreto"
+    print urllib2.quote(url)
+    print urllib2.quote(urllib2.quote(url))
+
 if __name__ == "__main__":
     #test_server_connectors()
     #test_cineraculo()
-    test_channels()
+    #test_channels()
     #test_samba()
     #test_fileserver_premium()
     #test_filenium()
     #test_json()
     #test_wupload()
+    test_encode()
