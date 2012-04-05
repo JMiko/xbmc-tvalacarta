@@ -7,17 +7,9 @@
 import urlparse,re
 import urllib
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
-
-logger.info("[antena3.py] init")
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 DEBUG = False
 CHANNELNAME = "antena3"
@@ -188,19 +180,19 @@ def series(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
 
     return itemlist
 
-def capitulos(item):
-    logger.info("[antena3.py] capitulos")
+def episodios(item):
+    logger.info("[antena3.py] episodios")
     logger.info(item.tostring())
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    # Capitulos
+    # episodios
     '''
     <div>
     <a  title="Vídeos de El Internado - Capítulo 8 - Temporada 7"
@@ -265,7 +257,7 @@ def capitulos(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
     
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
 
     # Otras temporadas
     patron = '<dd class="seleccion">(.*?)</dd>'
@@ -297,7 +289,7 @@ def capitulos(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
     
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="capitulos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , folder=True) )
 
     return itemlist
 
