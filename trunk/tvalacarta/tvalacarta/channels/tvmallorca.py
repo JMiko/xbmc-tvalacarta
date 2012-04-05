@@ -13,7 +13,7 @@ import xbmcgui
 import xbmcplugin
 import binascii
 from core import scrapertools
-from core import xbmctools
+from platformcode.xbmc import xbmctools
 from core import logger
 
 try:
