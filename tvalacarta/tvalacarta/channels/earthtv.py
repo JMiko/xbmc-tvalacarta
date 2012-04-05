@@ -5,17 +5,10 @@
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-    from servers import youtube
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
-    from Code.servers import youtube
+from core import logger
+from core import scrapertools
+from core.item import Item
+from servers import youtube
 
 logger.info("[clantv.py] init")
 
