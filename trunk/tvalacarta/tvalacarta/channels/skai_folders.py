@@ -15,7 +15,7 @@ import binascii
 import xbmcaddon
 
 from core import scrapertools
-from core import xbmctools
+from platformcode.xbmc import xbmctools
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )
@@ -181,4 +181,4 @@ def play(params,url,category):
 	
 	
 
-	xbmctools.playvideo(CHANNELCODE,server,url,category,title,thumbnail,plot)
+	xbmctools.play_video(CHANNELCODE,server,url,category,title,thumbnail,plot)
