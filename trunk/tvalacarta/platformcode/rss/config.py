@@ -14,7 +14,7 @@
 # 20-01-2010 Fichero de configuración en el directorio de usuario
 #-------------------------------------------------------------------------------
 
-print "[config.py] rss config 3.2.2"
+print "[config.py] rss config 3.2"
 
 import os,re
 import ConfigParser
