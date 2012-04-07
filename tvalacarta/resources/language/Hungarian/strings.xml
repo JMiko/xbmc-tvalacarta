@@ -42,6 +42,8 @@
 	<string id="30027">Cache all</string>
 	<string id="30028">Cache nothing</string>
     <string id="30029">Cache path:</string>
+    <string id="30043">Elegir la mejor vista (Sólo Confluence):</string>
+    <string id="30044">Play mode:</string>
 
 	<!-- =============================================================== -->
 	<!-- 30050 to 30099: Info / error messages                           -->

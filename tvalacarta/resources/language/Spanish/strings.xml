@@ -63,6 +63,8 @@
     <string id="30040">Cachear todo</string>
     <string id="30041">No cachear nada</string>
     <string id="30042">Directorio de cache:</string>
+    <string id="30043">Elegir la mejor vista (Sólo Confluence):</string>
+    <string id="30044">Modo de reproducción:</string>
 
 	<!-- =============================================================== -->
 	<!-- De 30050 a 30099: Mensajes informativos - error                 -->

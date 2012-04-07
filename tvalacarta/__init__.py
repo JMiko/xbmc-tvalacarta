@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# tvakacarta
+# tvalacarta
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------

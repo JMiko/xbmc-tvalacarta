@@ -89,7 +89,7 @@ def getitems(requestpath):
            exec "import "+channel
         else:
             try:
-               exec "from pelisalacarta.channels import "+channel
+               exec "from tvalacarta.channels import "+channel
             except:
                exec "from core import "+channel
     
