@@ -36,7 +36,5 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
-    encontrados = set()
-    devuelve = []
-
-    return devuelve
+    logger.info("[adnstream.py] find_videos")
+    return []

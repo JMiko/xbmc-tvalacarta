@@ -166,42 +166,45 @@ def videos(item):
 
 def play( item ):
     logger.info("[telefe.py] play")
-
-    page_url=item.url
-    data = scrapertools.cache_page(page_url)
-
-    video_urls = []
     itemlist = []
 
-    # Descarga el descriptor del vídeo
-    # El vídeo:
-    # <script type="text/javascript" src="http://flash.velocix.com/c1197/legacy/UAAA1582_X264_480x360.mp4?format=jscript2&protocol=rtmpe&vxttoken=00004EAA82A8000000000289A60672657573653D32EBF4321F280103EC9B2025F74095B4E74A0E459A" ></script>
-    # El anuncio:
-    # <script type="text/javascript" src="http://flash.velocix.com/bt/145e8eae1563f092fbdf905113f7c213ebefd8e6/flash?format=jscript2&protocol=rtmpte&vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB" ></script>
-    patron  = '<script type="text/javascript" src="(http://flash.velocix.com/[^"]+)" ></script>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    print matches
-    
-    if len(matches)>0:
-        page_url2 = matches[0]
-        data2 = scrapertools.cache_page(page_url2)
-        print("data2="+data2)
-        '''
-        var streamName = "mp4:bt-145e8eae1563f092fbdf905113f7c213ebefd8e6";
-        var rtmpUrl = [];
-        rtmpUrl.push("rtmpte://201.251.164.11/flash?vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB");
-        rtmpUrl.push("rtmpte://201.251.118.11/flash?vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB");
-        '''
-        patron = 'streamName \= "([^"]+)"'
-        matches = re.compile(patron,re.DOTALL).findall(data2)
-        streamName = matches[0]
-
-        patron = 'rtmpUrl\.push\("([^"]+)"\)'
-        matches = re.compile(patron,re.DOTALL).findall(data2)
-        if len(matches)>0:
-            videourl = matches[0]+"/"+streamName
+    if item.url.startswith("rtmp"):
+        itemlist.append( item )
+    else:
+        page_url=item.url
+        data = scrapertools.cache_page(page_url)
         
-            logger.info(videourl)
-            itemlist.append( Item(channel=CHANNELNAME, title=item.title, action="play" , server="directo", url=videourl, thumbnail=item.thumbnail, plot=item.plot, folder=False) )
+        video_urls = []
+        
+        # Descarga el descriptor del vídeo
+        # El vídeo:
+        # <script type="text/javascript" src="http://flash.velocix.com/c1197/legacy/UAAA1582_X264_480x360.mp4?format=jscript2&protocol=rtmpe&vxttoken=00004EAA82A8000000000289A60672657573653D32EBF4321F280103EC9B2025F74095B4E74A0E459A" ></script>
+        # El anuncio:
+        # <script type="text/javascript" src="http://flash.velocix.com/bt/145e8eae1563f092fbdf905113f7c213ebefd8e6/flash?format=jscript2&protocol=rtmpte&vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB" ></script>
+        patron  = '<script type="text/javascript" src="(http://flash.velocix.com/[^"]+)" ></script>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        print matches
+        
+        if len(matches)>0:
+            page_url2 = matches[0]
+            data2 = scrapertools.cache_page(page_url2)
+            print("data2="+data2)
+            '''
+            var streamName = "mp4:bt-145e8eae1563f092fbdf905113f7c213ebefd8e6";
+            var rtmpUrl = [];
+            rtmpUrl.push("rtmpte://201.251.164.11/flash?vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB");
+            rtmpUrl.push("rtmpte://201.251.118.11/flash?vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB");
+            '''
+            patron = 'streamName \= "([^"]+)"'
+            matches = re.compile(patron,re.DOTALL).findall(data2)
+            streamName = matches[0]
+        
+            patron = 'rtmpUrl\.push\("([^"]+)"\)'
+            matches = re.compile(patron,re.DOTALL).findall(data2)
+            if len(matches)>0:
+                videourl = matches[0]+"/"+streamName
+            
+                logger.info(videourl)
+                itemlist.append( Item(channel=CHANNELNAME, title=item.title, action="play" , server="directo", url=videourl, thumbnail=item.thumbnail, plot=item.plot, folder=False) )
 
     return itemlist

@@ -13,7 +13,7 @@ import xbmcgui
 import xbmcplugin
 from core import scrapertools
 import binascii
-from core import xbmctools
+from platformcode.xbmc import xbmctools
 
 try:
 	pluginhandle = int( sys.argv[ 1 ] )

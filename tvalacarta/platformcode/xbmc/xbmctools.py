@@ -22,17 +22,7 @@ try:
 except:
     pluginhandle = ""
 
-LIBRARY_CATEGORIES = ['Series'] #Valor usuarios finales
-
-# TODO: Actualizar automáticamente servidores soportados desde http://www.filenium.com/domains
-
-#LIBRARY_CATEGORIES = ['Cine','Series'] #Valor developers (descomentar para activar)
-# Para test de programadores. Se pueden añadir aquellos canales de cine que 
-#   queramos que tengan opción de añadir a la biblioteca.
-#   (SÓLO VERSIONES XBMC COMPILADAS CON BUGFIX INCLUIDO)
-
 DEBUG = True
-_addon_ = config.get_runtime_path()
 
 # TODO: (3.2) Esto es un lío, hay que unificar
 def addnewfolder( canal , accion , category , title , url , thumbnail , plot , Serie="",totalItems=0,fanart="",context="", show="",fulltitle=""):
@@ -101,13 +91,20 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         justinCommand = "XBMC.Container.Update(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s)" % ( sys.argv[ 0 ] , "justintv" , "removeFromFavorites" , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( "" )  )
         contextCommands.append((config.get_localized_string(30407),justinCommand))
 
-
-    if len (contextCommands) > 0:
-        listitem.addContextMenuItems ( contextCommands, replaceItems=False)
-    if totalItems == 0:
+    if config.get_platform()=="boxee":
+        logger.info("Modo boxee")
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
     else:
-        ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
+        logger.info("Modo xbmc")
+        if len(contextCommands) > 0:
+            listitem.addContextMenuItems ( contextCommands, replaceItems=False)
+        else:
+            logger.info("Ignora menu contextual, es Boxee")
+    
+        if totalItems == 0:
+            ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
+        else:
+            ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
     return ok
 
 def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = "", subtitle="", totalItems = 0, show="", password="", extra="",fulltitle=""):
@@ -200,6 +197,7 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
 def play_video(channel="",server="",url="",category="",title="", thumbnail="",plot="",extra="",desdefavoritos=False,desdedescargados=False,desderrordescargas=False,strmfile=False,Serie="",subtitle="", video_password="",fulltitle=""):
     from servers import servertools
     import sys
+    import xbmcgui
     try:
         logger.info("[xbmctools.py] play_video(channel=%s, server=%s, url=%s, category=%s, title=%s, thumbnail=%s, plot=%s, desdefavoritos=%s, desdedescargados=%s, desderrordescargas=%s, strmfile=%s, Serie=%s, subtitle=%s" % (channel,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile,Serie,subtitle))
     except:
@@ -219,79 +217,20 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     except:
         download_enable=False
 
-    '''
-    logger.info("[xbmctools.py] playvideo")
-    logger.info("[xbmctools.py] playvideo canal="+canal)
-    logger.info("[xbmctools.py] playvideo server="+server)
-    logger.info("[xbmctools.py] playvideo url="+url)
-    logger.info("[xbmctools.py] playvideo category="+category)
-    logger.info("[xbmctools.py] playvideo serie="+Serie)
-    logger.info("[xbmctools.py] playvideo subtitle="+config.get_setting("subtitulo")+" "+subtitle)
-    '''
-
     view = False
     # Abre el diálogo de selección
     opciones = []
-    video_urls = []
     default_action = config.get_setting("default_action")
     logger.info("default_action="+default_action)
 
-    if server=="directo" or server=="local":
-        video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
-    elif server in servertools.FILENIUM_ONLY_SERVERS and config.get_setting("fileniumpremium")=="false":
-        video_urls = []
-        existe = False
-        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con una cuenta de Filenium"
-    elif server in servertools.PREMIUM_ONLY_SERVERS and config.get_setting(server+"premium")=="false":
-        video_urls = []
-        existe = False
-        motivo = "El servidor "+server+" sólo funciona<br/>en pelisalacarta con cuenta premium o con cuenta de Filenium"
-    else:
-        # Muestra un diálogo de progreso
-        if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":
-            import xbmcgui
-            progreso = xbmcgui.DialogProgress()
-            progreso.create( "pelisalacarta" , "Conectando con %s..." % server)
+    # Si no es el modo normal, no muestra el diálogo porque cuelga XBMC
+    muestra_dialogo = (config.get_setting("player_mode")=="0" and not strmfile)
 
-        existe = True
-        motivo = ""
-        try:
-            # Extrae todos los enlaces posibles
-            exec "from servers import "+server+" as server_connector"
+    # Extrae las URL de los vídeos, y si no puedes verlo te dice el motivo
+    video_urls,puedes,motivo = servertools.resolve_video_urls_for_playing(server,url,video_password,muestra_dialogo)
 
-            # Primero averigua si existe
-            if hasattr(server_connector, 'test_video_exists'):
-                existe,motivo = server_connector.test_video_exists( page_url=url )
-
-            if existe:
-                if server in servertools.PREMIUM_SERVERS:
-                    video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting(server+"premium")=="true") , user=config.get_setting(server+"user") , password=config.get_setting(server+"password"), video_password=video_password )
-                else:
-                    video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
-        except:
-            import traceback
-            from pprint import pprint
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
-            for line in lines:
-                line_splits = line.split("\n")
-                for line_split in line_splits:
-                    logger.error(line_split)
-
-        if existe and server in servertools.FILENIUM_SERVERS and config.get_setting("fileniumpremium")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
-            exec "from servers import filenium as gen_conector"
-            
-            video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
-            logger.info("[xbmctools.py] filenium url="+video_gen)
-            video_urls.append( [ "[filenium]", video_gen ] )
-
-        # Cierra el diálogo de progreso
-        if config.get_setting("player_mode")=="0" and not strmfile and server!="wupload":
-            progreso.close()
-
-    # El vídeo está
-  
-    if len(video_urls)>0:
+    # Si puedes ver el vídeo, presenta las opciones
+    if puedes:
         for video_url in video_urls:
             opciones.append(config.get_localized_string(30151) + " " + video_url[0])
 
@@ -329,7 +268,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         if not channel in ["Trailer","ecarteleratrailers"]:
             opciones.append(config.get_localized_string(30162)) # "Buscar Trailer"
 
-    # El vídeo no está
+    # Si no puedes ver el vídeo te informa
     else:
         import xbmcgui
         if server!="":
@@ -520,6 +459,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             return
 
     # Obtención datos de la Biblioteca (solo strms que estén en la biblioteca)
+    import xbmcgui
     if strmfile:
         logger.info("b3")
         xlistitem = getLibraryInfo(mediaurl)
@@ -867,3 +807,15 @@ def trailer(item):
     import sys
     xbmc.executebuiltin("XBMC.RunPlugin(%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s)" % ( sys.argv[ 0 ] , "trailertools" , "buscartrailer" , urllib.quote_plus( item.category ) , urllib.quote_plus( item.fulltitle ) , urllib.quote_plus( item.url ) , urllib.quote_plus( item.thumbnail ) , urllib.quote_plus( "" ) ))
     return
+
+def alert_no_puedes_ver_video(server,url,motivo):
+    import xbmcgui
+
+    if server!="":
+        advertencia = xbmcgui.Dialog()
+        if "<br/>" in motivo:
+            resultado = advertencia.ok( "No puedes ver ese vídeo porque...",motivo.split("<br/>")[0],motivo.split("<br/>")[1],url)
+        else:
+            resultado = advertencia.ok( "No puedes ver ese vídeo porque...",motivo,url)
+    else:
+        resultado = advertencia.ok( "No puedes ver ese vídeo porque...","El servidor donde está alojado no está","soportado en pelisalacarta todavía",url)

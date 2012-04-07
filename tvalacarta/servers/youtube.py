@@ -76,17 +76,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             etiqueta = ""
             try:
                 etiqueta = CALIDADES[calidad]
+                if formato!="":
+                    etiqueta = etiqueta + " (%s a %s) [youtube]" % (formato,resolucion)
+                else:
+                    etiqueta = etiqueta + " (%s) [youtube]" % (resolucion)
+        
+                video_urls.append( [ etiqueta , video_url ])
             except:
                 pass
             
-            if formato!="":
-                etiqueta = etiqueta + " (%s a %s) [youtube]" % (formato,resolucion)
-            else:
-                etiqueta = etiqueta + " (%s) [youtube]" % (resolucion)
-    
-            video_urls.append( [ etiqueta , video_url ])
         except:
             pass
+    
+    video_urls.reverse()
     
     for video_url in video_urls:
         logger.info(str(video_url))

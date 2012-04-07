@@ -4,33 +4,45 @@
 # Utilidades para detectar vídeos de los diferentes conectores
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import re
+import re,sys
 
 from core import scrapertools
 from core import config
 from core import logger
 
-# Todos los servidores
-ALL_SERVERS = []
-ALL_SERVERS.extend(['directo','adnstream','bitshare','allmyvideos','bliptv','depositfiles','divxstage','downupload','facebook','fileserve','fourshared'])
-ALL_SERVERS.extend(['googlevideo','gigabyteupload','hotfile','hdplay','letitbit','mediafire','modovideo','movshare','novamov','ovfile','putlocker','rapidshare'])
-ALL_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','turbobit','tutv','userporn','uploadedto','veoh','veevr','videobam'])
-ALL_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','wupload'])
+# Listas de servidores empleadas a la hora de reproducir para explicarle al usuario por qué no puede ver un vídeo
 
-# Todos los servidores soportados por Filenium
-FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
+# Lista de los servidores que se pueden ver sin cuenta premium de ningún tipo
+FREE_SERVERS = []
+FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared'])
+FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','movshare','novamov','ovfile','putlocker'])
+FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
+FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
 
-# Los servidores que SÓLO funcionan con Filenium
-FILENIUM_ONLY_SERVERS = ['linkto','uploadedto','gigasize','filepost','hotfile','rapidshare','turbobit','bitshare','depositfiles','oron','allmyvideos','fooget','letitbit','shareonline']
+FREE_SERVERS.extend(['boing','disneychannel','tvg','telefe','mitele','eltrece'])
 
-# Todos los servidores que funcionan con cuenta premium
-PREMIUM_SERVERS = ['wupload','fileserve']
+# Lista de TODOS los servidores que funcionan con cuenta premium individual
+PREMIUM_SERVERS = ['wupload','fileserve']#,'uploadedto']
 
-# Todos los servidores que SÓLo funcionan con cuenta premium
-PREMIUM_ONLY_SERVERS = ['wupload','fileserve']
+# Lista de TODOS los servidores soportados por Filenium
+FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron',
+                    'downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
+
+# Lista de TODOS los servidores soportados por Real-Debrid
+REALDEBRID_SERVERS = ['tenupload','onefichier','twoshared','fourfastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
+                    'dengee','depositfiles','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
+                   'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
+                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
+                   'novamov','przeklej','purevid','putlocker','rapidgator','redtube','rapidshare','rutube','scribd','sendspace','shareonline','shareflare','shragle','slingfile','sockshare',
+                   'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
+                   'userporn','videoweed','vidxden','vimeo','vipfile','wattv','wupload','youporn','youtube','yunfile','zippyshare','zshare']
+
+# Lista completa de todos los servidores soportados por pelisalacarta, usada para buscar patrones
+ALL_SERVERS = list( set(FREE_SERVERS) | set(FILENIUM_SERVERS) | set(REALDEBRID_SERVERS) )
+ALL_SERVERS.sort()
 
 # Función genérica para encontrar vídeos en una página
-def find_video_items(item=None, data=None):
+def find_video_items(item=None, data=None, channel=""):
     logger.info("[launcher.py] findvideos")
 
     # Descarga la página
@@ -64,70 +76,140 @@ def findvideos(data):
 
     # Ejecuta el findvideos en cada servidor
     for serverid in ALL_SERVERS:
-        exec "import "+serverid
-        exec "devuelve = devuelve.extend("+serverid+".find_videos(data))"
+        try:
+            exec "from servers import "+serverid
+            exec "devuelve.extend("+serverid+".find_videos(data))"
+        except ImportError:
+            logger.info("No existe conector para "+serverid)
+        except:
+            logger.info("Error en el conector "+serverid)
+            import traceback,sys
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
 
     return devuelve
-    
-def findurl(code,server):
-    mediaurl = "ERROR"
-    server = server.lower() #Para hacer el procedimiento case insensitive
 
-    if server == "megavideo":
-        import megavideo
-        mediaurl = megavideo.Megavideo(code)
+def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=False):
 
-    elif server == "megaupload":
-        import megaupload
-        mediaurl = megaupload.gethighurl(code)
-        
-    elif server == "directo":
-        mediaurl = code
+    video_urls = []
 
-    elif server == "4shared":
-        import fourshared
-        mediaurl = fourshared.geturl(code)
-        
-    elif server == "xml":
-        import xmltoplaylist
-        mediaurl = xmltoplaylist.geturl(code)
+    # Si el vídeo es "directo", no hay que buscar más
+    if server=="directo" or server=="local":
+        video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
+        return video_urls,True,""
 
+    # Averigua las URL de los vídeos
     else:
+
+        # Carga el conector
         try:
-            exec "import "+server+" as serverconnector"
-            mediaurl = serverconnector.geturl(code)
+            # Muestra un diálogo de progreso
+            if muestra_dialogo:
+                import xbmcgui
+                progreso = xbmcgui.DialogProgress()
+                progreso.create( "pelisalacarta" , "Conectando con "+server)
+
+            exec "from servers import "+server+" as server_connector"
+    
+            if muestra_dialogo:
+                progreso.update( 25 , "Conectando con "+server)
+
+            # Si tiene una función para ver si el vídeo existe, lo comprueba ahora
+            if hasattr(server_connector, 'test_video_exists'):
+                puedes,motivo = server_connector.test_video_exists( page_url=url )
+
+                # Si la funcion dice que no existe, fin
+                if not puedes:
+                    if muestra_dialogo: progreso.close()
+                    return video_urls,puedes,motivo
+
+            # Obtiene enlaces free
+            if server in FREE_SERVERS:
+                video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
+                
+                # Si no se encuentran vídeos en modo free, es porque el vídeo no existe
+                if len(video_urls)==0:
+                    if muestra_dialogo: progreso.close()
+                    return video_urls,False,"No se puede encontrar el vídeo en "+server
+
+            # Obtiene enlaces premium si tienes cuenta en el server
+            if server in PREMIUM_SERVERS and config.get_setting(server+"premium")=="true":
+                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting(server+"premium")=="true") , user=config.get_setting(server+"user") , password=config.get_setting(server+"password"), video_password=video_password )
+                
+                # Si no se encuentran vídeos en modo premium directo, es porque el vídeo no existe
+                if len(video_urls)==0:
+                    if muestra_dialogo: progreso.close()
+                    return video_urls,False,"No se puede encontrar el vídeo en "+server
+    
+            # Obtiene enlaces filenium si tienes cuenta
+            if server in FILENIUM_SERVERS and config.get_setting("fileniumpremium")=="true":
+    
+                # Muestra un diálogo de progreso
+                if muestra_dialogo:
+                    progreso.update( 50 , "Conectando con Filenium")
+    
+                exec "from servers import filenium as gen_conector"
+                
+                video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
+                logger.info("[xbmctools.py] filenium url="+video_gen)
+                video_urls.append( [ "[filenium]", video_gen ] )
+
+            # Obtiene enlaces realdebrid si tienes cuenta
+            if server in REALDEBRID_SERVERS and config.get_setting("realdebridpremium")=="true":
+    
+                # Muestra un diálogo de progreso
+                if muestra_dialogo:
+                    progreso.update( 75 , "Conectando con Real-Debrid")
+
+                exec "from servers import realdebrid as gen_conector"
+                video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("realdebridpremium")=="true") , user=config.get_setting("realdebriduser") , password=config.get_setting("realdebridpassword"), video_password=video_password )
+                logger.info("[xbmctools.py] realdebrid url="+video_gen)
+                if not "REAL-DEBRID" in video_gen:
+                    video_urls.append( [ "."+video_gen.rsplit('.',1)[1]+" [realdebrid]", video_gen ] )
+                else:
+                    if muestra_dialogo: progreso.close()
+                    # Si RealDebrid da error pero tienes un enlace válido, no te dice nada
+                    if len(video_urls)==0:
+                        return video_urls,False,video_gen
+
+                if muestra_dialogo:
+                    progreso.update( 100 , "Proceso finalizado")
+
+                # Cierra el diálogo de progreso
+                if muestra_dialogo: progreso.close()
+
+            # Llegas hasta aquí y no tienes ningún enlace para ver, así que no vas a poder ver el vídeo
+            if len(video_urls)==0:
+                # ¿Cual es el motivo?
+                
+                # 1) No existe -> Ya está controlado
+                # 2) No tienes alguna de las cuentas premium compatibles
+
+                # Lista de las cuentas que soportan este servidor
+                listapremium = ""
+                if server in FILENIUM_SERVERS: listapremium+="Filenium o "
+                if server in REALDEBRID_SERVERS: listapremium+="Real-Debrid o "
+                if server in PREMIUM_SERVERS: listapremium+=server+" o "
+                listapremium = listapremium[:-3]
+    
+                return video_urls,False,"Para ver un vídeo en "+server+" necesitas<br/>una cuenta en "+listapremium
+
         except:
-            mediaurl = "ERROR"
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line )
-        
-    return mediaurl
+            if muestra_dialogo: progreso.close()
+            import traceback
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
 
-def getmegavideolow(code, password=None):
-    import megavideo
-    if password is not None:
-        return megavideo.getlowurl(code,password)
-    else:
-        return megavideo.getlowurl(code,password)
+            return video_urls,False,"Se ha producido un error en<br/>el conector con "+server
 
-def getmegavideohigh(code):
-    import megavideo
-    return megavideo.gethighurl(code)
-
-def getmegauploadhigh(page_url, video_password=""):
-    logger.info("getmegauploadhigh "+page_url)
-    import megaupload
-    if config.get_setting("megavideopremium")=="true":
-        logger.info("modo premium")
-        return megaupload.get_video_url( page_url , True , config.get_setting("megavideouser") , config.get_setting("megavideopassword") , video_password )
-    else:
-        logger.info("modo no premium")
-        return megaupload.get_video_url( page_url , False , "" , "" , video_password )
-
-def getmegauploadlow(code, password=None):
-    import megaupload
-    if password is not None:
-        return megaupload.getlowurl(code,password)
-    else:
-        return megaupload.getlowurl(code)
+    return video_urls,True,""

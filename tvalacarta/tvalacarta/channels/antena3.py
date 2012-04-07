@@ -21,6 +21,8 @@ def mainlist(item):
     logger.info("[antena3.py] mainlist")
 
     itemlist = []
+    #itemlist.append( Item(channel=CHANNELNAME, title="test" , action="play" , url="http://series.dibujos.tv/monster-high/01-el-canto-del-lobo-288.html", server="dibujostv", folder=False) )
+    #itemlist.append( Item(channel=CHANNELNAME, title="test" , action="play" , url="http://replay.disneychannel.es/phineas-y-ferb/el-lado-doof-de-la-luna.html", server="disneychannel", folder=False) )
     itemlist.append( Item(channel=CHANNELNAME, title="Los más vistos" , action="losmasvistos" , url="http://www.antena3.com/videos/", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Últimos vídeos" , action="ultimosvideos", url="http://www.antena3.com/videos/", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Última semana"  , action="ultimasemana" , url="http://www.antena3.com/videos/ultima-semana.html", folder=True) )

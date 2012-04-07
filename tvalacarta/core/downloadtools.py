@@ -445,9 +445,16 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
-def downloadfile(url,nombrefichero,headers=[]):
+def downloadfile(url,nombrefichero,headers=[],silent=False):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+    
+    # Si no es XBMC, siempre a "Silent"
+    try:
+        import xbmcgui
+    except:
+        silent=False
+    
     # antes
     #f=open(nombrefichero,"wb")
     try:
@@ -471,12 +478,11 @@ def downloadfile(url,nombrefichero,headers=[]):
         grabado = 0
 
     # Crea el diálogo de progreso
-    try:
-        import xbmcgui
+    if not silent:
         progreso = xbmcgui.DialogProgress()
         progreso.create( "plugin" , "Descargando..." , url , nombrefichero )
         #progreso.create( "plugin" , "Descargando..." , os.path.basename(nombrefichero)+" desde "+urlparse.urlparse(url).hostname )
-    except:
+    else:
         progreso = ""
 
     # Login y password Filenium
@@ -509,10 +515,8 @@ def downloadfile(url,nombrefichero,headers=[]):
         #print e.hdrs
         #print e.fp
         f.close()
-        try:
+        if not silent:
             progreso.close()
-        except:
-            pass
         # El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
         if e.code==416:
             return 0
@@ -560,11 +564,9 @@ def downloadfile(url,nombrefichero,headers=[]):
                         else:
                             tiempofalta=0
                         #logger.info(sec_to_hms(tiempofalta))
-                        try:
+                        if not silent:
                             #progreso.update( percent , "Descargando %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent),"Falta %s - Velocidad %.2f Kb/s" % ( sec_to_hms(tiempofalta) , velocidad/1024 ), os.path.basename(nombrefichero) )
                             progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
-                        except:
-                            pass
                     break
                 except:
                     reintentos = reintentos + 1
@@ -586,10 +588,8 @@ def downloadfile(url,nombrefichero,headers=[]):
             if reintentos > maxreintentos:
                 logger.info("ERROR en la descarga del fichero")
                 f.close()
-                try:
+                if not silent:
                     progreso.close()
-                except:
-                    pass
 
                 return -2
 
@@ -598,10 +598,8 @@ def downloadfile(url,nombrefichero,headers=[]):
             for line in sys.exc_info():
                 logger.error( "%s" % line )
             f.close()
-            try:
+            if not silent:
                 progreso.close()
-            except:
-                pass
             
             #advertencia = xbmcgui.Dialog()
             #resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
@@ -609,10 +607,9 @@ def downloadfile(url,nombrefichero,headers=[]):
             return -2
 
     f.close()
-    try:
+    if not silent:
         progreso.close()
-    except:
-        pass
+
     logger.info("Fin descarga del fichero")
 
 def downloadfileGzipped(url,pathfichero):

@@ -11,8 +11,6 @@ from core import logger
 from core import scrapertools
 from core.item import Item 
 
-logger.info("[tvg.py] init")
-
 DEBUG = False
 CHANNELNAME = "tvg"
 
@@ -119,7 +117,7 @@ def videos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="tvg", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=False) )
 
     # <a href="#" title="Seguinte" onclick="return posteriorpaginaclickTvg(33522, 2, 294);">
     patron  = '<a href="\#" title="Seguinte" onclick="return posteriorpaginaclickTvg\((\d+), (\d+), (\d+)\)\;'
@@ -137,74 +135,3 @@ def videos(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=True) )
 
     return itemlist
-
-def play(item):
-    logger.info("[tvg.py] play")
-    itemlist = []
-
-    #from servers import tvg as conector
-    #video_urls = conector.get_video_url(item.url)
-    video_urls = get_video_url(item.url)
-
-    itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=video_urls[1][1], thumbnail=item.thumbnail , plot=item.plot , server = "directo" , show = item.show , category = item.category , folder=False) )
-
-    return itemlist
-
-# Esto está en el conector, para futuras versiones se podrá quitar
-def get_video_url( page_url , premium = False , user="" , password="", video_password="", page_data="" ):
-    logger.info("[tvg.py] get_video_url(page_url='%s')" % page_url)
-
-    if page_data=="":
-        data = scrapertools.cache_page(page_url)
-    else:
-        data = page_data
-
-    video_urls = []
-
-    '''
-    rtmp: {
-        url: "http://www.crtvg.es/flowplayer3/flowplayer.rtmp-3.2.3.swf",
-        netConnectionUrl: "rtmp://media1.crtvg.es:80/vod" //Para VOD
-    },
-    clip: {
-        url: "mp4:00/0752/0752_20110129153400.mp4",
-        provider: "rtmp",
-        autoPlay: false,
-        //autoBuffering: true,
-        ipadUrl: "http://media1.crtvg.es:80/vod/_definst_/mp4:00/0752/0752_20110129153400.mp4/playlist.m3u8", //para ipad vod
-        start: 0,
-        duration: 0,
-        scaling: "fit" //scaling: orig, // fit, half, orig,scale
-    }
-    '''
-    patron  = 'rtmp\: \{.*?netConnectionUrl\: "([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    if len(matches)==0:
-        return []
-    base = matches[0]
-    
-    patron  = 'clip\: \{.*?url\: "([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    if len(matches)==0:
-        return []
-    playpath = matches[0]
-    rtmpurl = base+"/"+playpath
-    rtmpurl = rtmpurl.replace("mp4:", " playpath=mp4:")
-    
-    patron  = 'clip\: \{.*?ipadUrl\: "([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    if len(matches)==0:
-        return []
-    ipad = matches[0]
-    
-    video_urls.append( [ "RTMP [tvg]" , rtmpurl ] )
-    video_urls.append( [ "iPad [tvg]" , ipad ] )
-
-    for video_url in video_urls:
-        logger.info("[tvg.py] %s - %s" % (video_url[0],video_url[1]))
-
-    return video_urls

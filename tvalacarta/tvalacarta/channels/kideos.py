@@ -1,257 +1,148 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
+# tvalacarta - XBMC Plugin
 # Canal para kideos
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
-import scrapertools
-import megavideo
-import servertools
-import binascii
-import xbmctools
 
+import urlparse,urllib,re
+
+from core import logger
+from core import scrapertools
+from core.item import Item 
+
+DEBUG = False
 CHANNELNAME = "kideos"
+MAIN_URL = "http://www.kideos.com/channels"
 
-# Esto permite su ejecución en modo emulado
-try:
-	pluginhandle = int( sys.argv[ 1 ] )
-except:
-	pluginhandle = ""
+def isGeneric():
+    return True
 
-# Traza el inicio del canal
-xbmc.output("[kideos.py] init")
+def mainlist(item):
+    logger.info("[kideos.py] mainlist")
+    return programas(item)
 
-DEBUG = True
+def programas(item):
+    logger.info("[kideos.py] programas")
+    itemlist = []
+    
+    # Descarga la lista de canales
+    item.url = MAIN_URL
+    data = scrapertools.cache_page(item.url)
+    '''
+    <div id="VideoClip">
+    <table width="100" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+    <td valign="bottom" height="70">
+    <a href="/cookie-monster"><span class="VideoTitles"><h1>Cookie Monster</h1></span></a>
+    </td>
+    </tr>
+    <tr valign="top">
+    <td height="100" valign="top">
+    <div id="SearchThumbnail">
+    <a href="/cookie-monster">
+    <h1>
+    <img src="http://img.youtube.com/vi/shbgRyColvE/0.jpg" width="100" alt="Cookie Monster" height="69" hspace="4" vspace="4" />				              </h1>
+    </a>
+    </div>
+    '''
+    patron  = '<div id="VideoClip">[^<]+'
+    patron += '<table width="100" border="0" cellpadding="0" cellspacing="0">[^<]+'
+    patron += '<tr>[^<]+'
+    patron += '<td[^<]+'
+    patron += '<a href="([^"]+)"><span class="VideoTitles"><h1>([^>]+)</h1></span></a>[^<]+'
+    patron += '</td>[^<]+'
+    patron += '</tr>[^<]+'
+    patron += '<tr valign="top">[^<]+'
+    patron += '<td height="100" valign="top">[^<]+'
+    patron += '<div id="SearchThumbnail">[^<]+'
+    patron += '<a href="[^"]+">[^<]+'
+    patron += '<h1>[^<]+'
+    patron += '<img src="([^"]+)"'
 
-def mainlist(params,url,category):
-	xbmc.output("[kideos.py] ageslist")
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-	urltail = ""
-	if category=="vistos-dia":
-		urltail = "?sort_type=day"
-	elif category=="vistos-semana":
-		urltail = "?sort_type=week"
-	elif category=="vistos-mes":
-		urltail = "?sort_type=month"
-	
-	titlehead = ""
-	if category=="vistos-dia":
-		titlehead = xbmc.get_localized_string( 30700 ) + " - "
-	elif category=="vistos-semana":
-		titlehead = xbmc.get_localized_string( 30701 ) + " - "
-	elif category=="vistos-mes":
-		titlehead = xbmc.get_localized_string( 30702 ) + " - "
-	
-	xbmc.output("[kideos.py] urltail="+urltail)
-	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , titlehead+xbmc.get_localized_string( 30801 ) , "http://kideos.com/videos-for-kids/0-2"+urltail , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , titlehead+xbmc.get_localized_string( 30802 ) , "http://kideos.com/videos-for-kids/3-4"+urltail , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , titlehead+xbmc.get_localized_string( 30803 ) , "http://kideos.com/videos-for-kids/5-6"+urltail , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , titlehead+xbmc.get_localized_string( 30804 ) , "http://kideos.com/videos-for-kids/7-8"+urltail , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , titlehead+xbmc.get_localized_string( 30805 ) , "http://kideos.com/videos-for-kids/9-10"+urltail , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "videolist" , category , titlehead+xbmc.get_localized_string( 30806 ) , "http://kideos.com/videos-for-kids/all"+urltail , "", "" )
+    for url,title,thumbnail in matches:
+        scrapedtitle = title
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = thumbnail
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = scrapedtitle , folder=True) )
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
+    return itemlist
 
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+def episodios(item):
+    logger.info("[kideos.py] episodios")
+    itemlist = []
+    
+    # Descarga la lista de canales
+    data = scrapertools.cache_page(item.url)
+    '''
+    <div id="VideoClip" style="width: 150px;">
+    <br/>
+    <table width="150" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+    <td valign="bottom" height="70">
+    <a href="/video/oh-there-you-are-perry-phineas-and-ferb">
+    <span class="VideoTitles">
+    <h1>Oh, There You Are, Perry - Phineas and Ferb</h1>
+    </span>
+    </a>
+    </td>
+    </tr>
+    <tr valign="top">
+    <td valign="top">
+    <div id="SearchThumbnail" style="background-position:-200px -224px;height:110px;width:140px;">
+    <a href="/video/oh-there-you-are-perry-phineas-and-ferb">
+    <h1>
+    <img src="http://img.youtube.com/vi/sD8hqHSyYxw/0.jpg" width="132" height="99" hspace="4" vspace="4" />				    </h1>
+    </a>
+    </div>
+    '''
+    patron  = '<div id="VideoClip"[^<]+'
+    patron += '<br/>[^<]+'
+    patron += '<table width="150" border="0" cellpadding="0" cellspacing="0">[^<]+'
+    patron += '<tr>[^<]+'
+    patron += '<td valign="bottom" height="70">[^<]+'
+    patron += '<a href="([^"]+)">[^<]+'
+    patron += '<span class="VideoTitles">[^<]+'
+    patron += '<h1>([^<]+)</h1>[^<]+'
+    patron += '</span>[^<]+'
+    patron += '</a>[^<]+'
+    patron += '</td>[^<]+'
+    patron += '</tr>[^<]+'
+    patron += '<tr valign="top">[^<]+'
+    patron += '<td valign="top">[^<]+'
+    patron += '<div id="SearchThumbnail"[^<]+'
+    patron += '<a[^<]+'
+    patron += '<h1>[^<]+'
+    patron += '<img src="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
 
-def userlist(params,url,category):
-	xbmc.output("[kideos.py] ageslist")
+    for url,title,thumbnail in matches:
+        scrapedtitle = title
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = thumbnail
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-	# Añade al listado de XBMC
-	xbmctools.addnewfolder( CHANNELNAME , "ageslist" , "vistos-dia" , xbmc.get_localized_string( 30700 ) , "" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "ageslist" , "vistos-semana" , xbmc.get_localized_string( 30701 ) , "" , "", "" )
-	xbmctools.addnewfolder( CHANNELNAME , "ageslist" , "vistos-mes" , xbmc.get_localized_string( 30702 ) , "" , "", "" )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = scrapedtitle , folder=False) )
 
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
+    return itemlist
 
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def categorylist(params,url,category):
-	xbmc.output("[kideos.py] categorylist")
-
-	# Carga la página actual
-	data = scrapertools.cachePage("http://www.kideos.com/")
-	
-	# Pone el enlace para continuar con la siguiente página
-	patron = '<a href="(http://kideos.com/category/[^"]+)"><h1>([^<]+)</h1></a>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)		
-
-	for match in matches:
-		# Titulo
-		scrapedtitle = match[1]
-		# URL
-		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
-		scrapedthumbnail = ""
-		# Argumento
-		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-
-		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "videolist" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def videolist(params,url,category):
-	xbmc.output("[kideos.py] videolist")
-
-	# Carga la página actual
-	data = scrapertools.cachePage(url)
-	addvideopage(data,params,url,category)
-
-	# Obtiene el enlace a la página siguiente
-	patron = '<div id="next">[^<]+<a href="([^"]+)">'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	
-	if len(matches)>0:
-		url = urlparse.urljoin(url,matches[0])
-		xbmc.output("url siguiente="+url)
-
-	# Carga la página siguiente
-	data = scrapertools.cachePage(url)
-	addvideopage(data,params,url,category)
-
-	# Obtiene el enlace a la página siguiente
-	patron = '<div id="next">[^<]+<a href="([^"]+)">'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	
-	if len(matches)>0:
-		url = urlparse.urljoin(url,matches[0])
-		xbmc.output("url siguiente="+url)
-
-	# Carga la página siguiente
-	data = scrapertools.cachePage(url)
-	addvideopage(data,params,url,category)
-
-	# Pone el enlace para continuar con la siguiente página
-	patron = '<div id="next">[^<]+<a href="([^"]+)">'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)		
-
-	for match in matches:
-		# Titulo
-		scrapedtitle = xbmc.get_localized_string( 30900 )
-		# URL
-		scrapedurl = urlparse.urljoin(url,match)
-		# Thumbnail
-		scrapedthumbnail = ""
-		# Argumento
-		scrapedplot = ""
-
-		# Depuracion
-		if (DEBUG):
-			try:
-				xbmc.output("scrapedtitle="+scrapedtitle)
-			except:
-				xbmc.output("scrapedtitle=<unicode>")
-		xbmc.output("scrapedurl="+scrapedurl)
-		xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-
-		# Añade al listado de XBMC
-		xbmctools.addthumbnailfolder( CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail, "videolist" )
-
-	# Label (top-right)...
-	xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-		
-	# Disable sorting...
-	xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-	# End of directory...
-	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def addvideopage(data,params,url,category):
-
-	# Extrae los vídeos
-	patron =  '<div id="VideoClip">.*?'
-	patron += '<div id="SearchThumbnail">[^<]+<a href="([^"]+)">.*?'
-	patron += '<img src=([^\ ]+) .*?'
-	patron += '<span class="VideoTitles"><h1>([^<]+)</h1>.*?'
-	patron += '<span class="VideoDesc">([^<]+)</span>'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	if DEBUG:
-		scrapertools.printMatches(matches)		
-
-	# Los añade al directorio
-	for match in matches:
-		# Titulo
-		scrapedtitle = match[2]
-		# URL
-		scrapedurl = urlparse.urljoin(url,match[0])
-		# Thumbnail
-		scrapedthumbnail = urlparse.urljoin(url,match[1])
-		# Argumento
-		scrapedplot = match[3]
-
-		# Depuracion
-		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
-
-		# Añade al listado de XBMC
-		xbmctools.addnewvideo( CHANNELNAME , "play" , category , "youtube" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
-def play(params,url,category):
-	xbmc.output("[kideos.py] play")
-
-	title = urllib.unquote_plus( params.get("title") )
-	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-	xbmc.output("[kideos.py] play thumbnail="+thumbnail)
-	plot = urllib.unquote_plus( params.get("plot") )
-	server = urllib.unquote_plus( params.get("server") )
-
-	# Abre dialogo
-	dialogWait = xbmcgui.DialogProgress()
-	dialogWait.create( xbmc.get_localized_string( 30901 ), title , plot )
-
-	# Carga la página de detalle
-	data = scrapertools.cachePage(url)
-	addvideopage(data,params,url,category)
-
-	# Busca el id del vídeo
-	patron = '<param name\="flashVars" value\="videoId\=([^"]+)"'
-	matches = re.compile(patron,re.DOTALL).findall(data)
-	scrapertools.printMatches(matches)		
-
-	if len(matches)>0:
-		video_id = matches[0]
-		url = youtube.geturl(video_id)
-		listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-		listitem.setInfo( "video", { "Title": title, "Plot": plot } )
-
-	# Cierra dialogo
-	dialogWait.close()
-	del dialogWait
-
-	# Play video with the proper core
-	xbmc.Player().play( url, listitem )
-	#xbmctools.playvideo(CHANNELNAME,server,url,category,title,thumbnail,plot)
+def play(item):
+    logger.info("[kideos.py] episodios")
+    itemlist = []
+    
+    # Descarga la lista de canales
+    data = scrapertools.cache_page(item.url)
+    youtube_id = scrapertools.get_match(data,"'flashVars', 'youtube\=1\&videoId\=([^']+)'")
+    url = "http://www.youtube.com/watch?v="+youtube_id
+    item = Item(channel=item.channel, title=item.title, url=url, thumbnail=item.thumbnail, server="youtube")
+    itemlist.append(item)
+    
+    return itemlist

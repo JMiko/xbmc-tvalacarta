@@ -13,7 +13,7 @@ import time
 import config
 import logger
 
-PLUGIN_NAME = "pelisalacarta"
+PLUGIN_NAME = "tvalacarta"
 
 if config.get_setting("thumbnail_type")=="0":
     IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' )

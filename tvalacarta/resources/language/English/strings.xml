@@ -24,6 +24,7 @@
     <string id="30010">Channel icons view:</string>
     <string id="30011">Poster (vertical)</string>
     <string id="30012">Banner (horizontal)</string>
+    <string id="30200">Square</string>
 
     <!-- Megavideo account -->
     <string id="30013">Megavideo premium mode:</string>
@@ -120,7 +121,7 @@
     <string id="30130">Autonómicos</string>
     <string id="30131">Locales</string>
     <string id="30132">Temáticos</string>
-    <string id="30133">Internet</string>
+    <string id="30133">Infantil</string>
     <string id="30134">Los nuevos</string>
 
 	<!-- =============================================================== -->
