@@ -15,17 +15,19 @@ logger.info("[boing.py] init")
 
 DEBUG = True
 CHANNELNAME = "boing"
+MAIN_URL = "http://www.boing.es/series?order=title&sort=asc"
 
 def isGeneric():
     return True
 
 def mainlist(item):
     logger.info("[boing.py] mainlist")
-    itemlist = programas(Item(channel=CHANNELNAME,url="http://www.boing.es/series?order=title&sort=asc") )
-    return itemlist
+    item.url = MAIN_URL
+    return series(item)
 
-def programas(item):
+def series(item):
     logger.info("[boing.py] series")
+    itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -47,11 +49,12 @@ def programas(item):
             logger.info("ignorando, es de la caja de destacadas")
         else:
             itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="episodios" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail , show = scrapedtitle, folder=True) )
+    
     patron = '<li class="pager-next"><a href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     if len(matches)>0:
-        itemlist.append( Item(channel=item.channel, title="Página siguiente >>" , action="programas" , url=urlparse.urljoin(item.url,matches[0]), folder=True) )
+        itemlist.append( Item(channel=item.channel, title="Página siguiente >>" , action="series" , url=urlparse.urljoin(item.url,matches[0]), folder=True) )
 
     return itemlist
 
@@ -81,7 +84,7 @@ def episodios(item):
         if destacadas>=0:
             logger.info("ignorando, es de la caja de destacadas")
         else:
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="Directo" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
 
     return itemlist
 

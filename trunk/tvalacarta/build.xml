@@ -2,7 +2,7 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-    <property name="version" value="3.1"/>
+    <property name="version" value="3.2"/>
     
     <!-- Para betas usar: -->
     <!--property name="version" value="3.2.5-beta-1"/-->

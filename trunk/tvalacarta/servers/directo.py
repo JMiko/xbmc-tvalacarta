@@ -42,7 +42,7 @@ def find_videos(text):
 
     patronvideos  = 'flashvars="file=(http://[^\.]+.myspacecdn[^\&]+)&'
     logger.info("[directo.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
     for match in matches:
         titulo = "[Directo]"
@@ -57,7 +57,7 @@ def find_videos(text):
 
     patronvideos  = '(http://[^\.]+\.myspacecdn.*?\.flv)'
     logger.info("[directo.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
     for match in matches:
         titulo = "[Directo]"
@@ -72,7 +72,7 @@ def find_videos(text):
 
     patronvideos  = '(http://api.ning.com.*?\.flv)'
     logger.info("[directo.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
     for match in matches:
         titulo = "[Directo]"
@@ -89,7 +89,7 @@ def find_videos(text):
     #http://es.video.netlogstatic.com//v/oo/004/398/4398830.flv
     patronvideos  = "file\=(http\:\/\/es.video.netlogstatic[^\&]+)\&"
     logger.info("[directo.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
     for match in matches:
         titulo = "[Directo]"
@@ -104,7 +104,7 @@ def find_videos(text):
 
     patronvideos  = "file=http.*?mangaid.com(.*?)&amp;backcolor="
     logger.info("[directo.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
     cont = 0
     for match in matches:
         cont = cont + 1 

@@ -304,9 +304,15 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
 
     except urllib2.URLError,e:
+        import traceback
         import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                logger.error(line_split)
         import xbmcgui
         ventana_error = xbmcgui.Dialog()
         # Agarra los errores surgidos localmente enviados por las librerias internas

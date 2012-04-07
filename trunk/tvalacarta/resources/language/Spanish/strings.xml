@@ -24,6 +24,7 @@
 	<string id="30010">Logos de canales:</string>
 	<string id="30011">Poster (vertical)</string>
 	<string id="30012">Banner (horizontal)</string>
+    <string id="30200">Cuadrado</string>
 
 	<!-- Cuenta Megavideo -->
 	<string id="30013">Modo premium Megavideo:</string>
@@ -120,7 +121,7 @@
     <string id="30130">Autonómicos</string>
     <string id="30131">Locales</string>
     <string id="30132">Temáticos</string>
-    <string id="30133">Internet</string>
+    <string id="30133">Infantil</string>
     <string id="30134">Los nuevos</string>
 
 	<!-- =============================================================== -->
