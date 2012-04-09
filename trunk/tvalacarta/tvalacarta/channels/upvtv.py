@@ -53,7 +53,7 @@ def programas(item):
     
     for match in matches:
         # Atributos del vÃƒÂ­deo
-        scrapedtitle = match[1] 
+        scrapedtitle = unicode( match[1].strip() , "iso-8859-1" , errors="ignore").encode("utf-8")
         scrapedurl = "http://www.upv.es/pls/oreg/rtv_web.ProgFicha?p_id="+match[0][2:-2]+"&p_idioma=c" #urlparse.urljoin(url,)
         scrapedthumbnail = urlparse.urljoin(item.url,"http://mediaserver01.upv.es/UPRTV/TV/MC/img/"+match[0][2:-2]+".jpg") #urlparse.urljoin(url,match[1])
         scrapedplot = "Pulsa sobre el nombre de un programa para ver los detalles y escoger el capítulo que deseas ver en el histórico de sus emisiones." # match[3]
@@ -93,6 +93,8 @@ def episodios(item):
     for match in matches:
         # Atributos del vídeo
         scrapedtitle = "["+match[0].strip()+"] "+match[1][1:-1] #match[2]#.strip()
+        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
+
         #scrapedurl = urlparse.urljoin(url,match[2])
                 
         URLqueMola = urllib.quote(match[2]) #urllib.quote("http://mediaserver01.upv.es/UPRTV/TV/ActoInstitucionalUPV/2010-04-08 Acto_Insti Toma de posesión decano ADE.wmv")[5:]

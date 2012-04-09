@@ -48,7 +48,7 @@ def mainlist():
         elif canal.channel=="buscador":
             dir.Append( Function( InputDirectoryItem( do_search, canal.title, "subtitle", "txt", thumb = 'http://tvalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , itemtext = canal.serialize() ) )
         else:
-            if canal.channel!="trailertools" and canal.channel!="descargas" and canal.channel!="favoritos":
+            if canal.channel!="trailertools" and canal.channel!="descargas" and canal.channel!="favoritos" and channel.extra!="rtmp" and channel.extra!="background":
                 dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = 'http://tvalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , channel=canal.channel , action = canal.action ))
 
     return dir
@@ -237,13 +237,20 @@ def playvideo(sender,itemtext):
 
     for video_url in video_urls:
         wait_time=0
-        dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+        if video_url[1].startswith("http"):
+            dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+        else:
+            dir.Append(Function( RTMPVideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
     
     return dir
 
 def playvideonormal(sender,mediaurl,wait_time=0):
     Log("[__init__.py] playvideonormal url="+mediaurl)
-    return Redirect(mediaurl)
+    if mediaurl.startswith("http"):
+        return Redirect(mediaurl)
+    else:
+        return Redirect(RTMPVideoItem(url="rtmp://iasoftvodfs.fplive.net/iasoftvod/web",clip="3132/3132.mp4"))
+        return Redirect(RTMPVideoItem(url=mediaurl))
 
 def encodingsafe(text):
     from core import logger
