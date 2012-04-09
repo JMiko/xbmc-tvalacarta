@@ -21,7 +21,7 @@ def mainlist(item):
     logger.info("[extremaduratv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Últimos vídeos"    , action="ultimosvideos" , url="http://www.internautas.tv/backend/mp4.xml") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Ultimos videos"    , action="ultimosvideos" , url="http://www.internautas.tv/backend/mp4.xml") )
     itemlist.append( Item(channel=CHANNELNAME, title="Archivo"           , action="archivo"       , url="http://www.internautas.tv") )
 
     return itemlist

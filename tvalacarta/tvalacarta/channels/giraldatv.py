@@ -26,7 +26,7 @@ def programas(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    print data
+    #print data
 
     # Extrae los programas
     '''

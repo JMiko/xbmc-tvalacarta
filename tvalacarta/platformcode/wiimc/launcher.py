@@ -13,7 +13,7 @@ import md5
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from core import config
-from core import wiideoteca
+#from core import wiideoteca
 from core.item import Item
 
 import logging.config
@@ -90,7 +90,7 @@ def controller(plugin_name,port,host,path,headers):
             channelslist = channelselector.filterchannels(item.category)
             
             for channel in channelslist:
-                if channel.type=="generic" or channel.type=="wiimc":
+                if (channel.type=="generic" or channel.type=="wiimc") and channel.extra!="rtmp":
                     channel.action="mainlist"
                     respuesta += "type=playlist\n"
                     respuesta += "name="+channel.title+"\n"

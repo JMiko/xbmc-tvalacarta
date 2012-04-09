@@ -6,7 +6,7 @@
 # Por Truenon y Jesus, modificada por Boludiko
 # v11
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
+import urlparse,urllib2,urllib,re,sys
 
 from core import logger
 from core import config
@@ -487,6 +487,8 @@ def unescape(s):
     if want_unicode:
         es = u""
     return es.join(list)
+
+# TODO: Pasar al core
 def load_json(data):
     # callback to transform json string values to utf8
     def to_utf8(dct):
@@ -497,17 +499,50 @@ def load_json(data):
             else :
                 rdct[k] = v
         return rdct
-    try :        
+
+    try:
         from lib import simplejson
         json_data = simplejson.loads(data, object_hook=to_utf8)
         return json_data
     except:
-        try:
-            import json
-            json_data = json.loads(data, object_hook=to_utf8)
+        try :        
+            import simplejson
+            json_data = simplejson.loads(data, object_hook=to_utf8)
             return json_data
         except:
-            import sys
-            for line in sys.exc_info():
-                logger.error("%s" % line)
+            import traceback
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
+            
+            try:
+                import json
+                json_data = json.loads(data, object_hook=to_utf8)
+                return json_data
+            except:
+                import traceback
+                from pprint import pprint
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+                for line in lines:
+                    line_splits = line.split("\n")
+                    for line_split in line_splits:
+                        logger.error(line_split)
+
+                try:
+                    json_data = JSON.ObjectFromString(data, encoding="utf-8")
+                    return json_data
+                except:
+                    import traceback
+                    from pprint import pprint
+                    exc_type, exc_value, exc_tb = sys.exc_info()
+                    lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+                    for line in lines:
+                        line_splits = line.split("\n")
+                        for line_split in line_splits:
+                            logger.error(line_split)
 

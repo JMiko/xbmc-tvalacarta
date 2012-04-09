@@ -357,29 +357,75 @@ def tvmovies(item):
 
 def detalle(item):
     logger.info("[antena3.py] detalle")
-    #print item.tostring()
 
     itemlist = []
-    '''
-    try:
-        # Descarga la página de detalle
-        data = scrapertools.cachePage(item.url)
+    data = scrapertools.cache_page(item.url)
     
-        patron="<source src='([^']+)'"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        if DEBUG: scrapertools.printMatches(matches)
-        scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=scrapedurl, page = item.url, thumbnail=item.thumbnail , plot=item.plot , server = "directo" , folder=False) )
-    except:
-        logger.info("[antena3.py] nada encontrado en "+item.url)
-    '''
-    data = scrapertools.cachePage(item.url)
+    from core import config
+    #if "xbmc" in config.get_platform():
+    itemlist = get_rtmp_links(item,data)
+    #else:
+    #itemlist = get_ipad_links(item,data)
+    
+    return itemlist
+
+def play(item):
+    logger.info("[antena3.py] play")
+    itemlist=[]
+    
+    logger.info(" url="+item.url)
+
+    if item.url.startswith("rtmp"):
+        itemlist.append(item)
+        return itemlist
+    else:
+        headers = []
+        headers.append(["User-Agent",""])
+        data = scrapertools.cache_page(item.url,headers=headers)
+        item.url = data.strip()
+        logger.info(" url="+item.url)
+        item.url = "http://desproios.antena3.com/mp_seriesh1/2012/04/04/00005/001.mp4"
+        logger.info(" url="+item.url)
+        itemlist.append(item)
+        return itemlist
+
+        
+def get_ipad_links(item,data):
+    logger.info("[antena3.py] get_ipad_links")
 
     # Extrae el xml
-    patron = "player_capitulo.xml='([^']+)';"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    scrapedurl = urlparse.urljoin(item.url,matches[0])
+    # player_capitulo.xml='/chapterxml//5/1002212/2012/04/04/00005.xml';
+    xml_descriptor = scrapertools.get_match(data,"player_capitulo.xml='([^']+)';")
+    numero_partes = int(scrapertools.get_match(data,"player_capitulo.parts \= '(\d+)'"))
+    itemlist = []
+    
+    # Las URL son:
+    #http://www.antena3.com/ios/mainota.php?xml=/chapterxml//5/1002212/2012/04/04/00005.xml&part=
+    #http://www.antena3.com/ios/mainota.php?xml=/chapterxml//5/1002212/2012/04/04/00005.xml&part=1
+    #http://www.antena3.com/ios/mainota.php?xml=/chapterxml//5/1002212/2012/04/04/00005.xml&part=2
+    #...
+    i=0
+    while i<numero_partes:
+        if i==0:
+            parte=""
+        else:
+            parte = str(i)
+            
+        url="http://www.antena3.com/ios/mainota.php?xml="+xml_descriptor+"&part="+parte
+        itemlist.append( Item(channel=CHANNELNAME, title="("+str(i+1)+") "+item.title,url=url,server="directo", action="play", folder=False ) )
+        i=i+1
+    
+    return itemlist
+
+def get_rtmp_links(item,data):
+    logger.info("[antena3.py] get_rtmp_links")
+
+    # Extrae el xml
+    # player_capitulo.xml='/chapterxml//5/1002212/2012/04/04/00005.xml';
+    xml_descriptor = scrapertools.get_match(data,"player_capitulo.xml='([^']+)';")
+    numero_partes = int(scrapertools.get_match(data,"player_capitulo.parts \= '(\d+)'"))
+    itemlist = []
+    scrapedurl = urlparse.urljoin(item.url,xml_descriptor)
     logger.info("url="+scrapedurl)
     
     # Descarga la página del xml
@@ -413,4 +459,5 @@ def detalle(item):
         logger.info("scrapedurl="+scrapedurl)
         itemlist.append( Item(channel=CHANNELNAME, title="(%d) %s" % (i,item.title) , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=item.plot , server = "directo" , folder=False) )
         i=i+1
+
     return itemlist
