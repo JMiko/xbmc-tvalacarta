@@ -271,3 +271,5 @@ def play(item):
     # Reproduce
     xbmcPlayer = xbmc.Player( xbmc.PLAYER_CORE_AUTO )
     xbmcPlayer.play(playlist)   
+
+    return []

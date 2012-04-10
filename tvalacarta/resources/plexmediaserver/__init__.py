@@ -48,7 +48,7 @@ def mainlist():
         elif canal.channel=="buscador":
             dir.Append( Function( InputDirectoryItem( do_search, canal.title, "subtitle", "txt", thumb = 'http://tvalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , itemtext = canal.serialize() ) )
         else:
-            if canal.channel!="trailertools" and canal.channel!="descargas" and canal.channel!="favoritos" and channel.extra!="rtmp" and channel.extra!="background":
+            if canal.channel!="trailertools" and canal.channel!="descargas" and canal.channel!="favoritos":
                 dir.Append( Function( DirectoryItem( runchannel, title = canal.title, subtitle = "", thumb = 'http://tvalacarta.mimediacenter.info/posters/'+canal.channel+'.png', art=R(ART) ) , channel=canal.channel , action = canal.action ))
 
     return dir
@@ -98,7 +98,7 @@ def runchannel(sender,channel,action="mainlist",category=""):
             dir.Append( Function( DirectoryItem( runchannel, title = item.title, subtitle = "", thumb = item.thumbnail, art=R(ART) ) , channel=item.channel , action = item.action , category = item.category ))
         # Los canales
         else:
-            if item.type=="generic":
+            if item.type=="generic" and item.extra!="rtmp" and item.extra!="background":
                 dir.Append( Function( DirectoryItem( actionexecute, title = item.title, subtitle = category, thumb = item.thumbnail ) , itemtext = item.serialize() ) )
 
     return dir
@@ -225,7 +225,7 @@ def playvideo(sender,itemtext):
     video_urls = []
     video_password=""
     url = item.url
-    server = item.server
+    server = item.server.lower()
     try:
         # Extrae todos los enlaces posibles
         exec "from servers import "+server+" as server_connector"

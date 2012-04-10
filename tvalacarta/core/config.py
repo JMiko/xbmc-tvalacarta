@@ -171,6 +171,8 @@ def verify_directories_created():
         download_list_path = os.path.join( get_data_path() , "downloads" , "list")
         set_setting("downloadlistpath" , download_list_path)
 
+    download_error_list_path = os.path.join( download_list_path , "error" )
+
     # Force bookmark path if empty
     bookmark_path = get_setting("bookmarkpath")
     if bookmark_path=="":
@@ -200,6 +202,16 @@ def verify_directories_created():
             os.mkdir(download_list_path)
         except:
             pass
+
+    # Create download_error_list_path if not exists
+    if not download_list_path.lower().startswith("smb") and not os.path.exists(download_error_list_path):
+        logger.debug("Creating download_error_list_path "+download_error_list_path)
+        try:
+            os.mkdir(download_error_list_path)
+        except:
+            pass
+    else:
+        logger.debug("NOT Creating download_error_list_path "+download_error_list_path)
 
     # Create bookmark_path if not exists
     if not bookmark_path.lower().startswith("smb") and not os.path.exists(bookmark_path):

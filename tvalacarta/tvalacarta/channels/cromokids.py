@@ -51,6 +51,8 @@ def series(item):
     itemlist = []
     for url,thumbnail,title in matches:
         scrapedtitle = title
+        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
+        
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
         scrapedplot = ""
@@ -85,6 +87,7 @@ def episodios(item):
     itemlist = []
     for url,thumbnail,title,subtitle in matches:
         scrapedtitle = title+" "+subtitle
+        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
         scrapedplot = ""

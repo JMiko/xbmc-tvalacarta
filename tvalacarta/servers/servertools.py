@@ -19,7 +19,7 @@ FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafir
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
 
-FREE_SERVERS.extend(['boing','disneychannel','tvg','telefe','mitele','eltrece'])
+FREE_SERVERS.extend(['boing','disneychannel','tvg','telefe','mitele','eltrece','extremaduratv'])
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
 PREMIUM_SERVERS = ['wupload','fileserve']#,'uploadedto']
@@ -100,7 +100,10 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
 
     # Si el vídeo es "directo", no hay que buscar más
     if server=="directo" or server=="local":
-        video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
+        if url.startswith("rtmp"):
+            video_urls = [[ "%s [%s]" % (url[:4],server) , url ]]
+        else:
+            video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
         return video_urls,True,""
 
     # Averigua las URL de los vídeos
