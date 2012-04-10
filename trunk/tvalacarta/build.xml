@@ -341,6 +341,7 @@
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/images/posters/**"/>
                 <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
