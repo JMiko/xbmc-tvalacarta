@@ -143,6 +143,7 @@
 	<string id="30161">Add to library</string> <!-- Añadir a Biblioteca -->
 	<string id="30162">Search for trailer</string> <!-- Buscar Trailer -->
 	<string id="30163">Choose an option</string> <!-- Elige una opción -->
+    <string id="30164">Delete this file</string>
 
 	<!-- =============================================================== -->
 	<!-- 30100 to 30999: Individual channels                             -->

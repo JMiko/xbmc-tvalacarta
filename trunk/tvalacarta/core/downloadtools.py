@@ -436,7 +436,14 @@ def getfilefromtitle(url,title):
 
     logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 
-    fullpath = os.path.join( config.get_setting("downloadpath") , nombrefichero )
+    try:
+        fullpath = config.get_temp_file( nombrefichero )
+        f = open(fullpath, 'wb')
+        f.close()
+        fullpath = os.path.join( config.get_setting("downloadpath") , nombrefichero )
+    except:
+        fullpath = os.path.join( config.get_setting("downloadpath") , limpia_nombre_excepto_1(nombrefichero) )
+        
     logger.info("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
     
     return fullpath
@@ -448,163 +455,171 @@ def downloadtitle(url,title):
 def downloadfile(url,nombrefichero,headers=[],silent=False):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
-    
-    # Si no es XBMC, siempre a "Silent"
-    try:
-        import xbmcgui
-    except:
-        silent=False
-    
-    # antes
-    #f=open(nombrefichero,"wb")
-    try:
-        import xbmc
-        nombrefichero = xbmc.makeLegalFilename(nombrefichero)
-    except:
-        pass
-    logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
-
-    # despues
-    if os.path.exists(nombrefichero):
-        f = open(nombrefichero, 'r+b')
-        existSize = os.path.getsize(nombrefichero)
-        logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
-        grabado = existSize
-        f.seek(existSize)
-    else:
-        existSize = 0
-        logger.info("[downloadtools.py] downloadfile: el fichero no existe")
-        f = open(nombrefichero, 'wb')
-        grabado = 0
-
-    # Crea el diálogo de progreso
-    if not silent:
-        progreso = xbmcgui.DialogProgress()
-        progreso.create( "plugin" , "Descargando..." , url , nombrefichero )
-        #progreso.create( "plugin" , "Descargando..." , os.path.basename(nombrefichero)+" desde "+urlparse.urlparse(url).hostname )
-    else:
-        progreso = ""
-
-    # Login y password Filenium
-    # http://abcd%40gmail.com:mipass@filenium.com/get/Oi8vd3d3/LmZpbGVz/ZXJ2ZS5j/b20vZmls/ZS9kTnBL/dm11/b0/?.zip
-    if "filenium" in url:
-        from servers import filenium
-        url , authorization_header = filenium.extract_authorization_header(url)
-        headers.append( [ "Authorization", authorization_header ] )
-
-    # Timeout del socket a 60 segundos
-    socket.setdefaulttimeout(10)
-
-    h=urllib2.HTTPHandler(debuglevel=0)
-    request = urllib2.Request(url)
-    for header in headers:
-        logger.info("[downloadtools.py] Header="+header[0]+": "+header[1])
-        request.add_header(header[0],header[1])
-
-    if existSize > 0:
-        request.add_header('Range', 'bytes=%d-' % (existSize, ))
-
-    opener = urllib2.build_opener(h)
-    urllib2.install_opener(opener)
-    try:
-        connexion = opener.open(request)
-    except urllib2.HTTPError,e:
-        logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
-        #print e.code
-        #print e.msg
-        #print e.hdrs
-        #print e.fp
-        f.close()
-        if not silent:
-            progreso.close()
-        # El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
-        if e.code==416:
-            return 0
-        else:
-            return -2
 
     try:
-        totalfichero = int(connexion.headers["Content-Length"])
-    except:
-        totalfichero = 1
-            
-    if existSize > 0:
-        totalfichero = totalfichero + existSize
-
-    logger.info("Content-Length=%s" % totalfichero)
-
-    blocksize = 100*1024
-
-    bloqueleido = connexion.read(blocksize)
-    logger.info("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
-
-    maxreintentos = 10
-    
-    while len(bloqueleido)>0:
+        # Si no es XBMC, siempre a "Silent"
         try:
-            # Escribe el bloque leido
-            f.write(bloqueleido)
-            grabado = grabado + len(bloqueleido)
-            percent = int(float(grabado)*100/float(totalfichero))
-            totalmb = float(float(totalfichero)/(1024*1024))
-            descargadosmb = float(float(grabado)/(1024*1024))
-
-            # Lee el siguiente bloque, reintentando para no parar todo al primer timeout
-            reintentos = 0
-            while reintentos <= maxreintentos:
-                try:
-                    before = time.time()
-                    bloqueleido = connexion.read(blocksize)
-                    after = time.time()
-                    if (after - before) > 0:
-                        velocidad=len(bloqueleido)/((after - before))
-                        falta=totalfichero-grabado
-                        if velocidad>0:
-                            tiempofalta=falta/velocidad
-                        else:
-                            tiempofalta=0
-                        #logger.info(sec_to_hms(tiempofalta))
-                        if not silent:
-                            #progreso.update( percent , "Descargando %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent),"Falta %s - Velocidad %.2f Kb/s" % ( sec_to_hms(tiempofalta) , velocidad/1024 ), os.path.basename(nombrefichero) )
-                            progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
-                    break
-                except:
-                    reintentos = reintentos + 1
-                    logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
-                    for line in sys.exc_info():
-                        logger.error( "%s" % line )
-            
-            # El usuario cancelo la descarga
-            try:
-                if progreso.iscanceled():
-                    logger.info("Descarga del fichero cancelada")
-                    f.close()
-                    progreso.close()
-                    return -1
-            except:
-                pass
-
-            # Ha habido un error en la descarga
-            if reintentos > maxreintentos:
-                logger.info("ERROR en la descarga del fichero")
-                f.close()
-                if not silent:
-                    progreso.close()
-
-                return -2
-
+            import xbmcgui
         except:
-            logger.info("ERROR en la descarga del fichero")
-            for line in sys.exc_info():
-                logger.error( "%s" % line )
+            silent=False
+        
+        # antes
+        #f=open(nombrefichero,"wb")
+        try:
+            import xbmc
+            nombrefichero = xbmc.makeLegalFilename(nombrefichero)
+        except:
+            pass
+        logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
+    
+        # despues
+        if os.path.exists(nombrefichero):
+            f = open(nombrefichero, 'r+b')
+            existSize = os.path.getsize(nombrefichero)
+            logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
+            grabado = existSize
+            f.seek(existSize)
+        else:
+            existSize = 0
+            logger.info("[downloadtools.py] downloadfile: el fichero no existe")
+            f = open(nombrefichero, 'wb')
+            grabado = 0
+    
+        # Crea el diálogo de progreso
+        if not silent:
+            progreso = xbmcgui.DialogProgress()
+            progreso.create( "plugin" , "Descargando..." , url , nombrefichero )
+            #progreso.create( "plugin" , "Descargando..." , os.path.basename(nombrefichero)+" desde "+urlparse.urlparse(url).hostname )
+        else:
+            progreso = ""
+    
+        # Login y password Filenium
+        # http://abcd%40gmail.com:mipass@filenium.com/get/Oi8vd3d3/LmZpbGVz/ZXJ2ZS5j/b20vZmls/ZS9kTnBL/dm11/b0/?.zip
+        if "filenium" in url:
+            from servers import filenium
+            url , authorization_header = filenium.extract_authorization_header(url)
+            headers.append( [ "Authorization", authorization_header ] )
+    
+        # Timeout del socket a 60 segundos
+        socket.setdefaulttimeout(10)
+    
+        h=urllib2.HTTPHandler(debuglevel=0)
+        request = urllib2.Request(url)
+        for header in headers:
+            logger.info("[downloadtools.py] Header="+header[0]+": "+header[1])
+            request.add_header(header[0],header[1])
+    
+        if existSize > 0:
+            request.add_header('Range', 'bytes=%d-' % (existSize, ))
+    
+        opener = urllib2.build_opener(h)
+        urllib2.install_opener(opener)
+        try:
+            connexion = opener.open(request)
+        except urllib2.HTTPError,e:
+            logger.info("[downloadtools.py] downloadfile: error %d (%s) al abrir la url %s" % (e.code,e.msg,url))
+            #print e.code
+            #print e.msg
+            #print e.hdrs
+            #print e.fp
             f.close()
             if not silent:
                 progreso.close()
-            
-            #advertencia = xbmcgui.Dialog()
-            #resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
-            
-            return -2
+            # El error 416 es que el rango pedido es mayor que el fichero => es que ya está completo
+            if e.code==416:
+                return 0
+            else:
+                return -2
+    
+        try:
+            totalfichero = int(connexion.headers["Content-Length"])
+        except:
+            totalfichero = 1
+                
+        if existSize > 0:
+            totalfichero = totalfichero + existSize
+    
+        logger.info("Content-Length=%s" % totalfichero)
+    
+        blocksize = 100*1024
+    
+        bloqueleido = connexion.read(blocksize)
+        logger.info("Iniciando descarga del fichero, bloqueleido=%s" % len(bloqueleido))
+    
+        maxreintentos = 10
+        
+        while len(bloqueleido)>0:
+            try:
+                # Escribe el bloque leido
+                f.write(bloqueleido)
+                grabado = grabado + len(bloqueleido)
+                percent = int(float(grabado)*100/float(totalfichero))
+                totalmb = float(float(totalfichero)/(1024*1024))
+                descargadosmb = float(float(grabado)/(1024*1024))
+    
+                # Lee el siguiente bloque, reintentando para no parar todo al primer timeout
+                reintentos = 0
+                while reintentos <= maxreintentos:
+                    try:
+                        before = time.time()
+                        bloqueleido = connexion.read(blocksize)
+                        after = time.time()
+                        if (after - before) > 0:
+                            velocidad=len(bloqueleido)/((after - before))
+                            falta=totalfichero-grabado
+                            if velocidad>0:
+                                tiempofalta=falta/velocidad
+                            else:
+                                tiempofalta=0
+                            #logger.info(sec_to_hms(tiempofalta))
+                            if not silent:
+                                #progreso.update( percent , "Descargando %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent),"Falta %s - Velocidad %.2f Kb/s" % ( sec_to_hms(tiempofalta) , velocidad/1024 ), os.path.basename(nombrefichero) )
+                                progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
+                        break
+                    except:
+                        reintentos = reintentos + 1
+                        logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
+                        for line in sys.exc_info():
+                            logger.error( "%s" % line )
+                
+                # El usuario cancelo la descarga
+                try:
+                    if progreso.iscanceled():
+                        logger.info("Descarga del fichero cancelada")
+                        f.close()
+                        progreso.close()
+                        return -1
+                except:
+                    pass
+    
+                # Ha habido un error en la descarga
+                if reintentos > maxreintentos:
+                    logger.info("ERROR en la descarga del fichero")
+                    f.close()
+                    if not silent:
+                        progreso.close()
+    
+                    return -2
+    
+            except:
+                logger.info("ERROR en la descarga del fichero")
+                for line in sys.exc_info():
+                    logger.error( "%s" % line )
+                f.close()
+                if not silent:
+                    progreso.close()
+                
+                #advertencia = xbmcgui.Dialog()
+                #resultado = advertencia.ok('Error al descargar' , 'Se ha producido un error' , 'al descargar el archivo')
+                
+                return -2
+
+    except:
+        if url.startswith("rtmp") and not silent:
+            import xbmcgui
+            advertencia = xbmcgui.Dialog()
+            resultado = advertencia.ok( "No puedes descargar ese vídeo","Las descargas en RTMP aún no","están soportadas")
+
 
     f.close()
     if not silent:

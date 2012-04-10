@@ -59,7 +59,7 @@ def mainlist(item):
         scrapedurl = 'http://api.adnstream.com/canales.php?canal='+nombrelimpio
         scrapedthumbnail = thumbnail
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="mainlist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot="" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = scrapedtitle , action="mainlist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot="" , folder=True) )
 
     # Extrae las entradas (Vídeos)
     patronvideos  = '<video>[^<]+'
@@ -80,7 +80,7 @@ def mainlist(item):
         scrapedurl = "http://api.adnstream.com/video.php?video="+idvideo
         scrapedthumbnail = thumbnail
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     return itemlist
 
@@ -109,7 +109,7 @@ def play(item):
         scrapedurl = mediaurl
         scrapedthumbnail = thumbnail
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     return itemlist
 
@@ -150,6 +150,6 @@ def searchresults(term):
         scrapedurl = match[5]
         scrapedthumbnail = match[6]
 
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = title, action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
 
     return itemlist
