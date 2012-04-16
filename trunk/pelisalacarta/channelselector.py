@@ -208,7 +208,7 @@ def channels_list():
     #itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
     #itemlist.append( Item( title="Megaupload Premium (FR)", channel="megauploadpremiumfr"  , language="FR"    , category="S"       , type="generic"  ))
     #itemlist.append( Item( title="Megalive"              , channel="megalivewall"         , language=""      , category="G"       , type="xbmc"  ))
-    itemlist.append( Item( title="Mi tele"             , channel="mitele"             , language="ES" , category="S,F"        , type="generic"  ))
+    #itemlist.append( Item( title="Mi tele"             , channel="mitele"             , language="ES" , category="S,F"        , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Moviezet"              , channel="moviezet"             , language="ES"    , category="F,S,VOS"     , type="generic" )) # mrfluffy 01/10/2011
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
