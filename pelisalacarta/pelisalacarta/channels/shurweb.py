@@ -29,7 +29,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades"                , action="scrapping"   , url="http://www.shurweb.es/"))
     itemlist.append( Item(channel=__channel__, title="Películas"                , action="menupeliculas"))
-    itemlist.append( Item(channel=__channel__, title="Series"                   , action="scrappingS"  , url="http://www.shurweb.es/series/"))
+    itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"  , url="http://www.shurweb.es/series/"))
     itemlist.append( Item(channel=__channel__, title="Documentales"             , action="scrapping"   , url="http://www.shurweb.es/videoscategory/documentales/"))
     itemlist.append( Item(channel=__channel__, title="Anime"                    , action="scrappingS"  , url="http://www.shurweb.es/anime/"))
 #    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
@@ -124,25 +124,64 @@ def scrappingSearch(item,paginacion=True):
 
     return itemlist
 
-def scrappingS(item,paginacion=True):
-    logger.info("[shurweb.py] scrappingS")
+def series(item,paginacion=True):
+    logger.info("[shurweb.py] series")
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
     # Extrae las entradas
-    patronvideos = '<tr class="row-\d+ [^"]+">[^<]+<td class="column-1"><span[^>]+><b>([^<]+)</b></span></td><td class="column-2"></td><td class="column-3"><div align=center><b><a href="([^<]+)"  class="linktable">([^<]+)</a></b></div></td>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    '''
+    <li class="clearfix">
+    <a class="video_thumb" href="http://www.shurweb.es/serie/anatomia-de-grey/" rel="bookmark" title="Anatomía de Grey">
+    <img width="123" height="100" src="http://www.shurweb.es/wp-content/uploads/2012/02/Greys-Anatomy4.jpg" class="wp-post-image">             
+    </a>
+    <p class="title"><a href="http://www.shurweb.es/serie/anatomia-de-grey/" rel="bookmark" title="Anatomía de Grey">Anatomía de Grey</a></p>
+    </li>
+    '''
+    patron  = '<li class="clearfix">[^<]+'
+    patron += '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">[^<]+'
+    patron += '<img width="[^"]+" height="[^"]+" src="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
-    for match in matches:
-        scrapedtitle =  match[0] + " (" + match[2]  + ")"
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+    for url,title,thumbnail in matches:
+        scrapedtitle = title
         fulltitle = scrapedtitle
         scrapedplot = ""
-        scrapedurl = match[1]
+        scrapedurl = url
+        scrapedthumbnail = thumbnail
+        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+    return itemlist
+
+def episodios(item):
+    logger.info("[shurweb.py] episodios")
+    url = item.url
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    # Extrae las entradas
+    '''
+    <li>
+    <div class="video">
+    <a class="video_title" href="http://www.shurweb.es/videos/alcatraz-1x10/">Alcatraz 1x10</a>
+    </div>
+    </li>
+    '''
+    patron  = '<li>[^<]+'
+    patron += '<div class="video">[^<]+'
+    patron += '<a class="video_title" href="([^"]+)">([^<]+)</a>'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    for url,title in matches:
+        scrapedtitle = title
+        fulltitle = scrapedtitle
+        scrapedplot = ""
+        scrapedurl = url
         scrapedthumbnail = ""
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='scrapping', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
     return itemlist
 
 def scrapping(item,paginacion=True):
