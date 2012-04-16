@@ -46,9 +46,13 @@ def novedades(item):
     for post in matches:
         #<span class="Apple-style-span" style="font-size: large;">CONAN EL BARBARO (2011)</span></b><br />
         try:
-            scrapedtitle = scrapertools.get_match(post,'<span class="Apple-style-span" style="font-size\: large\;">(.*?)</span>')
+            #<span class="Apple-style-span" style="font-size: x-large;"><b>IRA DE TITANES</b></span><br />
+            scrapedtitle = scrapertools.get_match(post,'<span class="Apple-style-span" style="font-size: x-large;">(.*?)</span>')
+            scrapedtitle = scrapertools.htmlclean(scrapedtitle).strip()
             scrapedthumbnail = scrapertools.get_match(post,'<img border="0" height="[^"]+" src="([^"]+)"')
             scrapedplot = scrapertools.htmlclean(post).strip()
+            scrapedplot = re.compile("\s*Ver trailer\s*",re.DOTALL).sub(" ",scrapedplot)
+
             scrapedurl = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = post , folder=True) )
@@ -67,7 +71,7 @@ def novedades(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="listado", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="Página siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 

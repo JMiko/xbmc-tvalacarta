@@ -18,6 +18,7 @@ FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','d
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
+FREE_SERVERS.extend(['jumbofiles'])
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
 PREMIUM_SERVERS = ['wupload','fileserve']#,'uploadedto']
@@ -190,8 +191,8 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
 
                 # Lista de las cuentas que soportan este servidor
                 listapremium = ""
-                if server in REALDEBRID_SERVERS: listapremium+="Real-Debrid o "
                 if server in FILENIUM_SERVERS: listapremium+="Filenium o "
+                if server in REALDEBRID_SERVERS: listapremium+="Real-Debrid o "
                 if server in PREMIUM_SERVERS: listapremium+=server+" o "
                 listapremium = listapremium[:-3]
     
