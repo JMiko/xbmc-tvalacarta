@@ -117,7 +117,9 @@ def buscavideo(item):
     data = scrapertools.cachePage(item.url)
     patron='decode64.*?"(.*?)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
+    logger.info("matches[0]="+matches[0])
     decripted=base64.decodestring(matches[0])
+    logger.info("decripted="+decripted)
     listavideos = servertools.findvideos(decripted)
     itemlist = []
     plot=""
