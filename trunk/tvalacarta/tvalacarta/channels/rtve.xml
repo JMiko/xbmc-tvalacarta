@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>rtve</name>
-	<tag>7</tag>
-	<date>06/06/2011</date>
-	<changes>Arreglados algunos programas que no salían, y fallos en los acentos</changes>
+	<tag>8</tag>
+	<date>16/04/2012</date>
+	<changes>Se arreglan los episodios que no funcionaban</changes>
 </version>

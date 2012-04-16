@@ -504,7 +504,21 @@ def play(item):
 
     itemlist = []
     if url=="":
-        title="No disponible"
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail=thumbnail , plot=item.plot , server = "directo" , show = item.title , folder=False) )
+        logger.info("[rtve.py] Extrayendo URL tipo iPad")
+        headers = []
+        headers.append( ["User-Agent","Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"] )
+        location = scrapertools.get_header_from_response(item.url,headers=headers,header_to_get="location")
+        logger.info("[rtve.py] location="+location)
+        
+        data = scrapertools.cache_page(location,headers=headers)
+        #<a href="/usuarios/sharesend.shtml?urlContent=/resources/TE_SREP63/mp4/4/8/1334334549284.mp4" target
+        url = scrapertools.get_match(data,'<a href="/usuarios/sharesend.shtml\?urlContent\=([^"]+)" target')
+        logger.info("[rtve.py] url="+url)
+        #http://www.rtve.es/resources/TE_NGVA/mp4/4/8/1334334549284.mp4
+        url = urlparse.urljoin("http://www.rtve.es",url)
+        logger.info("[rtve.py] url="+url)
+
+    if url!="":
+        itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail=thumbnail , plot=item.plot , server = "directo" , show = item.title , folder=False) )
 
     return itemlist
