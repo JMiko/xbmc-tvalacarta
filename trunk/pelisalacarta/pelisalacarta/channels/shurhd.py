@@ -90,8 +90,8 @@ def login(item):
 def menupeliculas(item):
     logger.info("[shurweb.py] menupeliculas")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas - HD"        , action="scrapping"   , url="http://www.shurhd.com/category/hd/") )
-    itemlist.append( Item(channel=__channel__, title="Películas - DVD"        , action="scrapping"   , url="http://www.shurhd.com/category/otras-calidades/") )
+    itemlist.append( Item(channel=__channel__, title="Películas - HD"        , action="scrapping"   , url="http://www.shurhd.com/calidad-hd/") )
+    itemlist.append( Item(channel=__channel__, title="Películas - DVD"        , action="scrapping"   , url="http://www.shurhd.com/calidad-dvd/") )
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -142,20 +142,45 @@ def scrapping(item,paginacion=True):
     # Descarga la página
     data = scrapertools.cachePage(url)
     # Extrae las entradas
-    patronvideos = '<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"[^>]+><div src="" class="kucukIcon"></div></a>'
+    '''
+    <div class="afis">
+    <a href="http://www.shurhd.com/invictus-dvd/" title="Invictus DVD<">
+    <img src="http://www.shurhd.com/wp-content/themes/stargate spanish/stargate/timthumb.php?src=http://www.shurhd.com/wp-content/uploads/2012/04/Mr_Brooks-167323471-large.jpg&amp;w=120&amp;zc=1&amp;q=176" width="120" height="176" alt="Invictus DVD">
+    <img style="position:relative; top: -176px;width:60px;height:60px;" src="/dvd.png"/><div src="" class="kucukIcon"></div></a>
+    </div>
+    <div class="film">
+    <p><span class="kalin">Titulo:</span> <a href="http://www.shurhd.com/invictus-dvd/" title="Invictus DVD">Invictus DVD (2009)<span class="kalin"></span> </a></p>
+    <p><span class="kalin">Género:</span> <a href="http://www.shurhd.com/category/otras-calidades/drama-otras-calidades/" title="Ver todas las entradas en Drama" rel="category tag">Drama</a>, <a href="http://www.shurhd.com/category/otras-calidades/" title="Ver todas las entradas en Otras calidades" rel="category tag">Otras calidades</a></p>
+    <p><span class="kalin">Descripcion:</span><div style="display: none">UN:F [1.9.16_1159]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_3347" class="ratepost gdsr-oxygen gdsr-size-20"><div class="starsbar gdsr-size-20"><div class="gdouter gdheight"><div id="gdr_vote_a3347" style="width: 100px;" class="gdinner gdheight"></div><div id="gdr_stars_a3347" class="gdsr_rating_as"><a id="gdsrX3347X5X3062XaXarticle_rater_3347Xarticle_loader_3347X10X20" title="5 / 5" class="s5" rel="nofollow"></a><a id="gdsrX3347X4X3062XaXarticle_rater_3347Xarticle_loader_3347X10X20" title="4 / 5" class="s4" rel="nofollow"></a><a id="gdsrX3347X3X3062XaXarticle_rater_3347Xarticle_loader_3347X10X20" title="3 / 5" class="s3" rel="nofollow"></a><a id="gdsrX3347X2X3062XaXarticle_rater_3347Xarticle_loader_3347X10X20" title="2 / 5" class="s2" rel="nofollow"></a><a id="gdsrX3347X1X3062XaXarticle_rater_3347Xarticle_loader_3347X10X20" title="1 / 5" class="s1" rel="nofollow"></a></div></div></div></div><div id="article_loader_3347" style="display: none; width: 100px " class="ratingloaderarticle"><div class="loader bar " style="height: 20px"><div class="loaderinner"></div></div></div></div><div class="ratingtext "><div id="gdr_text_a3347">Rating: 5.0/<strong>5</strong> (1 vote cast)</div></div></div><p>Adaptación de un libro de John Carlin (Playing the enemy). En 1990, tras ser puesto en libertad, Nelson Mandela (Morgan Freeman) llega a la Presidencia de su país y decreta la abolición del &#8220;Apartheid&#8221;. Su objetivo era llevar a cabo una política de reconciliación entre la mayoría negra y la minoría blanca. En 1995, la celebración en Sudáfrica de la Copa Mundial de Rugby fue el instrumento utilizado por el líder negro para construir la unidad nacional.</p>
+    '''
+    '''
+    <div class="afis">
+    <a href="http://www.shurhd.com/la-playa-hd/" title="La Playa HD"><img src="http://www.shurhd.com/wp-content/themes/stargate spanish/stargate/timthumb.php?src=http://www.shurhd.com/wp-content/uploads/2012/04/la-playa.jpg&amp;w=120&amp;zc=1&amp;q=176" width="120" height="176" alt="La Playa HD"><div src="" class="kucukIcon"></div></a>
+    </div>
+    <div class="film">
+    <p><span class="kalin">Titulo:</span> <a href="http://www.shurhd.com/la-playa-hd/" title="La Playa HD">La Playa HD<span class="kalin"></span> </a></p>
+    <p><span class="kalin">Genero:</span> <a href="http://www.shurhd.com/category/hd/aventuras/" title="Ver todas las entradas en Aventuras" rel="category tag">Aventuras</a>, <a href="http://www.shurhd.com/category/hd/" title="Ver todas las entradas en HD y HDRip" rel="category tag">HD y HDRip</a>, <a href="http://www.shurhd.com/category/hd/intriga/" title="Ver todas las entradas en Intriga" rel="category tag">Intriga</a></p>
+    <p><span class="kalin">Descripción:</span><div style="display: none">UN:F [1.9.16_1159]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_3283" class="ratepost gdsr-oxygen gdsr-size-20"><div class="starsbar gdsr-size-20"><div class="gdouter gdheight"><div id="gdr_vote_a3283" style="width: 85.333333333333px;" class="gdinner gdheight"></div><div id="gdr_stars_a3283" class="gdsr_rating_as"><a id="gdsrX3283X5X3062XaXarticle_rater_3283Xarticle_loader_3283X10X20" title="5 / 5" class="s5" rel="nofollow"></a><a id="gdsrX3283X4X3062XaXarticle_rater_3283Xarticle_loader_3283X10X20" title="4 / 5" class="s4" rel="nofollow"></a><a id="gdsrX3283X3X3062XaXarticle_rater_3283Xarticle_loader_3283X10X20" title="3 / 5" class="s3" rel="nofollow"></a><a id="gdsrX3283X2X3062XaXarticle_rater_3283Xarticle_loader_3283X10X20" title="2 / 5" class="s2" rel="nofollow"></a><a id="gdsrX3283X1X3062XaXarticle_rater_3283Xarticle_loader_3283X10X20" title="1 / 5" class="s1" rel="nofollow"></a></div></div></div></div><div id="article_loader_3283" style="display: none; width: 100px " class="ratingloaderarticle"><div class="loader bar " style="height: 20px"><div class="loaderinner"></div></div></div></div><div class="ratingtext "><div id="gdr_text_a3283">Rating: 4.3/<strong>5</strong> (15 votes cast)</div></div></div><p>Impulsado por el deseo de vivir experiencias y emociones apasionantes, Richard (Leonardo DiCaprio), un joven mochilero, va a Thailandia. En Bangkok, se aloja en un hotel de mala muerte, donde conoce a una pareja de franceses, Étienne (Guillaume Canet) y Françoise (Virginie Ledoyen), y a Daffy (Robert Carlyle), un viajero consumido por años de sol y drogas y que está de vuelta de todo. Daffy, un ser tortuoso y paranoico, le cuenta a Richard una historia fantástica sobre una isla paradisíaca que nunca ha sido profanada por los turistas</p>
+    </p>
+    '''
+    patronvideos  = '<a href="([^"]+)" title="([^"]+)">[^<]*'
+    patronvideos += '<img src="http\://www.shurhd.com/wp-content/themes/stargate spanish/stargate/timthumb.php\?src\=(.*?.jpg)[^"]+"[^>]+>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
-    for match in matches:
-        scrapedtitle =  match[1]
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+    for url,title,thumbnail in matches:
+        scrapedtitle = title
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle).strip()
+        if scrapedtitle.endswith("<"):
+            scrapedtitle = scrapedtitle[:-1]
         fulltitle = scrapedtitle
         scrapedplot = ""
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
+        scrapedurl = url
+        scrapedthumbnail = thumbnail
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
 
+    #<li><a class="next page-numbers" href="http://www.shurhd.com/page/2/">Siguiente</a></li>
     patronvideos  = '<li><a class="next page-numbers" href="([^"]+)">[^<]+</a></li>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
