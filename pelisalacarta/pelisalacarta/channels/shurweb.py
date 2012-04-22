@@ -21,6 +21,7 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
+
 def isGeneric():
     return True
 
@@ -28,7 +29,7 @@ def mainlist(item):
     logger.info("[shurweb.py] getmainlist")
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades"                , action="scrapping"   , url="http://www.shurweb.es/"))
-    itemlist.append( Item(channel=__channel__, title="Películas"                , action="menupeliculas"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas"                , action="menupeliculas"))
     itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"  , url="http://www.shurweb.es/series/"))
     itemlist.append( Item(channel=__channel__, title="Documentales"             , action="scrapping"   , url="http://www.shurweb.es/videoscategory/documentales/"))
     itemlist.append( Item(channel=__channel__, title="Anime"                    , action="scrappingS"  , url="http://www.shurweb.es/anime/"))
