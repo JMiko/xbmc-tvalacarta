@@ -47,24 +47,21 @@ def peliculas(item):
 
     # Extrae las entradas (carpetas)
     '''
-    <!--TBegin--><a href="http://www.pelis24.com/uploads/posts/2012-01/1327670351_dime_con_cuantos-301100490-large.jpg" onclick="return hs.expand(this)" ><img align="left" src="http://www.pelis24.com/uploads/posts/2012-01/thumbs/1327670351_dime_con_cuantos-301100490-large.jpg" alt='Dime con cuántos (2011) - Latino' title='Dime con cuántos (2011) - Latino'
-    ...
-    <div class="mlink">		<span class="argmore"><a href="http://www.pelis24.com/peliculas/12513-dime-con-cubntos-2011castellano-mic.html">
+    <a class="" href="http://www.pelis24.com/estrenos/13156-lorax-en-busca-de-la-trfula-perdida-2012-ruso.html" ><img src="http://www.pelis24.com/uploads/posts/2012-03/1331437256_lorax_en_busca_de_la_trufula_perdida-322812684-large.jpg" width="145" height=211" alt="Lorax, en busca de la trúfula perdida (2012) - Latino, Castellano" /></a>&nbsp;&nbsp;
     '''
-    patron = '<!--TBegin--><a href="([^"]+)"[^<]+'
-    patron += '<img align="left" src="[^"]+" alt=\'([^\']+)\'.*?'
-    patron += '<div class="mlink">[^<]+<span class="argmore"><a href="([^"]+)">'
+    patron  = '<a class="" href="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)".*?alt="([^"]+)" /></a>\&nbsp\;\&nbsp\;'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedthumbnail,scrapedtitle,scrapedurl in matches:
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
 
     # Extrae el paginador
-    patronvideos  = '<a href="([^"]+)"><span class="thide pnext">Siguiente</span></a>'
+    patronvideos  = '<span>[^<]+</span>[^<]+<a href="([^"]+)">'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
