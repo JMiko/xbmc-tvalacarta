@@ -19,7 +19,7 @@ def test_video_exists( page_url ):
     # No existe / borrado: http://allmyvideos.net/8jcgbrzhujri
     data = scrapertools.cache_page(page_url)
     #logger.info("data="+data)
-    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data:
+    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data or '<b class="err">Removed' in data or '<font class="err">No such' in data:
         return False,"No existe o ha sido borrado de allmyvideos"
     else:
         # Existe: http://allmyvideos.net/6ltw8v1zaa7o
@@ -41,7 +41,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         matches = re.compile(patron,re.DOTALL).findall(data)
         page_url = page_url+"/"+matches[0]+".html"
 
-        
     # Lo pide una vez
     scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
     
@@ -57,11 +56,12 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         codigo = matches[0][0]
         nombre = matches[0][1]
 
-    post = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Watch Now!"
+    #op=download1&usr_login=&id=yqa1zlnum819&fname=harrys.law.219.hdtv-lol.mp4&referer=&method_free=Watch+Now%21
+    post = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Watch+Now%21"
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
     
     # Extrae el trozo cifrado
-    patron = "src='http://allmyvideos.net/player/swfobject.js'></script>[^<]+"
+    patron = "<div id='flvplayer'></div>[^<]+"
     patron += "<script type='text/javascript'>(.*?)</script>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
@@ -80,7 +80,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Extrae la URL del vídeo
     logger.info("descifrado="+descifrado)
     # Extrae la URL
-    patron = "'file','([^']+)'"
+    #'file':'http://sd481.allmyvideos.net:182/d/2gmhj7h7yq5dh6lnhtgyd4g5pmks5h3dog2xp6ege3teeecdbp6zhy7f/video.mp4'
+    patron = "'file'\:'([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(descifrado)
     scrapertools.printMatches(matches)
     
