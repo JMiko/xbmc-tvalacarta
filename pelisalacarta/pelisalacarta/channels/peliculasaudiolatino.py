@@ -63,7 +63,7 @@ def listarpeliculas(item):
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
            
     # Extrae la marca de siguiente página
     patron = 'Anterior.*?  :: <a href="/../../.*?/page/([^"]+)">Siguiente '
@@ -80,7 +80,7 @@ def listarpeliculas(item):
 
     return itemlist
 
-def videos(item):
+def findvideos(item):
     logger.info("[peliculasaudiolatino.py] videos")
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -91,26 +91,39 @@ def videos(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
     for match in matches:
-        data2 = scrapertools.cachePage(match[0])
-        data2 = data2.replace("http://www.peliculasaudiolatino.com/show/mv.php?url=","http://www.megavideo.com/?v=")
-        data2 = data2.replace("http://www.peliculasaudiolatino.com/show/videobb.php?url=","http://www.videobb.com/watch_video.php?v=")
-        data2 = data2.replace("http://www.peliculasaudiolatino.com/show/vidbux.php?url=","http://www.vidbux.com/")
-        data2 = data2.replace("http://www.peliculasaudiolatino.com/show/vidxden.php?url=","http://www.vidxden.com/")
-        data2 = data2.replace("http://www.peliculasaudiolatino.com/show/videozer.php?url=","http://www.videozer.com/video/")
-        title = "IDIOMA: "+match[2]+" CALIDAD: "+match[3]+" "
-        listavideos = servertools.findvideos(data2)
-        for video in listavideos:
-            invalid = video[1]
-            invalid = invalid[0:8]
-            if invalid!= "FN3WE43K" and invalid!="9CC3F8&e":
-                scrapedtitle = title+video[0]
-                videourl = video[1]
-                server = video[2]
-                if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
+        url = match[0]
+        title = "SERVIDOR: "+match[1]+" IDIOMA: "+match[2]+" CALIDAD: "+match[3]+" "
+        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=scrapedthumbnail , folder=False) )
 
-                # Añade al listado de XBMC
-                itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , server=server , folder=False) )
+    return itemlist
 
+def play(item):
+    logger.info("[peliculasaudiolatino.py] play")
+    itemlist=[]
+
+    data2 = scrapertools.cache_page(item.url)
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/show/mv.php?url=","http://www.megavideo.com/?v=")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/show/videobb.php?url=","http://www.videobb.com/watch_video.php?v=")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/show/vidbux.php?url=","http://www.vidbux.com/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/show/vidxden.php?url=","http://www.vidxden.com/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/show/videozer.php?url=","http://www.videozer.com/video/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/v/pl/play.php?url=","http://www.putlocker.com/embed/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/v/mv/play.php?url=","http://www.modovideo.com/frame.php?v=")
+    data2 = data2.replace("http://www.peliculasaudiolatino.com/v/ss/play.php?url=","http://www.sockshare.com/embed/")
+
+    listavideos = servertools.findvideos(data2)
+    for video in listavideos:
+        invalid = video[1]
+        invalid = invalid[0:8]
+        if invalid!= "FN3WE43K" and invalid!="9CC3F8&e":
+            scrapedtitle = item.title+video[0]
+            videourl = video[1]
+            server = video[2]
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"]")
+
+            # Añade al listado de XBMC
+            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , server=server , folder=False) )
+    
     return itemlist
 
 def generos(item):
@@ -220,7 +233,7 @@ def listado2(item):
         scrapedtitle = match[2]
         scrapedthumbnail = match[1]
         scrapedplot = match[3]
-        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if extra<>"":
         # Extrae la marca de siguiente página

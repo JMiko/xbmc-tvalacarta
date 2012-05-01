@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
-	<name>peliculaseroticas</name>
-	<tag>2</tag>
-	<date>03/01/2012</date>
-	<changes>Fixed a bug in videos e.r.</changes>
+	<name>peliculasaudiolatino</name>
+	<tag>3</tag>
+	<date>02/05/2012</date>
+	<changes>Arreglados patrones para los conectores</changes>
 </version>
