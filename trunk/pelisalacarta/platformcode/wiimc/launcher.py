@@ -123,7 +123,14 @@ def controller(plugin_name,port,host,path,headers):
                     if item.url=="": item.url="none"
                     if item.title=="": item.title="Ver el video-"
     
-                    url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , base64.b64encode( item.serialize() ) )
+                    #print "item="+item.serialize()
+                    #print "  -> b64="+base64.b64encode( item.serialize() )
+                    codeditem = base64.b64encode( item.serialize() )
+                    print "codeditem="+codeditem
+                    codeditem = codeditem.replace("\/","%2F")
+                    print "codeditem="+codeditem
+                    url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , codeditem )
+                    #print "  -> url="+url
                     respuesta += "type=playlist\n"
                     respuesta += "name=%s\n" % item.title
                     if item.thumbnail != "":
