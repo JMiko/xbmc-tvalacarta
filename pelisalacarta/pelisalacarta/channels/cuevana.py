@@ -130,20 +130,21 @@ def novedades(item):
     
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
+    #logger.info("data="+data)
 
     # Extrae las entradas
     patron  = '<a href="([^"]+)">[^<]+'
     patron += '<div class="img"><img src="([^"]+)".*?'
     patron += '<div class="box">[^<]+'
     patron += '<div class="rate"><span[^<]+</span></div>[^<]+'
-    patron += '<div class="tit">([^>]+)</div>[^<]+'
+    patron += '<div class="tit">(.*?)</div>[^<]+'
     patron += '<div class="ano">([^<]+)</div>[^<]+'
     patron += '<div class="txt">(.*?)</div>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     
     for url,thumbnail,tit,anyo,plot in matches:
-        scrapedtitle = tit
+        scrapedtitle = scrapertools.htmlclean(tit).replace("Indexada","")
         scrapedplot = anyo+" "+plot        
         # url es "#!/peliculas/4437/mammuth"
         scrapedurl = re.compile('peliculas/([^/]+)',re.DOTALL).findall(url)[0]
@@ -296,6 +297,7 @@ def findvideos(item):
         '720': 'HD (720p)',
         '1080': 'HD (1080p)'
     };
+    
     var labeli = {"1":"Espa\u00f1ol","2":"Ingl\u00e9s","3":"Portugu\u00e9s","4":"Alem\u00e1n","5":"Franc\u00e9s","6":"Coreano","7":"Italiano","8":"Tailand\u00e9s","9":"Ruso","10":"Mongol","11":"Polaco","12":"Esloveno","13":"Sueco","14":"Griego","15":"Canton\u00e9s","16":"Japon\u00e9s","17":"Dan\u00e9s","18":"Neerland\u00e9s","19":"Hebreo","20":"Serbio","21":"\u00c1rabe","22":"Hindi","23":"Noruego","24":"Turco","26":"Mandar\u00edn","27":"Nepal\u00e9s","28":"Rumano","29":"Iran\u00ed","30":"Est\u00f3n","31":"Bosnio","32":"Checo","33":"Croata","34":"Fin\u00e9s","35":"H\u00fanagro"};
     var labelh = {
         'megaupload': 'Megaupload',
@@ -306,7 +308,10 @@ def findvideos(item):
     '''
     url = "http://www.cuevana.tv/player/sources?id="+id+"&tipo="+tipo
 
-    data = scrapertools.cache_page(url)
+    headers = []
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:11.0) Gecko/20100101 Firefox/11.0"])
+    headers.append(["Referer","http://www.cuevana.tv/"])
+    data = scrapertools.cache_page(url,headers=headers)
     logger.info("data="+data)
     
     # Fuentes
@@ -325,6 +330,7 @@ def findvideos(item):
 
     import simplejson as json
     qualities = json.loads(cadena)
+    logger.info("qualities="+str(qualities))
 
     # Idiomas
     language_labels = {}
@@ -343,14 +349,24 @@ def findvideos(item):
     # Presenta las opciones
     itemlist = []
     i=1
+    
+    '''
     for quality_id in sources:
         languages = sources[quality_id]
 
         for language_id in languages:
-            print language_id
-            mirrors = sources[quality_id][language_id]
+    '''
+
+    for language_id in sources:
+        logger.info("language_id="+str(language_id));
+        qualitiesj = sources[language_id]
+        
+        for quality_id in qualitiesj:
+            logger.info("quality_id="+str(quality_id));
+            mirrors = sources[language_id][quality_id]
 
             for mirror in mirrors:
+                logger.info("i=%d, mirror=%s, quality_id=%s, language_id=%s" % (i,mirror,str(quality_id),str(language_id)))
                 titulo = "Opcion %d: %s %s (%s)" % (i, mirror , qualities[quality_id], language_labels[language_id])
                 i=i+1
                 url = "def=%s&audio=%s&host=%s&id=%s&tipo="+tipo
