@@ -19,7 +19,7 @@ def test_video_exists( page_url ):
     # No existe / borrado: http://allmyvideos.net/8jcgbrzhujri
     data = scrapertools.cache_page(page_url)
     #logger.info("data="+data)
-    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data or '<b class="err">Removed' in data or '<font class="err">No such' in data:
+    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data or '<b class="err">Deleted' in data or '<b class="err">Removed' in data or '<font class="err">No such' in data:
         return False,"No existe o ha sido borrado de allmyvideos"
     else:
         # Existe: http://allmyvideos.net/6ltw8v1zaa7o
