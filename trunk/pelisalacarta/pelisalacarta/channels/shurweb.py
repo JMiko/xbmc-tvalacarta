@@ -207,32 +207,6 @@ def scrapping(item,paginacion=True):
 
     return itemlist
 
-def findvideos(item):
-    logger.info("[shurweb.py] findvideos")
-    try:
-        url = item.url
-        fulltitle = item.fulltitle
-        extra = item.extra
-        plot = item.plot
-        data = scrapertools.cachePage(url)
-        patronvideos = '<iframe src="(http://([^/]+)([^"]+))"[^w]+width=[^>]+></iframe>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        itemlist = []
-        for match in matches:
-            scrapedtitle = match[1]
-            scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-            scrapedurl = match[0]
-            server = match[1]
-            if "vk" in server:
-            	server = "vk"
-            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-
-    return itemlist
-
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     # mainlist
