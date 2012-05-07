@@ -28,9 +28,10 @@ def mainlist(item):
     logger.info("[yotix.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="series"         , title="Novedades", url="http://yotixanime.com/"))
-    itemlist.append( Item(channel=__channel__, action="listcategorias" , title="Listado por categorías", url="http://yotix.tv/"))
-    itemlist.append( Item(channel=__channel__, action="search"         , title="Buscador", url="http://yotix.tv/?s=%s"))
+    itemlist.append( Item(channel=__channel__, action="series"     , title="Novedades", url="http://yotixanime.com/"))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="Categorías", url="http://yotixanime.com/"))
+    itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Alfabético", url="http://yotixanime.com/"))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"))
 
     return itemlist
 
@@ -40,7 +41,7 @@ def search(item,texto):
     try:
         # La URL puede venir vacía, por ejemplo desde el buscador global
         if item.url=="":
-            item.url="http://yotix.tv/?s=%s"
+            item.url="http://yotixanime.com/?s=%s"
 
         # Reemplaza el texto en la cadena de búsqueda
         item.url = item.url % texto
@@ -55,15 +56,15 @@ def search(item,texto):
             logger.error( "%s" % line )
         return []
 
-def listcategorias(item):
-    logger.info("[yotix.py] listcategorias")
+def categorias(item):
+    logger.info("[yotix.py] categorias")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
     # Extrae las entradas de la home como carpetas
-    patron  = '<a href="(/categoria/[^"]+)">([^<]+)</a>'
+    patron  = '<a class="generos" title="Ver todos los animes[^"]+" href="(http\://yotixanime.com/categoria[^"]+)">([^>]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -75,9 +76,34 @@ def listcategorias(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="videolist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="series" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
+
+def alfabetico(item):
+    logger.info("[yotix.py] alfabetico")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+
+    # Extrae las entradas de la home como carpetas
+    patron = '<a href="(http\://yotixanime.com/tag[^"]+)" title="Ver todos los animes de letra[^"]+" class="alfb">([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for match in matches:
+        scrapedtitle = match[1]
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="series" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+
+    return itemlist
+
 
 def series(item):
     logger.info("[yotix.py] videolist")
@@ -88,26 +114,31 @@ def series(item):
 
     # Extrae las entradas de la home como carpetas
     '''
-    <a title="Ver Serie Pokemon Fuerza Máxima (sexta temporada)" href="http://yotixanime.com/pokemon-fuerza-maxima-sexta-temporada/"><img class="imagen" src="http://yotixanime.com/caratula/Pokemon-06.jpg" border="0" /></a><p>Su desarrollo comienza en la región Hoenn desde Pueblo Littleroot a Ciudad Mauville. Ash conoce a May y su hermano Max y con la compañía de Brock inician su viaje, durante el cual Ash colecta medallas para participar en la Liga Hoenn mientras que May participa en los concursos de coordinadores para llegar al Gran Festival.</p>
+    <h2><a href="http://yotixanime.com/they-are-my-noble-masters-kimi-ga-aruji-de-shitsuji-ga-ore-de/" rel="bookmark">Kimi ga Aruji de Shitsuji ga Ore de ~They Are My Noble Masters~</a></h2><div class="entry"> <a title="Ver Serie Kimi ga Aruji de Shitsuji ga Ore de ~They Are My Noble Masters~" href="http://yotixanime.com/they-are-my-noble-masters-kimi-ga-aruji-de-shitsuji-ga-ore-de/"><img class="imagen" src="http://yotixanime.com/caratula/Kimi ga Aruji de Shitsuji ga Ore de.jpg" border="0" /></a><p>Uesugi Ren y su hermana Mihato, tras escapar de su violento padre y la terrible vida que tenían junto a él, deciden empezar una nueva vida juntos. Ren desea poder cuidar de su querida hermana mayor, pero pronto los fondos se acaban y necesita encontrar pronto un trabajo (y no quiere aceptar el ofrecimiento de su hermanad para hacer de modelo). La oportunidad se presenta con las hermanas Kuonji: Shinra, Miyu y Yume; unas chicas de familia rica que parecen siempre necesitar de más mayordomos. Sin nada que perder y no queriendo que su hermana haga otro tipo de labor, Ren y Mihato se unen al staff de sirvientes de la familia; donde tendrán que convivir con los demás mayordomos y sirvientas en busca de complacer a sus queridas amas.</p><div class="clear"></div></div></div>
     '''
-    patron  = '<a title="([^"]+)" href="([^"]+)"><img class="imagen" src="([^"]+)"[^>]+></a>(.*?)<div'
+    patron  = '<div class="entry"> <a title="([^"]+)" href="([^"]+)">'
+    patron += '<img class="imagen" src="([^"]+)" border="0" /></a>'
+    patron += '<p>(.*?)</p><div class="clear"></div></div></div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
 
     for scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot in matches:
+        scrapedtitle = scrapedtitle.replace("Ver Serie ","")
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        scrapedthumbnail = scrapedthumbnail.replace(" ","%20")
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, fanart=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
-    patron = '<a href="([^"]+)" class="nextpostslink">»'
+    #<a href='http://yotixanime.com/pagina/2/' class='nextpostslink'>
+    patron = "<a href='([^']+)' class='nextpostslink'>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = "Pagina siguiente >>"
+        scrapedtitle = "!Pagina siguiente >>"
         scrapedurl = match
         scrapedthumbnail = ""
         scrapeddescription = ""
@@ -122,11 +153,14 @@ def episodios(item):
     itemlist=[]
     
     data = scrapertools.cachePage(item.url)
-    patronvideos  = '<a class="azul" href="([^"]+)" target="_blank">([^<]+)</a>'
+    #<a class="azul" href="http://yotixanime.com/rt/kissxsis-capitulo-4/9f44885c43a61e9a337f9ce598078baa/" target="_blank">Capitulo 04 &#8211; Notas de un Amante</a>
+    patronvideos  = '<a class="azul" href="([^"]+)" target="_blank">(.*?)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for scrapedurl,scrapedtitle in matches:
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot))
 
     return itemlist
