@@ -37,6 +37,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Buscar pelicula" , action="search", url=""))
  
     return itemlist
+
 def search(item,texto):
     logger.info("[sipeliculas.py] search")
     itemlist = []
@@ -47,6 +48,7 @@ def search(item,texto):
     itemlist.extend(lista1(item))
     
     return itemlist
+
 def alfa(item):
     logger.info("[sipeliculas.py] alfabetico")
     itemlist=[]
@@ -61,6 +63,7 @@ def alfa(item):
         scrapedtitle=match[1]
         itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="lista2", url=scrapedurl)) 
     return itemlist
+
 def generos(item):
     logger.info("[sipeliculas.com] generos")
     itemlist=[]
@@ -75,6 +78,7 @@ def generos(item):
         scrapedtitle=match[1]
         itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="lista2", url=scrapedurl)) 
     return itemlist
+
 def lista1(item):
     logger.info("[sipeliculas.py] lista1")
     itemlist=[]
@@ -85,7 +89,7 @@ def lista1(item):
         scrapedurl=match[0]
         scrapedtitle=match[1]
         scrapedthumbnail=match[2]
-        itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="buscavideo", url=scrapedurl, thumbnail=scrapedthumbnail))
+        itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="mirrors", url=scrapedurl, thumbnail=scrapedthumbnail))
 
     patron='class="PaginaActual".*?href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)    
@@ -94,6 +98,7 @@ def lista1(item):
     itemlist.append( Item(channel=__channel__, title="! Pagina Siguiente" , action="lista1", url=scrapedurl))
     #itemlist.append( Item(channel=__channel__, title=matchx , action="lista2", url=matchx)) 
     return itemlist
+
 def lista2(item):
     logger.info("[sipeliculas.py] lista2")
     itemlist=[]
@@ -104,7 +109,7 @@ def lista2(item):
         scrapedurl=match[0]
         scrapedtitle=match[1]
         scrapedthumbnail=match[2]
-        itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="buscavideo", url=scrapedurl, thumbnail=scrapedthumbnail))
+        itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="mirrors", url=scrapedurl, thumbnail=scrapedthumbnail))
 
     patron='class="PaginaActual".*?href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)    
@@ -113,7 +118,21 @@ def lista2(item):
     #itemlist.append( Item(channel=__channel__, title=matchx , action="lista2", url=matchx)) 
     return itemlist
 
-def buscavideo(item):
+def mirrors(item):
+    itemlist=[]
+    data = scrapertools.cachePage(item.url)
+    patron = '<li><a href="([^"]+)"[^>]*>(Opcion[^>]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, title=title , action="findvideos", url=url, folder=True))
+
+    if len(itemlist)==0:
+        itemlist = findvideos(item)
+    
+    return itemlist
+
+def findvideos(item):
     data = scrapertools.cachePage(item.url)
     patron='decode64.*?"(.*?)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -132,4 +151,3 @@ def buscavideo(item):
         itemlist.append( Item(channel=__channel__, action="play", server=server, title=videotitle , url=url , thumbnail=item.thumbnail , plot=plot ,subtitle="", folder=False) )
     #itemlist.append( Item(channel=__channel__, title=titu , action="generos", url="http://yahoo.com"))
     return itemlist
-
