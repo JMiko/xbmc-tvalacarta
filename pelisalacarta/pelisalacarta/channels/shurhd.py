@@ -30,8 +30,9 @@ def isGeneric():
 def mainlist(item):
     logger.info("[shurweb.py] getmainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"                , action="scrapping"   , url="http://www.shurhd.com/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"                , action="peliculas"    , url="http://www.shurhd.com/"))
     itemlist.append( Item(channel=__channel__, title="Películas"                , action="menupeliculas"))
+    itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"      , url="http://series.shurhd.com/"))
 #    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
     if SESION=="true":
         perform_login(LOGIN,PASSWORD)
@@ -90,8 +91,8 @@ def login(item):
 def menupeliculas(item):
     logger.info("[shurweb.py] menupeliculas")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas - HD"        , action="scrapping"   , url="http://www.shurhd.com/calidad-hd/") )
-    itemlist.append( Item(channel=__channel__, title="Películas - DVD"        , action="scrapping"   , url="http://www.shurhd.com/calidad-dvd/") )
+    itemlist.append( Item(channel=__channel__, title="Películas - HD" , action="peliculas", url="http://www.shurhd.com/calidad-hd/") )
+    itemlist.append( Item(channel=__channel__, title="Películas - DVD", action="peliculas", url="http://www.shurhd.com/calidad-dvd/") )
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -136,7 +137,7 @@ def scrappingSearch(item,paginacion=True):
 
     return itemlist
 
-def scrapping(item,paginacion=True):
+def peliculas(item,paginacion=True):
     logger.info("[shurweb.py] peliculas")
     url = item.url
     # Descarga la página
@@ -187,36 +188,56 @@ def scrapping(item,paginacion=True):
 
     if len(matches)>0:
         scrapedurl = matches[0]
-        pagitem = Item(channel=__channel__, action="scrapping", title="!Página siguiente" , url=scrapedurl)
+        pagitem = Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl)
         if not paginacion:
             itemlist.extend( scrapping(pagitem) )
         else:
             itemlist.append( pagitem )
     return itemlist
 
-def findvideos(item):
-    logger.info("[shurweb.py] findvideos")
-    try:
-        url = item.url
-        fulltitle = item.fulltitle
-        extra = item.extra
-        plot = item.plot
-        data = scrapertools.cachePage(url)
-        patronvideos = '<iframe src="(http://([^/]+)([^"]+))"[^w]+width=[^>]+></iframe>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        itemlist = []
-        for match in matches:
-            scrapedtitle = match[1]
-            scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-            scrapedurl = match[0]
-            server = match[1]
-            if "vk" in server:
-            	server = "vk"
-            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
+def series(item):
+    logger.info("[shurweb.py] series")
+    url = item.url
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    patronvideos  = '<li class="cat-item[^<]+<div class="avhec-widget-line"><a href="([^"]+)" title="[^"]+">(.*?)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    for url,title in matches:
+        scrapedtitle = title
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle).strip()
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle).strip()
+        if scrapedtitle.endswith("<"):
+            scrapedtitle = scrapedtitle[:-1]
+        fulltitle = scrapedtitle
+        scrapedplot = ""
+        scrapedurl = url
+        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
+        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , plot=scrapedplot , extra=scrapedtitle , folder=True) )
+
+    return itemlist
+
+def episodios(item):
+    logger.info("[shurweb.py] series")
+    url = item.url
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    patronvideos  = '<li><a href="(http://series.shurhd.com/[^"]+)">(.*?)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    for url,title in matches:
+        scrapedtitle = title.strip()
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle).strip()
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle).strip()
+        if scrapedtitle.endswith("<"):
+            scrapedtitle = scrapedtitle[:-1]
+        fulltitle = scrapedtitle
+        scrapedplot = ""
+        scrapedurl = url
+        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
 
     return itemlist
 
