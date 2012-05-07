@@ -136,5 +136,6 @@ def findvideos(item):
     for videoitem in itemlist:
         videoitem.channel=__channel__
         videoitem.action="play"
+        videoitem.title = "Vídeo en "+videoitem.server
     
     return itemlist
