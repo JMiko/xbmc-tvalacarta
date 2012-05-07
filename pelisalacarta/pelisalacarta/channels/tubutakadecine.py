@@ -27,11 +27,64 @@ def isGeneric():
 def mainlist(item):
     logger.info("[tubutakadecine.py] mainlist")
 
-    item.url = "http://www.tubutakadecine.com/"
-    return novedades(item)
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, action="novedades"   , title="Novedades", url="http://www.tubutakadecine.com/"))
+    itemlist.append( Item(channel=__channel__, action="encartelera" , title="En cartelera", url="http://www.tubutakadecine.com/"))
+    itemlist.append( Item(channel=__channel__, action="alfabetico"  , title="Alfabético", url="http://www.tubutakadecine.com/"))
+    itemlist.append( Item(channel=__channel__, action="categoria"   , title="Por categoría", url="http://www.tubutakadecine.com/"))
+
+    return itemlist
+
+def encartelera(item):
+    logger.info("[tubutakadecine.py] encartelera")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,"<h2>En cartelera</h2>.*?<ul>(.*?)</ul>")
+    logger.info("data="+data)
+    patron = "<li>[^<]+<a dir='ltr' href='([^']+)'>([^<]+)</a>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , folder=True) )
+
+    return itemlist
+
+def categoria(item):
+    logger.info("[tubutakadecine.py] categoria")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,"<h2>Por g[^>]+</h2>.*?<ul>(.*?)</ul>")
+    logger.info("data="+data)
+    patron = "<li>[^<]+<a dir='ltr' href='([^']+)'>([^<]+)</a>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , folder=True) )
+
+    return itemlist
+
+def alfabetico(item):
+    logger.info("[tubutakadecine.py] alfabetico")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,"<h2>Por t[^>]+</h2>.*?<ul>(.*?)</ul>")
+    logger.info("data="+data)
+    patron = "<li>[^<]+<a dir='ltr' href='([^']+)'>([^<]+)</a>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , folder=True) )
+
+    return itemlist
 
 def novedades(item):
-    logger.info("[peliculasflv.py] listado")
+    logger.info("[tubutakadecine.py] listado")
     itemlist = []
 
     # Descarga la página
@@ -57,12 +110,15 @@ def novedades(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = post , folder=True) )
         except:
+            '''
             scrapedtitle = "(no identificado)"
             scrapedthumbnail = ""
             scrapedplot = ""
             scrapedurl = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = post , folder=True) )
+            '''
+            pass
 
     # Extrae el paginador
     patronvideos  = "<a class='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Entradas antiguas'>Entradas antiguas</a>"
