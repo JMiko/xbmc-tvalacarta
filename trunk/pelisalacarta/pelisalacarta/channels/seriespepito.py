@@ -248,8 +248,8 @@ def findvideos(item):
         # Listas de enlaces
         patron  = "<tr><td><div class='([^']+)'></div></td>"
         patron += "<td>[^<]+</td>"
-        patron += "<td><img src='([^']+)'[^>]+></td>"
-        patron += "<td><a.*?href='([^']+)'"
+        patron += "<td><img src='([^']+)'[^>]+>.*?"
+        patron += "<a.*?href='([^']+)'"
         matches = re.compile(patron,re.DOTALL).findall(data)
         scrapertools.printMatches(matches)
         numero = 1
