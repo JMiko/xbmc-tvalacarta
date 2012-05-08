@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriespepito</name>
-	<tag>2</tag>
-	<date>14/12/2011</date>
-	<changes>Eliminada dependencia con XBMC</changes>
+	<tag>3</tag>
+	<date>08/05/2012</date>
+	<changes>Arreglado patron de busqueda de videos</changes>
 </version>
