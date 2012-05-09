@@ -314,14 +314,22 @@ def play(item):
             videos = servertools.findvideos(location)
             
             if len(videos)==0:
-                logger.info("[seriesyonkis.py] play downloading location")
-                data = scrapertools.cache_page(location)
-                logger.info("------------------------------------------------------------")
-                #logger.info(data)
-                logger.info("------------------------------------------------------------")
-                videos = servertools.findvideos(data) 
-                logger.info(str(videos))
-                logger.info("------------------------------------------------------------")
+                location = scrapertools.getLocationHeaderFromResponse(location)
+                logger.info("[seriesyonkis.py] play location="+location)
+
+                if location<>"":
+                    logger.info("[seriesyonkis.py] Busca videos conocidos en la url")
+                    videos = servertools.findvideos(location)
+                    
+                    if len(videos)==0:
+                        logger.info("[seriesyonkis.py] play downloading location")
+                        data = scrapertools.cache_page(location)
+                        logger.info("------------------------------------------------------------")
+                        #logger.info(data)
+                        logger.info("------------------------------------------------------------")
+                        videos = servertools.findvideos(data) 
+                        logger.info(str(videos))
+                        logger.info("------------------------------------------------------------")
         else:
             logger.info("[seriesyonkis.py] play location vacía")
             videos=[]
