@@ -21,10 +21,10 @@ def mainlist(item):
     logger.info("[extremaduratv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Informativos"   , action="programas"    , url="http://www.canalextremadura.es/alacarta/tv/programas/informativos") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Programas"      , action="programas"    , url="http://www.canalextremadura.es/alacarta/tv/programas/programas") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Deportes"       , action="programas"    , url="http://www.canalextremadura.es/alacarta/tv/programas/deportes") )
-    itemlist.append( Item(channel=CHANNELNAME, title="Archivo"        , action="archivo"      , url="http://www.canalextremadura.es/alacarta/tv/programas/archivo") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Informativos"   , action="programas"    , url="http://www.canalextremadura.es/alacarta/tv/programas/informativos", category="informativos") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Programas"      , action="programas"    , url="http://www.canalextremadura.es/alacarta/tv/programas/programas", category="programas") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Deportes"       , action="programas"    , url="http://www.canalextremadura.es/alacarta/tv/programas/deportes", category="deportes") )
+    itemlist.append( Item(channel=CHANNELNAME, title="Archivo"        , action="archivo"      , url="http://www.canalextremadura.es/alacarta/tv/programas/archivo", category="programas") )
 
     return itemlist
 
