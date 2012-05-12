@@ -127,7 +127,7 @@ def episodios(item):
     patron  = "Paginación: .*?<span class='activo'>[^<]+</span>  |  <a href='([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    if len(matches)>0:
+    if len(matches)>1:
         itemlist.append( Item(channel=CHANNELNAME, title="Página siguiente >>" , action="episodios" , url=urlparse.urljoin(item.url,matches[1]), thumbnail=item.thumbnail, plot=item.plot , folder=True) )
 
     return itemlist
