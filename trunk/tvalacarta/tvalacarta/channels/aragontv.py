@@ -124,10 +124,8 @@ def episodios(item):
         # Añade al listado
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
-    bloquepaginacion = scrapertools.get_match(data,"<!-- BEGIN B_PAGINACION -->\s+Paginación\: (.*?)<!-- BEGIN B_PAGINACION -->")
-    logger.info("paginacion="+bloquepaginacion)
-    patron  = "<span class='activo'>[^<]+</span>  \|  <a href='([^']+)'"
-    matches = re.compile(patron,re.DOTALL).findall(bloquepaginacion)
+    patron  = "Paginación.*?<span class='activo'>[^<]+</span>  \|  <a href='([^']+)'"
+    matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
         pageitem = Item(channel=CHANNELNAME, title="Página siguiente >>" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , folder=True)
