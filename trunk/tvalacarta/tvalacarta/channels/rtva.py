@@ -7,15 +7,9 @@
 
 import urlparse,urllib,re
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 logger.info("[rtva.py] init")
 
@@ -77,7 +71,7 @@ def programas(item):
         scrapedthumbnail = match[1]
         scrapedplot = match[3].strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle) )
 
     patron = '<a href="([^"]+)"  class="enlace siguiente"'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -88,8 +82,8 @@ def programas(item):
 
     return itemlist
 
-def videos(item):
-    logger.info("[rtva.py] videos")
+def episodios(item):
+    logger.info("[rtva.py] episodios")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -139,7 +133,7 @@ def videos(item):
     if len(matches)>0:
         logger.info("[rtva.py] Página siguiente: "+matches[0])
         item = Item(url=matches[0], show=item.show)
-        itemlist.extend(videos(item))
+        itemlist.extend(episodios(item))
 
     return itemlist
 
