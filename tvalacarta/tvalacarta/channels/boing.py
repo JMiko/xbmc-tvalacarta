@@ -54,7 +54,7 @@ def series(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     if len(matches)>0:
-        itemlist.append( Item(channel=item.channel, title="Página siguiente >>" , action="series" , url=urlparse.urljoin(item.url,matches[0]), folder=True) )
+        itemlist.extend( series(Item(channel=item.channel, title="Página siguiente >>" , action="series" , url=urlparse.urljoin(item.url,matches[0]), folder=True) ) )
 
     return itemlist
 
@@ -66,25 +66,30 @@ def episodios(item):
     #http://www.boing.es/videos/hora-de-aventuras
     data = scrapertools.cachePage(item.url.replace("/serie/","/videos/"))
     #logger.info(data)
+    bloque = scrapertools.get_match(data,'<div class="Contenedor100">(.*?)<\!-- \/Contenedor100 -->',1)
+    logger.info(str(bloque))
 
     # Extrae los videos
-    patron = '<div id="item-.*?'
-    patron += '<div class="pic3">[^<]+<a href="([^"]+)">.*?'
-    patron += '<img style="[^"]+" height="[^"]+" width="[^"]+" src="([^"]+)".*?'
+    '''
+    <div class="pic"><div class="pic2"><div class="pic3">    
+    <a href="/serie/geronimo-stilton/video/top-model">
+    <img class="bcvid" height="73" width="130" src="http://i.cdn.turner.com/tbseurope/big/Boing_ES/thumbs/SP_SA_GERSTI0017_01.jpg" />
+    </a>
+    </div></div></div>
+    <div class="series"><a href="/serie/geronimo-stilton">Gerónimo Stilton</a></div>
+    <div class="title"><a href="/serie/geronimo-stilton/video/top-model">Top Model</a></div>
+    '''
+    patron  = '<div class="pic3">[^<]+<a href="([^"]+)">[^<]+'
+    patron += '<img class="bcvid" height="[^"]+" width="[^"]+" src="([^"]+)".*?'
     patron += '<div class="title"><a[^>]+>([^<]+)</a></div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
+    matches = re.compile(patron,re.DOTALL).findall(bloque)
     scrapertools.printMatches(matches)
     #if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
-    destacadas = 4
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
-        destacadas = destacadas - 1
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        if destacadas>=0:
-            logger.info("ignorando, es de la caja de destacadas")
-        else:
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
 
     return itemlist
 
