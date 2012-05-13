@@ -89,7 +89,8 @@ def episodios(item):
     itemlist = []
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
+        url = urlparse.urljoin(item.url,scrapedurl)
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=url, thumbnail=scrapedthumbnail, page=url, show = item.show, folder=False) )
 
     return itemlist
 
