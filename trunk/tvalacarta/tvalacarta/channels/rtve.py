@@ -364,8 +364,8 @@ def episodios(item):
 
     # Crea una lista con las entradas
     for match in matches:
-        if config.get_setting("rtve.programa.extendido")=="true":
-            scrapedtitle = match[1]+" ("+match[2]+") ("+match[3]+") ("+match[4]+")"
+        if not "developer" in config.get_platform():
+            scrapedtitle = match[1]+" ("+match[2].strip()+") ("+match[3].strip()+") ("+match[4]+")"
         else:
             scrapedtitle = match[1]
         scrapedtitle = scrapedtitle.replace("<em>Nuevo</em>&nbsp;","")
@@ -374,9 +374,10 @@ def episodios(item):
         scrapedthumbnail = item.thumbnail
         scrapedplot = scrapertools.unescape(match[5].strip())
         scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
-        scrapedextra = ""
+        scrapedextra = match[2]
+        
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, category = item.category, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, category = item.category, extra=scrapedextra, folder=False) )
 
     # Extrae la paginación
     patron = '<a name="paginaIR" href="([^"]+)"><span>Siguiente</span></a>'
