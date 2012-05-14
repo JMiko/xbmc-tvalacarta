@@ -827,7 +827,10 @@ def htmlclean(cadena):
     cadena = cadena.replace("<tr>","")
     cadena = cadena.replace("</tr>","")
     cadena = cadena.replace("<![CDATA[","")
-
+    cadena = cadena.replace("<Br />","")
+    cadena = cadena.replace("<BR />","")
+    cadena = cadena.replace("<Br>","")
+    
     cadena = re.compile("<table[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</table>","")
     
