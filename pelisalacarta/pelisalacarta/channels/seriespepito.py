@@ -135,6 +135,7 @@ def alphaserieslist(item):
         scrapedurl = match[0]
         scrapedthumbnail = match[1]
         scrapedplot = match[3].strip()
+        scrapedplot = scrapertools.htmlclean(scrapedplot)
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Ajusta el encoding a UTF-8
