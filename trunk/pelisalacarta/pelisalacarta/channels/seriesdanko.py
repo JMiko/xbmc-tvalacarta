@@ -138,8 +138,10 @@ def detalle_programa(item):
     data = scrapertools.cachePage(item.url)
 
     # Argumento
-    patron  = "<!-- Aquí comienza el rollo de la lista de capítulos -->.*?"
-    patron += '<div style="[^"]+"></div><div align="justify">(.*?)</div>'
+    '''
+    Informaci&oacuten de A c&aacutemara s&uacuteper lenta</b><div style="margin-top: 10px; height: 10px; border-top: 1px dotted #999999;"></div><Br />La revolucionaria serie de Discovery Channel nos revela el mundo de manera <Br>espectacular y asombrosa al modificar radicalmente un factor esencial: el <Br>tiempo. ¿C&oacutemo se contrae el rostro de una persona cuando un boxeador le da un <Br>pu&ntildeetazo en la cara? ¿Qu&eacute ocurre cuando se dispara una bala y atraviesa una  <Br> manzana?<Br /><Br><img style='float:right; margin:0 0 10px 10px;cursor:pointer; cursor:hand; width: 150px; height: 200px;border: 3px solid #616161; ' src=http://2.bp.blogspot.com/-9imlR7oVyK0/TomeSfjpmqI/AAAAAAAADz4/aDFpk_U_sMk/s400/a-camara-super-lenta-seriesdanko.jpg'' /><Br><Br /><BR /><span style="color:#ffc029;">G&eacutenero:</span><br><span style="color:#ffc029;">Pa&iacutes de origen:</span><br><span style="color:#ffc029;">Duraci&oacuten:</span><br><span style="color:#ffc029;">Idioma/s:</span><br><span style="color:#ffc029;">Episodios:</span><br><span style="color:#ffc029;">Temporadas:</span><br><span style="color:#ffc029;">Director:</span><br><span style="color:#ffc029;">Producci&oacuten:</span><div style='clear: both;'></div>
+    '''
+    patron = '<div style="[^"]+"></div>(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
         item.plot = scrapertools.htmlclean(matches[0])
