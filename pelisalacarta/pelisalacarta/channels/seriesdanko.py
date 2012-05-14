@@ -134,6 +134,17 @@ def letras(item):
 
     return itemlist
 
+def detalle_programa(item):
+    data = scrapertools.cachePage(item.url)
+
+    # Argumento
+    patron  = '<meta name="description" content="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        item.plot = scrapertools.htmlclean(matches[0])
+
+    return item
+
 def series(item,data=""):
     logger.info("[seriesdanko.py] series")
     itemlist = []
