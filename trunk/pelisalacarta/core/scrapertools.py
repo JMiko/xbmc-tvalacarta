@@ -18,14 +18,12 @@
 
 import urlparse,urllib2,urllib
 import time
-import md5
 import os
 import config
 import logger
 import re
 import downloadtools
 import socket
-import binascii
 
 logger.info("[scrapertools.py] init")
 
@@ -165,7 +163,14 @@ def getCacheFileNames(url):
     siteCachePath = getSiteCachePath(url)
         
     # Obtiene el ID de la cache (md5 de la URL)
-    cacheId = binascii.hexlify(md5.new(url).digest())
+    try:
+        import hashlib
+        cacheId = hashlib.md5(url).hexdigest()
+    except:
+        import md5
+        import binascii
+        cacheId = binascii.hexlify(md5.new(url).digest())
+        
     logger.debug("[scrapertools.py] cacheId="+cacheId)
 
     # Timestamp actual
@@ -972,7 +977,14 @@ def remove_show_from_title(title,show):
     return title
 
 def getRandom(str):
-    return binascii.hexlify(md5.new(str).digest())
+    # Obtiene el ID de la cache (md5 de la URL)
+    try:
+        import hashlib
+        return hashlib.md5(str).hexdigest()
+    except:
+        import md5
+        import binascii
+        return binascii.hexlify(md5.new(str).digest())
 
 def getLocationHeaderFromResponse(url):
     return get_header_from_response(url,header_to_get="location")
