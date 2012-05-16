@@ -69,21 +69,6 @@ def find_videos(text):
     encontrados = set()
     devuelve = []
 
-    # http://www.peliculasaudiolatino.com/show/sockshare.php?url=CEE0B3A7DDFED758
-    patronvideos  = 'sockshare.php\?url=([A-Z0-9]+)'
-    logger.info("[sockshare.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(text)
-
-    for match in matches:
-        titulo = "[sockshare]"
-        url = "http://www.sockshare.com/embed/"+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'sockshare' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-            
     # http://www.sockshare.com/embed/CEE0B3A7DDFED758
     patronvideos  = 'http://www.sockshare.com/(?:file|embed)/([A-Z0-9]+)'
     logger.info("[sockshare.py] find_videos #"+patronvideos+"#")
