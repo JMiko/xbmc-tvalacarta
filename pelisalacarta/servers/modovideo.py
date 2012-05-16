@@ -12,6 +12,24 @@ from core import scrapertools
 from core import logger
 from core import config
 
+#Location: http://www.modovideo.com/MakeLightBox.php?retURL=&h1=Video Has been removed&p=
+
+def test_video_exists( page_url ):
+    if not page_url.startswith("http://"):
+        page_url = 'http://www.modovideo.com/frame.php?v='+page_url
+
+    logger.info("[modovideo.py] test_video_exists(page_url='%s')" % page_url)
+    
+    # Vídeo borrado: http://www.modovideo.com/frame.php?v=teml3hpu3141n0lam2a04iufcsz7q7pt
+    location = scrapertools.get_header_from_response( url = page_url , header_to_get = "location")
+    if location=="":
+        return True,""
+    #Location: http://www.modovideo.com/MakeLightBox.php?retURL=&h1=Video Has been removed&p=
+    elif "Video Has been removed" in location:
+        return False,"El archivo ya no está disponible<br/>en modovideo (ha sido borrado)"
+    else:
+        return True,""
+
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[modovideo.py] get_video_url(page_url='%s')" % page_url)
