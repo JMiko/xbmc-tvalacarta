@@ -197,7 +197,7 @@ def addvideo( canal , nombre , url , category , server , Serie=""):
 def play_video(channel="",server="",url="",category="",title="", thumbnail="",plot="",extra="",desdefavoritos=False,desdedescargados=False,desderrordescargas=False,strmfile=False,Serie="",subtitle="", video_password="",fulltitle=""):
     from servers import servertools
     import sys
-    import xbmcgui
+    import xbmcgui,xbmc
     try:
         logger.info("[xbmctools.py] play_video(channel=%s, server=%s, url=%s, category=%s, title=%s, thumbnail=%s, plot=%s, desdefavoritos=%s, desdedescargados=%s, desderrordescargas=%s, strmfile=%s, Serie=%s, subtitle=%s" % (channel,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile,Serie,subtitle))
     except:
@@ -344,13 +344,15 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # Descargar
     elif opciones[seleccion]==config.get_localized_string(30153): # "Descargar"
-        
+        import xbmc
         # El vídeo de más calidad es el último
         mediaurl = video_urls[len(video_urls)-1][1]
         
         # Si no quiere usar filenium para descargas, coge el anterior
-        if config.get_setting("filenium_for_download")=="false" and video_urls[len(video_urls)-1][0]=="[filenium]":
+        if config.get_setting("filenium_for_download")=="false" and ("filenium" in video_urls[len(video_urls)-1][0] or "realdebrid" in video_urls[len(video_urls)-1][0]):
             mediaurl = video_urls[len(video_urls)-2][1]
+            if "filenium" in video_urls[len(video_urls)-2][0] or "realdebrid" in video_urls[len(video_urls)-2][0]:
+                mediaurl = video_urls[len(video_urls)-3][1]
 
         from core import downloadtools
         keyboard = xbmc.Keyboard(fulltitle)
@@ -503,6 +505,37 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         #if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
         #    logger.info("[xbmctools.py] Con subtitulos")
         #    setSubtitles()
+    elif server=="vidxden" or server=="bayfiles":
+        from core import downloadtools
+        import thread,os
+        import xbmc
+        
+        logger.info("[xbmctools.py] ---------------------------------")
+        logger.info("[xbmctools.py] DESCARGA EN SEGUNDO PLANO")
+        logger.info("[xbmctools.py]   de "+mediaurl)
+        temp_file = config.get_temp_file("background.file")
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+        logger.info("[xbmctools.py]   a "+temp_file)
+        logger.info("[xbmctools.py] ---------------------------------")
+        thread.start_new_thread(downloadtools.downloadfile, (mediaurl,temp_file), {'silent':True})
+
+        handle_wait(60,"Descarga en segundo plano","Se está descargando un trozo antes de empezar")
+
+        playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+        playlist.clear()
+        playlist.add( temp_file, xlistitem )
+    
+        player_type = xbmc.PLAYER_CORE_AUTO
+        xbmcPlayer = xbmc.Player( player_type )
+        xbmcPlayer.play(playlist)
+        
+        while xbmcPlayer.isPlaying():
+            xbmc.sleep(5000)
+            logger.info("sigo aquí...")
+
+        logger.info("fin")
+        
     else:
         logger.info("b7")
         if config.get_setting("player_mode")=="0":
