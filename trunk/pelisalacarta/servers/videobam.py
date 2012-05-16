@@ -76,11 +76,12 @@ def find_videos(data):
     for match in matches:
         titulo = "[videobam]"
         url = "http://videobam.com/"+match
-        if url not in encontrados and url!="http://videobam.com/widget":
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'videobam' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
+        if not match.startswith("videos"):
+            if url not in encontrados and url!="http://videobam.com/widget":
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'videobam' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
     return devuelve
