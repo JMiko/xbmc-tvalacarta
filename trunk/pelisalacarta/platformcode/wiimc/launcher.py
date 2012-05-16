@@ -66,7 +66,7 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "type=search\n"
                 respuesta += "name="+channel.title+"\n"
                 respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-                respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize())+"/playlist.plx\n"
+                respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize()).replace("/","%2F")+"/playlist.plx\n"
                 respuesta += "\n"
     else:
         
@@ -81,7 +81,7 @@ def controller(plugin_name,port,host,path,headers):
                 respuesta += "type=playlist\n"
                 respuesta += "name="+channel.title+"\n"
                 respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-                respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize())+"/playlist.plx\n"
+                respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize()).replace("/","%2F")+"/playlist.plx\n"
                 respuesta += "\n"
         
         elif item.channel=="channelselector" and item.action=="listchannels":
@@ -95,7 +95,7 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "type=playlist\n"
                     respuesta += "name="+channel.title+"\n"
                     respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-                    respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize())+"/playlist.plx\n"
+                    respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize()).replace("/","%2F")+"/playlist.plx\n"
                     respuesta += "\n"
     
         else:
@@ -109,7 +109,7 @@ def controller(plugin_name,port,host,path,headers):
                 if item.action=="search":
                     if item.server=="": item.server="none"
                     if item.url=="": item.url="none"
-                    url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , base64.b64encode( item.serialize() ) )
+                    url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , base64.b64encode( item.serialize() ).replace("/","%2F") )
                     respuesta += "type=search\n"
                     respuesta += "name=%s\n" % item.title
                     if item.thumbnail != "":
@@ -122,15 +122,8 @@ def controller(plugin_name,port,host,path,headers):
                     if item.server=="": item.server="none"
                     if item.url=="": item.url="none"
                     if item.title=="": item.title="Ver el video-"
-    
-                    #print "item="+item.serialize()
-                    #print "  -> b64="+base64.b64encode( item.serialize() )
-                    codeditem = base64.b64encode( item.serialize() )
-                    print "codeditem="+codeditem
-                    codeditem = codeditem.replace("\/","%2F")
-                    print "codeditem="+codeditem
-                    url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , codeditem )
-                    #print "  -> url="+url
+
+                    url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , base64.b64encode( item.serialize() ).replace("/","%2F") )
                     respuesta += "type=playlist\n"
                     respuesta += "name=%s\n" % item.title
                     if item.thumbnail != "":
@@ -155,6 +148,8 @@ def extract_item_from_url(requestpath):
 
     # El item serializado está codificado en base64
     itemserializado = ruta.split("/")[2]
+    itemserializado = itemserializado.replace("%2F","/")
+    itemserializado = itemserializado.replace("%2f","/")
     logger.info("item base64="+itemserializado)
     import base64
     item = Item()
