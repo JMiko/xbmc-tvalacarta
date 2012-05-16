@@ -11,7 +11,6 @@ import os
 from core import scrapertools
 from core import logger
 from core import config
-from core import unpackerjs
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[royalvids.py] url="+page_url)
