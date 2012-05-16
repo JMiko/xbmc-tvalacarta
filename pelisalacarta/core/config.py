@@ -127,7 +127,7 @@ def get_temp_file(filename):
         exec "import platformcode."+PLATFORM_NAME+".config as platformconfig"
     except:
         exec "import "+PLATFORM_NAME+"config as platformconfig"
-    return platformconfig.get_temp_file()
+    return platformconfig.get_temp_file(filename)
 
 def get_runtime_path():
     try:
