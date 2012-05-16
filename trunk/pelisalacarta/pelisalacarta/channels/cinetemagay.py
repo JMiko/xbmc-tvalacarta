@@ -35,9 +35,11 @@ def mainlist(item):
     logger.info("[cinetemagay.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="Crónicas de Hefestion" , url="http://cronicasdehefestion.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-0lCbGrGkYzM/TyQ9a73qFcI/AAAAAAAAOK8/aQk2ZegBN9I/s1600/Banner%2B3.png"))    
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="Latin Queer Channel" , url="http://latinqueerchannel.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://3.bp.blogspot.com/-r8c6teBc_3I/TbmJiNtv0UI/AAAAAAAAC-0/KrthDgHEebM/banner-latin1.jpg"))
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="Cine gay online" , url="http://cinegayonline.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/_klHnTlDhpEE/TPK-FcZIhnI/AAAAAAAAAj8/sGfMjMa-QuI/S968-R/MyBannerMaker_Banner.jpg"))    
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Crónicas de Hefestion" , url="http://cronicasdehefestion.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-0lCbGrGkYzM/TyQ9a73qFcI/AAAAAAAAOK8/aQk2ZegBN9I/s1600/Banner%2B3.png"))    
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Latin Queer Channel" , url="http://latinqueerchannel.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://3.bp.blogspot.com/-r8c6teBc_3I/TbmJiNtv0UI/AAAAAAAAC-0/KrthDgHEebM/banner-latin1.jpg"))
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Cine gay online" , url="http://cinegayonline.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/_klHnTlDhpEE/TPK-FcZIhnI/AAAAAAAAAj8/sGfMjMa-QuI/S968-R/MyBannerMaker_Banner.jpg"))    
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Modo gay" , url="http://www.modogay.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/--oGFfDhcJg8/T4iGRMsNFOI/AAAAAAAABV4/oXKs9PMbrYU/s1600/mgbanner2.jpg"))         
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Cortosgay" , url="http://www.cortosgay.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/-66icrLESK28/TjEWQFsSwKI/AAAAAAAAAZU/PYbNsjO8JSA/s890/cortosgay1%25282%2529.jpg"))         
     return itemlist
 
 def lista(item):
@@ -64,6 +66,8 @@ def lista(item):
         scrapedtitle = match[3]
         scrapedtitle = scrapedtitle.replace("&apos;","'")
         scrapedtitle = scrapedtitle.replace("&quot;","'")
+        scrapedtitle = scrapedtitle.replace("&lt;h1&gt;","")
+        scrapedtitle = scrapedtitle.replace("&lt;/h1&gt;","")
         scrapedurl = match[2]
         scrapedthumbnail = match[0]
         imagen = ""
