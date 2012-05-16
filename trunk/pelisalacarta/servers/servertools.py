@@ -15,26 +15,31 @@ from core import logger
 # Lista de los servidores que se pueden ver sin cuenta premium de ningún tipo
 FREE_SERVERS = []
 FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared'])
-FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','movshare','novamov','ovfile','putlocker'])
+FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
 FREE_SERVERS.extend(['jumbofiles'])
+#bayfiles
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
-PREMIUM_SERVERS = ['wupload','fileserve']#,'uploadedto']
+PREMIUM_SERVERS = [''] #wupload','fileserve']#,'uploadedto']
 
 # Lista de TODOS los servidores soportados por Filenium
-FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','wupload','mediafire','bitshare','depositfiles','oron',
-                    'downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','fileserve','shareonline']
+FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','mediafire','bitshare','depositfiles']
+FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline'])
+FILENIUM_SERVERS.extend(['filebox','filefactory','netload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
+FILENIUM_SERVERS.extend(['vimeo','dailymotion'])
+#wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
 REALDEBRID_SERVERS = ['tenupload','onefichier','twoshared','fourfastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
                     'dengee','depositfiles','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
-                   'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
+                   'filesend','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
                    'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
                    'novamov','przeklej','purevid','putlocker','rapidgator','redtube','rapidshare','rutube','scribd','sendspace','shareonline','shareflare','shragle','slingfile','sockshare',
                    'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
-                   'userporn','videoweed','vidxden','vimeo','vipfile','wattv','wupload','youporn','youtube','yunfile','zippyshare','zshare']
+                   'userporn','videoweed','vidxden','vimeo','vipfile','wattv','youporn','youtube','yunfile','zippyshare','zshare']
+#wupload,fileserve
 
 # Lista completa de todos los servidores soportados por pelisalacarta, usada para buscar patrones
 ALL_SERVERS = list( set(FREE_SERVERS) | set(FILENIUM_SERVERS) | set(REALDEBRID_SERVERS) )
@@ -94,11 +99,12 @@ def findvideos(data):
     return devuelve
 
 def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=False):
-
+    logger.info("[servertools.py] resolve_video_urls_for_playing, server="+server+", url="+url)
     video_urls = []
 
     # Si el vídeo es "directo", no hay que buscar más
     if server=="directo" or server=="local":
+        logger.info("[servertools.py] server=directo, la url es la buena")
         video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
         return video_urls,True,""
 
@@ -114,21 +120,26 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
                 progreso.create( "pelisalacarta" , "Conectando con "+server)
 
             exec "from servers import "+server+" as server_connector"
-    
+            logger.info("[servertools.py] servidor de "+server+" importado")
             if muestra_dialogo:
                 progreso.update( 25 , "Conectando con "+server)
 
             # Si tiene una función para ver si el vídeo existe, lo comprueba ahora
             if hasattr(server_connector, 'test_video_exists'):
+                logger.info("[servertools.py] invocando a "+server+".test_video_exists")
                 puedes,motivo = server_connector.test_video_exists( page_url=url )
 
                 # Si la funcion dice que no existe, fin
                 if not puedes:
+                    logger.info("[servertools.py] test_video_exists dice que el video no existe")
                     if muestra_dialogo: progreso.close()
                     return video_urls,puedes,motivo
+                else:
+                    logger.info("[servertools.py] test_video_exists dice que el video SI existe")
 
             # Obtiene enlaces free
             if server in FREE_SERVERS:
+                logger.info("[servertools.py] invocando a "+server+".get_video_url")
                 video_urls = server_connector.get_video_url( page_url=url , video_password=video_password )
                 
                 # Si no se encuentran vídeos en modo free, es porque el vídeo no existe
