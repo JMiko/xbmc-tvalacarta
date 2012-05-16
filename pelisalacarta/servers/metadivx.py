@@ -7,16 +7,10 @@
 
 import urlparse,urllib2,urllib,re
 
-try:
-    from core import scrapertools
-    from core import logger
-    from core import config
-    from core import unpackerjs
-except:
-    from Code.core import scrapertools
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import unpackerjs
+from core import scrapertools
+from core import logger
+from core import config
+from core import unpackerjs
 
 import os
 COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
