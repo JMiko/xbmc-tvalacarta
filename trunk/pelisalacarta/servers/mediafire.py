@@ -24,7 +24,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     time.sleep(1)
 
     data = scrapertools.cache_page(page_url)
-    patron = '<a href="([^"]+)" onclick="avh\(this\)[^"]+">Download'
+    patron = 'kNO \= "([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
         video_urls.append( [matches[0][-4:]+" [mediafire]",matches[0] ] )
