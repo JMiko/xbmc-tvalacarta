@@ -27,14 +27,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     patron += '<input type="hidden" name="rand" value="([^"]+)">'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
-
-        
     # Lo pide una vez
     #scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
     from platformcode.xbmc import xbmctools
     xbmctools.handle_wait(5,"filebox",'')
     # Lo pide una segunda vez, como si hubieras hecho click en el banner
-
     
     codigo = ""
     nombre = ""
