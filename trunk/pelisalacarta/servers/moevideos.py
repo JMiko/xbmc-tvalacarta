@@ -16,6 +16,10 @@ from core import unpackerjs
 def test_video_exists( page_url ):
     logger.info("[moevideos.py] test_video_exists(page_url='%s')" % page_url)
 
+    # Si es el código embed directamente, no se puede comprobar
+    if "video.php" in page_url:
+        return True,""
+    
     # No existe / borrado: http://www.moevideos.net/online/27991
     data = scrapertools.cache_page(page_url)
     #logger.info("data="+data)
@@ -35,20 +39,24 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[moevideos.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
 
-    # Descarga la página y saca el ID
-    headers = []
-    headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
-    data = scrapertools.cache_page( page_url , headers=headers )
-    patron = '<script language="JavaScript" type="text/javascript" src="(http\://moevideo.net/video.php[^"]+)">'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    url1 = matches[0]
-    logger.info("[moevideos.py] url="+url1)
+    if not "video.php" in page_url:
+        # Descarga la página y saca el ID
+        headers = []
+        headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
+        data = scrapertools.cache_page( page_url , headers=headers )
+        patron = '<script language="JavaScript" type="text/javascript" src="(http\://moevideo.net/video.php[^"]+)">'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        url1 = matches[0]
+        logger.info("[moevideos.py] url="+url1)
+        
+        # Descarga el script (no sirve para nada, excepto las cookies)
+        headers.append(['Referer',page_url])
+        data = scrapertools.cache_page( url1 , headers=headers )
+        code = scrapertools.get_match(url1,"video.php\?file\=([^\&]+)\&")
+        
+    else:
+        code = scrapertools.get_match(page_url,"video.php\?file\=([^\&]+)\&")
 
-    # Descarga el script (no sirve para nada, excepto las cookies)
-    headers.append(['Referer',page_url])
-    data = scrapertools.cache_page( url1 , headers=headers )
-    code = scrapertools.get_match(url1,"video.php\?file\=([^\&]+)\&")
-    
     # API de letitbit
     headers2 = []
     headers2.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
@@ -84,6 +92,21 @@ def find_videos(data):
     for match in matches:
         titulo = "[moevideos]"
         url = "http://www."+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'moevideos' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # http://moevideo.net/video.php?file=71845.7a9a6d72d6133bb7860375b63f0e&width=600&height=450
+    patronvideos  = '"(http://moevideo.net/video.php[^"]+)"'
+    logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[moevideos]"
+        url = match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'moevideos' ] )
