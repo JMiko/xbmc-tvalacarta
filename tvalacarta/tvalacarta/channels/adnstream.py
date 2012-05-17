@@ -64,7 +64,7 @@ def mainlist(item, numero_por_pagina=None, pagina=None):
         scrapedurl = 'http://api.adnstream.com/canales.php?canal='+nombrelimpio
         scrapedthumbnail = thumbnail
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = scrapedtitle , action="mainlist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot="" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = scrapedtitle , action="mainlist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot="", show=scrapedtitle, folder=True) )
 
     # Extrae las entradas (Vídeos)
     patronvideos  = '<video>[^<]+'
@@ -85,7 +85,7 @@ def mainlist(item, numero_por_pagina=None, pagina=None):
         scrapedurl = "http://api.adnstream.com/video.php?video="+idvideo
         scrapedthumbnail = thumbnail
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , duration=duracion, page=link, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , duration=duracion, page=link, show=item.title, folder=False) )
 
     return itemlist
 
