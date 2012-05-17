@@ -25,7 +25,7 @@ MAX_SEARCH_RESULTS = "50"
 def isGeneric():
     return True
 
-def mainlist(item):
+def mainlist(item, numero_por_pagina=None, pagina=None):
     logger.info("[adnstream.py] mainlist")
 
     itemlist = []
@@ -34,9 +34,14 @@ def mainlist(item):
     if item is None or item.url == "":
         url=ADNURL
         primera = True
+        if numero_por_pagina is not None and pagina is not None:
+            url = url + "?n=%d&p=%d" % (numero_por_pagina,pagina)
+
     else:
         url = item.url
         primera = False
+        if numero_por_pagina is not None and pagina is not None:
+            url = url + "&n=%d&p=%d" % (numero_por_pagina,pagina)
 
     logger.info("url="+url)
 
@@ -71,7 +76,7 @@ def mainlist(item):
     patronvideos += '<thumbnails>.*?'
     patronvideos += '<thumb[^>]+>([^<]+)</thumb>[^<]+'
     patronvideos += '</thumbnails>'
-    
+
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for idvideo,nombre,descripcion,duracion,link,thumbnail in matches:
@@ -80,7 +85,7 @@ def mainlist(item):
         scrapedurl = "http://api.adnstream.com/video.php?video="+idvideo
         scrapedthumbnail = thumbnail
         
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , duration=duracion, page=link, folder=False) )
 
     return itemlist
 
