@@ -629,7 +629,10 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok( "No puedes descargar ese vídeo","Las descargas en RTMP aún no","están soportadas")
 
-    f.close()
+    try:
+        f.close()
+    except:
+        pass
     if not silent:
         progreso.close()
 
