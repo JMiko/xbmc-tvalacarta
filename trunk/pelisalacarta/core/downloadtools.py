@@ -454,7 +454,7 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
         try:
             import xbmcgui
         except:
-            silent=False
+            silent=True
         
         # antes
         #f=open(nombrefichero,"wb")
