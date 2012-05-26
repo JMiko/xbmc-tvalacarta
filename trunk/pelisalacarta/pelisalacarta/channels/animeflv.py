@@ -277,6 +277,16 @@ def findvideos(item):
         videoitem.fulltitle = item.title
         videoitem.title = item.title + videoitem.title
     
+    #<div style="display:none;" id="videoi">i=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=</div>
+    codigo_video_plugin = scrapertools.get_match(data,'<div[^>]+>i\=([^<]+)</div>')
+    #http://prueba.animeflv.net/mf.php?id=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=&paso=obtener
+    url="http://prueba.animeflv.net/mf.php?id="+codigo_video_plugin+"&paso=obtener"
+    data = scrapertools.cache_page(url)
+    #<embed allowfullscreen="true" src="/archivos/player.swf" bgcolor="#000" type="application/x-shockwave-flash" wmode="transparent" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="file=http://205.196.121.103/khff8ehdgfdg/mu0d5033k2ook7r/%5BVagoSubs%5D+Kurokos+Basketball+08+%5B480p%5D.mp4&autostart=true&provider=video" height="100%" width="100%">
+    mediaurl = scrapertools.get_match(data,'<embed.*?flashvars\="file\=([^\&]+)&')
+    logger.info("data="+data)
+    itemlist.append( Item( channel=__channel__, title=item.title+" (acceso plugin) - [directo]", action="play", url=mediaurl, server="directo", thumbnail=item.thumbnail, plot=scrapedplot, fulltitle=item.title, folder=False) )
+    
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
@@ -286,7 +296,14 @@ def test():
     # mainlist
     mainlist_items = mainlist(Item())
     
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    # Comprueba que todas las opciones tengan algo (excepto el buscador)
+    for mainlist_item in mainlist_items:
+        if mainlist_item.action!="search":
+            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
+            if len(itemlist)==0:
+                return false
+    
+    # Comprueba si alguno de los vídeos de "Novedades" devuelve mirrors
     episodios_items = newlist(mainlist_items[0])
     
     bien = False
