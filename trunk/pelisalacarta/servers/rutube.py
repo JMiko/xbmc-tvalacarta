@@ -15,32 +15,42 @@ from core import config
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[rutube.py] url="+page_url)
+    video_urls = []
 
+    # http://video.rutube.ru/c787127815fb977fee41c9c745495e63
     patron = 'http://video.rutube.ru/([a-z0-9]+)'
     matches = re.compile(patron,re.DOTALL).findall(page_url)
     if len(matches)==0:return []
     code = matches[0]
     logger.info("code="+code)
 
-    url = "http://bl.rutube.ru/"+code+".xml?referer="
+    #http://bl.rutube.ru/c787127815fb977fee41c9c745495e63.f4m
+    url = "http://bl.rutube.ru/"+code+".f4m"
     data = scrapertools.cache_page( url )
     logger.info("data="+data)
 
     '''
-    <?xml version="1.0"?>
-    <response status="302"><finalAddress>
-    <![CDATA[rtmp://video-13-7.rutube.ru/rutube_vod_2/mp4:n2vol1/movies/91/20/91203fc46405f06c2cadb98c9052dd68.mp4?e=1327761052&s=fc2477835e2ee7cf6e9fb437d6eb8341]]>
-    </finalAddress></response>
+    <?xml version="1.0" encoding="UTF-8"?><manifest xmlns="http://ns.adobe.com/f4m/1.0"><responseCode>200</responseCode><responseDsc>Success</responseDsc><baseURL>rtmp://video-1-13.rutube.ru</baseURL><media url="/rutube_vod_2/mp4:n6vol1/movies/c7/87/c787127815fb977fee41c9c745495e63.mp4?e=1338076898&amp;s=f4622e19943508f93e5781d1d6646835" bitrate="0" width="0" height="0"/></manifest>
     '''
-    '''
-    <response status="302"><finalAddress>
-    <![CDATA[rtmp://video-12-9.rutube.ru/rutube_vod_1/mp4:n1vol1/movies/4c/b0/4cb0b5b76105084987be355f5c0cf5cc.mp4?e=1328574823&s=7ce76180534e1f8d5a88f81095d3e133]]>
-    </finalAddress></response>
-    '''
+    #rtmp://video-1-13.rutube.ru
+    baseURL = scrapertools.get_match(data,"<baseURL>([^<]+)</baseURL")
+    #/rutube_vod_2/mp4:n6vol1/movies/c7/87/c787127815fb977fee41c9c745495e63.mp4?e=1338076898&amp;s=f4622e19943508f93e5781d1d6646835
+    mediaURL = scrapertools.get_match(data,'<media url="([^"]+)"')
+    
+    app = scrapertools.get_match(mediaURL,"\/(rutube_vod[^\/]+\/)")
+    playpath = scrapertools.get_match(mediaURL,"(mp4\:.*?)$")
+    swfurl = 'http://rutube.ru/player.swf'
+    
+    # ANTES rtmp://video-1-1.rutube.ru:1935/ app=rutube_vod_2/_definst_/ swfurl=http://rutube.ru/player.swf playpath=mp4:vol32/movies/14/bd/14bd98f3733ef080507ff5f517f28830.mp4?e=1295385656&s=adb28dba086b7394013c37550cb48dd8&blid=957c0d2befa18c8d286b2076cecf01bd
+    # AHORA rtmp://video-1-13.rutube.ru:1935 app=rutube_vod_2/           swfurl=http://rutube.ru/player.swf playpath=mp4:n6vol1/movies/c7/87/c787127815fb977fee41c9c745495e63.mp4?e=1338077658&amp;s=cc16803c683a4216875eb3bb9216ad45
+
+
+    streamURL = baseURL + ":1935 app="+app+" swfurl="+swfurl+" playpath="+playpath.replace("&amp;","&")
+
+    video_urls.append(["[rutube]",streamURL])
+    ''' 
     patron = "<finalAddress>[^<]+<\!\[CDATA\[([^\]]+)\]\]>"
     matches = re.compile(patron,re.DOTALL).findall(data)
-
-    video_urls = []
     
     if len(matches)>0:
         
@@ -67,10 +77,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         logger.info("stream="+sStreamUrl)
 
         video_urls.append( ["[rutube]",sStreamUrl])
+    '''
 
     for video_url in video_urls:
         logger.info("[rutube.py] %s - %s" % (video_url[0],video_url[1]))
-
+    
     return video_urls
 
 # Encuentra vídeos de este servidor en el texto pasado
