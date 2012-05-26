@@ -16,7 +16,7 @@ def test_video_exists( page_url ):
     return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[hotfile.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[hulkshare.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
     
     location = scrapertools.get_header_from_response(page_url, header_to_get="location")
