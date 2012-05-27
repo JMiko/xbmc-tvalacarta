@@ -36,35 +36,34 @@ def mainlist(item):
 def menupeliculas(item):
     logger.info("[bajui.py] menupeliculas")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas - Novedades"        , action="scrapping"   , url="http://www.bajui.com/categoria/2/peliculas"))
-    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="scrapping"   , url="http://www.bajui.com/categoria/2/peliculas/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Películas - DVDRip-VHSRip"    , action="scrapping"   , url="http://www.bajui.com/subcategoria/1/dvdrip-vhsrip/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Películas - HDRip-BDRip"      , action="scrapping"   , url="http://www.bajui.com/subcategoria/2/hdrip-bdrip/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Películas - HD"               , action="scrapping"   , url="http://www.bajui.com/subcategoria/3/hd/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Películas - TS-SCR-CAM"       , action="scrapping"   , url="http://www.bajui.com/subcategoria/5/ts-scr-cam/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Películas - DVDR-FULL"        , action="scrapping"   , url="http://www.bajui.com/subcategoria/6/dvdr-full/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Películas - VOS"              , action="scrapping"   , url="http://www.bajui.com/subcategoria/7/vos/orden:nombre") )
-    itemlist.append( Item(channel=__channel__, title="Películas - Latino"           , action="scrapping"   , url="http://www.bajui.com/subcategoria/35/latino/orden:nombre") )
+    itemlist.append( Item(channel=__channel__, title="Películas - Novedades"        , action="peliculas"   , url="http://www.bajui.com/categoria/2/peliculas"))
+    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="peliculas"   , url="http://www.bajui.com/categoria/2/peliculas/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Películas - DVDRip-VHSRip"    , action="peliculas"   , url="http://www.bajui.com/subcategoria/1/dvdrip-vhsrip/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Películas - HDRip-BDRip"      , action="peliculas"   , url="http://www.bajui.com/subcategoria/2/hdrip-bdrip/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Películas - HD"               , action="peliculas"   , url="http://www.bajui.com/subcategoria/3/hd/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Películas - TS-SCR-CAM"       , action="peliculas"   , url="http://www.bajui.com/subcategoria/5/ts-scr-cam/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Películas - DVDR-FULL"        , action="peliculas"   , url="http://www.bajui.com/subcategoria/6/dvdr-full/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Películas - VOS"              , action="peliculas"   , url="http://www.bajui.com/subcategoria/7/vos/orden:nombre") )
+    itemlist.append( Item(channel=__channel__, title="Películas - Latino"           , action="peliculas"   , url="http://www.bajui.com/subcategoria/35/latino/orden:nombre") )
     itemlist.append( Item(channel=__channel__, title="Buscar"                       , action="search"      , url="") )
     return itemlist
 
 def menuseries(item):
     logger.info("[bajui.py] menuseries")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Series - Novedades"           , action="scrappingS"        , url="http://www.bajui.com/categoria/3/series"))
-    itemlist.append( Item(channel=__channel__, title="Series - A-Z"                 , action="scrappingS"        , url="http://www.bajui.com/categoria/3/series/orden:nombre"))
-    itemlist.append( Item(channel=__channel__, title="Series - HD"                  , action="scrappingS"        , url="http://www.bajui.com/subcategoria/11/hd/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Series - Novedades"           , action="peliculas"        , url="http://www.bajui.com/categoria/3/series"))
+    itemlist.append( Item(channel=__channel__, title="Series - A-Z"                 , action="peliculas"        , url="http://www.bajui.com/categoria/3/series/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Series - HD"                  , action="peliculas"        , url="http://www.bajui.com/subcategoria/11/hd/orden:nombre"))
     itemlist.append( Item(channel=__channel__, title="Buscar"                       , action="search"            , url="") )
     return itemlist
 
 def menudocumentales(item):
     logger.info("[bajui.py] menudocumentales")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Documentales - Novedades"         , action="scrapping"     , url="http://www.bajui.com/categoria/7/docus-y-tv"))
-    itemlist.append( Item(channel=__channel__, title="Documentales - A-Z"               , action="scrapping"     , url="http://www.bajui.com/categoria/7/docus-y-tv/orden:nombre"))
+    itemlist.append( Item(channel=__channel__, title="Documentales - Novedades"         , action="peliculas"     , url="http://www.bajui.com/categoria/7/docus-y-tv"))
+    itemlist.append( Item(channel=__channel__, title="Documentales - A-Z"               , action="peliculas"     , url="http://www.bajui.com/categoria/7/docus-y-tv/orden:nombre"))
     itemlist.append( Item(channel=__channel__, title="Buscar"                           , action="search"        , url="") )
     return itemlist
-
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto,categoria=""):
@@ -76,7 +75,7 @@ def search(item,texto,categoria=""):
     try:
         item.url = "http://www.bajui.com/busqueda/%s"
         item.url = item.url % texto
-        itemlist.extend(scrappingSearch(item))
+        itemlist.extend(buscar(item))
         return itemlist
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
@@ -85,8 +84,7 @@ def search(item,texto,categoria=""):
             logger.error( "%s" % line )
         return []
 
-
-def scrappingSearch(item,paginacion=True):
+def buscar(item,paginacion=True):
     logger.info("[bajui.py] peliculas")
     url = item.url
     # Descarga la página
@@ -109,12 +107,7 @@ def scrappingSearch(item,paginacion=True):
             scrapedurl = urlparse.urljoin("http://www.bajui.com/",match[3])
             scrapedthumbnail = urlparse.urljoin("http://www.bajui.com/",match[1])
             if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            if match[5] == 'Peliculas':
-                finder='findvideos'
-            elif match[5] == 'Series':
-                finder='findcapitulos'
-                # Añade al listado de XBMC
-            itemlist.append( Item(channel=__channel__, action=finder, title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+            itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
 
     # Extrae el paginador
     #<a href="categoria/2/peliculas/pag:2/orden:nombre" class="pagina pag_sig">Siguiente »</a>
@@ -124,18 +117,15 @@ def scrappingSearch(item,paginacion=True):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin("http://www.bajui.com/",matches[0])
-        pagitem = Item(channel=__channel__, action="scrapping", title="!Página siguiente" , url=scrapedurl)
+        pagitem = Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl)
         if not paginacion:
-            itemlist.extend( scrapping(pagitem) )
+            itemlist.extend( peliculas(pagitem) )
         else:
             itemlist.append( pagitem )
 
     return itemlist
 
-def scrappingS(item,paginacion=True):
-    return scrapping(item,paginacion,'findcapitulos')
-
-def scrapping(item,paginacion=True,finder='findvideos'):
+def peliculas(item,paginacion=True):
     logger.info("[bajui.py] peliculas")
     url = item.url
     # Descarga la página
@@ -159,7 +149,7 @@ def scrapping(item,paginacion=True,finder='findvideos'):
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action=finder, title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
 
     # Extrae el paginador
     #<a href="categoria/2/peliculas/pag:2/orden:nombre" class="pagina pag_sig">Siguiente »</a>
@@ -169,9 +159,9 @@ def scrapping(item,paginacion=True,finder='findvideos'):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin("http://www.bajui.com/",matches[0])
-        pagitem = Item(channel=__channel__, action="scrapping", title="!Página siguiente" , url=scrapedurl)
+        pagitem = Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl)
         if not paginacion:
-            itemlist.extend( scrapping(pagitem) )
+            itemlist.extend( peliculas(pagitem) )
         else:
             itemlist.append( pagitem )
 
@@ -179,90 +169,43 @@ def scrapping(item,paginacion=True,finder='findvideos'):
 
 def findvideos(item):
     logger.info("[bajui.py] findvideos")
-    try:
-        url = item.url
-        title = item.title
-        fulltitle = item.fulltitle
-        extra = item.extra
-        thumbnail = item.thumbnail
-        plot = item.plot
-        # Descarga la pagina
-        data = scrapertools.cachePage(url)
-        # Busca los enlaces a los mirrors, o a los capitulos de las series...
-#        <li><span class="comentario">filejungle</span></li><li><a href="http://www.filejungle.com/f/uGuF2M" target="_blank" id="a-58321-2">http://www.filejungle.com/f/uGuF2M</a> </li>
-        patronvideos = '<li><a href="(http://([^/]+)([^"]+))" target="_blank" id="[^"]+">[^<]+</a> </li>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        itemlist = []
-        for match in matches:
-            scrapedtitle = match[1]
-            scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-            scrapedurl = match[0]
-            videoitems = servertools.find_video_items(data=scrapedurl)
-            if len(videoitems)>0:
-                server = videoitems[0].server
-                scrapedurl = videoitems[0].url
-                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-
-    return itemlist
-
-def findcapitulos(item):
-    logger.info("[bajui.py] findcapitulos")
-    try:
-        url = item.url
-        title = item.title
-        fulltitle = item.fulltitle
-        extra = item.extra
-        thumbnail = item.thumbnail
-        plot = item.plot
-
-        # Descarga la pagina
-        data = scrapertools.cachePage(url)
-        # Busca los enlaces a los mirrors, o a los capitulos de las series...
-        patronvideos = '(<li><span class="comentario">([^<]+)</span></li>)?<li>(<span class="negrita">([^<]+)</span>)?</li><li>(<a href="([^"]+)" target="_blank" id="[^"]+">[^<]+</a>)? ?</li>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        itemlist = []
-        scrapedtitle=""
-        for match in matches:
-            if len(match[1]):
-                scrapedtitle = match[1]
-                scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-            
-            scrapedurl = match[5]
-            videoitems = servertools.find_video_items(data=scrapedurl)
-            if len(videoitems)>0:
-                server = videoitems[0].server
-                scrapedurl = videoitems[0].url
-                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
-#        Segunda pasada duplicara alguno pero asi nos aseguramos que los tenemos todos
-        patronvideos = '<li><a href="(http://([^/]+)([^"]+))" target="_blank" id="[^"]+">[^<]+</a> </li>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        for match in matches:
-            scrapedtitle = match[1]
-            scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-            scrapedurl = match[0]
-            videoitems = servertools.find_video_items(data=scrapedurl)
-            if len(videoitems)>0:
-                server = videoitems[0].server
-                scrapedurl = videoitems[0].url
-                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl, thumbnail=item.thumbnail, plot=plot, server=server, extra=extra, category=item.category, fanart=item.thumbnail, folder=False))
-
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-
+    
+    data = scrapertools.cache_page(item.url)
+    itemlist = servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+        videoitem.plot = item.plot
+        videoitem.thumbnail = item.thumbnail
+        videoitem.fulltitle = item.fulltitle
+        
+        parsed_url = urlparse.urlparse(videoitem.url)
+        fichero = parsed_url.path
+        partes = fichero.split("/")
+        titulo = partes[ len(partes)-1 ]
+        videoitem.title = titulo + " - [" + videoitem.server+"]"
+        
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     # mainlist
     mainlist_items = mainlist(Item())
-    menupeliculas_items = menupeliculas(mainlist_items[0])
+    
+    # Comprueba que todas las opciones tengan algo (excepto los buscadores)
+    for mainlist_item in mainlist_items:
+        if mainlist_item.action!="search":
+            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
+            
+            for item in itemlist:
+                if item.action!="search":
+                    exec "itemlist2 ="+item.action+"(item)"
+        
+                    if len(itemlist2)==0:
+                        return false
+    
+    
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    menupeliculas_items = menupeliculas(mainlist_items[0])
     peliculas_items = peliculas(menupeliculas_items[0])
     bien = False
     for pelicula_item in peliculas_items:

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>bajui</name>
-	<tag>2</tag>
-	<date>22/02/2012</date>
-	<changes>Mejorada detección servidores</changes>
+	<tag>3</tag>
+	<date>27/05/2012</date>
+	<changes>Se incluye el nombre del fichero al presentar los links, para facilitar</changes>
 </version>
