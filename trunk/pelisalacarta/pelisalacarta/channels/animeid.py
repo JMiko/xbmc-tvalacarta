@@ -351,7 +351,14 @@ def test():
     
     # mainlist
     mainlist_items = mainlist(Item())
-    
+
+    # Comprueba que todas las opciones tengan algo (excepto el buscador)
+    for mainlist_item in mainlist_items:
+        if mainlist_item.action!="search":
+            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
+            if len(itemlist)==0:
+                return false
+
     # Da por bueno el canal si alguno de los vídeos de las series en "Destacados" devuelve mirrors
     series_items = destacados(mainlist_items[0])
     episodios_items = serie(series_items[0])
