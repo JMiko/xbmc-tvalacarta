@@ -24,13 +24,14 @@ def find_videos(data):
 
     # https://rapidshare.com/files/3346009389/_BiW__Last_Exile_Ginyoku_no_Fam_-_Episodio_09__A68583B1_.mkv
     # "https://rapidshare.com/files/3346009389/_BiW__Last_Exile_Ginyoku_no_Fam_-_Episodio_09__A68583B1_.mkv"
-    patronvideos  = '"(https://rapidshare.com/files/[0-9]+/[^"]+)"'
+    # http://rapidshare.com/files/2327495081/Camino.Sangriento.4.HDR.Proper.200Ro.dri.part5.rar
+    patronvideos  = '(rapidshare.com/files/[0-9]+/.*?)["|<]'
     logger.info("[rapidshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[rapidshare]"
-        url = match
+        url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'rapidshare' ] )
