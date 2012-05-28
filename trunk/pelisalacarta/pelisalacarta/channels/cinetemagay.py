@@ -130,6 +130,24 @@ def detail(item):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         if not "www.youtube" in matches[0]:
-            itemlist.append( Item(channel=__channel__ , action="play" , server="Directo", title=item.title+" [directo]",url=matches[0], thumbnail=item.thumbnail, plot=item.plot))
+            itemlist.append( Item(channel=__channel__ , action="play" , server="Directo", title=item.title+" [directo]",url=matches[0], thumbnail=item.thumbnail, plot=item.plot, folder=False))
 
     return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Comprueba que alguna de las opciones tenga algo, con mirrors
+    for mainlist_item in mainlist_items:
+        exec "peliculas_list = "+mainlist_item.action+"(mainlist_item)"
+
+        if len(peliculas_list)>0:
+            for pelicula_item in peliculas_list:
+                mirrors = detail(item=pelicula_item)
+                if len(mirrors)>0:
+                    return True
+
+    return False
