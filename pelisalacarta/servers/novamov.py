@@ -21,13 +21,13 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     patron = 'flashvars.file="(.*?)";'
     matches = re.compile(patron).findall(data)
     for match in matches:
-    	logger.info("File = "+match)
-	flashvarsfile = match
+        logger.info("File = "+match)
+    flashvarsfile = match
     patron = 'flashvars.filekey="(.*?)";'
     matches = re.compile(patron).findall(data)
     for match in matches:
-    	logger.info("Key = "+match)
-	flashvarsfilekey = match
+        logger.info("Key = "+match)
+    flashvarsfilekey = match
     post="key="+flashvarsfilekey+"&user=undefined&codes=1&pass=undefined&file="+flashvarsfile
     url = "http://www.novamov.com/api/player.api.php?"+post
     data = scrapertools.cache_page(url, post=post)
@@ -38,8 +38,8 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     
     video_urls = []
     logger.info(matches[0])
-    video_urls.append( ["FLV [novamov]",matches[0]])
-	
+    video_urls.append( [".flv [novamov]",matches[0]])
+    
     return video_urls
 
 def find_videos(data):
