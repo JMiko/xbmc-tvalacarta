@@ -13,6 +13,17 @@ from core import logger
 from core import config
 from core import unpackerjs
 
+def test_video_exists( page_url ):
+    logger.info("[vidxden.py] test_video_exists(page_url='%s')" % page_url)
+    
+    data = scrapertools.cache_page( page_url )
+    if "This server is in maintenance mode, please try again later." in data:
+        return False,"El servidor de vidxden no está disponible<br/>por tareas de mantenimiento"
+    elif "No such file or the file has been removed due to copyright infringement issues." in data:
+        return False,"Ese video ha sido borrado de vidxden"
+    else:
+        return True,""
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
 
     logger.info("[vidxden.py] url="+page_url)
