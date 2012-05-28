@@ -201,7 +201,7 @@ def test():
                     exec "itemlist2 ="+item.action+"(item)"
         
                     if len(itemlist2)==0:
-                        return false
+                        return False
     
     
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
