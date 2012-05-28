@@ -71,9 +71,12 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_url = matches[0]
     logger.info("[moevideos.py] video_url="+video_url)
 
-    video_urls = []
-    video_urls.append(["FLV [moevideos]",video_url])
+    import urlparse
+    parsed_url = urlparse.urlparse(video_url)
     
+    video_urls = []
+    video_urls.append( [ parsed_url.path[-4:] + " [moevideos]",video_url ] )
+
     for video_url in video_urls:
         logger.info("[moevideos.py] %s - %s" % (video_url[0],video_url[1]))
 
