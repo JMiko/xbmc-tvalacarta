@@ -14,31 +14,32 @@ from core import logger
 
 # Lista de los servidores que se pueden ver sin cuenta premium de ningún tipo
 FREE_SERVERS = []
-FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared'])
+FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared', 'hulkshare', 'twitvid'])
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
-FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
+FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
-FREE_SERVERS.extend(['jumbofiles'])
+FREE_SERVERS.extend(['jumbofiles','nowvideo','videopremium'])
 #bayfiles
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
 PREMIUM_SERVERS = [''] #wupload','fileserve']#,'uploadedto']
 
 # Lista de TODOS los servidores soportados por Filenium
-FILENIUM_SERVERS = ['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','mediafire','bitshare','depositfiles']
-FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline'])
+FILENIUM_SERVERS = []
+FILENIUM_SERVERS.extend(['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','mediafire','bitshare','depositfiles'])
+FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline','rapidgator'])
 FILENIUM_SERVERS.extend(['filebox','filefactory','netload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
-FILENIUM_SERVERS.extend(['vimeo','dailymotion'])
+FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles'])
 #wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
-REALDEBRID_SERVERS = ['tenupload','onefichier','twoshared','fourfastfile','fourshared','abc','badongo','bayfiles','bitshare','bulletupload','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
-                    'dengee','depositfiles','diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
-                   'filesend','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
-                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','kickload','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
-                   'novamov','przeklej','purevid','putlocker','rapidgator','redtube','rapidshare','rutube','scribd','sendspace','shareonline','shareflare','shragle','slingfile','sockshare',
-                   'soundcloud','speedyshare','turbobit','unibytes','uploadboost','uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
-                   'userporn','videoweed','vidxden','vimeo','vipfile','wattv','youporn','youtube','yunfile','zippyshare','zshare']
+REALDEBRID_SERVERS = ['one80upload','tenupload','onefichier','onehostclick','twoshared','fourfastfile','fourshared','abc','asfile','badongo','bayfiles','bitshare','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
+                    'dengee','diglo','extabit','fiberupload','filebox','filedino','filefactory','fileflyer','filekeen','filemade','filemates','fileover','filepost',
+                   'filereactor','filesend','filesmonster','filevelocity','freakshare','free','furk','fyels','gigasize','gigaup','glumbouploads','goldfile','hitfile','hipfile','hostingbulk',
+                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','muchshare','netload',
+                   'novafile','nowdownload','purevid','putbit','putlocker','redtube','rapidshare','rutube','ryushare','scribd','sendspace','sharebees','shareflare','shragle','slingfile','sockshare',
+                   'soundcloud','speedyshare','turbobit','unibytes','uploadc','uploadedto','uploading','uploadspace','uptobox',
+                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare']
 #wupload,fileserve
 
 # Lista completa de todos los servidores soportados por pelisalacarta, usada para buscar patrones
@@ -105,7 +106,12 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
     # Si el vídeo es "directo", no hay que buscar más
     if server=="directo" or server=="local":
         logger.info("[servertools.py] server=directo, la url es la buena")
-        video_urls = [[ "%s [%s]" % (url[-4:],server) , url ]]
+        
+        import urlparse
+        parsed_url = urlparse.urlparse(url)
+        extension = parsed_url.path[-4:]
+        
+        video_urls = [[ "%s [%s]" % (extension,server) , url ]]
         return video_urls,True,""
 
     # Averigua las URL de los vídeos
