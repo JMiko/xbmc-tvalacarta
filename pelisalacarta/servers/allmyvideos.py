@@ -34,61 +34,23 @@ def test_video_exists( page_url ):
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[allmyvideos.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
-    if ".html" not in page_url:
-        logger.info("[allmyvideos.py] URL incompleta")
-        data = scrapertools.cache_page(page_url)
-        patron = '<input type="hidden" name="fname" value="([^"]+)">'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        page_url = page_url+"/"+matches[0]+".html"
 
-    # Lo pide una vez
-    scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
+    # Descarga
+    data = scrapertools.cache_page( page_url )
+    packed = scrapertools.get_match( data , "(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d.*?)</script>",1)
     
-    # Lo pide una segunda vez, como si hubieras hecho click en el banner
-    patron = 'http\:\/\/allmyvideos\.net/([^\/]+)/(.*?)\.html'
-    matches = re.compile(patron,re.DOTALL).findall(page_url)
-    logger.info("[allmyvideos.py] fragmentos de la URL")
-    scrapertools.printMatches(matches)
-    
-    codigo = ""
-    nombre = ""
-    if len(matches)>0:
-        codigo = matches[0][0]
-        nombre = matches[0][1]
-
-    #op=download1&usr_login=&id=yqa1zlnum819&fname=harrys.law.219.hdtv-lol.mp4&referer=&method_free=Watch+Now%21
-    post = "op=download1&usr_login=&id="+codigo+"&fname="+nombre+"&referer=&method_free=Watch+Now%21"
-    data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
-    
-    # Extrae el trozo cifrado
-    patron = "<div id='flvplayer'></div>[^<]+"
-    patron += "<script type='text/javascript'>(.*?)</script>"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
-    data = ""
-    if len(matches)>0:
-        data = matches[0]
-        logger.info("[allmyvideos.py] bloque packed="+data)
-    else:
-        logger.info("[allmyvideos.py] no encuentra bloque packed="+data)
-
-        return ""
-    
-    # Lo descifra
-    descifrado = unpackerjs.unpackjs(data)
-    descifrado = descifrado.replace("\\","")
-    # Extrae la URL del vídeo
-    logger.info("descifrado="+descifrado)
-    # Extrae la URL
-    #'file':'http://sd481.allmyvideos.net:182/d/2gmhj7h7yq5dh6lnhtgyd4g5pmks5h3dog2xp6ege3teeecdbp6zhy7f/video.mp4'
-    patron = "'file'\:'([^']+)'"
-    matches = re.compile(patron,re.DOTALL).findall(descifrado)
-    scrapertools.printMatches(matches)
+    from core import unpackerjs
+    unpacked = unpackerjs.unpackjs(packed)
+    #('var starttime=$.cookie(\'vposm7p03lbkysdw\');if(starttime==undefined)starttime=0;jwplayer(\'flvplayer\').setup({\'id\':\'playerID\',\'width\':\'960\',\'height\':\'511\',\'file\':\'http://66.220.4.230:182/d/3omd5q77yq5dh6lnhlgzlnwmpjsz6jak4r4dalwptfh3auyzpfu2og6u/video.mp4\',\'image\':\'http://66.220.4.230/i/00012/m7p03lbkysdw.jpg\',\'duration\':\'5836\',\'streamscript\':\'lighttpd\',\'provider\':\'http\',\'http.startparam\':\'start\',\'dock\':\'true\',\'viral.onpause\':\'false\',\'viral.callout\':\'none\',\'start\':starttime,\'plugins\':\'captions-2,fbit-1,timeslidertooltipplugin-3,/player/ova-jw.swf,sharing-3\',\'timeslidertooltipplugin.preview\':{\'enabled\':true,\'path\':\'http://66.220.4.230:182/p/00012/m7p03lbkysdw/\',\'prefix\':\'m7p03lbkysdw_\'},\'sharing.link\':\'http://allmyvideos.net/m7p03lbkysdw\',\'sharing.code\':\'<IFRAME SRC="http://allmyvideos.net/embed-h08ml8bdrpvw-960x511.html" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=960 HEIGHT=531></IFRAME>\',\'config\':\'/player/ova.xml\',\'logo.hide\':\'false\',\'logo.position\':\'top-left\',\'logo.file\':\'/player/gopremium.png\',\'logo.link\':\'/premium.html\',\'skin\':\'/player/skins/bekle.zip\',\'dock.position\':\'left\',\'controlbar.position\':\'bottom\',\'modes\':[{type:\'flash\',src:\'/player/player.swf\'},{type:\'html5\'}]});var playerVersion=swfobject.getFlashPlayerVersion();var output=\'You have Flash player \'+playerVersion.major+\'.\'+playerVersion.minor+\'.\'+playerVersion.release+\' installed\';if((playerVersion.major<1)&&(navigator.appVersion.indexOf(\'iPhone\')==-1)&&(navigator.appVersion.indexOf(\'Android\')==-1)){document.getElementById(\'flashnotinstalled\').style.display=\'block\'}',511,00012player,
+    unpacked = unpacked.replace("\\","")
+    location = scrapertools.get_match(unpacked,"'file'\:'([^']+)'")+"?start=0"
     
     video_urls = []
     
-    if len(matches)>0:
-        video_urls.append( ["."+matches[0].rsplit('.',1)[1]+" [allmyvideos]",matches[0]])
+    import urlparse
+    parsed_url = urlparse.urlparse(location)
+    
+    video_urls.append( [ parsed_url.path[-4:] + " [allmyvideos]",location ] )
 
     for video_url in video_urls:
         logger.info("[allmyvideos.py] %s - %s" % (video_url[0],video_url[1]))
@@ -115,18 +77,4 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    # http://allmyvideos.net/ugk8qqbywuk8/alc103.mp4.html
-    patronvideos  = '(allmyvideos.net/[A-Z0-9a-z]+/.*?html)'
-    logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    for match in matches:
-        titulo = "[allmyvideos]"
-        url = "http://"+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'allmyvideos' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
     return devuelve
