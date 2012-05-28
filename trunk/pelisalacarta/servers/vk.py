@@ -125,8 +125,11 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    #//vk.com/video_ext.php?oid=114355493&id=162574740&hash=dd60f434da306b26&hd=1
-    patronvideos = '(vk.com/video_ext.php?oid=\d+&id=\d+&hash=[a-z0-9]+&hd=\d+)'
+    #http://vk-30835.html -> mal
+    #http://vk.com/video101726978_163640461 -> bien
+    #http://vk.com/video_ext.php?oid=114355493&id=162574740&hash=dd60f434da306b26&hd=1
+
+    patronvideos = '(vk\.com/video_ext.php?oid=\d+&id=\d+&hash=[a-z0-9]+&hd=\d+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
@@ -141,14 +144,17 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    #vk tipo "http://vk.com/video_ext.php?oid=70712020&amp;id=159787030&amp;hash=88899d94685174af&amp;hd=3"
-    patronvideos = '<iframe src=".*?(vk.com/video_ext.php[^"]+)"'
+    #http://vk.com/video_ext.php?oid=70712020&amp;id=159787030&amp;hash=88899d94685174af&amp;hd=3"
+    #http://vk.com/video_ext.php?oid=161288347&#038;id=162474656&#038;hash=3b4e73a2c282f9b4&#038;sd
+    patronvideos = '<iframe src=".*?(vk\.com/video_ext.php[^"]+)"'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
         titulo = "[vk]"
         url = "http://"+match
+        url = url.replace("&amp;","&")
+        url = url.replace("&#038;","&")
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -158,13 +164,15 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # otro alternativo
-    patronvideos  = '(vk.+?\/video_ext\.php[^"]+)"'
+    patronvideos  = '(vk\..+?\/video_ext\.php[^"]+)"'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #print data
     for match in matches:
         titulo = "[vk]"
         url = "http://"+match
+        url = url.replace("&amp;","&")
+        url = url.replace("&#038;","&")
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -174,13 +182,15 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # otro alternativo
-    patronvideos  = "http://(?:www.)(vk.+?\/video_ext\.php[^']+)'"
+    patronvideos  = "http://(?:www.)(vk\..+?\/video_ext\.php[^']+)'"
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #print data
     for match in matches:
         titulo = "[vk]"
         url = "http://"+match
+        url = url.replace("&amp;","&")
+        url = url.replace("&#038;","&")
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -190,7 +200,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # http://vk.com/video97482389_161509127?section=all
-    patronvideos  = '(vk.+?\/video[0-9]+_[0-9]+)\?'
+    patronvideos  = '(vk\..+?\/video[0-9]+_[0-9]+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #print data
