@@ -327,7 +327,7 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     # ---------------------------------
 
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
     logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
@@ -355,14 +355,14 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
             # imported ClientCookie
             urlopen = ClientCookie.urlopen
             Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            cj = ClientCookie.MozillaCookieJar()
 
     else:
         logger.info("[scrapertools.py] cookielib disponible")
         # importing cookielib worked
         urlopen = urllib2.urlopen
         Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
+        cj = cookielib.MozillaCookieJar()
         # This is a subclass of FileCookieJar
         # that has useful load and save methods
 
@@ -483,7 +483,7 @@ def downloadpagewithcookies(url):
     # ---------------------------------
 
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_data_path(), 'cookies.dat' )
     logger.info("[scrapertools.py] Cookiefile="+ficherocookies)
 
     cj = None
@@ -506,13 +506,13 @@ def downloadpagewithcookies(url):
             # imported ClientCookie
             urlopen = ClientCookie.urlopen
             Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            cj = ClientCookie.MozillaCookieJar()
 
     else:
         # importing cookielib worked
         urlopen = urllib2.urlopen
         Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
+        cj = cookielib.MozillaCookieJar()
         # This is a subclass of FileCookieJar
         # that has useful load and save methods
 
@@ -596,7 +596,7 @@ def downloadpageWithoutCookies(url):
 def downloadpageGzip(url):
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_data_path(), 'cookies.dat' )
     logger.info("Cookiefile="+ficherocookies)
     inicio = time.clock()
     
@@ -620,13 +620,13 @@ def downloadpageGzip(url):
             # imported ClientCookie
             urlopen = ClientCookie.urlopen
             Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            cj = ClientCookie.MozillaCookieJar()
 
     else:
         # importing cookielib worked
         urlopen = urllib2.urlopen
         Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
+        cj = cookielib.MozillaCookieJar()
         # This is a subclass of FileCookieJar
         # that has useful load and save methods
 
@@ -999,7 +999,7 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
         logger.info("[scrapertools.py] post=None")
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
     logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
@@ -1010,7 +1010,7 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
     # importing cookielib worked
     urlopen = urllib2.urlopen
     Request = urllib2.Request
-    cj = cookielib.LWPCookieJar()
+    cj = cookielib.MozillaCookieJar()
     # This is a subclass of FileCookieJar
     # that has useful load and save methods
 
@@ -1092,7 +1092,7 @@ def get_headers_from_response(url,post=None,headers=[['User-Agent', 'Mozilla/5.0
         logger.info("[scrapertools.py] post=None")
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
     logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
@@ -1103,7 +1103,7 @@ def get_headers_from_response(url,post=None,headers=[['User-Agent', 'Mozilla/5.0
     # importing cookielib worked
     urlopen = urllib2.urlopen
     Request = urllib2.Request
-    cj = cookielib.LWPCookieJar()
+    cj = cookielib.MozillaCookieJar()
     # This is a subclass of FileCookieJar
     # that has useful load and save methods
 
