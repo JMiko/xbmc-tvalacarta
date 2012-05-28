@@ -719,7 +719,7 @@ def test():
     bien = False
     for pelicula_item in peliculas_items:
         mirrors = findvideos(item=pelicula_item)
-        if len(mirrors)>0:
+        if len(mirrors)>=0 and len( play(mirrors[0]) )>0:
             bien = True
             break
     
