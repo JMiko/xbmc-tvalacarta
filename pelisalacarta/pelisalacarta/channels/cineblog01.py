@@ -30,97 +30,94 @@ def mainlist(item):
     itemlist = []
 
     # Main options
-    itemlist.append( Item(channel=__channel__, action="listvideos", title="Film - Novità" , url="http://cineblog01.com/" ))
-    itemlist.append( Item(channel=__channel__, action="pelisalfa", title="Film - Per Lettera" ))
-    itemlist.append( Item(channel=__channel__, action="peliscat", title="Film - Per Categoria" ))
-    itemlist.append( Item(channel=__channel__, action="searchmovie", title="Film - Cerca" ))
-    itemlist.append( Item(channel=__channel__, action="listserie", title="Serie" , url="http://cineblog01.info/serietv/" ))
-    itemlist.append( Item(channel=__channel__, action="listserie", title="Anime" , url="http://cineblog01.info/anime/" ))
+    itemlist.append( Item(channel=__channel__, action="peliculas"  , title="Film - Novità" , url="http://cineblog01.com/" ))
+    itemlist.append( Item(channel=__channel__, action="menuvk"     , title="Film - VK senza blochi" , url="http://cineblog01.com/" ))
+    itemlist.append( Item(channel=__channel__, action="menugeneros", title="Film - Per genere" , url="http://cineblog01.com/" ))
+    itemlist.append( Item(channel=__channel__, action="menuanyos"  , title="Film - Per anno" , url="http://cineblog01.com/" ))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Film - Cerca" ))
+    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Serie" , url="http://cineblog01.info/serietv/" ))
+    #itemlist.append( Item(channel=__channel__, action="listserie"  , title="Anime" , url="http://cineblog01.info/anime/" ))
 
     return itemlist
 
-def pelisalfa(item):
-    logger.info("[cineblog01.py] mainlist")
+def menuvk(item):
+    logger.info("[cineblog01.py] menuvk")
     itemlist = []
+    
+    data = scrapertools.cache_page(item.url)
+    
+    # Narrow search by selecting only the combo
+    bloque = scrapertools.get_match(data,'<select name="select1"(.*?)</select')
+    
+    # The categories are the options for the combo  
+    patron = '<option value="([^"]+)">([^<]+)</option>'
+    matches = re.compile(patron,re.DOTALL).findall(bloque)
+    scrapertools.printMatches(matches)
 
-    # Alphabetic menu
-    itemlist.append( Item(channel=__channel__, action="listcat", title="0-9", url="http://cineblog01.com/category/numero"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="A", url="http://cineblog01.com/category/a"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="B", url="http://cineblog01.com/category/b"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="C", url="http://cineblog01.com/category/c"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="D", url="http://cineblog01.com/category/d"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="E", url="http://cineblog01.com/category/e"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="F", url="http://cineblog01.com/category/f"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="G", url="http://cineblog01.com/category/g"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="H", url="http://cineblog01.com/category/h"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="I", url="http://cineblog01.com/category/i"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="J", url="http://cineblog01.com/category/j"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="K", url="http://cineblog01.com/category/k"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="L", url="http://cineblog01.com/category/l"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="M", url="http://cineblog01.com/category/m"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="N", url="http://cineblog01.com/category/n"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="O", url="http://cineblog01.com/category/o"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="P", url="http://cineblog01.com/category/p"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Q", url="http://cineblog01.com/category/q"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="R", url="http://cineblog01.com/category/r"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="S", url="http://cineblog01.com/category/s"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="T", url="http://cineblog01.com/category/t"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="U", url="http://cineblog01.com/category/u"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="V", url="http://cineblog01.com/category/v"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="W", url="http://cineblog01.com/category/w"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="X", url="http://cineblog01.com/category/x"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Y", url="http://cineblog01.com/category/y"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Z", url="http://cineblog01.com/category/z"))
+    for url,titulo in matches:
+        scrapedtitle = titulo
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
-def peliscat(item):
-    logger.info("[cineblog01.py] mainlist")
+def menugeneros(item):
+    logger.info("[cineblog01.py] menuvk")
     itemlist = []
+    
+    data = scrapertools.cache_page(item.url)
+    
+    # Narrow search by selecting only the combo
+    bloque = scrapertools.get_match(data,'<select name="select2"(.*?)</select')
+    
+    # The categories are the options for the combo  
+    patron = '<option value="([^"]+)">([^<]+)</option>'
+    matches = re.compile(patron,re.DOTALL).findall(bloque)
+    scrapertools.printMatches(matches)
 
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Animazione", url="http://cineblog01.com/category/animazione/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Avventura", url="http://cineblog01.com/category/avventura/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Azione", url="http://cineblog01.com/category/azione/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Biografico", url="http://cineblog01.com/category/biografico/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Comico", url="http://cineblog01.com/category/comico/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Commedia", url="http://cineblog01.com/category/commedia/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Corti", url="http://cineblog01.com/category/solo-cortometraggio/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Cult", url="http://cineblog01.com/category/cult/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Documentario", url="http://cineblog01.com/category/documentario/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Drammatico", url="http://cineblog01.com/category/drammatico/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Erotico", url="http://cineblog01.com/category/erotico/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Fantascienza", url="http://cineblog01.com/category/fantascienza/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Fantasy", url="http://cineblog01.com/category/fantasyfantastico/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Gangster", url="http://cineblog01.com/category/gangster/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Grottesco", url="http://cineblog01.com/category/grottesco/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Guerra", url="http://cineblog01.com/category/guerra/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Horror", url="http://cineblog01.com/category/horror/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Megavideo", url="http://cineblog01.com/category/solo-megavideo/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Megaupload", url="http://cineblog01.com/?cat=410"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Musical", url="http://cineblog01.com/category/musicale/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Noir", url="http://cineblog01.com/category/noir/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Poliziesco", url="http://cineblog01.com/category/poliziesco/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Sentimentale", url="http://cineblog01.com/category/sentimentale/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Storico", url="http://cineblog01.com/category/storico/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Thriller", url="http://cineblog01.com/category/thriller/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Tutto Totò", url="http://cineblog01.com/category/st-toto/"))
-    itemlist.append( Item(channel=__channel__, action="listcat", title="Western", url="http://cineblog01.com/category/western/"))
+    for url,titulo in matches:
+        scrapedtitle = titulo
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
-def searchmovie(item):
-    logger.info("[cineblog01.py] searchmovie")
+def menuanyos(item):
+    logger.info("[cineblog01.py] menuvk")
+    itemlist = []
+    
+    data = scrapertools.cache_page(item.url)
+    
+    # Narrow search by selecting only the combo
+    bloque = scrapertools.get_match(data,'<select name="select3"(.*?)</select')
+    
+    # The categories are the options for the combo  
+    patron = '<option value="([^"]+)">([^<]+)</option>'
+    matches = re.compile(patron,re.DOTALL).findall(bloque)
+    scrapertools.printMatches(matches)
 
-    import xbmc
-    keyboard = xbmc.Keyboard('')
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        tecleado = keyboard.getText()
-        if len(tecleado)>0:
-            #convert to HTML
-            tecleado = tecleado.replace(" ", "+")
-            item = Item(url="http://cineblog01.com/?s="+tecleado)
-            return listvideos(item)
+    for url,titulo in matches:
+        scrapedtitle = titulo
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+
+    return itemlist
+
+# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+def search(item,texto):
+    logger.info("[cineblog01.py] "+item.url+" search "+texto)
+    itemlist = []
+    item.url = "http://cineblog01.com/?s="+texto
+    return peliculas(item)
 
 def listcat(item):
     logger.info("[cineblog01.py] mainlist")
@@ -164,7 +161,7 @@ def listcat(item):
 
     return itemlist
 
-def listvideos(item):
+def peliculas(item):
     logger.info("[cineblog01.py] mainlist")
     itemlist = []
 
@@ -188,22 +185,29 @@ def listvideos(item):
         scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = urlparse.urljoin(item.url,match[0])
         scrapedplot = scrapertools.unescape(match[3])
+        scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Remove the next page mark <a href="http://cineblog01.com/page/2/">Avanti
-    patronvideos = '<a href="(http://[www/.]*cineblog01.com/page/[0-9]+)/">Avanti >'
-    matches = re.compile (patronvideos, re.DOTALL).findall (data)
-    scrapertools.printMatches (matches)
-
-    if len(matches)>0:
-        scrapedtitle = "(Next Page ->)"
-        scrapedurl = matches[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+    # Next page mark
+    try:
+        bloque = scrapertools.get_match(data,"<div id='wp_page_numbers'>(.*?)</div>")
+        # <a href="http://cineblog01.com/page/2/">Avanti
+        # <a href="http://www.cineblog01.com/category/streaming/vk/animazione-vk/page/2/">Avanti > </a></li>
+        patronvideos = '<a href="([^"]+)">Avanti'
+        matches = re.compile (patronvideos, re.DOTALL).findall (data)
+        scrapertools.printMatches (matches)
+    
+        if len(matches)>0:
+            scrapedtitle = ">> Next page"
+            scrapedurl = matches[0]
+            scrapedthumbnail = ""
+            scrapedplot = ""
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    
+            itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+    except:
+        pass
 
     return itemlist
 
@@ -257,15 +261,27 @@ def test():
     # mainlist
     mainlist_items = mainlist(Item())
     
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    peliculas_items = listvideos(mainlist_items[0])
+    # Comprueba que todas las opciones por categorias tengan algo (excepto los buscadores)
+    for mainlist_item in mainlist_items:
+        if mainlist_item.action.startswith("menu"):
+            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
+            
+            # Lee la primera categoría sólo
+            exec "itemlist2 ="+itemlist[0].action+"(itemlist[0])"
+            if len(itemlist2)==0:
+                return false
+
+    # Comprueba si alguno de los vídeos de "Novedades" devuelve mirrors
+    for mainlist_item in mainlist_items:
+        if mainlist_item.action=="peliculas" or mainlist_item.action=="listserie":
+            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
     
-    bien = False
-    for pelicula_item in peliculas_items:
-        from servers import servertools
-        mirrors = servertools.find_video_items(item=pelicula_item)
-        if len(mirrors)>0:
-            bien = True
-            break
-    
+            bien = False
+            for episodio_item in itemlist:
+                from servers import servertools
+                mirrors = servertools.find_video_items(item=episodio_item)
+                if len(mirrors)>0:
+                    bien = True
+                    break
+
     return bien
