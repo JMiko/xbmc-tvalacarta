@@ -37,7 +37,7 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     
     video_urls = []
     logger.info(matches[0])
-    video_urls.append( ["FLV [videoweed]",matches[0]])
+    video_urls.append( [".flv [videoweed]",matches[0]])
 	
     return video_urls
 
@@ -51,7 +51,7 @@ def find_videos(data):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[Videoweed]"
+        titulo = "[videoweed]"
         url = match
 
         if url not in encontrados:
@@ -67,7 +67,7 @@ def find_videos(data):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[Videoweed]"
+        titulo = "[videoweed]"
         url = match
 
         if url not in encontrados:
