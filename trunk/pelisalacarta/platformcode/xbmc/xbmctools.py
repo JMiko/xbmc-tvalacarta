@@ -92,14 +92,12 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         contextCommands.append((config.get_localized_string(30407),justinCommand))
 
     if config.get_platform()=="boxee":
-        logger.info("Modo boxee")
+        #logger.info("Modo boxee")
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
     else:
-        logger.info("Modo xbmc")
+        #logger.info("Modo xbmc")
         if len(contextCommands) > 0:
             listitem.addContextMenuItems ( contextCommands, replaceItems=False)
-        else:
-            logger.info("Ignora menu contextual, es Boxee")
     
         if totalItems == 0:
             ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True)
@@ -121,6 +119,11 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
             logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
         except:
             logger.info('[xbmctools.py] addnewvideo(<unicode>)')
+            
+    icon_image = os.path.join( config.get_runtime_path() , "resources" , "images" , "servers" , server+".png" )
+    if not os.path.exists(icon_image):
+        icon_image = "DefaultVideo.png"
+     
     listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
     listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal, "Genre" : category } )
 
@@ -505,7 +508,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         #if subtitle!="" and (opciones[seleccion].startswith("Ver") or opciones[seleccion].startswith("Watch")):
         #    logger.info("[xbmctools.py] Con subtitulos")
         #    setSubtitles()
-    elif server=="vidxden" or server=="bayfiles":
+        
+    # Descarga en segundo plano para vidxden, sólo en modo free
+    elif server=="vidxden" and seleccion==0:
         from core import downloadtools
         import thread,os
         import xbmc
