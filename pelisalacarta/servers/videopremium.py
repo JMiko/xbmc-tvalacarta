@@ -19,13 +19,41 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[videopremium.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
     
+    # Lee la URL
     data = scrapertools.cache_page( page_url )
+    bloque = scrapertools.get_match(data,'<Form method="POST"(.*)</Form>')
+    logger.info("bloque="+bloque)
+    op = scrapertools.get_match(bloque,'<input type="hidden" name="op" value="([^"]+)"')
+    usr_login = scrapertools.get_match(bloque,'<input type="hidden" name="usr_login" value="([^"]*)"')
+    id = scrapertools.get_match(bloque,'<input type="hidden" name="id" value="([^"]+)"')
+    fname = scrapertools.get_match(bloque,'<input type="hidden" name="fname" value="([^"]+)"')
+    referer = scrapertools.get_match(bloque,'<input type="hidden" name="referer" value="([^"]*)"')
+    method_free = scrapertools.get_match(bloque,'<input type="submit" name="method_free" value="([^"]+)"')
+
+    # Simula el botón
+    post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&method_free="+method_free
+    data = scrapertools.cache_page( page_url , post=post )
+    logger.info("data="+data)
+    
+    packed = scrapertools.get_match(data,"(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d\).*?</script>)")
+    from core import unpackerjs
+    unpacked = unpackerjs.unpackjs(packed)
+    logger.info("unpacked="+unpacked)
+
     location = scrapertools.get_match(data,"url\: '([^']+)'")
-    
-    import urlparse
-    parsed_url = urlparse.urlparse(location)
-    
-    video_urls.append( [ parsed_url.path[-4:] + " [videopremium]",location ] )
+
+    try:
+        import urlparse
+        parsed_url = urlparse.urlparse(location)
+        logger.info("parsed_url="+str(parsed_url))
+        extension = parsed_url.path[-4:]
+    except:
+        if len(parsed_url)>=4:
+            extension = parsed_url[2][-4:]
+        else:
+            extension = ""
+
+    video_urls.append( [ extension + " [videopremium]",location ] )
 
     return video_urls
 

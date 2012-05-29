@@ -38,25 +38,25 @@ def test_one_channel(channelid):
 def test_channels():
     
     para_probar = []
+    '''
     para_probar.append("animeflv")
     para_probar.append("animeid")
-    para_probar.append("buenaisla")
-    para_probar.append("cineadicto")
+    para_probar.append("bajui")
+    para_probar.append("beeg")
     para_probar.append("cineblog01")
-    para_probar.append("cinegratis")
     para_probar.append("cinetube")
+    para_probar.append("cinetemagay")
+    '''
+    '''
     para_probar.append("cuevana")
-    para_probar.append("dlmore")
-    para_probar.append("delatv")
-    para_probar.append("descargacineclasico")
-    para_probar.append("descargapelis")
-    para_probar.append("descarregadirecta")
+    para_probar.append("cinevos")
     para_probar.append("discoverymx")
     para_probar.append("divxonline")
+    '''
     
     funcionan = []
     no_funcionan = []
-    no_probados = [ "asiateam", "casttv" ]
+    no_probados = []
 
     # Verifica los canales
     for canal in para_probar:
@@ -65,90 +65,6 @@ def test_channels():
             funcionan.append(canal)
         else:
             no_funcionan.append(canal)
-
-
-    '''
-    # documaniatv
-    try:
-        from pelisalacarta.channels import documaniatv
-        itemlist = documaniatv.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = documaniatv."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de documentales
-        exec "itemlist = documaniatv."+itemlist[0].action+"(itemlist[0])" # Primer documental -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("documaniatv")
-    else: no_funcionan.append("documaniatv")
-
-    # documentalesatonline2
-    try:
-        from pelisalacarta.channels import documentalesatonline2
-        itemlist = documentalesatonline2.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = documentalesatonline2."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de documentales
-        exec "itemlist = documentalesatonline2."+itemlist[0].action+"(itemlist[0])" # Primer documental -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("documentalesatonline2")
-    else: no_funcionan.append("documentalesatonline2")
-
-    # documentalesyonkis
-    try:
-        from pelisalacarta.channels import documentalesyonkis
-        itemlist = documentalesyonkis.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = documentalesyonkis."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de documentales
-        exec "itemlist = documentalesyonkis."+itemlist[0].action+"(itemlist[0])" # Primer documental -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("documentalesyonkis")
-    else: no_funcionan.append("documentalesyonkis")
-
-    # documentariestv
-    try:
-        from pelisalacarta.channels import documentariestv
-        itemlist = documentariestv.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = documentariestv."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de documentales
-        exec "itemlist = documentariestv."+itemlist[0].action+"(itemlist[0])" # Primer documental -> lista de vídeos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("documentariestv")
-    else: no_funcionan.append("documentariestv")
-
-    # gratisdocumentales
-    try:
-        from pelisalacarta.channels import gratisdocumentales
-        itemlist = gratisdocumentales.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = gratisdocumentales."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de documentales (videos directos)
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("gratisdocumentales")
-    else: no_funcionan.append("gratisdocumentales")
-
-    # internapoli
-    try:
-        from pelisalacarta.channels import internapoli
-        itemlist = internapoli.mainlist(Item()) # -> novedades
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("internapoli")
-    else: no_funcionan.append("internapoli")
-
-    # islapeliculas
-    try:
-        from pelisalacarta.channels import islapeliculas
-        itemlist = islapeliculas.mainlist(Item()) # -> lista opciones del canal
-        exec "itemlist = islapeliculas."+itemlist[0].action+"(itemlist[0])"  # novedades -> lista de pelis
-        exec "itemlist = islapeliculas."+itemlist[0].action+"(itemlist[0])"  # pelicula -> lista de videos
-    except:
-        itemlist=[]
-
-    if len(itemlist)>0: funcionan.append("islapeliculas")
-    else: no_funcionan.append("islapeliculas")
-    '''
     
     print "------------------------------------"
     print " funcionan: %d" % len(funcionan)
@@ -354,10 +270,10 @@ def test_encode():
 if __name__ == "__main__":
     #test_server_connectors()
     #test_cineraculo()
-    #test_channels()
+    test_channels()
     #test_samba()
     #test_fileserver_premium()
     #test_filenium()
     #test_json()
     #test_wupload()
-    test_encode()
+    #test_encode()

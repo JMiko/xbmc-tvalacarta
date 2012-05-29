@@ -26,10 +26,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     import urlparse
     url = urlparse.urljoin( page_url, source )
     
-    # Obtiene la URL del vídeo
-    #location = scrapertools.get_header_from_response( url )
-    #parsed_url = urlparse.urlparse(location)
-
     video_urls.append( [ "[twitvid]",url ] )
     
     return video_urls

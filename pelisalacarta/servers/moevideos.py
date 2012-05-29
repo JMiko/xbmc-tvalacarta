@@ -71,11 +71,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_url = matches[0]
     logger.info("[moevideos.py] video_url="+video_url)
 
-    import urlparse
-    parsed_url = urlparse.urlparse(video_url)
-    
+    try:
+        import urlparse
+        parsed_url = urlparse.urlparse(video_url)
+        logger.info("parsed_url="+str(parsed_url))
+        extension = parsed_url.path[-4:]
+    except:
+        if len(parsed_url)>=4:
+            extension = parsed_url[2][-4:]
+        else:
+            extension = ""
+        
     video_urls = []
-    video_urls.append( [ parsed_url.path[-4:] + " [moevideos]",video_url ] )
+    video_urls.append( [ extension + " [moevideos]",video_url ] )
 
     for video_url in video_urls:
         logger.info("[moevideos.py] %s - %s" % (video_url[0],video_url[1]))

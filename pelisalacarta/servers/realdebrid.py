@@ -36,7 +36,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             if len(matches)>0:
                 server_error = "REAL-DEBRID: "+urllib.unquote_plus(matches[0].replace("\\u00","%"))
             else:
-                server_error = "REAL-DEBRID: A ocurrido un error con tu login"
+                server_error = "REAL-DEBRID: Ha ocurrido un error con tu login"
             return server_error
     else:
         logger.info("Ya estas logueado en Real-Debrid")
@@ -54,7 +54,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         if len(matches)>0:
             server_error = "REAL-DEBRID: "+matches[0]
         else:
-            server_error = "REAL-DEBRID: A ocurrido un error con el servidor "
+            server_error = "REAL-DEBRID: Ha ocurrido un error con el servidor "
         logger.info(data)
         return server_error
 

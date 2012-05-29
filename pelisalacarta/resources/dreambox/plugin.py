@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta launcher for dreambox
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
@@ -59,9 +60,6 @@ config.plugins.pelisalacarta.imagescaling = ConfigSelection(default="1", choices
 config.plugins.pelisalacarta.imagescaler = ConfigSelection(default="0", choices = [("0", _("decodePic()")), ("1", _("getThumbnail()"))])
 config.plugins.pelisalacarta.showadultcontent = ConfigYesNo(default=False)
 config.plugins.pelisalacarta.showsecretcontent = ConfigYesNo(default=False)
-config.plugins.pelisalacarta.megavideopremium = ConfigEnableDisable(default=False)
-config.plugins.pelisalacarta.megavideouser = ConfigText(default="", fixed_size=False)
-config.plugins.pelisalacarta.megavideopassword = ConfigText(default="", fixed_size=False)
 config.plugins.pelisalacarta.version = NoSave(ConfigText(default="282"))
 
 default = config.plugins.pelisalacarta.storagepath.value + "/pelisalacarta/movies"
@@ -291,13 +289,11 @@ class Pelisalacarta(Screen):
 
         # Screen, backgroundlabel and MovingPixmap
         self.skin = "<screen position=\"0,0\" size=\"" + str(size_w) + "," + str(size_h) + "\" flags=\"wfNoBorder\" title=\"pelisalacarta\"> \
-            <ePixmap name=\"dp_logo\" position=\"50,30\" zPosition=\"2\" size=\"250,200\" pixmap=\"/usr/lib/enigma2/python/Plugins/Extensions/pelisalacarta/images/logopelis.jpg\" /> \
+            <ePixmap name=\"dp_logo\" position=\"25,8\" zPosition=\"2\" size=\"250,200\" pixmap=\"/usr/lib/enigma2/python/Plugins/Extensions/pelisalacarta/images/logopelis.jpg\" /> \
+            <ePixmap name=\"dp_logo2\" position=\"1050,30\" zPosition=\"2\" size=\"130,134\" pixmap=\"/usr/lib/enigma2/python/Plugins/Extensions/pelisalacarta/images/tododream.jpg\" /> \
             <eLabel position=\"75,200\" zPosition=\"1\" size=\"1140,2\" backgroundColor=\"#FF9900\" /> \
-            <widget source=\"titletext\" transparent=\"1\" render=\"Label\" zPosition=\"2\" position=\"320,105\" size=\"600,45\" font=\"Regular;40\" backgroundColor=\"" + self.bgcolor + "\" foregroundColor=\"" + self.textcolor + "\" /> \
-            <widget source=\"titlemessage\" transparent=\"1\" render=\"Label\" zPosition=\"2\" valign=\"center\" halign=\"left\" position=\"320,150\" size=\""+ str(size_w) + ",30\" font=\"Regular;25\" foregroundColor=\"" + self.textcolor + "\" /> \
-            <widget source=\"global.CurrentTime\" render=\"Label\" position=\"1135,100\" zPosition=\"2\" transparent=\"1\" size=\"80,30\" font=\"Regular;25\" halign=\"right\" foregroundColor=\"" + self.textcolor + "\"> \
-                <convert type=\"ClockToText\"></convert> \
-            </widget> \
+            <widget source=\"titletext\" transparent=\"1\" render=\"Label\" zPosition=\"2\" position=\"295,105\" size=\"600,45\" font=\"Regular;40\" backgroundColor=\"" + self.bgcolor + "\" foregroundColor=\"" + self.textcolor + "\" /> \
+            <widget source=\"titlemessage\" transparent=\"1\" render=\"Label\" zPosition=\"2\" valign=\"center\" halign=\"left\" position=\"295,150\" size=\""+ str(size_w) + ",30\" font=\"Regular;25\" foregroundColor=\"" + self.textcolor + "\" /> \
             <eLabel position=\"0,0\" zPosition=\"0\" size=\""+ str(size_w) + "," + str(size_h) + "\" backgroundColor=\"" + self.bgcolor + "\" /> \
             <widget source=\"pageinfo\" position=\"0,667\" transparent=\"1\" render=\"Label\" zPosition=\"2\" valign=\"center\" halign=\"center\" size=\"" + str(size_w) + ",30\" font=\"Regular;14\" foregroundColor=\"" + self.textcolor + "\" /> \
             <widget name=\"frame\" position=\"" + str(size_w) + "," + str(size_h) + "\" size=\"190,200\" pixmap=\"pic_frame.png\" zPosition=\"5\" alphatest=\"on\" />"  + skincontent + "</screen>"
@@ -482,12 +478,8 @@ class Pelisalacarta(Screen):
             except:
                 pass
 
-            #item = Item(title="Megavideo",url=urlx,folder=False,action="__movieplay")
             exec "from servers import "+item.server+" as servermodule"
-            if item.server.lower()=="megavideo" or item.server.lower()=="megaupload":
-                video_urls = servermodule.get_video_url( item.url , premium=config.plugins.pelisalacarta.megavideopremium.value , user=config.plugins.pelisalacarta.megavideouser.value , password=config.plugins.pelisalacarta.megavideopassword.value )
-            else:
-                video_urls = servermodule.get_video_url( item.url )
+            video_urls = servermodule.get_video_url( item.url )
             
             itemlista = []
             for video_url in video_urls:
@@ -535,15 +527,24 @@ class Pelisalacarta(Screen):
                 name = item.title
                 imgurl = ""
                 url = item.url
-                if item.server.lower()=="megavideo":
-                    url = url.replace("?.flv","a.flv")
-                #from servers import megavideo 
-                #url = "video.flv" #megavideo.getlowurl(item.url)
-                #url = url.replace("?.flv","a.flv")
             else:
                 print "item normal"
                 type = "cat"
-                name = downloadtools.limpia_nombre_excepto_1(item.title)
+                name = item.title
+                name = name.replace("á","a")
+                name = name.replace("é","e")
+                name = name.replace("í","i")
+                name = name.replace("ó","o")
+                name = name.replace("ú","u")
+                name = name.replace("ñ","n")
+                name = name.replace("Á","A")
+                name = name.replace("É","E")
+                name = name.replace("Í","I")
+                name = name.replace("Ó","O")
+                name = name.replace("Ú","U")
+                name = name.replace("Ñ","N")
+                name = downloadtools.limpia_nombre_excepto_1(name)
+                #name = unicode(item.title,"utf-8",errors="ignore").encode("iso-8859-1")
                 imgurl = ""
                 url = "pelisalacarta" + "|" + canal + "|" + item.action + "|" + item.url + "|" + item.server
 
@@ -596,7 +597,7 @@ class Pelisalacarta(Screen):
         itemlist = channelselector.channels_list()
 
         for item in itemlist:
-            if item.type=="generic":
+            if item.type=="generic" and item.channel!="tengourl":
                 type = "cat"
                 name = item.title
                 imgurl = "http://pelisalacarta.mimediacenter.info/dreambox/"+item.channel+".png"
@@ -976,7 +977,7 @@ class MovieInfoScreen(Screen):
                 getPage(self.movieinfo[1]).addCallback(self.GotMovieList).addErrback(self.error)
         except Exception, error:
             print "[pelisalacarta] Could not download Movie-List\n%s" % (error)
-            self.GotMovieList("Megavideo<-->"+self.url+"<-->filename.flv\n")
+            self.GotMovieList("Streaming video<-->"+self.url+"<-->filename.flv\n")
 
     def ForwardExternalMovieList(self, html):
         # We send the received page directly to my webserver and parse it there ...
@@ -1526,9 +1527,6 @@ class Pelisalacarta_Settings(Screen, ConfigListScreen):
         #self.cfglist.append(getConfigListEntry(_("Show Secret Content:"), config.plugins.pelisalacarta.showsecretcontent))
         self.cfglist.append(getConfigListEntry(_("Download Directory:"), config.plugins.pelisalacarta.moviedir))
         self.cfglist.append(getConfigListEntry(_("Cache Folder:"), config.plugins.pelisalacarta.storagepath))
-        self.cfglist.append(getConfigListEntry(_("Tienes cuenta de Megavideo?"), config.plugins.pelisalacarta.megavideopremium))
-        self.cfglist.append(getConfigListEntry(_("Login Megavideo"), config.plugins.pelisalacarta.megavideouser))
-        self.cfglist.append(getConfigListEntry(_("Password Megavideo"), config.plugins.pelisalacarta.megavideopassword))
         ConfigListScreen.__init__(self, self.cfglist, session)
 
     def keySave(self):
@@ -1581,5 +1579,5 @@ def main(session, **kwargs):
 def Plugins(**kwargs):
     print "[pelisalacarta] Plugins"
     return [
-        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.7 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc = main),
-        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.7 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=main)]
+        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.8 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc = main),
+        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.8 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=main)]

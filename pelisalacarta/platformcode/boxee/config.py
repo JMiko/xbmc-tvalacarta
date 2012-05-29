@@ -11,7 +11,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] boxee config 4.1 (3.2.7)"
+print "[config.py] boxee config 4.2 (3.2.8)"
 
 import os,re
 import xbmc
@@ -20,7 +20,7 @@ import mc
 PLUGIN_NAME = "pelisalacarta"
 
 def get_version():
-    return "4.1"
+    return "4.2"
 
 def get_system_platform():
     return "boxee"
