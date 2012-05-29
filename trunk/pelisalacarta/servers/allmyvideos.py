@@ -44,13 +44,22 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #('var starttime=$.cookie(\'vposm7p03lbkysdw\');if(starttime==undefined)starttime=0;jwplayer(\'flvplayer\').setup({\'id\':\'playerID\',\'width\':\'960\',\'height\':\'511\',\'file\':\'http://66.220.4.230:182/d/3omd5q77yq5dh6lnhlgzlnwmpjsz6jak4r4dalwptfh3auyzpfu2og6u/video.mp4\',\'image\':\'http://66.220.4.230/i/00012/m7p03lbkysdw.jpg\',\'duration\':\'5836\',\'streamscript\':\'lighttpd\',\'provider\':\'http\',\'http.startparam\':\'start\',\'dock\':\'true\',\'viral.onpause\':\'false\',\'viral.callout\':\'none\',\'start\':starttime,\'plugins\':\'captions-2,fbit-1,timeslidertooltipplugin-3,/player/ova-jw.swf,sharing-3\',\'timeslidertooltipplugin.preview\':{\'enabled\':true,\'path\':\'http://66.220.4.230:182/p/00012/m7p03lbkysdw/\',\'prefix\':\'m7p03lbkysdw_\'},\'sharing.link\':\'http://allmyvideos.net/m7p03lbkysdw\',\'sharing.code\':\'<IFRAME SRC="http://allmyvideos.net/embed-h08ml8bdrpvw-960x511.html" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=960 HEIGHT=531></IFRAME>\',\'config\':\'/player/ova.xml\',\'logo.hide\':\'false\',\'logo.position\':\'top-left\',\'logo.file\':\'/player/gopremium.png\',\'logo.link\':\'/premium.html\',\'skin\':\'/player/skins/bekle.zip\',\'dock.position\':\'left\',\'controlbar.position\':\'bottom\',\'modes\':[{type:\'flash\',src:\'/player/player.swf\'},{type:\'html5\'}]});var playerVersion=swfobject.getFlashPlayerVersion();var output=\'You have Flash player \'+playerVersion.major+\'.\'+playerVersion.minor+\'.\'+playerVersion.release+\' installed\';if((playerVersion.major<1)&&(navigator.appVersion.indexOf(\'iPhone\')==-1)&&(navigator.appVersion.indexOf(\'Android\')==-1)){document.getElementById(\'flashnotinstalled\').style.display=\'block\'}',511,00012player,
     unpacked = unpacked.replace("\\","")
     location = scrapertools.get_match(unpacked,"'file'\:'([^']+)'")+"?start=0"
+    logger.info("location="+location)
     
     video_urls = []
     
-    import urlparse
-    parsed_url = urlparse.urlparse(location)
-    
-    video_urls.append( [ parsed_url.path[-4:] + " [allmyvideos]",location ] )
+    try:
+        import urlparse
+        parsed_url = urlparse.urlparse(location)
+        logger.info("parsed_url="+str(parsed_url))
+        extension = parsed_url.path[-4:]
+    except:
+        if len(parsed_url)>=4:
+            extension = parsed_url[2][-4:]
+        else:
+            extension = ""
+
+    video_urls.append( [ extension + " [allmyvideos]",location ] )
 
     for video_url in video_urls:
         logger.info("[allmyvideos.py] %s - %s" % (video_url[0],video_url[1]))

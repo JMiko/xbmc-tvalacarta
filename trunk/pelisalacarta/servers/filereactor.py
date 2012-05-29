@@ -26,7 +26,7 @@ def find_videos(data):
     devuelve = []
 
     #http://www.filereactor.com/zs8ob7o2lix6/Copito.Nieve.HDR.Rodri.part1.rar.html
-    patronvideos  = '(filereactor.com.*?\.html)'
+    patronvideos  = '(filereactor.com/[a-z0-9]+)'
     logger.info("[filereactor.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

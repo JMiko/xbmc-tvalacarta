@@ -41,11 +41,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     location = scrapertools.get_match(data,'url=([^\&]+)&')
     location = location + "?client=FLASH"
+
+    try:
+        import urlparse
+        parsed_url = urlparse.urlparse(location)
+        logger.info("parsed_url="+str(parsed_url))
+        extension = parsed_url.path[-4:]
+    except:
+        if len(parsed_url)>=4:
+            extension = parsed_url[2][-4:]
+        else:
+            extension = ""
     
-    import urlparse
-    parsed_url = urlparse.urlparse(location)
-    
-    video_urls.append( [ parsed_url.path[-4:] + " [nowvideo]",location ] )
+    video_urls.append( [ extension + " [nowvideo]",location ] )
 
     for video_url in video_urls:
         logger.info("[nowvideo.py] %s - %s" % (video_url[0],video_url[1]))

@@ -21,7 +21,7 @@ def get_platform():
 def open_settings():
     return
 
-def get_setting(name):
+def get_setting(name,channel=""):
     if name=="debug":
         return "true"
     elif name=="cache.mode":

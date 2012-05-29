@@ -31,8 +31,8 @@ def mainlist(item):
     logger.info("[newhd.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="EspaÒol", action="idioma", url="http://www.newhd.org/"))
-    itemlist.append( Item(channel=__channel__, title="InglÈs",  action="idioma", url="http://www.newhd.org/en/"))
+    itemlist.append( Item(channel=__channel__, title="Espa√±ol", action="idioma", url="http://www.newhd.org/"))
+    itemlist.append( Item(channel=__channel__, title="Ingl√©s",  action="idioma", url="http://www.newhd.org/en/"))
     itemlist.append( Item(channel=__channel__, title="Latino",  action="idioma", url="http://www.newhd.org/lat/"))
     itemlist.append( Item(channel=__channel__, title="VOS",     action="novedades", url="http://www.newhd.org/sub/"))
     itemlist.append( Item(channel=__channel__, title="Buscar"  ,action="search" , url="http://www.newhd.org/"))
@@ -43,8 +43,8 @@ def idioma(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades", action="novedades", url=item.url+"index.php?do=cat&category=online"))
-    itemlist.append( Item(channel=__channel__, title="Listado AlfabÈtico", action="alfa", url=item.url+"index.php?do=cat&category=online"))
-    itemlist.append( Item(channel=__channel__, title="Listado por CategorÌas", action="cat", url=item.url+"index.php?do=cat&category=online"))
+    itemlist.append( Item(channel=__channel__, title="Listado Alfab√©tico", action="alfa", url=item.url+"index.php?do=cat&category=online"))
+    itemlist.append( Item(channel=__channel__, title="Listado por Categor√≠as", action="cat", url=item.url+"index.php?do=cat&category=online"))
 
     return itemlist
 
@@ -58,7 +58,7 @@ def search(item,texto):
 def novedades(item):
     logger.info("[newhd.py] novedades")
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
@@ -77,7 +77,7 @@ def novedades(item):
     </table>
     <div id="911" class='elementoOculto'><table width="100%" class="box"><br><tr>
     <td width="14%" rowspan="6" align="left" valign="top"><img src="/uploads/thumbs/1319662843_salvar_al_soldado_ryan-738956437-large.jpg" width="112" height="154" border="0" align="top" /></td>
-    <td height="122" colspan="4" valign="top"><div id="news-id-911" style="display:inline;">Durante la invasiÛn de NormandÌa, en plena Segunda Guerra Mundial, a un grupo de soldados americanos se le encomienda una peligrosa misiÛn: poner a salvo al soldado James Ryan. Los hombres de la patrulla del capit·n John Miller deben arriesgar sus vidas para encontrar a este soldado, cuyos tres hermanos han muerto en la guerra. Lo ˙nico que se sabe del soldado Ryan es que se lanzÛ con su escuadrÛn de paracaidistas detr·s de las lÌneas enemigas.</div><font style="text-transform: uppercase;">&nbsp;</font></td>
+    <td height="122" colspan="4" valign="top"><div id="news-id-911" style="display:inline;">Durante la invasi√≥n de Normand√≠a, en plena Segunda Guerra Mundial, a un grupo de soldados americanos se le encomienda una peligrosa misi√≥n: poner a salvo al soldado James Ryan. Los hombres de la patrulla del capit√°n John Miller deben arriesgar sus vidas para encontrar a este soldado, cuyos tres hermanos han muerto en la guerra. Lo √∫nico que se sabe del soldado Ryan es que se lanz√≥ con su escuadr√≥n de paracaidistas detr√°s de las l√≠neas enemigas.</div><font style="text-transform: uppercase;">&nbsp;</font></td>
     <tr>
     <tr>
     <td height="20" valign="bottom" class="rating"><img src="/templates/newhd/images/floder.gif" width="20" height="16" align="absbottom" />&nbsp;Category: <font style="text-transform: uppercase;"><a href="http://www.newhd.org/online/">HD Online</a> &raquo; <a href="http://www.newhd.org/online/online-belico/">Belico</a></font></td>
@@ -127,16 +127,16 @@ def novedades(item):
             scrapedplot = ""
         logger.info(scrapedtitle)
 
-        # AÒade al listado
+        # A√±ade al listado
         itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ,context='4', folder=True) )
 
-    # Extrae la marca de siguiente p·gina
+    # Extrae la marca de siguiente p√°gina
     patronvideos = '<a href="([^"]+)"><span class="thide pnext">Next</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "P·gina siguiente"
+        scrapedtitle = "P√°gina siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
         itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="novedades" , url=scrapedurl , thumbnail=scrapedthumbnail, folder=True ) )
@@ -146,7 +146,7 @@ def novedades(item):
 def videos(item):
 
 	logger.info("[newhd.py] videos")
-	# Descarga la p·gina
+	# Descarga la p√°gina
 	data = scrapertools.cachePage(item.url)
 	title= item.title
 	scrapedthumbnail = item.thumbnail
@@ -164,7 +164,7 @@ def videos(item):
 		#logger.info("title="+urllib.quote_plus( title ))
 		if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"], thumbnail=["+scrapedthumbnail+"]")
 
-		# AÒade al listado de XBMC
+		# A√±ade al listado de XBMC
 		itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , thumbnail=scrapedthumbnail , plot=scrapedplot , server=server , folder=False) )
 
 	return itemlist
@@ -173,7 +173,7 @@ def alfa(item):
     
     logger.info("[newhd.py] alfa")
     
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     
     # Extrae las entradas
@@ -190,7 +190,7 @@ def alfa(item):
         scrapedplot = ""
         logger.info(scrapedtitle)
 
-        # AÒade al listado
+        # A√±ade al listado
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
         
     return itemlist
@@ -199,7 +199,7 @@ def cat(item):
     
     logger.info("[newhd.py] cat")
     
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     
     # Extrae las entradas
@@ -214,14 +214,14 @@ def cat(item):
         scrapedthumbnail = ""
         scrapedplot = ""
 
-        # AÒade al listado
+        # A√±ade al listado
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
         
     return itemlist
 
 def searchlist(item):
     logger.info("[newhd.py] searchlist")
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     
     # Extrae las entradas
@@ -249,7 +249,7 @@ def searchlist(item):
             scrapedplot = ""
         logger.info(scrapedtitle)
 
-        # AÒade al listado
+        # A√±ade al listado
         itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ,context='4' , folder=True) )
         
     return itemlist

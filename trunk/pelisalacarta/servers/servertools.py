@@ -18,7 +18,7 @@ FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','d
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
-FREE_SERVERS.extend(['jumbofiles','nowvideo','videopremium'])
+FREE_SERVERS.extend(['jumbofiles','nowvideo'])
 #bayfiles
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
@@ -107,10 +107,14 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
     if server=="directo" or server=="local":
         logger.info("[servertools.py] server=directo, la url es la buena")
         
-        import urlparse
-        parsed_url = urlparse.urlparse(url)
-        extension = parsed_url.path[-4:]
-        
+        try:
+            import urlparse
+            parsed_url = urlparse.urlparse(url)
+            logger.info("parsed_url="+str(parsed_url))
+            extension = parsed_url.path[-4:]
+        except:
+            extension = url[-4:]
+
         video_urls = [[ "%s [%s]" % (extension,server) , url ]]
         return video_urls,True,""
 

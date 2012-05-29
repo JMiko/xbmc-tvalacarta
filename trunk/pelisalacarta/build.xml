@@ -2,7 +2,7 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.2.7"/>
+    <property name="version" value="3.2.8"/>
     
     <!-- Para betas usar: -->
     <!--property name="version" value="3.2.5-beta-1"/-->
@@ -10,7 +10,7 @@
     <!-- Para versiones finales usar: -->
     <!--property name="version" value="3.2.5"/-->
     
-    <property name="versionboxee" value="4.1"/>
+    <property name="versionboxee" value="4.2"/>
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
 

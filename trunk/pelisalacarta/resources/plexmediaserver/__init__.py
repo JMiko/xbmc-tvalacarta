@@ -249,6 +249,33 @@ def playvideo(sender,itemtext):
     video_password=""
     url = item.url
     server = item.server
+    
+
+    # Extrae las URL de los vídeos, y si no puedes verlo te dice el motivo
+    from servers import servertools
+    video_urls,puedes,motivo = servertools.resolve_video_urls_for_playing(server,url,video_password,False)
+
+    # Si puedes ver el vídeo, presenta las opciones
+    if puedes:
+        for video_url in video_urls:
+            if len(video_url)>2:
+                wait_time=video_url[2]
+                dir.Append(Function( VideoItem(playvideonormal, title="Ver el vídeo "+video_url[0]+" (Espera %d segundos)" % wait_time, subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+            else:
+                wait_time=0
+                dir.Append(Function( VideoItem(playvideonormal, title="Ver el vídeo "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+
+    # Si no puedes ver el vídeo te informa
+    else:
+        if server!="":
+            if "<br/>" in motivo:
+                dir.Append(Function( VideoItem(playvideonormal, title="No puedes ver este vídeo", subtitle="", summary="No puedes ver ese vídeo porque...\n"+motivo.split("<br/>")[0]+"\n"+motivo.split("<br/>")[1]+"\n"+url, thumb = ""), mediaurl="" ))
+            else:
+                dir.Append(Function( VideoItem(playvideonormal, title="No puedes ver este vídeo", subtitle="", summary="No puedes ver ese vídeo porque...\n"+motivo , thumb = ""), mediaurl="" ))
+        else:
+            dir.Append(Function( VideoItem(playvideonormal, title="No puedes ver este vídeo", subtitle="", summary="No puedes ver ese vídeo porque...\n"+"El servidor donde está alojado no está"+"\nsoportado en pelisalacarta todavía" , thumb = ""), mediaurl="" ))
+    
+    '''
     try:
         Log("megavideo="+config.get_setting("megavideopremium"))
         # Extrae todos los enlaces posibles
@@ -269,14 +296,7 @@ def playvideo(sender,itemtext):
         video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
         Log("[xbmctools.py] filenium url="+video_gen)
         video_urls.append( [ "[filenium]", video_gen ] )
-
-    for video_url in video_urls:
-        if len(video_url)>2:
-            wait_time=video_url[2]
-            dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0]+" (Espera %d segundos)" % wait_time, subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
-        else:
-            wait_time=0
-            dir.Append(Function( VideoItem(playvideonormal, title="Ver "+video_url[0], subtitle="", summary="", thumb = ""), mediaurl=video_url[1] ))
+    '''
     
     return dir
 
