@@ -247,8 +247,8 @@ def serie_capitulos(item):
     for episode in serieInfo['episode'] :
         if episode.has_key('viewed'):
             viewed = episode['viewed'] 
-            if viewed == '0' : episode['estado'] = ' [Visto]'
-            elif viewed == '1' : episode['estado'] = ' [Pte]'
+            if viewed == '0' : episode['estado'] = ' [Pendiente]'
+            elif viewed == '1' : episode['estado'] = ' [Visto]'
             else : episode['estado'] = ' [?]'
         else:
             episode['estado'] = ''

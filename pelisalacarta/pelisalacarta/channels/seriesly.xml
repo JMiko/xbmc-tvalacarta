@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>13</tag>
-	<date>19/03/2012</date>
-	<changes>Arreglado el problema con los links de las películas by neofreno</changes>
+	<tag>14</tag>
+	<date>30/05/2012</date>
+	<changes>El flag de VISTO-NOVISTO ahora sale correcto, arreglado por talixme</changes>
 </version>
