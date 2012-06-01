@@ -18,16 +18,39 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page(page_url)
 
     video_urls = []
-    #Busca video <param name="src" value="http://s1.divxstage.eu/dl/3100a46b2d569919d35185e74575e1ef/4e93d212/2imiqn8w0w6dx.avi" />
-    patron  = '<param name="src" value="([^"]+)" />'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    for match in matches:
-        videourl = match
-        logger.info(match)
-        videourl = videourl.replace('%5C','')
-        videourl = urllib.unquote(videourl)
-        video_urls.append( [ "[Divxstage]" , videourl ] )
+    # Descarga la página
+    headers = [ ['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'],['Referer','http://www.movshare.net/'] ]
+    data = scrapertools.cache_page(page_url , headers = headers)
+    
+    # La vuelve a descargar, como si hubieras hecho click en el botón
+    data = scrapertools.cache_page(page_url , headers = headers)
+
+    # Extrae el vídeo
+    #flashvars.file="an6u81bpsbenn";
+    #flashvars.filekey="88.12.109.83-e2d263cbff66b2a510d6f7417a57e498";
+    file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
+    filekey = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
+    
+    #http://www.divxstage.eu/api/player.api.php?file=pn7tthffreyoo&user=undefined&pass=undefined&codes=1&key=88%2E12%2E109%2E83%2Df1d041537679b37f5b25404ac66b341b
+    filekey = filekey.replace(".","%2E")
+    filekey = filekey.replace("-","%2D")
+    url = "http://www.divxstage.eu/api/player.api.php?file="+file+"&user=undefined&pass=undefined&codes=1&key="+filekey
+    data = scrapertools.cache_page(url , headers = headers)
+    logger.info("data="+data)
+    location = scrapertools.get_match(data,"url=([^\&]+)\&")
+
+    try:
+        import urlparse
+        parsed_url = urlparse.urlparse(location)
+        logger.info("parsed_url="+str(parsed_url))
+        extension = parsed_url.path[-4:]
+    except:
+        if len(parsed_url)>=4:
+            extension = parsed_url[2][-4:]
+        else:
+            extension = ""
+
+    video_urls.append( [ extension+" [divxstage]" , location ] )
 
     for video_url in video_urls:
         logger.info("[divxstage.py] %s - %s" % (video_url[0],video_url[1]))
