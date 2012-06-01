@@ -110,6 +110,21 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    # http://www.moevideos.net/view/30086
+    patronvideos  = '(moevideos.net/view/\d+)'
+    logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[moevideos]"
+        url = "http://www."+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'moevideos' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     # http://moevideo.net/video.php?file=71845.7a9a6d72d6133bb7860375b63f0e&width=600&height=450
     patronvideos  = '"(http://moevideo.net/video.php[^"]+)"'
     logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
