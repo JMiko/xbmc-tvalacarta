@@ -26,17 +26,36 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     data = scrapertools.cache_page(page_url , headers = headers)
 
     # Extrae el vídeo
-    patronvideos  = 'flashvars.file="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
+    #flashvars.file="an6u81bpsbenn";
+    #flashvars.filekey="88.12.109.83-e2d263cbff66b2a510d6f7417a57e498";
+    file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
+    filekey = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
+    
+    #http://www.movshare.net/api/player.api.php?file=an6u81bpsbenn&user=undefined&codes=undefined&pass=undefined&key=88%2E12%2E109%2E83%2De2d263cbff66b2a510d6f7417a57e498
+    filekey = filekey.replace(".","%2E")
+    filekey = filekey.replace("-","%2D")
+    url = "http://www.movshare.net/api/player.api.php?file="+file+"&user=undefined&codes=undefined&pass=undefined&key="+filekey
+    data = scrapertools.cache_page(url , headers = headers)
+    logger.info("data="+data)
+    location = scrapertools.get_match(data,"url=([^\&]+)\&")
 
-    for match in matches:
-        video_urls.append( [ "[movshare]" , match ] )
+    try:
+        import urlparse
+        parsed_url = urlparse.urlparse(location)
+        logger.info("parsed_url="+str(parsed_url))
+        extension = parsed_url.path[-4:]
+    except:
+        if len(parsed_url)>=4:
+            extension = parsed_url[2][-4:]
+        else:
+            extension = ""
+
+    video_urls.append( [ extension+" [movshare]" , location ] )
 
     for video_url in video_urls:
         logger.info("[movshare.py] %s - %s" % (video_url[0],video_url[1]))
 
-    return matches[0]
+    return video_urls
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
