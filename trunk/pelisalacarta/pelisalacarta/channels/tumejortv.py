@@ -28,43 +28,38 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="newlist"           , title="Novedades" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=__channel__, action="moviecategorylist" , title="Películas - Por categorías" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=__channel__, action="moviealphalist"    , title="Películas - Por orden alfabético" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=__channel__, action="serienewlist"      , title="Series - Novedades" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=__channel__, action="seriealllist"      , title="Series - Todas" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=__channel__, action="seriealphalist"    , title="Series - Por orden alfabético" , url="http://www.tumejortv.com/"))
-    itemlist.append( Item(channel=__channel__, action="search"            , title="Buscar", url="http://www.tumejortv.com/buscar/%s"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas"    , url="http://www.tumejortv.com/directorio/peliculas", extra="peliculas"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas VO" , url="http://www.tumejortv.com/directorio/peliculas_vo", extra="peliculas"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"       , url="http://www.tumejortv.com/directorio/series", extra="series"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Series VO"    , url="http://www.tumejortv.com/directorio/series_vo", extra="series"))
 
     return itemlist
 
-# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
-def search(item,texto, categoria="*"):
+def submenu(item):
+    logger.info("[tumejortv.py] submenu")
+    
+    itemlist = []
 
-    if categoria not in ("F","S","*"): 
-       return []
-       
-    try:
-        # La URL puede venir vacía, por ejemplo desde el buscador global
-        if item.url=="":
-            item.url = "http://www.tumejortv.com/buscar/%s"
-        
-        # Reemplaza el texto en la cadena de búsqueda
-        item.url = item.url % texto
+    itemlist.append( Item(channel=__channel__, action=item.extra        , title="Novedades"                  , url=item.url))
+    itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Todas por orden alfabético" , url=item.url, extra=item.extra))
+
+    return itemlist
+
+def alfabetico(item):
+    logger.info("[tumejortv.py] alfabetico")
     
-        # Devuelve los resultados
-        return shortlist(item)
-    
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        return []
+    itemlist=[]
+    alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for letra in alfabeto:
+        itemlist.append( Item(channel=item.channel, action=item.extra, title=str(letra), url = item.url + "/filtro_letras/"+letra))
+
+    itemlist.append( Item(channel=item.channel, action=item.extra, title="0-9", url = item.url + "/filtro_letras/0"))
+
+    return itemlist
 
 # Listado de novedades de la pagina principal
-def newlist(item):
-    logger.info("[tumejortv.py] movielist")
+def peliculas(item):
+    logger.info("[tumejortv.py] peliculas")
 
     url = item.url
     # Descarga la página
@@ -72,383 +67,136 @@ def newlist(item):
     #logger.info(data)
 
     # Extrae las películas
-    patron  = '<div class="item " style="clear:both;">[^<]+'
-    patron += '<div class="covershot[^<]+'
-    patron += '<a href="([^"]+)"[^<]+<img src="([^"]+)"[^<]+</a>[^<]+'
-    patron += '</div>[^<]+'
-    patron += '<div class="post-title">[^<]+'
-    patron += '<h3><a[^<]+>(.*?)</a>'
+    #<div class="antlo_dir_all_container">
+    #<a href="http://www.tumejortv.com/peliculas/Another_Year__2012_/" class="antlo_dir_pic_container color1" alt="Another Year [2012]" title="Another Year [2012]">
+    #<div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_dvd.png" alt="Another Year [2012]" title="Another Year [2012]"/>
+    #</div><div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/f4cbNabTUw9Ri5dD.jpeg" alt="Another Year [2012]"/>
+    #<div class="antlo_pic_more_info"><span class="color1">Película  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/></span></div></div><p>
+    #<div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">Another Year [2012]</div>
+    #<span class="antlo_dir_video_cat">Drama</span><div class="antlo_dir_video_calidad">HD-RIP AC3 </div></div></p></a></div>
+    patron  = '<div class="antlo_dir_all_container">'
+    patron += '<a href="([^"]+)" class="antlo_dir_pic_container color1"[^>]+>'
+    patron += '<div class="antlo_dir_bandera"><img[^>]+></div>'
+    patron += '<div class="antlo_dir_img_container"><img src="([^"]+)"[^>]+>'
+    patron += '<div class="antlo_pic_more_info"><span class="color1">([^>]+)<img src="[^"]+" alt="([^"]+)"[^>]+></span></div></div><p>'
+    patron += '<div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">([^<]+)</div>'
+    patron += '<span class="antlo_dir_video_cat">([^<]+)</span><div class="antlo_dir_video_calidad">([^<]+)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]
-        scrapedtitle = scrapedtitle.replace("<span class=\'smallTitle'>","(")
-        scrapedtitle = scrapedtitle.replace("</span>",")")
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
+    for url,thumbnail,tipo,idioma,titulo,categoria,calidad in matches:
+        scrapedtitle = titulo+" ("+idioma.strip()+") ("+calidad+")"
+        scrapedurl = url+"enlaces/"
+        scrapedthumbnail = thumbnail
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
-    patron = '<a href="([^"]+)" >&raquo;</a>'
+    patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG:
-        scrapertools.printMatches(matches)
-
     if len(matches)>0:
-        scrapedtitle = "!Pagina siguiente"
+        scrapedtitle = ">> Pagina siguiente"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
-        scrapeddescription = ""
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="newlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
-# Listado de películas de una categoria / letra
-def shortlist(item):
-    logger.info("[tumejortv.py] shortlist")
+def series(item):
+    logger.info("[tumejortv.py] series")
 
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
-    # Extrae las películas
-    patron  = '<li><div class="movieTitle">[^<]+</div><div class="covershot">'
-    patron += '<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"[^>]+></a></div></li>'
+    # Extrae las series
+    #<div class="antlo_dir_all_container">
+    #<a href="http://www.tumejortv.com/series/Blue_Bloods_2/" class="antlo_dir_pic_container color2" alt="Blue Bloods" title="Blue Bloods">
+    #<div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_nuevo.png" alt="Blue Bloods" title="Blue Bloods"/></div>
+    #<div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/CtdRg5ctHAFyE7Mh.jpeg" alt="Blue Bloods"/>
+    #<div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/></span></div></div><p>
+    #<div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">Blue Bloods</div>
+    #<div class="antlo_dir_video_cat">Temporada <span class="white">2</span> Capítulo <span class="white">16</span></div><div class="antlo_dir_video_calidad">HDTV</div></div></p>
+    patron  = '<div class="antlo_dir_all_container">'
+    patron += '<a href="([^"]+)" class="antlo_dir_pic_container color[^"]+"[^>]+>'
+    patron += '<div class="antlo_dir_bandera"><img[^>]+></div>'
+    patron += '<div class="antlo_dir_img_container"><img src="([^"]+)"[^>]+>'
+    patron += '<div class="antlo_pic_more_info"><span class="[^"]+">([^>]+)<img src="[^"]+" alt="([^"]+)"[^>]+></span></div></div><p>'
+    patron += '<div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">([^<]+)</div>'
+    patron += '<div class="antlo_dir_video_cat">(.*?)<div class="antlo_dir_video_calidad">([^<]+)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
+    for url,thumbnail,tipo,idioma,titulo,categoria,calidad in matches:
+        scrapedtitle = titulo+" ("+idioma.strip()+") ("+scrapertools.htmlclean(calidad)+")"
+        scrapedurl = url+"capitulos/"
+        scrapedthumbnail = thumbnail
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # http://www.tumejortv.com/series-tv-online/battlestar-galactica
-        if "series-tv-online" in scrapedurl:
-            action="detailserie"
-        else:
-            action="findvideos"
-        itemlist.append( Item(channel=__channel__, action=action , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Extrae la página siguiente
-    patron = '<a href="([^"]+)" >&raquo;</a>'
+    patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
     if len(matches)>0:
-        scrapedtitle = "!Pagina siguiente"
+        scrapedtitle = ">> Pagina siguiente"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="series" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
 
-# Listado de series de una letra
-def shortlistserie(item):
-    logger.info("[tumejortv.py] shortlistserie")
-    itemlist = []
-    url = item.url
-    salir = False
-
-    while not salir:
-        # Descarga la página
-        data = scrapertools.cachePage(url)
-
-        # Extrae las entradas
-        partial_list = get_pagina(data)
-        itemlist.extend( partial_list )
-
-        # Extrae la página siguiente
-        patron = '<a href="([^"]+)" >&raquo;</a>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        if DEBUG: scrapertools.printMatches(matches)
-    
-        if len(matches)>0:
-            url = matches[0]
-        else:
-            url = ""
-
-        # Condicion de salida
-        salir = ( len(partial_list) == 0 or url=="")
-
-    return itemlist
-
-def get_pagina(data):
-    patron  = '<li><div class="covershot"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"[^>]+></a></div></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
-    
-    return itemlist
-
-# Listado de categorias de películas, de la caja derecha de la home
-def moviecategorylist(item):
-    logger.info("[tumejortv.py] moviecategorylist")
-
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las películas
-    patron  = '<li class="cat-item[^<]+<a href="(http\:\/\/www\.tumejortv\.com\/peliculas\-online\-es\/[^"]+)"[^>]+>([^<]+)</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-# Listado de letras iniciales de película, de la caja derecha de la home
-def moviealphalist(item):
-    logger.info("[tumejortv.py] moviealphalist")
-
-    # Descarga la página
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las películas
-    patron  = '<a href="(http\:\/\/www\.tumejortv\.com\/peliculas-es-con-letra-[^"]+)".*?class="listados_letras">([^<]+)</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="shortlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-# Listado de letras iniciales de series, de la caja derecha de la home
-def seriealphalist(item):
-    logger.info("[tumejortv.py] seriealphalist")
-
-    # Descarga la página
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las películas
-    patron  = '<a href="(http\:\/\/www\.tumejortv\.com\/series-con-letra-[^"]+)".*?class="listados_letras">([^<]+)</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="shortlistserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-# Listado de series actualizadas, de la caja derecha de la home
-def serienewlist(item):
-    logger.info("[tumejortv.py] serienewlist")
-
-    # Descarga la página
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las películas
-    patron  = '<span><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)".*?</span>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-def detalle_programa(item):
-    data = scrapertools.cachePage(item.url)
-
-    # Argumento
-    patron  = '<meta name="description" content="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        item.plot = scrapertools.htmlclean(matches[0])
-
-    return item
-
-# Listado de todas las series, de la caja derecha de la home
-def seriealllist(item):
-    logger.info("[tumejortv.py] seriealllist")
-
-    # Descarga la página
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # Extrae las películas
-    patron  = "<li class='cat-item[^<]+<a href='(http\:\/\/www\.tumejortv\.com\/series\-tv\-online\/[^']+)'[^>]+>([^<]+)</a></li>"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="detailserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
-
-    return itemlist
-
-# Detalle de un vídeo (peli o capitulo de serie), con los enlaces
 def findvideos(item):
     logger.info("[tumejortv.py] findvideos")
-
-    # Descarga la página
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    patron = '<div id="blogitem">[^<]+<p>([^<]+)</p>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        plot = matches[0]
-
-    listavideos = servertools.findvideos(data)
     
-    itemlist = []
-    for video in listavideos:
-        scrapedtitle = item.title + " (" + video[2] + ")"
-        scrapedurl = video[1]
-        scrapedthumbnail = item.thumbnail
-        scrapedplot = item.plot
-        server = video[2]
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server=server, folder=False))
+    data = scrapertools.cache_page(item.url)
+    
+    from servers import servertools
+    itemlist = servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.action="play"
+        videoitem.folder=False
+        videoitem.title = "["+videoitem.server+"]"
+    
+    patron = '<a title="[^>]+" href="(http://www.tumejortv.com/.*?/url/\d+)"[^>]+>([^<]+)</a></td><td>([^<]+)</td><td><img src="[^"]+" alt="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    for url,server,calidad,idioma in matches:
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=server.strip()+" ("+idioma+") ("+calidad+") -> En partes" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
 
     return itemlist
 
-# Detalle de una serie, con sus capítulos
-def detailserie(item):
-    logger.info("[tumejortv.py] detailserie")
-
-    # Descarga la página
-    url = item.url
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # ------------------------------------------------------
-    #<ul class="linksListados">
-    #<li><a href="http://www.tumejortv.com/series-tv-online/babylon-5/babylon-5-temporada-1/capitulo-122-15-15-04-2009.html">Babylon 5, Babylon 5 Temporada 1, Capitulo 122</a></li>
-    patron  = '<ul class="linksListados">(.*?)</ul>'
+def findepisodios(item):
+    logger.info("[tumejortv.py] findvideos")
+    
+    itemlist=[]
+    
+    data = scrapertools.cache_page(item.url)
+    #<a href="#" class="antlo_temporadas_li" title="Haga clic para ver listado de capítulos"><img src="http://www.tumejortv.com/images/general/more.png" /> TEMPORADA 1<span style="float:right;"><img src="http://www.tumejortv.com/images/general/estreno.png" alt="EstrenoT"/></span></a><div><table class="antlo_links_table">
+    patron = '<a href="\#" class="antlo_temporadas_li" title="Haga clic[^"]+"><img[^>]+>( TEMPORADA [^<]+)<(.*?)</table>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        patron2 = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
-        matches2 = re.compile(patron2,re.DOTALL).findall(match)
-        #if DEBUG: scrapertools.printMatches(matches2)
-
-        for match2 in matches2:
-            scrapedtitle = match2[1]
-            #print "#"+scrapedtitle+"# == #"+item.show+"#"
-            scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
-            if scrapedtitle.startswith(", "):
-                scrapedtitle = scrapedtitle[2:]
-            scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
-
-            scrapedtitle = scrapedtitle.replace(", Capítulo ","x")
-            scrapedtitle = scrapedtitle.replace(", Capitulo ","x")
-            scrapedtitle = scrapedtitle.replace("&#215;","x")
-            scrapedtitle = scrapedtitle.replace(", Series Online ","x")
-            scrapedtitle = scrapedtitle.replace(", Series online capitulo ","x")
-            scrapedtitle = scrapedtitle.replace(", Series Online Capítulo ","x")
-            scrapedtitle = scrapedtitle.replace(", Series online capítulo ","x")
-            scrapedtitle = scrapedtitle.strip()
-            #scrapedtitle = scrapedtitle.replace("Temporada ","")
-            
-            #print scrapedtitle
-
-            # Reemplaza "1, 1x33" por "1x33"
-            patron = "\d+\, (\d+x\d+)"
-            matches3 = re.compile(patron,re.DOTALL).findall(scrapedtitle)
-            if len(matches3)>0 and len(matches3[0])>0:
-                scrapedtitle = matches3[0]
-
-            #print scrapedtitle
-
-            # Reemplaza "Temporada 1, Capítulo 33" por "1x33"
-            patron = "Temporada (\d+). Cap.*?lo (\d+.*?)"
-            matches3 = re.compile(patron,re.DOTALL).findall(scrapedtitle)
-            #print matches3
-            if len(matches3)>0:
-                scrapedtitle = matches3[0][0]+"x"+matches3[0][1]
-
-            #print scrapedtitle
-
-            # Reemplaza "Temporada 1, Capítulo 33" por "1x33"
-            patron = "Temporada (\d+). Series online\s+(\d+x\d+.*?)"
-            matches3 = re.compile(patron,re.DOTALL).findall(scrapedtitle)
-            #print matches3
-            if len(matches3)>0:
-                scrapedtitle = matches3[0][1]
-
-            #print scrapedtitle
-
-            if scrapedtitle.startswith(item.title+", "):
-                scrapedtitle = scrapedtitle[ len(item.title)+2 : ]
-
-            #scrapedtitle = scrapedtitle + "#"+match2[1]+"#"
-            
-            scrapedurl = match2[0]
-            scrapedthumbnail = item.thumbnail
-            scrapedplot = ""
-
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show))
+    for temporada,episodios in matches:
+        
+        patronepisodio = '<tr><td></td><td[^>]+><a title="[^"]+" alt="[^"]+" href="([^"]+)"> <img[^>]+><br />[^<]+</a></td><td>([^<]+)</td><td>([^<]+)</td><td><a[^>]+>([^<]+)</a></td></tr>'
+        matches2 = re.compile(patronepisodio,re.DOTALL).findall(episodios)
+        for url,episodio,num_enlaces,titulo in matches2:
+            temporada = temporada.replace("TEMPORADA","").strip()
+            if len(episodio)<2:
+                episodio = "0"+episodio
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
 
     return itemlist
