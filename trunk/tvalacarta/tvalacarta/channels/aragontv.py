@@ -12,7 +12,7 @@ from core import logger
 from core import scrapertools
 from core.item import Item
 
-DEBUG = False
+DEBUG = True
 CHANNELNAME = "aragontv"
 
 def isGeneric():
@@ -29,7 +29,7 @@ def mainlist(item):
     return itemlist
 
 def programas(item):
-    logger.info("[aragontv.py] programas")
+    logger.info("[aragontv.py] programas [item="+item.tostring()+" show="+item.show+"]")
     itemlist = []
 
     # Descarga la página
@@ -68,6 +68,7 @@ def programas(item):
 
 def episodios(item):
     logger.info("[aragontv.py] episodios")
+    logger.info("[aragontv.py] programa [item="+item.tostring()+" show="+item.show+"]")
     itemlist = []
 
     # Descarga la página
@@ -119,7 +120,7 @@ def episodios(item):
         scrapedurl = urlparse.urljoin(item.url,match[2])
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
         scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], show=["+item.show+"]")
 
         # Añade al listado
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, folder=False) )
@@ -128,7 +129,7 @@ def episodios(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
-        pageitem = Item(channel=CHANNELNAME, title="Página siguiente >>" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , folder=True)
+        pageitem = Item(channel=CHANNELNAME, title="Página siguiente >>" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , show=item.show, folder=True)
         itemlist.extend( episodios(pageitem) )
 
     return itemlist
