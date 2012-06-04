@@ -18,7 +18,7 @@ FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','d
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
-FREE_SERVERS.extend(['jumbofiles','nowvideo'])
+FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4'])
 #bayfiles
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
