@@ -39,24 +39,16 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[moevideos.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
 
-    if not "video.php" in page_url:
-        # Descarga la página y saca el ID
-        headers = []
-        headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
-        data = scrapertools.cache_page( page_url , headers=headers )
-        patron = '<script language="JavaScript" type="text/javascript" src="(http\://moevideo.net/video.php[^"]+)">'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        url1 = matches[0]
-        logger.info("[moevideos.py] url="+url1)
+    headers = []
+    headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
+    data = scrapertools.cache_page( page_url , headers=headers )
         
-        # Descarga el script (no sirve para nada, excepto las cookies)
-        headers.append(['Referer',page_url])
-        data = scrapertools.cache_page( url1 , headers=headers )
-        code = scrapertools.get_match(url1,"video.php\?file\=([^\&]+)\&")
+    # Descarga el script (no sirve para nada, excepto las cookies)
+    headers.append(['Referer',page_url])
+    post = "id=1&enviar2=ver+video"
+    data = scrapertools.cache_page( page_url , post=post, headers=headers )
+    code = scrapertools.get_match(data,"video.php\?file\=([^\&]+)\&")
         
-    else:
-        code = scrapertools.get_match(page_url,"video.php\?file\=([^\&]+)\&")
-
     # API de letitbit
     headers2 = []
     headers2.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
@@ -71,19 +63,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_url = matches[0]
     logger.info("[moevideos.py] video_url="+video_url)
 
-    try:
-        import urlparse
-        parsed_url = urlparse.urlparse(video_url)
-        logger.info("parsed_url="+str(parsed_url))
-        extension = parsed_url.path[-4:]
-    except:
-        if len(parsed_url)>=4:
-            extension = parsed_url[2][-4:]
-        else:
-            extension = ""
-        
     video_urls = []
-    video_urls.append( [ extension + " [moevideos]",video_url ] )
+    video_urls.append( [ scrapertools.get_filename_from_url(video_url)[-4:] + " [moevideos]",video_url ] )
 
     for video_url in video_urls:
         logger.info("[moevideos.py] %s - %s" % (video_url[0],video_url[1]))
