@@ -28,15 +28,15 @@ def mainlist(item):
     logger.info("[serieonline.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"    , action="novedades", url="http://www.serieonline.net/"))
-    itemlist.append( Item(channel=__channel__, title="Series"       , action="series"   , url="http://www.serieonline.net/series/"))
-    itemlist.append( Item(channel=__channel__, title="Películas"    , action="peliculas", url="http://www.serieonline.net/peliculas/"))
-    itemlist.append( Item(channel=__channel__, title="Documentales" , action="peliculas", url="http://www.serieonline.net/documentales/"))
+    itemlist.append( Item(channel=__channel__, title="Episodios destacados"      , action="destacados"     , url="http://www.serieonline.net/"))
+    itemlist.append( Item(channel=__channel__, title="Nuevos episodios"          , action="novedades"      , url="http://www.serieonline.net/"))
+    itemlist.append( Item(channel=__channel__, title="Series (con carátula)"     , action="series"         , url="http://www.serieonline.net/series/"))
+    itemlist.append( Item(channel=__channel__, title="Series (listado completo)" , action="seriescompleto" , url="http://www.serieonline.net/"))
     
     return itemlist
 
-def novedades(item):
-    logger.info("[serieonline.py] novedades")
+def destacados(item):
+    logger.info("[serieonline.py] destacados")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -58,13 +58,37 @@ def novedades(item):
         # Añade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
+    return itemlist
+
+def novedades(item):
+    logger.info("[serieonline.py] novedades")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    # Extrae las entradas
+    patronvideos  = '<div class="capitulo"><div class="imagen-text"><a href="([^"]+)"><img src="([^"]+)"[^<]+</a></div><div class="texto-capitulo"><a href="[^"]+">([^<]+)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for url,thumbnail,title in matches:
+        scrapedtitle = title
+        scrapedplot = ""
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
     # Extrae el paginador
     patronvideos  = '<div class="paginacion-num"><a href="([^"]+)">'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "Página siguiente"
+        scrapedtitle = ">> Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , folder=True) )
 
@@ -168,6 +192,31 @@ def series(item,paginacion=True):
 
     return itemlist
 
+def seriescompleto(item):
+    logger.info("[serieonline.py] seriescompleto")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    # Extrae las entradas
+    data = scrapertools.get_match(data , '<div id="lista-series-menu">(.*?)\s+<div class="clear"></div>')
+
+    patronvideos  = '<a href="([^"]+)">([^<]+)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for url,title in matches:
+        scrapedtitle = title
+        scrapedplot = ""
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, folder=True) )
+
+    return itemlist
 
 def episodios(item):
     logger.info("[serieonline.py] episodios")
@@ -176,25 +225,74 @@ def episodios(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-    patronvideos  = '<div class="serie">(.*?)</div>'
+    patronvideos  = '<li>[^<]+'
+    patronvideos += '<a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-        cuerpo = matches[0]
-    else:
-        cuerpo = ""
-
-    patronvideos  = '<a href="([^"]+)">([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(cuerpo)
 
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
+    for url,title in matches:
+        scrapedtitle = title
         scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = item.thumbnail
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , show=item.show, plot=scrapedplot , folder=True) )
+
+    return itemlist
+
+def findvideos(item):
+    logger.info("[serieonline.py] findvideos")
+    itemlist = []
+    
+    '''
+    <div class="enlace_contenedor">
+    <div class="enlace_contenedor_enlace">
+    <a href="http://www.serieonmirror.com/section/64846/a102bca9daa4b450c692bf8c610408fa/" target="_blank" title="Descargar de rapidgator">Descargar</a>
+    </div>
+    <div class="enlace_contenedor_servidor_ server rapidgator"></div>
+    <div class="enlace_contenedor_idioma_ES" title="Español"><div></div></div>
+    <div class="enlace_contenedor_idioma_" title=""><div></div></div>
+    <div class="enlace_contenedor_info"><p><b></b></p></div>
+    <div class="enlace_contenedor_up"><p><b>Emel</b></p></div>	<div class="enlace_contenedor_info_contenedor">
+    <p></p>
+    </div>
+    <div class="clear"></div>
+    </div>
+    '''
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    patron = '<div class="enlace_contenedor">(.*?)<div class="clear">'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        logger.info("match="+match)
+        
+        patron2  = '<a href="([^"]+)[^<]+</a>[^<]+</div>[^<]+'
+        patron2 += '<div class="enlace_contenedor_servidor_ server ([^"]+)"></div>[^<]+'
+        patron2 += '<div class="enlace_contenedor_idioma[^"]+" title="([^"]+)"><div></div></div>[^<]+'
+        patron2 += '<div class="enlace_contenedor_idioma[^"]+" title="([^"]*)"'
+        matches2 = re.compile(patron2,re.DOTALL).findall(match)
+        for url,server,audio,subtitulos in matches2:
+            if subtitulos=="":
+                subtitulos="no"
+        
+            itemlist.append( Item(channel=__channel__, action="play", title="Ver en "+server+" (audio "+audio+", subtitulos "+subtitulos+")" , url=url , thumbnail=item.thumbnail , show=item.show, plot=item.plot , folder=False) )
+
+    return itemlist
+
+def play(item):
+    logger.info("[serieonline.py] play")
+    itemlist = []
+    
+    data = scrapertools.cachePage(item.url)
+    
+    from servers import servertools
+    itemlist = servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel = item.channel
+        videoitem.folder=False
+        videoitem.action="play"
 
     return itemlist
