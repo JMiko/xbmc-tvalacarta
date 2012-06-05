@@ -15,10 +15,17 @@ import logger
 
 PLUGIN_NAME = "pelisalacarta"
 
-if config.get_setting("thumbnail_type")=="0":
-    IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' )
-else:
-    IMAGES_PATH = os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' )
+# FIXME: Esto está repetido en el channelselector, debería ir a config
+thumbnail_type = config.get_setting("thumbnail_type")
+if thumbnail_type=="":
+    thumbnail_type="2"
+logger.info("thumbnail_type="+thumbnail_type)
+if thumbnail_type=="0":
+    IMAGES_PATH = 'http://pelisalacarta.mimediacenter.info/posters/'
+elif thumbnail_type=="1":
+    IMAGES_PATH = 'http://pelisalacarta.mimediacenter.info/banners/'
+elif thumbnail_type=="2":
+    IMAGES_PATH = 'http://pelisalacarta.mimediacenter.info/squares/'
 
 ROOT_DIR = config.get_runtime_path()
 
@@ -124,7 +131,9 @@ def checkforupdates():
         
         # Añade al listado de XBMC
         import xbmcgui
-        listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, iconImage=os.path.join(IMAGES_PATH, "poster" , "Crystal_Clear_action_info.png"), thumbnailImage=os.path.join(IMAGES_PATH, "Crystal_Clear_action_info.png") )
+        thumbnail = IMAGES_PATH+"Crystal_Clear_action_info.png"
+        logger.info("thumbnail="+thumbnail)
+        listitem = xbmcgui.ListItem( "Descargar version "+versiondescargada, thumbnailImage=thumbnail )
         itemurl = '%s?action=update&version=%s' % ( sys.argv[ 0 ] , versiondescargada )
         import xbmcplugin
         xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
