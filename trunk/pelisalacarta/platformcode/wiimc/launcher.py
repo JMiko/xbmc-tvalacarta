@@ -21,6 +21,9 @@ import logging
 logging.config.fileConfig("logging.conf")
 logger=logging.getLogger("wiimc")
 
+#TODO: Pasar esto a ¿config?
+VERSIONTAG = "3.2.6"
+
 #from lib import cerealizer
 #cerealizer.register(Item)
 
@@ -30,7 +33,7 @@ def controller(plugin_name,port,host,path,headers):
 
     respuesta += "version=7\n"
     respuesta += "logo=http://pelisalacarta.mimediacenter.info/icon.png\n"
-    respuesta += "title="+plugin_name+" 3.2.6 (WiiMC)\n"
+    respuesta += "title="+plugin_name+" "+VERSIONTAG+" (WiiMC)\n"
     respuesta += "\n"
 
     if path == "/wiimc/" or path=="/wiimc":
