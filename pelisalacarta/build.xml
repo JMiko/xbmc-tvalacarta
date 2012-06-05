@@ -2,7 +2,14 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="version" value="3.2.8"/>
+    <property name="oldversion" value="3.2.8"/>
+    <property name="oldversionboxee" value="4.2"/>
+    <property name="oldversiondate" value="29/05/2012"/>
+
+    <property name="version" value="3.2.9"/>
+    <property name="versionboxee" value="4.3"/>
+    <property name="versiondate" value="04/06/2012"/>
+    <property name="versionchanges" value="Weekly release"/>
     
     <!-- Para betas usar: -->
     <!--property name="version" value="3.2.5-beta-1"/-->
@@ -10,7 +17,6 @@
     <!-- Para versiones finales usar: -->
     <!--property name="version" value="3.2.5"/-->
     
-    <property name="versionboxee" value="4.2"/>
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
 
@@ -549,5 +555,26 @@
         <copy todir="/Users/jesus/Library/Application Support/Plex Media Server/Plug-ins/pelisalacarta.bundle">
             <fileset dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
         </copy>
+    </target>
+    
+    <target name="versionup"> <!-- depends="package"-->
+        <replaceregexp file="version.xml" match="&lt;tag&gt;(.*?)&lt;/tag&gt;" replace="&lt;tag&gt;${version}&lt;/tag&gt;"/>
+        <replaceregexp file="version.xml" match="&lt;date&gt;(.*?)&lt;/date&gt;" replace="&lt;date&gt;${versiondate}&lt;/date&gt;"/>
+        <replaceregexp file="version.xml" match="&lt;changes&gt;(.*?)&lt;/changes&gt;" replace="&lt;changes&gt;${versionchanges}&lt;/changes&gt;"/>
+
+
+        <replaceregexp file="default.py" match="__date__ = &quot;([^&quot;]+)&quot;" replace="__date__ = &quot;${versiondate}&quot;"/>
+        <replaceregexp file="default.py" match="__version__ = &quot;([^&quot;]+)&quot;" replace="__version__ = &quot;${version}&quot;"/>
+
+        <replaceregexp file="addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmceden/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmcdharma/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/wiimc/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
+
+        <replaceregexp file="resources/dreambox/plugin.py" match="pelisalacarta ${oldversion} para Dreambox" replace="pelisalacarta ${version} para Dreambox" flags="g"/>
+
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION = &quot;${versionboxee}&quot;"/>
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION_XBMC = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION_XBMC = &quot;${versionboxee}&quot;"/>
+
     </target>
 </project>
