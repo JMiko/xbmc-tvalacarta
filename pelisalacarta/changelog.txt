@@ -1,13 +1,13 @@
 3.2.9
 
     Cambios comunes a todas las plataformas
-
+    
         Canales
             Restaurado canal PelisPekes
             Arreglado serieonline
             Arreglado tumejortv
             Nuevo canal italiano filmsenzalimiti
-
+    
         Conectores
             Nuevo conector para streamcloud
             Nuevo conector para allbox4

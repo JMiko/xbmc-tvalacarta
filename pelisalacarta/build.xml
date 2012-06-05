@@ -574,7 +574,21 @@
         <replaceregexp file="resources/dreambox/plugin.py" match="pelisalacarta ${oldversion} para Dreambox" replace="pelisalacarta ${version} para Dreambox" flags="g"/>
 
         <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION = &quot;${versionboxee}&quot;"/>
-        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION_XBMC = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION_XBMC = &quot;${versionboxee}&quot;"/>
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION_XBMC = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION_XBMC = &quot;${version}&quot;"/>
+        
+        <replaceregexp file="platformcode/boxee/descriptor.xml" match="&lt;version&gt;(.*?)&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
+        <replaceregexp file="platformcode/boxee/index.xml" match="&lt;version&gt;${oldversionboxee}&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
 
+        <antcall target="package"/>
+        
+        <!-- Pasos que quedan por automatizar
+        
+        Subir los ZIP al servidor
+        Subir version.xml como pelisalacarta-version.xml
+        Subir index.xml de boxee y el zip de boxee al repo
+        Firmar boxee y subir el xml
+        Redactar texto para actualizar página de descargas
+        
+        -->
     </target>
 </project>
