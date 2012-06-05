@@ -194,6 +194,7 @@ def channels_list():
     itemlist.append( Item( title="DocumentariesTV"       , channel="documentariestv"      , language="EN"    , category="D,VOS"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Filmixt"               , channel="filmixt"              , language="ES"    , category="F"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="FilmesOnlineBr"        , channel="filmesonlinebr"       , language="PT"    , category="F"       , type="xbmc"     ))
+    itemlist.append( Item( title="Film Senza Limiti (IT)"        , channel="filmsenzalimiti"       , language="IT"    , category="F"       , type="generic"     ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Gaypornshare"             , channel="gaypornshare"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Gnula"                   , channel="gnula"                , language="ES" , category="F" , type="generic"  )) # vcalvo 15/12/2011
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Gratisdocumentales"    , channel="gratisdocumentales"   , language="ES"    , category="D"       , type="generic"  ))
@@ -298,6 +299,7 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     if thumbnail_type=="":
         thumbnail_type="2"
     logger.info("thumbnail_type="+thumbnail_type)
+    # FIXME: Esto está repetido en el updater, debería ir a config
     if thumbnail_type=="0":
         IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
     elif thumbnail_type=="1":
