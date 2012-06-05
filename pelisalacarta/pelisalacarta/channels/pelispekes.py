@@ -14,8 +14,8 @@ from core.item import Item
 from servers import servertools
 
 __channel__ = "pelispekes"
-__category__ = "F,A"
-__type__ = "xbmc"
+__category__ = "F"
+__type__ = "generic"
 __title__ = "Pelis Pekes"
 __language__ = "ES"
 
@@ -28,9 +28,9 @@ def mainlist(item):
     logger.info("[pelispekes.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=__channel__ , action="Generico"        , title="Novedades"                      , url="http://pelispekes.com/"))
-    itemlist.append( Item(channel=__channel__ , action="Categorias"        , title="Categorias"                      , url="http://pelispekes.com/"))
-    itemlist.append( Item(channel=__channel__ , action="Abecedario"        , title="Abecedario"                      , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Generico"   , title="Novedades" , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Categorias" , title="Categorias", url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="Abecedario" , title="Abecedario", url="http://pelispekes.com/"))
     
 
     return itemlist
@@ -105,10 +105,10 @@ def buscavideos(item):
     
     for video in listavideos:
         server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
+        scrapedtitle = "["+server+"]"
         scrapedurl = video[1]
         
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, fulltitle = item.title, folder=False))
 
     return itemlist
 
