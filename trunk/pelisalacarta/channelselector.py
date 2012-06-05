@@ -228,6 +228,7 @@ def channels_list():
     itemlist.append( Item( title="Peliculasyonkis"       , channel="peliculasyonkis_generico" , language="ES"    , category="F,VOS"   , type="generic" ))
     # DESACTIVADO - SIN CONTENIDO itemlist.append( Item( title="Pelis Pekes"           , channel="pelispekes"           , language="ES" , category="F,A"        , type="xbmc"  ))
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S,VOS"        , type="generic"  ))
+    itemlist.append( Item( title="PelisPekes"               , channel="pelispekes"              , language="ES" , category="F"        , type="generic"  ))
     #itemlist.append( Item( title="PelisFlv"              , channel="pelisflv"             , language="ES" , category="F"          , type="xbmc"  ))
     # YA NO EXISTE itemlist.append( Item( title="Redes.tv"              , channel="redestv"              , language="ES" , category="D"          , type="xbmc"  ))
     itemlist.append( Item( title="Robinfilm (IT)"        , channel="robinfilm"            , language="IT" , category="F"          , type="generic"  )) # jesus 16/05/2011
