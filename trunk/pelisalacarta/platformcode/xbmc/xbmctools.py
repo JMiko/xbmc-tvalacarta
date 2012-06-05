@@ -401,7 +401,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         keyboard.doModal()
         if keyboard.isConfirmed():
             title = keyboard.getText()
-            favoritos.savebookmark(titulo=title,url=url,thumbnail=thumbnail,server=server,plot=plot,fulltitle=fulltitle)
+            favoritos.savebookmark(titulo=title,url=url,thumbnail=thumbnail,server=server,plot=plot,fulltitle=title)
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok(config.get_localized_string(30102) , title , config.get_localized_string(30108)) # 'se ha añadido a favoritos'
         return
@@ -425,7 +425,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         keyboard.doModal()
         if keyboard.isConfirmed():
             title = keyboard.getText()
-            descargas.savebookmark(titulo=title,url=url,thumbnail=thumbnail,server=server,plot=plot,fulltitle=fulltitle)
+            descargas.savebookmark(titulo=title,url=url,thumbnail=thumbnail,server=server,plot=plot,fulltitle=title)
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30109)) # 'se ha añadido a la lista de descargas'
         return
