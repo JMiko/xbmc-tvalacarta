@@ -54,8 +54,10 @@ def run():
             except ImportError:
                 logger.info("[launcher.py] Actualizacion automática desactivada")
 
-            import channelselector as plugin
-            plugin.listchannels(params, url, category)
+            #import channelselector as plugin
+            #plugin.listchannels(params, url, category)
+            import xbmc
+            xbmc.executebuiltin( "Container.Refresh" )
 
         elif (action=="channeltypes"):
             import channelselector as plugin
