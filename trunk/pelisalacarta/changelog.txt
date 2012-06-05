@@ -1,3 +1,33 @@
+3.2.9
+
+    Cambios comunes a todas las plataformas
+
+        Canales
+            Restaurado canal PelisPekes
+            Arreglado serieonline
+            Arreglado tumejortv
+            Nuevo canal italiano filmsenzalimiti
+
+        Conectores
+            Nuevo conector para streamcloud
+            Nuevo conector para allbox4
+            Arreglado conector moevideos
+            Arreglado conector divxstage
+            Arreglado conector con movshare
+            Mejorados patrones en VK
+            Mejorados patrones conector "directo" para peliculasid, gracias a xboxfan
+            Mejorados patrones en moevideos (gracias a xboxfan)
+        
+    XBMC        
+        Ya coge bien el título en descargas y favoritos
+        Tras actualizar el plugin refresca en lugar de entrar en otro nivel
+        El updater ya muestra el icono correctamente
+        Dos nuevos conectores filenium/real-debrid para Fileflyer y Gigasize
+        Arreglado flag visto en seriesly por talixme
+
+3.2.8
+    First weekly release
+
 3.2.7
 
 - Bugfix release
