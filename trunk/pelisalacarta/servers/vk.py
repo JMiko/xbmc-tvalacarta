@@ -128,14 +128,29 @@ def find_videos(data):
     #http://vk-30835.html -> mal
     #http://vk.com/video101726978_163640461 -> bien
     #http://vk.com/video_ext.php?oid=114355493&id=162574740&hash=dd60f434da306b26&hd=1
-
-    patronvideos = '(vk\.com/video_ext.php?oid=\d+&id=\d+&hash=[a-z0-9]+&hd=\d+)'
+    patronvideos = '(vk\.com/video_ext.php\?oid=\d+&id=\d+&hash=[a-z0-9]+&hd=\d+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
         titulo = "[vk]"
         url = "http://"+match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vk' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://vkontakte.ru/video_ext.php?oid=95855298&id=162902512&hash=4f0d023887f3648e
+    patronvideos = 'vkontakte\.ru(/video_ext.php\?oid=\d+&id=\d+&hash=[a-z0-9]+)'
+    logger.info("[vk.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos).findall(data)
+
+    for match in matches:
+        titulo = "[vk]"
+        url = "http://vk.com"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
