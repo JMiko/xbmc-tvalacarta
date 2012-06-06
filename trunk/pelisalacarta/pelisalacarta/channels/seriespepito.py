@@ -189,7 +189,7 @@ def episodelist(item):
 
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , context="4"))
 
-    if config.get_platform().startswith("xbmc"):
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show) )
 
     return itemlist
