@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>14</tag>
-	<date>30/05/2012</date>
-	<changes>El flag de VISTO-NOVISTO ahora sale correcto, arreglado por talixme</changes>
+	<tag>15</tag>
+	<date>06/06/2012</date>
+	<changes>Mis series salen ordenadas alfabéticamente</changes>
 </version>

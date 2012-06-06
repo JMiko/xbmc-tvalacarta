@@ -214,9 +214,13 @@ def mis_series(item):
                  url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
                  thumbnail = serieItem['thumb'],
                  plot = "",
+                 show = serieItem['title'],
                  extra = item.extra
             )
         )
+        
+    itemlist = sorted( itemlist , key=lambda item: item.title)
+        
     return itemlist
 
 def serie_capitulos(item):
@@ -260,10 +264,14 @@ def serie_capitulos(item):
                 url = 'http://series.ly/api/linksCap.php?idCap=%(idc)s&format=json' % episode,
                 thumbnail = item.thumbnail,
                 plot = "",
+                show = item.show,
                 extra = item.extra
             )
         )
-    
+
+    #if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+    #    itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="serie_capitulos###"+item.extra, show=item.show) )
+
     return itemlist
 
 def capitulo_links(item):
