@@ -24,13 +24,14 @@ def find_videos(data):
 
     # http://turbobit.net/scz8lxrrgllr.html
     # http://www.turbobit.net/uzo3gcyfmt4b.html
-    patronvideos  = '(turbobit.net/[0-9a-z]+\.html)'
+    # http://turbobit.net/eaz9ha3gop65/deadliest.catch.s08e09-killers.mp4.html
+    patronvideos  = '(turbobit.net/[0-9a-z]+)'
     logger.info("[turbobit.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[turbobit]"
-        url = "http://"+match
+        url = "http://"+match+".html"
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'turbobit' ] )
