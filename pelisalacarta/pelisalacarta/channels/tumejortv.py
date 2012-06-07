@@ -142,7 +142,7 @@ def series(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
 
     # Extrae la página siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'
@@ -197,6 +197,9 @@ def findepisodios(item):
             temporada = temporada.replace("TEMPORADA","").strip()
             if len(episodio)<2:
                 episodio = "0"+episodio
-            itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, show=item.show, plot=item.plot, folder=True, fulltitle=item.title))
+
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findepisodios", show=item.show) )
 
     return itemlist
