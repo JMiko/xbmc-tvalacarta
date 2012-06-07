@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>tutvsite</name>
-	<tag>3</tag>
+	<tag>4</tag>
 	<date>07/06/2012</date>
-	<changes>Ya se puede añadir a la biblioteca</changes>
+	<changes>Parche para arreglar el buscador</changes>
 </version>
