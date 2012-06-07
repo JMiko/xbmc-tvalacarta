@@ -35,6 +35,9 @@ def mainlist(item):
 
     return itemlist
 
+def search(item,texto):
+    return []
+
 def submenu(item):
     logger.info("[tumejortv.py] submenu")
     
