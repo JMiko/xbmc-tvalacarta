@@ -34,11 +34,13 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Películas"                , action="menupeliculas"))
     itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"      , url="http://series.shurhd.com/"))
 #    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
+    '''
     if SESION=="true":
         perform_login(LOGIN,PASSWORD)
         itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
     else:
         itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
+    '''
 
     return itemlist
 
@@ -214,7 +216,7 @@ def series(item):
         scrapedplot = ""
         scrapedurl = url
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
-        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , plot=scrapedplot , extra=scrapedtitle , folder=True) )
+        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , plot=scrapedplot , extra=scrapedtitle , show=scrapedtitle, folder=True) )
 
     return itemlist
 
@@ -228,6 +230,7 @@ def episodios(item):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for url,title in matches:
+        title = title.replace("&#215;","x")
         scrapedtitle = title.strip()
         scrapedtitle = scrapertools.entityunescape(scrapedtitle).strip()
         scrapedtitle = scrapertools.htmlclean(scrapedtitle).strip()
@@ -237,7 +240,10 @@ def episodios(item):
         scrapedplot = ""
         scrapedurl = url
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , plot=scrapedplot , extra=scrapedtitle , show=item.show, context="4|5") )
+
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
