@@ -538,3 +538,19 @@ def verRelacionados(params,data,category):
     # End of directory...
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
   
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    items = documentalesnuevos(mainlist_items[0])
+    bien = False
+    for singleitem in items:
+        mirrors = servertools.find_video_items( item=singleitem )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
