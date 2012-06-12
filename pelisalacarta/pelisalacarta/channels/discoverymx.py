@@ -262,27 +262,8 @@ def findvideos(item):
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,"<div class='post-body entry-content'>(.*?)<div class='post-footer'>")
 
-    # Busca los enlaces a videos no megavideo (youtube)
-    patronyoutube = '<a href="http\:\/\/www.youtube.com/watch\?v=[^=]+=PlayList\&amp\;p=(.+?)&[^"]+"'
-    matchyoutube  = re.compile(patronyoutube,re.DOTALL).findall(data)
-    if len(matchyoutube)>0:
-        for match in matchyoutube:
-            listyoutubeurl = 'http://www.youtube.com/view_play_list?p='+match
-            data1 = scrapertools.cachePage(listyoutubeurl)
-            newpatronyoutube = '<a href="(.*?)".*?<img src="(.*?)".*?alt="([^"]+)"'
-            matchnewyoutube  = re.compile(newpatronyoutube,re.DOTALL).findall(data1)
-            if len(matchnewyoutube)>0:
-                for match2 in matchnewyoutube:
-                    scrapedthumbnail = match2[1]
-                    scrapedtitle     = match2[2]
-                    scrapedurl       = match2[0]
-                    if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-                    #xbmctools.addnewvideo( __channel__ , "play" , category , "youtube" , scrapedtitle +" - "+"(youtube) ", scrapedurl , scrapedthumbnail , plot )
-                    itemlist.append( Item(channel=__channel__, action="play", server="youtube", title=scrapedtitle+" [youtube]" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
-
-                logger.info(" lista de links encontrados U "+str(len(matchnewyoutube)))
-    
     # Busca los enlaces a los videos
     listavideos = servertools.findvideos(data)
 
@@ -291,7 +272,7 @@ def findvideos(item):
         url = video[1]
         server = video[2]
         #xbmctools.addnewvideo( __channel__ , "play" , category , server ,  , url , thumbnail , plot )
-        itemlist.append( Item(channel=__channel__, action="play", server=server, title=item.title.strip() + " - " + videotitle , url=url , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", server=server, title=videotitle , url=url , thumbnail=item.thumbnail , plot=item.plot , fulltitle = item.title , folder=False) )
 
     return itemlist
 
