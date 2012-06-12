@@ -7,22 +7,14 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 
 from core import scrapertools
 from core import logger
 from core.item import Item
 from core import downloadtools
-from platformcode.xbmc import xbmctools
 from servers import servertools
 
 CHANNELNAME = "cinevos"
-
-# Traza el inicio del canal
-logger.info("[cinevos.py] init")
-
 DEBUG = True
 
 def isGeneric():
@@ -42,10 +34,15 @@ def mainlist(item):
 
 def search(item,texto):
     logger.info("[cinevos.py] search")
-    itemlist = []
-    item.url = "http://www.cinevos.com/index.php?do=search&subaction=search&story=%s" %texto
-    itemlist.extend(listvideos(item))
-    return itemlist
+    item.url = "http://www.cinevos.com/index.php?do=search&subaction=search&story=%s" % texto
+    try:
+        return listvideos(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def listcategorias(item):
     logger.info("[cinevos.py] listcategorias")
@@ -96,14 +93,14 @@ def listalfanum(item):
     logger.info("[cinevos.py] listalfanum")
     
     BaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    BaseUrl   = "http://peliculasid.net/categoria/letra/%s"
+    BaseUrl   = "http://www.cinevos.com/index.php?&do=cat&catalog=%s"
     action    = "listvideos"
     itemlist = []
     #itemlist.append( Item(channel=CHANNELNAME, action=action, title="0-9" , url=BaseUrl % "0-9" , thumbnail="" , plot="" , folder=True) )
     for letra in BaseChars:
         scrapedtitle = letra
         scrapedplot = ""
-        scrapedurl = BaseUrl % letra
+        scrapedurl = BaseUrl % letra.lower()
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
@@ -227,3 +224,20 @@ def findvideos(item):
             videotitle = item.title+ " - " +videotitle
         itemlist.append( Item(channel=CHANNELNAME, action="play", server=server, title=videotitle , url=url , thumbnail=item.thumbnail , plot=plot ,subtitle=sub, folder=False) )
     return itemlist
+
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    peliculas_items = listvideos(mainlist_items[0])
+
+    # Comprueba primero las películas "Recientes" a ver si alguna tiene mirrors    
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = findvideos(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+    
+    return bien
