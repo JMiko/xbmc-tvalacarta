@@ -49,7 +49,7 @@ def lista(item):
     itemlist = []
 
     # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.downloadpageGzip(item.url)
     #logger.info(data)
 
 
@@ -100,7 +100,7 @@ def search(item,texto):
     itemlist = []
 
     # descarga la pagina
-    data=scrapertools.cache_page("http://gaypornshare.org/?s="+texto)
+    data=scrapertools.downloadpageGzip("http://gaypornshare.org/?s="+texto)
 
     
     # Extrae las entradas (carpetas)
@@ -146,7 +146,7 @@ def detail(item):
     itemlist = []
 
     # Descarga la pagina
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.downloadpageGzip(item.url)
     descripcion = ""
     plot = ""
     patrondescrip = 'SINOPSIS:(.*?)'
