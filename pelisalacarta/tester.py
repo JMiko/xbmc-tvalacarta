@@ -39,6 +39,7 @@ def test_channels():
     
     para_probar = []
     '''
+    '''
     para_probar.append("animeflv")
     para_probar.append("animeid")
     para_probar.append("bajui")
@@ -46,12 +47,15 @@ def test_channels():
     para_probar.append("cineblog01")
     para_probar.append("cinetube")
     para_probar.append("cinetemagay")
-    '''
-    '''
     para_probar.append("cuevana")
     para_probar.append("cinevos")
     para_probar.append("discoverymx")
     para_probar.append("divxonline")
+    para_probar.append("documaniatv")
+    para_probar.append("documentariestv")
+    para_probar.append("filmsenzalimiti")
+    para_probar.append("gnula")
+    '''
     '''
     
     funcionan = []
