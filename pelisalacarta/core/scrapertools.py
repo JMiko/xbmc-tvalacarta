@@ -1193,3 +1193,16 @@ def get_filename_from_url(url):
             filename = ""
 
     return filename
+
+# Parses the title of a tv show episode and returns the season id + episode id in format "1x01"
+def get_season_and_episode(title):
+    logger.info("get_season_and_episode('"+title+"')")
+
+    patron ="(\d+)[x|X](\d+)"
+    matches = re.compile(patron).findall(title)
+    logger.info(str(matches))
+    filename=matches[0][0]+"x"+matches[0][1]
+
+    logger.info("get_season_and_episode('"+title+"') -> "+filename)
+    
+    return filename
