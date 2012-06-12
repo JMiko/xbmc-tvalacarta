@@ -62,6 +62,11 @@ config.plugins.pelisalacarta.showadultcontent = ConfigYesNo(default=False)
 config.plugins.pelisalacarta.showsecretcontent = ConfigYesNo(default=False)
 config.plugins.pelisalacarta.version = NoSave(ConfigText(default="282"))
 
+#config.plugins.pelisalacarta.cinetubelogin = ConfigText(default="", fixed_size=False)
+#config.plugins.pelisalacarta.cinetubepass = ConfigText(default="", fixed_size=False)
+#config.plugins.pelisalacarta.serieslylogin = ConfigText(default="", fixed_size=False)
+#config.plugins.pelisalacarta.serieslypass = ConfigText(default="", fixed_size=False)
+
 default = config.plugins.pelisalacarta.storagepath.value + "/pelisalacarta/movies"
 tmp = config.movielist.videodirs.value
 if default not in tmp:
@@ -1527,6 +1532,13 @@ class Pelisalacarta_Settings(Screen, ConfigListScreen):
         #self.cfglist.append(getConfigListEntry(_("Show Secret Content:"), config.plugins.pelisalacarta.showsecretcontent))
         self.cfglist.append(getConfigListEntry(_("Download Directory:"), config.plugins.pelisalacarta.moviedir))
         self.cfglist.append(getConfigListEntry(_("Cache Folder:"), config.plugins.pelisalacarta.storagepath))
+
+
+        #self.cfglist.append(getConfigListEntry(_("Login Cinetube:"), config.plugins.pelisalacarta.cinetubelogin))
+        #self.cfglist.append(getConfigListEntry(_("Password Cinetube:"), config.plugins.pelisalacarta.cinetubepass))
+        #self.cfglist.append(getConfigListEntry(_("Login Series.ly:"), config.plugins.pelisalacarta.serieslylogin))
+        #self.cfglist.append(getConfigListEntry(_("Password Series.ly:"), config.plugins.pelisalacarta.serieslypass))
+
         ConfigListScreen.__init__(self, self.cfglist, session)
 
     def keySave(self):
