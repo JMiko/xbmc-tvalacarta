@@ -31,7 +31,7 @@ def get_system_platform():
 def open_settings():
     return
 
-def get_setting(name):
+def get_setting(name,value=""):
     dev = ""
     try:
         if name in overrides:
