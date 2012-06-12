@@ -58,8 +58,23 @@ def do_search_results(tecleado):
 
     itemlist = []
 
+    from pelisalacarta.channels import animeflv
+    itemlist.extend( animeflv.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import bajui
+    itemlist.extend( bajui.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import cineblog01
+    itemlist.extend( cineblog01.search( Item() , tecleado) )
+
     from pelisalacarta.channels import cinetube
     itemlist.extend( cinetube.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import cuevana
+    itemlist.extend( cuevana.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import cinevos
+    itemlist.extend( cinevos.search( Item() , tecleado) )
 
     from pelisalacarta.channels import divxonline
     itemlist.extend( divxonline.search( Item() , tecleado) )
@@ -82,33 +97,6 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import seriesyonkis
     itemlist.extend( seriesyonkis.search( Item() , tecleado) )
 
-    '''
-    try:
-        from pelisalacarta.channels import documaniatv
-        matches.extend( documaniatv.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import discoverymx
-        matches.extend( discoverymx.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import yotix
-        matches.extend( yotix.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import stagevusite
-        matches.extend( stagevusite.performsearch(tecleado) )
-    except:
-        pass
-    try:
-        from pelisalacarta.channels import tutvsite
-        matches.extend( tutvsite.performsearch(tecleado) )
-    except:
-        pass
-    '''
     return itemlist
 
 def salvar_busquedas(params,url="",category=""):
