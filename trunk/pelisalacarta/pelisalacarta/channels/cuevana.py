@@ -193,18 +193,7 @@ def series(item):
     for url,thumbnail,tit,anyo,plot,plot2 in matches:
         scrapedtitle = tit
         scrapedplot = anyo+" "+plot+" "+plot2
-        
-        # url es "#!/series/3478/american-dad"
-        # el destino es "http://www.cuevana.tv/web/series?&3478&american-dad"
-        
-        #   #!/series/3478/american-dad
-        scrapedurl = url.replace("/","&")
-        #   !&series&3478&american-dad
-
-        scrapedurl = scrapedurl.replace("#!&series","http://www.cuevana.tv/web/series?")
-        #   http://www.cuevana.tv/web/series?&3478&american-dad
-
-        # scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
+        scrapedurl = get_serie_url(url)
         scrapedthumbnail = thumbnail
         #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
 
@@ -221,6 +210,25 @@ def series(item):
         itemlist.append( Item(channel=__channel__, action="series", title="Página siguiente >>" , url=scrapedurl) )
 
     return itemlist
+
+def get_serie_url(url):
+    # url es "#!/series/3478/american-dad"
+    # o "#!\\/series\\/4446\\/alcatraz"
+    logger.info("get_serie_url(url=["+url+"]")
+    scrapedurl = url.replace("\\","")
+    logger.info("get_serie_url(url=["+scrapedurl+"]")
+    scrapedurl = scrapedurl.replace("\\","")
+    logger.info("get_serie_url(url=["+scrapedurl+"]")
+    
+    # el destino es "http://www.cuevana.tv/web/series?&3478&american-dad"
+    
+    #   #!/series/3478/american-dad
+    scrapedurl = scrapedurl.replace("/","&")
+    #   !&series&3478&american-dad
+
+    scrapedurl = scrapedurl.replace("#!&series","http://www.cuevana.tv/web/series?")
+    #   http://www.cuevana.tv/web/series?&3478&american-dad
+    return scrapedurl
 
 def episodios(item):
     logger.info("[cuevana.py] episodios")
@@ -446,32 +454,36 @@ def search(item,texto, categoria="*"):
     try:
         # La URL puede venir vacía, por ejemplo desde el buscador global
         if item.url=="":
-            item.url="http://www.cuevana.tv/web/buscar?&q="+texto+"#!/buscar/q:"+texto
+            item.url="http://www.cuevana.tv/web/buscar?&q="+texto
     
         # Descarga la pagina
-    	data = scrapertools.cache_page(item.url)
+        data = scrapertools.cache_page(item.url)
 
-    	# Extrae las entradas
-    	patron = '\[(.*?)\]'
-    	matches = re.compile(patron,re.DOTALL).findall(data)
-	data = matches[0]
+        # Extrae las entradas
+        patron = '\[(.*?)\]'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        #scrapertools.printMatches(matches)
+        data = matches[ len(matches)-2 ]
+        logger.info("data="+data)
+    
+        #Listar
+        itemlist = []
+        patron = '"id":"([^"]+)","url":"([^"]+)","tit":"([^"]+)","duracion":"([^"]+)","txt":"([^"]+)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        
+        for id,url,tit,duracion,txt in matches:
+            scrapedtitle = tit
+            scrapedurl = id
+            scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
+            scrapedplot = txt
+            if "peliculas" in url:
+                itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+            else:
+                scrapedurl = get_serie_url(url)
+                itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
 
-	#Json
-	import simplejson as json
-    	jsondata = eval("("+data+")")
-	
-	#Listar
-
-	itemlist = []
-	for resultado in jsondata:
-		
-		scrapedtitle=resultado['tit'].encode('utf-8')
-		scrapedurl = resultado['id']
-		scrapedthumbnail = "http://sc.cuevana.tv/box/"+resultado['id']+".jpg"
-		scrapedplot = resultado['txt']
-		itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
-	
-	return itemlist
+        return itemlist
 
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
