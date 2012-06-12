@@ -23,22 +23,17 @@ def getmainlist():
         idiomav = langlistv[0]
     
     # Añade los canales que forman el menú principal
-    itemlist.append( Item(title=config.get_localized_string(30118)+" ("+idiomav+")" , channel="channelselector" , action="channeltypes" ) )
-    itemlist.append( Item(title=config.get_localized_string(30103) , channel="buscador" , action="mainlist") )
-    itemlist.append( Item(title=config.get_localized_string(30128) , channel="trailertools" , action="mainlist") )
-    itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
-    if config.get_platform() in ("wiimc","rss") :itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist") )
-    if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist") )
-
-    try:
-        from core import descargas
-        itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist") )
-    except:
-        logger.error("[channelselector.py] no encuentra core/descargas.py, se deshabilitan las descargas")
-    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
+    itemlist.append( Item(title=config.get_localized_string(30118)+" ("+idiomav+")" , channel="channelselector" , action="channeltypes", thumbnail = urlparse.urljoin(get_thumbnail_path(),"channelselector.png") ) )
+    itemlist.append( Item(title=config.get_localized_string(30103) , channel="buscador" , action="mainlist" , thumbnail = urlparse.urljoin(get_thumbnail_path(),"buscador.png")) )
+    itemlist.append( Item(title=config.get_localized_string(30128) , channel="trailertools" , action="mainlist" , thumbnail = urlparse.urljoin(get_thumbnail_path(),"trailertools.png")) )
+    itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist" , thumbnail = urlparse.urljoin(get_thumbnail_path(),"favoritos.png")) )
+    if config.get_platform() in ("wiimc","rss") :itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"wiideoteca.png")) )
+    if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist" , thumbnail = urlparse.urljoin(get_thumbnail_path(),"pyload.png")) )
+    itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"descargas.png")) )
+    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"configuracion.png")) )
     
     #if config.get_library_support():
-    if config.get_platform()!="rss": itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist") )
+    if config.get_platform()!="rss": itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"ayuda.png")) )
     return itemlist
 
 # TODO: (3.1) Pasar el código específico de XBMC al laucher
@@ -61,7 +56,7 @@ def mainlist(params,url,category):
     itemlist = getmainlist()
     for elemento in itemlist:
         logger.info("[channelselector.py] item="+elemento.title)
-        addfolder(elemento.title,elemento.channel,elemento.action)
+        addfolder(elemento.title , elemento.channel , elemento.action , thumbnail=elemento.thumbnail)
 
     # Label (top-right)...
     import xbmcplugin
@@ -72,15 +67,15 @@ def mainlist(params,url,category):
 def getchanneltypes():
     logger.info("[channelselector.py] getchanneltypes")
     itemlist = []
-    itemlist.append( Item( title=config.get_localized_string(30121) , channel="channelselector" , action="listchannels" , category="*"   , thumbnail="channelselector"))
-    itemlist.append( Item( title=config.get_localized_string(30122) , channel="channelselector" , action="listchannels" , category="F"   , thumbnail="peliculas"))
-    itemlist.append( Item( title=config.get_localized_string(30123) , channel="channelselector" , action="listchannels" , category="S"   , thumbnail="series"))
-    itemlist.append( Item( title=config.get_localized_string(30124) , channel="channelselector" , action="listchannels" , category="A"   , thumbnail="anime"))
-    itemlist.append( Item( title=config.get_localized_string(30125) , channel="channelselector" , action="listchannels" , category="D"   , thumbnail="documentales"))
-    itemlist.append( Item( title=config.get_localized_string(30136) , channel="channelselector" , action="listchannels" , category="VOS"   , thumbnail="versionoriginal"))
-    itemlist.append( Item( title=config.get_localized_string(30126) , channel="channelselector" , action="listchannels" , category="M"   , thumbnail="musica"))
-    itemlist.append( Item( title=config.get_localized_string(30127) , channel="channelselector" , action="listchannels" , category="G"   , thumbnail="servidores"))
-    itemlist.append( Item( title=config.get_localized_string(30134) , channel="channelselector" , action="listchannels" , category="NEW" , thumbnail="novedades"))
+    itemlist.append( Item( title=config.get_localized_string(30121) , channel="channelselector" , action="listchannels" , category="*"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"channelselector")))
+    itemlist.append( Item( title=config.get_localized_string(30122) , channel="channelselector" , action="listchannels" , category="F"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"peliculas")))
+    itemlist.append( Item( title=config.get_localized_string(30123) , channel="channelselector" , action="listchannels" , category="S"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"series")))
+    itemlist.append( Item( title=config.get_localized_string(30124) , channel="channelselector" , action="listchannels" , category="A"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"anime")))
+    itemlist.append( Item( title=config.get_localized_string(30125) , channel="channelselector" , action="listchannels" , category="D"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"documentales")))
+    itemlist.append( Item( title=config.get_localized_string(30136) , channel="channelselector" , action="listchannels" , category="VOS" , thumbnail=urlparse.urljoin(get_thumbnail_path(),"versionoriginal")))
+    itemlist.append( Item( title=config.get_localized_string(30126) , channel="channelselector" , action="listchannels" , category="M"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"musica")))
+    itemlist.append( Item( title=config.get_localized_string(30127) , channel="channelselector" , action="listchannels" , category="G"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"servidores")))
+    itemlist.append( Item( title=config.get_localized_string(30134) , channel="channelselector" , action="listchannels" , category="NEW" , thumbnail=urlparse.urljoin(get_thumbnail_path(),"novedades")))
     return itemlist
     
 def channeltypes(params,url,category):
@@ -88,7 +83,7 @@ def channeltypes(params,url,category):
 
     lista = getchanneltypes()
     for item in lista:
-        addfolder(item.title,item.channel,item.action,item.category,item.thumbnail)
+        addfolder(item.title,item.channel,item.action,item.category,item.thumbnail,item.thumbnail)
 
     # Label (top-right)...
     import xbmcplugin
@@ -102,7 +97,7 @@ def listchannels(params,url,category):
     lista = filterchannels(category)
     for channel in lista:
         if channel.type=="xbmc" or channel.type=="generic":
-            addfolder(channel.title , channel.channel , "mainlist" , channel.channel)
+            addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail=urlparse.urljoin(get_thumbnail_path(),channel.channel+".png"))
 
     # Label (top-right)...
     import xbmcplugin
@@ -116,6 +111,8 @@ def filterchannels(category):
     if category=="NEW":
         channelslist = channels_history_list()
         for channel in channelslist:
+            channel.thumbnail = urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
+            channel.plot = channel.category.replace("VOS","Versión original subtitulada").replace("F","Películas").replace("S","Series").replace("D","Documentales").replace("A","Anime").replace(",",", ")
             returnlist.append(channel)
     else:
         try:
@@ -138,6 +135,8 @@ def filterchannels(category):
             if channel.language<>"" and idiomav<>"" and idiomav not in channel.language:
                 #logger.info(channel[0]+" no entra por idioma #"+channel[3]+"#, el usuario ha elegido #"+idiomav+"#")
                 continue
+            channel.thumbnail = urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
+            channel.plot = channel.category.replace("VOS","Versión original subtitulada").replace("F","Películas").replace("S","Series").replace("D","Documentales").replace("A","Anime").replace(",",", ")
             returnlist.append(channel)
 
     return returnlist
@@ -174,7 +173,7 @@ def channels_list():
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Bajui"       , channel="bajui"             , language="ES"      , category="F,S,D,VOS" , type="generic"    ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Beeg"             , channel="beeg"            , language="ES" , category="F" , type="generic"  ))
-    itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""      , category="F,S,D,A" , type="wiimc"    ))
+    #itemlist.append( Item( title="Biblioteca XBMC"       , channel="libreria"             , language=""      , category="F,S,D,A" , type="wiimc"    ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cine-Adicto"           , channel="cineadicto"           , language="ES"    , category="F,D"     , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cinegratis"            , channel="cinegratis"           , language="ES"    , category="F,S,A,D" , type="generic"  ))
     itemlist.append( Item( title="Cineblog01 (IT)"       , channel="cineblog01"           , language="IT"    , category="F,S,A,VOS"   , type="generic"  ))
@@ -286,7 +285,7 @@ def channels_list():
     #channelslist.append([ "Ovasid"                , "ovasid"               , "" , "ES" , "A" , "xbmc"  ])
     return itemlist
 
-def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
+def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail=""):
     if category == "":
         try:
             category = unicode( nombre, "utf-8" ).encode("iso-8859-1")
@@ -294,19 +293,20 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
             pass
     
     import xbmc
+    import xbmcgui
+    import xbmcplugin
+    listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
+    itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
+    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
+
+def get_thumbnail_path():
+
+    WEB_PATH = ""
     
-    #print "thumbnail_type="+config.get_setting("thumbnail_type")
     thumbnail_type = config.get_setting("thumbnail_type")
     if thumbnail_type=="":
         thumbnail_type="2"
     logger.info("thumbnail_type="+thumbnail_type)
-    # FIXME: Esto está repetido en el updater, debería ir a config
-    if thumbnail_type=="0":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'posters' ) )
-    elif thumbnail_type=="1":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'banners' ) )
-    elif thumbnail_type=="2":
-        IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' , 'images' , 'squares' ) )
     
     if thumbnail_type=="0":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/posters/"
@@ -315,26 +315,4 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     elif thumbnail_type=="2":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/squares/"
 
-    #if config.get_platform()=="boxee":
-    #    IMAGES_PATH="http://pelisalacarta.mimediacenter.info/posters/"
-
-    if thumbnailname=="":
-        thumbnailname = channelname
-
-    # Preferencia: primero JPG
-    thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, thumbnailname+".jpg")
-    # Preferencia: segundo PNG
-    if not os.path.exists(thumbnail):
-        thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, thumbnailname+".png")
-    # Preferencia: tercero WEB
-    if not os.path.exists(thumbnail):
-        thumbnail = thumbnailImage=WEB_PATH+thumbnailname+".png"
-    #Si no existe se usa el logo del plugin
-    #if not os.path.exists(thumbnail):
-    #    thumbnail = thumbnailImage=WEB_PATH+"ayuda.png" #Check: ruta del logo
-
-    import xbmcgui
-    import xbmcplugin
-    listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
-    itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
-    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
+    return WEB_PATH
