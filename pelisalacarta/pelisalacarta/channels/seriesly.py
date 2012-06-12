@@ -72,10 +72,15 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="pelis_mas_vistas", extra=extra_params ) )
     itemlist.append( Item(channel=__channel__, title="Ultimas Pelis Modificadas", action="ultimas_pelis_modificadas", extra=extra_params ) )
 
-    if SESION=="true":
-        itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
+    if config.get_platform() in ("wiimc", "rss", "mediaserver"):
+        milogin = config.get_setting("serieslyuser")
+        mipassword = config.get_setting("serieslypassword")
+        login( Item() , milogin , mipassword)
     else:
-        itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
+        if SESION=="true":
+            itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
+        else:
+            itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
 
     return itemlist
 
@@ -94,28 +99,29 @@ def logout(item):
     itemlist.append( Item(channel=__channel__, title="Sesión finalizada", action="mainlist"))
     return itemlist
 
-def login(item):
-    import xbmc
-    keyboard = xbmc.Keyboard("","Login")
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        login = keyboard.getText()
-
-    keyboard = xbmc.Keyboard("","Password")
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        password = keyboard.getText()
-
+def login(item,milogin="",mipassword=""):
+    
+    if milogin=="":
+        import xbmc
+        keyboard = xbmc.Keyboard("","Login")
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            milogin = keyboard.getText()
+    
+        keyboard = xbmc.Keyboard("","Password")
+        keyboard.doModal()
+        if (keyboard.isConfirmed()):
+            mipassword = keyboard.getText()
 
     itemlist = []
-    auth_token,user_token = perform_login(login,password)
+    auth_token,user_token = perform_login(milogin,mipassword)
     if(user_token == "invalid login"):
         itemlist.append( Item(channel=__channel__, title=user_token, action="mainlist"))
         return itemlist
     
     nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
     config_canal = open( nombre_fichero_config_canal , "w" )
-    config_canal.write("<settings>\n<session>true</session>\n<login>"+login+"</login>\n<password>"+password+"</password>\n</settings>")
+    config_canal.write("<settings>\n<session>true</session>\n<login>"+milogin+"</login>\n<password>"+mipassword+"</password>\n</settings>")
     config_canal.close();
     
     #Refrescamos variables globales
