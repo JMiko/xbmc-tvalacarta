@@ -211,6 +211,12 @@ def run():
                 
                     # Obtiene el listado desde el que se llamó
                     action = item.extra
+                    
+                    # Esta marca es porque el item tiene algo más aparte en el atributo "extra"
+                    if "###" in item.extra:
+                        action = item.extra.split("###")[0]
+                        item.extra = item.extra.split("###")[1]
+
                     exec "itemlist = channel."+action+"(item)"
 
                     # Progreso
@@ -232,7 +238,7 @@ def run():
                             #(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
                             # Añade todos menos el último (el que dice "Añadir esta serie...")
                             if i<len(itemlist):
-                                nuevos = nuevos + library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
+                                nuevos = nuevos + library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle, extra=item.extra )
                         except IOError:
                             import sys
                             for line in sys.exc_info():
@@ -310,7 +316,7 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
 
     except urllib2.URLError,e:
-        import traceback
+        import traceback,sys
         from pprint import pprint
         exc_type, exc_value, exc_tb = sys.exc_info()
         lines = traceback.format_exception(exc_type, exc_value, exc_tb)

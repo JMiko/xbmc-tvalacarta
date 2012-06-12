@@ -352,6 +352,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         mediaurl = video_urls[len(video_urls)-1][1]
         
         # Si no quiere usar filenium para descargas, coge el anterior
+        # FIXME: esto falla si sólo está filenium
         if config.get_setting("filenium_for_download")=="false" and ("filenium" in video_urls[len(video_urls)-1][0] or "realdebrid" in video_urls[len(video_urls)-1][0]):
             mediaurl = video_urls[len(video_urls)-2][1]
             if "filenium" in video_urls[len(video_urls)-2][0] or "realdebrid" in video_urls[len(video_urls)-2][0]:
