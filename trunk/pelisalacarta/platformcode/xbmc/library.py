@@ -48,19 +48,8 @@ if not os.path.exists(SERIES_PATH):
     logger.info("[library.py] Series path doesn't exist:"+SERIES_PATH)
     os.mkdir(SERIES_PATH)
 
-def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="play_from_library",pedirnombre=True, subtitle=""):
+def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="play_from_library",pedirnombre=True, subtitle="", extra=""):
     logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
-
-    #Limpiamos el titulo para usarlo como fichero
-    patron ="\d+[x|X]\d+"
-    matches = re.compile(patron).findall(titulo)
-    scrapertools.printMatches(matches)
-    if len(matches)>0:
-        logger.info("[library.py] savelibrary id episodio: %s" % matches[0])
-        filename=matches[0]+".strm"
-    else:
-        logger.info("[library.py] savelibrary id episodio no encontrada")
-        filename=string.translate(titulo,allchars,deletechars)+".strm"
 
     if category != "Series":  #JUR - DEBUGIN INTERNO PARA 2.14
         category = "Cine"
@@ -78,6 +67,12 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
         if not os.path.exists(pathserie):
             logger.info("[library.py] savelibrary Creando directorio serie:"+pathserie)
             os.mkdir(pathserie)
+
+        #Limpiamos el titulo para usarlo como fichero
+        from  core import scrapertools
+        filename = scrapertools.get_season_and_episode(titulo)+".strm"
+        #filename=string.translate(titulo,allchars,deletechars)+".strm"
+
         fullfilename = os.path.join(pathserie,filename)
     else:    #Resto de categorias de momento en la raiz de library
         fullfilename = os.path.join(LIBRARY_PATH,filename)
@@ -99,7 +94,7 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
     addon_name = sys.argv[ 0 ]
     if addon_name.strip()=="":
         addon_name="plugin://plugin.video.pelisalacarta/"
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s' % ( addon_name , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) )
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s&extra=%s' % ( addon_name , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( titulo ) , urllib.quote_plus( url ) , "" , "" , server , Serie , urllib.quote_plus(subtitle) , urllib.quote_plus(extra) )
     logger.info("[library.py] savelibrary fullfilename=%s , itemurl=%s" % (fullfilename,itemurl))
 
     LIBRARYfile.write(itemurl)
