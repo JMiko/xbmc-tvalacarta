@@ -43,12 +43,19 @@ def mainlist(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("[cineadicto.py] search")
+    logger.info("[animeflv.py] search")
+    if item.url=="":
+        item.url="http://animeflv.net/buscar/"
     texto = texto.replace(" ","+")
     item.url = item.url+texto
-    itemlist = []
-    itemlist.extend(Lista2(item))
-    return itemlist
+    try:
+        return Lista2(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def genero(item):
     logger.info("[animeflv.py] genero")
