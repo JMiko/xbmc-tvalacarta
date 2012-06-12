@@ -115,9 +115,15 @@ def menuanyos(item):
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto):
     logger.info("[cineblog01.py] "+item.url+" search "+texto)
-    itemlist = []
     item.url = "http://cineblog01.com/?s="+texto
-    return peliculas(item)
+    try:
+        return peliculas(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def listcat(item):
     logger.info("[cineblog01.py] mainlist")
