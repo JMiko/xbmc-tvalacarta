@@ -12,6 +12,15 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[uploadedto.py] test_video_exists(page_url='%s')" % page_url)
+    
+    data = scrapertools.cache_page(page_url)
+    if "This video has been removed from public access" in data:
+        return False,"El archivo ya no está disponible<br/>en VK (ha sido borrado)"
+    else:
+        return True,""
+
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[vk.py] get_video_url(page_url='%s')" % page_url)
