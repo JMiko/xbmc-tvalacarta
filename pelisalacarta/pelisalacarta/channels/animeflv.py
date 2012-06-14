@@ -284,6 +284,7 @@ def findvideos(item):
         videoitem.fulltitle = item.title
         videoitem.title = item.title + videoitem.title
     
+    '''
     #<div style="display:none;" id="videoi">i=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=</div>
     codigo_video_plugin = scrapertools.get_match(data,'<div[^>]+>i\=([^<]+)</div>')
     #http://prueba.animeflv.net/mf.php?id=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=&paso=obtener
@@ -293,6 +294,7 @@ def findvideos(item):
     mediaurl = scrapertools.get_match(data,'<embed.*?flashvars\="file\=([^\&]+)&')
     logger.info("data="+data)
     itemlist.append( Item( channel=__channel__, title=item.title+" (acceso plugin) - [directo]", action="play", url=mediaurl, server="directo", thumbnail=item.thumbnail, plot=scrapedplot, fulltitle=item.title, folder=False) )
+    '''
     
     return itemlist
 
