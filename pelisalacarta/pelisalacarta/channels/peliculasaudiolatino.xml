@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>peliculasaudiolatino</name>
-	<tag>3</tag>
-	<date>02/05/2012</date>
-	<changes>Arreglados patrones para los conectores</changes>
+	<tag>4</tag>
+	<date>12/06/2012</date>
+	<changes>Arreglados patrones para categorias por @Ignite</changes>
 </version>
