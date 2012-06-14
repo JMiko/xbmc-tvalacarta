@@ -134,34 +134,12 @@ def generos(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-    '''
-    <h3 align="center">Generos</h3>
-    <ul>
-    <li><a href="/genre/accion.html" class="mb1">&nbsp;&nbsp;&nbsp;* Accion</a></li>
-    <li><a href="/genre/fantasia.html" class="mb1">&nbsp;&nbsp;&nbsp;* Fantasia</a></li>
-    <li><a href="/genre/drama.html" class="mb1">&nbsp;&nbsp;&nbsp;* Drama</a></li>
-    <li><a href="/genre/ciencia_ficcion.html" class="mb1">&nbsp;&nbsp;&nbsp;* Ciencia Ficcion</a></li>
-    <li><a href="/genre/terror.html" class="mb1">&nbsp;&nbsp;&nbsp;* Terror</a></li>
-    <li><a href="/genre/suspenso.html" class="mb1">&nbsp;&nbsp;&nbsp;* Suspenso</a></li>
-    <li><a href="/genre/aventura.html" class="mb1">&nbsp;&nbsp;&nbsp;* Aventura</a></li>
-    <li><a href="/genre/comedia.html" class="mb1">&nbsp;&nbsp;&nbsp;* Comedia</a></li>
-    <li><a href="/genre/guerra.html" class="mb1">&nbsp;&nbsp;&nbsp;* Guerra</a></li>
-    <li><a href="/genre/animacion.html" class="mb1">&nbsp;&nbsp;&nbsp;* Animacion</a></li>
-    <li><a href="/genre/familiar.html" class="mb1">&nbsp;&nbsp;&nbsp;* Familiar</a></li>
-    <li><a href="/genre/documentales.html" class="mb1">&nbsp;&nbsp;&nbsp;* Documentales</a></li>
-    <li><a href="/genre/mexicanas.html" class="mb1">&nbsp;&nbsp;&nbsp;* Mexicanas</a></li>
-    <li><a href="/genre/romantica.html" class="mb1">&nbsp;&nbsp;&nbsp;* Romantica</a></li>
-    <li><a href="/genre/infantiles.html" class="mb1">&nbsp;&nbsp;&nbsp;* Infantiles</a></li>
-    <li><a href="/genre/subtituladas.html" class="mb1">&nbsp;&nbsp;&nbsp;* Subtituladas</a></li>
-    <li><a href="http://www.myhotamateurvideos.com/" TARGET = "_blank" class="mb1">&nbsp;&nbsp;&nbsp;* Adultos +18</a></li>
-    </ul>
-    '''
-    patron = '<h3 align="center">Generos</h3>(.*?)</ul>'
+    patron = '<img src="/templates/images/mgeneros.jpg"(.*?)</ul>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
     data = matches[0]
                                           
-    patron = '<li><a href="([^"]+)" .*?;[\D] ([^<]+)</a></li>'
+    patron = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
                                           
@@ -169,7 +147,7 @@ def generos(item):
         scrapedurl = urlparse.urljoin("http://www.peliculasaudiolatino.com",match[0])
         scrapedurl = scrapedurl.replace(".html","/page/0.html")
         extra = scrapedurl.replace ("/page/0.html","/page/")
-        scrapedtitle = match[1]
+        scrapedtitle = match[1].replace("&nbsp;&nbsp;&nbsp;*","").strip()
         scrapedthumbnail = ""
         scrapedplot = ""
         logger.info(scrapedtitle)
