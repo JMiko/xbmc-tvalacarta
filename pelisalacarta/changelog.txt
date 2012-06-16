@@ -1,3 +1,28 @@
+3.2.10
+
+    Cambios comunes a todas las plataformas
+    
+        Canales
+            En series.ly la sección "Mis series" ya sale ordenada alfabéticamente
+            Arreglado buscador en cuevana
+            Mejorada búsqueda de episodios en discoverymx
+            Arreglado divxonline, y añadido listado alfabético + buscador
+            Actualizado gaypornshare por cambios en la web
+            
+        Conectores
+            Actualizado patron de turbobit
+            Actualizado patron de rapidgator
+            Mejorada detección vídeos borrados en VK
+
+    Otros
+    
+        Soporte para animeflv, cineblog01, cuevana, cinevos, bajui, divxonline en el buscador
+        Ya se pueden poner login y password de series.ly en la configuración de WiiMC
+        Nuevos sitios para agregar series a la biblioteca de XBMC/Boxee: seriespepito, tumejortv, shurhd y shurweb
+        
+    HTML
+        Nueva plataforma para ver pelisalacarta con un navegador estándar
+
 3.2.9
 
     Cambios comunes a todas las plataformas

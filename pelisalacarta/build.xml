@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.8"/>
-    <property name="oldversionboxee" value="4.2"/>
-    <property name="oldversiondate" value="29/05/2012"/>
+    <property name="oldversion" value="3.2.9"/>
+    <property name="oldversionboxee" value="4.3"/>
+    <property name="oldversiondate" value="04/06/2012"/>
 
-    <property name="version" value="3.2.9"/>
-    <property name="versionboxee" value="4.3"/>
-    <property name="versiondate" value="04/06/2012"/>
+    <property name="version" value="3.2.10"/>
+    <property name="versionboxee" value="4.4"/>
+    <property name="versiondate" value="11/06/2012"/>
     <property name="versionchanges" value="Weekly release"/>
     
     <!-- Para betas usar: -->
@@ -57,6 +57,10 @@
         <antcall target="copy-rss"/>
         <zip destfile="${target}/rss/pelisalacarta-rss-${version}.zip" basedir="${target}/rss"/>
 
+        <mkdir dir="${target}/mediaserver/pelisalacarta"/>
+        <antcall target="copy-mediaserver"/>
+        <zip destfile="${target}/mediaserver/pelisalacarta-mediaserver-${version}.zip" basedir="${target}/mediaserver"/>
+
         <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
         <antcall target="copy-boxee"/>
     	<zip destfile="${target}/boxee/info.mimediacenter.pelisalacarta-${version}.zip" basedir="${target}/boxee"/>
@@ -69,12 +73,6 @@
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
         <antcall target="copy-plexmediaserver"/>
         <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/>
-
-        <!-- Repo oficial XBMC -->
-        <!--mkdir dir="${target}/xbmc-addon-oficial-eden/plugin.video.pelisalacarta"/>
-        <mkdir dir="${target}/xbmc-addon-oficial-dharma/plugin.video.pelisalacarta"/>
-        <antcall target="copy-xbmc-addon-oficial-dharma"/>
-        <antcall target="copy-xbmc-addon-oficial-eden"/-->
     </target>
     
     <!-- upload =============================================== -->
@@ -111,6 +109,13 @@
         <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="${target}/rss">
 				<include name="pelisalacarta-rss-${version}.zip"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Subiendo pelisalacarta-mediaserver-${version}.zip"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/mediaserver">
+				<include name="pelisalacarta-mediaserver-${version}.zip"/>
             </fileset>
         </ftp>
 
@@ -190,6 +195,7 @@
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/rss/**"/>
                 <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <exclude name="platformcode/xbmceden/**"/>
@@ -234,6 +240,7 @@
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/rss/**"/>
                 <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <!--exclude name="platformcode/xbmceden/**"/-->
@@ -277,6 +284,7 @@
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/rss/**"/>
                 <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <!--exclude name="platformcode/xbmceden/**"/-->
@@ -319,6 +327,7 @@
                 <exclude name="platformcode/dreambox/**"/>
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <exclude name="platformcode/rss/**"/>
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <exclude name="platformcode/xbmcdharma/**"/>
@@ -369,6 +378,7 @@
                 <exclude name="platformcode/developer/**"/>
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/wiimc/**"/-->
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
@@ -376,6 +386,47 @@
             </fileset>
         </copy>
         <copy file="platformcode/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-mediaserver ============================================================ -->
+    <target name="copy-mediaserver">
+        <copy todir="${target}/mediaserver/pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.log"/>
+				<exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/images/squares/**"/>
+                <exclude name="resources/images/fanart/**"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/mediaserver/**"/-->
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+            </fileset>
+        </copy>
+        <copy file="platformcode/mediaserver/platform_name.py" tofile="${target}/mediaserver/pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-rss ============================================================ -->
@@ -409,6 +460,7 @@
                 <exclude name="platformcode/developer/**"/>
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/rss/**"/-->
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
@@ -503,6 +555,7 @@
                 <exclude name="platformcode/developer/**"/>
                 <exclude name="platformcode/plex/**"/>
                 <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
                 <exclude name="platformcode/rss/**"/>
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
@@ -570,6 +623,7 @@
         <replaceregexp file="platformcode/xbmceden/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
         <replaceregexp file="platformcode/xbmcdharma/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
         <replaceregexp file="platformcode/wiimc/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/mediaserver/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
 
         <replaceregexp file="resources/dreambox/plugin.py" match="pelisalacarta ${oldversion} para Dreambox" replace="pelisalacarta ${version} para Dreambox" flags="g"/>
 
@@ -583,10 +637,11 @@
         
         <!-- Pasos que quedan por automatizar
         
+        Firmar boxee
+        Subir el xml de boxee
         Subir los ZIP al servidor
         Subir version.xml como pelisalacarta-version.xml
         Subir index.xml de boxee y el zip de boxee al repo
-        Firmar boxee y subir el xml
         Redactar texto para actualizar página de descargas
         
         -->
