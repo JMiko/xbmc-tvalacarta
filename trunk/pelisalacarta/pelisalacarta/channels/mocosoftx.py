@@ -113,14 +113,14 @@ def FullList(item):
         url = "http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14"
     
     # Descarga la página
-    data = scrapertools.cache_page(url,headers=MAIN_HEADERS)
+    data = scrapertools.cache_page(url , headers=MAIN_HEADERS , timeout=30)
     #logger.info(data)
     
     # Extrae las entradas (carpetas)
     patron      = '<item>(.*?)</item>'
     matchesITEM = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matchesITEM[0])
-    patronvideos = '<title>(.*?)</title>[^<]+<link>(.*?)</link>.*?'
+    patronvideos = '<title>(.*?)</title>[^<]+<link>(.*?)</link>'
     #patronvideos += '<\!\[CDATA\[<a href="[^"]+" target="_blank"><img src="([^"]+)".*?'
     for match in matchesITEM:
         matches = re.compile(patronvideos,re.DOTALL).findall(match)
