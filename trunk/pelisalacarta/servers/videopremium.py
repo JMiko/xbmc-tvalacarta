@@ -31,6 +31,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     method_free = scrapertools.get_match(bloque,'<input type="submit" name="method_free" value="([^"]+)"')
 
     # Simula el botón
+    #op=download1&usr_login=&id=buq4b8zunbm6&fname=Snow.Buddies-Avventura.In.Alaska.2008.iTALiAN.AC3.DVDRip.H264-PsYcOcReW.avi&referer=&method_free=Watch+Free%21
     post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&method_free="+method_free
     data = scrapertools.cache_page( page_url , post=post )
     logger.info("data="+data)
@@ -79,6 +80,7 @@ def find_videos(data):
 
     return devuelve
 
+    #http://videopremium.net/buq4b8zunbm6
     #http://videopremium.net/0yo7kkdsfdh6/21.Jump.Street.2012.Subbed.ITA.DVDRIP.XviD-ZDC.CD1.avi.flv.html
     patronvideos  = '(videopremium.net/[a-z0-9]+)'
     logger.info("[videopremium.py] find_videos #"+patronvideos+"#")

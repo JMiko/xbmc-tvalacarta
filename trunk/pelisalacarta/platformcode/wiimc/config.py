@@ -23,7 +23,7 @@ import logging
 logging.config.fileConfig("logging.conf")
 logger=logging.getLogger("wiimc")
 
-logger.info("wiimc config 3.2.7")
+logger.info("wiimc config")
 
 def get_system_platform():
     return "wiimc"

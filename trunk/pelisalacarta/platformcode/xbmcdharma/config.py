@@ -13,7 +13,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] xbmcdharma config 3.2.7"
+print "[config.py] xbmcdharma config"
 
 import sys
 import os
