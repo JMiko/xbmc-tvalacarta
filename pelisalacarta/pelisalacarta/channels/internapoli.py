@@ -85,3 +85,18 @@ def novedades(item):
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = mainlist(Item())
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = servertools.find_video_items( item=pelicula_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
