@@ -28,8 +28,8 @@ def mainlist(item):
     logger.info("[letmewatchthis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Movies"   ,url="http://www.letmewatchthis.com/watch-movies"))
-    itemlist.append( Item(channel=__channel__, action="series"    , title="TV Shows" ,url="http://www.letmewatchthis.com/watch-tv-shows"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Movies"   ,url="http://www.watchfreemovies.ch/watch-movies/"))
+    itemlist.append( Item(channel=__channel__, action="series"    , title="TV Shows" ,url="http://www.watchfreemovies.ch/watch-tv-shows/"))
     #itemlist.append( Item(channel=__channel__, action=""search"     , category , "Buscar"                           ,"","","")
 
     return itemlist
@@ -158,3 +158,20 @@ def play(item):
         itemlist = servertools.find_video_items(data=location)
     
     return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = peliculas(mainlist_items[0])
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = listmirrors( item=pelicula_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
