@@ -39,9 +39,8 @@ def test_channels():
     
     para_probar = []
     '''
-    '''
     para_probar.append("animeflv")
-    para_probar.append("animeid")
+    #para_probar.append("animeid") (TIMEOUT?)
     para_probar.append("bajui")
     para_probar.append("beeg")
     para_probar.append("cineblog01")
@@ -55,6 +54,12 @@ def test_channels():
     para_probar.append("documentariestv")
     para_probar.append("filmsenzalimiti")
     para_probar.append("gnula")
+    para_probar.append("internapoli")
+    para_probar.append("italiafilm")
+    para_probar.append("documentalesatonline2")
+    para_probar.append("letmewatchthis")
+    '''
+    para_probar.append("mcanime")
     '''
     '''
     
