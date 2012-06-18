@@ -20,18 +20,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     location = scrapertools.get_header_from_response(page_url, header_to_get="location")
+    extension = scrapertools.get_filename_from_url(location)[-4:]
 
-    try:
-        import urlparse
-        parsed_url = urlparse.urlparse(location)
-        logger.info("parsed_url="+str(parsed_url))
-        extension = parsed_url.path[-4:]
-    except:
-        if len(parsed_url)>=4:
-            extension = parsed_url[2][-4:]
-        else:
-            extension = ""
-    
     video_urls.append( [ extension + " [hulkshare]",location ] )
     
     return video_urls
