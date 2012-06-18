@@ -17,14 +17,24 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[sockshare.py] url="+page_url)
     data = scrapertools.cache_page(page_url)
 
+    #<input type="hidden" value="72bed17fd0fa62ac" name="hash" /> <input name="agreeButton" type="submit" value="Continue as Free User" disabled="disabled" id="agreeButton" class="confirm_button" />
     patron  = '<form method="post">[^<]+'
     patron += '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
-    patron += '<input name="confirm" type="submit" value="([^"]+)"'
+    patron += '<input name="(confirm)" type="submit" value="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    if len(matches)==0: return []
+    
+    # Patron alternativo para sockshare.ws
+    if len(matches)==0:
+        patron  = '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)"[^<]+'
+        patron += '<input name="(agreeButton)" type="submit" value="([^"]+)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
 
-    post = matches[0][1]+"="+matches[0][0]+"&confirm="+(matches[0][2].replace(" ","+"))
+    if len(matches)==0:
+        return []
+
+    post = matches[0][1]+"="+matches[0][0]+"&"+matches[0][2]+"="+(matches[0][3].replace(" ","+"))
     headers = []
     headers.append( ['User-Agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20100101 Firefox/10.0.2'] )
     headers.append( [ "Accept" , "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ])
@@ -36,28 +46,28 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Extrae el trozo cifrado
     patron = "playlist: '(.+?)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
-    data = ""
+    video_urls = []
+
     if len(matches)>0:
         xmlurl = urlparse.urljoin(page_url,matches[0])
         logger.info("[sockshare.py] Playlis="+xmlurl)
+    
+        logger.info("xmlurl="+xmlurl)
+        data = scrapertools.downloadpageWithoutCookies(xmlurl)
+        # Extrae la URL
+        patron = '</link><media\:content url="(.+?)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        
+        if len(matches)>0:
+            video_urls.append( ["."+matches[0].rsplit('.',1)[1][0:3]+" [sockshare]",matches[0]])
+
     else:
         logger.info("[sockshare.py] No encuentra Playlist=")
-
-        return []
-    
-
-    logger.info("xmlurl="+xmlurl)
-    data = scrapertools.downloadpageWithoutCookies(xmlurl)
-    # Extrae la URL
-    patron = '</link><media\:content url="(.+?)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    video_urls = []
-    
-    if len(matches)>0:
-        video_urls.append( ["."+matches[0].rsplit('.',1)[1][0:3]+" [sockshare]",matches[0]])
+        
+        # Patron alternativo para sockshare.ws
+        mediaurl = scrapertools.get_match(data,'<input type="hidden" value="([^"]+)" id="videoFile"')
+        video_urls.append( [ "[sockshare]" , mediaurl ])
 
     for video_url in video_urls:
         logger.info("[sockshare.py] %s - %s" % (video_url[0],video_url[1]))
@@ -77,6 +87,21 @@ def find_videos(text):
     for match in matches:
         titulo = "[sockshare]"
         url = "http://www.sockshare.com/embed/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'sockshare' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://www.sockshare.ws/file/ytpw420jwHTivD7a
+    patronvideos  = '(sockshare.ws/file/[A-Za-z0-9]+)'
+    logger.info("[sockshare.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[sockshare]"
+        url = "http://www."+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'sockshare' ] )
