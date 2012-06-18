@@ -5,63 +5,43 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os
-import sys
+import os,sys
 
-from core import descargas
-import time
-
-import xbmc
-import xbmcgui
-import xbmcplugin
-
-from core import scrapertools
-from core import config
 from core import logger
-from platformcode.xbmc import xbmctools
+from core import config
+from core import scrapertools
 from core.item import Item
 from servers import servertools
-from servers import vk
-
-from pelisalacarta import buscador
 
 __channel__ = "mcanime"
 __category__ = "A"
-__type__ = "xbmc"
+__type__ = "generic"
 __title__ = "MCAnime"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-# Esto permite su ejecucion en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
 
-logger.info("[mcanime.py] init")
+def isGeneric():
+    return True
 
-def mainlist(params,url,category):
-    logger.info("[mcanime.py] mainlist")
+def mainlist(item):
+    logger.info("[gnula.py] mainlist")
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Novedades"                            , action="home"       ,url="http://www.mcanime.net/"))
+    itemlist.append( Item(channel=__channel__, title="Foro anime en línea"                  , action="forum"      ,url="http://www.mcanime.net/foro/viewforum.php?f=113"))
+    itemlist.append( Item(channel=__channel__, title="Descarga directa - Novedades"         , action="ddnovedades",url="http://www.mcanime.net/descarga_directa/anime"))
+    itemlist.append( Item(channel=__channel__, title="Descarga directa - Listado alfabético", action="ddalpha"    ,url="http://www.mcanime.net/descarga_directa/anime"))
+    itemlist.append( Item(channel=__channel__, title="Descarga directa - Categorías"        , action="ddcat"      ,url="http://www.mcanime.net/descarga_directa/anime"))
+    itemlist.append( Item(channel=__channel__, title="Enciclopedia - Estrenos"              , action="estrenos"   ,url="http://www.mcanime.net/enciclopedia/estrenos/anime"))
+    return itemlist
 
-    # AÒade al listado de XBMC
-    xbmctools.addnewfolder( __channel__ , "home"       , category , "Novedades"                             ,"http://www.mcanime.net/","","")
-    xbmctools.addnewfolder( __channel__ , "forum"      , category , "Foro anime en línea"                   ,"http://www.mcanime.net/foro/viewforum.php?f=113","","")
-    xbmctools.addnewfolder( __channel__ , "ddnovedades", category , "Descarga directa - Novedades"          ,"http://www.mcanime.net/descarga_directa/anime","","")
-    xbmctools.addnewfolder( __channel__ , "ddalpha"    , category , "Descarga directa - Listado alfabético" ,"http://www.mcanime.net/descarga_directa/anime","","")
-    xbmctools.addnewfolder( __channel__ , "ddcat"      , category , "Descarga directa - Categorías"         ,"http://www.mcanime.net/descarga_directa/anime","","")
-    xbmctools.addnewfolder( __channel__ , "estrenos"   , category , "Enciclopedia - Estrenos"               ,"http://www.mcanime.net/enciclopedia/estrenos/anime","","")
-
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def estrenos(params,url,category):
+def estrenos(item):
     logger.info("[mcanime.py] estrenos")
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
@@ -86,7 +66,7 @@ def estrenos(params,url,category):
         matches2 = re.compile(patron,re.DOTALL).findall(data)
         if len(matches2)>0:
             scrapedtitle = matches2[0][1].strip() + " " + matches2[0][2].strip()
-            scrapedthumbnail = urlparse.urljoin(url,matches2[0][0])
+            scrapedthumbnail = urlparse.urljoin(item.url,matches2[0][0])
             scrapedplot = ""
             scrapedurl = ""
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -103,21 +83,19 @@ def estrenos(params,url,category):
             scrapedplot = scrapedplot.replace("\r"," ")
             scrapedplot = scrapedplot.replace("\r\n"," ")
             
-            scrapedurl = urlparse.urljoin(url,matches2[0][1])
+            scrapedurl = urlparse.urljoin(item.url,matches2[0][1])
 
         # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "ddseriedetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='ddseriedetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def home(params,url,category):
-    logger.info("[mcanime.py] listvideos")
-
+def home(item):
+    logger.info("[mcanime.py] home")
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
@@ -134,14 +112,13 @@ def home(params,url,category):
     for match in matches:
         if match[0].endswith("anime.gif"):
             scrapedtitle = match[3].strip() + " " + match[1].strip() + " (" + match[4] + ")"
-            scrapedurl = urlparse.urljoin(url,match[2])
-            scrapedthumbnail = urlparse.urljoin(url,match[5])
+            scrapedurl = urlparse.urljoin(item.url,match[2])
+            scrapedthumbnail = urlparse.urljoin(item.url,match[5])
             scrapedplot = scrapertools.htmlclean(match[6])
             scrapedextra = match[8]
+            scrapedtitle = scrapedtitle.replace("[CR]"," CR ")
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-            # AÒade al listado de XBMC
-            xbmctools.addnewfolderextra( __channel__ , "homedetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot , scrapedextra )
+            itemlist.append( Item(channel=__channel__, action='homedetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = scrapedextra , folder=True ) )
 
     # Extrae la marca de siguiente p·gina
     patronvideos = '<span class="next"><a href="([^"]+)">Anteriores</a>...</span>'
@@ -150,46 +127,34 @@ def home(params,url,category):
 
     if len(matches)>0:
         scrapedtitle = "P·gina siguiente"
-        scrapedurl = urlparse.urljoin(url,matches[0])
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( __channel__ , "home" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='home', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def homedetail(params,url,category):
+def homedetail(item):
     logger.info("[mcanime.py] homedetail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-    extradata = urllib.unquote_plus( params.get("extradata") )
-
+    itemlist=[]
+    
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
     # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(extradata)
+    itemlist = servertools.find_video_items(data=item.extra)
 
-    for video in listavideos:
-        videotitle = video[0]
-        url = video[1]
-        server = video[2]
-        xbmctools.addnewvideo( __channel__ , "play" , category , server , title.strip() + " - " + videotitle , url , thumbnail , plot )
-    # ------------------------------------------------------------------------------------
+    for video in itemlist:
+        video.channel=__channel__
+        video.action="play"
 
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def ddnovedades(params,url,category):
+def ddnovedades(item):
     logger.info("[mcanime.py] ddnovedades")
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<ul class="dd_row">[^<]+'
@@ -204,13 +169,11 @@ def ddnovedades(params,url,category):
     for match in matches:
         # Atributos
         scrapedtitle = match[2].strip() + " ("+match[0].strip()+")"
-        scrapedurl = urlparse.urljoin(url,match[1])
+        scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "ddpostdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='ddpostdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
     # Extrae la marca de siguiente p·gina
     patronvideos = '<span class="current">[^<]+</span><a href="([^"]+)">[^<]+</a>'
@@ -218,22 +181,20 @@ def ddnovedades(params,url,category):
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "P·gina siguiente"
-        scrapedurl = urlparse.urljoin(url,matches[0])
+        scrapedtitle = ">> Pagina siguiente"
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        xbmctools.addnewfolder( __channel__ , "ddnovedades" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='ddnovedades', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def ddalpha(params,url,category):
-    logger.info("[mcanime.py] ddcat")
-
+def ddalpha(item):
+    logger.info("[mcanime.py] ddalpha")
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<a href="(/descarga_directa/anime/lista/[^"]+)">([^<]+)</a>'
@@ -243,24 +204,20 @@ def ddalpha(params,url,category):
     for match in matches:
         # Atributos
         scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0])
+        scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action='ddlist', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-        # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "ddlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    return itemlist
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def ddcat(params,url,category):
+def ddcat(item):
     logger.info("[mcanime.py] ddcat")
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<a href="(/descarga_directa/anime/genero/[^"]+)">([^<]+)</a>'
@@ -270,24 +227,22 @@ def ddcat(params,url,category):
     for match in matches:
         # Atributos
         scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0])
+        scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "ddlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='ddlist', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def ddlist(params,url,category):
+def ddlist(item):
     logger.info("[mcanime.py] ddlist")
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<li class="dd_title"><h5><a href="([^"]+)">(.*?)</a>\s*<i>([^<]+)</i>\s*</h5></li>'
@@ -297,47 +252,39 @@ def ddlist(params,url,category):
     for match in matches:
         # Atributos
         scrapedtitle = match[1].strip().replace("<b>","").replace("</b>","")
-        scrapedurl = urlparse.urljoin(url,match[0])
+        scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "ddseriedetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='ddseriedetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Propiedades
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+    return itemlist
 
-def ddseriedetail(params,url,category):
+def ddseriedetail(item):
     logger.info("[mcanime.py] ddseriedetail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = urllib.unquote_plus( params.get("plot") )
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
 
     # Foto de la serie de la enciclopedia
     patron = '<img src="([^"]+)" width="300".*?class="title_pic" />'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        thumbnail = matches[0]
-    logger.info("[mcanime.py] thumbnail="+thumbnail)
+        item.thumbnail = matches[0]
 
     # Argumento
     patron = '<h6>Sinopsis.*?</h6>(.*?)<h6>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        plot = matches[0]
-        plot = plot.replace("\n"," ")
-        plot = plot.replace("\r"," ")
-        plot = plot.replace("\r\n"," ")
-        plot = plot.strip()
-        plot = scrapertools.htmlclean(matches[0])
-    logger.info("[mcanime.py] plot="+plot)
+        item.plot = matches[0]
+        item.plot = item.plot.replace("\n"," ")
+        item.plot = item.plot.replace("\r"," ")
+        item.plot = item.plot.replace("\r\n"," ")
+        item.plot = item.plot.strip()
+        item.plot = scrapertools.htmlclean(matches[0])
 
     # Fansubs
     patron  = '<h6 class="m">Fansubs que trabajan esta serie</h6>[^<]+'
@@ -357,14 +304,14 @@ def ddseriedetail(params,url,category):
         for match in matches:
             # Atributos
             scrapedtitle = match[2].strip()+" ("+match[0].strip()+")"
-            scrapedurl = urlparse.urljoin(url,match[1])
-            scrapedthumbnail = thumbnail
-            scrapedplot = plot
+            scrapedurl = urlparse.urljoin(item.url,match[1])
+            scrapedthumbnail = item.thumbnail
+            scrapedplot = item.plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # AÒade al listado de XBMC
-            xbmctools.addnewfolder( __channel__ , "ddpostdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
-
+            itemlist.append( Item(channel=__channel__, action='ddpostdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
+    
     # Aportaciones de los usuarios
     patron  = '<h6 class="m">Por los Usuarios</h6>[^<]+'
     patron += '<div id="user_actions">(.*?)</div>'
@@ -383,154 +330,71 @@ def ddseriedetail(params,url,category):
         for match in matches:
             # Atributos
             scrapedtitle = match[2].strip()+" ("+match[0].strip()+")"
-            scrapedurl = urlparse.urljoin(url,match[1])
-            scrapedthumbnail = thumbnail
-            scrapedplot = plot
+            scrapedurl = urlparse.urljoin(item.url,match[1])
+            scrapedthumbnail = item.thumbnail
+            scrapedplot = item.plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             # AÒade al listado de XBMC
-            xbmctools.addnewfolder( __channel__ , "ddpostdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+            itemlist.append( Item(channel=__channel__, action='ddpostdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
+    return itemlist
 
-def ddpostdetail(params,url,category):
+def ddpostdetail(item):
     logger.info("[mcanime.py] ddpostdetail")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
     # Foto de la serie de la enciclopedia
     patron = '<img src="([^"]+)" width="300".*?class="title_pic" />'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        thumbnail = matches[0]
+        item.thumbnail = matches[0]
     
     # Argumento - texto del post
     patron = '<div id="download_detail">(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
-        plot = scrapertools.htmlclean(matches[0])
-        plot = plot.replace("\r\n"," ")
-        plot = plot.replace("\r"," ")
-        plot = plot.replace("\n"," ")
-        plot = plot.strip()
+        item.plot = scrapertools.htmlclean(matches[0])
+        item.plot = item.plot.replace("\r\n"," ")
+        item.plot = item.plot.replace("\r"," ")
+        item.plot = item.plot.replace("\n"," ")
+        item.plot = item.plot.strip()
 
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
     # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
-
     i = 1
+    itemlist = servertools.find_video_items(data=data)
 
-    for video in listavideos:
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+        videoitem.action="play"
+        videoitem.folder=False
         try:
-            fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
+            fulltitle = unicode( item.title.strip() + " (%d) " + videoitem.title, "utf-8" ).encode("iso-8859-1")
             fulltitle = fulltitle % i
         except:
             validchars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$&'()-@^_`."
-            stripped = ''.join(c for c in title if c in validchars)
-            fulltitle = stripped.strip() + " (%d) " + video[0]
+            stripped = ''.join(c for c in item.title if c in validchars)
+            fulltitle = stripped.strip() + " (%d) " + videoitem.title
             fulltitle = fulltitle % i
         i = i + 1
-        videourl = video[1]
-        server = video[2]
-        #logger.info("videotitle="+urllib.quote_plus( videotitle ))
-        #logger.info("plot="+urllib.quote_plus( plot ))
-        #plot = ""
-        #logger.info("title="+urllib.quote_plus( title ))
 
-        xbmctools.addnewvideo( __channel__ , "play" , category , server , fulltitle , videourl , thumbnail , plot )
-    # ------------------------------------------------------------------------------------
+    return itemlist
 
-    # ------------------------------------------------------------------------------------
-    # AÒade la opciÛn "AÒadir todos los vÌdeos a la lista de descarga"
-    # ------------------------------------------------------------------------------------
-    #xbmctools.addnewvideo( __channel__ , "addalltodownloadlist" , title , "" , "(Añadir todos los videos a la lista de descarga)" , url , thumbnail , plot )
-    
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def addalltodownloadlist(params,url,category):
-    logger.info("[mcanime.py] addalltodownloadlist")
-
-    title = urllib.unquote_plus( params.get("category") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-
-    # Pide el tÌtulo de la serie como "prefijo"
-    keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(title))
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        title = keyboard.getText()
-    else:
-        return
-
-    # Descarga la p·gina
-    data = scrapertools.cachePage(url)
-    #logger.info(data)
-
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
-
-    # Di·logo de progreso
-    pDialog = xbmcgui.DialogProgress()
-    ret = pDialog.create('pelisalacarta', 'Añadiendo videos a la lista de descargas')
-    pDialog.update(0, 'VÌdeo...')
-    totalepisodes = len(listavideos)
-
-    i = 1
-
-    for video in listavideos:
-        try:
-            fulltitle = unicode( title.strip() + " (%d) " + video[0], "utf-8" ).encode("iso-8859-1")
-        except:
-            fulltitle = title.strip() + " (%d) " + video[0]
-        fulltitle = fulltitle % i
-        i = i + 1
-        url = video[1]
-        server = video[2]
-
-        # AÒade el enlace a la lista de descargas
-        descargadoslist.savebookmark(fulltitle,url,thumbnail,server,plot)
-        
-        pDialog.update(i*100/totalepisodes, 'VÌdeo...',fulltitle)
-        if (pDialog.iscanceled()):
-            pDialog.close()
-            return
-
-    # ------------------------------------------------------------------------------------
-    pDialog.close()
-
-    advertencia = xbmcgui.Dialog()
-    resultado = advertencia.ok('VÌdeos en lista de descargas' , 'Se han aÒadido todos los vÌdeos' , 'a la lista de descargas')
-
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-def forum(params,url,category):
+def forum(item):
     logger.info("[mcanime.py] forum")
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
-    # --------------------------------------------------------------------
     # Extrae las entradas del foro (series / pelis)
-    # --------------------------------------------------------------------
     patronvideos  = '<ul class="topic_row">[^<]+<li class="topic_type"><img.*?'
     patronvideos += '<li class="topic_title"><h5><a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -542,7 +406,7 @@ def forum(params,url,category):
             scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
         except:
             scrapedtitle = match[1]
-        scrapedurl = urlparse.urljoin(url,match[0].replace("&amp;","&"))
+        scrapedurl = urlparse.urljoin(item.url,match[0].replace("&amp;","&"))
         scrapedthumbnail = ""
         scrapedplot = ""
 
@@ -550,18 +414,16 @@ def forum(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "forumdetail" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='forumdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # --------------------------------------------------------------------
     # Extrae la siguiente p·gina
-    # --------------------------------------------------------------------
     patronvideos  = '<a href="([^"]+)" class="next">(Siguiente &raquo;)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
         scrapedtitle = "P·gina siguiente"
-        scrapedurl = urlparse.urljoin(url,match[0].replace("&amp;","&"))
+        scrapedurl = urlparse.urljoin(item.url,match[0].replace("&amp;","&"))
         scrapedthumbnail = ""
         scrapedplot = ""
 
@@ -569,22 +431,16 @@ def forum(params,url,category):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
         # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "forum" , __channel__ , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        itemlist.append( Item(channel=__channel__, action='forum', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
+    return itemlist
 
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def forumdetail(params,url,category):
+def forumdetail(item):
     logger.info("[mcanime.py] forumdetail")
-
+    itemlist=[]
+    
     # Descarga la p·gina
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
     # ------------------------------------------------------------------------------------
@@ -594,7 +450,7 @@ def forumdetail(params,url,category):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     for match in matches:
         logger.info("Encontrada pagina siguiente")
-        xbmctools.addnewfolder( __channel__ , "list" , category , "Pagina siguiente" ,urlparse.urljoin(url,match).replace("&amp;","&"),"","")
+        itemlist.append( Item(channel=__channel__, action='list', title=">> Página siguiente" , url=urlparse.urljoin(item.url,match).replace("&amp;","&") , folder=True ) )
 
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
@@ -633,30 +489,12 @@ def forumdetail(params,url,category):
         descripcion = re.sub("<[^>]+>"," ",descripcion)
     logger.info("descripcion="+descripcion)
     
-    listavideos = servertools.findvideos(datapost)
-    
-    for video in listavideos:
-        titulo = descripcion = re.sub("<[^>]+>","",video[0])
-        url = video[1]
-        thumbnail = thumbnailurl
-        plot = descripcion
-        server = video[2]
-        xbmctools.addnewvideo( __channel__ , "play" , category , server , titulo , url , thumbnail , plot )
+    itemlist.extend( servertools.find_video_items(data=datapost) )
 
-    # ------------------------------------------------------------------------------------
+    for video in itemlist:
+        if video.folder==False:
+            video.channel = __channel__
+            video.title = re.sub("<[^>]+>","",item.title)
+            video.action = "play"
 
-    # Cierra el directorio
-    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
-    xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-
-def play(params,url,category):
-    logger.info("[mcanime.py] play")
-
-    title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-    
-    xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
-
+    return itemlist
