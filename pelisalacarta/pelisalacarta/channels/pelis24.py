@@ -43,14 +43,14 @@ def peliculas(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
+    data = scrapertools.get_match(data,"<div id='dle-content'>(.*?)</div>")
 
     # Extrae las entradas (carpetas)
     '''
-    <a class="" href="http://www.pelis24.com/estrenos/13156-lorax-en-busca-de-la-trfula-perdida-2012-ruso.html" ><img src="http://www.pelis24.com/uploads/posts/2012-03/1331437256_lorax_en_busca_de_la_trufula_perdida-322812684-large.jpg" width="145" height=211" alt="Lorax, en busca de la trúfula perdida (2012) - Latino, Castellano" /></a>&nbsp;&nbsp;
+    <a href="http://www.pelis24.com/pelicula-ca/13617-el-amor-de-tony-2010-castellano.html" ><img src="http://www.pelis24.com/uploads/posts/2012-06/1339789029_cartel_el_amor_de_tony_0.jpg" width="145" height="211" alt="el amor de tony (2010) - Castellano" title="el amor de tony (2010) - Castellano"/></a>&nbsp;&nbsp;
     '''
-    patron  = '<a class="" href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)".*?alt="([^"]+)" /></a>\&nbsp\;\&nbsp\;'
+    patron  = '<a.*?href="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)".*?alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
