@@ -41,32 +41,33 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     headers.append( ['Referer',page_url] )
 
     data = scrapertools.cache_page( page_url , post=post, headers=headers )
-    logger.info("data="+data)
+    #logger.info("data="+data)
     # extrae 
     patron = "playlist: '(.+?)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
+    video_urls = []
     if len(matches)>0:
         xmlurl = urlparse.urljoin(page_url,matches[0])
         logger.info("[putlocker.py] Playlis="+xmlurl)
+    
+        logger.info("xmlurl="+xmlurl)
+        data = scrapertools.downloadpageWithoutCookies(xmlurl)
+        # Extrae la URL
+        patron = '</link><media\:content url="(.+?)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+        
+        if len(matches)>0:
+            video_urls.append( ["."+matches[0].rsplit('.',1)[1][0:3]+" [putlocker]",matches[0]])
+
     else:
-        logger.info("[putlocker.py] No encuentra Playlist="+xmlurl)
-
-        return []
+        logger.info("[putlocker.py] No encuentra Playlist")
+        #url: 'http://s3.putlocker.ch:86/2015.mp4?key=2daad71cdc34f5a2e10665cf0efe1356'
+        videourl = scrapertools.get_match(data,"url\: '([^']+)'")
+        video_urls.append( ["[putlocker]",videourl] )
     
-
-    logger.info("xmlurl="+xmlurl)
-    data = scrapertools.downloadpageWithoutCookies(xmlurl)
-    # Extrae la URL
-    patron = '</link><media\:content url="(.+?)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    video_urls = []
-    
-    if len(matches)>0:
-        video_urls.append( ["."+matches[0].rsplit('.',1)[1][0:3]+" [putlocker]",matches[0]])
 
     for video_url in video_urls:
         logger.info("[putlocker.py] %s - %s" % (video_url[0],video_url[1]))
@@ -116,6 +117,21 @@ def find_videos(text):
     for match in matches:
         titulo = "[putlocker]"
         url = "http://www.putlocker.com/embed/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'putlocker' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://www.putlocker.ch/file/0e6f1eeb473e0d87b390a71cd50c24a2/
+    patronvideos  = '(putlocker.ch/file/[a-z0-9]+)'
+    logger.info("[putlocker.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[putlocker]"
+        url = "http://www."+match+"/"
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'putlocker' ] )
