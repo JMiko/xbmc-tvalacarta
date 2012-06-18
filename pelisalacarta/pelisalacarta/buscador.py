@@ -58,9 +58,6 @@ def do_search_results(tecleado):
 
     itemlist = []
 
-    from pelisalacarta.channels import animeflv
-    itemlist.extend( animeflv.search( Item() , tecleado) )
-
     from pelisalacarta.channels import bajui
     itemlist.extend( bajui.search( Item() , tecleado) )
 
