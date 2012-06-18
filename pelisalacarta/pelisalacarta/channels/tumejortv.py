@@ -70,6 +70,11 @@ def peliculas(item):
     #logger.info(data)
 
     # Extrae las películas
+    '''
+    #<div class="antlo_dir_all_container">
+    #<a href="http://www.tumejortv.com/peliculas/Beginners--Principiantes---2011-/" class="antlo_dir_pic_container color1" alt="Beginners (Principiantes) [2011]" title="Beginners (Principiantes) [2011]">
+    #<div class="antlo_dir_bandera"></div><div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/hGRBYzinntQi6vaT.jpeg" alt="Beginners (Principiantes) [2011]"/><div class="antlo_pic_more_info"><span class="color1">Película  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/></span></div></div><p><div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">Beginners (Principiantes) [201...</div><span class="antlo_dir_video_cat">Comedia Dramatica</span><div class="antlo_dir_video_calidad">DVD-RIP</div></div></p></a></div>
+    '''
     #<div class="antlo_dir_all_container">
     #<a href="http://www.tumejortv.com/peliculas/Another_Year__2012_/" class="antlo_dir_pic_container color1" alt="Another Year [2012]" title="Another Year [2012]">
     #<div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_dvd.png" alt="Another Year [2012]" title="Another Year [2012]"/>
@@ -79,7 +84,7 @@ def peliculas(item):
     #<span class="antlo_dir_video_cat">Drama</span><div class="antlo_dir_video_calidad">HD-RIP AC3 </div></div></p></a></div>
     patron  = '<div class="antlo_dir_all_container">'
     patron += '<a href="([^"]+)" class="antlo_dir_pic_container color1"[^>]+>'
-    patron += '<div class="antlo_dir_bandera"><img[^>]+></div>'
+    patron += '<div class="antlo_dir_bandera".*?</div>'
     patron += '<div class="antlo_dir_img_container"><img src="([^"]+)"[^>]+>'
     patron += '<div class="antlo_pic_more_info"><span class="color1">([^>]+)<img src="[^"]+" alt="([^"]+)"[^>]+></span></div></div><p>'
     patron += '<div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">([^<]+)</div>'
@@ -129,7 +134,7 @@ def series(item):
     #<div class="antlo_dir_video_cat">Temporada <span class="white">2</span> Capítulo <span class="white">16</span></div><div class="antlo_dir_video_calidad">HDTV</div></div></p>
     patron  = '<div class="antlo_dir_all_container">'
     patron += '<a href="([^"]+)" class="antlo_dir_pic_container color[^"]+"[^>]+>'
-    patron += '<div class="antlo_dir_bandera"><img[^>]+></div>'
+    patron += '<div class="antlo_dir_bandera".*?</div>'
     patron += '<div class="antlo_dir_img_container"><img src="([^"]+)"[^>]+>'
     patron += '<div class="antlo_pic_more_info"><span class="[^"]+">([^>]+)<img src="[^"]+" alt="([^"]+)"[^>]+></span></div></div><p>'
     patron += '<div class="antlo_dir_box_text_container"><div class="antlo_dir_video_title">([^<]+)</div>'
