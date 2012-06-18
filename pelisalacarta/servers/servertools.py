@@ -18,7 +18,7 @@ FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','d
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
-FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud'])
+FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa']) #,'videopremium'])
 #bayfiles
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
@@ -27,9 +27,10 @@ PREMIUM_SERVERS = [''] #wupload','fileserve']#,'uploadedto']
 # Lista de TODOS los servidores soportados por Filenium
 FILENIUM_SERVERS = []
 FILENIUM_SERVERS.extend(['linkto','uploadedto','gigasize','youtube','filepost','hotfile','rapidshare','turbobit','mediafire','bitshare','depositfiles'])
-FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline','rapidgator'])
-FILENIUM_SERVERS.extend(['filebox','filefactory','netload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
-FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles'])
+FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline','shareflare','rapidgator'])
+FILENIUM_SERVERS.extend(['filebox','filefactory','netload','nowdownload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
+FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles','zippyshare','glumbouploads','bayfiles','twoshared', 'fourshared','crocko','fiberupload','filereactor'])
+FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile'])
 #wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
