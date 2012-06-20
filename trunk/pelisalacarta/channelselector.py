@@ -177,7 +177,7 @@ def channels_list():
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cine-Adicto"           , channel="cineadicto"           , language="ES"    , category="F,D"     , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Cinegratis"            , channel="cinegratis"           , language="ES"    , category="F,S,A,D" , type="generic"  ))
     itemlist.append( Item( title="Cineblog01 (IT)"       , channel="cineblog01"           , language="IT"    , category="F,S,A,VOS"   , type="generic"  ))
-    itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D,VOS" , type="generic"  ))
+    #itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D,VOS" , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Cinetemagay"           , channel="cinetemagay"          , language="ES"    , category="F" , type="generic"    )) # sdfasd 15/4/2012
     itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES"    , category="F,S,VOS"     , type="generic"  ))
     itemlist.append( Item( title="CineVOS"               , channel="cinevos"             , language="ES"    , category="F,A,D,VOS" , type="generic"  ))
