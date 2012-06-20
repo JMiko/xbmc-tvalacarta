@@ -121,6 +121,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Tvolucion.com (20/06/2012)"              , channel="tvolucion"      , language="ES" , category="N" , type="generic"  ))  # pedro 20/06/2012
     itemlist.append( Item( title="La Sexta (05/04/2012)"                   , channel="lasexta"        , language="ES" , category="N" , type="generic"  ))  # jesus 05/04/2012
     itemlist.append( Item( title="El Trece TV (05/04/2012)"                , channel="eltrece"        , language="ES" , category="N" , type="generic"  ))  # jesus 05/04/2012
     itemlist.append( Item( title="Mitele (05/04/2012)"                     , channel="mitele"         , language="ES" , category="I" , type="generic"  ))  # jesus, truenon, boludiko 05/04/2012
@@ -165,6 +166,7 @@ def channels_list():
     itemlist.append( Item( title="Skai folders"               , channel="skai_folders"         , language="GR" , category="N"   , type="xbmc"   , extra="rtmp" ))  # dusan 04/12/2011
     itemlist.append( Item( title="Telefe"                     , channel="telefe"               , language="ES" , category="N"   , type="generic", extra="rtmp" ))  # jesus 28/10/2011
     itemlist.append( Item( title="TVE"                        , channel="rtve"                 , language="ES" , category="N"   , type="generic" ))
+    itemlist.append( Item( title="Tvolucion.com"              , channel="tvolucion"            , language="ES" , category="N"   , type="generic" ))    
     itemlist.append( Item( title="Turbonick"                  , channel="turbonick"            , language="ES" , category="I"   , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="TV3 (Cataluña)"             , channel="tv3"                  , language="ES" , category="I,A" , type="generic" ))
     itemlist.append( Item( title="TVC (Canarias)"             , channel="rtvc"                 , language="ES" , category="A"   , type="generic" ))
