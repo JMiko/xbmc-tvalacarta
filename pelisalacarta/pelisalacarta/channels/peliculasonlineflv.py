@@ -38,13 +38,7 @@ def peliculas(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     '''
-    <div id='summary6460896240038050290'><div class="separator" style="clear: both; text-align: center;"><a class="vtip" href="http://www.peliculasonlineflv.net/2012/01/el-gato-con-botas-los-tres-diablos-2012.html" title="Ver El gato con botas: Los tres diablos (2012)  Audio Latino"> <img src="http://4.bp.blogspot.com/-5n5pyABPx_o/Txzz987AiiI/AAAAAAAAAkI/QwLhNBWM4yo/s1600/El_gato_con_botas_Los_tres_diablos-379546995-large.jpg" alt="Ver El gato con botas: Los tres diablos (2012)  Audio Latino" height="0" width="0"></a></div></div>
-    <script type='text/javascript'>createSummaryAndThumb("summary6460896240038050290");</script>
-    </div>
-    <div class='content'>
-    <a name='6460896240038050290'></a>
-    <h3>
-    <a href='http://www.peliculasonlineflv.net/2012/01/el-gato-con-botas-los-tres-diablos-2012.html'>El gato con botas: Los tres diablos (2012) - Castellano Online</a>
+    <div id='summary4752473937397861806'><div class="separator" style="clear: both; text-align: center;"><a class="vtip" href="http://www.peliculasonlineflv.net/2012/06/raid-redemption-2011-subtitulada.html" title="Ver The Raid: Redemption (2011) Audio Latino"> <img src="http://4.bp.blogspot.com/-B9hBOxmodQc/T8eDUNMiYuI/AAAAAAAAE7o/FMNJ4PpiK18/s320/The%2BRaid%2BRedemption%2B%25282011%2529.jpg" alt="Ver The Raid: Redemption (2011) Audio Latino" height="0" width="0"></a></div><br>
     '''
 
     # Patron de las entradas
@@ -68,3 +62,19 @@ def peliculas(item):
         itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=siguiente_url , extra=str(siguiente_pagina) , folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = peliculas(mainlist_items[0])
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = servertools.find_video_items( item=pelicula_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
