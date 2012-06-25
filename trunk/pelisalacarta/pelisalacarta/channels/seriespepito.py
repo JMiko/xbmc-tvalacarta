@@ -197,8 +197,11 @@ def episodelist(item):
 def findvideos(item):
     logger.info("[seriespepito.py] findvideos")
     itemlist = []
-    from core.subtitletools import saveSubtitleName
-    saveSubtitleName(item)
+    try:
+        from core.subtitletools import saveSubtitleName
+        saveSubtitleName(item)
+    except:
+        pass
     try:
         # Descarga la pagina
         data = scrapertools.cachePage(item.url)
@@ -289,3 +292,22 @@ def findvideos(item):
             logger.error( "%s" % line )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    series_items = allserieslist(mainlist_items[1])
+    bien = False
+    for serie_item in series_items:
+        episode_items = episodelist( item=serie_item )
+
+        for episode_item in episode_items:
+            mediaurls = findvideos( episode_item )
+            if len(mediaurls)>0:
+                return True
+
+    return False
