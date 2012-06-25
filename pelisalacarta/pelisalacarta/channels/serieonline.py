@@ -296,3 +296,22 @@ def play(item):
         videoitem.action="play"
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    novedades_items = novedades(mainlist_items[1])
+    bien = False
+    for novedades_item in novedades_items:
+        mirrors = findvideos( item=novedades_item )
+
+        for mirror in mirrors:
+            mediaurl = play( mirror )
+            if len(mediaurl)>0:
+                return True
+
+    return False
