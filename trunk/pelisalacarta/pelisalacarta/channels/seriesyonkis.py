@@ -466,3 +466,19 @@ def listalfabetico(item):
     itemlist.append( Item(channel=__channel__, action="series" , title="Z"  , url="http://www.seriesyonkis.com/lista-de-series/Z"))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    episode_items = lastepisodes(mainlist_items[0])
+    bien = False
+    for episode_item in episode_items:
+        mediaurls = findvideos( episode_item )
+        if len(mediaurls)>0:
+            return True
+
+    return False
