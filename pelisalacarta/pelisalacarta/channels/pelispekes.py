@@ -32,25 +32,18 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__ , action="Categorias" , title="Categorias", url="http://pelispekes.com/"))
     itemlist.append( Item(channel=__channel__ , action="Abecedario" , title="Abecedario", url="http://pelispekes.com/"))
     
-
     return itemlist
-
 
 def Generico(item):
     logger.info("[filmixt.py] Generico")
-
-    url = item.url
-                
-    data = scrapertools.cachePage(url)
+    itemlist = []
 
     # Extrae las entradas (carpetas)
-   
+    data = scrapertools.cachePage(item.url)
     patron = 'class="filmgal">(.*?)<strong>Duración: </strong>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     logger.info("hay %d matches" % len(matches))
-    
 
-    itemlist = []
     for match in matches:
         patron  = '<a target="_blank" href="(.*?)">.*?'
         patron += '<img width="145" height="199" border="0" src="(.*?)" alt="(.*?)"/>.*?'
@@ -65,50 +58,20 @@ def Generico(item):
             scrapedthumbnail = match2[1]
             scrapedplot = match2[3]
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            
-            # A�ade al listado de XBMC
-            itemlist.append( Item(channel=item.channel , action="buscavideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+            itemlist.append( Item(channel=item.channel , action="findvideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
     
-    # ------------------------------------------------------
-    # Extrae la p?gina siguiente
-    # ------------------------------------------------------
-    #patron = '<a href="([^"]+)" >\&raquo\;</a>'
+    # Extrae la pagina siguiente
     patron  = "class='current'>[^<]+</span><a href='([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG:
-        scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = "!Pagina siguiente"
+        scrapedtitle = ">> Pagina siguiente"
         scrapedurl = match
         scrapedthumbnail = ""
         scrapeddescription = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=item.channel , action="Generico"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
-    
-    
-    return itemlist
-
-def buscavideos(item):
-    logger.info("[pelispekes.py] BuscaVideos")
-
-    url = item.url
-                
-    data = scrapertools.cachePage(url)
-    
-    logger.info(data)
-    # Usa findvideos    
-    listavideos = servertools.findvideos(data)
-    
-    itemlist = []
-    
-    for video in listavideos:
-        server = video[2]
-        scrapedtitle = "["+server+"]"
-        scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, fulltitle = item.title, folder=False))
 
     return itemlist
 
@@ -176,3 +139,19 @@ def Abecedario(item):
         
     return itemlist
 
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    novedades_items = Generico(mainlist_items[0])
+    bien = False
+    for novedades_item in novedades_items:
+        mirrors = servertools.find_video_items( item=novedades_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
