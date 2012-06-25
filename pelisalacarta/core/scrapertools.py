@@ -835,7 +835,10 @@ def htmlclean(cadena):
     cadena = cadena.replace("<Br />","")
     cadena = cadena.replace("<BR />","")
     cadena = cadena.replace("<Br>","")
-    
+
+    cadena = re.compile("<option[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</option>","")
+
     cadena = re.compile("<table[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</table>","")
     
