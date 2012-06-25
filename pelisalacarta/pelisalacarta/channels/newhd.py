@@ -253,3 +253,21 @@ def searchlist(item):
         itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ,context='4' , folder=True) )
         
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    espanol_items = idioma(mainlist_items[0])
+    novedades_items = novedades(espanol_items[0])
+    bien = False
+    for novedades_item in novedades_items:
+        mirrors = servertools.find_video_items( item=novedades_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
