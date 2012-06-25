@@ -14,6 +14,7 @@ from core import samba
 from core import favoritos
 from core.item import Item
 from core import downloadtools
+from servers import servertools
 
 CHANNELNAME = "descargas"
 DEBUG = True
@@ -107,7 +108,7 @@ def errores(item):
     
     # Crea un listado con las entradas de la lista de descargas
     for fichero in ficheros:
-        logger.info("[downloadall.py] fichero="+fichero)
+        logger.info("[descargas.py] fichero="+fichero)
         try:
             # Lee el bookmark
             canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,ERROR_PATH)
@@ -120,14 +121,14 @@ def errores(item):
 
         except:
             pass
-            logger.info("[downloadall.py] error al leer bookmark")
+            logger.info("[descargas.py] error al leer bookmark")
             for line in sys.exc_info():
                 logger.error( "%s" % line )
 
     return itemlist
 
 def downloadall(item):
-    logger.info("[downloadall.py] downloadall")
+    logger.info("[descargas.py] downloadall")
 
     # Lee la lista de ficheros
     if usingsamba:
@@ -135,7 +136,7 @@ def downloadall(item):
     else:
         ficheros = os.listdir(DOWNLOAD_LIST_PATH)
 
-    logger.info("[downloadall.py] numero de ficheros=%d" % len(ficheros))
+    logger.info("[descargas.py] numero de ficheros=%d" % len(ficheros))
 
     # La ordena
     ficheros.sort()
@@ -143,32 +144,21 @@ def downloadall(item):
     # Crea un listado con las entradas de favoritos
     for fichero in ficheros:
         # El primer video de la lista
-        logger.info("[downloadall.py] fichero="+fichero)
+        logger.info("[descargas.py] fichero="+fichero)
 
         if fichero!="error" and fichero!=".DS_Store":
             # Descarga el vídeo
             try:
                 # Lee el bookmark
                 canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
-                logger.info("[downloadall.py] url="+url)
+                logger.info("[descargas.py] url="+url)
 
                 # Averigua la URL del vídeo
-                exec "from servers import "+server+" as server_connector"
-                video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
-
-                if config.get_setting("fileniumpremium")=="true" and config.get_setting("filenium_for_download")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
-                    exec "from servers import filenium as gen_conector"
-                    
-                    # Parche para solucionar el problema habitual de que un vídeo http://www.megavideo.com/?d=XXX no está, pero http://www.megaupload.com/?d=XXX si
-                    url = url.replace("http://www.megavideo.com/?d","http://www.megaupload.com/?d")
-        
-                    video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword") )
-                    logger.info("[xbmctools.py] filenium url="+video_gen)
-                    video_urls.append( [ "[filenium]", video_gen ] )
+                video_urls,puedes,motivo = servertools.resolve_video_urls_for_playing(server,url,"",False)
 
                 # La última es la de mayor calidad, lo mejor para la descarga
                 mediaurl = video_urls[ len(video_urls)-1 ][1]
-                logger.info("[downloadall.py] mediaurl="+mediaurl)
+                logger.info("[descargas.py] mediaurl="+mediaurl)
 
                 # Genera el NFO
                 nfofilepath = downloadtools.getfilefromtitle("sample.nfo",fulltitle)
@@ -201,19 +191,19 @@ def downloadall(item):
                 outfile.write("</movie>")
                 outfile.flush()
                 outfile.close()
-                logger.info("[downloadall.py] Creado fichero NFO")
+                logger.info("[descargas.py] Creado fichero NFO")
                 
                 # Descarga el thumbnail
                 if thumbnail != "":
-                   logger.info("[downloadall.py] thumbnail="+thumbnail)
+                   logger.info("[descargas.py] thumbnail="+thumbnail)
                    thumbnailfile = downloadtools.getfilefromtitle(thumbnail,fulltitle)
                    thumbnailfile = thumbnailfile[:-4] + ".tbn"
-                   logger.info("[downloadall.py] thumbnailfile="+thumbnailfile)
+                   logger.info("[descargas.py] thumbnailfile="+thumbnailfile)
                    try:
                        downloadtools.downloadfile(thumbnail,thumbnailfile)
-                       logger.info("[downloadall.py] Thumbnail descargado")
+                       logger.info("[descargas.py] Thumbnail descargado")
                    except:
-                       logger.info("[downloadall.py] error al descargar thumbnail")
+                       logger.info("[descargas.py] error al descargar thumbnail")
                        for line in sys.exc_info():
                            logger.error( "%s" % line )
                 
@@ -221,11 +211,11 @@ def downloadall(item):
                 dev = downloadtools.downloadtitle(mediaurl,fulltitle)
                 if dev == -1:
                     # El usuario ha cancelado la descarga
-                    logger.info("[downloadall.py] Descarga cancelada")
+                    logger.info("[descargas.py] Descarga cancelada")
                     return
                 elif dev == -2:
                     # Error en la descarga, lo mueve a ERROR y continua con el siguiente
-                    logger.info("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
+                    logger.info("[descargas.py] ERROR EN DESCARGA DE "+fichero)
                     if not usingsamba:
                         origen = os.path.join( DOWNLOAD_LIST_PATH , fichero )
                         destino = os.path.join( ERROR_PATH , fichero )
@@ -235,16 +225,16 @@ def downloadall(item):
                         favoritos.savebookmark(canal,titulo, url, thumbnail, server, plot, fulltitle, ERROR_PATH)
                         favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
                 else:
-                    logger.info("[downloadall.py] Video descargado")
+                    logger.info("[descargas.py] Video descargado")
                     # Borra el bookmark e itera para obtener el siguiente video
                     filepath = os.path.join( DOWNLOAD_LIST_PATH , fichero )
                     if usingsamba:
                         os.remove(filepath)
                     else:
                         favoritos.deletebookmark(fichero, DOWNLOAD_LIST_PATH)
-                    logger.info("[downloadall.py] "+fichero+" borrado")
+                    logger.info("[descargas.py] "+fichero+" borrado")
             except:
-                logger.info("[downloadall.py] ERROR EN DESCARGA DE "+fichero)
+                logger.info("[descargas.py] ERROR EN DESCARGA DE "+fichero)
                 import sys
                 for line in sys.exc_info():
                     logger.error( "%s" % line )
