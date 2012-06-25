@@ -64,8 +64,8 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import cineblog01
     itemlist.extend( cineblog01.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import cinetube
-    itemlist.extend( cinetube.search( Item() , tecleado) )
+    #from pelisalacarta.channels import cinetube
+    #itemlist.extend( cinetube.search( Item() , tecleado) )
 
     from pelisalacarta.channels import cuevana
     itemlist.extend( cuevana.search( Item() , tecleado) )
@@ -81,6 +81,18 @@ def do_search_results(tecleado):
 
     from pelisalacarta.channels import cuevana
     itemlist.extend( cuevana.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import newdivx
+    itemlist.extend( newdivx.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import newhd
+    itemlist.extend( newhd.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import peliculasaudiolatino
+    itemlist.extend( peliculasaudiolatino.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import peliculasflv
+    itemlist.extend( peliculasflv.search( Item() , tecleado) )
 
     from pelisalacarta.channels import peliculasyonkis_generico
     itemlist.extend( peliculasyonkis_generico.search( Item() , tecleado) )
