@@ -118,7 +118,7 @@ def home(item):
             scrapedextra = match[8]
             scrapedtitle = scrapedtitle.replace("[CR]"," CR ")
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            itemlist.append( Item(channel=__channel__, action='homedetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = scrapedextra , folder=True ) )
+            itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = scrapedextra , folder=True ) )
 
     # Extrae la marca de siguiente p·gina
     patronvideos = '<span class="next"><a href="([^"]+)">Anteriores</a>...</span>'
@@ -131,21 +131,6 @@ def home(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action='home', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
-
-    return itemlist
-
-def homedetail(item):
-    logger.info("[mcanime.py] homedetail")
-    itemlist=[]
-    
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    itemlist = servertools.find_video_items(data=item.extra)
-
-    for video in itemlist:
-        video.channel=__channel__
-        video.action="play"
 
     return itemlist
 
@@ -498,3 +483,21 @@ def forumdetail(item):
             video.action = "play"
 
     return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    novedades_items = home(mainlist_items[0])
+    bien = False
+    for novedad_item in novedades_items:
+        mirrors = servertools.find_video_items( item=novedad_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
