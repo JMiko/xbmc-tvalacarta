@@ -55,6 +55,7 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
         category = "Cine"
         
     if category == "Cine":
+        filename=string.translate(titulo,allchars,deletechars)+".strm"
         fullfilename = os.path.join(MOVIES_PATH,filename)
     elif category == "Series":
         if Serie == "": #A�adir comprobaci�n de len>0 bien hecha
