@@ -39,9 +39,10 @@ def test_channels():
     
     para_probar = []
     '''
+    #para_probar.append("animeid") (TIMEOUT?)
+    '''
     para_probar.append("cinetube")
     para_probar.append("animeflv")
-    #para_probar.append("animeid") (TIMEOUT?)
     para_probar.append("bajui")
     para_probar.append("beeg")
     para_probar.append("cineblog01")
@@ -75,13 +76,12 @@ def test_channels():
     para_probar.append("seriesyonkis")
     '''
     '''
-    '''
     
     funcionan = []
     no_funcionan = []
     no_probados = []
     no_probados.append("mocosoftx")
-    para_probar.append("seriesid") # Tiene problemas de estructura
+    no_probados.append("seriesid") # Tiene problemas de estructura
 
     # Verifica los canales
     for canal in para_probar:
