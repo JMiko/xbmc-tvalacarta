@@ -337,7 +337,7 @@ def play(item):
         if(len(videos)>0): 
             url = videos[0][1]
             server=videos[0][2]                   
-            itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+            itemlist.append( Item(channel=item.channel, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
         else:
             data = scrapertools.cache_page(playurl)
             patron='<ul class="form-login">(.*?)</ul'
@@ -371,7 +371,7 @@ def play(item):
                             if(confirmed and tecleado != ""):
                                 itemlist = play(item)
                 else:
-                    itemlist.append( Item(channel=__channel__, action="error", title="El sitio web te requiere un captcha") )
+                    itemlist.append( Item(channel=item.channel, action="error", title="El sitio web te requiere un captcha") )
 
     except:
         import sys
