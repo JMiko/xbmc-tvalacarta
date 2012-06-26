@@ -86,15 +86,30 @@ def find_videos(text):
     encontrados = set()
     devuelve = []
 
-    # http://www.vidxden.com/qya0qmf3k502
-    patronvideos  = '(vidxden.com/\w+)'
+    # http://www.vidxden.com/embed-3e1cwjigcicj-width-770-height-385.html
+    patronvideos  = 'vidxden.com/embed-([a-z0-9]+)'
     logger.info("[vidxden.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
     for match in matches:
         titulo = "[vidxden]"
-        url = "http://www."+match
+        url = "http://www.vidxden.com/"+match
         if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'vidxden' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    # http://www.vidxden.com/qya0qmf3k502
+    patronvideos  = 'vidxden.com/([a-z0-9]+)'
+    logger.info("[vidxden.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[vidxden]"
+        url = "http://www.vidxden.com/"+match
+        if url!="http://www.vidxden.com/embed" and url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'vidxden' ] )
             encontrados.add(url)
