@@ -80,9 +80,8 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    return devuelve
-
     #http://www.nowvideo.eu/video/3695bce6e6288
+    #http://www.nowvideo.eu/video/4fd0757fd4592
     patronvideos  = '(nowvideo.eu/video/[a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
