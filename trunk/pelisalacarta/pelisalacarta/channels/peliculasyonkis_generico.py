@@ -29,11 +29,11 @@ def mainlist(item):
     logger.info("[peliculasyonkis_generico.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lastepisodes"      , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
-    itemlist.append( Item(channel=__channel__, action="listalfabetico"    , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
-    itemlist.append( Item ( channel=__channel__ , action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
-    itemlist.append( Item(channel=__channel__, action="mostviewed"    , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
-    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://www.peliculasyonkis.com/buscar/pelicula"))
+    itemlist.append( Item(channel=__channel__, action="lastepisodes"   , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico" , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
+    itemlist.append( Item(channel=__channel__, action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
+    itemlist.append( Item(channel=__channel__, action="mostviewed"     , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
+    itemlist.append( Item(channel=__channel__, action="search"         , title="Buscar...", url="http://www.peliculasyonkis.com/buscar/pelicula"))
 
     return itemlist
 
@@ -240,90 +240,8 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[seriesyonkis.py] play")
-    itemlist = []
-    
-    # Descarga la página de reproducción de este episodio y server
-    #<a href="/s/y/597157/0/s/1244" target="_blank">Reproducir ahora</a>
-    data = scrapertools.cache_page(item.url)
-    patron = '<a href="([^"]+)" target="_blank">Reproducir ahora</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)==0:
-        patron = '<a href="([^"]+)" target="_blank">Descargar ahora</a>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    if len(matches)==0:
-        return []
-    
-    item.url = urlparse.urljoin(item.url,matches[0])
-
-    try:
-    	try:
-        	location = scrapertools.getLocationHeaderFromResponse(item.url)
-        except:
-        	location = scrapertools.get_header_from_response(item.url,header_to_get="location")
-        if "fileserve.com" in location:
-            itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=location, thumbnail=item.thumbnail, plot=item.plot, server="fileserve", folder=False))
-        else:
-            data = scrapertools.cache_page(item.url)
-            logger.info("------------------------------------------------------------")
-            #logger.info(data)
-            logger.info("------------------------------------------------------------")
-            videos = servertools.findvideos(data) 
-            logger.info(str(videos))
-            logger.info("------------------------------------------------------------")
-            if(len(videos)>0): 
-                url = videos[0][1]
-                server=videos[0][2]                   
-                itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
-            else:
-                patron='<ul class="form-login">(.*?)</ul'
-                matches = re.compile(patron, re.S).findall(data)
-                if(len(matches)>0):
-                    data = matches[0]
-                    #buscamos la public key
-                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
-                    pkeys = re.compile(patron, re.S).findall(data)
-                    if(len(pkeys)>0):
-                        pkey=pkeys[0]
-                        #buscamos el id de challenge
-                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
-                        patron="challenge.*?'([^']+)'"
-                        challenges = re.compile(patron, re.S).findall(data)
-                        if(len(challenges)>0):
-                            challenge = challenges[0]
-                            image = "http://www.google.com/recaptcha/api/image?c="+challenge
-                            
-                            #CAPTCHA
-                            exec "import pelisalacarta.captcha as plugin"
-                            tbd = plugin.Keyboard("","",image)
-                            tbd.doModal()
-                            confirmed = tbd.isConfirmed()
-                            if (confirmed):
-                                tecleado = tbd.getText()
-                                sendcaptcha(item.url,challenge,tecleado)
-                            del tbd 
-                            #tbd ya no existe
-                            if(confirmed and tecleado != ""):
-                                itemlist = play(item)
-
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-    logger.info("len(itemlist)=%s" % len(itemlist))
-    return itemlist
-
-def sendcaptcha(url,challenge,text):
-    values = {'recaptcha_challenge_field' : challenge,
-          'recaptcha_response_field' : text}
-    form_data = urllib.urlencode(values)
-    request = urllib2.Request(url,form_data)
-    request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
-    response = urllib2.urlopen(request)
-    html = response.read()
-    response.close()
-    return html
+    from pelisalacarta.channels import seriesyonkis
+    return seriesyonkis.play(item)
 
 def listalfabetico(item):
     logger.info("[peliculasyonkis_generico.py] listalfabetico")
@@ -358,3 +276,19 @@ def listalfabetico(item):
     itemlist.append( Item(channel=__channel__, action="peliculas" , title="Z"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Z"))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    episode_items = lastepisodes(mainlist_items[0])
+    bien = False
+    for episode_item in episode_items:
+        mediaurls = findvideos( episode_item )
+        if len(mediaurls)>0:
+            return True
+
+    return False
