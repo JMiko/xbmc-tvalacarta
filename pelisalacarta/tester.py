@@ -39,12 +39,12 @@ def test_channels():
     
     para_probar = []
     '''
+    para_probar.append("cinetube")
     para_probar.append("animeflv")
     #para_probar.append("animeid") (TIMEOUT?)
     para_probar.append("bajui")
     para_probar.append("beeg")
     para_probar.append("cineblog01")
-    para_probar.append("cinetube")
     para_probar.append("cinetemagay")
     para_probar.append("cuevana")
     para_probar.append("cinevos")
@@ -58,14 +58,30 @@ def test_channels():
     para_probar.append("italiafilm")
     para_probar.append("documentalesatonline2")
     para_probar.append("letmewatchthis")
-    '''
     para_probar.append("mcanime")
+    para_probar.append("moviezet")
+    para_probar.append("newdivx")
+    para_probar.append("newhd")
+    para_probar.append("peliculasaudiolatino")
+    para_probar.append("peliculasflv")
+    para_probar.append("peliculasid")
+    para_probar.append("peliculasonlineflv")
+    para_probar.append("peliculasyonkis_generico")
+    para_probar.append("pelis24")
+    para_probar.append("pelispekes")
+    para_probar.append("robinfilm")
+    para_probar.append("serieonline")
+    para_probar.append("seriespepito")
+    para_probar.append("seriesyonkis")
+    '''
     '''
     '''
     
     funcionan = []
     no_funcionan = []
     no_probados = []
+    no_probados.append("mocosoftx")
+    para_probar.append("seriesid") # Tiene problemas de estructura
 
     # Verifica los canales
     for canal in para_probar:
