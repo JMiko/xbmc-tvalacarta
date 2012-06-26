@@ -5,20 +5,19 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
+import os, sys
 
-from core import scrapertools
 from core import logger
+from core import config
+from core import scrapertools
 from core.item import Item
-from core import downloadtools
-from platformcode.xbmc import xbmctools
 from servers import servertools
 
-CHANNELNAME = "peliculasid"
+__channel__ = "peliculasid"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "PeliculasID"
+__language__ = "ES"
 
 # Traza el inicio del canal
 logger.info("[peliculasid.py] init")
@@ -32,11 +31,11 @@ def mainlist(item):
     logger.info("[peliculasid.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos"      , title="Ultimos capítulos" , url="http://www.peliculasid.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listvideos"      , title="Estrenos" , url="http://www.peliculasid.net/categoria/estreno"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listbyYears"    , title="Año de estreno", url="http://www.peliculasid.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listcategorias"    , title="Categorias", url="http://www.peliculasid.net/"))
-    itemlist.append( Item(channel=CHANNELNAME, action="listalfanum"    , title="Listado alfabetico", url="http://www.peliculasid.net/"))
+    itemlist.append( Item(channel=__channel__, action="listvideos"      , title="Ultimos capítulos" , url="http://www.peliculasid.net/"))
+    itemlist.append( Item(channel=__channel__, action="listvideos"      , title="Estrenos" , url="http://www.peliculasid.net/categoria/estreno"))
+    itemlist.append( Item(channel=__channel__, action="listbyYears"    , title="Año de estreno", url="http://www.peliculasid.net/"))
+    itemlist.append( Item(channel=__channel__, action="listcategorias"    , title="Categorias", url="http://www.peliculasid.net/"))
+    itemlist.append( Item(channel=__channel__, action="listalfanum"    , title="Listado alfabetico", url="http://www.peliculasid.net/"))
     return itemlist
 
 def listcategorias(item):
@@ -61,7 +60,7 @@ def listcategorias(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item ( channel=CHANNELNAME , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
+        itemlist.append( Item ( channel=__channel__ , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
 
     return itemlist
         
@@ -87,7 +86,7 @@ def listbyYears(item):
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item ( channel=CHANNELNAME , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
+        itemlist.append( Item ( channel=__channel__ , action="listvideos" , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
 
     return itemlist
     
@@ -98,7 +97,7 @@ def listalfanum(item):
     BaseUrl   = "http://peliculasid.net/categoria/letra/%s"
     action    = "listvideos"
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, action=action, title="0-9" , url=BaseUrl % "0-9" , thumbnail="" , plot="" , folder=True) )
+    itemlist.append( Item(channel=__channel__, action=action, title="0-9" , url=BaseUrl % "0-9" , thumbnail="" , plot="" , folder=True) )
     for letra in BaseChars:
         scrapedtitle = letra
         scrapedplot = ""
@@ -107,7 +106,7 @@ def listalfanum(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     return itemlist
     
 def listvideos(item):
@@ -149,14 +148,8 @@ def listvideos(item):
         except:
             scrapedplot = ""
 
-        # Depuracion
-        if (DEBUG):
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5"  ))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle.strip() , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5"  ))
         
 
     # Extrae la marca de siguiente página
@@ -170,6 +163,22 @@ def listvideos(item):
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item(channel=CHANNELNAME, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot ))
+        itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot ))
         
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    peliculas_items = listvideos(mainlist_items[0])
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = servertools.find_video_items( item=pelicula_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
