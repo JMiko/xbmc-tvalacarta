@@ -124,19 +124,3 @@ def scrappingTemp(item,paginacion=True):
         itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
 
     return itemlist
-
-# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
-def test():
-    # mainlist
-    mainlist_items = mainlist(Item())
-    menupeliculas_items = menupeliculas(mainlist_items[0])
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    peliculas_items = peliculas(menupeliculas_items[0])
-    bien = False
-    for pelicula_item in peliculas_items:
-        mirrors = findvideos(item=pelicula_item)
-        if len(mirrors)>0:
-            bien = True
-            break
-
-    return bien
