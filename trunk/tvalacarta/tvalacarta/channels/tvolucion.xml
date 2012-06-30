@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>tvolucion</name>
-	<tag>4</tag>
-	<date>05/06/2012</date>
-	<changes>Se agrega seccion Kids, agregan imagenes al menu principal, se amplia compatibilidad en novelas anteriores (aun faltan), se agrega formato m3up (no corre bien en XBMC)</changes>
+	<tag>5</tag>
+	<date>30/06/2012</date>
+	<changes>Actualizado por cambios en la web</changes>
 </version>

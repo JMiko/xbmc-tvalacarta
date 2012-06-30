@@ -22,6 +22,7 @@ __type__ = "generic"
 __title__ = "tvolucion"
 __language__ = "ES"
 __creationdate__ = "20111014"
+__vfanart__ = "http://img594.imageshack.us/img594/7788/fanart.png"
 
 DEBUG = config.get_setting("debug")
 
@@ -33,15 +34,15 @@ def mainlist(item):
     
     itemlist = []
     #   itemlist.append( Item(channel=__channel__, title="Buscar" , action="search") )
-    itemlist.append( Item(channel=__channel__, title="Cine", action="cine", url="http://tvolucion.esmas.com/entretenimiento/noticias/cine/", thumbnail="http://img690.imageshack.us/img690/690/cinev.png")) 
-    itemlist.append( Item(channel=__channel__, title="Deportes", action="deportes", url="http://televisadeportes.esmas.com/video/", thumbnail="http://img217.imageshack.us/img217/2709/deportesk.png")) 
-    itemlist.append( Item(channel=__channel__, title="Novelas Recientes", action="novelasr", url="http://tvolucion.esmas.com/secciones.php?canal=telenovelas", thumbnail="http://img651.imageshack.us/img651/4894/novelasq.png"))
-    itemlist.append( Item(channel=__channel__, title="Novelas Anteriores", action="novelasa", url="http://tvolucion.esmas.com/secciones.php?canal=telenovelas", thumbnail="http://img607.imageshack.us/img607/4232/novelasa.png"))
-    itemlist.append( Item(channel=__channel__, title="Programas", action="programas", url="http://tvolucion.esmas.com/secciones.php?canal=programas-de-tv", thumbnail="http://img845.imageshack.us/img845/9910/40000175.png"))
-    itemlist.append( Item(channel=__channel__, title="Kids", action="ninos", url="http://www2.esmas.com/chicoswaifai/videos/", thumbnail="http://img267.imageshack.us/img267/6987/kidsg.png")) 
-    itemlist.append( Item(channel=__channel__, title="Noticias", action="noticias", url="http://tvolucion.esmas.com/secciones.php?canal=noticieros", thumbnail="http://img827.imageshack.us/img827/1724/noticiasir.png")) 
-    itemlist.append( Item(channel=__channel__, title="Todas las Novelas (Prueba)", action="novelas", url="http://www.tutelenovela.net/p/telenovelas.html", thumbnail="")) 
-    itemlist.append( Item(channel=__channel__, title="En Vivo", action="tv", url="http://www.ilive.to/view/1598/", thumbnail="http://img716.imageshack.us/img716/9962/canal10.png")) 
+    itemlist.append( Item(channel=__channel__, title="Cine", action="cine", url="http://tvolucion.esmas.com/entretenimiento/noticias/cine/", thumbnail="http://img690.imageshack.us/img690/690/cinev.png", fanart = __vfanart__)) 
+    itemlist.append( Item(channel=__channel__, title="Deportes", action="deportes", url="http://televisadeportes.esmas.com/video/", thumbnail="http://img217.imageshack.us/img217/2709/deportesk.png", fanart = __vfanart__)) 
+    itemlist.append( Item(channel=__channel__, title="Novelas Recientes", action="novelasr", url="http://tvolucion.esmas.com/secciones.php?canal=telenovelas", thumbnail="http://img651.imageshack.us/img651/4894/novelasq.png", fanart = __vfanart__))
+    itemlist.append( Item(channel=__channel__, title="Novelas Anteriores", action="novelasa", url="http://tvolucion.esmas.com/secciones.php?canal=telenovelas", thumbnail="http://img607.imageshack.us/img607/4232/novelasa.png", fanart = __vfanart__))
+    itemlist.append( Item(channel=__channel__, title="Programas", action="programas", url="http://tvolucion.esmas.com/secciones.php?canal=programas-de-tv", thumbnail="http://img845.imageshack.us/img845/9910/40000175.png", fanart = __vfanart__))
+    itemlist.append( Item(channel=__channel__, title="Kids", action="ninos", url="http://www2.esmas.com/chicoswaifai/videos/", thumbnail="http://img267.imageshack.us/img267/6987/kidsg.png", fanart = __vfanart__)) 
+    itemlist.append( Item(channel=__channel__, title="Noticias", action="noticias", url="http://tvolucion.esmas.com/secciones.php?canal=noticieros", thumbnail="http://img827.imageshack.us/img827/1724/noticiasir.png", fanart = __vfanart__)) 
+    # itemlist.append( Item(channel=__channel__, title="Todas las Novelas (Prueba)", action="novelas", url="http://www.tutelenovela.net/p/telenovelas.html", thumbnail="", fanart = __vfanart__)) 
+    itemlist.append( Item(channel=__channel__, title="En Vivo", action="tv", url="http://www.ilive.to/view/1598/", thumbnail="http://img716.imageshack.us/img716/9962/canal10.png", fanart = __vfanart__)) 
 # itemlist.append( Item(channel=__channel__, title="Teresa", action="teresa", url="http://blog.cuatexoft.com/?p=537")) 
     # http://tvolucion.esmas.com/home_mas_visto.php
     return itemlist
@@ -469,14 +470,16 @@ def novelasr(item):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
-        scrapedurl = "http://tvolucion.esmas.com/telenovelas/"+match[0]
+        scrapedurl1 = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]
+        scrapedurl = "http://googleak.esmas.com/search?q=site:http://tvolucion.esmas.com/telenovelas/"+match[0]+"&btnG=Google+Search&access=p&client=masarchivo&site=portal&output=xml_no_dtd&proxystylesheet=tv3vidrecientes&entqrm=0&oe=UTF-8&ie=UTF-8&ud=1&exclude_apps=1&getfields=*&num=25&sort=date:D:L:d1&entqr=6&filter=0&ip=189.254.126.103,63.99.211.110&start=0"
+        print scrapedurl
         scrapedtitle = match[2]
         scrapedthumbnail = match[1]
-        scrapedplot = "http://tvolucion.esmas.com/telenovelas/"+match[0]
+        scrapedplot = scrapedurl
         logger.info(scrapedtitle)
         
         # baja fanart
-        data2 = scrapertools.cachePage(scrapedurl)
+        data2 = scrapertools.cachePage(scrapedurl1)
         patron2 = '<img src="([^"]+)" class="stage.*?>(.*?)</div>'
         matches2 = re.compile(patron2,re.DOTALL).findall(data2)
         for match2 in matches2:
@@ -681,6 +684,37 @@ def capitulo(item):
         # A–ade al listado
         itemlist.append( Item(channel=__channel__, action="video", title=scrapedtitle , url=scrapedurl , page=urlbase, thumbnail=scrapedthumbnail ,fanart=scrapedfanart,  plot=scrapedplot , extra=extra , folder=True) )
     
+    # NOVELAS V2
+    '''
+        <ul id="cont-fila-art">
+        <li class="thumb"><a href="http://tvolucion.esmas.com/telenovelas/drama/abismo-de-pasion/179216/abismo-pasion-capitulo-114/" target="_top"><img src="http://m4v.tvolucion.com/m4v/boh/abism/abism-c114/abism-c114.jpg" align="left"></a></li>
+        <li class="nombrePrograma">Abismo de pasi—n</li>
+        <li class="titulo-art">Cancelar el contrato</li>
+        <li class="Duracion">Duracion: 00:42:12</li>
+        <li class="capitulo">Capitulo: 114</li>
+        <li class="pre-fecha">Fecha:&nbsp;</li>
+        <li class="fecha-pub-art">&nbsp;29/06/2012</li>
+        </ul>
+        '''
+    patron = '<ul id="cont-fila-art">.*?<li class="thumb"><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)" target="_top"><img src="([^"]+)" align="left"></a></li>.*?<li class="nombrePrograma">(.*?)</li>.*?<li class="titulo-art">(.*?)</li>.*?<li class="Duracion">Duracion: (.*?)</li>.*?<li class="capitulo">Capitulo: (.*?)</li>.*?<li class="pre-fecha">Fecha:&nbsp;</li>.*?<li class="fecha-pub-art">&nbsp;(.*?)</li>.*?</ul>'
+    # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
+    print "intenta obtener patron 2"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    itemlist = []
+    for match in matches:
+        scrapedurl = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]+"/"
+        print scrapedurl
+        scrapedtitle = match[5]+" - "+match[3]
+        scrapedthumbnail = match[1]
+        scrapedfanart = item.fanart
+        scrapedplot = match[3]+ chr(10)+" DURACION : "+match[4]+chr(10)+" ESTRENO : "+match[6]  +chr(10)+match[0]
+        
+        
+        logger.info(scrapedtitle)
+        
+        # A–ade al listado
+        itemlist.append( Item(channel=__channel__, action="video", title=scrapedtitle , url=scrapedurl , page=urlbase, thumbnail=scrapedthumbnail ,fanart=scrapedfanart,  plot=scrapedplot , extra=extra , folder=True) )
     # NOTICIAS
     # patron = '<td><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)">([^<]+)</a>.*?<td>'
     patron = '<td><a href="http://tvolucion.esmas.com/noticieros/([^"]+)">([^<]+)</a>.*?<td>([^<]+)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td class="noborder">(.*?)</td>'
@@ -981,7 +1015,7 @@ def video(item):
     # Descarga la p‡gina
     data = scrapertools.cachePage(item.url)
     extra = item.extra
-    
+    print "entra a video"
     # Extrae las entradas de la pagina seleccionada
     '''<video width="294" height="165" controls autoplay="autoplay" poster="http://m4v.tvolucion.com/m4v/boh/abism/abism-c092/abism-c092.jpg" style="margin: 0pt 13px;">
         <source src="http://apps.tvolucion.com/m4v/boh/abism/abism-c092/abism-c092-150.mp4" type="video/mp4; codecs='avc1,mp4a'" />
@@ -1002,6 +1036,7 @@ def video(item):
         
         '''
     #NOVELAS (WEB MOVIL)   
+    
     patron = '<video width="294" height="165" controls autoplay="autoplay" poster="([^"]+)" style=.*?<source src="([^"]+)" type="([^"]+)" />'
     # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -1059,7 +1094,7 @@ def video(item):
         scrapedfanart = item.fanart
         scrapedplot = item.plot
         logger.info(scrapedtitle)
-        print srt(scrapedurl)
+        print str(scrapedurl)
         # A–ade al listado
         
         # CALIDAD MEDIA
