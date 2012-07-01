@@ -471,7 +471,14 @@ def novelasr(item):
     itemlist = []
     for match in matches:
         scrapedurl1 = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]
-        scrapedurl = "http://googleak.esmas.com/search?q=site:http://tvolucion.esmas.com/telenovelas/"+match[0]+"&btnG=Google+Search&access=p&client=masarchivo&site=portal&output=xml_no_dtd&proxystylesheet=tv3vidrecientes&entqrm=0&oe=UTF-8&ie=UTF-8&ud=1&exclude_apps=1&getfields=*&num=25&sort=date:D:L:d1&entqr=6&filter=0&ip=189.254.126.103,63.99.211.110&start=0"
+        string = match[0]+" "
+        print "cadena " +string
+        print string.find("/ ")
+        if int(string.find("/ "))<0:
+            scrapedurl = "http://googleak.esmas.com/search?q=site:http://tvolucion.esmas.com/telenovelas/"+match[0]+"&btnG=Google+Search&access=p&client=masarchivo&site=portal&output=xml_no_dtd&proxystylesheet=tv3vidrecientes&entqrm=0&oe=UTF-8&ie=UTF-8&ud=1&exclude_apps=1&getfields=*&num=25&sort=date:D:L:d1&entqr=6&filter=0&ip=189.254.126.103,63.99.211.110&start=0"
+        else:
+            string =string[0:string.find("/ ")]
+            scrapedurl = "http://googleak.esmas.com/search?q=site:http://tvolucion.esmas.com/telenovelas/"+string+"&btnG=Google+Search&access=p&client=masarchivo&site=portal&output=xml_no_dtd&proxystylesheet=tv3vidrecientes&entqrm=0&oe=UTF-8&ie=UTF-8&ud=1&exclude_apps=1&getfields=*&num=25&sort=date:D:L:d1&entqr=6&filter=0&ip=189.254.126.103,63.99.211.110&start=0"
         print scrapedurl
         scrapedtitle = match[2]
         scrapedthumbnail = match[1]
