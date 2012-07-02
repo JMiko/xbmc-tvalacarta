@@ -20,7 +20,7 @@ def unpackjs(texto):
     # Extrae el cuerpo de la funcion
     patron = "eval\(function\(p\,a\,c\,k\,e\,d\)\{[^\}]+\}(.*?)\.split\('\|'\)\)\)"
     matches = re.compile(patron,re.DOTALL).findall(texto)
-    #scrapertools.printMatches(matches)
+    scrapertools.printMatches(matches)
     
     # Separa el código de la tabla de conversion
     if len(matches)>0:
@@ -28,6 +28,7 @@ def unpackjs(texto):
         logger.info("[unpackerjs.py] bloque funcion="+data)
     else:
         return ""
+
     patron = "(.*)'([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -70,5 +71,6 @@ def unpackjs(texto):
     #logger.info("[unpackerjs.py] cadenapatron="+cadenapatron)
     compiled = re.compile(cadenapatron)
     descifrado = compiled.sub(lookup, cifrado)
+    logger.info("descifrado="+descifrado);
 
     return descifrado
