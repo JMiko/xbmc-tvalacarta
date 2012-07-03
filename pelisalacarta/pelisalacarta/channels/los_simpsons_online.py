@@ -38,12 +38,12 @@ def mainlist(item):
          scrapedurl = match[0]
          scrapedthumbnail = ""
          scrapedplot = ""
-         itemlist.append( Item(channel=__channel__, action="temporadas", title=scrapedtitle, url=scrapedurl))
+         itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle, url=scrapedurl))
 
     return itemlist
     
-def temporadas(item):
-    logger.info("[simpsonsonline.py] temporadas")
+def episodios(item):
+    logger.info("[simpsonsonline.py] episodios")
 
     url = item.url
     url = "http://www.lossimpsonsonline.com.ar"+url
@@ -59,3 +59,25 @@ def temporadas(item):
          itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+
+    # Lee todas las temporadas buscando un episodio visible
+    temporadas_items = mainlist(Item())
+    
+    # Empezando por las últimas que es más fácil
+    temporadas_items.reverse()
+    
+    for temporada_item in temporadas_items:
+    
+        # Da por bueno el canal si alguno de los vídeos devuelve mirrors
+        episodios_items = episodios(temporada_item)
+        bien = False
+        for episodio_item in episodios_items:
+            mirrors = servertools.find_video_items( item=episodio_item )
+            if len(mirrors)>0:
+                return True
+
+    return False
