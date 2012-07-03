@@ -25,9 +25,10 @@ def find_videos(data):
     # https://rapidshare.com/files/3346009389/_BiW__Last_Exile_Ginyoku_no_Fam_-_Episodio_09__A68583B1_.mkv
     # "https://rapidshare.com/files/3346009389/_BiW__Last_Exile_Ginyoku_no_Fam_-_Episodio_09__A68583B1_.mkv"
     # http://rapidshare.com/files/2327495081/Camino.Sangriento.4.HDR.Proper.200Ro.dri.part5.rar
+    # https://rapidshare.com/files/715435909/Salmon.Fishing.in.the.Yemen.2012.720p.UNSOLOCLIC.INFO.mkv
     patronvideos  = '(rapidshare.com/files/[0-9]+/.*?)["|<]'
     logger.info("[rapidshare.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    matches = re.compile(patronvideos,re.DOTALL).findall(data+'"')
 
     for match in matches:
         titulo = "[rapidshare]"
