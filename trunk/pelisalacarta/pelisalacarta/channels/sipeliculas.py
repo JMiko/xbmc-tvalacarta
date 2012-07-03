@@ -151,3 +151,22 @@ def findvideos(item):
         itemlist.append( Item(channel=__channel__, action="play", server=server, title=videotitle , url=url , thumbnail=item.thumbnail , plot=plot ,subtitle="", folder=False) )
     #itemlist.append( Item(channel=__channel__, title=titu , action="generos", url="http://yahoo.com"))
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    peliculas_items = lista2(mainlist_items[0])
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors_items = mirrors(pelicula_item)
+        for mirror_item in mirrors_items:
+            if mirror_item.action=="findvideos":
+                video_items = findvideos(item=mirror_item)
+                if len(video_items)>0:
+                    return True
+            else:
+                return True
+
+    return bien
