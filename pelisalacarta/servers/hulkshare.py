@@ -32,6 +32,7 @@ def find_videos(data):
     devuelve = []
 
     #http://www.hulkshare.com/dl/bp62cf2510h8
+    #http://www.hulkshare.com/dl/e633tphub8jk
     patronvideos  = '(hulkshare.com/dl/[a-z0-9]+)'
     logger.info("[hulkshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
