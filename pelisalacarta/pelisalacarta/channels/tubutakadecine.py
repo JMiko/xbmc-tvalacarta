@@ -139,3 +139,18 @@ def findvideos(item):
         videoitem.title = "Vídeo en "+videoitem.server
     
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    peliculas_items = novedades(mainlist_items[0])
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = findvideos(item=pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
