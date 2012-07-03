@@ -139,4 +139,19 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
 
+    #http://www.player3k.info/putlocker/?id=92FA671A11CA7A05
+    patronvideos  = '/putlocker/\?id\=([A-Z0-9]+)'
+    logger.info("[putlocker.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[putlocker]"
+        url = "http://www.putlocker.com/embed/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'putlocker' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+    
     return devuelve
