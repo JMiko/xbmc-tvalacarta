@@ -13,6 +13,11 @@ from core import logger
 from core import config
 from core import unpackerjs
 
+def test_video_exists( page_url ):
+    logger.info("[allbox4.py] test_video_exists(page_url='%s')" % page_url)
+
+    return False,"El conector con allbox4 no funciona<br/>actualmente en pelisalacarta"
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[allbox4.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
