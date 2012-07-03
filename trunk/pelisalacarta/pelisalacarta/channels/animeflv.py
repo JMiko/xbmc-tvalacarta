@@ -265,6 +265,9 @@ def airlist(item):
 
 def findvideos(item):
     logger.info("[animeid.py] findvideos")
+    itemlist=[]
+    
+    from core import unpackerjs3
 
     # Busca el argumento
     data = scrapertools.cache_page(item.url)
@@ -275,15 +278,23 @@ def findvideos(item):
     else:
         scrapedplot = item.plot
     
-    # Ahora busca los vídeos
-    itemlist = servertools.find_video_items(data=data)
+    patron = "(<script>eval\(function\(p,a,c,k,e,d\).*?</script>)"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for match in matches:
+        data = unpackerjs3.unpackjs(match)
+        logger.info("data="+data)
+
+        # Ahora busca los vídeos
+        itemlist.extend( servertools.find_video_items(data=data) )
+
     for videoitem in itemlist:
         videoitem.channel = __channel__
         videoitem.plot = scrapedplot
         videoitem.thumbnail = item.thumbnail
         videoitem.fulltitle = item.title
         videoitem.title = item.title + videoitem.title
-    
+        
     '''
     #<div style="display:none;" id="videoi">i=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=</div>
     codigo_video_plugin = scrapertools.get_match(data,'<div[^>]+>i\=([^<]+)</div>')
