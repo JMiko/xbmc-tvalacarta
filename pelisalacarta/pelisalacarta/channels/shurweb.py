@@ -213,14 +213,13 @@ def scrapping(item,paginacion=True):
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
+    from servers import servertools
     # mainlist
     mainlist_items = mainlist(Item())
-    menupeliculas_items = menupeliculas(mainlist_items[0])
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    peliculas_items = peliculas(menupeliculas_items[0])
+    peliculas_items = scrapping(mainlist_items[0])
     bien = False
     for pelicula_item in peliculas_items:
-        mirrors = findvideos(item=pelicula_item)
+        mirrors = servertools.find_video_items(item=pelicula_item)
         if len(mirrors)>0:
             bien = True
             break
