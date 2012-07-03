@@ -46,3 +46,19 @@ def series(item):
         itemlist.append( Item( channel=item.channel, action="findvideos", title=scrapedtitle, url=scrapedurl, folder=True))
 
     return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+
+    # Da por bueno el canal si alguno de las series devuelve mirrors
+    from servers import servertools
+    series_items = mainlist(Item())
+    bien = False
+    for serie_item in series_items:
+        mirrors = servertools.find_video_items( item=serie_item )
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien

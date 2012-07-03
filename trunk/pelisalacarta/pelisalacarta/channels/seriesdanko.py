@@ -438,3 +438,26 @@ def entitiesfix(string):
     string = string.replace("&#161"  ,"&#161;")
     string = string.replace(";;"     ,";")
     return string
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    # mainlist
+    mainlist_items = mainlist(Item())
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    novedades_items = novedades(mainlist_items[0])
+    bien = False
+    for novedades_item in novedades_items:
+        episodios_items = episodios(novedades_item)
+        
+        for episodio_item in episodios_items:
+            
+            mirrors_items = findvideos(episodio_item)
+            
+            for mirror_item in mirrors_items:
+                videoitems = play(mirror_item)
+                if len(videoitems)>0:
+                    return True
+
+    return False
