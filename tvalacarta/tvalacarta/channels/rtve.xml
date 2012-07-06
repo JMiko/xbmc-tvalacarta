@@ -2,6 +2,6 @@
 <version>
 	<name>rtve</name>
 	<tag>8</tag>
-	<date>16/04/2012</date>
-	<changes>Se arreglan los episodios que no funcionaban</changes>
+	<date>06/07/2012</date>
+	<changes>Cambios en el esquema de protección de vídeos</changes>
 </version>
