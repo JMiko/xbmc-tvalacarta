@@ -408,38 +408,78 @@ def play(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     codigo = matches[0]
+    url=""
+    itemlist = []
     logger.info("assetid="+codigo)
     
     thumbnail = item.thumbnail
 
-    try:
-        # Compone la URL
-        #http://www.rtve.es/swf/data/es/videos/alacarta/5/2/5/1/741525.xml
-        url = 'http://www.rtve.es/swf/data/es/videos/alacarta/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
-        logger.info("[rtve.py] url="+url)
+    if url=="":
+        logger.info("[rtve.py] Probando nuevo sistema")
 
-        # Descarga el XML y busca el vídeo
-        #<file>rtmp://stream.rtve.es/stream/resources/alacarta/flv/6/9/1270911975696.flv</file>
-        data = scrapertools.cachePage(url)
-        #print url
-        #print data
-        patron = '<file>([^<]+)</file>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        if len(matches)>0:
-            #url = matches[0].replace('rtmp://stream.rtve.es/stream/','http://www.rtve.es/')
-            url = matches[0]
-        else:
-            url = ""
+        # Ponemos el id en el siguiente enlace
+        url = "http://www.rtve.es/ztnr/?idasset="+codigo
+        logger.info("url="+url)
+        data = scrapertools.cache_page(url)
+        logger.info("data="+data)
+
+        # Cuando la página carga nos muestra el nuevo id
+        category = scrapertools.get_match(data,"<td>Category</td>[^<]+<th>([^<]+)</th>")
         
-        patron = '<image>([^<]+)</image>'
+        patron  = '<td\s+class="s\d+">(\d+)</td>[^<]+'
+        patron += '<td\s+class="s\d+">([^<]+)</td>[^<]+'
+        patron += '<td\s+class="s\d+">([^<]+)</td>[^<]+'
+        patron += '<td\s+class="s\d+">([^<]+)</td>'
         matches = re.compile(patron,re.DOTALL).findall(data)
         scrapertools.printMatches(matches)
-        #print len(matches)
-        #url = matches[0].replace('rtmp://stream.rtve.es/stream/','http://www.rtve.es/')
-        thumbnail = matches[0]
-    except:
-        url = ""
+        for idpreset,videoaudio,tipo,lenguaje in matches:
+            
+            # Ponemos el nuevo id en el siguiente enlace:
+            #http://www.rtve.es/ztnr/preset.jsp?idpreset=910988&lenguaje=es&tipo=video
+            url = "http://www.rtve.es/ztnr/preset.jsp?idpreset="+idpreset+"&lenguaje="+lenguaje+"&tipo="+videoaudio
+            logger.info("url="+url)
+            data = scrapertools.cache_page(url)
+            logger.info("data="+data)
+
+            # De ahí sacamos el video
+            # <li><em>File Name</em>&nbsp;<span class="titulo">mp4/4/1/1340907208714.mp4</span></li>
+            finalurl = scrapertools.get_match(data,'<li><em>File Name</em>&nbsp;<span class="titulo">([^<]+)</span></li>')
+            
+            # Ahora solo nos falta el principio del enlace y quedaría así:
+            url = "http://www.rtve.es/resources/"+category+"/"+finalurl
+            logger.info("url="+url)
+            
+            itemlist.append( Item(channel=CHANNELNAME, title=tipo+" "+item.title , action="play" , url=url, thumbnail=thumbnail , plot=item.plot , server = "directo" , show = item.title , folder=False) )
+    
+    if url=="":
+        try:
+            # Compone la URL
+            #http://www.rtve.es/swf/data/es/videos/alacarta/5/2/5/1/741525.xml
+            url = 'http://www.rtve.es/swf/data/es/videos/alacarta/'+codigo[-1:]+'/'+codigo[-2:-1]+'/'+codigo[-3:-2]+'/'+codigo[-4:-3]+'/'+codigo+'.xml'
+            logger.info("[rtve.py] url="+url)
+    
+            # Descarga el XML y busca el vídeo
+            #<file>rtmp://stream.rtve.es/stream/resources/alacarta/flv/6/9/1270911975696.flv</file>
+            data = scrapertools.cachePage(url)
+            #print url
+            #print data
+            patron = '<file>([^<]+)</file>'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            scrapertools.printMatches(matches)
+            if len(matches)>0:
+                #url = matches[0].replace('rtmp://stream.rtve.es/stream/','http://www.rtve.es/')
+                url = matches[0]
+            else:
+                url = ""
+            
+            patron = '<image>([^<]+)</image>'
+            matches = re.compile(patron,re.DOTALL).findall(data)
+            scrapertools.printMatches(matches)
+            #print len(matches)
+            #url = matches[0].replace('rtmp://stream.rtve.es/stream/','http://www.rtve.es/')
+            thumbnail = matches[0]
+        except:
+            url = ""
     
     # Hace un segundo intento
     if url=="":
@@ -503,7 +543,7 @@ def play(item):
             url = ""
     logger.info("[rtve.py] url="+url)
 
-    itemlist = []
+    '''
     if url=="":
         logger.info("[rtve.py] Extrayendo URL tipo iPad")
         headers = []
@@ -512,14 +552,16 @@ def play(item):
         logger.info("[rtve.py] location="+location)
         
         data = scrapertools.cache_page(location,headers=headers)
+        logger.info("[rtve.py] data="+data)
         #<a href="/usuarios/sharesend.shtml?urlContent=/resources/TE_SREP63/mp4/4/8/1334334549284.mp4" target
         url = scrapertools.get_match(data,'<a href="/usuarios/sharesend.shtml\?urlContent\=([^"]+)" target')
         logger.info("[rtve.py] url="+url)
         #http://www.rtve.es/resources/TE_NGVA/mp4/4/8/1334334549284.mp4
         url = urlparse.urljoin("http://www.rtve.es",url)
         logger.info("[rtve.py] url="+url)
+    '''
 
-    if url!="":
+    if len(itemlist)==0 and url!="":
         itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail=thumbnail , plot=item.plot , server = "directo" , show = item.title , folder=False) )
 
     return itemlist
