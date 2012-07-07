@@ -292,10 +292,10 @@ def play(item):
     #<a href="/s/y/597157/0/s/1244" target="_blank">Reproducir ahora</a>
     logger.info("[seriesyonkis.py] play url="+item.url)
     data = scrapertools.cache_page(item.url)
-    patron = '<a href="([^"]+)" target="_blank">Reproducir ahora</a>'
+    patron = '<a href="([^"]+)" target="_blank">\s*Reproducir ahora\s*</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)==0:
-        patron = '<a href="([^"]+)" target="_blank">Descargar ahora</a>'
+        patron = '<a href="([^"]+)" target="_blank">\s*Descargar ahora\s*</a>'
         matches = re.compile(patron,re.DOTALL).findall(data)
     
     if len(matches)==0:
