@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>animeflv</name>
-	<tag>4</tag>
-	<date>03/07/2012</date>
-	<changes>Incluido nuevo unpacker para desofuscar los links</changes>
+	<tag>5</tag>
+	<date>07/07/2012</date>
+	<changes>Ya salen todas las categorias y la paginacion en menu completo. Por @ignite.</changes>
 </version>
