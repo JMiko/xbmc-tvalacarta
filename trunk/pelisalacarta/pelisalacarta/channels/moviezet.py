@@ -123,7 +123,7 @@ def series(item):
     # Extrae las entradas
     #<li><a href="#" title="$#*! My Dad Says">$#*! My Dad Says</a></li>
 
-    patron  = '<li><a href="#" title="[^>]+>(.*?)</a></li>'
+    patron  = '<li><a href="\#" title="[^>]+>(.*?)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     itemlist = []
@@ -131,7 +131,7 @@ def series(item):
         scrapedtitle = match
         scrapedplot = ""
         code = match[0]
-        scrapedurl = "http://www.moviezet.com/shows/?page_id=2853&show="+match
+        scrapedurl = "http://www.moviezet.tv/category/shows/?page_id=2853&show="+(match.replace(" ","%20"))
         #scrapedurl = urllib.quote(scrapedurl)
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+scrapedtitle)
@@ -158,7 +158,7 @@ def temporadas(item):
         temporada = scrapedtitle.replace("Temporada ","")
         scrapedtitle = match
         scrapedplot = ""
-        scrapedurl = "http://www.moviezet.com/shows/?page_id=2853&show="+item.title+"&season="+temporada
+        scrapedurl = "http://www.moviezet.com/shows/?page_id=2853&show="+(item.title.replace(" ","%20"))+"&season="+temporada
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"] show="+item.show)
 
@@ -178,9 +178,11 @@ def episodios(item):
     temporadas_itemlist = temporadas(item)
     
     for temporada_item in temporadas_itemlist:
+        id_temporada = temporada_item.extra.split("|")[1]
         data = scrapertools.cache_page(temporada_item.url)
 
         # Extrae las entradas
+        #http://www.moviezet.tv/category/shows/?page_id=2853&show=Continuum&season=1&episode=1
         #<li><a href="#7685" title="1"><b>1.</b> Pilot</a></li>
         patron  = '<li><a href="(.*?)" title="(.*?)"><b>.*?</b>(.*?)</a></li>'
         matches = re.compile(patron,re.DOTALL).findall(data)
@@ -193,7 +195,7 @@ def episodios(item):
                 episodio = "0" + episodio
             scrapedtitle = temporada_item.title + "x" + episodio + " "+match[2].strip()
             scrapedplot = ""
-            scrapedurl = "http://www.moviezet.com/shows/?page_id=2853&show=dexter+&season=1&episode="+match[1]
+            scrapedurl = "http://www.moviezet.com/category/shows/?page_id=2853&show="+(item.show.replace(" ","%20"))+"&season="+id_temporada+"&episode="+match[1]
             scrapedthumbnail = item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
@@ -229,8 +231,15 @@ def findvideos(item):
     logger.info("url2="+url)
     data = scrapertools.cachePage(url)
     logger.info("data="+data)
-
-    # <p id="videoi" style="display: none; text-align: center;">?megaus=http://www.megaupload.com/?d=H0LTL5XI&wup=&bit=&mubs=7686_ES.srt&langids=ES&videoid=7686&fulldir=http://www.moviezet.com/shows/dexter-crocodile/</p>
+    
+    # Si es una serie tendrá ese enlace "watch-show"
+    try:
+        url = scrapertools.get_match(data,'<a class="watch-show" href="([^"]+)">')
+        data = scrapertools.cachePage(url)
+    # Si no lo tiene puede seguir tranquilamente
+    except:
+        pass
+    logger.info("data="+data)
 
     patron = "&mubs=(.*?)&"
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -239,10 +248,9 @@ def findvideos(item):
     
 
     # Subtitulos
-    if serieOpelicula:
-        suburl = "http://www.moviezet.com/files/s/sub/"+code
-    else:
-        suburl = "http://www.moviezet.com/files/s/sub/"+code
+    #http://www.moviezet.tv/files/s/sub/18962_ES.srt
+    #suburl = "http://www.moviezet.com/files/s/sub/"+code
+    suburl = "http://www.moviezet.tv/files/s/sub/"+code+"_ES.srt"
     logger.info("suburl="+suburl)
     
     # Elimina el archivo subtitulo.srt de alguna reproduccion anterior

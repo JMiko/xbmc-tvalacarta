@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>moviezet</name>
-	<tag>2</tag>
-	<date>31/12/2011</date>
-	<changes>Arreglados subtítulos y paginación en películas</changes>
+	<tag>3</tag>
+	<date>10/07/2012</date>
+	<changes>Arreglados fallos subtítulos y video erroneo de Dexter</changes>
 </version>
