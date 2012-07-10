@@ -27,12 +27,12 @@ def mainlist(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos DVD/BluRay" , url="http://www.cinegratis.net/estrenos-dvd-bluray/", extra="Estrenos+DVD%2FBLURAY"))
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos cine"       , url="http://www.cinegratis.net/estrenos-de-cine/", extra="Estrenos+de+Cine"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Novedades"           , url="http://www.cinegratis.net/peliculas/novedades/", extra="No+Estrenos"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos"            , url="http://www.cinegratis.net/estrenos-de-cine/", extra="Estrenos+de+Cine"))
     #itemlist.append( Item(channel=__channel__, action="peliscat"   , title="Películas - Géneros"             , url="http://www.cinegratis.net/index.php?module=generos"))
     #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Idiomas"             , url="http://www.cinegratis.net/index.php?module=peliculas"))
     #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Calidades"           , url="http://www.cinegratis.net/index.php?module=peliculas"))
-    #itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"                          , url="http://www.cinegratis.net/index.php?module=search&title=%s"))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"))
 
     return itemlist
 
@@ -41,21 +41,35 @@ def peliculas(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    if "index.php" in item.url:
+        data = scrapertools.cache_page(item.url.split("?")[0],post=item.url.split("?")[1])
+    else:
+        data = scrapertools.cache_page(item.url)
 
     # Extrae los items
+    '''
     patron  = "<td class='asd2'.*?"
     patron += "<table.*?<a.*?href='([^']+)'>([^<]+)</a>.*?"
     patron += "<img src='([^']+)'"#.*?"
-    #patron += "<table>(.*?)</table>"
+    '''
+    patron = "<td class='asd2'[^<]+<table(.*?)</table>"
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    #scrapertools.printMatches(matches)
 
-    for url,titulo,thumbnail in matches:
+    for bloque in matches:
+        url = scrapertools.get_match(bloque,"<a class='style1' style='[^']+' href='([^']+)'>[^<]+</a>")
+        titulo = scrapertools.get_match(bloque,"<a class='style1' style='[^']+' href='[^']+'>([^<]+)</a>").strip()
+        thumbnail = scrapertools.get_match(bloque,"<img src='([^']+)'")
+        
+        try:
+            calidad = "("+scrapertools.get_match(bloque,"Calidad[^<]+</td><td style='[^']+'>[^<]+<a[^>]+>([^<]+)</a>").strip()+")"
+        except:
+            calidad = ""
+        
         plot=""
         if not url.startswith("/"):
             url = "/"+url
-        scrapedtitle = unicode(titulo,"iso-8859-1").encode("utf-8")
+        scrapedtitle = unicode(titulo,"iso-8859-1").encode("utf-8")+" "+calidad+""
         scrapedurl = urlparse.urljoin(item.url,url.replace("\n",""))
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
         scrapedplot = scrapertools.htmlclean(plot)
@@ -64,46 +78,63 @@ def peliculas(item):
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
 
     # Extrae la marca de siguiente página
+    #<input class='boton' type='button' value='2' style='margin-left:15px;margin-right:15px;cursor:pointer; font-weight:normal;  background-color:#4B4A42; border: solid 1px #4B4A42;color:#ffffff;'>
+    #<input class='boton' style='margin-left:3px;margin-right:3px;cursor:pointer;background-color:#393831;border: solid 1px #4B4A42;' type='button' value='3' onclick='document.homesearch.pag.value=3;document.homesearch.tesths.value=1;document.homesearch.submit();'><input class='boton' style='margin-left:3px;margin-right:3px;cursor:pointer;background-color:#393831;border: solid 1px #4B4A42;'type='button' value='4' onclick='document.homesearch.pag.value=4;document.homesearch.tesths.value=1;document.homesearch.submit();'><input class='boton' style='margin-left:3px;margin-right:3px;cursor:pointer;background-color:#393831;border: solid 1px #4B4A42;'type='button' value='5' onclick='document.homesearch.pag.value=5;document.homesearch.tesths.value=1;document.homesearch.submit();'>
     patron = "<input class='boton' type='button' value='[^']+' style='[^']+'><input class='boton' style='[^']+' type='button' value='[^']+' onclick='document.homesearch.pag.value\=(\d+)\;"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
         scrapedtitle = "Página siguiente >>"
-        scrapedurl = "http://www.cinegratis.net/index.php?hstype=t%EDtulo&hstitle=Todos...&hscat=Todos&hslanguage=Todos&hsquality=Todas&hsestreno="+item.extra+"&hsyear1=Desde...&hsyear2=...Hasta&pag="+matches[0]+"&hsletter=&tesths=1"
+        if item.extra=="Estrenos+de+Cine":
+            scrapedurl = "http://www.cinegratis.net/index.php?hstype=t%EDtulo&hstitle=Todos...&hscat=Todos&hslanguage=Todos&hsquality=Todas&hsestreno="+item.extra+"&hsyear1=Desde...&hsyear2=...Hasta&pag="+matches[0]+"&order1=&order2=&hsletter=&tesths=1"
+        else:
+            scrapedurl = "http://www.cinegratis.net/index.php?hstype=t%EDtulo&hstitle=Todos...&hscat=Todos&hslanguage=Todos&hsquality=Todas&hsestreno="+item.extra+"&hsyear1=Desde...&hsyear2=...Hasta&pag="+matches[0]+"&order1=id2&order2=desc&hsletter=&tesths=1"
         scrapedthumbnail = ""
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="peliculas" , title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra=item.extra))
 
     return itemlist
 
-# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
-def search(item,texto, categoria="*"):
-    logger.info("[cinegratis.py] search")
+def findvideos(item):
+    logger.info("[cinegratis.py] findvideos")
 
-    texto = texto.replace(" ", "+")
     itemlist = []
-    try:
-        # La URL puede venir vacía, por ejemplo desde el buscador global
-        if item.url=="":
-            if categoria in ("*","F"):
-                item.url = "http://www.cinegratis.net/index.php?module=search&title="+texto
-                itemlist.extend(listsimple(item)) 
-            if categoria in ("*","D"):
-                item.url = "http://www.cinegratis.net/index.php?hstitle="+texto+"&hscat=Documentales&hsyear"
-                itemlist.extend(listsimple_documentales(item))
-        else:
-            item.url = item.url % texto
-            itemlist.extend(listsimple(item))
-              
-        return itemlist
-    
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        return []
+    data = scrapertools.cachePage(item.url)
+
+    patron  = "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
+    patron += "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
+    patron += "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
+    patron += "<td[^<]+</td><td[^<]+<div[^<]+</div><div[^<]+</div></td></tr><tr[^<]+<td[^<]+<div[^<]+<a class='[^']+' style='[^']+' href='([^']+)"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for servidor,calidad,idioma,url in matches:
+        itemlist.append( Item(channel=__channel__, action="play" , title=servidor + " (" + calidad + ")(" + idioma + ")" , url=url))
+
+    return itemlist
+
+def play(item):
+    logger.info("[divxonline.py] play")
+    itemlist=[]
+    data = scrapertools.cachePage(item.url)
+    logger.info("data="+data)
+    itemlist = servertools.find_video_items(data=data)
+    i=1
+    for videoitem in itemlist:
+        videoitem.title = "Mirror %d%s" % (i,videoitem.title)
+        videoitem.fulltitle = item.fulltitle
+        videoitem.channel=channel=__channel__
+        i=i+1
+
+    return itemlist
+
+def search(item,texto):
+    logger.info("[cinegratis.py] search")
+    if item.url=="":
+        item.url="http://www.cinegratis.net/index.php?hstype=t%EDtulo&hstitle="+texto+"&hscat=Todos&hslanguage=Todos&hsquality=Todas&hsestreno=Todos&hsyear1=Desde...&hsyear2=...Hasta&pag=1&order1=&order2=&hsletter=&tesths=0"
+    texto = texto.replace(" ","+")
+    return peliculas(item)
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
