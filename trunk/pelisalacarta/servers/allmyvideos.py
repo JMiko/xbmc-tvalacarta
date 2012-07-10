@@ -11,7 +11,7 @@ import os
 from core import scrapertools
 from core import logger
 from core import config
-from core import unpackerjs
+from core import unpackerjs,unpackerjs3
 
 def test_video_exists( page_url ):
     logger.info("[allmyvideos.py] test_video_exists(page_url='%s')" % page_url)
@@ -37,13 +37,25 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     # Descarga
     data = scrapertools.cache_page( page_url )
-    packed = scrapertools.get_match( data , "(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d.*?)</script>",1)
+    #<script type='text/javascript'>eval(/* unpacking function - this is the boot strap function */ /* data extracted from this packing routine is passed to */ /* this function when decoded in the target */ function(p, a, c, k, e, d) { while (c--) if (k[c]) p = p.replace(new RegExp('\\b' + c.toString(a) + '\\b', 'g'), k[c]); /* RS_Debug = p; */ /* {RS} !!!!!!!!! */ return p; } (' c b=$.3k(\'3j\'); m (b==3i) b=0; 3h(\'3g\').3f({ \'3e\' : \'3d\', \'3c\' : \'w\', \'3b\' : \'3a\', \'t\' : \'4://39.9.8:y/d/38/37.36\', \'35\' : \'4://z.9.8/i/x/g.34\', \'33\' : \'32\', \'31\' : \'30\', \'2z\' : \'4\', \'4.2y\' : \'13\', \'q\' : \'11\', \'14.2x\' : \'u\', \'14.2w\' : \'2v\', \'13\' : b, \'2u\' : \'2t-2,2s-1,12-3,f-3,2r-1\', \'12.2q\' : { \'2p\' : 11, \'2o\' : \'4://z.9.8:y/p/x/g/\', \'2n\' : \'2m\', \'2l\' : 5, \'2k\': 10, \'2j\': 2i }, \'f.s\' : \'4://9.8/g\', \'f.2h\' : \'<v 2g="4://9.8/2f-2e-2d.r" 2c=0 2b=0 2a=0 29=28 27=w 26=25></v>\', \'24\' : \'/6/23.22\', \'a.21\' : \'u\', \'a.e\' : \'20-o\', \'a.t\' : \'/6/1z.1y\', \'a.s\' : \'/1x.r\', \'1w\' : \'/6/1v/1u.1t\', \'q.e\' : \'o\', \'1s.e\' : \'1r\', \'1q\': [ {n: \'1p\', 1o: \'/6/6.1n\'}, {n: \'1m\'} ] }); c 7 = 1l.1k(); c 1j = \'1i 1h 1g 6 \' + 7.l + \'.\' + 7.1f + \'.\' + 7.1e + \' 1d\'; m ((7.l < 1 ) && (k.j.h(\'1c\')==-1) && (k.j.h(\'1b\')==-1)) { 1a.19(\'18\').17.16 = \'15\'; } ',36,129,'||||http||player|playerVersion|net|allmyvideos|logo|starttime|var||position|sharing|0ah5ph2vxm8w|indexOf||appVersion|navigator|major|if|type|left||dock|html|link|file|false|IFRAME|720|00027|182|d3220||true|timeslidertooltipplugin|start|viral|block|display|style|flashnotinstalled|getElementById|document|Android|iPhone|installed|release|minor|Flash|have|You|output|getFlashPlayerVersion|swfobject|html5|swf|src|flash|modes|bottom|controlbar|zip|bekle|skins|skin|premium|png|gopremium|top|hide|xml|ova|config|403|HEIGHT|WIDTH|NO|SCROLLING|MARGINHEIGHT|MARGINWIDTH|FRAMEBORDER|720x383|h08ml8bdrpvw|embed|SRC|code|100|spritelength|linelength|frequency|0ah5ph2vxm8w_|prefix|path|enabled|preview|lightsout|fbit|captions|plugins|none|callout|onpause|startparam|provider|lighttpd|streamscript|4250|duration|jpg|image|mp4|video|y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdiegq4nk|d2739|383|height|width|playerID|id|setup|flvplayer|jwplayer|undefined|vpos0ah5ph2vxm8w|cookie'.split('|')))
+    #</script>
+    packed = scrapertools.get_match( data , "(<script type='text/javascript'>eval\(.*?function\(p,\s*a,\s*c,\s*k,\s*e,\s*d.*?)</script>",1)
+    logger.info("packed="+packed)
     
     from core import unpackerjs
     unpacked = unpackerjs.unpackjs(packed)
+    logger.info("unpacked="+unpacked)
+    if unpacked=="":
+        unpacked = unpackerjs3.unpackjs(packed,tipoclaves=2)
+        logger.info("unpacked3="+unpackerjs3.unpackjs(packed,tipoclaves=2))
+
     #('var starttime=$.cookie(\'vposm7p03lbkysdw\');if(starttime==undefined)starttime=0;jwplayer(\'flvplayer\').setup({\'id\':\'playerID\',\'width\':\'960\',\'height\':\'511\',\'file\':\'http://66.220.4.230:182/d/3omd5q77yq5dh6lnhlgzlnwmpjsz6jak4r4dalwptfh3auyzpfu2og6u/video.mp4\',\'image\':\'http://66.220.4.230/i/00012/m7p03lbkysdw.jpg\',\'duration\':\'5836\',\'streamscript\':\'lighttpd\',\'provider\':\'http\',\'http.startparam\':\'start\',\'dock\':\'true\',\'viral.onpause\':\'false\',\'viral.callout\':\'none\',\'start\':starttime,\'plugins\':\'captions-2,fbit-1,timeslidertooltipplugin-3,/player/ova-jw.swf,sharing-3\',\'timeslidertooltipplugin.preview\':{\'enabled\':true,\'path\':\'http://66.220.4.230:182/p/00012/m7p03lbkysdw/\',\'prefix\':\'m7p03lbkysdw_\'},\'sharing.link\':\'http://allmyvideos.net/m7p03lbkysdw\',\'sharing.code\':\'<IFRAME SRC="http://allmyvideos.net/embed-h08ml8bdrpvw-960x511.html" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=960 HEIGHT=531></IFRAME>\',\'config\':\'/player/ova.xml\',\'logo.hide\':\'false\',\'logo.position\':\'top-left\',\'logo.file\':\'/player/gopremium.png\',\'logo.link\':\'/premium.html\',\'skin\':\'/player/skins/bekle.zip\',\'dock.position\':\'left\',\'controlbar.position\':\'bottom\',\'modes\':[{type:\'flash\',src:\'/player/player.swf\'},{type:\'html5\'}]});var playerVersion=swfobject.getFlashPlayerVersion();var output=\'You have Flash player \'+playerVersion.major+\'.\'+playerVersion.minor+\'.\'+playerVersion.release+\' installed\';if((playerVersion.major<1)&&(navigator.appVersion.indexOf(\'iPhone\')==-1)&&(navigator.appVersion.indexOf(\'Android\')==-1)){document.getElementById(\'flashnotinstalled\').style.display=\'block\'}',511,00012player,
     unpacked = unpacked.replace("\\","")
-    location = scrapertools.get_match(unpacked,"'file'\:'([^']+)'")+"?start=0"
+    
+    #'file' : 'http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjumszgt/video.mp4'
+    #http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjtww5ha/video.mp4?start=0
+    #http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjumszgt/video.mp4
+    location = scrapertools.get_match(unpacked,"'file'\s*\:\s*'([^']+)'")+"?start=0"
     logger.info("location="+location)
     
     video_urls = []
