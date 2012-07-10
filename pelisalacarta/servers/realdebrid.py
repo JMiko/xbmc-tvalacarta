@@ -61,4 +61,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def correct_url(url):
     if "userporn.com" in url:
         url = url.replace("/e/","/video/")
+    
+    if "putlocker" in url:
+        url = url.replace("/embed/","/file/")
     return url

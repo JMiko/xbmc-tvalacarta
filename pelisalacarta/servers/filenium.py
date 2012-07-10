@@ -17,7 +17,7 @@ from urllib import urlencode
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[filenium.py] get_video_url(page_url='%s')" % page_url)
     location=""
-    
+    page_url = correct_url(page_url)
     if premium:
         # Hace el login
         url = "http://filenium.com/welcome"
@@ -58,3 +58,11 @@ def extract_authorization_header(url):
     logger.info("[filenium.py] nueva url="+url)
 
     return url,authorization_header
+
+def correct_url(url):
+    if "userporn.com" in url:
+        url = url.replace("/e/","/video/")
+    
+    if "putlocker" in url:
+        url = url.replace("/embed/","/file/")
+    return url
