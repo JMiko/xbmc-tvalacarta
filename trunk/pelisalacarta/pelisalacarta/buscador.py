@@ -47,7 +47,7 @@ def searchresults(params,url="",category=""):
         scrapedthumbnail = item.thumbnail
         scrapedplot = item.plot
         
-        xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+        xbmctools.addnewfolder( targetchannel , action , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot, show=item.show )
     
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -58,8 +58,8 @@ def do_search_results(tecleado):
 
     itemlist = []
 
-    from pelisalacarta.channels import bajui
-    itemlist.extend( bajui.search( Item() , tecleado) )
+    #from pelisalacarta.channels import bajui
+    #itemlist.extend( bajui.search( Item() , tecleado) )
 
     from pelisalacarta.channels import cineblog01
     itemlist.extend( cineblog01.search( Item() , tecleado) )
@@ -97,14 +97,11 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import peliculasyonkis_generico
     itemlist.extend( peliculasyonkis_generico.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import tumejortv
-    itemlist.extend( tumejortv.search( Item() , tecleado) )
-
-    from pelisalacarta.channels import gratisdocumentales
-    itemlist.extend( gratisdocumentales.search( Item() , tecleado) )
-
     from pelisalacarta.channels import seriesyonkis
     itemlist.extend( seriesyonkis.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import veranime
+    itemlist.extend( veranime.search( Item() , tecleado) )
 
     return itemlist
 
