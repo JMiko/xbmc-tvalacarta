@@ -205,7 +205,7 @@ def run():
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
                 elif action=="add_serie_to_library":
-                    logger.info("[launcher.py] add_serie_to_library")
+                    logger.info("[launcher.py] add_serie_to_library, show="+item.show)
                     from platformcode.xbmc import library
                     import xbmcgui
                 

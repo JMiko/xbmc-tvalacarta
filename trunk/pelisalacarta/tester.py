@@ -39,10 +39,10 @@ def test_channels():
     
     para_probar = []
     '''
-    #para_probar.append("animeid") (TIMEOUT?)
     '''
-    para_probar.append("cinetube")
+    
     para_probar.append("animeflv")
+    para_probar.append("animeid")
     para_probar.append("bajui")
     para_probar.append("beeg")
     para_probar.append("cineblog01")
@@ -59,29 +59,45 @@ def test_channels():
     para_probar.append("italiafilm")
     para_probar.append("documentalesatonline2")
     para_probar.append("letmewatchthis")
+    para_probar.append("los_simpsons_online")
     para_probar.append("mcanime")
     para_probar.append("moviezet")
     para_probar.append("newdivx")
     para_probar.append("newhd")
+    para_probar.append("peliculasonlineflv")
     para_probar.append("peliculasaudiolatino")
+    para_probar.append("peliculaseroticas")
     para_probar.append("peliculasflv")
     para_probar.append("peliculasid")
-    para_probar.append("peliculasonlineflv")
     para_probar.append("peliculasyonkis_generico")
     para_probar.append("pelis24")
     para_probar.append("pelispekes")
     para_probar.append("robinfilm")
     para_probar.append("serieonline")
+    para_probar.append("seriesid")
+    para_probar.append("serieshentai")
+    para_probar.append("seriesdanko")
     para_probar.append("seriespepito")
     para_probar.append("seriesyonkis")
-    '''
-    '''
-    
+    para_probar.append("shurhd")
+    para_probar.append("shurweb")
+    para_probar.append("sipeliculas")
+    para_probar.append("tubutakadecine")
+    para_probar.append("tumejortv")
+    para_probar.append("filmesonlinebr")
+    para_probar.append("tusnovelas")
+    para_probar.append("unsoloclic")
+
     funcionan = []
     no_funcionan = []
+    
     no_probados = []
+    no_probados.append("gaypornshare")
+    no_probados.append("justintv")
     no_probados.append("mocosoftx")
-    no_probados.append("seriesid") # Tiene problemas de estructura
+    no_probados.append("seriesly")
+    no_probados.append("cinetube")
+    no_probados.append("sonolatino")
 
     # Verifica los canales
     for canal in para_probar:
