@@ -43,8 +43,28 @@ REALDEBRID_SERVERS = ['one80upload','tenupload','onefichier','onehostclick','two
                    'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare']
 #wupload,fileserve
 
+ALLDEBRID_SERVERS = ['one80upload','tenupload','onefichier','twoshared','fourfastfile','fourshared','asfile','badongo','bayfiles','bitshare','bulletupload','cramit','crocko','dateito','dengee',
+                   'diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
+                   'filesend','fileserve','filesmonster','filevelocity','freakshare','free','furk','fyels','gigapeta','gigasize','gigaup','glumbouploads','goldfile','grupload','hitfile',
+                   'hotfile','ifile','jumbofiles','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
+                   'przeklej','purevid','putlocker','rapidgator','rapidshare','scribd','sendspace','shareonline','shareflare','shragle','slingfile','sockshare',
+                   'soundcloud','speedyshare','turbobit','unibytes', 'uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
+                   'userporn','vidxden','vipfile','wupload','youtube','yunfile','zippyshare','zshare']               
+               
+#Resultado de http://alldebrid.com/api.php?action=get_host
+#"10upload.com", "1fichier.com", "180upload.com", "2shared.com", "4fastfile.com", "4shared.com", "asfile.com", "badongo.com", "bayfiles.com", "bitshare.com", "buckshare.com", "bulletupload.com", "cloudnator.com", 
+#"cloudnxt.net", "cramit.in", "crocko.com", "datei.to", "ddlstorage.com", "dengee.net", "diglo.com", "easybytez.com", "enterupload.com", "exoshare.com", "extabit.com", "fiberupload.com", "fileape.com", "filebox.com",
+# "filebase.com", "fileden.com", "filedino.com", "filefactory.com", "fileflyer.com", "filefrog.com", "fileforth.com", "filegag.com", "filejungle.com", "filekeen.com", "filelaser.com", "filemade.com", "filemates.com", 
+# "fileover.com", "filepost.com", "files-save.com", "filesend.com", "fileserve.com", "filesmonster.net", "filevelocity.com", "filemarkets.com", "filereactor.com", "freakshare.com", "free.fr", "furk.net", "fyels.com",
+# "gigapeta.com", "gigasize.com", "gigaup.fr", "glumbouploads.com", "goldfile.eu", "grupload", "hitfile.net", "hotfile.com", "hu.lk", "ifile.com", "jumbofiles.com", "keepfile.com", "letitbit.net", "load.to", "mediafire.com",
+# "MegaShare.com", "megashares.com", "mixturevideo.com", "movbay.com", "muchshare.net", "novafile.com", "nowdownload.eu", "netload.in", "piggyshare.com", "pigsonic.com", "przeklej.pl", "purevid.com", "putlocker.com", 
+# "pyramidfiles.com", "rapidgator.net", "rapidshare.com", "ryushare.com", "scribd.com", "sendspace.com", "shareflare.net", "share-online.biz", "shragle.com", "simpleupload.com", "slingfile.com", "sockshare.com", 
+# "soundcloud.com", "speedy.sh", "speedyshare.com", "squillion.com", "turbobit.net", "turboupload".com, "ugotfile.com", "unibytes.com", "uploadbox.com", "uploadc.com", "uploaded.to", "uploadhere.com", "uploadhero.com", 
+# "uploading.com", "uploadking.com", "uploadspace.pl", "uploadstation.com", "uptobox.com", "userporn.com", "usershare.com", "vidbux.com", "videobb.com", "videozer.com", "vidxden.com", "vip-file.com", "wupload.com", 
+# "x7.com", "youtube.com", "yunfile.com", "zippyshare.com", "zshare.net"               
+               
 # Lista completa de todos los servidores soportados por pelisalacarta, usada para buscar patrones
-ALL_SERVERS = list( set(FREE_SERVERS) | set(FILENIUM_SERVERS) | set(REALDEBRID_SERVERS) )
+ALL_SERVERS = list( set(FREE_SERVERS) | set(FILENIUM_SERVERS) | set(REALDEBRID_SERVERS) | set(ALLDEBRID_SERVERS) )
 ALL_SERVERS.sort()
 
 # Función genérica para encontrar vídeos en una página
@@ -133,7 +153,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
             exec "from servers import "+server+" as server_connector"
             logger.info("[servertools.py] servidor de "+server+" importado")
             if muestra_dialogo:
-                progreso.update( 25 , "Conectando con "+server)
+                progreso.update( 20 , "Conectando con "+server)
 
             # Si tiene una función para ver si el vídeo existe, lo comprueba ahora
             if hasattr(server_connector, 'test_video_exists'):
@@ -172,7 +192,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
     
                 # Muestra un diálogo de progreso
                 if muestra_dialogo:
-                    progreso.update( 50 , "Conectando con Filenium")
+                    progreso.update( 40 , "Conectando con Filenium")
     
                 exec "from servers import filenium as gen_conector"
                 
@@ -185,7 +205,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
     
                 # Muestra un diálogo de progreso
                 if muestra_dialogo:
-                    progreso.update( 75 , "Conectando con Real-Debrid")
+                    progreso.update( 60 , "Conectando con Real-Debrid")
 
                 exec "from servers import realdebrid as gen_conector"
                 video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("realdebridpremium")=="true") , user=config.get_setting("realdebriduser") , password=config.get_setting("realdebridpassword"), video_password=video_password )
@@ -197,12 +217,26 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
                     # Si RealDebrid da error pero tienes un enlace válido, no te dice nada
                     if len(video_urls)==0:
                         return video_urls,False,video_gen
-
+                  
+            # Obtiene enlaces alldebrid si tienes cuenta
+            if server in ALLDEBRID_SERVERS and config.get_setting("alldebridpremium")=="true":
+    
+                # Muestra un diálogo de progreso
                 if muestra_dialogo:
-                    progreso.update( 100 , "Proceso finalizado")
+                    progreso.update( 80 , "Conectando con All-Debrid")
 
-                # Cierra el diálogo de progreso
-                if muestra_dialogo: progreso.close()
+                exec "from servers import alldebrid as gen_conector"
+                video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("alldebridpremium")=="true") , user=config.get_setting("alldebriduser") , password=config.get_setting("alldebridpassword"), video_password=video_password )
+                logger.info("[xbmctools.py] alldebrid url="+video_gen)
+                if video_gen!="":
+                    video_urls.append( [ "[alldebrid]", video_gen ] )
+
+            
+            if muestra_dialogo:
+                progreso.update( 100 , "Proceso finalizado")
+
+            # Cierra el diálogo de progreso
+            if muestra_dialogo: progreso.close()
 
             # Llegas hasta aquí y no tienes ningún enlace para ver, así que no vas a poder ver el vídeo
             if len(video_urls)==0:
@@ -213,6 +247,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
 
                 # Lista de las cuentas que soportan este servidor
                 listapremium = ""
+                if server in ALLDEBRID_SERVERS: listapremium+="All-Debrid o "            
                 if server in FILENIUM_SERVERS: listapremium+="Filenium o "
                 if server in REALDEBRID_SERVERS: listapremium+="Real-Debrid o "
                 if server in PREMIUM_SERVERS: listapremium+=server+" o "
