@@ -54,13 +54,17 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
         logger.info("xmlurl="+xmlurl)
         data = scrapertools.downloadpageWithoutCookies(xmlurl)
+        logger.info("data="+data)
         # Extrae la URL
-        patron = '</link><media\:content url="(.+?)"'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        
-        if len(matches)>0:
-            video_urls.append( ["."+matches[0].rsplit('.',1)[1][0:3]+" [putlocker]",matches[0]])
+        mediaurl = scrapertools.get_match(data,'</link><media\:content url="(.+?)"')
+        logger.info("mediaurl="+mediaurl)
+        # web  http://media-a7.putlocker.com/download/17/ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv?h=T6eVK5WKEn3fDwKLcFkAog&e=1341894542&f=%27ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv%27
+        # xbmc http://media-a7.putlocker.com/download/17/ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv?h=yFVjhTW95m3LqyqUH1yUDA&amp;e=1341894600&amp;f='ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv'
+        # xbmc http://media-a7.putlocker.com/download/17/ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv?h=yFVjhTW95m3LqyqUH1yUDA&e=1341894600&f=%27ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv%27
+
+        mediaurl = mediaurl.replace("&amp;","&").replace("'","%27")
+        logger.info("mediaurl="+mediaurl)
+        video_urls.append( [".flv [putlocker]",mediaurl] )
 
     else:
         logger.info("[putlocker.py] No encuentra Playlist")
