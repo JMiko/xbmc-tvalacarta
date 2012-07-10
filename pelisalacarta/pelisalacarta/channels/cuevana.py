@@ -478,7 +478,7 @@ def search(item,texto, categoria="*"):
             scrapedthumbnail = "http://sc.cuevana.tv/box/"+id+".jpg"
             scrapedplot = txt
             if "peliculas" in url:
-                itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
+                itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot ) )
             else:
                 scrapedurl = get_serie_url(url)
                 itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle, fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle) )
