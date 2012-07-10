@@ -58,6 +58,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page(url,headers=headers2,post=post)
     logger.info("data="+data)
     data = data.replace("\\","")
+    logger.info("data="+data)
     patron = '"link"\:"([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     video_url = matches[0]

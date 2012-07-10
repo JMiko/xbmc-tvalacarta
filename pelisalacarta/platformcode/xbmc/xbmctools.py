@@ -585,13 +585,16 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             logger.info("b10")
             xbmc.executebuiltin( "PlayMedia("+mediaurl+")" )
 
-    if (config.get_setting("subtitulo") == "true") and view:
+    if config.get_setting("subtitulo") == "true" and view:
         logger.info("b11")
         from core import subtitletools
         wait2second()
         subtitletools.set_Subtitle()
         if subtitle!="":
             xbmc.Player().setSubtitles(subtitle)
+    #FIXME: Qué cosa más fea...
+    elif channel=="moviezet":
+        xbmc.Player().setSubtitles(subtitle)
 
 def handle_wait(time_to_wait,title,text):
     logger.info ("[xbmctools.py] handle_wait(time_to_wait=%d)" % time_to_wait)

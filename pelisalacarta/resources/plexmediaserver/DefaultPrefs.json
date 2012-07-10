@@ -25,4 +25,7 @@
         {"id": "realdebridpremium", "label": "Cuenta premium Real Debrid", "type": "bool", "default": "false"},
         {"id": "realdebriduser", "label": "Usuario", "type": "text", "default": ""},
         {"id": "realdebridpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
+        {"id": "alldebridpremium", "label": "Cuenta premium All Debrid", "type": "bool", "default": "false"},
+        {"id": "alldebriduser", "label": "Usuario", "type": "text", "default": ""},
+        {"id": "alldebridpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
 ]
