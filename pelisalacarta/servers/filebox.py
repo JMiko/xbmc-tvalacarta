@@ -31,17 +31,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         import time
         time.sleep(5)
 
+    codigo = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)">[^<]+')
+    rand = scrapertools.get_match(data,'<input type="hidden" name="rand" value="([^"]+)">')
 
-    patron  = '<input type="hidden" name="id" value="([^"]+)">[^<]+'
-    patron += '<input type="hidden" name="rand" value="([^"]+)">'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-
-    codigo = ""
-    nombre = ""
-    if len(matches)>0:
-        codigo = matches[0][0]
-        rand = matches[0][1]
-
+    #op=download2&id=xuquejiv6xdf&rand=r6dq7hn7so2ygpnxv2zg2i3cu3sbdsunf57gtni&referer=&method_free=&method_premium=&down_direct=1
     post = "op=download2&id="+codigo+"&rand="+rand+"&referer=&method_free=&method_premium=&down_direct=1"
 
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
