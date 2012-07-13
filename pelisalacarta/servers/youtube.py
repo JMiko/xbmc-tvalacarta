@@ -94,9 +94,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         logger.info(str(video_url))
     
     return video_urls
-    
-    
-    
+
 def getuploads(user,startindex,maxresults,channel="",action="play"):
     logger.info("[youtube.py] getuploads")
 
@@ -250,28 +248,12 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    #<a href="http://www.youtube.com/watch?v=je-692ngMY0" target="_blank">parte 1</a>
-    patronvideos = '<a href="(http://www.youtube.com/watch\?v\=[^"]+)".*?>(.*?)</a>'
+    patronvideos = "youtube.com/v/([0-9A-Za-z_-]{11})"
     logger.info("[youtube.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
-        titulo = match[1]
-        url = match[0]
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'youtube' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    patronvideos = "<param name='movie' value='http://www.youtube.com/v/([^']+)'"
-    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = match[1]
+        titulo = "[YouTube]"
         url = "http://www.youtube.com/watch?v="+match[0]
 
         if url not in encontrados:
