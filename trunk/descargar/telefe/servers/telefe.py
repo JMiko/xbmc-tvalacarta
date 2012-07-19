@@ -30,6 +30,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         logger.info("[telefe.py] Encontrado vídeo en formato Telefónica: "+video_url)
     
     except:
+        import traceback
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                logger.error(line_split)
 
         # Descarga el descriptor del vídeo
         # El vídeo:
