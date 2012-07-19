@@ -7,15 +7,15 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{2334DF5D-8AC0-4220-9DE4-41FF546F057C}
 AppName=Descargar de Telefe
-AppVersion=1.0
-;AppVerName=Descargar de Telefe 1.0
+AppVersion=1.1
+;AppVerName=Descargar de Telefe 1.1
 AppPublisher=Televisión a la carta
 AppPublisherURL=http://blog.tvalacarta.info/
 AppSupportURL=http://blog.tvalacarta.info/
 AppUpdatesURL=http://blog.tvalacarta.info/
 DefaultDirName={pf}\Televisión a la carta\Descargar de Telefe
 DefaultGroupName=Televisión a la carta
-LicenseFile=C:\workspaces\komodo\descargar\telefe\LICENSE.txt
+LicenseFile=C:\py2exe\telefe\LICENSE.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -29,8 +29,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\workspaces\komodo\descargar\telefe\dist\descargar.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\workspaces\komodo\descargar\telefe\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\py2exe\telefe\dist\descargar.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\py2exe\telefe\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
