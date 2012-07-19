@@ -20,13 +20,13 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     patron = 'flashvars.file="(.*?)";'
     matches = re.compile(patron).findall(data)
     for match in matches:
-    	logger.info("File = "+match)
-	flashvarsfile = match
+        logger.info("File = "+match)
+    flashvarsfile = match
     patron = 'flashvars.filekey="(.*?)";'
     matches = re.compile(patron).findall(data)
     for match in matches:
-    	logger.info("Key = "+match)
-	flashvarsfilekey = match
+        logger.info("Key = "+match)
+    flashvarsfilekey = match
     post="key="+flashvarsfilekey+"&user=undefined&codes=1&pass=undefined&file="+flashvarsfile
     url = "http://www.videoweed.es/api/player.api.php?"+post
     data = scrapertools.cache_page(url, post=post)
@@ -38,7 +38,7 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     video_urls = []
     logger.info(matches[0])
     video_urls.append( [".flv [videoweed]",matches[0]])
-	
+    
     return video_urls
 
 # Encuentra vídeos del servidor en el texto pasado
@@ -70,6 +70,23 @@ def find_videos(data):
         titulo = "[videoweed]"
         url = match
 
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'videoweed' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
+    #rep="/rep2.php?vw=wuogenrzatq40&t=18&c=13"
+    patronvideos  = 'src="" rep="([^"]+)" width="([^"]+)" height="([^"]+)"'
+    logger.info("[videoweed.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[videoweed]"
+        url = match[0]
+        url = url.replace("/rep2.php?vw=","http://www.videoweed.es/file/")
+        
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'videoweed' ] )
