@@ -35,6 +35,12 @@ class MyDialog:
 
         self.e2.insert(0, ruta)
         self.e2.pack(padx=5)
+
+        Label(top, text="Proxy SOCKS de Argentina\n(sólo si descargas programas geobloqueados y no estás en Argentina)\n(Formato host:puerto)").pack()
+    
+        self.e3 = Entry(top)
+        self.e3.config(width="75")
+        self.e3.pack(padx=5)
         
         b = Button(top, text="Descargar", command=self.ok)
         b.pack(pady=5)
@@ -45,6 +51,9 @@ class MyDialog:
 
         output = self.e2.get()
         print "Descargar en", output
+
+        proxysocks = self.e3.get()
+        print "Proxy SOCKS", proxysocks
 
         import os
         confpath = os.path.join( config.get_data_path() , "descargar-telefe.conf" )
@@ -80,16 +89,20 @@ class MyDialog:
         salida = os.path.join( output , "%s.mp4" % self.clean_title(titulo,windows_mode) )
         print salida
 
+        proxyparameter = ""
+        if proxysocks!="":
+            proxyparameter = " -S "+proxysocks
+
         # Invoca a rtmpdump
         if windows_mode:
-            print "Comando: "+'./rtmpdump.exe -r "'+url+'" -o "'+salida+'" -s "http://www.telefe.com/wp-content/plugins/fc-velocix-video/flowplayer/flowplayer.rtmp-3.1.3.swf"'
+            print "Comando: "+'./rtmpdump.exe -r "'+url+'" -o "'+salida+'" --live' + proxyparameter
             import shlex, subprocess
-            args = shlex.split('./rtmpdump.exe -r "'+url+'" -o "'+salida+'" -s "http://www.telefe.com/wp-content/plugins/fc-velocix-video/flowplayer/flowplayer.rtmp-3.1.3.swf"')
+            args = shlex.split('./rtmpdump.exe -r "'+url+'" -o "'+salida+'" --live' + proxyparameter)
             p = subprocess.call(args) # Success!
         else:
-            print "Comando: "+'./rtmpdump -r "'+url+'" -o "'+salida+'" -s "http://www.telefe.com/wp-content/plugins/fc-velocix-video/flowplayer/flowplayer.rtmp-3.1.3.swf"'
+            print "Comando: "+'./rtmpdump -r "'+url+'" -o "'+salida+'" --live' + proxyparameter
             import shlex, subprocess
-            args = shlex.split('./rtmpdump -r "'+url+'" -o "'+salida+'" -s "http://www.telefe.com/wp-content/plugins/fc-velocix-video/flowplayer/flowplayer.rtmp-3.1.3.swf"')
+            args = shlex.split('./rtmpdump -r "'+url+'" -o "'+salida+'" --live' + proxyparameter)
             p = subprocess.call(args) # Success!
 
     def clean_title(self,title,windows_mode):
