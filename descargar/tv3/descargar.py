@@ -12,7 +12,7 @@ class MyDialog:
         
         self.e = Entry(top)
         self.e.config(width="75")
-        self.e.insert(0, "http://www.tv3.cat/3alacarta/#/videos/3262992")
+        self.e.insert(0, "http://www.tv3.cat/3alacarta/#/videos/4179850")
         self.e.pack(padx=5)
         
         Label(top, text="Introduzca el directorio de descarga").pack()
@@ -75,11 +75,15 @@ class MyDialog:
         
         # Descarga el descriptor
         import urllib
-        destino = os.path.join( os.path.expanduser('~') , "page.html" )
-        urllib.urlretrieve("http://www.tv3.cat/pvideo/FLV_bbd_dadesItem.jsp?idint="+code,destino)
-        fichero = open(destino,"r")
+        page_url = "http://www.tv3.cat/pvideo/FLV_bbd_dadesItem.jsp?idint="+code
+        urllib.urlretrieve(page_url,"page.html")
+        fichero = open("page.html","r")
         data = fichero.read()
         fichero.close()
+        print "-------------------------------------------------------------------"
+        print page_url
+        print "-------------------------------------------------------------------"
+        print data.strip()
 
         # Extrae el título
         patron = "<title>([^<]+)</title>"
@@ -97,10 +101,16 @@ class MyDialog:
         print "Formato",formato
 
         # Descarga el descriptor con el RTMP
-        urllib.urlretrieve("http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+"&rnd=8551",destino)
-        fichero = open(destino,"r")
+        #page_url = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+"&rnd=8551"
+        page_url = "http://www.tv3.cat/pvideo/FLV_bbd_media.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+""
+        urllib.urlretrieve(page_url,"page.html")
+        fichero = open("page.html","r")
         data = fichero.read()
         fichero.close()
+        print "-------------------------------------------------------------------"
+        print page_url
+        print "-------------------------------------------------------------------"
+        print data.strip()
 
         # Extrae la url en rtmp
         patron = '<media[^>]+>([^<]+)</media>'
@@ -111,7 +121,11 @@ class MyDialog:
         # Averigua la extension
         patron = '.*?\.([a-z0-9]+)\?'
         matches = re.findall(patron,rtmpurl,flags=re.DOTALL)
-        extension = matches[0].lower()
+        if len(matches)>0:
+            extension = matches[0].lower()
+        else:
+            extension = rtmpurl[-4:]
+
         print "Extension",extension
         if extension=="mp4":
             extension="flv"
@@ -120,9 +134,36 @@ class MyDialog:
         import os
         salida = os.path.join( output , titulo+"."+extension )
 
-        #rtmpurl = "rtmp://mp4-500-str.tv3.cat/ondemand/mp4:g/tvcatalunya/7/0/1292234279807.mp4"
+        #rtmpurl = "rtmp://mp4-es-500-strfs.fplive.net/mp4-es-500-str/mp4:g/tvcatalunya/6/9/1342385038696.mp4"
+        # ./rtmpdump-2.4
+        #     --tcUrl "rtmp://mp4-es-500-strfs.fplive.net:1935/mp4-es-500-str?ovpfv=1.1&ua=Mozilla/5.0%20%28Windows%3B%20U%3B%20Wind.ows%20NT%205.1%3B%20es-ES%3B%20rv%3A1.9.2.13%29%20Gecko/20101203%20Firefox/3.6.13"
+        #     --app "mp4-es-500-str?ovpfv=1.1&ua=Mozilla/5.0%20%28Windows%3B%20U%3B%20Windows%20NT%205.1%3B%20es-ES%3B%20.rv%3A1.9.2.13%29%20Gecko/20101203%20Firefox/3.6.13"
+        #     --playpath "mp4:g/tvcatalunya/6/9/1342385038696.mp4?ua=Mozilla/5.0%20%28Windows%3B%20U%3B%20Windows%20NT%205.1%3B%20es-.ES%3B%20rv%3A1.9.2.13%29%20Gecko/20101203%20Firefox/3.6.13"
+        #     -o out.mp4 --host "mp4-es-500-strfs.fplive.net" --port "1935"
+        patron = "rtmp\://(.*?)/(.*?)/(.*?)$"
+        matches = re.findall(patron,rtmpurl,flags=re.DOTALL)
+        
+        host = matches[0][0]
+        tcUrl = matches[0][1]
+        playpath = matches[0][2]
+    
+        port = "1935"
+        app = tcUrl + "?ovpfv=1.1&ua=Mozilla/5.0%20%28Windows%3B%20U%3B%20Windows%20NT%205.1%3B%20es-ES%3B%20.rv%3A1.9.2.13%29%20Gecko/20101203%20Firefox/3.6.13"
+        tcUrl = "rtmp://"+host+":"+port+"/" + tcUrl + "?ovpfv=1.1&ua=Mozilla/5.0%20%28Windows%3B%20U%3B%20Wind.ows%20NT%205.1%3B%20es-ES%3B%20rv%3A1.9.2.13%29%20Gecko/20101203%20Firefox/3.6.13"
+        playpath = playpath + "?ua=Mozilla/5.0%20%28Windows%3B%20U%3B%20Windows%20NT%205.1%3B%20es-.ES%3B%20rv%3A1.9.2.13%29%20Gecko/20101203%20Firefox/3.6.13"
+        
+        print "host="+host
+        print "port="+port
+        print "tcUrl="+tcUrl
+        print "app="+app
+        print "playpath="+playpath
+        
+        comando = './rtmpdump --host "'+host+'" --port "'+port+'" --tcUrl "'+tcUrl+'" --app "'+app+'" --playpath "'+playpath+'" -o "'+salida+'"'
+        print comando
+        
         import shlex, subprocess
-        args = shlex.split('./rtmpdump -r "'+rtmpurl+'" -o "'+salida+'"')
+        
+        args = shlex.split(comando)
         p = subprocess.Popen(args) # Success!
 
     def clean_title(self,title):
