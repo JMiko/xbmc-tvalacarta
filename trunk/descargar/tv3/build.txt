@@ -6,7 +6,7 @@ Para crear el instalador en Windows
 
 	python setup_win.py py2exe
 
-2) Copiar rtmpdump.exe a ./dist, junto al recién creado descargar.exe
+2) Copiar rtmpdump.exe y librtmp.dll a ./dist, junto al recién creado descargar.exe
 
 3) Ejecutar setup.iss con Inno Setup, se abrirá el editor
 
