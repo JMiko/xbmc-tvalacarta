@@ -124,7 +124,7 @@ class MyDialog:
         if len(matches)>0:
             extension = matches[0].lower()
         else:
-            extension = rtmpurl[-4:]
+            extension = rtmpurl[-3:]
 
         print "Extension",extension
         if extension=="mp4":
