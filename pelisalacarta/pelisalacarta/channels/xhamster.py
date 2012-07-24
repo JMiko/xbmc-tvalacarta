@@ -153,5 +153,5 @@ def play(item):
         server = re.compile('\'srv\': \'(.*?)\'').findall(data);
         dir = server[0]+'/key=' + match[0] + '/' +match[1] + '/' + match[2] + '/' + match[3]
         logger.debug("url="+dir)
-        itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=dir, thumbnail=item.thumbnail, plot=item.plot, show=item.title, server="Directo", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=item.fulltitle , url=dir, thumbnail=item.thumbnail, plot=item.plot, show=item.title, server="directo", folder=False))
     return itemlist
