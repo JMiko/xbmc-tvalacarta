@@ -123,50 +123,13 @@ def episodios(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], show=["+item.show+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="aragontv" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, folder=False) )
 
     patron  = "Paginación.*?<span class='activo'>[^<]+</span>  \|  <a href='([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
-        pageitem = Item(channel=CHANNELNAME, title="Página siguiente >>" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , show=item.show, folder=True)
+        pageitem = Item(channel=CHANNELNAME, title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , show=item.show, folder=True)
         itemlist.extend( episodios(pageitem) )
-
-    return itemlist
-
-def play(item):
-    logger.info("[aragontv.py] play")
-    
-    #url:'mp4%3A%2F_archivos%2Fvideos%2Fweb%2F2910%2F2910.mp4',
-    #netConnectionUrl: 'rtmp%3A%2F%2Falacarta.aragontelevision.es%2Fvod'
-    #rtmp://iasoftvodfs.fplive.net/iasoftvod/web/980/980.mp4
-    
-    itemlist = []
-
-    # Boxee puede abrir la web y mostrarla, pero no reproducir el RTMP
-    from core import config
-    if config.get_platform()=="boxee":
-        itemlist.append(item)
-    else:
-        # Descarga la página
-        data = scrapertools.cachePage(item.url)
-        patron  = "url\:'(mp4\%3A[^']+)'"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        final = matches[0]
-    
-        patron  = "netConnectionUrl\: '([^']+)'"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        principio = matches[0]
-    
-        if len(matches)>0:
-            if urllib.unquote(principio).startswith("rtmp://iasoft"):
-                url = principio+"/"+final[9:]
-            else:
-                url = principio+"/"+final
-            url = urllib.unquote(url)
-            logger.info(url)
-            itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, thumbnail=item.thumbnail, plot=item.plot , folder=False) )
 
     return itemlist
