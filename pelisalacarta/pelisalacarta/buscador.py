@@ -58,8 +58,8 @@ def do_search_results(tecleado):
 
     itemlist = []
 
-    #from pelisalacarta.channels import bajui
-    #itemlist.extend( bajui.search( Item() , tecleado) )
+    from pelisalacarta.channels import bajui
+    itemlist.extend( bajui.search( Item() , tecleado) )
 
     from pelisalacarta.channels import cineblog01
     itemlist.extend( cineblog01.search( Item() , tecleado) )
