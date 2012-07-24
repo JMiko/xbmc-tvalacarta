@@ -21,99 +21,56 @@ def mainlist(item):
     logger.info("[telefe.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Vídeos"              , action="videos" , thumbnail = "" , url="http://www.telefe.com/videos/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Episodios completos" , action="completos" , thumbnail = "" , url="http://www.telefe.com/episodios-completos/"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Exclusivo web"       , action="videos" , thumbnail = "" , url="http://www.telefe.com/exclusivo-web/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Todos los programas" , action="programas"  , thumbnail = "" , url="http://www.telefe.com/programas/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Exclusivo web"       , action="videos"     , thumbnail = "" , url="http://www.telefe.com/exclusivo-web/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Vídeos"              , action="videos"     , thumbnail = "" , url="http://www.telefe.com/videos/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Episodios completos" , action="completos"  , thumbnail = "" , url="http://www.telefe.com/"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Especiales"          , action="especiales" , thumbnail = "" , url="http://www.telefe.com/"))
+
+    return itemlist
+
+def programas(item):
+    logger.info("[telefe.py] programas")
+    
+    itemlist = []
+    data = scrapertools.cache_page(item.url)
+    
+    patron  = '<div class="foto_marco"[^<]+'
+    patron += '<div class="foto">[^<]+'
+    patron += '<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"/></a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for url,title,thumbnail in matches:
+        scrapedtitle = scrapertools.htmlclean(title)
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
 
     return itemlist
 
 def completos(item):
     logger.info("[telefe.py] completos")
     
-    # Lo parsea como vídeos pero lo enlaza con el action "episodios"
-    itemlist = videos(item)
-    for item in itemlist:
-        if item.action=="play":
-            item.folder=True
-            item.action="episodios"
-            item.server=""
-        else:
-            item.action="completos"
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Novedades", action="videos", url="http://www.telefe.com/episodios-completos/") )
 
-    for item in itemlist:
-        print item.action,item.folder,item.server
-
-    return itemlist
-
-def episodios(item):
-    logger.info("[telefe.py] episodios")
-
-    itemlist = play(item)
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match( data , '<li[^<]+<a href="http\://www.telefe.com/episodios-completos/">Episodios completos</a>[^<]+<ul class="sub-menu">(.*?)</ul>')
     
-    if len(itemlist)>0:
-        return itemlist
-    
-    data = scrapertools.cachePage(item.url)
-    '''
-    <h2 class="entry-title"><a href="http://unanopararecordar.telefe.com/2011/08/15/cap-90-la-carta/" title="Enlace permanente a Cap.90: La carta" rel="bookmark"><i>Cap.90</i>: La carta</a></h2>
-    <img width="150" height="111" src="http://unanopararecordar.telefe.com/files/2011/07/cap-90-150x111.jpg" class="attachment-loop-thumb wp-post-image" alt="cap 90" title="cap 90" />
-    <div class="entry-summary">
-    <p>Ana  viaja al pasado. Escondida, observa a la madre de Mariano  escribir una carta y luego tirarse por la ventana.</p>
-    </div><!-- .entry-summary -->
-    '''
-    patron  = '<h2 class="entry-title"><a href="([^"]+)"[^>]+>(.*?)</a></h2>[^<]+'
-    patron += '<img width="[^"]+" height="[^"]+" src="([^"]+)".*?'
-    patron += '<div class="entry-summary">(.*?)</div>'
+    patron  = '<li[^<]+<a href="([^"]+)">(.*?)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for match in matches:
-        scrapedtitle = match[1].strip()
-        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-        scrapedtitle = scrapedtitle.replace("<i>","")
-        scrapedtitle = scrapedtitle.replace("</i>","")
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        scrapedplot = match[3].strip()
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=False) )
-
-    # Patron alternativo
-    '''
-    <h2 class="entry-title"><a href="http://elelegido.telefe.com/2011/10/26/capitulo-152-26-10-11/" title="Enlace permanente a Capítulo 152 (26-10-11)" rel="bookmark">Capítulo 152 (26-10-11)</a></h2>
-    <div class="entry-meta">
-    <span class="meta-prep meta-prep-author">Posted on</span> <a href="http://elelegido.telefe.com/2011/10/26/capitulo-152-26-10-11/" title="9:00" rel="bookmark"><span class="entry-date">26 octubre, 2011</span></a>			</div><!-- .entry-meta -->
-    <div class="entry-content">
-    <p>Roberto (Jorge Suárez) enfrenta a Andrés (Pablo Echarri) y Santiago (Martín Seefeld) por las escrituras. Llega la policía: Roberto queda detenido. El inspector le da 48 horas a Andrés para encontrar a Oscar (Lito Cruz).<br />
-    Andrés y Santiago (Martín Seefeld) le revelan a Mariana (Paola Krum) la trampa que tienen para hacer caer a Nevares Sosa.</p>
-    <p class="FacebookLikeButton"><iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Felelegido.telefe.com%2F2011%2F10%2F26%2Fcapitulo-152-26-10-11%2F&amp;layout=standard&amp;show_faces=yes&amp;width=450&amp;action=like&amp;colorscheme=light&amp;locale=es_ES" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:450px; height: 25px"></iframe></p>
-    </div><!-- .entry-content -->
-    '''
-    patron  = '<h2 class="entry-title"><a href="([^"]+)"[^>]+>(.*?)</a></h2>.*?'
-    patron += '<div class="entry-content">(.*?)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = match[1].strip()
-        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-        scrapedtitle = scrapedtitle.replace("<i>","")
-        scrapedtitle = scrapedtitle.replace("</i>","")
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = match[2].strip()
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=False) )
-
-    patron = '<a href="([^"]+)" class="nextpostslink"><span class="meta-nav">\&larr\;</span> Entradas m'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        scrapedurl = matches[0]
-        scrapedtitle = "!Página siguiente"
+    for url,title in matches:
+        scrapedtitle = scrapertools.htmlclean(title)
+        scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
 
     return itemlist
 
@@ -131,10 +88,23 @@ def videos(item):
     Los hermanos y la abuela Olga se preparaban para jugar pero antes, Olga pudo tener sesión de kinesiología por teléfono. Comprobá si la ayudó o no.					<p class="quick-read-more"><a href="http://www.telefe.com/2011/10/27/justo-a-tiempo-kinesiologia-a-domicilio/" title="Permalink to <i>Justo a Tiempo</i>: Kinesiología a domicilio"><img src="http://www.telefe.com/wp-content/themes/arras-theme-telefecom/images/bt_mas.png" /></a></p>
     </div>	
     '''
+    '''
+    <div class="entry-thumbnails">
+    <a class="entry-thumbnails-link" href="http://www.telefe.com/2012/05/23/el-donante-capitulo-1/">
+    <img width="155" height="144" src="http://www.telefe.com/wp-content/blogs.dir/10/files/2012/05/el-donante1-155x144.jpg" class="attachment-thumbnail-155 wp-post-image" alt="el donante" title="el donante" /></a></div><h3 class="entry-title"><a href="http://www.telefe.com/2012/05/23/el-donante-capitulo-1/" rel="bookmark">El Donante | Capítulo 1</a></h3>				<div class="entry-summary">
+    <div class="entry-info">
+    <abbr class="published" title="2012-05-23T14:17:27+00:00">Posteado el 23 mayo, 2012</abbr> | <span>22 comentarios</span>
+    </div>
+    Telefe presentó el primer episodio de “El Donante”, la ficción ganadora del concurso “Ficción para todos” propuesto por el INCAA en 2011, con el aporte del Ministerio de Planificación Federal inversión Pública y Servicios. El nuevo unitario de Telefe cuenta la historia de Bruno (Rafael...					<p class="quick-read-more"><a href="http://www.telefe.com/2012/05/23/el-donante-capitulo-1/" title="Permalink to El Donante | Capítulo 1"><img src="http://www.telefe.com/wp-content/themes/arras-theme-telefecom/images/bt_mas.png" /></a></p>
+    </div>
+    '''
     data = scrapertools.cache_page(item.url)
     logger.info("url="+item.url)
     logger.info("data="+data)
-    patron  = '<div class="entry-thumbnails"><a class="entry-thumbnails-link" href="([^"]+)"><img width="155" height="155" src="([^"]+)".*?<h3 class="entry-title"><a href="[^"]+" rel="bookmark">(.*?)</a></h3>[^<]+<div class="entry-summary">[^<]+'
+    
+    patron  = '<div class="entry-thumbnails">'
+    patron += '<a class="entry-thumbnails-link" href="([^"]+)">'
+    patron += '<img width="\d+" height="\d+" src="([^"]+)".*?<h3 class="entry-title"><a href="[^"]+" rel="bookmark">(.*?)</a></h3>[^<]+<div class="entry-summary">[^<]+'
     patron += '<div class="entry-info">[^<]+'
     patron += '<abbr class="published"[^>]+>Posteado el ([^<]+)</abbr>.*?'
     patron += '</div>([^<]+)<'
@@ -150,7 +120,82 @@ def videos(item):
         scrapedthumbnail = match[1]
         scrapedplot = match[4].strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="telefe", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=False) )
+
+    # Patron alternativo
+    '''
+    <div id="post-343" class="post-343 post type-post status-publish format-video hentry category-capitulos-completos row">
+    <a href="http://laduena.telefe.com/2012/06/21/capitulo-10-hd-20-06-12/" title="Enlace permanente a CAPITULO 10 HD (20-06-12)" rel="bookmark"><img width="135" height="76" src="http://laduena.telefe.com/wp-content/blogs.dir/27/files/2012/06/LA-DUENA-CAPITULO-10-HD-135x76.jpg" class="attachment-thumb-16:9-25% wp-post-image" alt="LA DUENA CAPITULO 10 HD" title="LA DUENA CAPITULO 10 HD" /></a></h2>
+    <h2 class="entry-title"><a href="http://laduena.telefe.com/2012/06/21/capitulo-10-hd-20-06-12/" title="Enlace permanente a CAPITULO 10 HD (20-06-12)" rel="bookmark">CAPITULO 10 HD (20-06-12)</a></h2>
+    <div class="entry-meta">
+    <a href="http://laduena.telefe.com/2012/06/21/capitulo-10-hd-20-06-12/" title="14:05" rel="bookmark"><span class="entry-date">21 junio, 2012</span></a>			</div>
+    <div class="entry-summary">
+    <p>Sofía (Mirtha Legrand) le miente a Amparo (Florencia Bertotti) sobre su paradero del día anterior, le cuenta que estuvo reunida con empresarios, sin nombrar en ningún momento a Martín Braun (Jorge D´Elia). Mientras tanto, Juan (Raúl Taibo) revisando cámaras de <a href="http://laduena.telefe.com/2012/06/21/capitulo-10-hd-20-06-12/" >Ver mas <span class="meta-nav">&rarr;</span></a></p>
+    </div>
+    <div class="entry-utility">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://laduena.telefe.com/2012/06/21/capitulo-10-hd-20-06-12/" data-text="CAPITULO 10 HD (20-06-12)" data-via="telefecom" data-lang="es" data-related="telefecom" >Twittear</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fladuena.telefe.com%2F2012%2F06%2F21%2Fcapitulo-10-hd-20-06-12%2F&amp;send=false&amp;layout=button_count&amp;width=120&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=165627566829126" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:120px; height:21px;" allowTransparency="true"></iframe>
+    <span class="comments-link"><a href="http://laduena.telefe.com/2012/06/21/capitulo-10-hd-20-06-12/#comments" rel="nofollow" title="Comentarios en CAPITULO 10 HD (20-06-12)">3 comentarios</a></span>
+    </div>
+    </div>
+    '''
+    patron  = '<div id="post-\d+"[^<]+'
+    patron += '<a href="([^"]+)" title="[^"]+" rel="bookmark"><img width="\d+" height="\d+" src="([^"]+)"[^<]+</a></h2>[^<]+'
+    patron += '<h2 class="entry-title"><a[^<]+>([^<]+)</a></h2>[^<]+'
+    patron += '<div class="entry-meta">[^<]+'
+    patron += '<a[^<]+<span[^<]+</span></a>[^<]+</div>[^<]+'
+    patron += '<div class="entry-summary">(.*?)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for url,thumbnail,title,plot in matches:
+        scrapedtitle = title
+        scrapedplot = scrapertools.htmlclean(plot)
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="telefe", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=False) )
+
+    '''
+    <div id="post-3802" class="post-3802 post type-post status-publish format-video hentry category-capitulos-completos">
+    <h2 class="entry-title"><a href="http://dulceamor.telefe.com/2012/07/16/capitulo-121-hd/" title="Enlace permanente a Capítulo 121 (HD)" rel="bookmark">Capítulo 121 (HD)</a></h2>
+    
+    <img width="150" height="111" src="http://dulceamor.telefe.com/wp-content/blogs.dir/23/files/2012/07/121-HD-Capitulo-dulce-amor-150x111.jpg" class="attachment-loop-thumb wp-post-image" alt="121 HD Capitulo dulce amor" title="121 HD Capitulo dulce amor" />
+    <div class="entry-summary">
+    <p>VIDEO SÓLO VISIBLE EN ARGENTINA. Para visualizarlo recomendamos tener la última versión de Flash Player. Para bajarlo hacé click aquí Aire 13-7-12</p>
+    </div><!-- .entry-summary -->
+    
+    <div class="entry-utility">
+    Publicado el <a href="http://dulceamor.telefe.com/2012/07/16/capitulo-121-hd/" title="15:21" rel="bookmark"><span class="entry-date">16 julio, 2012</span></a>									<span class="cat-links">
+    en <a href="http://dulceamor.telefe.com/capitulos-completos/" title="Ver todas las entradas en Capítulos Completos HD" rel="category tag">Capítulos Completos HD</a>					</span>
+    
+    <span class="meta-sep">|</span>
+    <span class="comments-link"><a href="http://dulceamor.telefe.com/2012/07/16/capitulo-121-hd/#comments" rel="nofollow" title="Comentarios en Capítulo 121 (HD)">128 comentarios</a></span>
+    </div><!-- .entry-utility -->
+    </div><!-- #post-## -->
+    '''
+    patron  = '<div id="post-\d+"[^<]+'
+    patron += '<h2 class="entry-title"><a href="([^"]+)" title="[^"]+" rel="bookmark">([^<]+)</a></h2>[^<]+'
+    patron += '<img width="\d+" height="\d+" src="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for url,title,thumbnail in matches:
+        scrapedtitle = title
+        scrapedplot = ""
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="telefe", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=False) )
+
+
+    # Si aún así no hay vídeos...
+    # Cambia: http://www.telefe.com/programas/am/
+    # Por: http://www.telefe.com/am/
+    if len(itemlist)==0 and "programas" in item.url:
+        item.url = item.url.replace("/programas/","/")
+        itemlist = videos(item)
 
     patron = '<a href="([^"]+)" >\&laquo\; Anterior</a></div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -161,50 +206,5 @@ def videos(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot) )
-
-    return itemlist
-
-def play( item ):
-    logger.info("[telefe.py] play")
-    itemlist = []
-
-    if item.url.startswith("rtmp"):
-        itemlist.append( item )
-    else:
-        page_url=item.url
-        data = scrapertools.cache_page(page_url)
-        
-        video_urls = []
-        
-        # Descarga el descriptor del vídeo
-        # El vídeo:
-        # <script type="text/javascript" src="http://flash.velocix.com/c1197/legacy/UAAA1582_X264_480x360.mp4?format=jscript2&protocol=rtmpe&vxttoken=00004EAA82A8000000000289A60672657573653D32EBF4321F280103EC9B2025F74095B4E74A0E459A" ></script>
-        # El anuncio:
-        # <script type="text/javascript" src="http://flash.velocix.com/bt/145e8eae1563f092fbdf905113f7c213ebefd8e6/flash?format=jscript2&protocol=rtmpte&vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB" ></script>
-        patron  = '<script type="text/javascript" src="(http://flash.velocix.com/[^"]+)" ></script>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        print matches
-        
-        if len(matches)>0:
-            page_url2 = matches[0]
-            data2 = scrapertools.cache_page(page_url2)
-            print("data2="+data2)
-            '''
-            var streamName = "mp4:bt-145e8eae1563f092fbdf905113f7c213ebefd8e6";
-            var rtmpUrl = [];
-            rtmpUrl.push("rtmpte://201.251.164.11/flash?vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB");
-            rtmpUrl.push("rtmpte://201.251.118.11/flash?vxttoken=00004EAA693D0000000002897CEF72657573653D320830AA52351D57C26FFD6E55F9183C6342438DEB");
-            '''
-            patron = 'streamName \= "([^"]+)"'
-            matches = re.compile(patron,re.DOTALL).findall(data2)
-            streamName = matches[0]
-        
-            patron = 'rtmpUrl\.push\("([^"]+)"\)'
-            matches = re.compile(patron,re.DOTALL).findall(data2)
-            if len(matches)>0:
-                videourl = matches[0]+"/"+streamName
-            
-                logger.info(videourl)
-                itemlist.append( Item(channel=CHANNELNAME, title=item.title, action="play" , server="directo", url=videourl, thumbnail=item.thumbnail, plot=item.plot, folder=False) )
 
     return itemlist
