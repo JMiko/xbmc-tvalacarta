@@ -457,7 +457,7 @@ def get_rtmp_links(item,data):
     for match in matches:
         scrapedurl = baseurlvideo+match
         logger.info("scrapedurl="+scrapedurl)
-        itemlist.append( Item(channel=CHANNELNAME, title="(%d) %s" % (i,item.title) , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=item.plot , server = "directo" , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title="%s (%d)" % (item.title,i) , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , plot=item.plot , server = "directo" , folder=False) )
         i=i+1
 
     return itemlist
