@@ -7,7 +7,9 @@
 
 import logging.config
 import logging
-logging.config.fileConfig("logging.conf")
+logging_conf = os.path.join( os.path.dirname(__file__) , ".." , ".." , "logging.conf")
+print "logging_conf=",logging_conf
+logging.config.fileConfig( logging_conf )
 logger_object=logging.getLogger("wiimc")
 
 logger_object.info("Using WiiMC logger")
