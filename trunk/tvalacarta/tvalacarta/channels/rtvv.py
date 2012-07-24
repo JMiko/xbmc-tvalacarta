@@ -47,12 +47,12 @@ def programas(item):
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , category=scrapedtitle , show=scrapedtitle, page=scrapedurl) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , category=scrapedtitle , show=scrapedtitle, page=scrapedurl) )
 
     return itemlist
 
-def videos(item):
-    logger.info("[rtvv.py] videos")
+def episodios(item):
+    logger.info("[rtvv.py] episodios")
 
     itemlist = []
 
@@ -91,12 +91,31 @@ def videos(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , page=scrapedurl, category=item.category, folder=False) )
 
+    patron  = '<div class="md-item">[^<]+'
+    patron += '<div class="thumb-mediateca bspace6">[^<]+'
+    patron += '<div class="mg">[^<]+'
+    patron += '<a href="([^"]+)" title="([^"]+)">[^<]+'
+    patron += '<img src="([^"]+)".*?'
+    patron += '<var class="date">([^<]+)</var>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for scrapedurl,scrapedtitle,scrapedthumbnail,scrapedfecha in matches:
+        title = scrapedtitle + " ("+scrapedfecha+")"
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , url=url, thumbnail=thumbnail , show=item.show , page=url, category=item.category, folder=False) )
+
     patron = '<span class="next"><a.*?href="([^"]+)">Siguiente</a></span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
         logger.info("Página siguiente "+matches[0])
-        itemlist.extend(videos(Item(url=urlparse.urljoin(item.url,matches[0]),show=item.show)))
-        
+        itemlist.extend(episodios(Item(url=urlparse.urljoin(item.url,matches[0]),show=item.show)))
+    
+    patron = '<a class="ctrl ctrl-next[^"]+" href="([^"]+)" title="Anar a la p'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        logger.info("Página siguiente "+matches[0])
+        itemlist.append( Item(channel=CHANNELNAME, title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), show=item.show) )
+    
     return itemlist
 
 def play(item):
