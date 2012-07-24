@@ -326,7 +326,12 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     if opciones[seleccion]==config.get_localized_string(30158): # "Enviar a JDownloader"
         #d = {"web": url}urllib.urlencode(d)
         from core import scrapertools
-        data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/web="+url+ " " +thumbnail)
+        
+        if subtitle!="":
+            data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/web="+url+ " " +thumbnail + " " + subtitle)
+        else:
+            data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/web="+url+ " " +thumbnail)
+
         return
 
     elif opciones[seleccion]==config.get_localized_string(30164): # Borrar archivo en descargas
