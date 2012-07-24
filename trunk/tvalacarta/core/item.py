@@ -66,6 +66,8 @@ class Item(object):
         devuelve = devuelve + self.action + separator
         devuelve = devuelve + self.server + separator
         devuelve = devuelve + self.extra + separator
+        devuelve = devuelve + self.show + separator
+        devuelve = devuelve + self.category + separator
         return devuelve
     
     def deserialize(self,cadena):
@@ -76,6 +78,8 @@ class Item(object):
         self.action = trozos[3]
         self.server = trozos[4]
         self.extra = trozos[5]
+        self.show = trozos[6]
+        self.category = trozos[7]
 
 if __name__ == "__main__":
     item = Item(title="bla b", url="http://bla")
