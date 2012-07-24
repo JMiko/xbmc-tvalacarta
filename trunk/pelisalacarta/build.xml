@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.13"/>
-    <property name="oldversionboxee" value="4.7"/>
-    <property name="oldversiondate" value="02/07/2012"/>
+    <property name="oldversion" value="3.2.14"/>
+    <property name="oldversionboxee" value="4.8"/>
+    <property name="oldversiondate" value="10/07/2012"/>
 
-    <property name="version" value="3.2.14"/>
-    <property name="versionboxee" value="4.8"/>
-    <property name="versiondate" value="10/07/2012"/>
+    <property name="version" value="3.2.15"/>
+    <property name="versionboxee" value="4.9"/>
+    <property name="versiondate" value="17/07/2012"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <!-- Para betas usar: -->
@@ -183,6 +183,7 @@
                 <exclude name="default.tbn"/>
                 <exclude name="core/platform_name.py"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/images/posters/**"/>
@@ -226,6 +227,7 @@
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/skins/default/nstc/**"/>
                 <exclude name="resources/skins/default/nstc16x9/**"/>
                 <exclude name="resources/dreambox/**"/>
@@ -272,6 +274,7 @@
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/images/posters/**"/>
@@ -333,6 +336,7 @@
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <exclude name="platformcode/xbmceden/**"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/images/posters/**"/>
@@ -374,6 +378,7 @@
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
                 <exclude name="platformcode/plex/**"/>
@@ -408,6 +413,7 @@
                 <exclude name="**/*.pyo"/>
                 <exclude name="**/*.pyc"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/images/posters/**"/>
@@ -456,6 +462,7 @@
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
 
+                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
                 <exclude name="platformcode/plex/**"/>
@@ -523,6 +530,7 @@
 				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="logging.conf"/>
 				<exclude name="upload.sh"/>
+                <exclude name="pelisalacarta/channels/rv_*"/>
             </fileset>
         </copy>
         <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
@@ -579,6 +587,7 @@
                 <exclude name="core/platform_name.py"/>
                 <exclude name="core/config.py"/>
                 <exclude name="core/logger.py"/>
+                <exclude name="pelisalacarta/channels/rv_*"/>
 			</fileset>
         </copy>
         <copy todir="${target}/dreambox/pelisalacarta">

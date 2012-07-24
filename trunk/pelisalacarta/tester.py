@@ -38,9 +38,9 @@ def test_one_channel(channelid):
 def test_channels():
     
     para_probar = []
-    '''
-    '''
     
+    '''
+    '''
     para_probar.append("animeflv")
     para_probar.append("animeid")
     para_probar.append("bajui")
@@ -52,7 +52,7 @@ def test_channels():
     para_probar.append("discoverymx")
     para_probar.append("divxonline")
     para_probar.append("documaniatv")
-    para_probar.append("documentariestv")
+    #para_probar.append("documentariestv")
     para_probar.append("filmsenzalimiti")
     para_probar.append("gnula")
     para_probar.append("internapoli")
@@ -82,11 +82,13 @@ def test_channels():
     para_probar.append("shurhd")
     para_probar.append("shurweb")
     para_probar.append("sipeliculas")
-    para_probar.append("tubutakadecine")
+    #para_probar.append("tubutakadecine")
     para_probar.append("tumejortv")
     para_probar.append("filmesonlinebr")
     para_probar.append("tusnovelas")
     para_probar.append("unsoloclic")
+    para_probar.append("cinetux")
+
 
     funcionan = []
     no_funcionan = []

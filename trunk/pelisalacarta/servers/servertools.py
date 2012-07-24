@@ -123,6 +123,8 @@ def findvideos(data):
 def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=False):
     logger.info("[servertools.py] resolve_video_urls_for_playing, server="+server+", url="+url)
     video_urls = []
+    
+    server = server.lower()
 
     # Si el vídeo es "directo", no hay que buscar más
     if server=="directo" or server=="local":
