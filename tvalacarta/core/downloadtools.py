@@ -500,6 +500,22 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             url , authorization_header = filenium.extract_authorization_header(url)
             headers.append( [ "Authorization", authorization_header ] )
     
+        if "|" in url:
+            additional_headers = url.split("|")[1]
+            if "&" in additional_headers:
+                additional_headers = additional_headers.split("&")
+            else:
+                additional_headers = [ additional_headers ]
+    
+            for additional_header in additional_headers:
+                logger.info("[downloadtools.py] additional_header: "+additional_header)
+                name = re.findall( "(.*?)=.*?" , additional_header )[0]
+                value = urllib.unquote(re.findall( ".*?=(.*?)$" , additional_header )[0])
+                headers.append( [ name,value ] )
+    
+            url = url.split("|")[0]
+            logger.info("[downloadtools.py] downloadfile: url="+url)
+    
         # Timeout del socket a 60 segundos
         socket.setdefaulttimeout(10)
     
@@ -619,7 +635,6 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             import xbmcgui
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok( "No puedes descargar ese vídeo","Las descargas en RTMP aún no","están soportadas")
-
 
     f.close()
     if not silent:
