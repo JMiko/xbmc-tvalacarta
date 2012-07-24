@@ -18,11 +18,13 @@ from core.item import Item
 
 import logging.config
 import logging
-logging.config.fileConfig("logging.conf")
+logging_conf = os.path.join( os.path.dirname(__file__) , ".." , ".." , "logging.conf")
+print "logging_conf=",logging_conf
+logging.config.fileConfig( logging_conf )
 logger=logging.getLogger("wiimc")
 
 #TODO: Pasar esto a ¿config?
-VERSIONTAG = "3.2.14"
+VERSIONTAG = "3.2.15"
 
 #from lib import cerealizer
 #cerealizer.register(Item)
@@ -248,6 +250,7 @@ def getitems(item):
                 logger.info("[launcher.py] executing channel 'play' method")
                 logger.info(channelmodule.__file__)
                 itemlist = channelmodule.play(senderitem)
+                logger.info("itemlist"+str(itemlist))
                 senderitem = itemlist[0]
                 senderitem.folder=False
             else:
@@ -321,7 +324,7 @@ def getitems(item):
         fichero.close()
         '''
     
-        logger.info("Items devueltos")
+        logger.info("Items devueltos ")
         for item in itemlist:
             logger.info( " " + item.title + " | " + item.url + " | " + item.action)
     except:
@@ -436,7 +439,7 @@ def add_again_to_downloads(senderitem,refered_item):
 
 def menu_video(item):
     itemlist = []
-    logger.info("menu_video url="+item.url+", server="+item.server+", fulltitle="+item.fulltitle)
+    logger.info("menu_video item=[url="+item.url+", server="+item.server+", fulltitle="+item.fulltitle+"]")
 
     from servers import servertools
     video_urls,puede,motivo = servertools.resolve_video_urls_for_playing( item.server , item.url , video_password="" , muestra_dialogo=False)
