@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>15</tag>
-	<date>06/06/2012</date>
-	<changes>Mis series salen ordenadas alfabéticamente</changes>
+	<tag>16</tag>
+	<date>24/07/2012</date>
+	<changes>Arreglado seriesly</changes>
 </version>

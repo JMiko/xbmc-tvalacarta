@@ -207,24 +207,28 @@ def mis_series(item):
     
     itemlist = []
     for serieItem in serieList:
-        status = serieItem['status'] 
-        if status == 'Pending' : serieItem['estado'] = 'Pendiente'
-        elif status == 'Watching' : serieItem['estado'] = 'Viendo'
-        elif status == 'Finished' : serieItem['estado'] = 'Finalizada'
-        else : serieItem['estado'] = '?'
-        # Añade al listado de XBMC
-        itemlist.append(
-            Item(channel=item.channel,
-                 action = 'serie_capitulos',
-                 title = '%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem,
-                 url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
-                 thumbnail = serieItem['thumb'],
-                 plot = "",
-                 show = serieItem['title'],
-                 extra = item.extra
+        logger.info("serieItem="+str(serieItem))
+        #serieItem={u'status': 'Watching', u'thumb': 'http://cdn.opensly.com/series/HV9RTVP6XN-p.jpg', u'title': 'Digimon: Digital Monsters', u'poster': 'http://cdn.opensly.com/series/HV9RTVP6XN.jpg', u'episodes': 343, u'small_thumb': 'http://cdn.opensly.com/series/HV9RTVP6XN-xs.jpg', u'seasons': 7, u'idSerie': 'HV9RTVP6XN'}
+
+        if serieItem['title'] is not None:
+            status = serieItem['status'] 
+            if status == 'Pending' : serieItem['estado'] = 'Pendiente'
+            elif status == 'Watching' : serieItem['estado'] = 'Viendo'
+            elif status == 'Finished' : serieItem['estado'] = 'Finalizada'
+            else : serieItem['estado'] = '?'
+            # Añade al listado de XBMC
+            itemlist.append(
+                Item(channel=item.channel,
+                     action = 'serie_capitulos',
+                     title = '%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem,
+                     url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
+                     thumbnail = serieItem['thumb'],
+                     plot = "",
+                     show = serieItem['title'],
+                     extra = item.extra
+                )
             )
-        )
-        
+            
     itemlist = sorted( itemlist , key=lambda item: item.title)
         
     return itemlist
