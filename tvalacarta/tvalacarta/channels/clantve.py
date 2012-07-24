@@ -6,17 +6,9 @@
 #------------------------------------------------------------
 import urlparse,re
 
-try:
-    from core import logger
-    from core import scrapertools
-    from core.item import Item
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import scrapertools
-    from Code.core.item import Item
-
-logger.info("[clantv.py] init")
+from core import logger
+from core import scrapertools
+from core.item import Item
 
 DEBUG = True
 CHANNELNAME = "clantve"
@@ -94,12 +86,13 @@ def episodios(item):
 
     patron = '<a rel="([^"]+)".*?href="([^"]+)"><img src="([^"]+)"[^>]+>(.*?)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data2)
-    
+
     # Extrae los items
     for match in matches:
         scrapedtitle = match[3]
         scrapedtitle = scrapertools.unescape(scrapedtitle)
         scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+        scrapedtitle = unicode(scrapedtitle,"utf-8").capitalize().encode("utf-8")
         
         # La página del vídeo
         scrapedpage = urlparse.urljoin(item.url,match[1])
@@ -114,7 +107,7 @@ def episodios(item):
         if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], page=["+scrapedpage+"] thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo", page=scrapedpage, url=scrapedurl, thumbnail=scrapedthumbnail, show=item.show , plot=scrapedplot , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo", page=scrapedpage, url=scrapedurl, thumbnail=scrapedthumbnail, fanart=item.thumbnail, show=item.show , plot=scrapedplot , folder=False) )
 
     # Ahora extrae el argumento y la url del vídeo
     dataplaylist = scrapertools.cachePage(scrapedurl)
@@ -139,5 +132,9 @@ def episodios(item):
         match = matches[0]
         item.url = urlparse.urljoin(item.url,match)
         itemlist.extend(episodios(item))
+
+    from core import config
+    if config.get_platform().startswith("xbmc"):
+        itemlist.append( Item(channel=item.channel, title=">> Añadir la serie completa a la lista de descarga", url=item.url, action="download_all_episodes", extra="episodios", show=item.show) )
 
     return itemlist
