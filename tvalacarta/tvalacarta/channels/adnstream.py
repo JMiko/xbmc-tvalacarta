@@ -87,6 +87,28 @@ def mainlist(item, numero_por_pagina=None, pagina=None):
         
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , duration=duracion, page=link, show=item.title, folder=False) )
 
+    # Extrae las entradas (Vídeos)
+    patronvideos  = '<video>[^<]+'
+    patronvideos += '<idvideo>([^<]+)</idvideo>[^<]+'
+    patronvideos += '<nombre>([^<]+)</nombre>[^<]+'
+    patronvideos += '<descripcion>(.*?)</descripcion>[^<]+'
+    patronvideos += '<duracion>([^<]+)</duracion>[^<]+'
+    patronvideos += '<link>([^<]+)</link>[^<]+'
+    patronvideos += '<ppv>([^<]+)</ppv>[^<]+'
+    patronvideos += '<thumbnails>.*?'
+    patronvideos += '<thumb[^>]+>([^<]+)</thumb>[^<]+'
+    patronvideos += '</thumbnails>'
+
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for idvideo,nombre,descripcion,duracion,link,ppv,thumbnail in matches:
+        scrapedtitle = nombre+" ("+duracion+")"
+        scrapedplot = descripcion
+        scrapedurl = "http://api.adnstream.com/video.php?video="+idvideo
+        scrapedthumbnail = thumbnail
+        
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = item.fulltitle + " " + scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , duration=duracion, page=link, show=item.title, folder=False) )
+
     return itemlist
 
 def play(item):
