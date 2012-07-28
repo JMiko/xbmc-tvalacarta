@@ -166,19 +166,19 @@ def getCredentials(auth_token, user_token):
             if(count > 0):
                 auth_token,user_token = perform_login(LOGIN,PASSWORD)
             post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-            url='http://series.ly/api/userSeries.php?type=&format=json'
-            data = scrapertools.cache_page(url, post=post)
-            patron = "User not logged.*?"
-            matches = re.compile(patron,re.DOTALL).findall(data)
-            patron2 = "ERROR: Auth required"
-            matches2 = re.compile(patron2,re.DOTALL).findall(data)
-            
-            if (len(matches)>0 or len(matches2)>0):
+            url='http://series.ly/api/isUserLogged.php?type=&format=json'
+            logresult = load_json(scrapertools.cache_page(url, post=post))
+            if logresult == None or logresult['result'] != '1': 
                 count = count + 1
             else:
                 logged=True
+            
+            
     except:
-        return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]  
+        return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]
+      
+    if(not logged):
+        return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]
     
     return [auth_token,user_token, logged, user_token]
 

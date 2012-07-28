@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>16</tag>
-	<date>24/07/2012</date>
-	<changes>Arreglado seriesly</changes>
+	<tag>17</tag>
+	<date>28/07/2012</date>
+	<changes>Arreglado seriesly, mejora al obtener credenciales, arregla problema con favoritos</changes>
 </version>
