@@ -167,7 +167,7 @@ def series(item,paginacion=True):
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[2]
+        scrapedtitle = unicode(match[2],"iso-8859-1",errors="replace").encode("utf-8")
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
@@ -188,7 +188,7 @@ def series(item,paginacion=True):
         if paginacion:
             itemlist.append( newitem )
         else:
-            itemlist.extend( series(newitem) )
+            itemlist.extend( series(newitem,paginacion) )
 
     return itemlist
 
