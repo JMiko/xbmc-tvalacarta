@@ -34,22 +34,39 @@ def programas(item):
 
     # Extrae los programas
     '''
-    <select name="select" class="formulario despl" id="select"><option value=''>Tots els programes</option><option value='a3194b87-719b-4537-a031-9930449f2f1f'>4-4-2</option>...</select>
+    <div class="keyelement">
+    <div class="shadow">
+    <a href="javascript:stepcarousel.loadcontent('f-slide', '/wp-content/themes/ib3/carta/update.php?programId=8bd4ff11-1195-47c3-a8ef-a0b810ad4914')"><img src="http://ib3img.s3.amazonaws.com/files_flutter/bs_cuad.jpg"  width="130" height="125" alt="BALEARS SALVATGE" /></a>
+    </div>
+    <div class="nombres">BALEARS SALVATGE</div>
+    </div>
     '''
-    data = scrapertools.get_match(data,'<select name="select" class="formulario despl" id="select">(.*?)</select>')
-    logger.info(data)
-    
-    patron  = "<option value='([^']+)'>([^<]+)</option>"
+    '''
+    <div class="keyelement">
+    <div class="shadow">
+    <a href="javascript:stepcarousel.loadcontent('f-slide', '/wp-content/themes/ib3/carta/update.php?programId=2d15fe76-bbed-40c9-95e3-32a800174b7c')"><img src="http://ib3img.s3.amazonaws.com/files_flutter/unaulladacapenrere240x240.jpg"  width="130" height="125" alt="UNA ULLADA CAP ENRERE" /></a>
+    </div>
+    <div class="nombres">UNA ULLADA CAP ENRERE</div>
+    </div>				
+    '''
+    patron = '<div class="keyelement">[^<]+'
+    patron += '<div class="shadow">[^<]+'
+    patron += '<a href="javascript:stepcarousel.loadcontent.\'f-slide\'. \'([^\']+)\'."><img src="([^"]+)"[^<]+</a>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '<div class="nombres">([^<]+)</div>[^<]+'
+    patron += '</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
-    for id,title in matches:
-        scrapedtitle = title.strip()
-        #http://ib3tv.com/tvalacarta/ajax.php?/0/data?programId=42afe688-1f06-49b3-8408-794270629a45&type=TV&start-index=0&max-results=100&orderby=airdate
-        scrapedurl = "http://ib3tv.com/tvalacarta/ajax.php?/0/data?programId="+id+"&type=TV&start-index=0&max-results=100&orderby=airdate"
-        scrapedthumbnail = ""
-        scrapedplot = ""
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        
+        #/wp-content/themes/ib3/carta/update.php?programId=2d15fe76-bbed-40c9-95e3-32a800174b7c
+        #http://ib3tv.com/wp-content/themes/ib3/carta/update.php?programId=e8f6d4ec-1d7c-4101-839a-36393d0df2a8
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = scrapedthumbnail
+        plot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, page=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , category = item.category , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="episodios" , url=url, page=url , thumbnail=thumbnail, plot=plot , show=title , category = "programas" , folder=True) )
 
     return itemlist
 
@@ -64,26 +81,48 @@ def episodios(item):
 
     # Extrae los capítulos
     '''
-    <item> <guid isPermaLink="false">8f53b6fb-0331-4d86-a35f-7e07e98c68e1/3320009a-a5ea-42ab-8b25-8c0bfbca148e</guid> <title>Documentals </title> <description></description> <media:keywords> </media:keywords> <media:thumbnail url="http://media.ib3alacarta.com/8f53b6fb-0331-4d86-a35f-7e07e98c68e1/3320009a-a5ea-42ab-8b25-8c0bfbca148e/4802730.jpg" width="100" height="100"/> <copyright>IB3 Televisió de les Illes Balears</copyright> <media:group> <media:content url="http://media.ib3alacarta.com/8f53b6fb-0331-4d86-a35f-7e07e98c68e1/3320009a-a5ea-42ab-8b25-8c0bfbca148e/4802730.mp4" fileSize="465852130" type="video/mp4" medium="video" bitrate="1011" framerate="25" samplingrate="48.0" channels="2" duration="3683" height="360" width="640"> <media:title>Boveret, el bruixot del Trot</media:title> <media:player url="http://ib3alacarta.com/?id=3320009a-a5ea-42ab-8b25-8c0bfbca148e"/> </media:content> </media:group> <media:category scheme="urn:boxee:episode">09</media:category> <media:community> <media:statistics views="474"/> </media:community> <dcterms:issued> 2011-12-27T01:00:00Z</dcterms:issued> <dcterms:valid>start=2011-12-27T01:00:00Z </dcterms:valid> </item>
+    <div class="keyelement">
+    <div class="keyimage">
+    <div class="shadow">
+    <a href="javascript:CambiaGraf('7e10a2b1-29a6-4c59-9bc0-77be28888cf6')" ><img src="http://media.ib3alacarta.com/e8f6d4ec-1d7c-4101-839a-36393d0df2a8/7e10a2b1-29a6-4c59-9bc0-77be28888cf6/5120551.jpg" width="190" height="120"/></a>
+    </div>
+    </div>	
+    <div  class="keytext">
+    <font color="#c6006f"><strong><b>Au idò!</b></strong></font>
+    <br />
+    <font color="#000000"></font>
+    <br />
+    <font size="0.5">02 06 2011 - Capítol: 57</font>
+    </div>
+    </div>
     '''
-    patron  = '<item>\s*'
-    patron += '<guid isPermaLink="[^"]+">[^<]+</guid>\s*'
-    patron += '<title>([^<]+)</title>\s*'
-    patron += '<description>[^<]*</description>\s*'
-    patron += '<media:keywords>[^<]*</media:keywords>\s*'
-    patron += '<media:thumbnail url="([^"]+)"[^>]+>.*?'
-    patron += '<media:content url="([^"]+)"[^>]+>\s*'
-    patron += '<media:title>([^>]+)</media:title>.*?'
-    patron += '<dcterms:issued>([^>]+)</dcterms:issued>'
+    patron = '<div class="keyelement">[^<]+'
+    patron += '<div class="keyimage">[^<]+'
+    patron += '<div class="shadow">[^<]+'
+    patron += '<a href="javascript:CambiaGraf.\'([^\']+)\'." ><img src="([^"]+)"[^<]+</a>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '</div>[^<]+'
+    patron += '<div  class="keytext">(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
     
     # Extrae los items
-    for titulo_programa,thumbnail,url,titulo_episodio,fecha in matches:
-        scrapedtitle = titulo_episodio
-        scrapedurl = url
-        scrapedthumbnail = thumbnail
-        scrapedplot = ""
-        if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , fulltitle = titulo_programa + " - " + titulo_episodio , action="play" , page = scrapedurl, url=scrapedurl, thumbnail=scrapedthumbnail, show=item.show , plot=scrapedplot , folder=False) )
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        title = scrapertools.htmlclean(scrapedtitle).strip()
+        title = re.compile("\s+",re.DOTALL).sub(" ",title)
+        url = "http://ib3tv.com/wp-content/themes/ib3/carta/titulos.php?type=TV&id="+scrapedurl
+        thumbnail = scrapedthumbnail
+        plot = ""
+        itemlist.append( Item(channel=CHANNELNAME, title=title , fulltitle = item.show + " - " + title , action="play" , page = url, url=url, thumbnail=thumbnail, show=item.show , plot=plot , folder=False) )
 
+    return itemlist
+
+def play(item):
+    logger.info("[ib3.py] play")
+    itemlist = []
+    
+    data = scrapertools.cache_page(item.url)
+    mediaurl = scrapertools.get_match(data,"file:'([^']+)',")
+    itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=mediaurl, thumbnail=item.thumbnail, show=item.show , folder=False) )
+    
     return itemlist

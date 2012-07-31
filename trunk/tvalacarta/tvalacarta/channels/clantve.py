@@ -135,6 +135,6 @@ def episodios(item):
 
     from core import config
     if config.get_platform().startswith("xbmc"):
-        itemlist.append( Item(channel=item.channel, title=">> Añadir la serie completa a la lista de descarga", url=item.url, action="download_all_episodes", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title=">> Añadir la serie completa a la lista de descarga", url=item.url, action="download_all_episodes##episodios", show=item.show) )
 
     return itemlist
