@@ -5,6 +5,127 @@
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
+import re,urllib,urllib2,sys,os
+sys.path.append ("lib")
+
+from core import platform_name
+platform_name.PLATFORM_NAME="developer"
+
+from core import config
+config.set_setting("debug","true")
+
+from core import scrapertools
+from core.item import Item
+from servers import servertools
+
+def descargar_programa_aragontv( channel_id , episodes_action , url , output_folder ):
+    from servers import aragontv as servermodule
+    exec "from tvalacarta.channels import "+channel_id+" as channelmodule"
+    exec "itemlist = channelmodule."+episodes_action+"(Item(url=url))"
+    
+    resultados = []
+    
+    for item in itemlist:
+        mediaurl = servermodule.get_video_url(item.url)
+        resultados.append( [ item.title, mediaurl[0][1] , clean_title(item.title) + mediaurl[0][1][-4:] ] )
+
+    for title,url,localfile in resultados:
+        print title,url,localfile
+        
+        ejecutable = "/Users/jesus/Downloads/rtmpdump-2.4"
+        salida = os.path.join( output_folder , localfile )
+
+        if not os.path.exists(salida):
+            print "Comando: "+ejecutable+' -r "'+url+'" -o "'+salida+'"'
+            import shlex, subprocess
+            args = shlex.split(ejecutable+' -r "'+url+'" -o "'+salida+'"')
+            print args
+            p = subprocess.call(args) # Success!
+        else:
+            print "Ya existe "+salida
+
+def descargar_programa_antena3( channel_id , episodes_action , url ):
+    
+    # Items que tiene que visitar
+    from servers import aragontv as servermodule
+    exec "from tvalacarta.channels import "+channel_id+" as channelmodule"
+    exec "itemlist = channelmodule."+episodes_action+"(Item(url=url))"
+
+    pendientes = []
+    for item in itemlist:
+        pendientes.append(item)
+    
+    # Items que ya ha visitado
+    visitados = set()
+
+    # Lo que finalmente va a descargar
+    resultados = []
+
+    # Recorre la lista de pendientes    
+    indice = 0
+    while True:
+
+        # Lee el siguiente de la lista
+        item = pendientes[indice]
+        
+        # Si no lo ha visitado
+        if item.url not in visitados:
+
+            # Lo marca como visitado
+            visitados.add(item.url)
+
+            # Lo visita y si es el que tiene los episodios, obtiene los links
+            if item.action=="detalle":
+                media_url_itemlist = channelmodule.detalle(item)
+                for media_url_item in media_url_itemlist:
+                    resultados.append( [ item.title, media_url_item.url , clean_title(media_url_item.title) + media_url_item.url[-4:] ] )
+            else:
+                exec "itemlist = channelmodule."+item.action+"(item)"
+                for item in itemlist:
+                    pendientes.append(item)
+
+        # Avanza en la lista
+        indice = indice + 1
+        
+        # Si no quedan elementos, acaba
+        if indice>=len(pendientes):
+            print "Fin de la lista"
+            break
+
+    # Ahora descarga uno por uno los links
+    for title,url,localfile in resultados:
+        print title,url,localfile
+        
+        ejecutable = "/Users/jesus/Downloads/rtmpdump-2.4"
+        salida = "/Users/jesus/Downloads/Vaya casas/"+localfile
+
+        # Solo si no existen ya...
+        if not os.path.exists(salida):
+            print "Comando: "+ejecutable+' -r "'+url+'" -o "'+salida+'"'
+            import shlex, subprocess
+            args = shlex.split(ejecutable+' -r "'+url+'" -o "'+salida+'"')
+            print args
+            p = subprocess.call(args) # Success!
+        else:
+            print "Ya existe "+salida
+
+def clean_title(title):
+
+    '''
+    try:
+        title = unicode(title,"iso-8859-1",errors="ignore").encode("utf-8")
+    except:
+        pass
+    '''
+
+    # Elimina caracteres no válidos 
+    validchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÇçÑñÁÉÍÓÚáéíóí1234567890- "
+    title = ''.join(c for c in title if c in validchars)
+
+    # Sólo windows
+    #title = unicode(title,"utf-8",errors="ignore").encode("iso-8859-1")
+
+    return title
 
 if __name__ == "__main__":
     '''
@@ -17,5 +138,9 @@ if __name__ == "__main__":
         print './rtmpdump-2.4 -r "'+video_url[1]+'" -s "http://www.telefe.com/wp-content/plugins/fc-velocix-video/flowplayer/flowplayer.rtmp-3.1.3.swf" -o out.mp4'
     '''
     
-    from servers import tvg    
-    video_urls = tvg.get_video_url("http://www.crtvg.es/tvg/a-carta/cap-35")
+    #from servers import tvg    
+    #video_urls = tvg.get_video_url("http://www.crtvg.es/tvg/a-carta/cap-35")
+    
+    descargar_programa_aragontv("aragontv","episodios","http://alacarta.aragontelevision.es/programas/vaughan-ingles-4.0/","/Users/jesus/Downloads/Television/Vaughan/")
+    #descargar_programa_antena3("antena3","episodios","http://www.antena3.com/videos/vaya-casa.html")
+    descargar_programa_aragontv("aragontv","episodios","http://alacarta.aragontelevision.es/programas/aragoneses-por-el-mundo/","/Users/jesus/Downloads/Television/Aragoneses por el mundo/")
