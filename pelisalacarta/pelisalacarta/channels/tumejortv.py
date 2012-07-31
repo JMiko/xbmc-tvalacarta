@@ -107,6 +107,10 @@ def peliculas(item):
 
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
+    # Ordena los listados alfabéticos
+    if "filtro_letras" in item.url:
+        itemlist = sorted(itemlist, key=lambda Item: Item.title)    
+
     # Extrae la página siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -121,7 +125,7 @@ def peliculas(item):
 
     return itemlist
 
-def series(item):
+def series(item,extended=True):
     logger.info("[tumejortv.py] series")
 
     url = item.url
@@ -161,13 +165,19 @@ def series(item):
 
     itemlist = []
     for url,thumbnail,tipo,idioma,titulo,categoria,calidad in matches:
-        scrapedtitle = titulo+" ("+idioma.strip()+") ("+scrapertools.htmlclean(calidad)+")"
+        scrapedtitle = titulo.strip()
+        if extended:
+            scrapedtitle = scrapedtitle +" ("+idioma.strip()+") ("+scrapertools.htmlclean(calidad)+")"
         scrapedurl = url+"capitulos/"
         scrapedthumbnail = thumbnail
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
+
+    # Ordena los listados alfabéticos
+    if "filtro_letras" in item.url:
+        itemlist = sorted(itemlist, key=lambda Item: Item.title)    
 
     # Extrae la página siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'

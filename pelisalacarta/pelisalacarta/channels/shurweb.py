@@ -146,7 +146,7 @@ def series(item,paginacion=True):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for url,title,thumbnail in matches:
-        scrapedtitle = title
+        scrapedtitle = title.replace("&amp;","&")
         fulltitle = scrapedtitle
         scrapedplot = ""
         scrapedurl = url

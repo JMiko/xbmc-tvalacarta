@@ -193,6 +193,7 @@ def channels_list():
     # DESACTIVADO - LA WEB ANUNCIA QUE CIERRAN itemlist.append( Item( title="Descargapelis"         , channel="descargapelis"        , language="ES"    , category="F"       , type="generic"  ))
     #itemlist.append( Item( title="Descarrega Directa (CAT)",channel="descarregadirecta"   , language="CAT"   , category="F,S,D,A" , type="generic" ))
     #itemlist.append( Item( title="dibujosanimadosgratis" , channel="dibujosanimadosgratis", language="ES"    , category="A"       , type="generic"  ))
+    itemlist.append( Item( title="Descargaya"           , channel="descargaya"          , language="ES"    , category="F,S"       , type="generic"  ))
     itemlist.append( Item( title="Discoverymx"           , channel="discoverymx"          , language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="Divx Online"           , channel="divxonline"           , language="ES"    , category="F"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="DL-More (FR)"          , channel="dlmore"               , language="FR"    , category="S"       , type="generic"  ))
