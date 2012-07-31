@@ -14,6 +14,7 @@ from core import logger
 
 # Lista de los servidores que se pueden ver sin cuenta premium de ningún tipo
 FREE_SERVERS = []
+FREE_SERVERS.extend(['aragontv','rtve','xiptv'])
 FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared'])
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','rutube','sockshare','stagevu','stagero','tutv','userporn','veoh','veevr','videobam'])
