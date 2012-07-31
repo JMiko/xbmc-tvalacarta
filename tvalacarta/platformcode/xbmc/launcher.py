@@ -200,6 +200,61 @@ def run():
                     # Obtiene el listado desde el que se llamó
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
+                elif action.startswith("download_all_episodes"):
+                    logger.info("[launcher.py] download_all_episodes")
+                    import xbmcgui
+                
+                    # Obtiene el listado desde el que se llamó
+                    print action
+                    action = action.split("##")[1]
+                    exec "itemlist = channel."+action+"(item)"
+
+                    # Progreso
+                    pDialog = xbmcgui.DialogProgress()
+                    ret = pDialog.create('plugin', 'Añadiendo episodios...')
+                    pDialog.update(0, 'Añadiendo episodio...')
+                    totalepisodes = len(itemlist)
+                    logger.info ("[launcher.py] Total Episodios:"+str(totalepisodes))
+                    i = 0
+                    errores = 0
+                    nuevos = 0
+
+                    from core import descargas
+
+                    for item in itemlist:
+                        i = i + 1
+                        pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',item.title)
+                        if (pDialog.iscanceled()):
+                            return
+                
+                        try:
+                            #(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
+                            # Añade solo los de action "play" -> los reproducibles
+                            if item.action=="play":
+                                descargas.savebookmark(titulo=item.show+" - "+item.title,url=item.url,thumbnail=item.thumbnail,server=item.server,plot=item.plot,fulltitle=item.show+" - "+item.title)
+                                nuevos = nuevos + 1
+                        except IOError:
+                            import sys
+                            for line in sys.exc_info():
+                                logger.error( "%s" % line )
+                            logger.info("[launcher.py]Error al grabar el archivo "+item.title)
+                            errores = errores + 1
+                        
+                    pDialog.close()
+                    
+                    # Actualizacion de la biblioteca
+                    itemlist=[]
+                    if errores > 0:
+                        itemlist.append(Item(title="ERROR, la serie NO se ha añadido a la lista de descargas o lo ha hecho incompleta"))
+                        logger.info ("[launcher.py] No se pudo añadir "+str(errores)+" episodios")
+                    else:
+                        itemlist.append(Item(title="La serie se ha añadido a la lista de descargas"))
+                        logger.info ("[launcher.py] Ningún error al añadir "+str(errores)+" episodios")
+                    
+                    # FIXME:jesus Comentado porque no funciona bien en todas las versiones de XBMC
+                    #library.update(totalepisodes,errores,nuevos)
+                    xbmctools.renderItems(itemlist, params, url, category)
+                    
                 elif action=="add_serie_to_library":
                     logger.info("[launcher.py] add_serie_to_library")
                     from platformcode.xbmc import library

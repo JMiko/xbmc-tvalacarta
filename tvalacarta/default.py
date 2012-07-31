@@ -9,8 +9,8 @@
 __plugin__  = "tvalacarta"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/"
-__date__    = "7 Abril 2012"
-__version__ = "3.2"
+__date__    = "31 Julio 2012"
+__version__ = "3.3.1"
 
 import os
 import sys

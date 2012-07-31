@@ -814,6 +814,8 @@ def htmlclean(cadena):
     cadena = cadena.replace("</cite>","")
     cadena = cadena.replace("<em>","")
     cadena = cadena.replace("</em>","")
+    cadena = cadena.replace("<i>","")
+    cadena = cadena.replace("</i>","")
     cadena = cadena.replace("<b>","")
     cadena = cadena.replace("</b>","")
     cadena = cadena.replace("<u>","")
@@ -1151,3 +1153,18 @@ def unseo(cadena):
     elif cadena.upper().startswith("DESCARGA DIRECTA "):
         cadena = cadena[17:]
     return cadena
+
+def get_filename_from_url(url):
+    
+    import urlparse
+    parsed_url = urlparse.urlparse(url)
+    try:
+        filename = parsed_url.path
+    except:
+        # Si falla es porque la implementación de parsed_url no reconoce los atributos como "path"
+        if len(parsed_url)>=4:
+            filename = parsed_url[2]
+        else:
+            filename = ""
+
+    return filename
