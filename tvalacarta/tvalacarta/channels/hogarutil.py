@@ -138,7 +138,8 @@ def detalle(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
-    patron  = 'GENERAL.videoKewego.".ms-player2-in-([^"]+)","([^"]+)","100.","100.","".'
+    #<script type="text/javascript">GENERAL.videoKewego("#ms-player2-in-1","0b2650924acs","680","380","")</script>
+    patron  = 'GENERAL.videoKewego.".ms-player2-in-([^"]+)","([^"]+)","\d+","\d+","".'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
