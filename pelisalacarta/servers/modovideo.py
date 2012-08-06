@@ -35,9 +35,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[modovideo.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
-    page_url = 'http://www.modovideo.com/frame.php?v='+page_url
-    data = scrapertools.cachePage(page_url)
-    logger.info("data")
+    #http://www.modovideo.com/frame.php?v=teml3hpu3141n0lam2a04iufcsz7q7pt
+    code = scrapertools.get_match(page_url,"http://www.modovideo.com/video\?v\=([a-zA-Z0-9]+)")
+    data = scrapertools.cachePage("http://www.modovideo.com/frame.php?v="+code)
 
     # Extrae la URL real
     patronvideos  = 'player5plugin.video=([^&]+)&'
@@ -57,14 +57,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def find_videos(data):
     encontrados = set()
     devuelve = []
+    #http://www.modovideo.com/video?v=7050wk9aa66xr579rtyyjm3fhbq45k4d
     #http://www.modovideo.com/frame.php?v=qzyrxqsxacbq3q43ssyghxzqkp35t8rh
-    patronvideos  = '//www.modovideo.com/(?:frame|video)\.php\?v=([a-zA-Z0-9]+)' 
+    patronvideos  = 'modovideo.com/(?:frame\.php|video\.php|video)\?v=([a-zA-Z0-9]+)' 
     logger.info("[modovideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[Modovideo]"
-        url = match
+        url = "http://www.modovideo.com/video?v="+match
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -80,7 +81,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[Modovideo]"
-        url = match
+        url = "http://www.modovideo.com/video?v="+match
 
         if url not in encontrados:
             logger.info("  url="+url)
