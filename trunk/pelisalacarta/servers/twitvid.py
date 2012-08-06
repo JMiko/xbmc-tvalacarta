@@ -20,13 +20,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     # Lee la página del player
-    data = scrapertools.cache_page(page_url+"&g=c20")
+    data = scrapertools.cache_page(page_url)
     logger.info("data="+data)
-    source = scrapertools.get_match(data,'<source src="([^"]+)" type')
+    url = scrapertools.get_match(data,'video_path="([^"]+)"')
     import urlparse
-    url = urlparse.urljoin( page_url, source )
+    url = urlparse.urljoin( page_url, url )
+    location = scrapertools.get_header_from_response(url,header_to_get="location")
     
-    video_urls.append( [ "[twitvid]",url ] )
+    video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:]+" [twitvid]",location ] )
     
     return video_urls
 
@@ -36,13 +37,13 @@ def find_videos(data):
     devuelve = []
 
     #http://www.twitvid.com/embed.php?guid=ILHLI
-    patronvideos  = '(twitvid.com/embed.php\?guid=[A-Z0-9]+)'
+    patronvideos  = 'twitvid.com/embed.php\?guid=([A-Z0-9]+)'
     logger.info("[twitvid.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[twitvid]"
-        url = "http://www."+match
+        url = "http://www.telly.com/"+match+"?fromtwitvid=1"
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'twitvid' ] )
