@@ -19,7 +19,7 @@ def test_video_exists( page_url ):
     # Si es el código embed directamente, no se puede comprobar
     if "video.php" in page_url:
         return True,""
-    
+
     # No existe / borrado: http://www.moevideos.net/online/27991
     data = scrapertools.cache_page(page_url)
     #logger.info("data="+data)
@@ -54,6 +54,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     headers2.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
     url = "http://api.letitbit.net"
     #post = "r=%5B%22tVL0gjqo5%22%2C%5B%22preview%2Fflv%5Fimage%22%2C%7B%22uid%22%3A%2272871%2E71f6541e64b0eda8da727a79424d%22%7D%5D%2C%5B%22preview%2Fflv%5Flink%22%2C%7B%22uid%22%3A%2272871%2E71f6541e64b0eda8da727a79424d%22%7D%5D%5D"
+    #post = "r=%5B%22tVL0gjqo5%22%2C%5B%22preview%2Fflv%5Fimage%22%2C%7B%22uid%22%3A%2212110%2E1424270cc192f8856e07d5ba179d%22%7D%5D%2C%5B%22preview%2Fflv%5Flink%22%2C%7B%22uid%22%3A%2212110%2E1424270cc192f8856e07d5ba179d%22%7D%5D%5D
     post = 'r=["tVL0gjqo5",["preview/flv_image",{"uid":"'+code+'"}],["preview/flv_link",{"uid":"'+code+'"}]]'
     data = scrapertools.cache_page(url,headers=headers2,post=post)
     logger.info("data="+data)
@@ -78,13 +79,13 @@ def find_videos(data):
     devuelve = []
 
     # http://www.moevideos.net/online/18998
-    patronvideos  = '(moevideos.net/online/\d+)'
+    patronvideos  = 'moevideos.net/online/(\d+)'
     logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[moevideos]"
-        url = "http://www."+match
+        url = "http://www.moevideos.net/online/"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'moevideos' ] )
@@ -93,13 +94,13 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # http://www.moevideos.net/view/30086
-    patronvideos  = '(moevideos.net/view/\d+)'
+    patronvideos  = 'moevideos.net/view/(\d+)'
     logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[moevideos]"
-        url = "http://www."+match
+        url = "http://www.moevideos.net/online/"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'moevideos' ] )
