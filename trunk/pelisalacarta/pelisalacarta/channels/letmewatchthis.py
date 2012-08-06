@@ -73,13 +73,17 @@ def listaconcaratulas(item,action):
         itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
-    patronvideos  = '<a href="([^"]+)" rel="last">\&gt\;\&gt\;</a>'
+    #<a href="http://www.watchfreemovies.ch/watch-tv-shows/page-2/" rel="next">&gt;</a>
+    patronvideos  = '<a href="([^"]+)" rel="next">\&gt\;</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Next page >>" , url=scrapedurl , folder=True) )
+        if action=="listmirrors":
+            itemlist.append( Item(channel=__channel__, action="peliculas", title="!Next page >>" , url=scrapedurl , folder=True) )
+        else:
+            itemlist.append( Item(channel=__channel__, action="series", title="!Next page >>" , url=scrapedurl , folder=True) )
     
     return itemlist
 
@@ -92,12 +96,9 @@ def listepisodes(item):
     #logger.info(data)
     '''
     <div class="tv_episode_item">
-    <a href="http://www.watchfreemovies.ch/watch-tv-shows/2007/watch-gossip-girl-13842/season-1/episode-8/" title="Watch Gossip Girl Season 1 Episode 8 - Seventeen Candles for FREE">Episode 8
-    <span class="tv_episode_name"> - Seventeen Candles</span>
-    </a>
+    <a href="http://www.watchfreemovies.ch/watch-tv-shows/2009/watch-white-collar-25277/season-1/episode-1/" title="Watch White Collar Season 1 Episode 1 - Pilot for FREE">Episode 1
     '''
-    patronvideos  = '<div class="tv_episode_item">[^<]+<a href="([^"]+)" title="([^"]+)'
-
+    patronvideos = '<div class="tv_episode_item">[^<]+<a href="([^"]+)" title="([^"]+)'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -156,6 +157,12 @@ def play(item):
     location = scrapertools.get_header_from_response(url=item.url, header_to_get="location")
     if location!="":
         itemlist = servertools.find_video_items(data=location)
+        
+        for videoitem in itemlist:
+            try:
+                videoitem.title = scrapertools.get_match(item.title,"Watch Version \d+ of (.*)\(")
+            except:
+                videoitem.title = item.title
     
     return itemlist
 

@@ -38,7 +38,7 @@ def generos(item):
     itemlist = []
 
     '''
-    <span>Generos</span>Peliculas por generos</a>
+    <li><a href='#'>peliculas por genero</a>
     <ul>
     <li><a href='http://www.cine-online.eu/search/label/accion'>Acción</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Animaci%C3%B3n'>Animacion</a></li>
@@ -51,7 +51,6 @@ def generos(item):
     <li><a href='http://www.cine-online.eu/search/label/Drama'>Drama</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Fantastico'>Fantastico</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Infantil'>Infantil</a></li>
-    <li><a href='http://www.cine-online.eu/search/label/series'>Series</a></li>
     <li><a href='http://www.cine-online.eu/search/label/romance'>Romance</a></li>
     <li><a href='http://www.cine-online.eu/search/label/terror'>Terror</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Thriller'>Thriller</a></li>
@@ -59,7 +58,7 @@ def generos(item):
     </ul>
     '''
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<span>Generos</span>Peliculas por generos</a>[^<]+<ul>(.*?)</ul>' )
+    data = scrapertools.get_match(data,"<li><a href='#'>peliculas por genero</a>[^<]+<ul>(.*?)</ul>" )
     patron  = "<li><a href='([^']+)'>([^<]+)</a></li>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -82,37 +81,30 @@ def peliculas(item):
 
     # Extrae las entradas (carpetas)
     '''
-    <div class='post hentry'>
-    <a name='5584516536626267731'></a>
+    <div class='post bar hentry'>
+    <a name='2511198152059281144'></a>
     <h3 class='post-title entry-title'>
-    <a href='http://www.cine-online.eu/2012/07/mechanic.html'>The Mechanic</a>
+    <a href='http://www.cine-online.eu/2012/08/los-inmortales.html'>Los inmortales</a>
     </h3>
-    <div class='post-header'>
     <div class='post-header-line-1'></div>
-    </div>
-    <div class='post-body entry-content' id='post-body-5584516536626267731'>
-    <div id='summary5584516536626267731'>
-    <a href="http://img833.imageshack.us/img833/9657/themechanic343996468lar.jpg"><img style="float:left; margin:0 10px 10px 0;cursor:pointer; cursor:hand;width: 217px; height: 320px;" src="http://img833.imageshack.us/img833/9657/themechanic343996468lar.jpg" border="0" alt="" /></a><br />Arthur Bishop (Jason Statham) es un asesino profesional de élite, con un estricto código y un talento único para eliminar limpiamente a sus víctimas. La muerte de su amigo y mentor Harry (Donald Sutherland) le obligará a replantearse sus métodos, sobre todo cuando Steve (Ben Foster), el hijo de Harry, le pida ayuda para saciar su sed de venganza. Bishop empieza a entrenar a Steve y a enseñarle sus letales técnicas, pero las mentiras y los engaños amenazan con convertir esta alianza en el mayor de sus errores. Remake del film protagonizado por Charles Bronson en 1972.<br /><br /><br /><iframe src="http://vk.com/video_ext.php?oid=162408313&id=162843006&hash=697b0f71fb4ce6fc&hd=1" width="607" height="360" frameborder="0"></iframe>
-    </div>
+    <div class='post-body entry-content'>
+    <div id='summary2511198152059281144'><a href="http://1.bp.blogspot.com/-sVlgrMa-8NA/UB5D5mSueeI/AAAAAAAAJNo/BGREaZVHNQs/s1600/Los_inmortales-365360791-large.jpg"><img style="float:left; margin:0 10px 10px 0;cursor:pointer; cursor:hand;width: 229px; height: 320px;" src="http://1.bp.blogspot.com/-sVlgrMa-8NA/UB5D5mSueeI/AAAAAAAAJNo/BGREaZVHNQs/s320/Los_inmortales-365360791-large.jpg" border="0" alt=""id="BLOGGER_PHOTO_ID_5773126429146249698" />
+    </a><br /><br />Los Inmortales son seres de una raza especial que sólo pueden morir decapitados entre sí. Viven desde hace siglos entre los hombres, pero ocultando su identidad. Unos defienden el Bien, otros, el Mal. Una maldición los obliga a luchar entre sí hasta que sólo quede uno de ellos. El escocés Connor MacLeod (Christopher Lambert) es uno de los supervivientes del clan de los Inmortales que ha llegado hasta nuestros días.<br /><iframe src="http://vk.com/video_ext.php?oid=146263567&id=163615214&hash=911afd3b1cb4b789&hd=1" width="607" height="360" frameborder="0"></iframe></div>
     '''
-    patron  = "<div class='post hentry'>[^<]+"
+    patron  = "<div class='post bar hentry'>[^<]+"
     patron += "<a name='[^']+'></a>[^<]+"
     patron += "<h3 class='post-title entry-title'>[^<]+"
     patron += "<a href='([^']+)'>([^<]+)</a>[^<]+"
-    patron += "</h3>[^<]+"
-    patron += "<div class='post-header'>[^<]+"
-    patron += "<div class='post-header-line-1'></div>[^<]+"
-    patron += "</div>[^<]+"
-    patron += "<div class='post-body entry-content' id='post-body[^']+'>[^<]+"
-    patron += "<div id='summary[^']+'>[^<]+"
-    patron += '<a[^<]+<img style="[^"]+" src="([^"]+)"'
+    patron += "</h3>.*?"
+    patron += "<div id='summary[^']+'>[^<]*"
+    patron += '<a[^<]+<img style="[^"]+" src="([^"]+)"[^>]+>(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        scrapedplot = ""
+    for scrapedurl,scrapedtitle,scrapedthumbnail,scrapedplot in matches:
+        plot = scrapertools.htmlclean(scrapedplot)
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , folder=True) )
 
     # Extrae el paginador
     patronvideos  = "<a class='blog-pager-older-link' href='([^']+)'"
