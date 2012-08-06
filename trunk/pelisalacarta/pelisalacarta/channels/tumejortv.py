@@ -70,29 +70,11 @@ def peliculas(item):
     #logger.info(data)
 
     # Extrae las películas
-    '''
-    <div class="antlo_dir_all_container">
-    <a rel="tag" href="http://www.tumejortv.com/peliculas/kika-Superbruja-El-Viaje-A-Mandolan--2012-/" class="antlo_dir_pic_container color1" alt="kika Superbruja El Viaje A Mandolan [2012]" title="kika Superbruja El Viaje A Mandolan [2012]">
-    <div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_dvd.png" alt="kika Superbruja El Viaje A Mandolan [2012]" title="kika Superbruja El Viaje A Mandolan [2012]"/></div>
-    <div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/jrUsuGVCAMxrPdan.jpeg" alt="kika Superbruja El Viaje A Mandolan [2012]"/>
-    <div class="antlo_pic_more_info"><span class="color1">Película  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
-    <div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Película </span><br/> kika Superbruja El Viaje A Man...</h3>
-    <span class="antlo_dir_video_cat">Aventuras</span><h5 class="antlo_dir_video_calidad">DVD-RIP AC3</h5>
-    </div></p></a></div><div class="antlo_dir_all_container"><a rel="tag" href="http://www.tumejortv.com/peliculas/Chocolate--2012-/" class="antlo_dir_pic_container color1" alt="Chocolate [2012]" title="Chocolate [2012]"><div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_dvd.png" alt="Chocolate [2012]" title="Chocolate [2012]"/></div><div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/7BFXjdiCqYE53yVW.jpeg" alt="Chocolate [2012]"/><div class="antlo_pic_more_info"><span class="color1">Película  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div>
-    '''
-    '''
-    <div class="antlo_dir_all_container">
-    <a rel="tag" href="http://www.tumejortv.com/peliculas/Hincame-el-diente/" class="antlo_dir_pic_container color1" alt="Híncame el diente [2010]" title="Híncame el diente [2010]">
-    <div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_actualizado.png" alt="Híncame el diente [2010]" title="Híncame el diente [2010]"/></div>
-    <div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/JzYbXhxAdj7Y2tYM.jpeg" alt="Híncame el diente [2010]"/>
-    <div class="antlo_pic_more_info"><span class="color1">Película  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/></span></div></div><p><div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Película </span><br/> Híncame el diente [2010]</h3><span class="antlo_dir_video_cat">Comedia</span><h5 class="antlo_dir_video_calidad">DVD-RIP</h5></div></p></a></div>
-    '''
     patron  = '<div class="antlo_dir_all_container">'
-    patron += '<a rel="tag" href="([^"]+)" class="antlo_dir_pic_container color1"[^>]+>'
-    patron += '<div class="antlo_dir_bandera"[^<]+<img[^<]+</div>'
-    patron += '<div class="antlo_dir_img_container"><img src="([^"]+)"[^>]+>'
+    patron += '<div rel="tag" data-href="([^"]+)".*?'
+    patron += '<div class="antlo_dir_img_container"><a[^<]+<img src="([^"]+)"[^>]+></a>'
     patron += '<div class="antlo_pic_more_info"><span class="color1">([^>]+)<img src="[^"]+" alt="([^"]+)".*?</span></div></div><p>'
-    patron += '<div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span[^>]+[^<]+</span><br/>([^<]+)</h3>'
+    patron += '<div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span[^<]+</span><br/><a[^>]+>([^<]+)</a></h3>'
     patron += '<span class="antlo_dir_video_cat">([^<]+)</span><h5 class="antlo_dir_video_calidad">([^<]+)</h5>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -133,32 +115,21 @@ def series(item,extended=True):
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
-    '''
-    <div class="antlo_dir_all_container">
-    <a rel="tag" href="http://www.tumejortv.com/series/Chuck/" class="antlo_dir_pic_container color2" alt="Chuck" title="Chuck">
-    <div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_nuevo.png" alt="Chuck" title="Chuck"/></div>
-    <div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/mqvyK6s4kzBvTYJq.jpeg" alt="Chuck"/>
-    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
-    <div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Serie </span><br/> Chuck</h3>
-    <h4 class="antlo_dir_video_cat">Temporada <span class="white">5</span> Capítulo <span class="white">2</span></h4>
-    <h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></a></div>
-    '''
-    '''
-    <div class="antlo_dir_all_container">
-    <a rel="tag" href="http://www.tumejortv.com/series/Ringer/" class="antlo_dir_pic_container color2" alt="Ringer" title="Ringer">
-    <div class="antlo_dir_bandera"></div>
-    <div class="antlo_dir_img_container"><img src="http://www.tumejortv.com/images/posters/2x5EyHacUHzJGmZ4.jpeg" alt="Ringer"/>
-    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/>
-    </span></div></div><p><div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Serie </span><br/> Ringer</h3><h4 class="antlo_dir_video_cat">Temporada <span class="white">1</span> Capítulo <span class="white">10</span></h4><h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></a></div>
-    '''
-
     # Extrae las series
+    '''
+    <div class="antlo_dir_all_container">
+    <div rel="tag" data-href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/" class="antlo_dir_pic_container color2" alt="G.C.B. (Golfas, Cursis Y Beatas)" title="G.C.B. (Golfas, Cursis Y Beatas)">
+    <div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_nuevo.png" alt="G.C.B. (Golfas, Cursis Y Beatas)" title="G.C.B. (Golfas, Cursis Y Beatas)"/></div>
+    <div class="antlo_dir_img_container"><a href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/"><img src="http://www.tumejortv.com/images/posters/bXc4yUxJvPx4Hszf.jpeg" alt="G.C.B. (Golfas, Cursis Y Beatas)"/></a>
+    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
+    <div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Serie </span><br/><a href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/"> G.C.B. (Golfas, Cursis Y Beata...</a></h3>
+    <h4 class="antlo_dir_video_cat">Temporada <span class="white">1</span> Capítulo <span class="white">10</span></h4><h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></div></div>
+    '''
     patron  = '<div class="antlo_dir_all_container">'
-    patron += '<a rel="tag" href="([^"]+)" class="antlo_dir_pic_container color[^"]+"[^>]+>'
-    patron += '<div class="antlo_dir_bandera.*?</div>'
-    patron += '<div class="antlo_dir_img_container"><img src="([^"]+)"[^>]+>'
-    patron += '<div class="antlo_pic_more_info"><span class="[^"]+">([^>]+)<img src="[^"]+" alt="([^"]+)".*?</span></div></div><p>'
-    patron += '<div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span[^<]+</span><br/>([^<]+)</h3>'
+    patron += '<div rel="tag" data-href="([^"]+)".*?'
+    patron += '<div class="antlo_dir_img_container"><a[^<]+<img src="([^"]+)"[^>]+></a>'
+    patron += '<div class="antlo_pic_more_info"><span class="col[^"]+">([^>]+)<img src="[^"]+" alt="([^"]+)".*?</span></div></div><p>'
+    patron += '<div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span[^<]+</span><br/><a[^>]+>([^<]+)</a></h3>'
     patron += '<h4 class="antlo_dir_video_cat">(.*?)<h5 class="antlo_dir_video_calidad">([^<]+)</h5'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
