@@ -12,9 +12,19 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[movshare.py] test_video_exists(page_url='%s')" % page_url)
+
+    data = scrapertools.cache_page(page_url)
+    
+    if "This file no longer exists on our servers" in data:
+        return False,"El fichero ha sido borrado de movshare"
+
+    return True,""
+
 # Returns an array of possible video url's from the page_url
 def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
-    logger.info("[bliptv.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[movshare.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
 
@@ -62,13 +72,14 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    patronvideos  = '"(http://www.movshare.net/video/[^"]+)"'
+    #http://www.movshare.net/video/deg0ofnrnm8nq
+    patronvideos  = 'movshare.net/video/([a-z0-9]+)'
     logger.info("[movshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[movshare]"
-        url = match
+        url = "http://www.movshare.net/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
@@ -77,13 +88,13 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    patronvideos  = "'(http://www.movshare.net/embed/[^']+)'"
+    patronvideos  = "movshare.net/embed/([a-z0-9]+)"
     logger.info("[movshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[movshare]"
-        url = match
+        url = "http://www.movshare.net/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)
