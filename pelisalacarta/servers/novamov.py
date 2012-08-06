@@ -13,21 +13,23 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[novamov.py] test_video_exists(page_url='%s')" % page_url)
+
+    data = scrapertools.cache_page(page_url)
+    
+    if "This file no longer exists on our servers" in data:
+        return False,"El fichero ha sido borrado de novamov"
+
+    return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
     logger.info("[novamov.py] get_video_url(page_url='%s')" % page_url)
 
     data = scrapertools.cache_page(page_url)
-    patron = 'flashvars.file="(.*?)";'
-    matches = re.compile(patron).findall(data)
-    for match in matches:
-        logger.info("File = "+match)
-    flashvarsfile = match
-    patron = 'flashvars.filekey="(.*?)";'
-    matches = re.compile(patron).findall(data)
-    for match in matches:
-        logger.info("Key = "+match)
-    flashvarsfilekey = match
+    flashvarsfile = scrapertools.get_match(data,'flashvars.file="(.*?)";')
+    flashvarsfilekey = scrapertools.get_match(data,'flashvars.filekey="(.*?)";')
+    
     post="key="+flashvarsfilekey+"&user=undefined&codes=1&pass=undefined&file="+flashvarsfile
     url = "http://www.novamov.com/api/player.api.php?"+post
     data = scrapertools.cache_page(url, post=post)
