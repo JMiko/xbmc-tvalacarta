@@ -13,6 +13,16 @@ from core import logger
 from core import config
 from core import unpackerjs
 
+
+def test_video_exists( page_url ):
+    logger.info("[allbox4.py] test_video_exists(page_url='%s')" % page_url)
+
+    data = scrapertools.cache_page(page_url)
+    
+    if ">Descarga lenta</a>" in data:
+        return False,"El esquema de descarga no es compatible con pelisalacarta"
+    return True,""
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[allbox4.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
@@ -69,13 +79,15 @@ def find_videos(data):
     devuelve = []
 
     # http://www.allbox4.com/embed-6szcvf0tv0s3.html
-    patronvideos  = '(allbox4.com/[a-z0-9\-\.]+)'
+    patronvideos  = 'allbox4.com/([a-z0-9\-\.]+)'
     logger.info("[allbox4.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[allbox4]"
-        url = "http://www."+match
+
+        url = "http://www.allbox4.com/"+match
+
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allbox4' ] )
