@@ -13,6 +13,13 @@ from core import logger
 from core import config
 
 def test_video_exists( page_url ):
+    logger.info("[nowvideo.py] test_video_exists(page_url='%s')" % page_url)
+
+    data = scrapertools.cache_page(page_url)
+    
+    if "The file is being converted" in data:
+        return False,"El fichero está en proceso"
+
     return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
@@ -42,18 +49,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     location = scrapertools.get_match(data,'url=([^\&]+)&')
     location = location + "?client=FLASH"
 
-    try:
-        import urlparse
-        parsed_url = urlparse.urlparse(location)
-        logger.info("parsed_url="+str(parsed_url))
-        extension = parsed_url.path[-4:]
-    except:
-        if len(parsed_url)>=4:
-            extension = parsed_url[2][-4:]
-        else:
-            extension = ""
-    
-    video_urls.append( [ extension + " [nowvideo]",location ] )
+    video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [nowvideo]",location ] )
 
     for video_url in video_urls:
         logger.info("[nowvideo.py] %s - %s" % (video_url[0],video_url[1]))
