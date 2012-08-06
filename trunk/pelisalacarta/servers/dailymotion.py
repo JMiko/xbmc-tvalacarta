@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para bitshare
+# Conector para dailymotion
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Basado en el resolver hecho por Shailesh Ghimire para su plugin "canadanepal"
@@ -19,11 +19,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     data = scrapertools.cache_page(page_url)
-    sequence = re.compile('"sequence",  "(.+?)"').findall(data)
+    sequence = re.compile('"sequence":"(.+?)"').findall(data)
     newseqeunce = urllib.unquote(sequence[0]).decode('utf8').replace('\\/', '/')
-    imgSrc = re.compile('og:image" content="(.+?)"').findall(data)
-    if(len(imgSrc) == 0):
-            imgSrc = re.compile('/jpeg" href="(.+?)"').findall(data)
+
     dm_low = re.compile('"sdURL":"(.+?)"').findall(newseqeunce)
     dm_high = re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
     videoUrl = ''
