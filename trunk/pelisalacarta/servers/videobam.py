@@ -12,6 +12,16 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[videobam.py] test_video_exists(page_url='%s')" % page_url)
+
+    data = scrapertools.cache_page(page_url)
+    
+    if "Video is processing" in data:
+        return False,"El fichero está en proceso"
+
+    return True,""
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[videobam.py] get_video_url(page_url='%s')" % page_url)
 
