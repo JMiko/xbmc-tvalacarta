@@ -62,17 +62,7 @@ def hilos(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    '''
-    <div class="threadinfo" title="El Caso Slevin	DVDRip		THRILLER	2006 
-    http://myfreevideos.net/watch_video.php?v=U8GSGG77AXKY">
-    <!--  status icon block -->
-    <a class="threadstatus" rel="vB::AJAX" ></a>
-    <!-- title / author block -->
-    <div class="inner">
-    <h3 class="threadtitle">
-    <a class="title" href="showthread.php?t=104323" id="thread_title_104323">El Caso Slevin	DVDRip	[CASTELLANO]	THRILLER 	2006</a>
-    '''
-    patron  = '<div class="threadinfo".*?<a class="title" href="([^"]+)"[^>]+>([^>]+)</a>'
+    patron  = '<div class="threadinfo".*?<a class="tit[^"]+" href="([^"]+)"[^>]+>([^>]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -90,7 +80,24 @@ def hilos(item):
 
     return itemlist
 
-
+def findvideos(item):
+    logger.info("[descargaya.py] findvideos")
+    
+    data = scrapertools.cache_page(item.url)
+    itemlist = servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+        videoitem.plot = item.plot
+        videoitem.thumbnail = item.thumbnail
+        videoitem.fulltitle = item.fulltitle
+        
+        parsed_url = urlparse.urlparse(videoitem.url)
+        fichero = parsed_url.path
+        partes = fichero.split("/")
+        titulo = partes[ len(partes)-1 ]
+        videoitem.title = titulo + " - [" + videoitem.server+"]"
+        
+    return itemlist    
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
