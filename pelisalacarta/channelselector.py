@@ -143,6 +143,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Newdivxonline (07/08/2012)"        , channel="newdivxonline"        , language="ES" , category="F" , type="generic"    )) # morser 07/08/2012
     itemlist.append( Item( title="cine-online.eu (16/07/2012)"       , channel="cineonlineeu"         , language="ES" , category="F" , type="generic"    )) # jesus 16/7/2012
     itemlist.append( Item( title="Pirate Streaming (16/07/2012)"     , channel="piratestreaming"      , language="IT" , category="F" , type="generic"    )) # jesus 16/7/2012
     itemlist.append( Item( title="Tucinecom (16/07/2012)"            , channel="tucinecom"            , language="ES" , category="F" , type="generic"    )) # jesus 16/7/2012
@@ -224,6 +225,7 @@ def channels_list():
     itemlist.append( Item( title="Moviezet"              , channel="moviezet"             , language="ES"    , category="F,S,VOS"     , type="generic" )) # mrfluffy 01/10/2011
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="myhentaitube"         , channel="myhentaitube"         , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES"    , category="F,D"     , type="generic"  ))
+    itemlist.append( Item( title="Newdivxonline"         , channel="newdivxonline"              , language="ES"    , category="F"     , type="generic"  ))
     itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES"    , category="F,VOS"       , type="generic" )) # xextil 05/05/2011
     #itemlist.append( Item( title="NKI"                   , channel="nki"                  , language="ES"    , category="S"       , type="generic" ))
     #itemlist.append( Item( title="No Megavideo"          , channel="nomegavideo"          , language="ES"    , category="F"       , type="xbmc"  ))
