@@ -100,8 +100,8 @@ def videos(item):
 def get_video_detail(item):
     
     data = scrapertools.cache_page(item.url)
-    item.title = scrapertools.get_match(data,'<meta property="og:title" content="([^"]+)" />')
-    item.plot = scrapertools.get_match(data,'<meta property="og:description" content="(.*?)" />')
+    item.title = scrapertools.get_match(data,'<meta name="title" content="([^"]+)" />')
+    item.plot = scrapertools.get_match(data,'<meta name="description" content="(.*?)" rel="canonical" />')
     
     return item
 
