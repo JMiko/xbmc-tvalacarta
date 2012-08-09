@@ -52,7 +52,7 @@ def subcanales(item):
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         title = scrapedtitle
         url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = scrapedthumbnail
+        thumbnail = scrapedthumbnail.replace("w160","w320")
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="subcanales" , folder=True) )
 
     if len(itemlist)==0:
