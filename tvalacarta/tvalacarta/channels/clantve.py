@@ -86,6 +86,7 @@ def episodios(item):
 
     patron = '<a rel="([^"]+)".*?href="([^"]+)"><img src="([^"]+)"[^>]+>(.*?)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data2)
+    scrapertools.printMatches(matches)
 
     # Extrae los items
     for match in matches:
@@ -96,6 +97,7 @@ def episodios(item):
         
         # La página del vídeo
         scrapedpage = urlparse.urljoin(item.url,match[1])
+        scrapedpage = scrapedpage.replace("videos-juegos/videos","videos-juegos/#/videos")
         
         # Código de la serie
         scrapedcode = match[0]
