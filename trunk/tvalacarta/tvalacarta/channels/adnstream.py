@@ -29,7 +29,7 @@ def mainlist(item):
     patron = '<a href="([^"]+)" title="[^"]+">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle
+        title = scrapedtitle.strip()
         #/canal/Documentales/
         url = urlparse.urljoin("http://www.adnstream.com",scrapedurl)
         thumbnail = "http://www.adnstream.com/img/"+scrapedurl.replace("/canal/","canales/")[:-1]+"_w320.jpg"
@@ -50,7 +50,7 @@ def subcanales(item):
     patron += '<a[^>]+>([^>]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
-        title = scrapedtitle
+        title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapedthumbnail.replace("w160","w320")
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="subcanales" , show = item.title , folder=True) )
@@ -83,7 +83,7 @@ def videos(item):
     patron += '<a[^>]+>([^>]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
-        title = scrapedtitle
+        title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapedthumbnail
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="play" , show = item.show , folder=False) )
