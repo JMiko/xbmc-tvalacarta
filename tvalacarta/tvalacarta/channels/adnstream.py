@@ -97,6 +97,14 @@ def videos(item):
 
     return itemlist
 
+def get_video_detail(item):
+    
+    data = scrapertools.cache_page(item.url)
+    item.title = scrapertools.get_match(data,'<meta property="og:title" content="([^"]+)" />')
+    item.plot = scrapertools.get_match(data,'<meta property="og:description" content="(.*?)" />')
+    
+    return item
+
 def play(item):
     logger.info("[adnstream.py] play")
 
