@@ -162,7 +162,7 @@ def getCredentials(auth_token, user_token):
             return [old_auth_token,old_user_token, logged, "Sesión no iniciada"]
         
         count = 0
-        while (not logged and count<3):
+        while (not logged and count<6):
             if(count > 0):
                 auth_token,user_token = perform_login(LOGIN,PASSWORD)
             post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
@@ -376,6 +376,14 @@ def mis_pelis(item):
     
     return itemlist
 
+def limpia_lista(movielist, campo):
+        
+    cleanlist = []
+    for movieItem in movielist:
+        if(movieItem[campo] is not None):
+            cleanlist.append( movieItem)
+    return cleanlist 
+
 def mis_pelis_categoria(item):
 
     logger.info("[seriesly.py] mis_pelis_categoria")
@@ -412,7 +420,13 @@ def mis_pelis_categoria(item):
             return 1
 
     itemlist = []
-    for movieItem in sorted(movieList, lambda x, y: movie_compare_criteria(x, y)):
+    try:
+        movieList = limpia_lista(movieList, 'title')
+        sortedlist = sorted(movieList, lambda x, y: movie_compare_criteria(x, y))
+    except: 
+        sortedlist = movieList
+        
+    for movieItem in sortedlist:
         status = movieItem['status']
         if status == cat_filter:
             if status == 'Pending' : movieItem['estado'] = 'Pendiente';
