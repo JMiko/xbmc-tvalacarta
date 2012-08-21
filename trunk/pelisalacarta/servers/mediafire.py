@@ -40,13 +40,28 @@ def find_videos(data):
     devuelve = []
 
     #http://www.mediafire.com/?4ckgjozbfid
-    patronvideos  = '(http://www.mediafire.com/\?[a-z0-9]+)'
+    patronvideos  = 'http://www.mediafire.com/\?([a-z0-9]+)'
     logger.info("[mediafire.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[mediafire]"
-        url = match
+        url = 'http://www.mediafire.com/?'+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'mediafire' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://www.mediafire.com/file/c0ama0jzxk6pbjl
+    patronvideos  = 'http://www.mediafire.com/file/([a-z0-9]+)'
+    logger.info("[mediafire.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[mediafire]"
+        url = 'http://www.mediafire.com/?'+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'mediafire' ] )
