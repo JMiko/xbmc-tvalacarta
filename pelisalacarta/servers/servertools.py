@@ -31,7 +31,7 @@ FILENIUM_SERVERS.extend(['linkto','uploadedto','gigasize','youtube','filepost','
 FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline','shareflare','rapidgator'])
 FILENIUM_SERVERS.extend(['filebox','filefactory','netload','nowdownload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
 FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles','zippyshare','glumbouploads','bayfiles','twoshared', 'fourshared','crocko','fiberupload','filereactor'])
-FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile'])
+FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile','filenium'])
 #wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
@@ -124,6 +124,7 @@ def findvideos(data):
 def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=False):
     logger.info("[servertools.py] resolve_video_urls_for_playing, server="+server+", url="+url)
     video_urls = []
+    torrent = False
     
     server = server.lower()
 
@@ -144,6 +145,10 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
 
     # Averigua las URL de los vídeos
     else:
+        
+        if server=="torrent":
+            server="filenium"
+            torrent = True
 
         # Carga el conector
         try:
