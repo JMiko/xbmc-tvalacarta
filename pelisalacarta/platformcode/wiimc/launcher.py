@@ -15,6 +15,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from core import config
 from core import wiideoteca
 from core.item import Item
+from pelisalacarta import buscador
 
 import logging.config
 import logging
@@ -66,7 +67,7 @@ def controller(plugin_name,port,host,path,headers):
         for channel in channelslist:
 
             # Quita el canal de ayuda y el de configuración, no sirven en WiiMC
-            if channel.channel!="configuracion" and channel.channel!="ayuda":
+            if channel.channel!="configuracion" and channel.channel!="ayuda" and channel.channel!="trailertools":
                 
                 if channel.channel!="buscador":
                     respuesta += "type=playlist\n"
@@ -86,11 +87,12 @@ def controller(plugin_name,port,host,path,headers):
             channelslist = channelselector.getchanneltypes()
             
             for channel in channelslist:
-                respuesta += "type=playlist\n"
-                respuesta += "name="+channel.title+"\n"
-                respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
-                respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize()).replace("/","%2F")+"/playlist.plx\n"
-                respuesta += "\n"
+                if channel.category!="M" and channel.category!="G":
+                    respuesta += "type=playlist\n"
+                    respuesta += "name="+channel.title+"\n"
+                    respuesta += "thumb=http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.channel+".png\n"
+                    respuesta += "URL=http://"+host+"/wiimc/"+base64.b64encode(channel.serialize()).replace("/","%2F")+"/playlist.plx\n"
+                    respuesta += "\n"
         
         elif item.channel=="channelselector" and item.action=="listchannels":
             
@@ -107,7 +109,7 @@ def controller(plugin_name,port,host,path,headers):
                     respuesta += "\n"
     
         else:
-            itemlist,channel = getitems(item)
+            itemlist,channel = getitems(item,path)
             
             # Las listas vacías son problemáticas, añade un elemento dummy
             if len(itemlist)==0:
@@ -124,7 +126,10 @@ def controller(plugin_name,port,host,path,headers):
                         respuesta += "thumb=%s\n" % item.thumbnail
                     respuesta += "URL=%s\n" % url
                     respuesta += "\n"
-                    logger.info("  Buscador "+url)
+                    if item.action=="search":
+                        logger.info("  Buscador "+url)
+                    else:
+                        logger.info("  Login "+url)
      
                 elif item.folder or item.action=="play" or item.action=="downloadall":
                     if item.server=="": item.server="none"
@@ -166,7 +171,7 @@ def extract_item_from_url(requestpath):
 
     return item
 
-def getitems(item):
+def getitems(item,requestpath):
     logger.info("getitems")
     itemlist = []
     
@@ -361,9 +366,13 @@ def send_to_jdownloader(senderitem,refered_item):
     itemlist = []
     itemlist.append( Item( title="Opcion no disponible" ) )
 
+    return itemlist
+
 def search_trailer(senderitem,refered_item):
     itemlist = []
     itemlist.append( Item( title="Opcion no disponible" ) )
+
+    return itemlist
 
 def add_to_favorites(senderitem,refered_item):
     from core import favoritos
