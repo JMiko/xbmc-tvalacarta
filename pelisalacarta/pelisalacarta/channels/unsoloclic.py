@@ -128,17 +128,18 @@ def play(item):
         data = scrapertools.cache_page(item.url)
 
         # Extrae la URL de adf.ly y descarga la página
-        adf_url = scrapertools.get_match(data,"Lbjs.TargetUrl \= '([^']+)'")
-        logger.info("adf_url="+adf_url)
-        data = scrapertools.cache_page(adf_url)
+        location = scrapertools.get_match(data,"Lbjs.TargetUrl \= '([^']+)'")
+        logger.info("adf_url="+location)
         
         # Extrae la URL de saltar el anuncio en adf.ly
-        adfskipad_url = urlparse.urljoin(adf_url,scrapertools.get_match(data,"var url \= '(/go/[^']+)'"))
-        logger.info("adfskipad_url="+adfskipad_url)
-        
-        # Obtiene la URL del video
-        location = scrapertools.get_header_from_response(adfskipad_url,header_to_get="location")
-        logger.info("location="+location)
+        if location.startswith("http://adf"):
+            data = scrapertools.cache_page(location)
+            adfskipad_url = urlparse.urljoin(adf_url,scrapertools.get_match(data,"var url \= '(/go/[^']+)'"))
+            logger.info("adfskipad_url="+adfskipad_url)
+            
+            # Obtiene la URL del video
+            location = scrapertools.get_header_from_response(adfskipad_url,header_to_get="location")
+            logger.info("location="+location)
 
         from servers import servertools
         itemlist=servertools.find_video_items(data=location)
