@@ -73,19 +73,22 @@ def pendientes(item):
         if match['status'] != "COMPLETED":
             porcentaje = str(match['percent_done'])
             title = downloadtools.limpia_nombre_excepto_1(match['name'])
-            tiempo = int(match['estimated_time'])
-            if tiempo<60:
-                estimado = "%ds" % tiempo
-            elif tiempo>60 and tiempo<60*60:
-                estimado = "%dm %ds" % ( tiempo / 60 , tiempo % 60)
-            else:
-                horas = tiempo / (60*60)
-                tiempo = tiempo - (horas*60*60)
-                minutos = tiempo / 60
-                tiempo = tiempo - (minutos * 60)
-                segundos = tiempo
-                estimado = "%dh %dm %ds" % ( horas , minutos , segundos)
+            try:
+                tiempo = int(match['estimated_time'])
+                if tiempo<60:
+                    estimado = "%ds" % tiempo
+                elif tiempo>60 and tiempo<60*60:
+                    estimado = "%dm %ds" % ( tiempo / 60 , tiempo % 60)
+                else:
+                    horas = tiempo / (60*60)
+                    tiempo = tiempo - (horas*60*60)
+                    minutos = tiempo / 60
+                    tiempo = tiempo - (minutos * 60)
+                    segundos = tiempo
+                    estimado = "%dh %dm %ds" % ( horas , minutos , segundos)
+            except:
+                estimado="???"
             #{"status":"DOWNLOADING","down_speed":5000,"peers_connected":12,"percent_done":0,"estimated_time":67475,"error_message":null,"size":337513018,"name":"Ladron De Guante Blanco - Temp1 [HDTV][Cap.107][Spanish]","id":2996823}
-            itemlist.append( Item(channel=item.channel , action="pendientes"   , title="("+porcentaje+"%) (Estimado "+estimado+") "+title , url="http://filenium.com/xbmc_json" , thumbnail="", plot="Downloading to Filenium" )) 
+            itemlist.append( Item(channel=item.channel , action="pendientes"   , title="("+porcentaje+"%) (Estimado "+estimado+") "+title , url="http://filenium.com/xbmc_json" , thumbnail="", plot="Downloading to Filenium", folder=False )) 
     
     return itemlist
