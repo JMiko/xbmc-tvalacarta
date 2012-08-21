@@ -8,11 +8,14 @@
 import urlparse,urllib2,urllib,re,time
 import os
 import base64
+import json
 
 from core import scrapertools
 from core import logger
 from core import config
 from urllib import urlencode
+
+TIMEOUT=50
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[filenium.py] get_video_url(page_url='%s')" % page_url)
@@ -20,13 +23,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     page_url = correct_url(page_url)
     if premium:
         # Hace el login
-        url = "http://filenium.com/welcome"
-        post = "username=%s&password=%s" % (user,password)
-        data = scrapertools.cache_page(url, post=post)
-        link = urlencode({'filez':page_url})
-        location = scrapertools.cache_page("http://filenium.com/?filenium&" + link)
+        if "?.torrent" in page_url:
+            location = page_url.replace("?.torrent","")        
+        else:
+            url = "http://filenium.com/welcome"
+            post = "username=%s&password=%s" % (user,password)
+            data = scrapertools.cache_page(url, post=post, timeout=TIMEOUT)
+            link = urlencode({'filez':page_url})
+            location = scrapertools.cache_page("http://filenium.com/?filenium&" + link, timeout=TIMEOUT)
+            
         user = user.replace("@","%40")
-
+        
+        #logger.info("[filenium.py] torrent url (location='%s')" % location)
+        
         if "xbmc" in config.get_platform():
             location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
         else:
@@ -35,6 +44,25 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             location = location + "?user="+user+"&passwd="+password
 
         logger.info("location="+location)
+
+        '''
+        if not location.startswith("http") and page_url.endswith(".torrent"):
+            # Lee el id
+            data=json.loads(location)
+            logger.info("data="+str(data))
+            name = data['name']
+
+            datas = scrapertools.cachePage("http://filenium.com/xbmc_json", timeout=TIMEOUT)
+            logger.info(datas)
+            data = json.loads(datas)
+            logger.info(str(data))
+            
+            for match in data:
+                if match['status'] == "COMPLETED" and match['filename'].startswith(name):
+                    location = match['download_url'] + "?.torrent"
+                    logger.info("location="+location)
+                    break
+        '''
 
     return location
 
