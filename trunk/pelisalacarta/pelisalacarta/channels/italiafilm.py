@@ -38,8 +38,8 @@ def categorias(item):
     itemlist = []
 
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,"<span>Categorie film</span>(.*?)</ul>")
-    patron = '<li class="level3"><a href="([^"]+)">([^<]+)</a></li>'
+    data = scrapertools.get_match(data,"<h2>Categorie Film</h2>(.*?)</div>")
+    patron = '<li class="[^"]+"><a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
@@ -83,16 +83,18 @@ def peliculas(item):
     data = scrapertools.cachePage(item.url,post)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<div class="notes">.*?<a href="([^"]+)"[^<]+<div id=\'[^\']+\'[^<]+<img src="([^"]+)" alt=\'([^\']+)\''
+    patronvideos  = '<a href="([^"]+)"><img class="news-item-image" title="([^"]+)" alt="[^"]+" src="([^"]+)"></a>[^<]+'
+    patronvideos += '<span class="shortstoryintro">[^<]+'
+    patronvideos += '<div id="news[^>]+>([^<]+)</div>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
-    for match in matches:
+    for url,title,thumbnail,plot in matches:
         # Atributos
-        scrapedtitle = match[2]
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
-        scrapedplot = ""
+        scrapedtitle = title
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        scrapedplot = plot
         
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
@@ -100,13 +102,13 @@ def peliculas(item):
         itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="([^"]+)">Avanti&nbsp;&#8594;'
+    patronvideos  = '<a href="([^"]+)"><span class="thide pnext">Avanti</span></a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
         # Atributos
-        scrapedtitle = "Pagina seguente"
+        scrapedtitle = ">> Pagina seguente"
         scrapedurl = urlparse.urljoin(item.url,match)
         scrapedthumbnail = ""
         scrapedplot = ""
