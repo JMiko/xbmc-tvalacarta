@@ -92,4 +92,34 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    #http://www.player3k.info/nowvideo/?id=t1hkrf1bnf2ek
+    patronvideos  = 'player3k.info/nowvideo/\?id\=([a-z0-9]+)'
+    logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[nowvideo]"
+        url = "http://www.nowvideo.eu/video/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'nowvideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://embed.nowvideo.eu/embed.php?v=obkqt27q712s9&amp;width=600&amp;height=480
+    patronvideos  = 'nowvideo.eu/embed.php?v\=([a-z0-9]+)'
+    logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[nowvideo]"
+        url = "http://www.nowvideo.eu/video/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'nowvideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     return devuelve
