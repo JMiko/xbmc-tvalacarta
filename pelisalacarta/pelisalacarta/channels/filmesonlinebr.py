@@ -39,13 +39,15 @@ def novedades(item):
     '''
     <div class="item">
     <div class="thumbwrap">
-    <div class="thumbnail" style="background: url(http://4.bp.blogspot.com/-Kpm17LgL2qc/T-9lxaAhn8I/AAAAAAAACrs/zbl0wuz7VME/s400/ty5ewf.jpg) top left no-repeat;">
-    <a href="http://www.filmesonlinebr.net/sete-dias-com-marilyn-dublado/" Title="Clique aqui para assistir o filme."><img class="thumb" src="http://www.filmesonlinebr.net/wp-content/themes/filmesonlinebr/images/zoom.png" alt="Sete Dias com Marilyn &#8211; Dublado" /></a> 
+    <div class="thumbnail" style="background: url(http://2.bp.blogspot.com/-pdT9EL18mAk/UDLTMyo-SiI/AAAAAAAAFXE/GXGncCeLY_0/s400/7yu46het.jpg) top left no-repeat;">
+    <a href="http://www.filmesonlinebr.net/o-vingador-do-futuro-dublado/" Title="Assistir O Vingador do Futuro &#8211; Dublado Online"><img class="thumbnail" src="http://2.bp.blogspot.com/-pdT9EL18mAk/UDLTMyo-SiI/AAAAAAAAFXE/GXGncCeLY_0/s400/7yu46het.jpg" alt="O Vingador do Futuro &#8211; Dublado" /></a> 
+    </div>  
+    </div>
     '''
     patron  = '<div class="item"[^<]+'
     patron += '<div class="thumbwrap"[^<]+'
     patron += '<div class="thumbnail" style="background\: url\(([^\)]+)\)[^<]+'
-    patron += '<a href="([^"]+)"[^<]+<img class="thumb" src="[^"]+" alt="([^"]+)" /></a>'
+    patron += '<a href="([^"]+)"[^<]+<img class="thumbnail" src="[^"]+" alt="([^"]+)" /></a>'
     
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
