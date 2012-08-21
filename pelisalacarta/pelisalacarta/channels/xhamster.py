@@ -49,7 +49,7 @@ def search(item,texto):
 def videos(item):
     logger.info("[xhamster.py] videos")
     data = scrapertools.downloadpageWithoutCookies(item.url)
-    data = scrapertools.get_match(data,'<td valign="top" id="video_title">(.*?)</table>')
+    data = scrapertools.get_match(data,'<td valign="top" id="video_title">(.*?)<div id="footer">')
     itemlist = []
 
     '''
