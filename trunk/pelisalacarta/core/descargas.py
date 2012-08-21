@@ -7,6 +7,7 @@
 import urlparse,urllib2,urllib,re
 import os
 import sys
+import json
 
 from core import config
 from core import logger
