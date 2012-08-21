@@ -31,7 +31,9 @@ def getmainlist():
     if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist" , thumbnail = urlparse.urljoin(get_thumbnail_path(),"pyload.png")) )
     itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"descargas.png")) )
     itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"configuracion.png")) )
-    
+    if config.get_setting("fileniumpremium")=="true":
+    	itemlist.append( Item(title="Torrents (Filenium)" , channel="descargasfilenium" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"torrents.png")) )
+
     #if config.get_library_support():
     if config.get_platform()!="rss": itemlist.append( Item(title=config.get_localized_string(30104) , channel="ayuda" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"ayuda.png")) )
     return itemlist
@@ -215,6 +217,7 @@ def channels_list():
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S,VOS"     , type="generic"  ))
     itemlist.append( Item( title="lossimpsonsonline.com.ar", channel="los_simpsons_online"       , language="ES"    , category="S"     , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Liberateca"            , channel="liberateca"           , language="ES"    , category="S"       , type="generic"  ))
+    itemlist.append( Item( title="Mejor Torrent"               , channel="mejortorrent"              , language="ES"    , category="F,S,D"       , type="generic"  ))
     itemlist.append( Item( title="MCAnime"               , channel="mcanime"              , language="ES"    , category="A"       , type="generic"  ))
     #itemlist.append( Item( title="Megavideo"             , channel="megavideosite"        , language=""      , category="G"       , type="generic"  ))
     #itemlist.append( Item( title="Megaupload"            , channel="megauploadsite"       , language=""      , category="G"       , type="xbmc"  ))
@@ -247,7 +250,7 @@ def channels_list():
     #itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A"      , type="generic"  ))
     itemlist.append( Item( title="Serieonline"           , channel="serieonline"          , language="ES" , category="F,S,D"      , type="generic"  ))
     itemlist.append( Item( title="Series ID"             , channel="seriesid"             , language="ES" , category="S,VOS" , type="generic"  )) # vcalvo 15/12/2011
-    itemlist.append( Item( title="Series.ly"             , channel="seriesly"             , language="ES" , category="S,A,VOS"        , type="generic"  ))
+    itemlist.append( Item( title="Series.ly"             , channel="seriesly"             , language="ES" , category="F,S,A,VOS"        , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     # DESACTIVADO - SIN CONTENIDO itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S"          , type="xbmc"  ))
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S,VOS"          , type="generic" ))
