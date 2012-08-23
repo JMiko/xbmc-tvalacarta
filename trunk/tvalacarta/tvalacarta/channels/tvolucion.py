@@ -1044,7 +1044,7 @@ def video(item):
         '''
     #NOVELAS (WEB MOVIL)   
     
-    patron = '<video width="294" height="165" controls autoplay="autoplay" poster="([^"]+)" style=.*?<source src="([^"]+)" type="([^"]+)" />'
+    patron = '<video id="video1" width="294" height="165" controls  poster="([^"]+)" style=.*?<source src="([^"]+)" type="([^"]+)" />'
     # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
