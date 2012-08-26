@@ -7,8 +7,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{250CC799-6AA0-4F58-8F08-14498F6868FD}
 AppName=Descargar de TV3
-AppVersion=1.3
-;AppVerName=Descargar de TV3 1.3
+AppVersion=1.4
+;AppVerName=Descargar de TV3 1.4
 AppPublisher=Televisión a la carta
 AppPublisherURL=http://blog.tvalacarta.info/
 AppSupportURL=http://blog.tvalacarta.info/

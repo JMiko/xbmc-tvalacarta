@@ -74,12 +74,10 @@ class MyDialog:
                 break
         
         # Descarga el descriptor
-        import urllib
+        from core import scrapertools
         page_url = "http://www.tv3.cat/pvideo/FLV_bbd_dadesItem.jsp?idint="+code
-        urllib.urlretrieve(page_url,"page.html")
-        fichero = open("page.html","r")
-        data = fichero.read()
-        fichero.close()
+        data = scrapertools.cachePage(page_url)
+
         print "-------------------------------------------------------------------"
         print page_url
         print "-------------------------------------------------------------------"
@@ -101,12 +99,10 @@ class MyDialog:
         print "Formato",formato
 
         # Descarga el descriptor con el RTMP
+        #http://www.tv3.cat/pvideo/FLV_bbd_media.jsp?PROFILE=EVP&ID=4217910&QUALITY=H&FORMAT=MP4
         #page_url = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+"&rnd=8551"
-        page_url = "http://www.tv3.cat/pvideo/FLV_bbd_media.jsp?ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+""
-        urllib.urlretrieve(page_url,"page.html")
-        fichero = open("page.html","r")
-        data = fichero.read()
-        fichero.close()
+        page_url = "http://www.tv3.cat/pvideo/FLV_bbd_media.jsp?PROFILE=EVP&ID="+code+"&QUALITY="+calidad+"&FORMAT="+formato+""
+        data = scrapertools.cachePage(page_url)
         print "-------------------------------------------------------------------"
         print page_url
         print "-------------------------------------------------------------------"
@@ -183,6 +179,7 @@ class MyDialog:
         return title
 
 root = Tk()
+root.title("Descargar de TV3 - v1.4")
 
 d = MyDialog(root)
 
