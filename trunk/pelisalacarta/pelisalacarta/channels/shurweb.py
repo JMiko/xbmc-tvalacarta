@@ -28,59 +28,59 @@ def isGeneric():
 def mainlist(item):
     logger.info("[shurweb.py] getmainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"                , action="scrapping"   , url="http://www.shurweb.es/"))
-    itemlist.append( Item(channel=__channel__, title="Peliculas"                , action="menupeliculas"))
-    itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"  , url="http://www.shurweb.es/series/"))
-    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="scrapping"   , url="http://www.shurweb.es/videoscategory/documentales/"))
-    itemlist.append( Item(channel=__channel__, title="Anime"                    , action="scrappingS"  , url="http://www.shurweb.es/anime/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"                , action="scrapping"   , url="http://www.shurweb.es/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas"                , action="menupeliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"  , url="http://www.shurweb.es/series/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="scrapping"   , url="http://www.shurweb.es/videoscategory/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Anime"                    , action="scrappingS"  , url="http://www.shurweb.es/anime/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
 #    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
     return itemlist
 
 def menupeliculas(item):
     logger.info("[shurweb.py] menupeliculas")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="menupelisaz"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Decadas"          , action="menupelisanos"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Animación"        , action="scrapping"   , url="http://www.shurweb.es/videoscategory/animacion/") )
+    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="menupelisaz", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Películas - Decadas"          , action="menupelisanos", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Películas - Animación"        , action="scrapping"   , url="http://www.shurweb.es/videoscategory/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
     return itemlist
 
 def menupelisaz(item):
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="A"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/a/"))
-    itemlist.append( Item(channel=__channel__, title="B"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/b/"))
-    itemlist.append( Item(channel=__channel__, title="C"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/c/"))
-    itemlist.append( Item(channel=__channel__, title="D"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/d/"))
-    itemlist.append( Item(channel=__channel__, title="E"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/e/"))
-    itemlist.append( Item(channel=__channel__, title="F"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/f/"))
-    itemlist.append( Item(channel=__channel__, title="G"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/g/"))
-    itemlist.append( Item(channel=__channel__, title="H"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/h/"))
-    itemlist.append( Item(channel=__channel__, title="I"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/i/"))
-    itemlist.append( Item(channel=__channel__, title="J"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/j/"))
-    itemlist.append( Item(channel=__channel__, title="K"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/k/"))
-    itemlist.append( Item(channel=__channel__, title="L"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/l/"))
-    itemlist.append( Item(channel=__channel__, title="M"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/m/"))
-    itemlist.append( Item(channel=__channel__, title="N"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/n/"))
-    itemlist.append( Item(channel=__channel__, title="O"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/o/"))
-    itemlist.append( Item(channel=__channel__, title="P"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/p/"))
-    itemlist.append( Item(channel=__channel__, title="Q"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/q/"))
-    itemlist.append( Item(channel=__channel__, title="R"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/r/"))
-    itemlist.append( Item(channel=__channel__, title="S"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/s/"))
-    itemlist.append( Item(channel=__channel__, title="T"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/t/"))
-    itemlist.append( Item(channel=__channel__, title="U"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/u/"))
-    itemlist.append( Item(channel=__channel__, title="V"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/v/"))
-    itemlist.append( Item(channel=__channel__, title="W"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/w/"))
-    itemlist.append( Item(channel=__channel__, title="X"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/x/"))
-    itemlist.append( Item(channel=__channel__, title="Y"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/y/"))
-    itemlist.append( Item(channel=__channel__, title="Z"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/z/"))
+    itemlist.append( Item(channel=__channel__, title="A"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/a/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="B"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/b/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="C"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/c/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="D"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/d/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="E"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/e/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="F"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/f/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="G"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/g/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="H"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/h/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="I"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/i/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="J"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/j/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="K"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/k/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="L"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/l/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="M"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/m/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="N"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/n/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="O"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/o/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="P"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/p/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Q"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/q/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="R"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/r/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="S"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="T"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/t/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="U"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/u/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="V"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/v/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="W"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/w/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="X"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/x/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Y"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/y/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Z"        , action="scrapping"   , url="http://www.shurweb.es/lista-de-peliculas/z/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     return itemlist
 
 def menupelisanos(item):
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="10's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/10s/"))
-    itemlist.append( Item(channel=__channel__, title="00's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/00s/"))
-    itemlist.append( Item(channel=__channel__, title="90's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/90s/"))
-    itemlist.append( Item(channel=__channel__, title="80's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/80s/"))
-    itemlist.append( Item(channel=__channel__, title="70's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/70s/"))
+    itemlist.append( Item(channel=__channel__, title="10's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/10s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="00's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/00s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="90's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/90s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="80's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/80s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="70's"        , action="scrapping"   , url="http://www.shurweb.es/peliculas/70s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -152,7 +152,7 @@ def series(item,paginacion=True):
         scrapedurl = url
         scrapedthumbnail = thumbnail
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=scrapedtitle, context="4|5") )
+        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=scrapedtitle, context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
     return itemlist
 
 def episodios(item):
@@ -182,7 +182,7 @@ def episodios(item):
         scrapedurl = url
         scrapedthumbnail = ""
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=item.show, context="4|5") )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=item.show, context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -207,7 +207,7 @@ def scrapping(item,paginacion=True):
         scrapedurl = match[0]
         scrapedthumbnail = match[2]
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
 
     return itemlist
 
