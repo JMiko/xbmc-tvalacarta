@@ -365,6 +365,7 @@ def play(item):
                             confirmed = tbd.isConfirmed()
                             if (confirmed):
                                 tecleado = tbd.getText()
+                                logger.info("tecleado="+tecleado)
                                 sendcaptcha(playurl,challenge,tecleado)
                             del tbd 
                             #tbd ya no existe
@@ -384,10 +385,13 @@ def sendcaptcha(url,challenge,text):
     values = {'recaptcha_challenge_field' : challenge,
           'recaptcha_response_field' : text}
     form_data = urllib.urlencode(values)
+    url = url.replace("seriesyonkis","seriescoco")
+    logger.info("url="+url+", form_data="+form_data)
     request = urllib2.Request(url,form_data)
     request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
     response = urllib2.urlopen(request)
     html = response.read()
+    logger.info("response="+html)
     response.close()
     return html
 
