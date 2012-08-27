@@ -25,7 +25,7 @@ logging.config.fileConfig( logging_conf )
 logger=logging.getLogger("wiimc")
 
 #TODO: Pasar esto a ¿config?
-VERSIONTAG = "3.2.19"
+VERSIONTAG = "3.2.18"
 
 #from lib import cerealizer
 #cerealizer.register(Item)
@@ -116,7 +116,7 @@ def controller(plugin_name,port,host,path,headers):
                 itemlist.append( Item(title="(No hay elementos)") )
             
             for item in itemlist:
-                if item.action=="search":
+                if item.action=="search" or item.action=="login" or item.action=="password":
                     if item.server=="": item.server="none"
                     if item.url=="": item.url="none"
                     url = "http://%s/%s/playlist.plx" % ( host+"/wiimc" , base64.b64encode( item.serialize() ).replace("/","%2F") )
@@ -279,6 +279,19 @@ def getitems(item,requestpath):
             logger.info("ACCION SEARCH")
             texto = requestpath.split("plx")[1]
             exec "itemlist = channelmodule."+accion+"(senderitem,texto)"
+
+        elif accion=="login":
+            logger.info("ACCION LOGIN")
+            user = requestpath.split("plx")[1]
+            itemlist.append(Item(channel=item.channel, title="Contraseña", action="password", url=item.url, extra=user))
+
+        elif accion=="password":
+            logger.info("ACCION LOGIN")
+            user = item.extra
+            password = requestpath.split("plx")[1]
+            login = user+"|"+password
+            senderitem = Item( title=title , channel=channel, action=accion, url=url , server=server, extra=login, category=category, fulltitle=fulltitle )
+            exec "itemlist = channelmodule.login(senderitem)"
     
         # findvideos - debe encontrar videos reproducibles
         elif accion=="findvideos":
