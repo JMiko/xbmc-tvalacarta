@@ -12,7 +12,8 @@ logger=logging.getLogger("rss")
 from lib import cerealizer
 cerealizer.register(Item)
 
-def getitems(requestpath):
+def getitems(requestpath, ua=""):
+    netplayer_ua = "Mozilla/5.0 (Windows; U; en-US; rv:1.8.1.11; Gecko/20071129; Firefox/2.5.0) Maple 6.0.00067 Navi"
     logger.info("getitems")
     itemlist = []
 
@@ -119,6 +120,7 @@ def getitems(requestpath):
         elif accion == "search":
             logger.info("ACCION SEARCH")
             texto = requestpath.split(".rss")[1]
+            if ua == netplayer_ua: texto = texto[2:]
             exec "itemlist = "+channel+"."+accion+"(senderitem,texto)"    
     
         # findvideos - debe encontrar videos reproducibles
