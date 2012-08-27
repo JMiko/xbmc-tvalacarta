@@ -145,6 +145,8 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Divxatope (27/08/2012)"            , channel="divxatope"            , language="ES" , category="F,S" , type="generic"    )) # jesus 27/08/2012
+    itemlist.append( Item( title="Mejortorrent (20/08/2012)"         , channel="mejortorrent"         , language="ES" , category="F,S" , type="generic"    )) # jesus 20/08/2012
     itemlist.append( Item( title="Newdivxonline (07/08/2012)"        , channel="newdivxonline"        , language="ES" , category="F" , type="generic"    )) # morser 07/08/2012
     itemlist.append( Item( title="cine-online.eu (16/07/2012)"       , channel="cineonlineeu"         , language="ES" , category="F" , type="generic"    )) # jesus 16/7/2012
     itemlist.append( Item( title="Pirate Streaming (16/07/2012)"     , channel="piratestreaming"      , language="IT" , category="F" , type="generic"    )) # jesus 16/7/2012
@@ -199,6 +201,7 @@ def channels_list():
     itemlist.append( Item( title="Descargaya"           , channel="descargaya"          , language="ES"    , category="F,S"       , type="generic"  ))
     itemlist.append( Item( title="Discoverymx"           , channel="discoverymx"          , language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="Divx Online"           , channel="divxonline"           , language="ES"    , category="F"       , type="generic"  ))
+    itemlist.append( Item( title="Divxatope (Torrent)"   , channel="divxatope"           , language="ES"    , category="F,S"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="DL-More (FR)"          , channel="dlmore"               , language="FR"    , category="S"       , type="generic"  ))
     itemlist.append( Item( title="DocumaniaTV"           , channel="documaniatv"          , language="ES"    , category="D"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Documentalesyonkis"    , channel="documentalesyonkis"   , language="ES"    , category="D"       , type="generic"  ))
@@ -212,7 +215,10 @@ def channels_list():
     itemlist.append( Item( title="Internapoli City (IT)" , channel="internapoli"          , language="IT"    , category="F"       , type="generic"  )) 
     itemlist.append( Item( title="Italia film (IT)"      , channel="italiafilm"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="IslaPelículas"         , channel="islapeliculas"        , language="ES"    , category="F"       , type="generic"  ))
-    itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
+    
+    if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
+        itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
+
     itemlist.append( Item( title="La Guarida de bizzente", channel="documentalesatonline2", language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S,VOS"     , type="generic"  ))
     itemlist.append( Item( title="lossimpsonsonline.com.ar", channel="los_simpsons_online"       , language="ES"    , category="S"     , type="generic"  ))
