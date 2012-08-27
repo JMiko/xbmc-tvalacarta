@@ -28,6 +28,7 @@ def get_content_type():
     return "application/rss+xml"
 
 def controller(plugin_name,port,host,path,headers):
+        netplayer_ua = "Mozilla/5.0 (Windows; U; en-US; rv:1.8.1.11; Gecko/20071129; Firefox/2.5.0) Maple 6.0.00067 Navi"
         respuesta = '<?xml version=\'1.0\' encoding="UTF-8" ?>\n<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
         respuesta += "<channel>\n"
         respuesta += "<link>%s</link>\n\n" % path
@@ -47,25 +48,40 @@ def controller(plugin_name,port,host,path,headers):
                    if actualizado:
                        respuesta += "<title>¡Lista de canales actualizada!</title>\n"
                        respuesta += "<image></image>\n"
-                       respuesta += "<link>http://"+host+"/rss/</link>\n"
+                       if headers.get("User-Agent") == netplayer_ua :
+                       		respuesta += "<enclosure url=\"http://"+host+"/rss/\" type=\"text/xml\" />\n"
+                       else:
+                       		respuesta += "<link>http://"+host+"/rss/</link>\n"
                        respuesta += "\n"
                 except:
                    pass
 
             for channel in channelslist:
-	           respuesta += "<item>\n"
-	           respuesta += "<title>"+channel.title+"</title>\n"
-	           respuesta += "<image>http://"+plugin_name+".mimediacenter.info/posters/"+channel.channel+".png</image>\n"
+               respuesta += "<item>\n"
+               respuesta += "<title>"+channel.title+"</title>\n"
+               if headers.get("User-Agent") == netplayer_ua :
+                   respuesta += "<description><![CDATA[<img src=\"http://"+plugin_name+".mimediacenter.info/posters/"+channel.channel+".png\" />]]></description>\n"
+               else:
+                   respuesta += "<image>http://"+plugin_name+".mimediacenter.info/posters/"+channel.channel+".png</image>\n"
 	           
-	           if channel.channel=="trailertools":
-                	enlace = "http://"+host+"/rss/"+channel.channel+"/search/none/none/none/none/none/none/none/playlist.rss"
-                	respuesta += "<link>rss_command://search</link>"
-                	respuesta += "<search url=\""+enlace+"%s\" />"
-	           else:
-                	respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/"+channel.action+"/none/none/none/none/none/none/none/playlist.rss</link>\n"
+               if channel.channel=="trailertools":
+                   enlace = "http://"+host+"/rss/"+channel.channel+"/search/none/none/none/none/none/none/none/playlist.rss"
+                   if headers.get("User-Agent") == netplayer_ua :
+                       respuesta += "<textinput>\n"
+                       #respuesta += "<title>%s</title>\n" % entityunescape(channel.title)
+                       respuesta += "<link>"+enlace+"</link>\n"
+                       respuesta += "</textinput>\n"
+                   else:
+                       respuesta += "<link>rss_command://search</link>"
+                       respuesta += "<search url=\""+enlace+"%s\" />"
+               else:
+                   if headers.get("User-Agent") == netplayer_ua :
+                       respuesta += "<enclosure url=\"http://"+host+"/rss/"+channel.channel+"/"+channel.action+"/none/none/none/none/none/none/none/playlist.rss\" type=\"text/xml\" />\n"
+                   else:
+                       respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/"+channel.action+"/none/none/none/none/none/none/none/playlist.rss</link>\n"
                 
-	           respuesta += "</item>\n"
-	           respuesta += "\n"
+               respuesta += "</item>\n"
+               respuesta += "\n"
       
         elif path.startswith("/rss/channelselector/channeltypes"):
             
@@ -76,8 +92,12 @@ def controller(plugin_name,port,host,path,headers):
             for channel in channelslist:
                 respuesta += "<item>\n"
                 respuesta += "<title>"+channel.title+"</title>\n"
-                respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/"+channel.action+"/"+channel.category+"/none/none/none/none/none/playlist.rss</link>\n"
-                respuesta += "<image>http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.thumbnail+".png</image>\n"
+                if headers.get("User-Agent") == netplayer_ua :
+                    respuesta += "<description><![CDATA[<img src=\"http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.thumbnail+".png\" />]]></description>\n"
+               	    respuesta += "<enclosure url=\"http://"+host+"/rss/"+channel.channel+"/"+channel.action+"/"+channel.category+"/none/none/none/none/none/playlist.rss\" type=\"text/xml\" />\n"
+                else:
+                    respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/"+channel.action+"/"+channel.category+"/none/none/none/none/none/playlist.rss</link>\n"
+                    respuesta += "<image>http://"+plugin_name+".mimediacenter.info/wiimc/"+channel.thumbnail+".png</image>\n"
                 respuesta += "</item>\n"
                 respuesta += "\n"
         
@@ -94,13 +114,17 @@ def controller(plugin_name,port,host,path,headers):
                 if channel.type=="generic" or channel.type=="rss": # or channel.type=="wiimc":
                     respuesta += "<item>\n"
                     respuesta += "<title>"+channel.title.replace("_generico","").replace(" (Multiplataforma)","")+"</title>\n"
-                    respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/mainlist/none/none/none/none/none/none/playlist.rss</link>\n"
-                    respuesta += "<image>http://"+plugin_name+".mimediacenter.info/posters/"+channel.channel+".png</image>\n"
+                    if headers.get("User-Agent") == netplayer_ua :
+                        respuesta += "<description><![CDATA[<img src=\"http://"+plugin_name+".mimediacenter.info/posters/"+channel.channel+".png\" />]]></description>\n"
+                        respuesta += "<enclosure url=\"http://"+host+"/rss/"+channel.channel+"/mainlist/none/none/none/none/none/none/playlist.rss\" type=\"text/xml\" />\n"
+                    else:
+                        respuesta += "<link>http://"+host+"/rss/"+channel.channel+"/mainlist/none/none/none/none/none/none/playlist.rss</link>\n"
+                        respuesta += "<image>http://"+plugin_name+".mimediacenter.info/posters/"+channel.channel+".png</image>\n"
                     respuesta += "</item>\n"
                     respuesta += "\n"
         else:
             import rsstools
-            itemlist,channel = rsstools.getitems(path)
+            itemlist,channel = rsstools.getitems(path,headers.get("User-Agent"))
 
             # Las listas vacías son problemáticas, añade un elemento dummy
             if len(itemlist)==0:
@@ -121,19 +145,31 @@ def controller(plugin_name,port,host,path,headers):
                 if item.channel=="": item.channel=channel
                 
                 if item.action == "search":
-                   url = "http://%s/rss/%s/%s/%s/%s/%s/%s/%s/%s/playlist.rss" % ( host , channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle))               
-                   respuesta += "<title>%s</title>\n" % entityunescape(item.title)
-                   if item.fulltitle  not in ("","none"): respuesta += "<fulltitle>%s</fulltitle>\n" % item.fulltitle
-                   if item.thumbnail != "":    respuesta += "<image>%s</image>\n" % item.thumbnail
-                   respuesta += "<link>rss_command://search</link>\n"
-                   respuesta += "<search url=\""+url+"%s\" />\n"
+                   url = "http://%s/rss/%s/%s/%s/%s/%s/%s/%s/%s/playlist.rss" % ( host , channel , item.action , urllib.quote_plus(item.url) , item.server, urllib.quote_plus(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle))
+                   if headers.get("User-Agent") == netplayer_ua :
+                       respuesta += "<textinput>\n"
+                       respuesta += "<title>%s</title>\n" % entityunescape(item.title)
+                       if item.fulltitle  not in ("","none"): respuesta += "<description>%s</description>\n" % item.fulltitle
+                       #if item.thumbnail != "":    respuesta += "<image>%s</image>\n" % item.thumbnail
+                       respuesta += "<link>"+url+"</link>\n"
+                       respuesta += "</textinput>\n"
+               	   else:
+                       respuesta += "<title>%s</title>\n" % entityunescape(item.title)
+                       if item.fulltitle  not in ("","none"): respuesta += "<fulltitle>%s</fulltitle>\n" % item.fulltitle
+                       if item.thumbnail != "": respuesta += "<image>%s</image>\n" % item.thumbnail
+                       respuesta += "<link>rss_command://search</link>\n"
+                       respuesta += "<search url=\""+url+"%s\" />\n"
                    respuesta += "\n"
                    
                 elif item.action=="EXIT":
                     respuesta += "<title>%s</title>\n" % entityunescape(item.title)
-                    if item.thumbnail != "": respuesta += "<image>%s</image>\n" % item.thumbnail
                     url = "http://%s/rss/" %  host
-                    respuesta += "<link>%s</link>\n" % url
+                    if headers.get("User-Agent") == netplayer_ua :
+               	        if item.thumbnail != "": respuesta += "<description><![CDATA[<img src=\"%s\" />]]></description>\n" % item.thumbnail
+               	        respuesta += "<enclosure url=\"%s\" type=\"text/xml\" />\n" % url
+                    else:
+                        if item.thumbnail != "": respuesta += "<image>%s</image>\n" % item.thumbnail
+                        respuesta += "<link>%s</link>\n" % url
                     respuesta += "\n"
                 
                 elif item.folder or item.action=="play" or item.action=="downloadall":
@@ -155,9 +191,15 @@ def controller(plugin_name,port,host,path,headers):
                     url = "http://%s/rss/%s/%s/%s/%s/%s/%s/%s/%s/playlist.rss" % ( host , item.channel , item.action , urllib.quote_plus(item.url) , item.server , urllib.quote(item.title),urllib.quote_plus(item.extra),urllib.quote_plus(item.category),urllib.quote_plus(item.fulltitle) )
                     respuesta += "<title><![CDATA[%s]]></title>\n" % unicode(item.title,"iso-8859-1",errors="ignore").encode("utf-8")
                     if item.fulltitle not in ("","none"): respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % unicode(item.title,"iso-8859-1",errors="ignore").encode("utf-8")
-                    if item.plot != "":                   respuesta += "<description><![CDATA[ %s ]]></description>\n" % unicode(item.plot,"iso-8859-1",errors="ignore").encode("utf-8")
-                    if item.thumbnail != "":              respuesta += "<image>%s</image>\n" % item.thumbnail
-                    respuesta += "<link>%s</link>\n" % url
+                    if headers.get("User-Agent") == netplayer_ua :
+                        if item.plot != "" or item.thumbnail != "":     respuesta += "<description><![CDATA[ "
+                        if item.thumbnail != "":              			respuesta += "<img src=\"%s\" />" % item.thumbnail
+                        if item.plot != "" or item.thumbnail != "":     respuesta += "%s ]]></description>\n" % unicode(item.plot,"iso-8859-1",errors="ignore").encode("utf-8")
+                        respuesta += "<enclosure url=\"%s\" type=\"text/xml\"/>\n" % url
+               	    else:
+                        if item.plot != "":                   respuesta += "<description><![CDATA[ %s ]]></description>\n" % unicode(item.plot,"iso-8859-1",errors="ignore").encode("utf-8")
+                        if item.thumbnail != "":              respuesta += "<image>%s</image>\n" % item.thumbnail
+                        respuesta += "<link>%s</link>\n" % url
                     respuesta += "\n"
                 else:
                     logger.info("  Video")
@@ -168,12 +210,24 @@ def controller(plugin_name,port,host,path,headers):
                     if fulltitle != "" and item.fulltitle in ("","none"): item.fulltitle = fulltitle
                     if plot      != "" and item.plot == "":               item.plot = plot
                     if thumbnail != "" and item.thumbnail == "":          item.thumbnail = thumbnail
-                    #respuesta += "<title><![CDATA[%s]]></title>\n" % entityunescape(item.title)
-                    respuesta += "<title><![CDATA[%s]]></title>\n" % unicode(fulltitle,"iso-8859-1",errors="ignore").encode("utf-8")
+                    if fulltitle == "":
+                        respuesta += "<title><![CDATA[%s]]></title>\n" % entityunescape(item.title)
+                    else:
+                        respuesta += "<title><![CDATA[%s]]></title>\n" % unicode(fulltitle,"iso-8859-1",errors="ignore").encode("utf-8")
                     respuesta += "<fulltitle><![CDATA[%s]]></fulltitle>\n" % unicode(item.title,"iso-8859-1",errors="ignore").encode("utf-8")
-                    respuesta += "<description><![CDATA[%s]]></description>\n" % unicode(plot,"iso-8859-1",errors="ignore").encode("utf-8")
-                    respuesta += "<enclosure url=\"%s\" type=\"video/x-flv\" />\n" % item.url
-                    respuesta += "<image>%s</image>\n" % thumbnail
+                    if headers.get("User-Agent") == netplayer_ua :
+                        if plot != "" or thumbnail != "": respuesta += "<description><![CDATA["
+                        if thumbnail != "" : 	respuesta += "<img src=\"%s\" />" % thumbnail
+                        if plot != "" or thumbnail != "": respuesta += "%s]]></description>\n" % unicode(plot,"iso-8859-1",errors="ignore").encode("utf-8")
+                        cad = item.url
+                        if cad.find(".flv") != -1:
+                        	respuesta += "<enclosure url=\"%s\" type=\"video/x-flv\" />\n" % item.url
+                        else:
+                        	respuesta += "<enclosure url=\"%s\" type=\"video/mpeg\" />\n" % item.url
+               	    else:
+                        respuesta += "<description><![CDATA[%s]]></description>\n" % unicode(plot,"iso-8859-1",errors="ignore").encode("utf-8")
+                    	respuesta += "<enclosure url=\"%s\" type=\"video/x-flv\" />\n" % item.url
+                    	respuesta += "<image>%s</image>\n" % thumbnail
                 respuesta += "</item>\n\n"
 
         respuesta += "</channel>\n"
