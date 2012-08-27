@@ -41,8 +41,8 @@ def load_json(data):
                 rdct[k] = v
         return rdct
     try :        
-        from lib import simplejson
-        json_data = simplejson.loads(data, object_hook=to_utf8)
+        import json
+        json_data = json.loads(data, object_hook=to_utf8)
         return json_data
     except:
         import sys
@@ -60,6 +60,10 @@ def mainlist(item):
     logger.info("[seriesly.py] mainlist")
     
     itemlist = []
+    if config.get_platform() == "wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
 
     auth_token, user_token = perform_login(LOGIN,PASSWORD)
     
@@ -72,7 +76,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="pelis_mas_vistas", extra=extra_params ) )
     itemlist.append( Item(channel=__channel__, title="Ultimas Pelis Modificadas", action="ultimas_pelis_modificadas", extra=extra_params ) )
 
-    if config.get_platform() in ("wiimc", "rss", "mediaserver"):
+    if config.get_platform() in ( "rss", "mediaserver"):
         milogin = config.get_setting("serieslyuser")
         mipassword = config.get_setting("serieslypassword")
         login( Item() , milogin , mipassword)
@@ -94,6 +98,10 @@ def logout(item):
     SESION = config.get_setting("session","seriesly")
     LOGIN = config.get_setting("login","seriesly")
     PASSWORD = config.get_setting("password","seriesly")
+    if config.get_platform() == "wiimc":
+        config.set_setting("sessionly","true")
+        config.set_setting("loginly",milogin)
+        config.set_setting("passwordly",mipassword)
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Sesión finalizada", action="mainlist"))
@@ -101,7 +109,7 @@ def logout(item):
 
 def login(item,milogin="",mipassword=""):
     
-    if milogin=="":
+    if config.get_platform() in ("xbmcdharma", "xmbc", "xbmceden"):
         import xbmc
         keyboard = xbmc.Keyboard("","Login")
         keyboard.doModal()
@@ -112,6 +120,10 @@ def login(item,milogin="",mipassword=""):
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             mipassword = keyboard.getText()
+			
+    if config.get_platform()=="wiimc":
+        login = item.extra
+        milogin, mipassword = login.split('|')
 
     itemlist = []
     auth_token,user_token = perform_login(milogin,mipassword)
@@ -128,6 +140,10 @@ def login(item,milogin="",mipassword=""):
     SESION = config.get_setting("session","seriesly")
     LOGIN = config.get_setting("login","seriesly")
     PASSWORD = config.get_setting("password","seriesly")
+    if config.get_platform() == "wiimc":
+        config.set_setting("sessionly","true")
+        config.set_setting("loginly",milogin)
+        config.set_setting("passwordly",mipassword)
 
     itemlist.append( Item(channel=__channel__, title="Sesión iniciada", action="mainlist"))
     return itemlist
@@ -157,6 +173,10 @@ def getCredentials(auth_token, user_token):
     logged = False
     old_auth_token = auth_token
     old_user_token = user_token
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     try:
         if SESION != "true":
             return [old_auth_token,old_user_token, logged, "Sesión no iniciada"]
@@ -186,6 +206,10 @@ def mis_series(item):
     
     logger.info("[seriesly.py] mis_series")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
     if (not logged):
@@ -237,6 +261,10 @@ def serie_capitulos(item):
     
     logger.info('[seriesly.py] serie_capitulos')
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -287,6 +315,10 @@ def serie_capitulos(item):
 def capitulo_links(item):
     logger.info("[seriesly.py] capitulo_links")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     
     auth_token, user_token = item.extra.split('|')
@@ -328,6 +360,10 @@ def capitulo_links(item):
 
 def links(item):    
         
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     itemlist = []
     try:
         count = 0
@@ -358,6 +394,10 @@ def links(item):
 
 def mis_pelis(item):
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -388,6 +428,10 @@ def mis_pelis_categoria(item):
 
     logger.info("[seriesly.py] mis_pelis_categoria")
 
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token, cat_filter = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -451,6 +495,10 @@ def peli_links(item):
 
     logger.info("[seriesly.py] peli_links")
    
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -501,6 +549,10 @@ def series_mas_votadas(item):
 
     logger.info("[seriesly.py] series_mas_votadas")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -540,6 +592,10 @@ def pelis_mas_vistas(item):
 
     logger.info("[seriesly.py] pelis_mas_vistas")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -579,6 +635,10 @@ def ultimas_pelis_modificadas(item):
 
     logger.info("[seriesly.py] ultimas_pelis_modificadas")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -617,6 +677,10 @@ def ultimas_pelis_modificadas(item):
 
 def search(item,texto, categoria="*"):
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     auth_token, user_token, logged, nologgedmessage = getCredentials("","")
     if (not logged):
         itemlist = []
@@ -631,6 +695,10 @@ def search(item,texto, categoria="*"):
 def search_series(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=serie&format=json' % ( qstr(texto) )
@@ -662,6 +730,10 @@ def search_series(auth_token, user_token, item, texto):
 def search_films(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search_films")
     
+    if config.get_platform()=="wiimc":
+        SESION = config.get_setting("sessionly")
+        LOGIN = config.get_setting("loginly")
+        PASSWORD = config.get_setting("passwordly")
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=film&format=json' % ( qstr(texto) )
