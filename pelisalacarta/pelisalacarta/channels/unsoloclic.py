@@ -134,7 +134,7 @@ def play(item):
         # Extrae la URL de saltar el anuncio en adf.ly
         if location.startswith("http://adf"):
             data = scrapertools.cache_page(location)
-            adfskipad_url = urlparse.urljoin(adf_url,scrapertools.get_match(data,"var url \= '(/go/[^']+)'"))
+            adfskipad_url = urlparse.urljoin(location,scrapertools.get_match(data,"var url \= '(/go/[^']+)'"))
             logger.info("adfskipad_url="+adfskipad_url)
             
             # Obtiene la URL del video
