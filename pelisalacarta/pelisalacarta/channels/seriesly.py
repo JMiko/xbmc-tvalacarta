@@ -64,6 +64,10 @@ def mainlist(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
 
     auth_token, user_token = perform_login(LOGIN,PASSWORD)
     
@@ -177,6 +181,11 @@ def getCredentials(auth_token, user_token):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     try:
         if SESION != "true":
             return [old_auth_token,old_user_token, logged, "Sesión no iniciada"]
@@ -210,6 +219,11 @@ def mis_series(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
     if (not logged):
@@ -265,6 +279,11 @@ def serie_capitulos(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -319,6 +338,11 @@ def capitulo_links(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     
     auth_token, user_token = item.extra.split('|')
@@ -364,6 +388,11 @@ def links(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     itemlist = []
     try:
         count = 0
@@ -398,6 +427,11 @@ def mis_pelis(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -432,6 +466,11 @@ def mis_pelis_categoria(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token, cat_filter = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -499,6 +538,11 @@ def peli_links(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -553,6 +597,11 @@ def series_mas_votadas(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -596,6 +645,11 @@ def pelis_mas_vistas(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -639,6 +693,11 @@ def ultimas_pelis_modificadas(item):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     # TOKENS
     auth_token, user_token = item.extra.split('|')
     auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
@@ -681,6 +740,11 @@ def search(item,texto, categoria="*"):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     auth_token, user_token, logged, nologgedmessage = getCredentials("","")
     if (not logged):
         itemlist = []
@@ -699,6 +763,11 @@ def search_series(auth_token, user_token, item, texto):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=serie&format=json' % ( qstr(texto) )
@@ -734,6 +803,11 @@ def search_films(auth_token, user_token, item, texto):
         SESION = config.get_setting("sessionly")
         LOGIN = config.get_setting("loginly")
         PASSWORD = config.get_setting("passwordly")
+    else:
+        SESION = config.get_setting("session","seriesly")
+        LOGIN = config.get_setting("login","seriesly")
+        PASSWORD = config.get_setting("password","seriesly")
+
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=film&format=json' % ( qstr(texto) )

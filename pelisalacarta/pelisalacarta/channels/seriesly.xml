@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>18</tag>
-	<date>11/08/2012</date>
-	<changes>Arreglado seriesly, se arregla el problema con las películas</changes>
+	<tag>19</tag>
+	<date>28/08/2012</date>
+	<changes>Arreglado fallo en seriesly por la actualización</changes>
 </version>
