@@ -7,18 +7,11 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 
-try:
-    from core import logger
-    from core import config
-    from core import scrapertools
-    from core.item import Item
-    from servers import servertools
-except:
-    # En Plex Media server lo anterior no funciona...
-    from Code.core import logger
-    from Code.core import config
-    from Code.core import scrapertools
-    from Code.core.item import Item
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
 
 __channel__ = "somosmovies"
 __category__ = "F,S,D,A"
@@ -35,63 +28,80 @@ def mainlist(item):
     logger.info("[somosmovies.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas"    , action="listado", url="http://www.somosmovies.com/search/label/Peliculas?max-results=12"))
+    itemlist.append( Item(channel=__channel__, title="Películas"    , action="listado", url="http://www.somosmovies.com"))
     itemlist.append( Item(channel=__channel__, title="Series"       , action="listado", url="http://www.somosmovies.com/search/label/Series?max-results=12"))
     itemlist.append( Item(channel=__channel__, title="Anime"        , action="listado", url="http://www.somosmovies.com/search/label/Anime?max-results=12"))
-    itemlist.append( Item(channel=__channel__, title="Documentales" , action="listado", url="http://www.somosmovies.com/search/label/Documental?max-results=12"))
     
     return itemlist
 
 def listado(item):
     logger.info("[somosmovies.py] listado")
+    itemlist=[]
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    logger.info("data="+data)
 
     # Extrae las entradas
     '''
-    <h3 class='post-title entry-title'>
-    <a href='http://www.somosmovies.com/2010/12/dinner-for-schmucks-2010.html'>Dinner for Schmucks (2010)</a>
+    <article CLASS='post crp'>
+    <header><h3 CLASS='post-title entry-title item_name'>
+    <a href='http://www.somosmovies.com/2012/09/blancanieves-y-el-cazador-2012.html' title='Blancanieves y el Cazador (2012)'>Blancanieves y el Cazador (2012)</a>
     </h3>
-    <div class='post-header-line-1'></div>
-    <div class='post-body entry-content'>
-    <a href='http://www.somosmovies.com/2010/12/dinner-for-schmucks-2010.html'><div id='summary2965545734731460603'><center><img border="0" src="http://1.bp.blogspot.com/_IcS2ZFffwuA/TRj6TU_-VXI/AAAAAAAACfE/bVPxAz3dra8/s1600/Dinner+For+Schmuck+%25282010%2529.jpg" style="display: block; height: 350px;"></center><br>
-    <br>
-    '''
-    '''
-    <h3 class='post-title entry-title'>
-    <a href='http://www.somosmovies.com/2010/12/ticking-clock-2011.html'>Ticking Clock (2011)</a>
-    </h3>
-    <div class='post-header-line-1'></div>
-    <div class='post-body entry-content'>
-    <a href='http://www.somosmovies.com/2010/12/ticking-clock-2011.html'><div id='summary4195574178414576162'><div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/_0bsG3NIClx0/TRp1mjN4f8I/AAAAAAAAAS0/ZRwtedadMjM/s1600/Caratula.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="400" src="http://1.bp.blogspot.com/_0bsG3NIClx0/TRp1mjN4f8I/AAAAAAAAAS0/ZRwtedadMjM/s400/Caratula.png" width="315"></a></div><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/_0bsG3NIClx0/TRKLExwYtRI/AAAAAAAAAQE/hIT8HghjdSA/s1600/Caratula.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><span id="goog_956228244"></span><span id="goog_956228245"></span></a></div></div></a><script type='text/javascript'>createSummaryAndThumb("summary4195574178414576162");</script>
-    <div style='clear: both;'></div>
+    </header>
+    <section CLASS='post-body entry-content clearfix'>
+    <a href='http://www.somosmovies.com/2012/09/blancanieves-y-el-cazador-2012.html' title='Blancanieves y el Cazador (2012)'><center><img border="0" src="http://4.bp.blogspot.com/-IGXqSKwmBnA/UEJzNarqbsI/AAAAAAAABfM/JZHRa09aJDo/s1600/poster.jpg" style="display: block; height: 400px; width: 316;"></center></a>
+    <div CLASS='latino'></div>
+    <div CLASS='pie-post'>
+    <div style='float:left'>
+    <div class='fb-like' data-href='http://www.somosmovies.com/2012/09/blancanieves-y-el-cazador-2012.html' data-layout='button_count' data-send='false' data-show-faces='false' data-width='120'></div>
     </div>
+    </div>
+    <div STYLE='clear: both;'></div>
+    </section>
+    </article>
+    '''
+    '''
+    <article CLASS='post crp'>
+    <header><h3 CLASS='post-title entry-title item_name'>
+    <a href='http://www.somosmovies.com/2012/08/the-avengers-los-vengadores-2012.html' title='Los Vengadores (2012)'>Los Vengadores (2012)</a>
+    </h3>
+    </header>
+    <section CLASS='post-body entry-content clearfix'>
+    <a href='http://www.somosmovies.com/2012/08/the-avengers-los-vengadores-2012.html' title='Los Vengadores (2012)'><center><img border="0" src="http://4.bp.blogspot.com/-cF8QdycAgno/UDkWNys9iKI/AAAAAAAABd4/QPNK1tN9Qog/s1600/poster.jpg" style="display: block; height: 400px; width: 316;"></center></a>
+    <div CLASS='latino'></div>
+    <div CLASS='pie-post'>
+    <div style='float:left'>
+    <div class='fb-like' data-href='http://www.somosmovies.com/2012/08/the-avengers-los-vengadores-2012.html' data-layout='button_count' data-send='false' data-show-faces='false' data-width='120'></div>
+    </div>
+    </div>
+    <div STYLE='clear: both;'></div>
+    </section>
+    </article>
     '''
 
-    patronvideos  = "<h3 class='post-title entry-title'>[^<]+"
-    patronvideos += "<a href='([^']+)'>([^<]+)</a>[^<]+"
-    patronvideos += "</h3>[^<]+"
-    patronvideos += "<div class='post-header-line-1'></div>[^<]+"
-    patronvideos += "<div class='post-body entry-content'>[^<]+"
-    patronvideos += "<a href='[^']+'><div id='[^']+'>.*?<img.*?src=\"([^\"]+)\""
+    patron = "<article(.*?)</article>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
 
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
     for match in matches:
-        scrapedtitle = match[1]
+        logger.info("match="+match)
+        scrapedtitle = scrapertools.get_match(match,"<a href='[^']+' title='([^']+)'")
+        scrapedurl = urlparse.urljoin(item.url, scrapertools.get_match(match,"<a href='([^']+)' title='[^']+'") )
         scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
+        scrapedthumbnail = urlparse.urljoin(item.url, scrapertools.get_match(match,'<img border="0" src="([^"]+)"') )
+        try:
+            idioma = scrapertools.get_match(match,"</center></a[^<]+<div CLASS='([^']+)'></div>")
+            scrapedtitle = scrapedtitle + " ("+idioma.upper()+")"
+        except:
+            pass
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
-    patronvideos  = "<a class='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Siguiente'>"
+    #<a CLASS='blog-pager-older-link' href='http://www.somosmovies.com/search?updated-max=2012-08-22T23:10:00-05:00&amp;max-results=16' id='Blog1_blog-pager-older-link' title='Siguiente Película'>Siguiente &#187;</a>
+    patronvideos  = "<a CLASS='blog-pager-older-link' href='([^']+)' id='Blog1_blog-pager-older-link' title='Siguiente"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -99,6 +109,56 @@ def listado(item):
         #http://www.somosmovies.com/search/label/Peliculas?updated-max=2010-12-20T08%3A27%3A00-06%3A00&max-results=12
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedurl = scrapedurl.replace("%3A",":")
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="listado", title=">> Página siguiente" , url=scrapedurl , folder=True) )
+
+    return itemlist
+
+def findvideos(item):
+    logger.info("[somosmovies.py] findvideos")
+    itemlist = []
+    
+    data = scrapertools.cachePage(item.url)
+    
+    '''
+    <fieldset id="enlaces"><legend>Enlaces</legend><br />
+    <div class="clearfix uno"><div class="dos"><b>1 LINK</b></div><div class="tres"><a href="http://goo.gl/U5Vdj" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://goo.gl/cCndD" target="_blank">EDOC</a> <b class="sep">|</b> <a href="http://goo.gl/j1SXg" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://goo.gl/dT6ki" target="_blank">GlumboUploads</a> <b class="sep">|</b> <a href="http://goo.gl/UzNPb" target="_blank">RapidGator</a> <b class="sep">|</b> <a href="http://goo.gl/zawVY" target="_blank">TurboBit</a> <b class="sep">|</b> <a href="http://goo.gl/NLGjA" target="_blank">DepositFiles</a> <b class="sep">|</b> <a href="http://goo.gl/DQyv1" target="_blank">FreakShare</a> <br />
+    </div></div><div class="clearfix uno"><div class="dos"><b>EN PARTES</b></div><div class="tres"><a href="http://goo.gl/bvAUf" target="_blank">Zippyshare</a> <b class="sep">|</b> <a href="http://goo.gl/2cA1o" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://goo.gl/fCIyM" target="_blank">EDOC</a></div></div></fieldset>
+    '''
+    # Se queda con la caja de enlaces
+    data = scrapertools.get_match(data,'<fieldset id="enlaces"><legend>Enlaces</legend>(.*?)</fieldset>')
+    
+    # Se queda con los enlaces 1 LINK
+    data = scrapertools.get_match(data,'<div class="clearfix uno"><div class="dos"><b>1 LINK</b></div><div class="tres">(.*?)</div></div>')
+    patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="", folder=False))
+
+    return itemlist
+
+def play(item):
+    logger.info("[somosmovies.py] play(item.url="+item.url+")")
+    itemlist=[]
+
+    if "goo.gl" in item.url:
+        logger.info("Acortador goo.gl")
+        location = scrapertools.get_header_from_response(item.url,header_to_get="location")
+        item.url = location
+        return play(item)
+    
+    #adf.ly
+    elif "j.gs" in item.url:
+        logger.info("Acortador j.gs (adfly)")
+        from servers import adfly
+        location = adfly.get_long_url(item.url)
+        item.url = location
+        return play(item)
+
+    else:
+        from servers import servertools
+        itemlist=servertools.find_video_items(data=item.url)
+        for videoitem in itemlist:
+            videoitem.channel=__channel__
+            videoitem.folder=False
 
     return itemlist
