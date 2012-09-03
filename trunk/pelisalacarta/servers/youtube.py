@@ -248,22 +248,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    patronvideos = "youtube.com/v/([0-9A-Za-z_-]{11})"
-    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = "[YouTube]"
-        url = "http://www.youtube.com/watch?v="+match[0]
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'youtube' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
+    patronvideos  = 'youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
     logger.info("[youtube.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
