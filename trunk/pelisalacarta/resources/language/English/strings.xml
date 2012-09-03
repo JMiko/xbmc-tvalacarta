@@ -10,6 +10,7 @@
     <string id="30000">Default player:</string>
     <string id="30001">Check for updates:</string>
     <string id="30004">Automatic update channels:</string>
+    <string id="30201">Update library each time XBMC opens</string>
     <string id="30002">Enable adult mode:</string>
     <string id="30003">Enable debug logging:</string>
     <string id="30043">Force view mode:</string>
