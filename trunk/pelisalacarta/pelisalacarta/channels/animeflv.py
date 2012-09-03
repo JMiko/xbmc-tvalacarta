@@ -240,6 +240,17 @@ def serie(item):
         scrapedtitle = match[1]
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = scrapertools.entityunescape( scrapedtitle )
+        
+        try:
+            episodio = scrapertools.get_match(scrapedtitle,"Capítulo (\d+)")
+            if len(episodio)==1:
+                scrapedtitle = "1x0"+episodio
+            else:
+                scrapedtitle = "1x"+episodio
+        except:
+            pass
+        
+        
         fulltitle = scrapedtitle
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
