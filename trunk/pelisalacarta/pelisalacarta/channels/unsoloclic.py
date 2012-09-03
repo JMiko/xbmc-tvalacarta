@@ -95,7 +95,7 @@ def novedades(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[tusnovelas.py] findvideos")
+    logger.info("[unsoloclic.py] findvideos")
     data = scrapertools.cache_page(item.url)
     itemlist=[]
 
@@ -117,7 +117,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[tusnovelas.py] findvideos")
+    logger.info("[unsoloclic.py] play")
     data = scrapertools.cache_page(item.url)
     itemlist=[]
 
