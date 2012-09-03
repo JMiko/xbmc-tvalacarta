@@ -30,7 +30,7 @@ def getmainlist():
     if config.get_platform() in ("wiimc","rss") :itemlist.append( Item(title="Wiideoteca (Beta)" , channel="wiideoteca" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"wiideoteca.png")) )
     if config.get_platform()=="rss":itemlist.append( Item(title="pyLOAD (Beta)" , channel="pyload" , action="mainlist" , thumbnail = urlparse.urljoin(get_thumbnail_path(),"pyload.png")) )
     itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"descargas.png")) )
-    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"configuracion.png")) )
+    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"configuracion.png"), folder=False) )
     if config.get_setting("fileniumpremium")=="true":
     	itemlist.append( Item(title="Torrents (Filenium)" , channel="descargasfilenium" , action="mainlist", thumbnail = urlparse.urljoin(get_thumbnail_path(),"torrents.png")) )
 
@@ -58,7 +58,7 @@ def mainlist(params,url,category):
     itemlist = getmainlist()
     for elemento in itemlist:
         logger.info("[channelselector.py] item="+elemento.title)
-        addfolder(elemento.title , elemento.channel , elemento.action , thumbnail=elemento.thumbnail)
+        addfolder(elemento.title , elemento.channel , elemento.action , thumbnail=elemento.thumbnail, folder=elemento.folder)
 
     # Label (top-right)...
     import xbmcplugin
@@ -266,7 +266,7 @@ def channels_list():
     itemlist.append( Item( title="Shurweb"       , channel="shurweb"             , language="ES"      , category="F,S,D,A" , type="generic"    ))
     itemlist.append( Item( title="Sipeliculas"       , channel="sipeliculas"             , language="ES"      , category="F" , type="generic"    )) # miguel 2/3/2012
     #itemlist.append( Item( title="Sofacine"              , channel="sofacine"             , language="ES" , category="F"          , type="generic"  ))
-    #itemlist.append( Item( title="Somosmovies"           , channel="somosmovies"          , language="ES" , category="F,S,D,A,VOS"    , type="generic"  ))
+    itemlist.append( Item( title="Somosmovies"           , channel="somosmovies"          , language="ES" , category="F,S,D,A,VOS"    , type="generic"  ))
     itemlist.append( Item( title="Sonolatino"            , channel="sonolatino"           , language=""   , category="M"          , type="xbmc"  ))
     itemlist.append( Item( title="Stagevu"               , channel="stagevusite"          , language=""   , category="G"          , type="xbmc"  ))
     itemlist.append( Item( title="Teledocumentales"      , channel="teledocumentales"     , language="ES" , category="D"          , type="generic" )) # mrfloffy 19/10/2011
@@ -310,7 +310,7 @@ def channels_list():
     #channelslist.append([ "Ovasid"                , "ovasid"               , "" , "ES" , "A" , "xbmc"  ])
     return itemlist
 
-def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail=""):
+def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="",folder=True):
     if category == "":
         try:
             category = unicode( nombre, "utf-8" ).encode("iso-8859-1")
@@ -322,7 +322,7 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="
     import xbmcplugin
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
     itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
-    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=True)
+    xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=folder)
 
 def get_thumbnail_path():
 
