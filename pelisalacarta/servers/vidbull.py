@@ -60,7 +60,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     if len(matches)>0:
-        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidbull]",media_url])
+        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidbull]",media_url+"|Referer="+urllib.quote("http://www.tusnovelas.com/archivos/player.swf")])
 
     for video_url in video_urls:
         logger.info("[vidbull.py] %s - %s" % (video_url[0],video_url[1]))
@@ -73,7 +73,8 @@ def find_videos(text):
     devuelve = []
 
     # http://www.vidbull.com/3360qika02mo
-    patronvideos  = 'vidbull.com/([A-Z0-9a-z]+)'
+    # http://vidbull.com/6efa0ns1dpxc.html
+    patronvideos  = 'vidbull.com/([A-Z0-9a-z\.]+)'
     logger.info("[vidbull.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
