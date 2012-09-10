@@ -69,7 +69,8 @@ def menugeneros(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-    
+    logger.info(data)
+
     # Narrow search by selecting only the combo
     bloque = scrapertools.get_match(data,'<select name="select2"(.*?)</select')
     
@@ -93,6 +94,7 @@ def menuanyos(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
+    logger.info(data)
     
     # Narrow search by selecting only the combo
     bloque = scrapertools.get_match(data,'<select name="select3"(.*?)</select')
@@ -133,7 +135,7 @@ def listcat(item):
         
     # Descarga la página
     data = scrapertools.cache_page(item.url)
-    #logger.info(data)
+    logger.info(data)
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<div id="covershot".*?<a.*?<img src="(.*?)".*?'
@@ -176,7 +178,7 @@ def peliculas(item):
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
-    #logger.info(data)
+    logger.info(data)
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<div id="covershot".*?<a.*?<img src="(.*?)".*?'
@@ -223,7 +225,7 @@ def listserie(item):
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
-    #logger.info(data)
+    logger.info(data)
     
     '''
     <div id="item">
