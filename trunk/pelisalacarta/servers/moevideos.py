@@ -48,13 +48,16 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     post = "id=1&enviar2=ver+video"
     data = scrapertools.cache_page( page_url , post=post, headers=headers )
     code = scrapertools.get_match(data,"video.php\?file\=([^\&]+)\&")
+    logger.info("code="+code)
         
     # API de letitbit
     headers2 = []
     headers2.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
-    url = "http://api.letitbit.net"
+    #url = "http://api.letitbit.net"
+    url = "http://api.moevideo.net"
     #post = "r=%5B%22tVL0gjqo5%22%2C%5B%22preview%2Fflv%5Fimage%22%2C%7B%22uid%22%3A%2272871%2E71f6541e64b0eda8da727a79424d%22%7D%5D%2C%5B%22preview%2Fflv%5Flink%22%2C%7B%22uid%22%3A%2272871%2E71f6541e64b0eda8da727a79424d%22%7D%5D%5D"
     #post = "r=%5B%22tVL0gjqo5%22%2C%5B%22preview%2Fflv%5Fimage%22%2C%7B%22uid%22%3A%2212110%2E1424270cc192f8856e07d5ba179d%22%7D%5D%2C%5B%22preview%2Fflv%5Flink%22%2C%7B%22uid%22%3A%2212110%2E1424270cc192f8856e07d5ba179d%22%7D%5D%5D
+    #post = "r=%5B%22tVL0gjqo5%22%2C%5B%22preview%2Fflv%5Fimage%22%2C%7B%22uid%22%3A%2268653%2E669cbb12a3b9ebee43ce14425d9e%22%7D%5D%2C%5B%22preview%2Fflv%5Flink%22%2C%7B%22uid%22%3A%2268653%2E669cbb12a3b9ebee43ce14425d9e%22%7D%5D%5D"
     post = 'r=["tVL0gjqo5",["preview/flv_image",{"uid":"'+code+'"}],["preview/flv_link",{"uid":"'+code+'"}]]'
     data = scrapertools.cache_page(url,headers=headers2,post=post)
     logger.info("data="+data)
@@ -62,7 +65,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
     patron = '"link"\:"([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    video_url = matches[0]
+    video_url = matches[0]+"?ref=www.moevideos.net|User-Agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:15.0) Gecko/20100101 Firefox/15.0.1"
     logger.info("[moevideos.py] video_url="+video_url)
 
     video_urls = []
@@ -110,6 +113,21 @@ def find_videos(data):
 
     # http://moevideo.net/video.php?file=71845.7a9a6d72d6133bb7860375b63f0e&width=600&height=450
     patronvideos  = '"(http://moevideo.net/video.php[^"]+)"'
+    logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[moevideos]"
+        url = match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'moevideos' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://www2.cinetux.org/moevideo.php?id=20671.29b19bfe3cfcf1c203816a78d1e8
+    patronvideos  = 'cinetux.org/moevideo.php\?id\=([a-z0-9\.]+)'
     logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
