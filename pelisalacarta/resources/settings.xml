@@ -45,6 +45,11 @@
     <setting id="alldebridpremium" type="bool" label="Alldebrid.com premium" default="false"/>
     <setting id="alldebriduser" type="text" label="30014"  enable="eq(-1,true)" default=""/>
     <setting id="alldebridpassword" type="text" option="hidden" label="30015" enable="!eq(-1,)+eq(-2,true)" default=""/>
+
+    <setting type="sep" />
+    <setting id="mocosoftxaccount" type="bool" label="MocosoftX" default="false"/>
+    <setting id="mocosoftxuser" type="text" label="User"  enable="eq(-1,true)" default=""/>
+    <setting id="mocosoftxpassword" type="text" option="hidden" label="Password" enable="!eq(-1,)+eq(-2,true)" default=""/>
   </category>
 
   <!-- Path downloads and subtitles -->
