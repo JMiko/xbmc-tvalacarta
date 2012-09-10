@@ -70,7 +70,7 @@ def lista(item):
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<a class="paginator-items" href="([^"]+)" title="Pagina de torrent[^"]+">([^<]+)</a>'
@@ -84,9 +84,9 @@ def lista(item):
 
     return itemlist
 
-def play(item):
-    logger.info("[divxatope.py] play")
-    itemlist = []
+def findvideos(item):
+    logger.info("[divxatope.py] findvideos")
+    itemlist=[]
 
     # Averigua el PHPSESSID
     login = LOGIN.replace("@","%40")
@@ -102,9 +102,22 @@ def play(item):
 
     # Descarga la página
     data = scrapertools.cache_page(item.url,headers=request_headers)
+
     #logger.info("data="+data)
     #href ="redirect.php?file=31351&url=http://www.divxatope.com/uploads/torrents/attachments/5730_iceberg-
     link = scrapertools.get_match(data,'redirect.php\?file=\d+\&url=(.*?\.torrent)')
     itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , url=link , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
+
+    # Ahora busca los vídeos
+    itemlist.extend(servertools.find_video_items(data=data))
+
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+
+        parsed_url = urlparse.urlparse(videoitem.url)
+        fichero = parsed_url.path
+        partes = fichero.split("/")
+        titulo = partes[ len(partes)-1 ]
+        videoitem.title = titulo + " - [" + videoitem.server+"]"
 
     return itemlist
