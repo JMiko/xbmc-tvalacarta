@@ -28,4 +28,7 @@
         {"id": "alldebridpremium", "label": "Cuenta premium All Debrid", "type": "bool", "default": "false"},
         {"id": "alldebriduser", "label": "Usuario", "type": "text", "default": ""},
         {"id": "alldebridpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
+        {"id": "mocosoftxaccount", "label": "Cuenta MocosoftX", "type": "bool", "default": "false"},
+        {"id": "mocosoftxuser", "label": "Usuario", "type": "text", "default": ""},
+        {"id": "mocosoftxpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
 ]
