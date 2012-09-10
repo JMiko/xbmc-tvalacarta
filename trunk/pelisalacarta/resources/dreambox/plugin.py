@@ -62,10 +62,12 @@ config.plugins.pelisalacarta.showadultcontent = ConfigYesNo(default=False)
 config.plugins.pelisalacarta.showsecretcontent = ConfigYesNo(default=False)
 config.plugins.pelisalacarta.version = NoSave(ConfigText(default="282"))
 
-#config.plugins.pelisalacarta.cinetubelogin = ConfigText(default="", fixed_size=False)
-#config.plugins.pelisalacarta.cinetubepass = ConfigText(default="", fixed_size=False)
-#config.plugins.pelisalacarta.serieslylogin = ConfigText(default="", fixed_size=False)
-#config.plugins.pelisalacarta.serieslypass = ConfigText(default="", fixed_size=False)
+config.plugins.pelisalacarta.mocosoftxaccount = ConfigYesNo(default=False)
+config.plugins.pelisalacarta.mocosoftxuser = ConfigText(default="", fixed_size=False)
+config.plugins.pelisalacarta.mocosoftxpassword = ConfigText(default="", fixed_size=False)
+config.plugins.pelisalacarta.serieslyaccount = ConfigYesNo(default=False)
+config.plugins.pelisalacarta.serieslyuser = ConfigText(default="", fixed_size=False)
+config.plugins.pelisalacarta.serieslypassword = ConfigText(default="", fixed_size=False)
 
 default = config.plugins.pelisalacarta.storagepath.value + "/pelisalacarta/movies"
 tmp = config.movielist.videodirs.value
@@ -1534,10 +1536,12 @@ class Pelisalacarta_Settings(Screen, ConfigListScreen):
         self.cfglist.append(getConfigListEntry(_("Cache Folder:"), config.plugins.pelisalacarta.storagepath))
 
 
-        #self.cfglist.append(getConfigListEntry(_("Login Cinetube:"), config.plugins.pelisalacarta.cinetubelogin))
-        #self.cfglist.append(getConfigListEntry(_("Password Cinetube:"), config.plugins.pelisalacarta.cinetubepass))
-        #self.cfglist.append(getConfigListEntry(_("Login Series.ly:"), config.plugins.pelisalacarta.serieslylogin))
-        #self.cfglist.append(getConfigListEntry(_("Password Series.ly:"), config.plugins.pelisalacarta.serieslypass))
+        self.cfglist.append(getConfigListEntry(_("Cuenta MocosoftX:"), config.plugins.pelisalacarta.mocosoftxaccount))
+        self.cfglist.append(getConfigListEntry(_("Login:"), config.plugins.pelisalacarta.mocosoftxuser))
+        self.cfglist.append(getConfigListEntry(_("Password:"), config.plugins.pelisalacarta.mocosoftxpassword))
+        self.cfglist.append(getConfigListEntry(_("Cuenta Series.ly:"), config.plugins.pelisalacarta.mocosoftxaccount))
+        self.cfglist.append(getConfigListEntry(_("Login:"), config.plugins.pelisalacarta.serieslyuser))
+        self.cfglist.append(getConfigListEntry(_("Password:"), config.plugins.pelisalacarta.serieslypassword))
 
         ConfigListScreen.__init__(self, self.cfglist, session)
 
@@ -1591,5 +1595,5 @@ def main(session, **kwargs):
 def Plugins(**kwargs):
     print "[pelisalacarta] Plugins"
     return [
-        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.20 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc = main),
-        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.20 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=main)]
+        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.21 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc = main),
+        PluginDescriptor(name = "pelisalacarta", description = "pelisalacarta 3.2.21 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=main)]
