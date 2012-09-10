@@ -23,10 +23,6 @@ __adult__ = "true"
 
 DEBUG = config.get_setting("debug")
 
-USER = config.get_setting("privateuser")
-PASSWORD = config.get_setting("privatepassword")
-LOGINURL = "http://mocosoftx.com/foro/login2/?user=" + USER + "&passwrd=" + PASSWORD + "&cookieneverexp=on&hash_passwrd="
-
 MAIN_HEADERS = []
 MAIN_HEADERS.append( ["Host","mocosoftx.com"] )
 MAIN_HEADERS.append( ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:8.0) Gecko/20100101 Firefox/8.0"] )
@@ -35,61 +31,94 @@ MAIN_HEADERS.append( ["Accept-Language","es-es,es;q=0.8,en-us;q=0.5,en;q=0.3"] )
 MAIN_HEADERS.append( ["Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7"] )
 MAIN_HEADERS.append( ["Connection","keep-alive"] )
 
+# Login:
+# <form action="http://mocosoftx.com/foro/login2/" method="post" accept-charset="ISO-8859-1" onsubmit="hashLoginPassword(this, '3e468fdsab5d9');" >
+# pst: user=blablabla&passwrd=&cookielength=-1&hash_passwrd=78e88DSe408508d22f
+# doForm.hash_passwrd.value = hex_sha1(hex_sha1(doForm.user.value.php_to8bit().php_strtolower() + doForm.passwrd.value.php_to8bit()) + cur_session_id);
 
 def isGeneric():
     return True
 
-def GetSessionID():
-    # Descarga la página
-    data = scrapertools.cache_page(LOGINURL,headers=MAIN_HEADERS)
-    logger.info("data="+data)
-    plogin = '<a href="([^"]+)">ingresa</a>'
-    plogout = '<a href="http://mocosoftx.com/foro/logout/?([^"]+)"><span>'
-    matches = re.compile(plogout,re.DOTALL).findall(data)
+def login():
+
+    # Averigua el id de sesión
+    data = scrapertools.cache_page("http://www.mocosoftx.com/foro/index.php")
+    cur_session_id = scrapertools.get_match(data,'form action="[^"]+" method="post" accept-charset="ISO-8859-1" onsubmit="hashLoginPassword\(this, \'([a-z0-9]+)\'')
+    logger.info("cur_session_id="+cur_session_id)
+
+    # Calcula el hash del password
+    import hashlib
+    LOGIN = config.get_setting("mocosoftxuser")
+    PASSWORD = config.get_setting("mocosoftxpassword")
+    logger.info("LOGIN="+LOGIN)
+    logger.info("PASSWORD="+PASSWORD)
     
-    if len(matches)>0:
-        return str(matches[0])
-    else:
-        return ''
+    #doForm.hash_passwrd.value = hex_sha1(hex_sha1(doForm.user.value.php_to8bit().php_strtolower() + doForm.passwrd.value.php_to8bit()) + cur_session_id);
+    hash_passwrd = hashlib.sha1( hashlib.sha1( LOGIN.lower() + PASSWORD.lower() ).hexdigest() + cur_session_id).hexdigest()
+    logger.info("hash_passwrd="+hash_passwrd)
+
+    # Hace el submit del login
+    post = "user="+LOGIN+"&passwrd=&cookielength=-1&hash_passwrd="+hash_passwrd
+    logger.info("post="+post)
+
+    data = scrapertools.cache_page("http://mocosoftx.com/foro/login2/" , post=post, headers=MAIN_HEADERS)
+
+    return True
 
 def mainlist(item):
     logger.info("[mocosoftx.py] mainlist")
     itemlist = []
-    sid = GetSessionID()
-    # Añade al listado de XBMC
-    #xbmctools.addnewfolder( __channel__ , "Novedades" , category , "Novedades"            ,"http://mocosoftx.com/foro/index.php"+sid,"","")
-    itemlist.append( Item( channel=__channel__ , title="Novedades" , action="Novedades" , url="http://mocosoftx.com/foro/index.php"+sid , folder=True ) )
-    if sid=='':
-        itemlist.append( Item( channel=__channel__ , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
-    else:
-        itemlist.append( Item( channel=__channel__ , title="Listado Completo" , action="FullList" , url="http://www.mocosoftx.com/foro/index.php"+sid+";action=.xml;type=rss2;limit=500;board=14;sa=news" , folder=True ) )
     
+    if config.get_setting("mocosoftxaccount")!="true":
+        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="" , url="" , folder=False ) )
+    else:
+        if login():
+            item.url = "http://mocosoftx.com/foro/forum/"
+            return foro(item)
+        else:
+            itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
+
     return itemlist
 
-def Novedades(item):
-    logger.info("[mocosoftx.py] Novedades")
+def foro(item):
+    logger.info("[mocosoftx.py] foro")
     itemlist = []
+    
     # Descarga la página
     data = scrapertools.cache_page(item.url,headers=MAIN_HEADERS)
-    #logger.info(data)
     
-    # Extrae las entradas (carpetas)
-    patron  = '<td class="sp_middle sp_regular_padding sp_fullwidth">'
-    patron += '<a href="(http://mocosoftx.com/foro/peliculas-xxx-online-\(completas\)[^"]+)"'
-    patron += '>([^<]+)</a>'
-    patron += '.*?<img src="([^"]+)" alt=""'
+    # Extrae los foros y subforos
+    patron  = '<h4><a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    for match in matches:
-        # Atributos
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        scrapedplot = ""
-        # if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        # Añade al listado de XBMC
-        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="detail" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
+    for scrapedurl,scrapedtitle in matches:
+        title = ">> Foro "+scrapedtitle
+        url = urlparse.urljoin(item.url,scrapedurl)
+        #http://mocosoftx.com/foro/fotos-hentai/?PHPSESSID=nflddqf9nvbm2dd92
+        if "PHPSESSID" in url:
+            url = scrapertools.get_match(url,"(.*?)\?PHPSESSID=")
+        thumbnail = ""
+        plot = ""
+        itemlist.append( Item( channel=__channel__ , title=title , action="foro" , url=url , plot=plot, thumbnail=thumbnail, folder=True ) )
     
+    # Extrae los hilos individuales
+    patron = '<td class="icon2 windowbgb">[^<]+'
+    patron += '<img src="([^"]+)"[^<]+'
+    patron += '</td>[^<]+'
+    patron += '<td class="subject windowbgb2">[^<]+'
+    patron += '<div >[^<]+'
+    patron += '<span id="msg_\d+"><a href="([^"]+)">([^>]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for scrapedthumbnail,scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle
+        url = urlparse.urljoin(item.url,scrapedurl)
+        if "PHPSESSID" in url:
+            url = scrapertools.get_match(url,"(.*?)\?PHPSESSID=")
+        thumbnail = scrapedthumbnail
+        plot = ""
+        itemlist.append( Item( channel=__channel__ , title=title , action="findvideos" , url=url , plot=plot, thumbnail=thumbnail, folder=True ) )
+
     # Extrae la marca de siguiente página
     patronvideos = '\[<b>[^<]+</b>\] <a class="navPages" href="([^"]+)">'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -103,79 +132,34 @@ def Novedades(item):
         itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="Novedades" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
-                                                                                          
-def FullList(item):
-    logger.info("[mocosoftx.py] FullList")
-    itemlist = []
-    url = item.url
-    
-    if url=="":
-        url = "http://www.mocosoftx.com/foro/index.php?action=.xml;type=rss2;limit=500;board=14"
-    
-    # Descarga la página
-    data = scrapertools.cache_page(url , headers=MAIN_HEADERS , timeout=30)
-    #logger.info(data)
-    
-    # Extrae las entradas (carpetas)
-    patron      = '<item>(.*?)</item>'
-    matchesITEM = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matchesITEM[0])
-    patronvideos = '<title>(.*?)</title>[^<]+<link>(.*?)</link>'
-    #patronvideos += '<\!\[CDATA\[<a href="[^"]+" target="_blank"><img src="([^"]+)".*?'
-    for match in matchesITEM:
-        matches = re.compile(patronvideos,re.DOTALL).findall(match)
-        scrapertools.printMatches(matches)
-        
-        for match2 in matches:
-            scrapedtitle = match2[0]
-            scrapedtitle = scrapedtitle.replace("<![CDATA[","")
-            scrapedtitle = scrapedtitle.replace("]]>","")
-            scrapedurl = match2[1]
-            try:
-                scrapedthumbnail = re.compile('<img src="(.+?)"').findall(match)[0]
-            except:
-                scrapedthumbnail = ""
-            scrapedplot = ""
-            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            
-            itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="detail" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
-    
-    return itemlist
 
-def detail(item):
-    logger.info("[mocosoftx.py] detail")
-    itemlist = []
-    url = item.url
-    title = urllib.unquote_plus( item.title )
-    thumbnail = urllib.unquote_plus( item.thumbnail )
-    #plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    if "CDATA" in url:
-        data = url
-        patronthumb = '<img src="([^"]+)"'
-        matches = re.compile(patronthumb,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-    else:
-        #Descarga la página
-        sid = GetSessionID()
-        data = scrapertools.cache_page(url+sid,headers=MAIN_HEADERS)
-        patronthumb = '<img src="([^"]+)" alt="" border="0" />[</a>|<br />]+'
-        matches = re.compile(patronthumb,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-    logger.info(data)
-    #addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ):
-    # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los videos
-    # ------------------------------------------------------------------------------------
-    listavideos = servertools.findvideos(data)
-    c=0
-    for video in listavideos:
-        c=c+1
-        try:
-            imagen = matches[c]
-        except:
-            imagen = thumbnail
-        itemlist.append( Item( channel=__channel__ , title=title+" - ["+video[2]+"]" , action="play" ,  server= video[2], url=video[1] ,thumbnail=imagen, plot=item.plot, folder=False ) )
-    # ------------------------------------------------------------------------------------
-    
-    return itemlist
+def findvideos(item):
+    logger.info("[mocosoftx.py] findvideos")
+    itemlist=[]
 
+    # Busca el thumbnail y el argumento
+    data = scrapertools.cache_page(item.url)
+    
+    try:
+        thumbnail = scrapertools.get_match(data,'<div class="post">.*?<img src="([^"]+)"')
+    except:
+        thumbnail = ""
+    
+    plot = ""
+    
+    # Ahora busca los vídeos
+    itemlist = servertools.find_video_items(data=data)
+
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+        videoitem.plot = plot
+        videoitem.thumbnail = thumbnail
+        videoitem.fulltitle = item.title
+
+        parsed_url = urlparse.urlparse(videoitem.url)
+        fichero = parsed_url.path
+        partes = fichero.split("/")
+        titulo = partes[ len(partes)-1 ]
+        videoitem.title = titulo + " - [" + videoitem.server+"]"
+
+    return itemlist
