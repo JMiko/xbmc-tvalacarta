@@ -65,7 +65,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
     patron = '"link"\:"([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    video_url = matches[0]+"?ref=www.moevideos.net|User-Agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:15.0) Gecko/20100101 Firefox/15.0.1"
+    video_url = matches[0]+"?ref=www.moevideos.net|User-Agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:15.0) Gecko/20100101 Firefox/15.0.1&Range=bytes:0-"
     logger.info("[moevideos.py] video_url="+video_url)
 
     video_urls = []
