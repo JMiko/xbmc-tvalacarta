@@ -28,13 +28,13 @@ def mainlist(item):
     logger.info("[cinetux.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="Novedades" , url="http://www.cinetux.org/" ))
-    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades subtitulado" , url="http://www.cinetux.org/", extra="Nuevo Sub" ))
-    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades DVD" , url="http://www.cinetux.org/", extra="ltimo DVDRIP" ))
-    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades latino" , url="http://www.cinetux.org/", extra="Nuevo Latino" ))
-    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades castellano" , url="http://www.cinetux.org/", extra="Nuevo Castellano" ))
-    itemlist.append( Item(channel=__channel__ , action="bloque", title="Nueva calidad disponible" , url="http://www.cinetux.org/", extra="Nueva Calidad" ))
-    itemlist.append( Item(channel=__channel__ , action="generos", title="Por géneros" , url="http://www.cinetux.org/" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="Novedades" , url="http://www.cinetux.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades subtitulado" , url="http://www.cinetux.org/", extra="Nuevo Sub", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades DVD" , url="http://www.cinetux.org/", extra="ltimo DVDRIP", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades latino" , url="http://www.cinetux.org/", extra="Nuevo Latino", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades castellano" , url="http://www.cinetux.org/", extra="Nuevo Castellano", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="bloque", title="Nueva calidad disponible" , url="http://www.cinetux.org/", extra="Nueva Calidad", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="generos", title="Por géneros" , url="http://www.cinetux.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
 
     return itemlist
 
@@ -58,7 +58,7 @@ def peliculas(item):
         scrapedplot = ""
         scrapedtitle = title + " ["+calidad+"]"
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg",  folder=True) )
 
     patron  = '<div id="post-\d+">[^<]+'
     patron += '<div class="index_item index_item_ie"><a href="([^"]+)" rel="[^"]+" title="[^"]+"><img style="[^"]+" width="\d+" height="\d+" src=([^>]+)>[^<]+'
@@ -71,7 +71,7 @@ def peliculas(item):
         scrapedthumbnail = thumbnail[:-2]
         scrapedtitle = title[14:]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<a href="([^"]+)"\s*><strong>\&raquo\;</strong></a>'
@@ -80,7 +80,7 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
 
     return itemlist
 
@@ -110,7 +110,7 @@ def bloque(item):
         scrapedtitle = scrapedtitle.capitalize()
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=True) )
 
     return itemlist
 
@@ -130,7 +130,7 @@ def generos(item):
         scrapedplot = ""
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=True) )
 
     return itemlist
 
@@ -149,7 +149,7 @@ def tags(item):
         scrapedplot = ""
         scrapedthumbnail = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=True) )
 
     return itemlist
 
@@ -183,7 +183,7 @@ def findvideos(item):
         url = scrapedlink
         thumbnail = item.thumbnail
         plot = ""
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
 
     patron  = '<tr class="tabletr">[^<]+'
     patron += '<td class="episode-server[^>]+><img[^>]+>([^>]+)</td>[^<]+'
