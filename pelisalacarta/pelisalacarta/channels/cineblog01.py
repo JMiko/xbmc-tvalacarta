@@ -30,13 +30,13 @@ def mainlist(item):
     itemlist = []
 
     # Main options
-    itemlist.append( Item(channel=__channel__, action="peliculas"  , title="Film - Novità" , url="http://cineblog01.com/" ))
-    itemlist.append( Item(channel=__channel__, action="menuvk"     , title="Film - VK senza blochi" , url="http://cineblog01.com/" ))
-    itemlist.append( Item(channel=__channel__, action="menugeneros", title="Film - Per genere" , url="http://cineblog01.com/" ))
-    itemlist.append( Item(channel=__channel__, action="menuanyos"  , title="Film - Per anno" , url="http://cineblog01.com/" ))
+    itemlist.append( Item(channel=__channel__, action="peliculas"  , title="Film - Novità" , url="http://www.cineblog01.org/"))
+    itemlist.append( Item(channel=__channel__, action="menuvk"     , title="Film - VK senza blochi" , url="http://www.cineblog01.org/"))
+    itemlist.append( Item(channel=__channel__, action="menugeneros", title="Film - Per genere" , url="http://www.cineblog01.org/"))
+    itemlist.append( Item(channel=__channel__, action="menuanyos"  , title="Film - Per anno" , url="http://www.cineblog01.org/"))
     itemlist.append( Item(channel=__channel__, action="search"     , title="Film - Cerca" ))
-    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Serie" , url="http://cineblog01.info/serietv/" ))
-    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Anime" , url="http://cineblog01.info/anime/" ))
+    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Serie" , url="http://www.cineblog01.info/serietv/" ))
+    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Anime" , url="http://www.cineblog01.info/anime/" ))
 
     return itemlist
 
@@ -117,7 +117,7 @@ def menuanyos(item):
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto):
     logger.info("[cineblog01.py] "+item.url+" search "+texto)
-    item.url = "http://cineblog01.com/?s="+texto
+    item.url = "http://www.cineblog01.org/?s="+texto
     try:
         return peliculas(item)
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
