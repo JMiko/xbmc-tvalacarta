@@ -62,6 +62,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             calidad = fmt_list_array[i].split("/")[0]
             video_url = video_url.replace("flv&itag="+calidad,"flv")
             video_url = video_url.replace("="+calidad+"&url=","")
+            video_url = video_url.replace("sig=","signature=")
+            video_url = re.sub("^=http","http",video_url)
+
             resolucion = fmt_list_array[i].split("/")[1]
     
             formato = ""
