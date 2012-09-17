@@ -27,8 +27,75 @@ def mainlist(item):
     logger.info("[seriespepito.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="listalfabetico"   , title="Listado alfabético"))
-    itemlist.append( Item(channel=__channel__, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/"))
+    itemlist.append( Item(channel=__channel__, action="novedades"        , title="Novedades", url="http://www.seriespepito.com/nuevos-capitulos/",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+    itemlist.append( Item(channel=__channel__, action="lomasvisto"        , title="Lo más visto", url="http://www.seriespepito.com/nuevos-capitulos/",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico"   , title="Listado alfabético",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+    itemlist.append( Item(channel=__channel__, action="allserieslist"    , title="Listado completo",    url="http://www.seriespepito.com/",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+
+    return itemlist
+
+def novedades(item):
+    logger.info("[seriespepito.py] novedades")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<ul class="lista_series">(.*?)</ul>')
+    
+    patron  = '<li>[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += "<img src='([^']+)'[^>]+>(.*?)</li>"
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    itemlist = []
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        logger.info("title="+scrapedtitle)
+        title = scrapertools.htmlclean(scrapedtitle).strip()
+        title = title.replace("\r","").replace("\n","")
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        title = re.compile("\s+",re.DOTALL).sub(" ",title)
+        logger.info("title="+title)
+
+        url = scrapedurl
+        thumbnail = scrapedthumbnail
+        plot = ""
+        plot = unicode( plot, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+
+    return itemlist
+
+def lomasvisto(item):
+    logger.info("[seriespepito.py] lomasvisto")
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'Lo mas visto de Pepito[^<]+</div>[^<]+<ul class=\'nav\'>(.*?)</ul>')
+    patron  = '<li>[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += "<img src='([^']+)'[^>]+>(.*?)</li>"
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    itemlist = []
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        logger.info("title="+scrapedtitle)
+        title = scrapertools.htmlclean(scrapedtitle).strip()
+        title = title.replace("\r","").replace("\n","")
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        title = re.compile("\s+",re.DOTALL).sub(" ",title)
+        logger.info("title="+title)
+
+        url = scrapedurl
+        thumbnail = scrapedthumbnail
+        plot = ""
+        plot = unicode( plot, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -37,6 +104,7 @@ def allserieslist(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,"<ul class='nav' id='lista_completa_series_ul'>(.*?)</ul>")
     patron = "<li><a href='([^']+)'>([^<]+)</a></li>"
 
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -54,7 +122,7 @@ def allserieslist(item):
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
-        itemlist.append( Item(channel=__channel__, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -63,32 +131,8 @@ def listalfabetico(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="0-9",url="http://www.seriespepito.com/lista-series-num/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="A",url="http://www.seriespepito.com/lista-series-a/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="B",url="http://www.seriespepito.com/lista-series-b/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="C",url="http://www.seriespepito.com/lista-series-c/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="D",url="http://www.seriespepito.com/lista-series-d/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="E",url="http://www.seriespepito.com/lista-series-e/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="F",url="http://www.seriespepito.com/lista-series-f/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="G",url="http://www.seriespepito.com/lista-series-g/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="H",url="http://www.seriespepito.com/lista-series-h/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="I",url="http://www.seriespepito.com/lista-series-i/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="J",url="http://www.seriespepito.com/lista-series-j/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="K",url="http://www.seriespepito.com/lista-series-k/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="L",url="http://www.seriespepito.com/lista-series-l/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="M",url="http://www.seriespepito.com/lista-series-m/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="N",url="http://www.seriespepito.com/lista-series-n/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="O",url="http://www.seriespepito.com/lista-series-o/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="P",url="http://www.seriespepito.com/lista-series-p/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="Q",url="http://www.seriespepito.com/lista-series-q/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="R",url="http://www.seriespepito.com/lista-series-r/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="S",url="http://www.seriespepito.com/lista-series-s/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="T",url="http://www.seriespepito.com/lista-series-t/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="U",url="http://www.seriespepito.com/lista-series-u/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="V",url="http://www.seriespepito.com/lista-series-v/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="W",url="http://www.seriespepito.com/lista-series-w/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="X",url="http://www.seriespepito.com/lista-series-x/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="Y",url="http://www.seriespepito.com/lista-series-y/"))
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="Z",url="http://www.seriespepito.com/lista-series-z/"))
+    for letra in ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']:
+        itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title=letra,url="http://www.seriespepito.com/lista-series-"+letra.lower()+"/",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -97,52 +141,20 @@ def alphaserieslist(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
+    data = scrapertools.get_match(data,'<ul class="lista_series">(.*?)</ul>')
 
-    # Extrae las entradas (carpetas)
-    '''
-    <div class='lista-series'>    
-    <div class="imagen">
-    <a href="http://abducidos.seriespepito.com" title="Abducidos online">
-    <img src='http://www.midatacenter.com/seriespepito/imagenes-serie/abducidos498.jpg' width='90' height='124' border='0' alt='Abducidos online'   />                  </a>
-    </div>
-    <div class="nombre">
-    <a href="http://abducidos.seriespepito.com" title="Abducidos online">Abducidos</a>
-    </div>
-    <div class="sinopsis">
-    Abducidos es una Mini-Serie Estadounidense que consta de 10 capítulos, los cuales los podrás ver online o descargar en SeriesPepito.
-    Es una miniserie de ciencia ficción emitida por primera vez en el ...                  </div>
-    <div class="enlace">
-    '''
-    patron  = "<div class='lista-series'>[^<]+"
-    patron += '<div class="imagen">[^<]+'
-    patron += '<a href="([^"]+)"[^<]+'
-    patron += "<img src='([^']+)'[^<]+</a>[^<]+"
-    patron += '</div>[^<]+'
-    patron += '<div class="nombre">[^<]+'
-    patron += '<a[^>]+>([^<]+)</a>[^<]+'
-    patron += '</div>[^<]+'
-    patron += '<div class="sinopsis">(.*?)</div>[^<]+'
-    patron += '<div class="enlace">'
-
-
+    patron = '<li><a href="([^"]+)" title="([^"]+)"><img src=\'([^\']+)\''
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
-        scrapedplot = match[3].strip()
-        scrapedplot = scrapertools.htmlclean(scrapedplot)
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
-
-        itemlist.append( Item(channel=__channel__, action="episodelist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+        title = scrapedtitle
+        url = scrapedurl
+        thumbnail = scrapedthumbnail
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -172,124 +184,91 @@ def episodelist(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
+    data = scrapertools.get_match(data,"<ul class='nav_lista_capitulos'>(.*?)<br")
+    logger.info(data)
 
     # Extrae los capítulos
-    patron  = "<li><a  href='(http://.*?.seriespepito.com.*?)'[^>]+><span>([^<]+)</span></a>"
+    '''
+    <li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-15/' title='Capitulo 15'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x15 - Capitulo 15</a>
+    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-16/' title='Capitulo 16'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x16 - Capitulo 16</a>
+    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-17/' title='Capitulo 17'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x17 - Capitulo 17</a>
+    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-18/' title='Capitulo 18'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x18 - Capitulo 18</a>
+    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-19/' title='Capitulo 19'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x19 - Capitulo 19</a>
+    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-20/' title='Capitulo 20'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x20 - Capitulo 20</a>
+    '''
+    patron  = "<li><a\s+href='([^']+)'[^>]+>"
+    patron += "<i[^<]+</i>"
+    patron += "([^<]+)</a>(.*?)</li>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedurl = match[0]
-        scrapedthumbnail = item.thumbnail
-        scrapedplot = item.plot
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for scrapedurl,scrapedtitle,idiomas in matches:
+        title = scrapedtitle.strip()
+        if "flag_es" in idiomas:
+            title = title + " (Español)"
+        if "flag_vo'" in idiomas:
+            title = title + " (VO)"
+        if "flag_vos" in idiomas:
+            title = title + " (VOS)"
+        url = scrapedurl
+        thumbnail = item.thumbnail
+        plot = item.plot
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show , context="4"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=item.show))
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
 def findvideos(item):
     logger.info("[seriespepito.py] findvideos")
     itemlist = []
-    try:
-        from core.subtitletools import saveSubtitleName
-        saveSubtitleName(item)
-    except:
-        pass
-    try:
-        # Descarga la pagina
-        data = scrapertools.cachePage(item.url)
-        #logger.info(data)
-        '''
-        <div class="content">
-        <div class="viewOnline"><h4>Ver Capitulo 3 Online</h4></div>	
-        <div style="clear:both"></div>					
-        <table cellpadding="0" cellspacing="0" border="0">
-        <thead>
-        <tr>
-        <th>Idioma</th>
-        <th>Fecha</th>
-        <th>Servidor</th>
-        <th>Enlace</th>
-        <th>Colabora</th>									
-        <th>Comentario</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr><td><div class='flag vos'></div></td><td>21/11/2010</td><td><img src='http://www.seriespepito.com/seriespepito/servidores/megavideod.jpg' width=45 height=20 class=server></td><td><a class='grayButton' href='http://www.megavideo.com/?d=0I8GDC55' target='_blank' rel='nofollow' alt=''>Ver</a></td><td>lKranich</td><td></td></tr>                    </tbody>
-        </table>
-        <div style="clear:both"></div>			
-        <div class="download"><h4>Descargar Capitulo 3 Gratis</h4></div>
-        <div style="clear:both"></div>
-        <table cellpadding="0" cellspacing="0" border="0">
-        <thead>
-        <tr>
-        <th>Idioma</th>
-        <th>Fecha</th>
-        <th>Servidor</th>
-        <th>Enlace</th>
-        <th>Colabora</th>									
-        <th>Comentario</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr><td><div class='flag vos'></div></td><td>21/11/2010</td><td><img src='http://www.seriespepito.com/seriespepito/servidores/megaupload.jpg' width=45 height=20 class=server></td><td><a class='grayButton' href='http://www.megaupload.com/?d=0I8GDC55' target='_blank' rel='nofollow' alt=''>Descargar</a></td><td>lKranich</td><td></td></tr>							</table>    
-        </div>
-        '''
-    
-        # Bloque con los enlaces
-        patron  = '<div class="downloadContainer">(.*?)<div class="linkContainer">'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        data = matches[0]
-        
-        # Listas de enlaces
-        patron  = "<tr><td><div class='([^']+)'></div></td>"
-        patron += "<td>[^<]+</td>"
-        patron += "<td><img src='([^']+)'[^>]+>.*?"
-        patron += "<a.*?href='([^']+)'"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        numero = 1
-        for match in matches:
-            scrapedurl = match[2]
-            scrapedthumbnail = item.thumbnail
-            scrapedplot = item.plot
 
-            if match[0]=="flag vos":
-                idioma="SUB"
-            else:
-                idioma="ESP"
-            
-            servidor = match[1].lower()
-            #print servidor
-            if "megaupload" in servidor:
-                servidor="megaupload"
-            elif "megavideo" in servidor:
-                servidor="megavideo"
-            else:
-                videos = servertools.findvideos(scrapedurl)
-                if len(videos)>0:
-                    servidor = videos[0][2]
-                    scrapedurl = videos[0][1]
-                else:
-                    servidor = ""
-            #print servidor
+    # Descarga la pagina
+    data = scrapertools.cachePage(item.url)
+    #logger.info(data)
+    '''
+    <tr><td><div class='flag flag_es'></div></td><td>16/09/2012</td><td><img src='http://nowvideo.eu/favicon.ico' width='16px' height='16px' style='border:0;background:none; margin:0 3px 0 0; padding:0' >
+    <b>nowvideo.eu</b></td><td><a class='btn btn-mini enlace_link' href='http://www.nowvideo.eu/video/50565ad5b8843' target='_blank' rel='nofollow' alt=''><i class='icon-play'></i> Ver</a></td><td>kubik</td><td></td></tr><tr><td>
+    '''
     
-            if servidor!="":
-                scrapedtitle = "Mirror %d - Idioma %s [%s]" % (numero,idioma,servidor)
-                itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=servidor, folder=False))
-                numero = numero + 1
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
+    # Listas de enlaces
+    patron  = "<tr><td><div class='([^']+')></div></td>"
+    patron += "<td>[^<]+</td>"
+    patron += "<td><img src='([^']+)'[^>]+>"
+    patron += "<b>([^<]+)</b></td><td><a class='[^']+' href='([^']+)'"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for idiomas,scrapedthumbnail,servidor,scrapedurl in matches:
+        url = scrapedurl
+        title = "Ver en "+servidor
+        plot = ""
+
+        if "flag_es" in idiomas:
+            title = title + " (Español)"
+        if "flag_vo'" in idiomas:
+            title = title + " (VO)"
+        if "flag_vos" in idiomas:
+            title = title + " (VOS)"
+
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+
+    return itemlist
+
+def play(item):
+    logger.info("[seriespepito.py] play")
+    itemlist=[]
+    itemlist = servertools.find_video_items(data=item.url)
+    i=1
+    for videoitem in itemlist:
+        videoitem.title = "Mirror %d%s" % (i,videoitem.title)
+        videoitem.fulltitle = item.fulltitle
+        videoitem.channel=channel=__channel__
+        i=i+1
 
     return itemlist
 
