@@ -120,16 +120,19 @@ def foro(item):
         itemlist.append( Item( channel=__channel__ , title=title , action="findvideos" , url=url , plot=plot, thumbnail=thumbnail, folder=True ) )
 
     # Extrae la marca de siguiente página
-    patronvideos = '\[<b>[^<]+</b>\] <a class="navPages" href="([^"]+)">'
+    #<a class="navPages" href="http://mocosoftx.com/foro/peliculas-xxx-online-(completas)/20/?PHPSESSID=rpejdrj1trngh0sjdp08ds0ef7">2</a>
+    patronvideos = '<strong>\d+</strong[^<]+<a class="navPages" href="([^"]+)">'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
     if len(matches)>0:
-        scrapedtitle = "Página siguiente"
+        scrapedtitle = ">> Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
+        if "PHPSESSID" in scrapedurl:
+            scrapedurl = scrapertools.get_match(scrapedurl,"(.*?)\?PHPSESSID=")
         scrapedthumbnail = ""
         scrapedplot = ""
-        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="Novedades" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
+        itemlist.append( Item( channel=__channel__ , title=scrapedtitle , action="foro" , url=scrapedurl , plot=scrapedplot, thumbnail=scrapedthumbnail, folder=True ) )
 
     return itemlist
 
