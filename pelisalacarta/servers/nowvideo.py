@@ -108,7 +108,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     #http://embed.nowvideo.eu/embed.php?v=obkqt27q712s9&amp;width=600&amp;height=480
-    patronvideos  = 'nowvideo.eu/embed.php?v\=([a-z0-9]+)'
+    #http://embed.nowvideo.eu/embed.php?v=4grxvdgzh9fdw&width=568&height=340
+    patronvideos  = 'nowvideo.eu/embed.php\?v\=([a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
