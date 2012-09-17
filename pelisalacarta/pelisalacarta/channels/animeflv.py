@@ -300,6 +300,9 @@ def findvideos(item):
     from core import unpackerjs3
 
     # Busca el argumento
+    headers=[]
+    headers.append( [ "User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:12.0) Gecko/20100101 Firefox/12.0" ] )
+    headers.append(["Referer","http://animeflv.net/archivos/player.swf"])
     data = scrapertools.cache_page(item.url)
     patron = '<img src="[^"]+" class="simg" align="left"[^>]+>(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -317,6 +320,12 @@ def findvideos(item):
 
         # Ahora busca los vídeos
         itemlist.extend( servertools.find_video_items(data=data) )
+        
+        # hulkshare robado
+        if "hl.php" in data:
+            url1 = scrapertools.get_match(data,"(http://prueba.animeflv.net/hl.php\?v=[a-zA-Z0-9\-]+)")
+            location = scrapertools.get_header_from_response(url1,headers=headers, header_to_get="location")
+            itemlist.append(Item(title=" - [hulkshare]",server="directo",url=location,action="play",folder=False))
 
     for videoitem in itemlist:
         videoitem.channel = __channel__
