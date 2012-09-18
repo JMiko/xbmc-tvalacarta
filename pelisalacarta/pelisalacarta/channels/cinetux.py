@@ -186,6 +186,21 @@ def findvideos(item):
         itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
 
     patron  = '<tr class="tabletr">[^<]+'
+    patron += '<td class="opcion-td"><img[^>]+>([^>]+)</td>[^<]+'
+    patron += '<td class="server-td[^>]+>([^<]+)</td>[^<]+'
+    patron += '<td class="idioma-td[^>]+>([^<]+)</td>[^<]+'
+    patron += '<td class="fuente-td[^>]+>([^<]+)</td>[^<]+'
+    patron += '<td class="link-td">(.*?)</td>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for scrapedtitle,scrapedserver,scrapedlanguage,scrapedquality,scrapedlink in matches:
+        title = "Ver "+scrapedtitle+" en "+scrapedserver+" ("+scrapedlanguage+") ("+scrapedquality+")"
+        url = scrapedlink
+        thumbnail = item.thumbnail
+        plot = ""
+        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
+
+    patron  = '<tr class="tabletr">[^<]+'
     patron += '<td class="episode-server[^>]+><img[^>]+>([^>]+)</td>[^<]+'
     patron += '<td class="episode-server-img[^>]+>([^<]+)</td>[^<]+'
     patron += '<td class="episode-lang[^>]+>([^>]+)</td>[^<]+'

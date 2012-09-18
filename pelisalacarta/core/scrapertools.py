@@ -884,7 +884,9 @@ def htmlclean(cadena):
     cadena = re.compile("<!--[^-]+-->",re.DOTALL).sub("",cadena)
     
     cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
+    
     cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
+
     cadena = re.compile("<object[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</object>","")
     cadena = re.compile("<param[^>]*>",re.DOTALL).sub("",cadena)
