@@ -52,42 +52,13 @@ def peliculas(item):
         data = scrapertools.cachePage( item.url , item.extra )
     else:
         data = scrapertools.cachePage( item.url )
-    '''
-    <div class="main-news">
-    <div class="main-news-content">
-    <div id="news-id-5677" style="display:inline;"><!--dle_image_begin:http://www.newdivx.net/uploads/1340575816_YouLuckyDog.jpg|left--><img src="/uploads/1340575816_YouLuckyDog.jpg" align="left" alt="Un perro con suerte (TV) (1994)" title="Un perro con suerte (TV) (1994)"  /><!--dle_image_end--></div><div style="clear: both;"></div>
-    <div class="main-news-link"><a href="http://www.newdivx.net/comedia/5677-un-perro-con-suerte-1994i.html"></a></div>
-    </div>
-    <h2><a href="http://www.newdivx.net/comedia/5677-un-perro-con-suerte-1994i.html">Un perro con suerte (TV) (1994)</a></h2>
-    <div class="main-news-hidden"><a href="http://www.newdivx.net/comedia/">Comedia</a>, <a href="http://www.newdivx.net/infantil/">Infantil</a></div>
-    </div>
-    '''
-    '''
-    <div class="main-news-content">
-    <div id="news-id-1198" style="display:inline;"><div align="center"><!--dle_image_begin:http://www.newdivx.net/uploads/thumbs/1280343827_mr_nobody.jpg|--><img src="/uploads/thumbs/1280343827_mr_nobody.jpg" alt="Las vidas posibles de Mr. Nobody (2009)" title="Las vidas posibles de Mr. Nobody (2009)"  /><!--dle_image_end--></div></div><div style="clear: both;"></div>
-    <div class="main-news-link"><a href="http://www.newdivx.net/ciencia-ficcion/1198-las-vidas-posibles-de-mr-nobody-2009.html"></a></div>
-    </div>
-    <h2><a href="http://www.newdivx.net/ciencia-ficcion/1198-las-vidas-posibles-de-mr-nobody-2009.html">Las vidas posibles de Mr. Nobody (2009)</a></h2>
-    '''
-    '''
-    <div class="main-news">
-    <div class="main-news-content">
-    <div id='news-id-5097'><!--dle_image_begin:http://www.newhd.org/uploads/thumbs/1332626577_Braveheart-898928745-large.jpg|left--><img src="http://www.newhd.org/uploads/thumbs/1332626577_Braveheart-898928745-large.jpg" align="left" alt="Braveheart (1995)" title="Braveheart (1995)"  /><!--dle_image_end--></div><div style="clear: both;"></div>
-    <div class="main-news-link">Ver <a href="http://www.newdivx.net/drama/5097-braveheart-1995.html" ></a> Online</div>
-    </div>
-    <h2><a href="http://www.newdivx.net/drama/5097-braveheart-1995.html" >Braveheart (1995)</a></h2>
-    <div class="main-news-hidden"><a href="http://www.newdivx.net/drama/">Drama</a>, <a href="http://www.newdivx.net/aventuras/">Aventuras</a>, <a href="http://www.newdivx.net/romatico/">Romatico</a></div>
-    </div>
-    '''
 
     # Patron de las entradas
-    patronvideos = '<div class="main-news-content">[^<]+'
-    patronvideos += '<div id=.news-id.*?<img src="([^"]+)".*?'
-    patronvideos += '<h2><a href="([^"]+)"\s*>([^<]+)</a></h2>[^<]+'
+    patronvideos = '<a href="([^"]+)"[^<]+<img src="([^"]+)" alt="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     # Añade las entradas encontradas
-    for thumbnail,url,title in matches:
+    for url,thumbnail,title in matches:
         scrapedtitle = title
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
@@ -116,7 +87,34 @@ def categorias(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,"<h4>Categories</h4>(.*?)</div>")
+    '''
+    <div class="case genres">
+    <ul class="nav">
+    <li><a href="/accion/">Acci&oacute;n</a></li>
+    <li><a href="/adolescencia/">Adolescencia</a></li>
+    <li><a href="/animacion/">Animaci&oacute;n</a></li>
+    <li><a href="/aventuras/">Aventura</a></li>
+    <li><a href="/belico/">Belico</a></li>
+    <li><a href="/ciencia-ficcion/">C. Ficci&oacute;n</a></li>
+    <li><a href="/clasico/">Clasico</a></li>
+    <li><a href="/comedia/">Comedia</a></li>
+    <li><a href="/drama/">Drama</a></li>
+    <li><a href="/fantastico/">Fantastico</a></li>
+    <li><a href="/intriga/">Intriga</a></li>
+    <li><a href="/infantil/">Infantil</a></li>
+    <li><a href="/musical/">Musical</a></li>
+    <li><a href="/terror/">Terror</a></li>
+    <li><a href="/thriller/">Thriller</a></li>
+    <li><a href="/western/">Western</a> </li>
+    <li><a href="/documentales/">Documentales</a></li>
+    <li>   <a href="/sport/">Sport</a> </li>
+    <li> <a href="/series/">Series</a> </li>
+    <li> <a href="/estrenos/">Estrenos</a></li>
+    <li><a href="/peliculas-vos/"><b>En VOS</b></a></li>
+    <li><a href="/latino/"><b>En Latino</b></a></li>
+    <li> <a href="/hd/"><b>En HD</b></a></li>
+    '''
+    data = scrapertools.get_match(data,'<div class="case genres">[^<]+<ul class="nav">(.*?)</ul>')
     patron = '<a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
