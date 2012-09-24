@@ -13,18 +13,14 @@ from core import logger
 from core import config
 
 # Obtiene la URL que hay detrás de un enlace a linkbucks
-def geturl(url):
+def get_long_url(url):
+    logger.info("[linkbucks.py] get_long_url(url='%s')" % url)
 
     # Descarga la página de linkbucks
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cache_page(url)
 
-    # Extrae la URL real
-    patronvideos  = "linkDestUrl \= '([^']+)'"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    devuelve = "";
-    if len(matches)>0:
-        devuelve = matches[0]
+    # Extrae la URL de adf.ly y descarga la página
+    location = scrapertools.get_match(data,"Lbjs.TargetUrl \= '([^']+)'")
+    logger.info("[linkbucks.py] -> location="+location)
 
-    return devuelve
+    return location
