@@ -215,6 +215,14 @@ def findvideos(item):
         plot = ""
         itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False) )
 
+    if len(itemlist)==0:
+        itemlist = servertools.find_video_items(data=data)
+        i=1
+        for videoitem in itemlist:
+            videoitem.title = "Ver Opción %d en %s" % (i,videoitem.server)
+            videoitem.fulltitle = item.fulltitle
+            videoitem.channel=channel=__channel__
+
     return itemlist
 
 def play(item):
