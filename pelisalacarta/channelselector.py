@@ -221,8 +221,8 @@ def channels_list():
     itemlist.append( Item( title="Italia film (IT)"      , channel="italiafilm"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="IslaPelículas"         , channel="islapeliculas"        , language="ES"    , category="F"       , type="generic"  ))
     
-    if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
-        itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
+    #if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
+    #    itemlist.append( Item( title="Justin.tv"              , channel="justintv"            , language=""      , category="G"       , type="generic"  ))
 
     itemlist.append( Item( title="La Guarida de bizzente", channel="documentalesatonline2", language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S,VOS"     , type="generic"  ))
