@@ -32,7 +32,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Peliculas Recien Agregadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/newest-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/newest-movies/page/"))
     itemlist.append( Item(channel=__channel__, title="Estrenos" , action="listarpeliculas", url="http://www.peliculasaudiolatino.com/latest-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/latest-movies/page/"))
-    itemlist.append( Item(channel=__channel__, title="Peliculas Actulizadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/updated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/updated-movies/page/"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas Actualizadas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/updated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/updated-movies/page/"))
     itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/most-viewed-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/most-viewed-movies/page/"))
     itemlist.append( Item(channel=__channel__, title="Peliculas Mejor Valoradas", action="listarpeliculas", url="http://www.peliculasaudiolatino.com/top-rated-movies/page/0.html" , extra="http://www.peliculasaudiolatino.com/top-rated-movies/page/"))
     itemlist.append( Item(channel=__channel__, title="Listado Alfabetico" , action="alfabetico", url="http://www.peliculasaudiolatino.com/letter/"))
