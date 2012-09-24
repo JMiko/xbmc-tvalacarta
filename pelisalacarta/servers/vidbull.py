@@ -40,11 +40,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
 
     # Extrae el trozo cifrado
+    '''
+    script type='text/javascript'>eval(function(p,a,c,k,e,d){while(c--)if(k[c])p=p.replace(new RegExp('\\b'+c.toString(a)+'\\b','g'),k[c]);return p}('2l 2=2k 2j(\'a://8.6/e/e.2i\',\'e\',\'2h\',\'2g\',\'9\');2.c(\'2f\',\'f\');2.c(\'2e\',\'2d\');2.c(\'2c\',\'f\');2.c(\'2b\',\'5\');2.c(\'2a\',\'29\');2.4(\'28\',\'../e/27.26\');2.4(\'25\',\'24\');2.4(\'m\',\'a://p.8.6:23/d/21/o.20\');2.4(\'1z\',\'a://p.8.6/i/1y/h.1x\');2.4(\'1w\',\'o\');2.4(\'1v.l\',\'1u\');2.4(\'1t\',\'1s\');2.4(\'1r\',\'j-3\');2.4(\'j.k\',\'a://8.6/h\');2.4(\'j.1q\',\'%1p+1o%1n%1m%1l%1k%1j.6%1i-h-1h.1g%22+1f%g+1e%g+1d%g+1c%1b+1a%19+18%17%n%16%14%n\');2.4(\'b.m\',\'a://8.6/13/12.11\');2.4(\'b.10\',\'f\');2.4(\'b.z\',\'15\');2.4(\'b.y\',\'1\');2.4(\'b.x\',\'0.7\');2.4(\'b.l\',\'w-v\');2.4(\'b.k\',\'a://8.6\');2.4(\'u\',\'t\');2.4(\'s\',\'a://8.6\');2.r(\'q\');',36,94,'||s1||addVariable||com||vidbull||http|logo|addParam||player|true|3D0|ytq373bhddsq||sharing|link|position|file|3E|video|fs4|flvplayer|write|aboutlink|VidBull|abouttext|right|top|out|over|timeout|hide|png|vidbull_playerlogo|images|2FIFRAME||3C|3D338|HEIGHT|3D640|WIDTH|3DNO|SCROLLING|MARGINHEIGHT|MARGINWIDTH|FRAMEBORDER|html|640x318|2Fembed|2Fvidbull|2F|3A|22http|3D|SRC|3CIFRAME|code|plugins|uniform|stretching|left|dock|provider|jpg|00005|image|flv|5fslq63iljrwuxim4m6wx32uxk7nv6rb3orixchf7fgrowdfiwuy5gqp||182|5271|duration|zip|modieus1|skin|opaque|wmode|bufferlength|autostart|always|allowscriptaccess|allowfullscreen|318|640|swf|SWFObject|new|var'.split('|')))
+    '''
     patron = "<script type='text/javascript'>(eval\(function\(p,a,c,k,e,d\).*?)</script>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     cifrado=""
     for match in matches:
-        if "mp4" in match:
+        logger.info("match="+match)
+        if "mp4" in match or "flv" in match:
             cifrado = match
             break
     
