@@ -110,7 +110,7 @@ def findvideos(item):
     scrapertools.printMatches(matches)
 
     for servidor,calidad,idioma,url in matches:
-        itemlist.append( Item(channel=__channel__, action="play" , title=servidor + " (" + calidad + ")(" + idioma + ")" , url=url))
+        itemlist.append( Item(channel=__channel__, action="play" , title=servidor + " (" + calidad + ")(" + idioma + ")" , url=url, folder=False))
 
     return itemlist
 
