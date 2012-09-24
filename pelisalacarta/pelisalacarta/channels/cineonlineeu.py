@@ -36,9 +36,9 @@ def mainlist(item):
 def generos(item):
     logger.info("[cineonlineeu.py] mainlist")
     itemlist = []
-
+    
     '''
-    <li><a href='#'>peliculas por genero</a>
+    <li><a href='#'>Peliculas por Genero</a>
     <ul>
     <li><a href='http://www.cine-online.eu/search/label/accion'>Acción</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Animaci%C3%B3n'>Animacion</a></li>
@@ -49,6 +49,7 @@ def generos(item):
     <li><a href='http://www.cine-online.eu/search/label/cine%20espa%C3%B1ol'>Cine Español</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Documental'>Documental</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Drama'>Drama</a></li>
+    <li><a href='http://adultos.cine-online.eu/'>Eroticas</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Fantastico'>Fantastico</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Infantil'>Infantil</a></li>
     <li><a href='http://www.cine-online.eu/search/label/romance'>Romance</a></li>
@@ -56,9 +57,10 @@ def generos(item):
     <li><a href='http://www.cine-online.eu/search/label/Thriller'>Thriller</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Western'>Western</a></li>
     </ul>
+    </li>
     '''
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,"<li><a href='#'>peliculas por genero</a>[^<]+<ul>(.*?)</ul>" )
+    data = scrapertools.get_match(data,"<li><a href='#'>Peliculas por Genero</a>[^<]+<ul>(.*?)</ul>" )
     patron  = "<li><a href='([^']+)'>([^<]+)</a></li>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -80,29 +82,31 @@ def peliculas(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
-    '''
-    <div class='post bar hentry'>
-    <a name='2511198152059281144'></a>
-    <h3 class='post-title entry-title'>
-    <a href='http://www.cine-online.eu/2012/08/los-inmortales.html'>Los inmortales</a>
-    </h3>
-    <div class='post-header-line-1'></div>
-    <div class='post-body entry-content'>
-    <div id='summary2511198152059281144'><a href="http://1.bp.blogspot.com/-sVlgrMa-8NA/UB5D5mSueeI/AAAAAAAAJNo/BGREaZVHNQs/s1600/Los_inmortales-365360791-large.jpg"><img style="float:left; margin:0 10px 10px 0;cursor:pointer; cursor:hand;width: 229px; height: 320px;" src="http://1.bp.blogspot.com/-sVlgrMa-8NA/UB5D5mSueeI/AAAAAAAAJNo/BGREaZVHNQs/s320/Los_inmortales-365360791-large.jpg" border="0" alt=""id="BLOGGER_PHOTO_ID_5773126429146249698" />
-    </a><br /><br />Los Inmortales son seres de una raza especial que sólo pueden morir decapitados entre sí. Viven desde hace siglos entre los hombres, pero ocultando su identidad. Unos defienden el Bien, otros, el Mal. Una maldición los obliga a luchar entre sí hasta que sólo quede uno de ellos. El escocés Connor MacLeod (Christopher Lambert) es uno de los supervivientes del clan de los Inmortales que ha llegado hasta nuestros días.<br /><iframe src="http://vk.com/video_ext.php?oid=146263567&id=163615214&hash=911afd3b1cb4b789&hd=1" width="607" height="360" frameborder="0"></iframe></div>
-    '''
     patron  = "<div class='post bar hentry'>[^<]+"
     patron += "<a name='[^']+'></a>[^<]+"
     patron += "<h3 class='post-title entry-title'>[^<]+"
     patron += "<a href='([^']+)'>([^<]+)</a>[^<]+"
-    patron += "</h3>.*?"
-    patron += "<div id='summary[^']+'>[^<]*"
-    patron += '<a[^<]+<img style="[^"]+" src="([^"]+)"[^>]+>(.*?)</div>'
+    patron += '</h3>.*?<img.*?src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedtitle,scrapedthumbnail,scrapedplot in matches:
-        plot = scrapertools.htmlclean(scrapedplot)
+    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+        plot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , folder=True) )
+
+    patron  = "<div class='item-content'>[^<]+"
+    patron += "<div class='item-thumbnail'>[^<]+"
+    patron += "<a href='([^']+)'[^<]+"
+    patron += "<img.*?src='([^']+)'[^<]+"
+    patron += "</a>[^<]+"
+    patron += "</div>[^<]+"
+    patron += "<div class='item-title'><a[^>]+>([^<]+)</a></div>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        plot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , folder=True) )
 
@@ -116,6 +120,58 @@ def peliculas(item):
         itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
+
+def findvideos(item):
+    logger.info("[cineonlineeu.py] findvideos")
+    data = scrapertools.cache_page(item.url)
+    itemlist=[]
+
+    #<a href="http://6dc55dcb.linkbucks.com/"
+    patron = '(http://[a-z0-9]+.linkbucks.com)'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for url in matches:
+        itemlist.append( Item(channel=__channel__, action="play", server="linkbucks", title="Ver enlace [linkbucks]" , url=url , thumbnail="" , plot=item.plot , folder=False) )
+
+    #<a href="http://6dc55dcb.linkbucks.com/"
+    patron = '(http://adf.ly/[a-zA-Z0-9]+)'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for url in matches:
+        itemlist.append( Item(channel=__channel__, action="play", server="adfly", title="Ver enlace [adf.ly]" , url=url , thumbnail="" , plot=item.plot , folder=False) )
+
+    from servers import servertools
+    itemlist.extend(servertools.find_video_items(data=data))
+    for videoitem in itemlist:
+        if videoitem.server!="linkbucks" and videoitem.server!="adfly":
+            videoitem.channel=__channel__
+            videoitem.action="play"
+            videoitem.folder=False
+            videoitem.title = "["+videoitem.server+"]"
+
+    return itemlist
+
+def play(item):
+    logger.info("[cineonlineeu.py] play")
+    itemlist=[]
+
+    if item.server=="linkbucks":
+        from servers import linkbucks
+        location = linkbucks.get_long_url(item.url)
+    elif item.server=="adfly":
+        from servers import adfly
+        location = adfly.get_long_url(item.url)
+    else:
+        location = item.url
+        
+    from servers import servertools
+    itemlist=servertools.find_video_items(data=location)
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.folder=False
+
+    return itemlist
+
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
