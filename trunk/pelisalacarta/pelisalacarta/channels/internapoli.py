@@ -31,33 +31,49 @@ def mainlist(item):
     return novedades(item)
 
 def novedades(item):
-    logger.info("[robinfilm.py] novedades")
+    logger.info("[internapoli.py] novedades")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     '''
-    <div class='post hentry'>
-    <a name='415866315917457690'></a>
+    <div class='post bar hentry'>
+    <a name='1873478727340052815'></a>
     <h3 class='post-title entry-title'>
-    <a href='http://www.internapoli-city.org/2011/11/hero-wanted-megaupload-ita.html'>Hero wanted Streaming Download ITA</a>
+    <a href='http://www.internapoli-city.org/2011/11/yes-man-megaupload-ita.html'>Yes Man Film Streaming (2008)</a>
     </h3>
-    <div class='post-header-line-1'>
-    <span class='post-comment-link' style='Float:right;'>
-    <a class='comment-link' href='http://www.internapoli-city.org/2011/11/hero-wanted-megaupload-ita.html#comment-form' onclick='' style='background:url(http://2.bp.blogspot.com/_kMUpUqMmduA/SVU81uUMS4I/AAAAAAAAA6E/OApf_zOXfC8/s1600/icon_comments.gif) no-repeat;Padding-left:20px;'>0
-    commenti</a>
-    </span>
-    <br/>
-    <span class='post-icons'>
-    </span>
-    </div>
+    <div class='post-header-line-1'></div>
     <div class='post-body entry-content'>
-    <div id='summary415866315917457690'><div class="separator" style="clear: both; text-align: center;">
-    </div>
-    <div class="separator" style="margin-left: 1em; margin-right: 1em; text-align: center;">
-    <img border="0" height="320" src="http://4.bp.blogspot.com/-CPGx23xboJ0/Tsx-1EpLzCI/AAAAAAAAAb8/RwXcAefGqxc/s320/89.jpeg" width="217" /></div>
+    <div id='summary1873478727340052815'><div dir="ltr" style="text-align: left;" trbidi="on">
+    <div class="separator" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em; text-align: center;">
+    <img border="0" height="200" src="http://1.bp.blogspot.com/-FmPLmbLHyso/Tr1BN8koSGI/AAAAAAAAAos/o_2dDVDchxE/s200/yes+man.jpg" width="141" /></div>
     <br />
+    <div>
+    Yes Man è un film del 2008, diretto da Peyton Reed. La pellicola racconta la storia di Carl Allen, interpretato da Jim Carrey, un uomo apatico e insoddisfatto della sua vita. Un giorno Carl incontra un suo ex collega che lo obbliga a partecipare ad un seminario sull&#8217;autostima, in cui viene spiegato un sistema per dare una svolta alla propria esistenza, che consiste nel dire sempre e a qualunque costo &#8220;sì&#8221; a tutto quello che ci viene richiesto.</div>
+    </div>
+    <br />
+    <div style="text-align: center;">
+    <b>Link.. (<a href="http://rapidgator.net/file/45405741/yes.man.2008.italian.dvdrip.xvid_p92.avi.html" target="_blank">Rapidgator</a>)-(<a href="http://www.putlocker.com/file/57077A323E5B3972" target="_blank">Putlocker</a>)-(<a href="http://www.nowvideo.co/video/08a947be1e980" target="_blank">Nowvideo</a>)-(<a href="http://www.nowdownload.co/dl/b1837f9f2f78b" target="_blank">Nowdownload</a>)</b></div>
+    <div style="text-align: center;">
+    <b>Qualità: Dvdrip - Anno: 2008</b></div>
+    <br />
+    <center>
+    <iframe allowfullscreen="allowfullscreen" frameborder="0" height="315" src="http://www.youtube.com/embed/FVI78YxlWGw" width="560"></iframe></center>
+    </div>
+    <script type='text/javascript'>
+    masSummaryAndThumb("summary1873478727340052815","http://www.internapoli-city.org/2011/11/yes-man-megaupload-ita.html");
+    </script>
+    <div class='readmorecontent'><a href='http://www.internapoli-city.org/2011/11/yes-man-megaupload-ita.html'>Vai al Film &#187;</a></div>
+    <div style='clear: both;'></div>
+    </div>
+    <div class='post-footer'><span class='post-labels'>
+    Etichette:
+    <a href='http://www.internapoli-city.org/search/label/Commedia' rel='tag'>Commedia</a>,
+    <a href='http://www.internapoli-city.org/search/label/DvdRip' rel='tag'>DvdRip</a>
+    </span>
+    </div>
+    </div>
     '''
-    patronvideos  = "<div class='post hentry'>[^<]+"
+    patronvideos  = "<div class='post bar hentry'>[^<]+"
     patronvideos += "<a name='[^']+'></a>[^<]+"
     patronvideos += "<h3 class='post-title entry-title'>[^<]+"
     patronvideos += "<a href='([^']+)'>([^<]+)</a>.*?"
