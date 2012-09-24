@@ -69,7 +69,22 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def find_videos(data):
     encontrados = set()
     devuelve = []
+    
+    # http://uploaded.net/file/1haty8nt
+    patronvideos  = '(uploaded.net/file/[a-zA-Z0-9]+)'
+    logger.info("[uploadedto.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
+    for match in matches:
+        titulo = "[uploaded.to]"
+        url = "http://"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'uploadedto' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
     # http://uploaded.to/file/1haty8nt
     patronvideos  = '(uploaded.to/file/[a-zA-Z0-9]+)'
     logger.info("[uploadedto.py] find_videos #"+patronvideos+"#")
