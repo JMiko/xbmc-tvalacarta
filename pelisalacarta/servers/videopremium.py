@@ -21,14 +21,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     # Lee la URL
     data = scrapertools.cache_page( page_url )
-    bloque = scrapertools.get_match(data,'<Form method="POST"(.*)</Form>')
+    bloque = scrapertools.get_match(data,'<Form method="POST"(.*)</.orm>')
     logger.info("bloque="+bloque)
     op = scrapertools.get_match(bloque,'<input type="hidden" name="op" value="([^"]+)"')
     usr_login = scrapertools.get_match(bloque,'<input type="hidden" name="usr_login" value="([^"]*)"')
     id = scrapertools.get_match(bloque,'<input type="hidden" name="id" value="([^"]+)"')
     fname = scrapertools.get_match(bloque,'<input type="hidden" name="fname" value="([^"]+)"')
     referer = scrapertools.get_match(bloque,'<input type="hidden" name="referer" value="([^"]*)"')
-    method_free = scrapertools.get_match(bloque,'<input type="submit" name="method_free" value="([^"]+)"')
+    method_free = scrapertools.get_match(bloque,'<input type="[^"]+" name="method_free" value="([^"]+)"')
 
     # Simula el botón
     #op=download1&usr_login=&id=buq4b8zunbm6&fname=Snow.Buddies-Avventura.In.Alaska.2008.iTALiAN.AC3.DVDRip.H264-PsYcOcReW.avi&referer=&method_free=Watch+Free%21
@@ -36,7 +36,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page( page_url , post=post )
     logger.info("data="+data)
     
-    packed = scrapertools.get_match(data,"(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d\).*?</script>)")
+    try:
+        packed = scrapertools.get_match(data,"(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d\).*?</script>)")
+    except:
+        packed = scrapertools.get_match(data,"(function\(p, a, c, k, e, d\).*?</script>)")
+        packed = "<script type='text/javascript'>eval("+packed
+
+    logger.info("packed="+packed)
+
     from core import unpackerjs
     unpacked = unpackerjs.unpackjs(packed)
     logger.info("unpacked="+unpacked)
