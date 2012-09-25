@@ -157,12 +157,12 @@ def doaction(item):
         if len(matches2)==1:
             match2 = matches2[0]
             # Titulo
-            scrapedtitle = match2[2]
+            scrapedtitle = scrapertools.htmlclean(match2[2])
             scrapedplot = ""
             scrapedurl = urlparse.urljoin(item.url,match2[0])
             scrapedthumbnail = match2[1]
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=__channel__, action=item.extra, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action=item.extra, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=scrapedtitle , plot=scrapedplot , folder=True) )
 
     
     #<div class="pagination">
@@ -195,7 +195,7 @@ def tvshowepisodes(item):
     for match in matches:
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedtitle = match[1]
-        itemlist.append( Item(channel=__channel__, action="fillseason", title=scrapedtitle ,url=scrapedurl, extra=item.extra))
+        itemlist.append( Item(channel=__channel__, action="fillseason", title=scrapedtitle ,url=scrapedurl, extra=item.title))
     
             
     return itemlist        
@@ -204,7 +204,12 @@ def fillseason(item):
     return season(item, data, item.title)
         
 def season(item, data, season):    
-    itemlist = []      
+    itemlist = []  
+    seasonnumber = season
+    patron = '([0-9]+)'
+    matches = re.compile(patron,re.DOTALL).findall(season)
+    if len(matches)==1:
+        seasonnumber = matches[0]
     #<div class="tv_episode_item"> <a href="/tv-2700449-Accused/season-1-episode-3">Episode 3
     #<span class="tv_episode_name"> - Helen's Story</span>        </a> </div>  
     #<div class="tv_episode_item"> <a href="/tv-13098-The-Game/season-5-episode-4">Episode 4                              </a> </div>
@@ -219,13 +224,20 @@ def season(item, data, season):
         if len(matches3) ==1:
             title = ""
             if len(matches4)==1:
-                title = matches4[0]
-                
-            scrapedtitle = season + " " + matches3[0][1].strip() + title
+                title = scrapertools.htmlclean(matches4[0])           
+            
+            chapternumber= matches3[0][1].strip()  
+            patron = '([0-9]+)'
+            matches = re.compile(patron,re.DOTALL).findall(chapternumber)
+            if len(matches)==1:
+                chapternumber =  "%02d" % (int(matches[0]))    
+                        
+            scrapedtitle = seasonnumber + "x" + chapternumber + title
+            scrapedextra = seasonnumber + "x" + chapternumber + " " +item.extra
             scrapedthumbnail = item.thumbnail
             scrapedurl = urlparse.urljoin(item.url,matches3[0][0])
             scrapedplot = ""
-            itemlist.append( Item(channel=__channel__, action="showlinks", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="showlinks", title=scrapedtitle , url=scrapedurl , extra= scrapedextra, thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
              
         
     return itemlist        
@@ -253,7 +265,7 @@ def showlinks(item):
         # Servidor
         servidor = match[2].strip()
         # Titulo
-        scrapedtitle = scrapertools.htmlclean(match[1])+ " [" + servidor + "]"
+        scrapedtitle = item.extra + " [" + servidor + "]"#  " + scrapertools.htmlclean(match[1])
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = item.thumbnail
@@ -267,10 +279,10 @@ def test():
     # mainlist
     mainlist_items = mainlist(Item())
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    peliculas_items = peliculas(mainlist_items[0])
+    peliculas_items = doaction(mainlist_items[0])
     bien = False
     for pelicula_item in peliculas_items:
-        mirrors = listmirrors( item=pelicula_item )
+        mirrors = showlinks( item=pelicula_item )
         if len(mirrors)>0:
             bien = True
             break
