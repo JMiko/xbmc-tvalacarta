@@ -1,17 +1,15 @@
 Para crear el instalador en Windows
 
-0) Tiene que estar en el directorio c:\py2exe\telefe, el script de inno setup depende de ello
+0) Tiene que estar en el directorio c:\py2exe\eltrece, el script de inno setup depende de ello
 
-1) Sobre el directorio "telefe" ejecutar py2exe -> crea la distribución en ./dist
+1) Sobre el directorio "eltrece" ejecutar py2exe -> crea la distribución en ./dist
 
 	python setup.py py2exe
 
-2) Copiar rtmpdump.exe a ./dist, junto al recién creado descargar.exe
+2) Ejecutar setup.iss con Inno Setup, se abrirá el editor
 
-3) Ejecutar setup.iss con Inno Setup, se abrirá el editor
+3) Incrementar el nº de versión
 
-4) Incrementar el nº de versión
+4) Darle a Build / Compile
 
-5) Darle a Build / Compile
-
-6) El instalador se crea en ./Output
+5) El instalador se crea en ./Output
