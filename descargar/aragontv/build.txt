@@ -1,6 +1,6 @@
 Para crear el instalador en Windows
 
-0) Tiene que estar en el directorio c:\py2exe\telefe, el script de inno setup depende de ello
+0) Tiene que estar en el directorio c:\py2exe\aragontv, el script de inno setup depende de ello
 
 1) Sobre el directorio "telefe" ejecutar py2exe -> crea la distribución en ./dist
 
