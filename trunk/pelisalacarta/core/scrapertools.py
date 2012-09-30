@@ -968,8 +968,8 @@ def remove_show_from_title(title,show):
     if slugify(title).startswith(slugify(show)):
 
         # Convierte a unicode primero, o el encoding se pierde
-        title = unicode(title,"utf-8")
-        show = unicode(show,"utf-8")
+        title = unicode(title,"utf-8","replace")
+        show = unicode(show,"utf-8","replace")
         title = title[ len(show) : ].strip()
 
         if title.startswith("-"):
