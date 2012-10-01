@@ -61,15 +61,10 @@ def peliculas(item):
         titulo = scrapertools.get_match(bloque,"<a class='style1' style='[^']+' href='[^']+'>([^<]+)</a>").strip()
         thumbnail = scrapertools.get_match(bloque,"<img src='([^']+)'")
         
-        try:
-            calidad = "("+scrapertools.get_match(bloque,"Calidad[^<]+</td><td style='[^']+'>[^<]+<a[^>]+>([^<]+)</a>").strip()+")"
-        except:
-            calidad = ""
-        
         plot=""
         if not url.startswith("/"):
             url = "/"+url
-        scrapedtitle = unicode(titulo,"iso-8859-1").encode("utf-8")+" "+calidad+""
+        scrapedtitle = unicode(titulo,"iso-8859-1").encode("utf-8")
         scrapedurl = urlparse.urljoin(item.url,url.replace("\n",""))
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
         scrapedplot = scrapertools.htmlclean(plot)
@@ -101,16 +96,22 @@ def findvideos(item):
 
     itemlist = []
     data = scrapertools.cachePage(item.url)
-
+    '''
+    <td align='center' valign='top' class='celda2'>vk.com</td>
+    <td align='center' valign='top' class='celda2'>Desconocida</td>
+    <td align='center' valign='top' class='celda2'>Versión Original</td>
+    <td align='center' valign='top' class='celda2'>1</td>
+    '''
     patron  = "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
+    patron += "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
     patron += "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
     patron += "<td align='center' valign='top' class='celda2'>([^<]+)</td>[^<]+"
     patron += "<td[^<]+</td><td[^<]+<div[^<]+</div><div[^<]+</div></td></tr><tr[^<]+<td[^<]+<div[^<]+<a class='[^']+' style='[^']+' href='([^']+)"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for servidor,calidad,idioma,url in matches:
-        itemlist.append( Item(channel=__channel__, action="play" , title=servidor + " (" + calidad + ")(" + idioma + ")" , url=url, folder=False))
+    for servidor,calidad,idioma,partes,url in matches:
+        itemlist.append( Item(channel=__channel__, action="play" , title=servidor + " (" + idioma + ")" , url=url, folder=False))
 
     return itemlist
 
@@ -148,9 +149,9 @@ def test():
     
     bien = False
     for pelicula_item in peliculas_items:
-        mirrors = servertools.find_video_items(item=pelicula_item)
-        if len(mirrors)>0:
+        mirrors = findvideos(pelicula_item)
+        if len(mirrors)>0 and len( play(mirrors[0]) )>0:
             bien = True
             break
-    
+
     return bien
