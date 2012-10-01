@@ -7,7 +7,6 @@
 import re
 import sys
 import os
-import traceback
 import urllib2
 
 from core import logger
@@ -16,7 +15,6 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-
 __channel__ = "seriesly"
 __category__ = "S,A"
 __type__ = "generic"
@@ -24,34 +22,7 @@ __title__ = "Series.ly"
 __language__ = "ES"
 __creationdate__ = "20111119"
 
-
 DEBUG = config.get_setting("debug")
-SESION = config.get_setting("session","seriesly")
-LOGIN = config.get_setting("login","seriesly")
-PASSWORD = config.get_setting("password","seriesly")
-
-def load_json(data):
-    # callback to transform json string values to utf8
-    def to_utf8(dct):
-        rdct = {}
-        for k, v in dct.items() :
-            if isinstance(v, (str, unicode)) :
-                rdct[k] = v.encode('utf8', 'ignore')
-            else :
-                rdct[k] = v
-        return rdct
-    try :        
-        import json
-        json_data = json.loads(data, object_hook=to_utf8)
-        return json_data
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line ) 
-
-''' URLEncode a string '''
-def qstr(string):
-    return string # urllib2.quote(string)   
 
 def isGeneric():
     return True
@@ -60,136 +31,31 @@ def mainlist(item):
     logger.info("[seriesly.py] mainlist")
     
     itemlist = []
-    if config.get_platform() == "wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
+
+    if config.get_setting("serieslyaccount")!="true":
+        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="" , url="" , folder=False ) )
     else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    auth_token, user_token = perform_login(LOGIN,PASSWORD)
-    
-    extra_params = '%s|%s' % ( auth_token, user_token )
-
-    itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
-    itemlist.append( Item(channel=__channel__, title="Mis series", action="mis_series", extra=extra_params ) )
-    itemlist.append( Item(channel=__channel__, title="Mis pelis", action="mis_pelis", extra=extra_params ) )
-    itemlist.append( Item(channel=__channel__, title="Series Mas Votadas", action="series_mas_votadas", extra=extra_params ) )
-    itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="pelis_mas_vistas", extra=extra_params ) )
-    itemlist.append( Item(channel=__channel__, title="Ultimas Pelis Modificadas", action="ultimas_pelis_modificadas", extra=extra_params ) )
-
-    if config.get_platform() in ( "rss", "mediaserver"):
-        milogin = config.get_setting("serieslyuser")
-        mipassword = config.get_setting("serieslypassword")
-        login( Item() , milogin , mipassword)
-    else:
-        if SESION=="true":
-            itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
+        auth_token, user_token = perform_login()
+        if not "invalid login" in user_token:
+            extra_params = '%s|%s' % ( auth_token, user_token )
+        
+            itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
+            itemlist.append( Item(channel=__channel__, title="Mis series", action="mis_series", extra=extra_params ) )
+            itemlist.append( Item(channel=__channel__, title="Mis pelis", action="mis_pelis", extra=extra_params ) )
+            itemlist.append( Item(channel=__channel__, title="Series Mas Votadas", action="series_mas_votadas", extra=extra_params ) )
+            itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="pelis_mas_vistas", extra=extra_params ) )
+            itemlist.append( Item(channel=__channel__, title="Ultimas Pelis Modificadas", action="ultimas_pelis_modificadas", extra=extra_params ) )
         else:
-            itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
+            itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
 
     return itemlist
-
-def logout(item):
-    nombre_fichero_config_canal = os.path.join( config.get_data_path() ,__channel__+".xml" )
-    config_canal = open( nombre_fichero_config_canal , "w" )
-    config_canal.write("<settings>\n<session>false</session>\n<login></login>\n<password></password>\n</settings>")
-    config_canal.close();    
-    
-    #Refrescamos variables globales
-    SESION = config.get_setting("session","seriesly")
-    LOGIN = config.get_setting("login","seriesly")
-    PASSWORD = config.get_setting("password","seriesly")
-    if config.get_platform() == "wiimc":
-        config.set_setting("sessionly","true")
-        config.set_setting("loginly",milogin)
-        config.set_setting("passwordly",mipassword)
-
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Sesión finalizada", action="mainlist"))
-    return itemlist
-
-def login(item,milogin="",mipassword=""):
-    
-    if config.get_platform() in ("xbmcdharma", "xmbc", "xbmceden"):
-        import xbmc
-        keyboard = xbmc.Keyboard("","Login")
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            milogin = keyboard.getText()
-    
-        keyboard = xbmc.Keyboard("","Password")
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            mipassword = keyboard.getText()
-			
-    if config.get_platform()=="wiimc":
-        login = item.extra
-        milogin, mipassword = login.split('|')
-
-    itemlist = []
-    auth_token,user_token = perform_login(milogin,mipassword)
-    if(user_token == "invalid login"):
-        itemlist.append( Item(channel=__channel__, title=user_token, action="mainlist"))
-        return itemlist
-    
-    nombre_fichero_config_canal = os.path.join( config.get_data_path() , __channel__+".xml" )
-    config_canal = open( nombre_fichero_config_canal , "w" )
-    config_canal.write("<settings>\n<session>true</session>\n<login>"+milogin+"</login>\n<password>"+mipassword+"</password>\n</settings>")
-    config_canal.close();
-    
-    #Refrescamos variables globales
-    SESION = config.get_setting("session","seriesly")
-    LOGIN = config.get_setting("login","seriesly")
-    PASSWORD = config.get_setting("password","seriesly")
-    if config.get_platform() == "wiimc":
-        config.set_setting("sessionly","true")
-        config.set_setting("loginly",milogin)
-        config.set_setting("passwordly",mipassword)
-
-    itemlist.append( Item(channel=__channel__, title="Sesión iniciada", action="mainlist"))
-    return itemlist
-
-def perform_login(login,password):
-
-    # AuthToken
-    url = "http://series.ly/api/auth.php?api=8&secret=N5X54c4OeDUwU8dWBbMW"
-    data = scrapertools.cache_page(url)
-    logger.info("****")
-    logger.info(data)
-    logger.info("****")
-    auth_token = data.strip()
-    
-    # UserToken
-    url = "http://series.ly/scripts/login/login.php"
-    post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s&autologin=" % ( qstr(login), qstr(password), qstr(auth_token) )
-    data = scrapertools.cache_page(url,post=post)
-    logger.info("****")
-    logger.info(data)
-    logger.info("****")
-    user_token=data.strip()
-    
-    return [auth_token,user_token]
 
 def getCredentials(auth_token, user_token):
     logged = False
     old_auth_token = auth_token
     old_user_token = user_token
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
 
     try:
-        if SESION != "true":
-            return [old_auth_token,old_user_token, logged, "Sesión no iniciada"]
-        
         count = 0
         while (not logged and count<6):
             if(count > 0):
@@ -201,8 +67,6 @@ def getCredentials(auth_token, user_token):
                 count = count + 1
             else:
                 logged=True
-            
-            
     except:
         return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]
       
@@ -214,30 +78,13 @@ def getCredentials(auth_token, user_token):
 def mis_series(item):
     
     logger.info("[seriesly.py] mis_series")
-    
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
 
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
+    
+    # Series Usuario
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-    
-    #Series Usuario
     url='http://series.ly/api/userSeries.php?type=&format=json'
-    
-    # Extrae las entradas (carpetas)
-    # {"idSerie":"?", "title":"?", "seasons":?d, "episodes":?d, "poster":"http:?", "thumb":"http:?, "small_thumb":"http:?", "status":"Pending/Watching/Finished"}
-    
     serieList = load_json(scrapertools.cache_page(url, post=post))
     if serieList == None : serieList = []
     
@@ -275,29 +122,11 @@ def serie_capitulos(item):
     
     logger.info('[seriesly.py] serie_capitulos')
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     
     # Extrae las entradas (carpetas)
-    
-    # {"title":"?", "ids":"?", "synopsis":"?", "seriesly_score":?d, "participants_score":"?d", "poster":"http:?, "thumb":"http:?", "small_thumb":"http:?", "episode":
-    #           [   {"idc":"?","title":"?","season":"?","viewed":"1/0"} ]
-    
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     serieInfo = load_json(scrapertools.cache_page(item.url, post=post))
     if serieInfo == None : serieInfo = {}
     if (not serieInfo.has_key('episode')) or serieInfo['episode'] == None : serieInfo['episode'] = []
@@ -334,27 +163,11 @@ def serie_capitulos(item):
 def capitulo_links(item):
     logger.info("[seriesly.py] capitulo_links")
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     # Extrae las entradas (carpetas)
-    # data=[{"language":"versi\u00f3n original","subtitles":"castellano","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4a2x2b7f734a&user_token=2PDP;zP2xkPI0&enc=dkx.N6i\/j*3X","server":"wupload"},
-    #{"language":"versi\u00f3n original","subtitles":"no","hd":"0","url":"http:\/\/series.ly\/api\/goLink.php?auth_token=2ee35ed4aaa&user_token=2PDP;aaaI0&enc=dkaaaR~H5?n%","server":"Novamov"}]
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     data = scrapertools.cache_page(item.url+"&"+post)
     linkList = load_json(data)
     if linkList == None : linkList = []
@@ -384,15 +197,6 @@ def capitulo_links(item):
 
 def links(item):    
         
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
     itemlist = []
     try:
         count = 0
@@ -423,31 +227,11 @@ def links(item):
 
 def mis_pelis(item):
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
+    itemlist = []    
+    itemlist.append( Item(channel=__channel__, title="Vistas", action="mis_pelis_categoria", url='Watched') )
+    itemlist.append( Item(channel=__channel__, title="Favoritas", action="mis_pelis_categoria", url='Favourite') )
+    itemlist.append( Item(channel=__channel__, title="Pendientes", action="mis_pelis_categoria", url='Pending') )
 
-    # TOKENS
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
-    
-    #Peliculas Usuario
-    
-    itemlist = []
-    
-    itemlist.append( Item(channel=__channel__, title="Vistas", action="mis_pelis_categoria", extra='%s|%s|%s' % (auth_token, user_token, 'Watched')) )
-    itemlist.append( Item(channel=__channel__, title="Favoritas", action="mis_pelis_categoria", extra='%s|%s|%s' % (auth_token, user_token, 'Favourite')) )
-    itemlist.append( Item(channel=__channel__, title="Pendientes", action="mis_pelis_categoria", extra='%s|%s|%s' % (auth_token, user_token, 'Pending')) )
-    
     return itemlist
 
 def limpia_lista(movielist, campo):
@@ -462,33 +246,18 @@ def mis_pelis_categoria(item):
 
     logger.info("[seriesly.py] mis_pelis_categoria")
 
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
-    auth_token, user_token, cat_filter = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-    #Peliculas Usuario (Filtradas por categoria)
-    
-    url='http://series.ly/api/userMovies.php?format=json'
+    # Obtiene de nuevo los tokens
+    cat_filter = item.url
+    auth_token, user_token = perform_login()
     
     # Extrae las entradas (carpetas)
-    #¬†[ {"idFilm":"?","title":"?","year":"?","genre":"?","poster":"http://?","thumb":"http://?","small_thumb":"http://?","status":"Watched/Favourite/Pending"} ]
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+
+    # Peliculas Usuario (Filtradas por categoria)
+    url='http://series.ly/api/userMovies.php?format=json'
     data = scrapertools.cache_page(url, post=post)
     movieList = load_json(data)
-    if movieList == None : movieList = []
-    
+    if movieList == None : movieList = []    
     logger.info("hay %d peliculas" % len(movieList))
 
     # compare function
@@ -534,28 +303,11 @@ def peli_links(item):
 
     logger.info("[seriesly.py] peli_links")
    
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
    
     # Extrae las entradas (carpetas)
-    #¬†{"title":"?","idp":"?", "synopsis":"?", "year":"?", "seriesly_score":?d, "participants_score":"?", "genre":"terror", "poster":"http://?","thumb":"http://?","small_thumb":"http://?","links":
-    #   [{"language":"?","subtitles":"yes/no","quality":"?","part":"?","uploader":"?","highDef":"0/1","server":"?","url_cineraculo":"?","url_megavideo":"?"}]
-    # }
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     data = scrapertools.cache_page(item.url, post=post)
     linkList = load_json(data)
     if linkList == None : linkList = []
@@ -589,33 +341,17 @@ def peli_links(item):
             logger.error( "%s" % line )
        
     return itemlist
+
 def series_mas_votadas(item):
 
     logger.info("[seriesly.py] series_mas_votadas")
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-    
-    url="http://series.ly/api/top.php?&format=json&id=1"
-    
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
+   
     # Extrae las entradas (carpetas)
-    # {series_mes_votades":[{"nom_serie":"?", "vots":"?", "id_serie":"?"}]}
-    
+    url="http://series.ly/api/top.php?&format=json&id=1"
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     topInfo = load_json(scrapertools.cache_page(url, post=post))
     if topInfo == None : topInfo = {}
     if topInfo['series_mes_votades'] == None : topInfo['series_mes_votades'] = []
@@ -641,29 +377,12 @@ def pelis_mas_vistas(item):
 
     logger.info("[seriesly.py] pelis_mas_vistas")
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
-    url="http://series.ly/api/top.php?&format=json&id=2"
-    
     # Extrae las entradas (carpetas)
-    # {pelis_mes_vistes":[{"nom_peli":"?", "id_peli":"?"}]}
-    
+    url="http://series.ly/api/top.php?&format=json&id=2"
     topInfo = load_json(scrapertools.cache_page(url, post=post))
     if topInfo == None : topInfo = {}
     if topInfo['pelis_mes_vistes'] == None : topInfo['pelis_mes_vistes'] = []
@@ -689,29 +408,13 @@ def ultimas_pelis_modificadas(item):
 
     logger.info("[seriesly.py] ultimas_pelis_modificadas")
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    # TOKENS
-    auth_token, user_token = item.extra.split('|')
-    auth_token, user_token, logged, nologgedmessage = getCredentials(auth_token, user_token)
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
-    url="http://series.ly/api/top.php?&format=json&id=3"
     
     # Extrae las entradas (carpetas)
-    # {ultimes_pelis":[{"nom_peli":"?", "id_peli":"?"}]}
-    
+    url="http://series.ly/api/top.php?&format=json&id=3"
     topInfo = load_json(scrapertools.cache_page(url, post=post))
     if topInfo == None : topInfo = {}
     if topInfo['ultimes_pelis'] == None : topInfo['ultimes_pelis'] = []
@@ -736,20 +439,8 @@ def ultimas_pelis_modificadas(item):
 
 def search(item,texto, categoria="*"):
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
-    auth_token, user_token, logged, nologgedmessage = getCredentials("","")
-    if (not logged):
-        itemlist = []
-        itemlist.append( Item(channel=__channel__, title=nologgedmessage, action="mainlist"))
-        return itemlist 
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     
     res = search_series(auth_token, user_token, item, texto)
     res.extend(search_films(auth_token, user_token, item, texto))
@@ -759,22 +450,13 @@ def search(item,texto, categoria="*"):
 def search_series(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search")
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=serie&format=json' % ( qstr(texto) )
     
     # Extrae las entradas (carpetas)
-    #¬†[{"idSerie":"?","title":"?","seasons":?d,"episodes":?d,"poster":"http://?","thumb":"http://?","small_thumb":"http://?"}
-    
     serieList = load_json(scrapertools.cache_page(url, post=post))
     if serieList == None : serieList = []
     
@@ -799,15 +481,8 @@ def search_series(auth_token, user_token, item, texto):
 def search_films(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search_films")
     
-    if config.get_platform()=="wiimc":
-        SESION = config.get_setting("sessionly")
-        LOGIN = config.get_setting("loginly")
-        PASSWORD = config.get_setting("passwordly")
-    else:
-        SESION = config.get_setting("session","seriesly")
-        LOGIN = config.get_setting("login","seriesly")
-        PASSWORD = config.get_setting("password","seriesly")
-
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = perform_login()
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=film&format=json' % ( qstr(texto) )
@@ -835,3 +510,50 @@ def search_films(auth_token, user_token, item, texto):
         )
           
     return itemlist
+
+def load_json(data):
+    # callback to transform json string values to utf8
+    def to_utf8(dct):
+        rdct = {}
+        for k, v in dct.items() :
+            if isinstance(v, (str, unicode)) :
+                rdct[k] = v.encode('utf8', 'ignore')
+            else :
+                rdct[k] = v
+        return rdct
+    try :        
+        import json
+        json_data = json.loads(data, object_hook=to_utf8)
+        return json_data
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line ) 
+
+''' URLEncode a string '''
+def qstr(string):
+    return string # urllib2.quote(string)   
+
+def perform_login():
+
+    LOGIN = config.get_setting("serieslyuser")
+    PASSWORD = config.get_setting("serieslypassword")
+
+    # AuthToken
+    url = "http://series.ly/api/auth.php?api=8&secret=N5X54c4OeDUwU8dWBbMW"
+    data = scrapertools.cache_page(url)
+    logger.info("****")
+    logger.info(data)
+    logger.info("****")
+    auth_token = data.strip()
+    
+    # UserToken
+    url = "http://series.ly/scripts/login/login.php"
+    post = "lg_login=%s&lg_pass=%s&callback_url=no&auth_token=%s&autologin=" % ( qstr(LOGIN), qstr(PASSWORD), qstr(auth_token) )
+    data = scrapertools.cache_page(url,post=post)
+    logger.info("****")
+    logger.info(data)
+    logger.info("****")
+    user_token=data.strip()
+    
+    return [auth_token,user_token]
