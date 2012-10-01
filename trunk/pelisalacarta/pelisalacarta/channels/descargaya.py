@@ -105,11 +105,13 @@ def test():
     
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    novedades_items = peliculas(mainlist_items[0])
+    
+    # Si encuentra algún vídeo en la sección de series lo da por bueno
+    subforo_series_items = subforos(mainlist_items[1])
+    series_items = subforos(subforo_series_items[0])
     bien = False
-    for novedades_item in novedades_items:
-        mirrors = servertools.find_video_items( item=novedades_item )
+    for serie_item in series_items:
+        mirrors = findvideos( serie_item )
         if len(mirrors)>0:
             bien = True
             break
