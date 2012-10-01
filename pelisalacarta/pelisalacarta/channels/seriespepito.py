@@ -234,7 +234,6 @@ def findvideos(item):
     <tr><td><div class='flag flag_es'></div></td><td>16/09/2012</td><td><img src='http://nowvideo.eu/favicon.ico' width='16px' height='16px' style='border:0;background:none; margin:0 3px 0 0; padding:0' >
     <b>nowvideo.eu</b></td><td><a class='btn btn-mini enlace_link' href='http://www.nowvideo.eu/video/50565ad5b8843' target='_blank' rel='nofollow' alt=''><i class='icon-play'></i> Ver</a></td><td>kubik</td><td></td></tr><tr><td>
     '''
-    
     # Listas de enlaces
     patron  = "<tr><td><div class='([^']+')></div></td>"
     patron += "<td>[^<]+</td>"
@@ -244,7 +243,7 @@ def findvideos(item):
     scrapertools.printMatches(matches)
 
     for idiomas,scrapedthumbnail,servidor,scrapedurl in matches:
-        url = scrapedurl
+        url = urlparse.urljoin(item.url,scrapedurl)
         title = "Ver en "+servidor
         plot = ""
 
@@ -262,13 +261,18 @@ def findvideos(item):
 def play(item):
     logger.info("[seriespepito.py] play")
     itemlist=[]
-    itemlist = servertools.find_video_items(data=item.url)
+    
+    data = scrapertools.cache_page(item.url)
+    
+    videoitemlist = servertools.find_video_items(data=data)
     i=1
-    for videoitem in itemlist:
-        videoitem.title = "Mirror %d%s" % (i,videoitem.title)
-        videoitem.fulltitle = item.fulltitle
-        videoitem.channel=channel=__channel__
-        i=i+1
+    for videoitem in videoitemlist:
+        if not "favicon" in videoitem.url:
+            videoitem.title = "Mirror %d%s" % (i,videoitem.title)
+            videoitem.fulltitle = item.fulltitle
+            videoitem.channel=channel=__channel__
+            itemlist.append(videoitem)
+            i=i+1
 
     return itemlist
 
@@ -278,15 +282,16 @@ def test():
     
     # mainlist
     mainlist_items = mainlist(Item())
+    
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    series_items = allserieslist(mainlist_items[1])
+    series_items = novedades(mainlist_items[0])
     bien = False
     for serie_item in series_items:
         episode_items = episodelist( item=serie_item )
 
         for episode_item in episode_items:
             mediaurls = findvideos( episode_item )
-            if len(mediaurls)>0:
+            if len(mediaurls)>=0 and len( play(mediaurls[0]) )>0:
                 return True
 
     return False
