@@ -21,6 +21,7 @@ __title__ = "Descarga Cine Clásico"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
+MAIN_URL = "http://descargacineclasico.com/"
 
 LoadThumbnails = True # indica si cargar los carteles
 
@@ -30,7 +31,7 @@ def isGeneric():
 def mainlist(item):
     logger.info("[animeid.py] mainlist")
     
-    url = "http://descargacineclasico.blogspot.com/"
+    url = MAIN_URL
     itemlist = []
  
     # Extrae los enlaces a las categorias
