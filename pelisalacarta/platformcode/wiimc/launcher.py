@@ -8,7 +8,6 @@ import urllib
 import base64
 import os
 import binascii
-import md5
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
@@ -202,22 +201,6 @@ def getitems(item,requestpath):
                 for line in sys.exc_info():
                     logger.error( "%s" % line )
     
-        '''
-        # Obtiene un nombre válido para la cache
-        hashed_url = binascii.hexlify(md5.new(requestpath).digest())
-        cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , hashed_url )
-        logger.info( "Cache file must be "+cached_file )
-        
-        # Si el fichero está en cache
-        if os.path.exists(cached_file):
-            logger.info( "Reading from cache" )
-            fichero = open( cached_file ,"rb")
-            itemlist = cerealizer.load(fichero)
-            fichero.close()
-            
-        # Si no está en cache
-        else:
-        '''
         logger.info( "Not cached" )
     
         # El item que invocó es importante para obtener el siguiente
