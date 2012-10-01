@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, os, binascii, md5, string, re
+import urllib, os, binascii, string, re
 
 from core.item import Item
 from core import scrapertools,config,wiideoteca
@@ -52,7 +52,7 @@ def getitems(requestpath, ua=""):
             itemlist.append( Item(title="¡Canal descargado y actualizado!") )
 
     # Obtiene un nombre válido para la cache
-    hashed_url = binascii.hexlify(md5.new(requestpath).digest())
+    hashed_url = scrapertools.get_md5(requestpath)
     cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , hashed_url )
     logger.info("cached_file="+cached_file)
     

@@ -8,7 +8,6 @@
 import urllib
 import os
 import binascii
-import md5
 
 from core.scrapertools import entityunescape
 from core import config
@@ -240,8 +239,6 @@ def controller(plugin_name,port,host,path,headers):
 def salva_descripcion(play_name,fulltitle,plot,thumbnail):
     if fulltitle == "none": fulltitle == ""
     # Obtiene un nombre válido para la cache
-    #hashed_url = binascii.hexlify(md5.new(play_name).digest())
-    #cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , hashed_url )
     cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , play_name )
     fichero = open( cached_file ,"w")
     fichero.write(thumbnail+"\n")
@@ -255,8 +252,6 @@ def recupera_descripcion(play_name):
     thumbnail=""
     fulltitle=""
     # Obtiene un nombre válido para la cache
-    #hashed_url = binascii.hexlify(md5.new(play_name).digest())
-    #cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , hashed_url )
     cached_file = os.path.join( config.get_data_path() , "tmp" , "cache" , play_name )
     if os.path.exists(cached_file):
         fichero = open( cached_file ,"r")
