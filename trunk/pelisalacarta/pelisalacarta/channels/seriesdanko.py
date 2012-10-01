@@ -58,12 +58,26 @@ def novedades(item):
     # Descarga la página
     data = scrapertools.downloadpageGzip(item.url).replace("\n","")
     #print data
+    '''
+    <h3 class='post-title entry-title'>The Good Wife 4x01 Sub.espa&ntildeol</h3>
+    <div class='comentariosyfechas'>
+    <a href='#D' title='¿Deje un comentario?'>&#191;Deje un comentario?</a>
+    <span class='etiquetineditar'>2012-10-01 a las 16:33:04</span>
+    </div>
+    <div class='post-header'>
+    <br /><a href="serie.php?serie=553" title='TODO-TITLE'><img class='ict' style='display: block; border: 3px solid #616161; opacity: 1; margin: 0px auto 10px; text-align: center; cursor: pointer; width: 400px; height: 500px; 'src='http://1.bp.blogspot.com/-YJMaorkbMtU/UGmpQZqIhiI/AAAAAAAAWPA/IXywwgXawFY/s400/the-good-wife-julianna-margulies-4.jpg' alt='TODO-alt' title='TODO-title' /></a><div face='trebuchet ms' style='text-align: center;'><a href='serie.php?serie=553'>
+    <span style='font-weight: bold;'> </span> 
+    <span style='font-weight: bold;'>Ya Disponible en V.O.S.E para ver online y descargar,aqui en SeriesDanko.com</span></a>
+    <span style='font-weight: bold;'></span></div><div class='post-header-line-1'></div>
+    </div>
+    <div class='post-body entry-content'>
+    '''
     patronvideos = "(<h3 class='post-title entry-title'>.*?<div class='post-body entry-content')"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     totalItems = len(matches)
     for match in matches:
         try:
-            scrapedurl = urlparse.urljoin(item.url,re.compile(r"href=(serie.+?)>").findall(match)[0])
+            scrapedurl = urlparse.urljoin(item.url,re.compile(r"href=\"(serie.+?)\">").findall(match)[0])
         except:continue
         try:
             scrapedthumbnail = re.compile(r"src='(.+?)'").findall(match)[0]
