@@ -121,3 +121,25 @@ def findvideos(item):
         videoitem.title = titulo + " - [" + videoitem.server+"]"
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    for mainlist_item in mainlist_items:
+        if "DVD-Rip Castellano" in mainlist_item.title:
+            peliculas_items = lista(mainlist_item)
+            break
+    
+    bien = False
+    for pelicula_item in peliculas_items:
+        mirrors = findvideos(pelicula_item)
+        if len(mirrors)>0:
+            bien = True
+            break
+
+    return bien
