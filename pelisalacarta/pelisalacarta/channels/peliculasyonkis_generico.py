@@ -99,7 +99,9 @@ def search(item,texto):
     post = 'keywords='+texto[0:18]
     
     data = scrapertools.cache_page(url,post=post)
-    patron = '<li class="[^"]+"> <a title="([^"]+)" href="([^"]+)"><img width="[^"]+" height="[^"]+" class="thumb" src="([^"]+)"></a> <h3><a[^>]+>[^<]+</a></h3> <p>([^<]+)</p>'
+    #<li class="blanco"> <a title="Brave Story (2006)" href="/pelicula/brave-story-2006"> <img width="50" height="71" class="thumb" src="http://s.staticyonkis.com/img/peliculas/100x144/brave-story-2006.jpg">
+    #</a> <h3>  <a title="Brave Story (2006)" href="/pelicula/brave-story-2006">Brave Story (2006)</a> </h3> <p>Brave Story narra la historia de Wataru, un niño de diez años que se introduce en un mundo fantástico llamado Vision, donde inicia la búsqueda de la Diosa del destino, ...</p> <div class="rating"><p>0</p><span>puntuación</span></div>
+    patron = '<li class="[^"]+"[^<]+<a title="([^"]+)" href="([^"]+)"[^<]+<img width="[^"]+" height="[^"]+" class="thumb" src="([^"]+)"[^<]+</a[^<]+<h3[^<]+<a[^<]+</a[^<]+</h3[^<]+<p>([^<]+)<'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     for match in matches:
