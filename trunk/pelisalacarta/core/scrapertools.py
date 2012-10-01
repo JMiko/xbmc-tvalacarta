@@ -163,13 +163,7 @@ def getCacheFileNames(url):
     siteCachePath = getSiteCachePath(url)
         
     # Obtiene el ID de la cache (md5 de la URL)
-    try:
-        import hashlib
-        cacheId = hashlib.md5(url).hexdigest()
-    except:
-        import md5
-        import binascii
-        cacheId = binascii.hexlify(md5.new(url).digest())
+    cacheId = get_md5(url)
         
     logger.debug("[scrapertools.py] cacheId="+cacheId)
 
@@ -985,14 +979,7 @@ def remove_show_from_title(title,show):
     return title
 
 def getRandom(str):
-    # Obtiene el ID de la cache (md5 de la URL)
-    try:
-        import hashlib
-        return hashlib.md5(str).hexdigest()
-    except:
-        import md5
-        import binascii
-        return binascii.hexlify(md5.new(str).digest())
+    return get_md5(str)
 
 def getLocationHeaderFromResponse(url):
     return get_header_from_response(url,header_to_get="location")
@@ -1214,3 +1201,25 @@ def get_season_and_episode(title):
     logger.info("get_season_and_episode('"+title+"') -> "+filename)
     
     return filename
+
+def get_sha1(cadena):
+    try:
+        import hashlib
+        devuelve = hashlib.sha1(cadena).hexdigest()
+    except:
+        import sha
+        import binascii
+        devuelve = binascii.hexlify(sha.new(url).digest())
+    
+    return devuelve
+
+def get_md5(cadena):
+    try:
+        import hashlib
+        devuelve = hashlib.md5(cadena).hexdigest()
+    except:
+        import md5
+        import binascii
+        devuelve = binascii.hexlify(md5.new(url).digest())
+    
+    return devuelve
