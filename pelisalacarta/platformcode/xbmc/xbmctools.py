@@ -373,7 +373,17 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         keyboard.doModal()
         if (keyboard.isConfirmed()):
             title = keyboard.getText()
-            downloadtools.downloadtitle(mediaurl,title)
+            devuelve = downloadtools.downloadbest(video_urls,title)
+            
+            if devuelve==0:
+                advertencia = xbmcgui.Dialog()
+                resultado = advertencia.ok("plugin" , "Descargado con éxito")
+            elif devuelve==-1:
+                advertencia = xbmcgui.Dialog()
+                resultado = advertencia.ok("plugin" , "Descarga abortada")
+            else:
+                advertencia = xbmcgui.Dialog()
+                resultado = advertencia.ok("plugin" , "Error en la descarga")
         return
 
     elif opciones[seleccion]==config.get_localized_string(30154): #"Quitar de favoritos"
