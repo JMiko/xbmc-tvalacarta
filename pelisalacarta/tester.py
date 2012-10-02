@@ -46,21 +46,34 @@ def test_channels():
     para_probar.append("bajui")
     para_probar.append("beeg")
     para_probar.append("cineblog01")
+    para_probar.append("cinegratis")
+    para_probar.append("cineonlineeu")
     para_probar.append("cinetemagay")
-    para_probar.append("cuevana")
+    para_probar.append("cinetux")
     para_probar.append("cinevos")
+    para_probar.append("cuevana")
+    #para_probar.append("descargacineclasico")
+    para_probar.append("descargaya")
     para_probar.append("discoverymx")
+    para_probar.append("divxatope")
     para_probar.append("divxonline")
+    #para_probar.append("dlmore")
     para_probar.append("documaniatv")
-    #para_probar.append("documentariestv")
+    para_probar.append("documentalesatonline2")
+    #para_probar.append("ecarteleratrailers")
+    para_probar.append("filmesonlinebr")
     para_probar.append("filmsenzalimiti")
+    #para_probar.append("gaypornshare")
     para_probar.append("gnula")
     para_probar.append("internapoli")
     para_probar.append("italiafilm")
-    para_probar.append("documentalesatonline2")
     para_probar.append("letmewatchthis")
     para_probar.append("los_simpsons_online")
     para_probar.append("mcanime")
+
+
+
+
     para_probar.append("moviezet")
     para_probar.append("newdivx")
     para_probar.append("newhd")
@@ -82,14 +95,10 @@ def test_channels():
     para_probar.append("shurhd")
     para_probar.append("shurweb")
     para_probar.append("sipeliculas")
-    #para_probar.append("tubutakadecine")
     para_probar.append("tumejortv")
-    para_probar.append("filmesonlinebr")
     para_probar.append("tusnovelas")
     para_probar.append("unsoloclic")
-    para_probar.append("cinetux")
-
-
+    
     funcionan = []
     no_funcionan = []
     
