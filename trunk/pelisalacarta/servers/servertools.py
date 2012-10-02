@@ -206,7 +206,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
                 
                 video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
                 logger.info("[xbmctools.py] filenium url="+video_gen)
-                video_urls.append( [ "[filenium]", video_gen ] )
+                video_urls.append( [ "["+server+"][filenium]", video_gen ] )
 
             # Obtiene enlaces realdebrid si tienes cuenta
             if server in REALDEBRID_SERVERS and config.get_setting("realdebridpremium")=="true":
