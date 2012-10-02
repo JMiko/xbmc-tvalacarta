@@ -209,7 +209,8 @@ def downloadall(item):
                            logger.error( "%s" % line )
                 
                 # Descarga el video
-                dev = downloadtools.downloadtitle(mediaurl,fulltitle)
+                #dev = downloadtools.downloadtitle(mediaurl,fulltitle)
+                dev = downloadtools.downloadbest(video_urls,fulltitle)
                 if dev == -1:
                     # El usuario ha cancelado la descarga
                     logger.info("[descargas.py] Descarga cancelada")

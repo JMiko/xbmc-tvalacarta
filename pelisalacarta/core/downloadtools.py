@@ -420,7 +420,7 @@ def getfilefromtitle(url,title):
         nombrefichero = limpia_nombre_excepto_1(nombrefichero)
     else:
         nombrefichero = title + url[-4:]
-        if "videobb" in url or "videozer" in url:
+        if "videobb" in url or "videozer" in url or "putlocker" in url:
             nombrefichero = title + ".flv"
         if "videobam" in url:
             nombrefichero = title+"."+url.rsplit(".",1)[1][0:3]
@@ -430,7 +430,11 @@ def getfilefromtitle(url,title):
             content_disposition_header = scrapertools.get_header_from_response(url,header_to_get="Content-Disposition")
             logger.info("content_disposition="+content_disposition_header)
             partes=content_disposition_header.split("=")
-            nombrefichero = title + partes[1][-5:-1]
+            if len(partes)<=1:
+                raise Exception('filenium', 'no existe')
+                
+            extension = partes[1][-5:-1]
+            nombrefichero = title + extension
 
         nombrefichero = limpia_nombre_caracteres_especiales(nombrefichero)
 
@@ -445,6 +449,50 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
+def downloadbest(video_urls,title):
+    
+    # Le da la vuelta, para poner el de más calidad primero ( list() es para que haga una copia )
+    invertida = list(video_urls)
+    invertida.reverse()
+    
+    for videotitle,url in invertida:
+        logger.info("[downoadtools] Descargando opción "+title+" "+url)
+        
+        # Calcula el fichero donde debe grabar
+        try:
+            fullpath = getfilefromtitle(url,title.strip()+" "+videotitle)
+        # Si falla, es porque la URL no vale para nada
+        except:
+            continue
+        
+        # Descarga
+        try:
+            ret = downloadfile(url,fullpath)
+        # Llegados a este punto, normalmente es un timeout
+        except urllib2.URLError, e:
+            ret = -2
+        
+        # El usuario ha cancelado la descarga
+        if ret==-1:
+            return -1
+        else:
+            # El fichero ni siquiera existe
+            if not os.path.exists(fullpath):
+                logger.info("[downoadtools] -> No ha descargado nada, probando con la siguiente opción si existe")
+            # El fichero existe
+            else:
+                tamanyo = os.path.getsize(fullpath)
+                
+                # Tiene tamaño 0
+                if tamanyo==0:
+                    logger.info("[downoadtools] -> Descargado un fichero con tamaño 0, probando con la siguiente opción si existe")
+                    os.remove(fullpath)
+                else:
+                    logger.info("[downoadtools] -> Descargado un fichero con tamaño %d, lo da por bueno" % tamanyo)
+                    return 0
+    
+    return -2
+    
 def downloadfile(url,nombrefichero,headers=[],silent=False):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
