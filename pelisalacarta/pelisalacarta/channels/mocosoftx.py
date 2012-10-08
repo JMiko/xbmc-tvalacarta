@@ -53,7 +53,7 @@ def login():
     logger.info("PASSWORD="+PASSWORD)
     
     #doForm.hash_passwrd.value = hex_sha1(hex_sha1(doForm.user.value.php_to8bit().php_strtolower() + doForm.passwrd.value.php_to8bit()) + cur_session_id);
-    hash_passwrd = scrapertools.get_sha1( scrapertools.get_sha1( LOGIN.lower() + PASSWORD.lower() ).hexdigest() + cur_session_id).hexdigest()
+    hash_passwrd = scrapertools.get_sha1( scrapertools.get_sha1( LOGIN.lower() + PASSWORD.lower() ) + cur_session_id)
     logger.info("hash_passwrd="+hash_passwrd)
 
     # Hace el submit del login

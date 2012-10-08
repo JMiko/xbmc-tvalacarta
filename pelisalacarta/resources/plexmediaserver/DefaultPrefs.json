@@ -21,7 +21,6 @@
         {"id": "fileniumpremium", "label": "Cuenta premium Filenium", "type": "bool", "default": "false"},
         {"id": "fileniumuser", "label": "Usuario", "type": "text", "default": ""},
         {"id": "fileniumpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
-        {"id": "filenium_for_download", "label": "Usar Filenium para descargas", "type": "bool", "default": "true"},
         {"id": "realdebridpremium", "label": "Cuenta premium Real Debrid", "type": "bool", "default": "false"},
         {"id": "realdebriduser", "label": "Usuario", "type": "text", "default": ""},
         {"id": "realdebridpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
@@ -31,4 +30,7 @@
         {"id": "mocosoftxaccount", "label": "Cuenta MocosoftX", "type": "bool", "default": "false"},
         {"id": "mocosoftxuser", "label": "Usuario", "type": "text", "default": ""},
         {"id": "mocosoftxpassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
+        {"id": "serieslyaccount", "label": "Cuenta Series.ly", "type": "bool", "default": "false"},
+        {"id": "serieslyuser", "label": "Usuario", "type": "text", "default": ""},
+        {"id": "serieslypassword", "label": "Contraseña", "type": "text", "option": "hidden", "default": "", "secure":   "true"},
 ]
