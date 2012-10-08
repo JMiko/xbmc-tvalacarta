@@ -139,9 +139,10 @@ def find_videos(data):
     #http://vk.com/video_ext.php?oid=161288347&#038;id=162474656&#038;hash=3b4e73a2c282f9b4&#038;sd
     #http://vk.com/video_ext.php?oid=146263567&id=163818182&hash=2dafe3b87a4da653&sd
     #http://vk.com/video_ext.php?oid=146263567&id=163818182&hash=2dafe3b87a4da653
+    #http://vk.com/video_ext.php?oid=-34450039&id=161977144&hash=0305047ffe3c55a8&hd=3
     data = data.replace("&amp;","&")
     data = data.replace("&#038;","&")
-    patronvideos = '(/video_ext.php\?oid=\d+&id=\d+&hash=[a-z0-9]+)'
+    patronvideos = '(/video_ext.php\?oid=[^&]+&id=[^&]+&hash=[a-z0-9]+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
