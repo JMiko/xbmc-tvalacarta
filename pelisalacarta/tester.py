@@ -4,6 +4,7 @@
 # tester
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
+
 import re,urllib,urllib2,sys
 sys.path.append ("lib")
 
@@ -97,7 +98,7 @@ def test_channels():
     para_probar.append("sipeliculas")
     para_probar.append("tumejortv")
     para_probar.append("tusnovelas")
-    para_probar.append("unsoloclic")
+    #para_probar.append("unsoloclic") (borrado)
     
     funcionan = []
     no_funcionan = []
