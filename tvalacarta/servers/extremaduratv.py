@@ -27,7 +27,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         partes = url.split("#")
         url = partes[0]+partes[1]
         logger.info("url="+url)
-        video_urls.append( [ "RTMP [extremaduratv]" , url ] )
+        video_urls.append( [ "RTMP [extremaduratv]" , url.replace(" ","%20") ] )
 
     # Descarga la página como ipad
     headers = []
