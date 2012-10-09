@@ -77,7 +77,7 @@ def categorias(item):
     itemlist.append( Item(channel=CHANNELNAME, title="", action="videos", url="") )
 
     # Restringe la búsqueda al bloque del menú por continentes
-    data2 = scrapertools.get_match(data,'<ol id="geographicNav">(.*?)</ol>')
+    data2 = scrapertools.get_match(data,'<ol class="lhsMenu">(.*?)</ol>')
     patron = '<li><a.*?href="([^"]+)">([^<]+)</a>'
     matches = re.findall(patron,data2,re.DOTALL)
     
