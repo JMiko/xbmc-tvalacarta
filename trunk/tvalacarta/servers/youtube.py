@@ -62,6 +62,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             calidad = fmt_list_array[i].split("/")[0]
             video_url = video_url.replace("flv&itag="+calidad,"flv")
             video_url = video_url.replace("="+calidad+"&url=","")
+            video_url = video_url.replace("sig=","signature=")
+            video_url = re.sub("^=http","http",video_url)
+
             resolucion = fmt_list_array[i].split("/")[1]
     
             formato = ""
@@ -94,9 +97,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         logger.info(str(video_url))
     
     return video_urls
-    
-    
-    
+
 def getuploads(user,startindex,maxresults,channel="",action="play"):
     logger.info("[youtube.py] getuploads")
 
@@ -250,38 +251,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    #<a href="http://www.youtube.com/watch?v=je-692ngMY0" target="_blank">parte 1</a>
-    patronvideos = '<a href="(http://www.youtube.com/watch\?v\=[^"]+)".*?>(.*?)</a>'
-    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = match[1]
-        url = match[0]
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'youtube' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    patronvideos = "<param name='movie' value='http://www.youtube.com/v/([^']+)'"
-    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos).findall(data)
-
-    for match in matches:
-        titulo = match[1]
-        url = "http://www.youtube.com/watch?v="+match[0]
-
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'youtube' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    patronvideos  = 'http://www.youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
+    patronvideos  = 'youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
     logger.info("[youtube.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -298,6 +268,22 @@ def find_videos(data):
                 logger.info("  url duplicada="+url)
     
     patronvideos  = 'www.youtube.*?v(?:=|%3D)([0-9A-Za-z_-]{11})'
+    logger.info("[youtube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[YouTube]"
+        url = "http://www.youtube.com/watch?v="+match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'youtube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://www.youtube.com/v/AcbsMOMg2fQ
+    patronvideos  = 'youtube.com/v/([0-9A-Za-z_-]{11})'
     logger.info("[youtube.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
