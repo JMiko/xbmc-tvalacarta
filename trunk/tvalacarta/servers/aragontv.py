@@ -23,7 +23,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # AHORA
     #{ url:'mp4%3A%2Fweb%2F5573%2F5573.mp4', provider: 'rtmp' }
     #netConnectionUrl: 'rtmp%3A%2F%2Faragontvvodfs.fplive.net%2Faragontvvod'
-    #rtmp://iasoftvodfs.fplive.net/iasoftvod/web/980/980.mp4
+    #rtmp://aragontvvodfs.fplive.net/aragontvvod/web/980/980.mp4
     
     itemlist = []
 
