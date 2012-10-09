@@ -30,7 +30,7 @@ def controller(plugin_name,port,host,path,headers):
 
     respuesta += "version=7\n"
     respuesta += "logo=http://tvalacarta.mimediacenter.info/icon.png\n"
-    respuesta += "title="+plugin_name+" 3.3.1 (WiiMC)\n"
+    respuesta += "title="+plugin_name+" 3.3.2 (WiiMC)\n"
     respuesta += "\n"
 
     if path == "/wiimc/" or path=="/wiimc":
