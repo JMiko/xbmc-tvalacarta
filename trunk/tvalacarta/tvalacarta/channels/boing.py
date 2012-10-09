@@ -31,7 +31,7 @@ def series(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    logger.info(data)
+    #logger.info(data)
 
     # Extrae las series
     '''
@@ -73,11 +73,12 @@ def series(item):
         else:
             itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="episodios" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail , show = scrapedtitle, folder=True) )
     
+    #<li class="pager-next"><a href="/series?page=1&amp;order=title&amp;sort=asc" title="Ir a la página siguiente" class="active">siguiente
     patron = '<li class="pager-next"><a href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     if len(matches)>0:
-        itemlist.extend( series(Item(channel=item.channel, title="Página siguiente >>" , action="series" , url=urlparse.urljoin(item.url,matches[0]), folder=True) ) )
+        itemlist.extend( series(Item(channel=item.channel, title="Página siguiente >>" , action="series" , url=urlparse.urljoin(item.url,matches[0].replace("&amp;","&")), folder=True) ) )
 
     return itemlist
 
@@ -130,12 +131,46 @@ def episodios(item):
     <div class="series"><a href="/serie/generator-rex">Generator Rex</a></div>
     <div class="title"><a href="/serie/generator-rex/video/hombre-contra-hombre">Hombre contra hombre</a></div>
     '''
-    patron  = '<div class="pic3">[^<]+<a href="([^"]+)">[^<]+'
-    patron += '<img style="[^"]+" height="\d+" width="\d+" src="([^"]+)".*?'
-    patron += '<div class="title"><a[^>]+>([^<]+)</a></div>'
+    '''
+    <div class="pic3">
+    
+    <a href="/serie/monster-high/video/monster-high-superpillada" class="imagecache imagecache-130x73 imagecache-linked imagecache-130x73_linked"><img src="http://www.boing.es/sites/default/files/imagecache/130x73/pantallazo2mh.jpg" alt="" title=""  class="imagecache imagecache-130x73" width="130" height="73" /></a>      		      		
+    
+    </div></div></div>
+    <div class="stars"><form action="/videos/monster-high"  accept-charset="UTF-8" method="post" id="fivestar-custom-widget" class="fivestar-widget">
+    <div><div class="fivestar-form-vote-24388 clear-block"><input type="hidden" name="content_type" id="edit-content-type" value="node"  />
+    <input type="hidden" name="content_id" id="edit-content-id" value="24388"  />
+    <div class="fivestar-form-item  fivestar-average-stars"><div class="form-item" id="edit-vote-wrapper">
+    <span class='edit-vote-design'><span class='form-item-value-design1'><span class='form-item-value-design2'><span class='form-item-value-design3'> <input type="hidden" name="vote_count" id="edit-vote-count" value="0"  />
+    <input type="hidden" name="vote_average" id="edit-vote-average" value="67.9646"  />
+    <input type="hidden" name="auto_submit_path" id="edit-auto-submit-path" value="/fivestar/vote/node/24388/vote"  class="fivestar-path" />
+    <select name="vote" class="form-select" id="edit-vote-1" ><option value="-">Select rating</option><option value="20">Give it 1/5</option><option value="40">Give it 2/5</option><option value="60">Give it 3/5</option><option value="80" selected="selected">Give it 4/5</option><option value="100">Give it 5/5</option></select><input type="hidden" name="auto_submit_token" id="edit-auto-submit-token" value="219ac03ae7ca6956d5484acb00454195"  class="fivestar-token" />
+    
+    </span></span></span></span></div>
+    </div><input type="hidden" name="destination" id="edit-destination" value="videos/monster-high"  />
+    <input type="submit" name="op" id="edit-fivestar-submit" value="Rate"  class="form-submit fivestar-submit" />
+    <input type="hidden" name="form_build_id" id="form-9e308b4823178e9cbca63316130d805e" value="form-9e308b4823178e9cbca63316130d805e"  />
+    <input type="hidden" name="form_id" id="edit-fivestar-custom-widget" value="fivestar_custom_widget"  />
+    </div>
+    </div></form></div>
+    <div class="series"><a href="/serie/monster-high">Monster High</a></div>
+    <div class="title"><a href="/serie/monster-high/video/monster-high-superpillada">Monster High: Superpillada</a></div>
+    
+    '''
+    patron  = '<div class="pic3"[^<]+'
+    patron += '<a href="([^"]+)"[^<]+<img style="[^"]+" height="\d+" width="\d+" src="([^"]+)".*?'
+    patron += '<div class="title"><a[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(bloque)
     scrapertools.printMatches(matches)
     #if DEBUG: scrapertools.printMatches(matches)
+
+    if len(matches)==0:
+        patron  = '<div class="pic3"[^<]+'
+        patron += '<a href="([^"]+)"[^<]+<img src="([^"]+)".*?'
+        patron += '<div class="title"><a[^>]+>([^<]+)</a>'
+        matches = re.compile(patron,re.DOTALL).findall(bloque)
+        scrapertools.printMatches(matches)
+        #if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
