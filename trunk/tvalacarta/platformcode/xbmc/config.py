@@ -11,7 +11,7 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] xbmc config 3.3.1"
+print "[config.py] xbmc config 3.3.2"
 
 import sys
 import os
