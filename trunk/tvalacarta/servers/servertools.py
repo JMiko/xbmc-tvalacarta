@@ -216,4 +216,9 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
 
             return video_urls,False,"Se ha producido un error en<br/>el conector con "+server
 
+        try:
+            progreso.close()
+        except:
+            pass
+
     return video_urls,True,""
