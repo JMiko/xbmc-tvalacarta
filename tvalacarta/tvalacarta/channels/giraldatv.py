@@ -30,10 +30,9 @@ def programas(item):
 
     # Extrae los programas
     '''
-    <td><a onclick="_gaq.push(['_trackEvent', 'Cabecera', 'A la carta', 'En el corazon sevilla']);" href="http://www.giraldatv.es/enelcorazonsevilla/" target="_top"><img src="http://www.giraldatv.es/img/logoenelcorazonsevilla.png" border=0 alt="En el corazon sevilla" title="En el corazon sevilla"></a></td></tr>
-    <td align="center"><a onclick="_gaq.push(['_trackEvent', 'Cabecera', 'A la carta', 'Sevilla siglo XXI']);" href="http://www.giraldatv.es/sevillasigloxxi/" target="_top"><img src="http://www.giraldatv.es/img/logosevillasigloxxi.png" border=0 alt="Sevilla siglo XXI" title="Sevilla siglo XXI"></a></td>
+    <td align="center" valign="middle"><a onClick="_gaq.push(['_trackEvent', 'Cabecera', 'A la carta', 'En el corazon sevilla']);" href="http://www.giraldatv.es/enelcorazonsevilla/" target="_top"><img src="http://www.giraldatv.es/img/logoenelcorazonsevilla.png" alt="En el corazon sevilla" class="borde" title="En el corazon sevilla" border=0></a></td>
     '''
-    patron  = "<td.*?<a onclick=\"_gaq.push\(\['_trackEvent', 'Cabecera', 'A la carta', '([^']+)'\]\)\;\""
+    patron  = "<td.*?<a on.lick=\"_gaq.push\(\['_trackEvent', 'Cabecera', 'A la carta', '([^']+)'\]\)\;\""
     patron += ' href="([^"]+)"[^<]+'
     patron += '<img src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
