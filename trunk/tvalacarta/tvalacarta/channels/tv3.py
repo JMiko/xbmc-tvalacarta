@@ -281,8 +281,7 @@ def hdvideolist(item):
                 import sys
                 for line in sys.exc_info():
                     logger.error( "%s" % line )     
-        
-        
+
     except:
         import sys
         for line in sys.exc_info():
