@@ -21,10 +21,10 @@ def isGeneric():
 def mainlist(item):
     logger.info("[aragontv.py] mainlist")
 
-    #itemlist = []
-    #itemlist.append( item )
-    item=Item(channel=CHANNELNAME, title="Programas" , action="programas" , url="http://alacarta.aragontelevision.es/programas", folder=True)
-    itemlist = programas(item)
+    itemlist = []
+
+    itemlist.append( Item(channel=CHANNELNAME, title="Programas" , action="programas" , url="http://alacarta.aragontelevision.es/programas", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="En directo" , action="play" , server="directo" , url="rtmp://aragontvlivefs.fplive.net/aragontvlive-live/stream_normal_abt", folder=False ) )
 
     return itemlist
 
