@@ -679,7 +679,7 @@ def capitulo(item):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
-        scrapedurl = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]+"/"
+        scrapedurl = "http://tvolucion.esmas.com/telenovelas/"+match[0]+"/"
         scrapedtitle = match[5]+" - "+match[1]
         scrapedthumbnail = item.thumbnail
         scrapedfanart = item.fanart
@@ -710,7 +710,7 @@ def capitulo(item):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
-        scrapedurl = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]+"/"
+        scrapedurl = "http://tvolucion.esmas.com/telenovelas/"+match[0]+"/"
         print scrapedurl
         scrapedtitle = match[5]+" - "+match[3]
         scrapedthumbnail = match[1]
@@ -1043,13 +1043,14 @@ def video(item):
         
         '''
     #NOVELAS (WEB MOVIL)   
-    
+    print "INTENRTA MOVIL"
     patron = '<video id="video1" width="294" height="165" controls  poster="([^"]+)" style=.*?<source src="([^"]+)" type="([^"]+)" />'
     # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
+        print "encontro movil"
         scrapedurl = match[1]
         scrapedurl = scrapedurl.replace("-150.mp4","-480.mp4")
         #scrapedurl = scrapedurl.replace("http://","rtmp://")
@@ -1080,6 +1081,7 @@ def video(item):
         patron = 'thumbnail: "([^"]+)".*?id: "([^"]+)".*?cat: "([^"]+)",.*?profile: "([^"]+)",.*?gbs: "([^"]+)",.*?extension = \'(.*?)\';'
         scrapedurl = "http://media.esmas.com/criticalmedia/files/"+match[2]+"/"+match[1]+".mp4"
         '''
+    print "INTENTA WEB"
     #OTROS (WEB NORMAL)   
     patron = 'videoUrlQvt = \'(.*?)\';.*?thumbnail: "([^"]+)".*?id: "([^"]+)".*?cat: "([^"]+)",.*?profile: "([^"]+)",.*?gbs: "([^"]+)",.*?extension = \'(.*?)\';'
     # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
@@ -1088,12 +1090,16 @@ def video(item):
     if DEBUG: scrapertools.printMatches(matches)
     #itemlist = []
     for match in matches:
+        print "encontro web"
         plus = ""
         extension = match[6][2:]
         flag = extension.isdigit()
-        scrapedurl = match[0]#"http://media.esmas.com/criticalmedia/files/"+match[3]+"/"+match[2]+".mp4"
+        print flag
+        scrapedurl = match[0]
+        #"http://media.esmas.com/criticalmedia/files/"+match[3]+"/"+match[2]+".mp4"
         scrapedurl = scrapedurl.replace("-480.mp4","-600.mp4")
         scrapedurl = scrapedurl.replace("m4v.","apps.")
+        scrapedurl = scrapedurl[:scrapedurl.find("?")]
         #scrapedurl = scrapedurl.replace("http://","rtmp://")
         #scrapedurlhd = scrapedurlhd.replace("-480.mp4","-,15,48,60,0.mp4.csmil/bitrate=2")
         scrapedtitle =  item.title
@@ -1110,16 +1116,23 @@ def video(item):
             if (float(extension) != 4) :
                 print "formato no es mp4"
                 ends = match[2]
-                ends = ends[ends.find("/"):]
-                scrapedurl = "http://apps.tvolucion.com/m4v/"+match[3]+"/"+match[2]+"/"+ends+"-600.mp4"
+                isf1 = ends.find("/")
+                if isf1 >=1:
+                     print isf1
+                     ends = ends[ends.find("/"):]
+                     scrapedurl = "http://apps.tvolucion.com/m4v/"+match[3]+"/"+match[2]+"/"+ends+"-600.mp4"
+                else:
+                     scrapedurl = match[1].replace(".jpg","-600.mp4")
+                     scrapedurl = scrapedurl.replace("m4v.","apps.")
             scrapedplot=scrapedplot+chr(10)+scrapedurl +chr(10)+extension+chr(10)+match[0]
             itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" (Calidad: Media)" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
         else :
-            print "no es mp, probablemente es formato anterior QVT"
-            scrapedplot=scrapedplot+chr(10)+scrapedurl +chr(10)+extension+chr(10)+match[0]
-            
-            itemlist.append( Item(channel=__channel__, action="capitulo", title="VIDEO NO COMPATIBLE" , url=item.page,  thumbnail=scrapedthumbnail , plot="Video formato QVT, no compatible con XBMC" , extra=extra , folder=True) )       
-    
+            if scrapedurl.find(".mp4"):
+                 itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" (Calidad: Web)" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+            else:
+                 print "no es mp, probablemente es formato anterior QVT"
+                 scrapedplot=scrapedplot+chr(10)+scrapedurl +chr(10)+extension+chr(10)+match[0]
+                 itemlist.append( Item(channel=__channel__, action="capitulo", title="VIDEO NO COMPATIBLE" , url=item.page,  thumbnail=scrapedthumbnail , plot="Video formato QVT, no compatible con XBMC" , extra=extra , folder=True) )
     
     
     return itemlist
