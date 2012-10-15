@@ -283,21 +283,6 @@ def test():
     # mainlist
     mainlist_items = mainlist(Item())
     
-    # Comprueba que todas las opciones tengan algo (excepto los buscadores)
-    for mainlist_item in mainlist_items:
-        if mainlist_item.action!="search":
-            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
-            
-            for item in itemlist:
-                if item.action!="search":
-                    exec "itemlist2 ="+item.action+"(item)"
-                    
-                    # Este canal tiene captcha...
-                    time.sleep(5)
-        
-                    if len(itemlist2)==0:
-                        return False
-
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
     menupeliculas_items = menupeliculas(mainlist_items[0])
     peliculas_items = peliculas(menupeliculas_items[0])
