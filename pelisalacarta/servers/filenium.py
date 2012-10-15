@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para fileserve
+# Conector para filenium
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re,time
 import os
 import base64
-import json
+#import json
 
 from core import scrapertools
 from core import logger
