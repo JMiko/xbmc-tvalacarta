@@ -39,17 +39,21 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[moevideos.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
 
-    headers = []
-    headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
-    data = scrapertools.cache_page( page_url , headers=headers )
-        
-    # Descarga el script (no sirve para nada, excepto las cookies)
-    headers.append(['Referer',page_url])
-    post = "id=1&enviar2=ver+video"
-    data = scrapertools.cache_page( page_url , post=post, headers=headers )
-    code = scrapertools.get_match(data,"video.php\?file\=([^\&]+)\&")
-    logger.info("code="+code)
-        
+    if page_url.startswith("http://www.moevideos.net/online"):
+        headers = []
+        headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
+        data = scrapertools.cache_page( page_url , headers=headers )
+            
+        # Descarga el script (no sirve para nada, excepto las cookies)
+        headers.append(['Referer',page_url])
+        post = "id=1&enviar2=ver+video"
+        data = scrapertools.cache_page( page_url , post=post, headers=headers )
+        code = scrapertools.get_match(data,"video.php\?file\=([^\&]+)\&")
+        logger.info("code="+code)
+    else:
+        #http://moevideo.net/?page=video&uid=81492.8c7b6086f4942341aa1b78fb92df
+        code = scrapertools.get_match(page_url,"uid=([a-z0-9\.]+)")
+            
     # API de letitbit
     headers2 = []
     headers2.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
@@ -61,6 +65,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     post = 'r=["tVL0gjqo5",["preview/flv_image",{"uid":"'+code+'"}],["preview/flv_link",{"uid":"'+code+'"}]]'
     data = scrapertools.cache_page(url,headers=headers2,post=post)
     logger.info("data="+data)
+    if ',"not_found"' in data:
+        return []
     data = data.replace("\\","")
     logger.info("data="+data)
     patron = '"link"\:"([^"]+)"'
@@ -112,13 +118,13 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # http://moevideo.net/video.php?file=71845.7a9a6d72d6133bb7860375b63f0e&width=600&height=450
-    patronvideos  = '"(http://moevideo.net/video.php[^"]+)"'
+    patronvideos  = 'moevideo.net/video.php\?file\=([a-z0-9\.]+)'
     logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[moevideos]"
-        url = match
+        url = "http://moevideo.net/?page=video&uid="+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'moevideos' ] )
@@ -133,7 +139,22 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[moevideos]"
-        url = match
+        url = "http://moevideo.net/?page=video&uid="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'moevideos' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
+    #http://moevideo.net/?page=video&uid=81492.8c7b6086f4942341aa1b78fb92df
+    patronvideos  = 'moevideo.net/\?page\=video\&uid=([a-z0-9\.]+)'
+    logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[moevideos]"
+        url = "http://moevideo.net/?page=video&uid="+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'moevideos' ] )
