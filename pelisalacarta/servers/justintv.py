@@ -70,13 +70,14 @@ def find_videos(data):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[justintv]"
-        url = "http://www."+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'justintv' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
+        if match!="justin.tv/widgets":
+            titulo = "[justintv]"
+            url = "http://www."+match
+            if url not in encontrados:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'justintv' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
     return devuelve
