@@ -41,7 +41,6 @@ def test_channels():
     para_probar = []
     
     '''
-    '''
     para_probar.append("animeflv")
     para_probar.append("animeid")
     para_probar.append("bajui")
@@ -71,17 +70,15 @@ def test_channels():
     para_probar.append("letmewatchthis")
     para_probar.append("los_simpsons_online")
     para_probar.append("mcanime")
+    '''
 
-
-
-
+    '''
     para_probar.append("moviezet")
     para_probar.append("newdivx")
     para_probar.append("newhd")
     para_probar.append("peliculasonlineflv")
     para_probar.append("peliculasaudiolatino")
     para_probar.append("peliculaseroticas")
-    para_probar.append("peliculasflv")
     para_probar.append("peliculasid")
     para_probar.append("peliculasyonkis_generico")
     para_probar.append("pelis24")
@@ -99,7 +96,8 @@ def test_channels():
     para_probar.append("tumejortv")
     para_probar.append("tusnovelas")
     #para_probar.append("unsoloclic") (borrado)
-    
+    '''
+
     funcionan = []
     no_funcionan = []
     
