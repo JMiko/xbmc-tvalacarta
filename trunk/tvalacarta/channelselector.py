@@ -121,6 +121,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="RTPA (Asturias) (16/10/2012)"            , channel="rtpa"           , language="ES" , category="A" , type="generic"  ))  # jesus 16/10/2011
     itemlist.append( Item( title="xip/tv (30/07/2012)"                     , channel="xiptv"          , language="ES" , category="L" , type="generic"  ))  # jesus 30/07/2011
     itemlist.append( Item( title="Tvolucion.com (20/06/2012)"              , channel="tvolucion"      , language="ES" , category="N" , type="generic"  ))  # pedro 20/06/2012
     itemlist.append( Item( title="La Sexta (05/04/2012)"                   , channel="lasexta"        , language="ES" , category="N" , type="generic"  ))  # jesus 05/04/2012
@@ -161,6 +162,7 @@ def channels_list():
     itemlist.append( Item( title="Kideos"                     , channel="kideos"               , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Mitele"                     , channel="mitele"               , language="ES" , category="I,N" , type="generic" ))
     itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"            , language="ES" , category="T"   , type="generic" ))
+    itemlist.append( Item( title="RTPA (Asturias)"            , channel="rtpa"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="RTVA (Andalucia)"           , channel="rtva"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="RTVV (Comunidad Valenciana)", channel="rtvv"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="La Sexta"                   , channel="lasexta"              , language="ES" , category="N"   , type="generic" ))  # juanfran 07/02/2011
