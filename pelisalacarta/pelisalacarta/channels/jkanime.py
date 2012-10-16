@@ -164,14 +164,17 @@ def episodios(item):
     scrapedplot = scrapertools.get_match(data,'<meta name="description" content="([^"]+)"/>')
     scrapedthumbnail = scrapertools.get_match(data,'<meta property="og.image" content="([^"]+)"/>')
     idserie = scrapertools.get_match(data,"ajax/pagination_episodes/(\d+)/")
+    logger.info("idserie="+idserie)
     numero_pagina = item.extra
     if numero_pagina=="":
         numero_pagina="1"
+    logger.info("idserie="+idserie)
     
     headers = []
     headers.append( [ "User-Agent" , "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:16.0) Gecko/20100101 Firefox/16.0" ] )
     headers.append( [ "Referer" , item.url ] )
     data = scrapertools.cache_page("http://jkanime.net/ajax/pagination_episodes/"+idserie+"/"+numero_pagina+"/")
+    logger.info("data="+data)
     
     '''
     [{"id":"14199","title":"GetBackers - 1","number":"1","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14200","title":"GetBackers - 2","number":"2","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14201","title":"GetBackers - 3","number":"3","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14202","title":"GetBackers - 4","number":"4","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14203","title":"GetBackers - 5","number":"5","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14204","title":"GetBackers - 6","number":"6","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14205","title":"GetBackers - 7","number":"7","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14206","title":"GetBackers - 8","number":"8","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14207","title":"GetBackers - 9","number":"9","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14208","title":"GetBackers - 10","number":"10","animes_id":"122","timestamp":"2012-01-04 16:59:30"}]
@@ -183,7 +186,7 @@ def episodios(item):
     #http://jkanime.net/get-backers/1/
     for id,scrapedtitle,numero,animes_id in matches:
         title = scrapedtitle.strip()
-        url = "http://jkanime.net/get-backers/"+numero+"/"
+        url = urlparse.urljoin(item.url,numero)
         thumbnail = scrapedthumbnail
         plot = scrapedplot
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
