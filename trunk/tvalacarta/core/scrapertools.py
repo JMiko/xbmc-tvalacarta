@@ -814,16 +814,35 @@ def htmlclean(cadena):
     cadena = cadena.replace("</cite>","")
     cadena = cadena.replace("<em>","")
     cadena = cadena.replace("</em>","")
-    cadena = cadena.replace("<i>","")
-    cadena = cadena.replace("</i>","")
     cadena = cadena.replace("<b>","")
     cadena = cadena.replace("</b>","")
+    cadena = cadena.replace("<i>","")
+    cadena = cadena.replace("</i>","")
     cadena = cadena.replace("<u>","")
     cadena = cadena.replace("</u>","")
     cadena = cadena.replace("<li>","")
     cadena = cadena.replace("</li>","")
+    cadena = cadena.replace("<tbody>","")
+    cadena = cadena.replace("</tbody>","")
+    cadena = cadena.replace("<tr>","")
+    cadena = cadena.replace("</tr>","")
     cadena = cadena.replace("<![CDATA[","")
+    cadena = cadena.replace("<Br />","")
+    cadena = cadena.replace("<BR />","")
+    cadena = cadena.replace("<Br>","")
 
+    cadena = re.compile("<option[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</option>","")
+
+    cadena = re.compile("<iframe[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</iframe>","")
+    
+    cadena = re.compile("<table[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</table>","")
+    
+    cadena = re.compile("<td[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</td>","")
+    
     cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</div>","")
     
@@ -857,10 +876,15 @@ def htmlclean(cadena):
     cadena = re.compile("<h3[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</h3>","")
 
+    cadena = re.compile("<h4[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</h4>","")
+
     cadena = re.compile("<!--[^-]+-->",re.DOTALL).sub("",cadena)
     
     cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
+    
     cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
+
     cadena = re.compile("<object[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</object>","")
     cadena = re.compile("<param[^>]*>",re.DOTALL).sub("",cadena)
