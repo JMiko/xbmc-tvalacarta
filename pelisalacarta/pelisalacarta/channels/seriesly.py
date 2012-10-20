@@ -50,16 +50,13 @@ def mainlist(item):
 
     return itemlist
 
-def getCredentials(auth_token, user_token):
+def getCredentials():
     logged = False
-    old_auth_token = auth_token
-    old_user_token = user_token
-
+    
     try:
         count = 0
         while (not logged and count<6):
-            if(count > 0):
-                auth_token,user_token = perform_login(LOGIN,PASSWORD)
+            auth_token,user_token = perform_login()
             post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
             url='http://series.ly/api/isUserLogged.php?type=&format=json'
             logresult = load_json(scrapertools.cache_page(url, post=post))
@@ -68,10 +65,10 @@ def getCredentials(auth_token, user_token):
             else:
                 logged=True
     except:
-        return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]
+        return [auth_token,user_token, logged, "Error al obtener credenciales"]
       
     if(not logged):
-        return [old_auth_token,old_user_token, logged, "Error al obtener credenciales"]
+        return [auth_token,user_token, logged, "Despues de 5 intentos no hemos podido loguear"]
     
     return [auth_token,user_token, logged, user_token]
 
@@ -80,7 +77,7 @@ def mis_series(item):
     logger.info("[seriesly.py] mis_series")
 
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     
     # Series Usuario
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
@@ -123,7 +120,7 @@ def serie_capitulos(item):
     logger.info('[seriesly.py] serie_capitulos')
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     
     # Extrae las entradas (carpetas)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
@@ -164,7 +161,7 @@ def capitulo_links(item):
     logger.info("[seriesly.py] capitulo_links")
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     
     # Extrae las entradas (carpetas)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
@@ -248,7 +245,7 @@ def mis_pelis_categoria(item):
 
     # Obtiene de nuevo los tokens
     cat_filter = item.url
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     
     # Extrae las entradas (carpetas)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
@@ -304,7 +301,7 @@ def peli_links(item):
     logger.info("[seriesly.py] peli_links")
    
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
    
     # Extrae las entradas (carpetas)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
@@ -347,7 +344,7 @@ def series_mas_votadas(item):
     logger.info("[seriesly.py] series_mas_votadas")
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
    
     # Extrae las entradas (carpetas)
     url="http://series.ly/api/top.php?&format=json&id=1"
@@ -378,7 +375,7 @@ def pelis_mas_vistas(item):
     logger.info("[seriesly.py] pelis_mas_vistas")
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     # Extrae las entradas (carpetas)
@@ -409,7 +406,7 @@ def ultimas_pelis_modificadas(item):
     logger.info("[seriesly.py] ultimas_pelis_modificadas")
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     
     
@@ -440,7 +437,7 @@ def ultimas_pelis_modificadas(item):
 def search(item,texto, categoria="*"):
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     
     res = search_series(auth_token, user_token, item, texto)
     res.extend(search_films(auth_token, user_token, item, texto))
@@ -451,7 +448,7 @@ def search_series(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search")
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=serie&format=json' % ( qstr(texto) )
@@ -482,7 +479,7 @@ def search_films(auth_token, user_token, item, texto):
     logger.info("[seriesly.py] search_films")
     
     # Obtiene de nuevo los tokens
-    auth_token, user_token = perform_login()
+    auth_token, user_token, logged, loginmessage = getCredentials()
     post = 'auth_token=%s' % ( qstr(auth_token) )
     
     url = 'http://series.ly/api/search.php?search=%s&type=film&format=json' % ( qstr(texto) )

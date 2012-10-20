@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>19</tag>
-	<date>28/08/2012</date>
-	<changes>Arreglado fallo en seriesly por la actualización</changes>
+	<tag>20</tag>
+	<date>21/10/2012</date>
+	<changes>Se comprueban los tokens al hacer login, si estos son invalidos los pide de nuevo (hasta 5 intentos). Soluciona el problema de dar a un enlace y que no aparezca nada.</changes>
 </version>
