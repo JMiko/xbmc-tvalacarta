@@ -30,10 +30,10 @@ def mainlist(item):
     logger.info("[animeflv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="newlist" , title="Novedades"                         , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="Lista2"  , title="Ultimas series agregadas o subidas", url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="airlist" , title="Animes en emision"                 , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="ListA"   , title="Listado Alfabetico"                , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="novedades" , title="Novedades"                         , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="Lista2"    , title="Ultimas series agregadas o subidas", url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="airlist"   , title="Animes en emision"                 , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="letras"    , title="Listado Alfabetico"                , url="http://animeflv.net/" ))
     itemlist.append( Item(channel=__channel__, action="genero"  , title="Listado por Genero"                , url="http://animeflv.net/" ))
     itemlist.append( Item(channel=__channel__, action="completo", title="Listado Completo de Animes"        , url="http://animeflv.net/" ))
     itemlist.append( Item(channel=__channel__, action="completo", title="Listado Completo de Ovas"          , url="http://animeflv.net/" ))
@@ -122,8 +122,8 @@ def completo(item):
         itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))        
     return itemlist
 
-def ListA(item):
-    logger.info("[animeflv.py] ListA")
+def letras(item):
+    logger.info("[animeflv.py] letras")
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="Lista2" , title="0-9", url="http://animeflv.net/letra/0-9.html"))
     itemlist.append( Item(channel=__channel__, action="Lista2" , title="A"  , url="http://animeflv.net/letra/a.html"))
@@ -189,8 +189,8 @@ def Lista2(item):
             itemlist.append( Item(channel=__channel__, action="Lista2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     return itemlist
 
-def newlist(item):
-    logger.info("[animeflv.py] newlist")
+def novedades(item):
+    logger.info("[animeflv.py] novedades")
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
@@ -209,7 +209,7 @@ def newlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, fulltitle=fulltitle))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, fulltitle=fulltitle, viewmode="movie"))
 
     return itemlist
 
