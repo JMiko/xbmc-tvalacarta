@@ -28,13 +28,9 @@
     <string id="30012">Banner (orizzontale)</string>
     <string id="30200">Square</string>
 
-    <!-- Account Megavideo -->
-    <string id="30013"></string>
+    <!-- Account premium -->
     <string id="30014">Nome utente:</string>
     <string id="30015">Password:</string>
-    <string id="30045"></string>
-    <string id="30048"></string>
-    <string id="30049"></string>
     <string id="30031">Qualità video (FLV)</string>
     <string id="30032">Definizione standard (SD)</string>
     <string id="30033">Alta Definizione (HD)(quando disponibile)</string>    
@@ -70,7 +66,12 @@
     <string id="30042">Percorso cache:</string>
 
     <string id="30044">Modalità riproduzione:</string>
-    
+
+    <string id="30013">Enable personal channel</string>
+    <string id="30048">Channel name</string>
+    <string id="30049">Channel logo</string>
+    <string id="30045">Video list URL / file</string>
+
     <!-- =============================================================== -->
     <!-- 30050 to 30099: Info / Messaggi d' errore                       -->
     <!-- =============================================================== -->
