@@ -1115,15 +1115,19 @@ def video(item):
             print  "entra a la bandera"
             if (float(extension) != 4) :
                 print "formato no es mp4"
-                ends = match[2]
-                isf1 = ends.find("/")
-                if isf1 >=1:
-                     print isf1
-                     ends = ends[ends.find("/"):]
-                     scrapedurl = "http://apps.tvolucion.com/m4v/"+match[3]+"/"+match[2]+"/"+ends+"-600.mp4"
+                ismp4 = scrapedurl.find(".mp4")
+                if ismp4 >=1:
+                    print "si es mp4, se queda el url original"
                 else:
-                     scrapedurl = match[1].replace(".jpg","-600.mp4")
-                     scrapedurl = scrapedurl.replace("m4v.","apps.")
+                    ends = match[2]
+                    isf1 = ends.find("/")
+                    if isf1 >=1:
+                        print isf1
+                        ends = ends[ends.find("/"):]
+                        scrapedurl = "http://apps.tvolucion.com/m4v/"+match[3]+"/"+match[2]+"/"+ends+"-600.mp4"
+                    else:
+                        scrapedurl = match[1].replace(".jpg","-600.mp4")
+                        scrapedurl = scrapedurl.replace("m4v.","apps.")
             scrapedplot=scrapedplot+chr(10)+scrapedurl +chr(10)+extension+chr(10)+match[0]
             itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle+" (Calidad: Media)" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
         else :
