@@ -27,13 +27,9 @@
     <string id="30012">Banner (horitzontal)</string>
  	<string id="30200">Cuadrado</string>
 
-    <!-- Cuenta Megavideo -->
-    <string id="30013"></string>
+    <!-- Cuenta premium -->
     <string id="30014">Usuari:</string>
     <string id="30015">Password:</string>
-    <string id="30045"></string>
-    <string id="30048"></string>
-    <string id="30049"></string>
     <string id="30031">Calidad de videos (FLV)</string>
     <string id="30032">Calidad Normal (SD)</string>
     <string id="30033">Calidad Alta (HD)(si existe)</string>
@@ -64,6 +60,11 @@
     <string id="30042">Directorio de cache:</string>
 
     <string id="30044">Modo de reproducción:</string>
+
+    <string id="30013">Habilitar canal personal</string>
+    <string id="30048">Nombre del canal</string>
+    <string id="30049">Logo del canal</string>
+    <string id="30045">URL/fichero con los vídeos</string>
 
     <!-- =============================================================== -->
     <!-- De 30050 a 30099: Mensajes informativos - error                 -->
