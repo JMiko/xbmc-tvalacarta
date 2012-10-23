@@ -190,7 +190,7 @@ def peliculas(item,paginacion=True):
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="enlaces", title=scrapedtitle , fulltitle=title , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/bajui.jpg") )
+        itemlist.append( Item(channel=__channel__, action="enlaces", title=scrapedtitle , fulltitle=title , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5", fanart="http://pelisalacarta.mimediacenter.info/fanart/bajui.jpg", viewmode="movie_with_plot") )
 
     # Extrae el paginador
     patron = '<a href="([^"]+)" class="pagina pag_sig">Siguiente \&raquo\;</a>'

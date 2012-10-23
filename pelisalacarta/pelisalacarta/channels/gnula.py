@@ -127,7 +127,7 @@ def peliculas(item,paginacion=True):
         scrapedurl = urlparse.urljoin("http://gnula.biz/",url)
         scrapedthumbnail = thumbnail
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", extra=scrapedtitle) )
 
     patron = "<span \"\">[^<]+</span><a href='([^']+)'>"
     matches = re.compile(patron,re.DOTALL).findall(data)

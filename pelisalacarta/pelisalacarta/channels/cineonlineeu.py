@@ -28,10 +28,26 @@ def mainlist(item):
     logger.info("[cineonlineeu.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas"         , title="Novedades"    , url="http://www.cine-online.eu/" ))
-    itemlist.append( Item(channel=__channel__ , action="generos"         , title="Por categorías"    , url="http://www.cine-online.eu/" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas" , title="Novedades"      , url="http://www.cine-online.eu/" ))
+    itemlist.append( Item(channel=__channel__ , action="generos"   , title="Por categorías" , url="http://www.cine-online.eu/" ))
+    itemlist.append( Item(channel=__channel__ , action="search"    , title="Buscar" ))
 
     return itemlist
+
+def search(item,texto):
+    logger.info("[cineonlineeu.py] search")
+    if item.url=="":
+        item.url="http://www.cine-online.eu/search?q="
+    texto = texto.replace(" ","+")
+    item.url = item.url+texto
+    try:
+        return peliculas(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def generos(item):
     logger.info("[cineonlineeu.py] mainlist")
@@ -93,7 +109,7 @@ def peliculas(item):
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         plot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , viewmode="movie", folder=True) )
 
     patron  = "<div class='item-content'>[^<]+"
     patron += "<div class='item-thumbnail'>[^<]+"

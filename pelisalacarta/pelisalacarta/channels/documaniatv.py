@@ -38,8 +38,24 @@ def mainlist(item):
     #itemlist.append( Item(channel=__channel__, action="topdocumentales"     , title="Top documentales online"          , url="http://www.documaniatv.com/topvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'top.png')))
     #itemlist.append( Item(channel=__channel__, action="listatipodocumental" , title="Documentales siendo vistos ahora" , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'viendose.png')))
     #itemlist.append( Item(channel=__channel__, action="documentaldeldia"    , title="Documental del dia"               , url="http://www.documaniatv.com/index.html",thumbnail=os.path.join(IMAGES_PATH, 'deldia.png')))
-    #itemlist.append( Item(channel=__channel__, action="search"              , title="Buscar"                           , url="http://www.cinetube.es/peliculas/",thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
+    itemlist.append( Item(channel=__channel__, action="search"              , title="Buscar"                           , url="",thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
     return itemlist
+
+def search(item,texto):
+    #http://www.documaniatv.com/search.php?keywords=luna&btn=Buscar
+    logger.info("[documaniatv.py] search")
+    if item.url=="":
+        item.url="http://www.documaniatv.com/search.php?keywords=%s&btn=Buscar"
+    texto = texto.replace(" ","+")
+    item.url = item.url % texto
+    try:
+        return tagdocumentaleslist(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def documentalesnuevos(item):
     logger.info("[documaniatv.py] documentalesnuevos")
@@ -157,8 +173,21 @@ def tagdocumentaleslist(item):
     #logger.info(data)
 
     # Extrae el listado de documentales del tag
-    patronvideos  = '<li class="video">[^<]+<div class="video_i">[^<]+<a href="([^"]+)"'
-    patronvideos += '>[^<]+<img src="([^"]+)"  alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
+    '''
+    <li class="video">
+    <div class="video_i">
+    <a href="http://www.documaniatv.com/ciencia/el-universo-05-14-la-luna-video_4be45aed1.html">
+    <img src="http://tu.tv/imagenes/videos//e/l/el-universo-05-de-14-la-luna-2007-docu_imagen1.jpg"  alt="El Universo: 05-14 La Luna" class="imag" width="116" height="87" /><div class="tag"></div>
+    </a>
+    <span class="artist_name">Ciencia</span> <span class="song_name">El Universo: 05-14 La Luna</span>
+    </div>
+    </li>
+    <li class="video">
+    '''
+    patronvideos  = '<li class="video"[^<]+'
+    patronvideos += '<div class="video_i[^<]+'
+    patronvideos += '<a href="([^"]+)"[^<]+'
+    patronvideos += '<img src="([^"]+)"\s+alt="([^"]+)".*?<span class="artist_name">([^<]+)</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)         
 
@@ -220,10 +249,6 @@ def detail(item):
 
     return itemlist
 
-def search(item):
-    logger.info("[documaniatv.py] search")
-    buscador.listar_busquedas(item)
-    
 def searchresults(item):
     logger.info("[documaniatv.py] search")
             

@@ -162,7 +162,7 @@ def doaction(item):
             scrapedurl = urlparse.urljoin(item.url,match2[0])
             scrapedthumbnail = match2[1]
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=__channel__, action=item.extra, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=scrapedtitle , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action=item.extra, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, extra=scrapedtitle , plot=scrapedplot , viewmode="movie", folder=True) )
 
     
     #<div class="pagination">

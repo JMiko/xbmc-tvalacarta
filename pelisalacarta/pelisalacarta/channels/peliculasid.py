@@ -149,7 +149,7 @@ def listvideos(item):
             scrapedplot = ""
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle.strip() , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5"  ))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle.strip() , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5", viewmode="movie"  ))
         
 
     # Extrae la marca de siguiente página

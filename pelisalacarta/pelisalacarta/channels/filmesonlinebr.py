@@ -56,7 +56,7 @@ def novedades(item):
         scrapedtitle = title.replace("&#8211; ","(")+")"
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
     
     '''
     <div id="navi"><a href="http://www.filmesonlinebr.net/page/2/" ><span class="navforward"></span></a></div>

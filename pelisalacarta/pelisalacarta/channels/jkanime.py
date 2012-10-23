@@ -30,11 +30,27 @@ def mainlist(item):
     logger.info("[jkanime.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="ultimos"  , title="Últimos"           , url="http://jkanime.net/" ))
-    itemlist.append( Item(channel=__channel__, action="letras"   , title="Listado Alfabetico", url="http://jkanime.net/" ))
-    itemlist.append( Item(channel=__channel__, action="generos"  , title="Listado por Genero", url="http://jkanime.net/" ))
+    itemlist.append( Item(channel=__channel__, action="ultimos" , title="Últimos"           , url="http://jkanime.net/" ))
+    itemlist.append( Item(channel=__channel__, action="letras"  , title="Listado Alfabetico", url="http://jkanime.net/" ))
+    itemlist.append( Item(channel=__channel__, action="generos" , title="Listado por Genero", url="http://jkanime.net/" ))
+    itemlist.append( Item(channel=__channel__, action="search"  , title="Buscar" ))
   
     return itemlist
+
+def search(item,texto):
+    logger.info("[jkanime.py] search")
+    if item.url=="":
+        item.url="http://jkanime.net/buscar/%s/"
+    texto = texto.replace(" ","+")
+    item.url = item.url % texto
+    try:
+        return series(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def ultimos(item):
     logger.info("[jkanime.py] ultimos")
@@ -141,7 +157,7 @@ def series(item):
         plot = scrapertools.htmlclean(scrapedplot)
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot))        
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot, viewmode="movie_with_plot"))        
 
     try:
         siguiente = scrapertools.get_match(data,'<a class="listsiguiente" href="([^"]+)" >Resultados Siguientes')

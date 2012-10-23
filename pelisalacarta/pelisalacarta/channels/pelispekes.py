@@ -58,7 +58,7 @@ def Generico(item):
             scrapedthumbnail = match2[1]
             scrapedplot = match2[3]
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            itemlist.append( Item(channel=item.channel , action="findvideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
+            itemlist.append( Item(channel=item.channel , action="findvideos"   , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , viewmode="movie"))
     
     # Extrae la pagina siguiente
     patron  = "class='current'>[^<]+</span><a href='([^']+)'"

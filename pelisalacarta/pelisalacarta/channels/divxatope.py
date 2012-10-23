@@ -45,7 +45,25 @@ def mainlist(item):
         if not title.startswith("Juegos") and not title.startswith("Musica"):
             itemlist.append( Item(channel=__channel__, action="lista", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/divxatope.jpg", folder=True) )
 
+    if len(itemlist)>0:
+        itemlist.append( Item(channel=__channel__ , action="search"    , title="Buscar" ))
+
     return itemlist
+
+def search(item,texto):
+    logger.info("[divxatope.py] search")
+    if item.url=="":
+        item.url="http://www.divxatope.com/main.php?q="
+    texto = texto.replace(" ","+")
+    item.url = item.url+texto
+    try:
+        return lista(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def lista(item):
     logger.info("[divxatope.py] lista")
@@ -70,7 +88,7 @@ def lista(item):
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , viewmode="movie", folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<a class="paginator-items" href="([^"]+)" title="Pagina de torrent[^"]+">([^<]+)</a>'

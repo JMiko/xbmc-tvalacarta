@@ -85,7 +85,7 @@ def novedades(item):
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
 
     #<a class='blog-pager-older-link' href='http://www.internapoli-city.org/search?updated-max=2012-05-15T23:54:00%2B02:00&amp;max-results=10' id='Blog1_blog-pager-older-link' title='Post più vecchi'><img height='38' src='http://1.bp.blogspot.com/-duUmcoXvqN8/T3uMWNT32hI/AAAAAAAAD4Q/EJ7MUmU1F90/s1600/desno.png' width='50'/></a>
     patron = "<a class='blog-pager-older-link' href='([^']+)'"

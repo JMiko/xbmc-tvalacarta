@@ -70,7 +70,7 @@ def peliculas(item):
         scrapedplot = scrapertools.htmlclean(plot)
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, context="4|5"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie", context="4|5"))
 
     # Extrae la marca de siguiente página
     #<input class='boton' type='button' value='2' style='margin-left:15px;margin-right:15px;cursor:pointer; font-weight:normal;  background-color:#4B4A42; border: solid 1px #4B4A42;color:#ffffff;'>
