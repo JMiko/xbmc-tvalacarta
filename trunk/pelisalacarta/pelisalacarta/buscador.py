@@ -9,6 +9,7 @@ import sys
 from core import config
 from core import logger
 from core.item import Item
+from core import scrapertools
 
 CHANNELNAME = "buscador"
 
@@ -67,20 +68,35 @@ def do_search_results(tecleado):
     #from pelisalacarta.channels import cinetube
     #itemlist.extend( cinetube.search( Item() , tecleado) )
 
+    from pelisalacarta.channels import cineonlineeu
+    itemlist.extend( cineonlineeu.search( Item() , tecleado) )
+
     from pelisalacarta.channels import cuevana
     itemlist.extend( cuevana.search( Item() , tecleado) )
 
     from pelisalacarta.channels import cinevos
     itemlist.extend( cinevos.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import divxonline
-    itemlist.extend( divxonline.search( Item() , tecleado) )
-
     from pelisalacarta.channels import cinegratis
     itemlist.extend( cinegratis.search( Item() , tecleado) )
 
     from pelisalacarta.channels import cuevana
     itemlist.extend( cuevana.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import divxatope
+    itemlist.extend( divxatope.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import divxonline
+    itemlist.extend( divxonline.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import documaniatv
+    itemlist.extend( documaniatv.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import gnula
+    itemlist.extend( gnula.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import jkanime
+    itemlist.extend( jkanime.search( Item() , tecleado) )
 
     from pelisalacarta.channels import newdivx
     itemlist.extend( newdivx.search( Item() , tecleado) )
@@ -91,8 +107,8 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import peliculasaudiolatino
     itemlist.extend( peliculasaudiolatino.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import peliculasflv
-    itemlist.extend( peliculasflv.search( Item() , tecleado) )
+    #from pelisalacarta.channels import peliculasflv
+    #itemlist.extend( peliculasflv.search( Item() , tecleado) )
 
     from pelisalacarta.channels import peliculasyonkis_generico
     itemlist.extend( peliculasyonkis_generico.search( Item() , tecleado) )
@@ -100,9 +116,22 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import seriesyonkis
     itemlist.extend( seriesyonkis.search( Item() , tecleado) )
 
+    from pelisalacarta.channels import serieonline
+    itemlist.extend( serieonline.search( Item() , tecleado) )
+
+    #from pelisalacarta.channels import seriesid
+    #itemlist.extend( seriesid.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import seriesly
+    itemlist.extend( seriesly.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import seriesdanko
+    itemlist.extend( seriesdanko.search( Item() , tecleado) )
+
     from pelisalacarta.channels import veranime
     itemlist.extend( veranime.search( Item() , tecleado) )
 
+    itemlist.sort(key=lambda item: item.title.lower().strip())
     return itemlist
 
 def salvar_busquedas(params,url="",category=""):

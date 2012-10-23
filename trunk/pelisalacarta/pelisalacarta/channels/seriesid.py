@@ -28,9 +28,9 @@ def isGeneric():
 def mainlist(item):
     logger.info("[seriesid.py] getmainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="En Emisión"            , action="scrapping"   , url="http://seriesid.com/series-en-emision/"))
-    itemlist.append( Item(channel=__channel__, title="Todas"                  , action="menucompleto"   , url="http://seriesid.com/"))
-    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
+    itemlist.append( Item(channel=__channel__, title="En Emisión", action="series"   , url="http://seriesid.com/series-en-emision/", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Todas"     , action="menucompleto"   , url="http://seriesid.com/", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"    , action="search", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg") )
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -43,7 +43,7 @@ def search(item,texto,categoria=""):
     try:
         item.url = "http://seriesid.com/?s=%s"
         item.url = item.url % texto
-        itemlist.extend(scrapping(item))
+        itemlist.extend(series(item))
         return itemlist
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
@@ -53,7 +53,7 @@ def search(item,texto,categoria=""):
         return []
 
 def menucompleto(item):
-    logger.info("[seriesid.py] scrapping")
+    logger.info("[seriesid.py] menucompleto")
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
@@ -71,25 +71,59 @@ def menucompleto(item):
         scrapedurl = match[0]
         scrapedthumbnail = ""
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="scrappingTemp", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
+        itemlist.append( Item(channel=__channel__, action="scrappingTemp", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg") )
 
     return itemlist
 
-def scrapping(item,paginacion=True):
-    logger.info("[seriesid.py] scrapping")
+def series(item,paginacion=True):
+    logger.info("[seriesid.py] series")
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
     # Extrae las entradas
-    patronvideos = 'div class="item">[^>]+<div class="item-title">[^>]+<h1><a title="([^"]+)" href="([^"]+)">[^>]+</a></h1>[^>]+</div>[^>]+<div class="item-contenido">[^>]+<div class="caratula" style="background:url\(([^\)]+)\);">'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    '''
+    <!--ITEM-->
+    <div class="item">
+    <div class="item-title">
+    <h1><a title="Alcatraz 1ra Temporada" href="http://seriesid.com/alcatraz-1ra-temporada/">Alcatraz 1ra Temporada</a></h1>
+    </div>
+    <div class="item-contenido">
+    <div class="caratula" style="background:url(http://seriesid.com/series/alcatraz1.jpg);">
+    <a title="Ver Serie Alcatraz 1ra Temporada" href="http://seriesid.com/alcatraz-1ra-temporada/"><span></span></a>
+    </div>
+    <p>Alcatraz es una Serie de 12 episodios que cuenta la misteriosa historia de la prisión mas famosa del mundo “Alcatraz” narra las
+    investigaciones de Rebecca Madsen, un agente de policía, y de Dr. Diego Soto, un "hippie geek" que es el mayor experto del
+    mundo en Alcatraz. Ambos investigan la reaparición de guardias y presos de Alcatraz en la actualidad, después de su misteriosa
+    desaparición hace cincuenta años. Producida por J.J. Abrams (Si, uno de los productores de “Lost").  
+    
+    
+    Lista de Episodios
+    Alcatraz 1ra Temporada - Episodio 1
+    Alcatraz 1ra Temporada - Episodio 2
+    Alcatraz 1ra Temporada - Episodio 3
+    Alcatraz 1ra Temporada - ...</p>
+    </div>
+    <div class="item-footer"></div>
+    </div>
+    <!--ITEM-->
+    '''
+    patron  = 'div class="item"[^<]+'
+    patron += '<div class="item-title"[^<]+'
+    patron += '<h1><a title="([^"]+)" href="([^"]+)">[^>]+</a></h1[^<]+'
+    patron += '</div[^<]+'
+    patron += '<div class="item-contenido"[^<]+'
+    patron += '<div class="caratula" style="background:url\(([^\)]+)\);">[^<]+'
+    patron += '<a[^<]+<span[^<]+</span[^<]+</a[^<]+'
+    patron += '</div[^<]+'
+    patron += '<p>([^<]+)</p>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
         scrapedtitle =  match[0]
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
         fulltitle = scrapedtitle
-        scrapedplot = ""
+        scrapedplot = match[3]
         scrapedurl = match[1]
         scrapedthumbnail = match[2]
         if "temporada" in scrapedurl:
@@ -97,12 +131,12 @@ def scrapping(item,paginacion=True):
         else:
             action = "findvideos"
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
+        itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", extra=scrapedtitle, fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg") )
 
     return itemlist
 
 def scrappingTemp(item,paginacion=True):
-    logger.info("[seriesid.py] scrapping")
+    logger.info("[seriesid.py] scrappingTemp")
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
@@ -121,7 +155,7 @@ def scrappingTemp(item,paginacion=True):
         scrapedplot = ""
         scrapedurl = match[0]
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle, fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg") )
 
     return itemlist
 
@@ -131,7 +165,7 @@ def test():
     # mainlist
     mainlist_items = mainlist(Item())
     # Da por bueno el canal si alguna de las series "En emisión" devuelve mirrors
-    series_items = scrapping(mainlist_items[0])
+    series_items = series(mainlist_items[0])
     bien = False
     
     for serie_item in series_items:

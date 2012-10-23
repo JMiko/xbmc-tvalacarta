@@ -32,8 +32,46 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Nuevos episodios"          , action="novedades"      , url="http://www.serieonline.net/"))
     itemlist.append( Item(channel=__channel__, title="Series (con carátula)"     , action="series"         , url="http://www.serieonline.net/series/"))
     itemlist.append( Item(channel=__channel__, title="Series (listado completo)" , action="seriescompleto" , url="http://www.serieonline.net/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"                    , action="search"))
     
     return itemlist
+
+def search(item,texto):
+    logger.info("[serieonline.py] search")
+    if item.url=="":
+        item.url="http://www.serieonline.net/buscar/"
+    texto = texto.replace(" ","+")
+    post = "tag="+texto
+    try:
+        data = scrapertools.cache_page(item.url,post=post)
+        '''
+        <a href="/merlin/" class="link_superpuesto"></a>
+        <img src="/imagenes/series/horizontal/merlin.jpg"></img>
+        <a href="/merlin/">Merlín</a>
+        '''
+        patron  = '<a href="([^"]+)"[^<]+</a[^<]+<img src="([^"]+)"[^<]+</img>[^<]+<a href="[^"]+">([^<]+)</a>'    
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if DEBUG: scrapertools.printMatches(matches)
+    
+        itemlist = []
+        for url,thumbnail,title in matches:
+            scrapedtitle = title.strip()
+            scrapedplot = ""
+            scrapedurl = urlparse.urljoin(item.url,url)
+            scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    
+            # Añade al listado de XBMC
+            itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
+    
+        return itemlist
+
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def destacados(item):
     logger.info("[serieonline.py] destacados")
@@ -56,7 +94,7 @@ def destacados(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
 
     return itemlist
 
@@ -80,7 +118,7 @@ def novedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<div class="paginacion-num"><a href="([^"]+)">'
@@ -91,44 +129,6 @@ def novedades(item):
         scrapedtitle = ">> Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , folder=True) )
-
-    return itemlist
-
-def peliculas(item):
-    logger.info("[serieonline.py] peliculas")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-
-    # Extrae las entradas
-    '''
-    <div class="capitulo"><div class="imagen-text"><a href="http://www.serieonline.net/drama/el-retrato-de-dorian-gray-2009/"><img src="http://www.serieonline.net/imagenes/portada/pelis/elretratodedoriangray2009.jpg" width="150" height="230" alt="El retrato de Dorian Gray (2009)" /></a></div>
-    '''
-    patronvideos  = '<div class="capitulo"><div class="imagen-text"><a href="([^"]+)"><img src="([^"]+)".*?alt="([^"]+)"'
-
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[2]
-        scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-
-    # Extrae el paginador
-    patronvideos  = '<div class="paginacion-num"><a href="([^"]+)">'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        scrapedtitle = "Página siguiente"
-        scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -174,7 +174,7 @@ def series(item,paginacion=True):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show=scrapedtitle, viewmode="movie", folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<div class="paginacion-num">\d+</div><div class="paginacion-num"><a href="([^"]+)">'

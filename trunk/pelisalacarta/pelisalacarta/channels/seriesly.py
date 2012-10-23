@@ -439,6 +439,8 @@ def search(item,texto, categoria="*"):
     # Obtiene de nuevo los tokens
     auth_token, user_token, logged, loginmessage = getCredentials()
     
+    item.channel="seriesly"
+    
     res = search_series(auth_token, user_token, item, texto)
     res.extend(search_films(auth_token, user_token, item, texto))
     

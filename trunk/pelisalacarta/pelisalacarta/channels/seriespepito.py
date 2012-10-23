@@ -63,7 +63,7 @@ def novedades(item):
         plot = unicode( plot, "iso-8859-1" , errors="replace" ).encode("utf-8")
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle, viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -95,7 +95,7 @@ def lomasvisto(item):
         plot = unicode( plot, "iso-8859-1" , errors="replace" ).encode("utf-8")
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle, viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -154,7 +154,7 @@ def alphaserieslist(item):
         thumbnail = scrapedthumbnail
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+        itemlist.append( Item(channel=__channel__, action="episodelist" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=scrapedtitle,viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
