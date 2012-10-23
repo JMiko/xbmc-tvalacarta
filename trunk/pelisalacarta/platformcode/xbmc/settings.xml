@@ -52,5 +52,8 @@
     <setting id="cache.dir" type="text" label="30042" default=""/>
 
     <setting type="sep" />
-    <setting id="enablemedia-translate" type="bool" label ="31000" default="false"/>
+    <setting id="personalchannel" type="bool" label="30013" default="false"/>
+    <setting id="personalchannelname" type="text" label="30048"  enable="eq(-1,true)" default="Ejemplo de canal personal"/>
+    <setting id="personalchannellogo" type="text" label="30049" enable="eq(-2,true)" default="http://pelisalacarta.mimediacenter.info/personalchannel/sample.png"/>
+    <setting id="personalchannelurl" type="text" label="30045" enable="eq(-3,true)" default="http://pelisalacarta.mimediacenter.info/personalchannel/samplefeed.rss"/>
 </settings>

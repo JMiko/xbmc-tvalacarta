@@ -105,7 +105,7 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
             ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url = itemurl , listitem=listitem, isFolder=True, totalItems=totalItems)
     return ok
 
-def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = "", subtitle="", totalItems = 0, show="", password="", extra="",fulltitle=""):
+def addnewvideo( canal , accion , category , server , title , url , thumbnail, plot ,Serie="",duration="",fanart="",IsPlayable='false',context = "", subtitle="", viewmode="", totalItems = 0, show="", password="", extra="",fulltitle=""):
     contextCommands = []
     ok = False
     try:
@@ -169,7 +169,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     except:
         pass
     
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s&show=%s&extradata=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle), urllib.quote_plus( show ) , urllib.quote_plus(extra) )
+    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s&viewmode=%s&show=%s&extradata=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle), urllib.quote_plus(viewmode), urllib.quote_plus( show ) , urllib.quote_plus(extra) )
     #logger.info("[xbmctools.py] itemurl=%s" % itemurl)
     if totalItems == 0:
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)
@@ -794,10 +794,13 @@ def playstrm(params,url,category):
     saveSubtitleName(item)
     play_video("Biblioteca pelisalacarta",server,url,category,title,thumbnail,plot,strmfile=True,Serie=serie,subtitle=subtitle)
 
-def renderItems(itemlist, params, url, category,isPlayable='false'):
+def renderItems(itemlist, params, url, category, isPlayable='false'):
+    
+    viewmode = "list"
+    
     if itemlist <> None:
         for item in itemlist:
-            
+            logger.info("viewmode="+item.viewmode)
             if item.category == "":
                 item.category = category
                 
@@ -827,12 +830,25 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
                     addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot , "" ,  duration = item.duration , fanart = item.fanart, IsPlayable=isPlayable,context = item.context , subtitle=item.subtitle, totalItems = len(itemlist), show=item.show, password = item.password, extra = item.extra, fulltitle=item.fulltitle )
                 else:    
                     addnewvideo( item.channel , item.action , item.category , item.server, item.title , item.url , item.thumbnail , item.plot, fanart = item.fanart, IsPlayable=isPlayable , context = item.context , subtitle = item.subtitle , totalItems = len(itemlist), show=item.show , password = item.password , extra=item.extra, fulltitle=item.fulltitle )
+            
+            if item.viewmode!="list":
+                viewmode = item.viewmode
 
         # Cierra el directorio
         xbmcplugin.setContent(pluginhandle,"Movies")
         xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
         xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-    
+
+        if config.get_setting("forceview")=="true":
+            if viewmode=="list":
+                xbmc.executebuiltin("Container.SetViewMode(50)")
+            elif viewmode=="movie_with_plot":
+                # Confluence - Thumbnail
+                xbmc.executebuiltin("Container.SetViewMode(503)")
+            elif viewmode=="movie":
+                # Confluence - Info de medios 2
+                xbmc.executebuiltin("Container.SetViewMode(500)")
+        
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def wait2second():
