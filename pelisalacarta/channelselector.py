@@ -71,6 +71,11 @@ def mainlist(params,url,category):
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
+    if config.get_setting("forceview")=="true":
+        # Confluence - Thumbnail
+        import xbmc
+        xbmc.executebuiltin("Container.SetViewMode(500)")
+
 def getchanneltypes():
     logger.info("[channelselector.py] getchanneltypes")
     itemlist = []
@@ -97,20 +102,34 @@ def channeltypes(params,url,category):
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category="" )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
-    
+
+    if config.get_setting("forceview")=="true":
+        # Confluence - Thumbnail
+        import xbmc
+        xbmc.executebuiltin("Container.SetViewMode(500)")
+
 def listchannels(params,url,category):
     logger.info("[channelselector.py] listchannels")
 
     lista = filterchannels(category)
     for channel in lista:
         if channel.type=="xbmc" or channel.type=="generic":
-            addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail=urlparse.urljoin(get_thumbnail_path(),channel.channel+".png"))
+            if channel.channel=="personal":
+                thumbnail=config.get_setting("personalchannellogo")
+            else:
+                thumbnail=urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
+            addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail = thumbnail)
 
     # Label (top-right)...
     import xbmcplugin
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+    if config.get_setting("forceview")=="true":
+        # Confluence - Thumbnail
+        import xbmc
+        xbmc.executebuiltin("Container.SetViewMode(500)")
 
 def filterchannels(category):
     returnlist = []
@@ -168,7 +187,7 @@ def channels_history_list():
     itemlist.append( Item( title="Series ID (15/12/2011)"            , channel="seriesid"             , language="ES" , category="S,VOS" , type="generic"  )) # vcalvo 15/12/2011
     itemlist.append( Item( title="Bajui (14/12/2011)"                , channel="bajui"                , language="ES" , category="F,S,D,VOS", type="generic")) # vcalvo 14/12/2011
     itemlist.append( Item( title="Shurweb (14/12/2011)"              , channel="shurweb"              , language="ES" , category="F,S,D,A", type="generic")) # vcalvo 14/12/2011
-    itemlist.append( Item( title="ShurHD (14/12/2011)"               , channel="shurhd"               , language="ES" , category="F" , type="generic"  )) # vcalvo 14/12/2011
+    #itemlist.append( Item( title="ShurHD (14/12/2011)"               , channel="shurhd"               , language="ES" , category="F" , type="generic"  )) # vcalvo 14/12/2011
     itemlist.append( Item( title="Justin.tv (12/12/2011)"            , channel="justintv"             , language=""   , category="G"       , type="generic"  )) # bandavi 12/12/2011
     itemlist.append( Item( title="Series.ly (19/11/2011)"            , channel="seriesly"             , language="ES" , category="S,A,VOS" , type="generic" )) # jesus/mrfloffy 19/11/2011
     itemlist.append( Item( title="Teledocumentales (19/10/2011)"     , channel="teledocumentales"     , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
@@ -186,7 +205,9 @@ def channels_list():
     #itemlist.append( Item( title="Asia-Team"             , channel="asiateam"             , language="ES"    , category="F,S"     , type="generic"  ))
     #itemlist.append( Item( title="Buena Isla"            , channel="buenaisla"            , language="ES"    , category="A,VOS"       , type="generic"  ))
 
-    itemlist.append( Item( title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
+    itemlist.append( Item( viewmode="movie", title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
+    if config.get_setting("personalchannel")=="true":
+        itemlist.append( Item( title=config.get_setting("personalchannelname") , channel="personal" , language="" , category="F,S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Animeflv"              , channel="animeflv"             , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Bajui"       , channel="bajui"             , language="ES"      , category="F,S,D,VOS" , type="generic"    ))
@@ -256,7 +277,7 @@ def channels_list():
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S,VOS"          , type="generic" ))
     itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S,VOS"          , type="generic" ))
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A,VOS"        , type="generic" , extra="Series" ))
-    itemlist.append( Item( title="ShurHD"       , channel="shurhd"             , language="ES"      , category="F,S" , type="generic"    ))
+    #itemlist.append( Item( title="ShurHD"       , channel="shurhd"             , language="ES"      , category="F,S" , type="generic"    ))
     itemlist.append( Item( title="Shurweb"       , channel="shurweb"             , language="ES"      , category="F,S,D,A" , type="generic"    ))
     itemlist.append( Item( title="Sipeliculas"       , channel="sipeliculas"             , language="ES"      , category="F" , type="generic"    )) # miguel 2/3/2012
     #itemlist.append( Item( title="Sofacine"              , channel="sofacine"             , language="ES" , category="F"          , type="generic"  ))
@@ -326,7 +347,6 @@ def get_thumbnail_path():
     thumbnail_type = config.get_setting("thumbnail_type")
     if thumbnail_type=="":
         thumbnail_type="2"
-    logger.info("thumbnail_type="+thumbnail_type)
     
     if thumbnail_type=="0":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/posters/"
