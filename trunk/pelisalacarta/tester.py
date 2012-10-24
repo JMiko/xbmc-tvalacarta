@@ -40,7 +40,6 @@ def test_channels():
     
     para_probar = []
     
-    '''
     para_probar.append("animeflv")
     para_probar.append("animeid")
     para_probar.append("bajui")
@@ -96,7 +95,6 @@ def test_channels():
     para_probar.append("tumejortv")
     para_probar.append("tusnovelas")
     #para_probar.append("unsoloclic") (borrado)
-    '''
 
     funcionan = []
     no_funcionan = []
