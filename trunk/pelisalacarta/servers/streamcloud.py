@@ -24,10 +24,20 @@ def test_video_exists( page_url ):
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[streamcloud.py] url="+page_url)
+    video_urls = []
     
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
     data = scrapertools.cache_page( page_url , headers=headers )
+    
+    patron =  'file\: "([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if len(matches)>0:
+        media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
+        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [streamcloud]",media_url])
+        return video_urls
+    
+    
     patron  = '<input type="hidden" name="op" value="([^"]+)">[^<]+'
     patron += '<input type="hidden" name="usr_login" value="">[^<]+'
     patron += '<input type="hidden" name="id" value="([^"]+)">[^<]+'
@@ -56,7 +66,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Extrae la URL
     media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
     
-    video_urls = []
     
     if len(matches)>0:
         video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [streamcloud]",media_url])
