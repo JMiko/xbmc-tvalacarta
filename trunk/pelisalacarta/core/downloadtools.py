@@ -409,6 +409,7 @@ def limpia_nombre_excepto_2(s):
 
 def getfilefromtitle(url,title):
     # Imprime en el log lo que va a descartar
+    logger.info("[downloadtools.py] getfilefromtitle: title="+title )
     logger.info("[downloadtools.py] getfilefromtitle: url="+url )
     #logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
     plataforma = config.get_system_platform();
@@ -420,6 +421,7 @@ def getfilefromtitle(url,title):
         nombrefichero = limpia_nombre_excepto_1(nombrefichero)
     else:
         nombrefichero = title + url[-4:]
+        logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
         if "videobb" in url or "videozer" in url or "putlocker" in url:
             nombrefichero = title + ".flv"
         if "videobam" in url:
@@ -435,6 +437,7 @@ def getfilefromtitle(url,title):
                 
             extension = partes[1][-5:-1]
             nombrefichero = title + extension
+        logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 
         nombrefichero = limpia_nombre_caracteres_especiales(nombrefichero)
 
@@ -456,11 +459,11 @@ def downloadbest(video_urls,title):
     invertida.reverse()
     
     for videotitle,url in invertida:
-        logger.info("[downoadtools] Descargando opción "+title+" "+url)
+        logger.info("[downloadtools] Descargando opción "+title+" "+url)
         
         # Calcula el fichero donde debe grabar
         try:
-            fullpath = getfilefromtitle(url,title.strip()+" "+videotitle)
+            fullpath = getfilefromtitle(url,title.strip())
         # Si falla, es porque la URL no vale para nada
         except:
             continue

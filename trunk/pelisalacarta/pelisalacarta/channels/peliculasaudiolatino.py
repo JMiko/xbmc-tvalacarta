@@ -63,7 +63,7 @@ def listarpeliculas(item):
         logger.info(scrapedtitle)
 
         # Añade al listado
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
            
     # Extrae la marca de siguiente página
     patron = 'Anterior.*?  :: <a href="/../../.*?/page/([^"]+)">Siguiente '
@@ -76,7 +76,7 @@ def listarpeliculas(item):
             scrapedthumbnail = ""
             scrapedplot = ""
     
-            itemlist.append( Item(channel=__channel__, action="listarpeliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="listarpeliculas", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
 
     return itemlist
 
@@ -93,7 +93,7 @@ def findvideos(item):
     for match in matches:
         url = match[0]
         title = "SERVIDOR: "+match[1]+" IDIOMA: "+match[2]+" CALIDAD: "+match[3]+" "
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=scrapedthumbnail , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.fulltitle, url=url , thumbnail=scrapedthumbnail , folder=False) )
 
     return itemlist
 
@@ -123,7 +123,7 @@ def play(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+videourl+"]")
 
             # Añade al listado de XBMC
-            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=videourl , server=server , folder=False) )
+            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.fulltitle, url=videourl , server=server , folder=False) )
     
     return itemlist
 
@@ -135,7 +135,29 @@ def generos(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas
-    patron = '<img src="/templates/images/mgeneros.jpg"(.*?)</ul>'
+    '''
+    <img src="http://www.peliculasaudiolatino.org/templates/images/mgeneros.jpg" />
+    <ul>
+    <li><a href="/genre/accion.html" class="mb1">&nbsp;&nbsp;&nbsp;* Accion</a></li>
+    <li><a href="/genre/fantasia.html" class="mb1">&nbsp;&nbsp;&nbsp;* Fantasia</a></li>
+    <li><a href="/genre/drama.html" class="mb1">&nbsp;&nbsp;&nbsp;* Drama</a></li>
+    <li><a href="/genre/ciencia_ficcion.html" class="mb1">&nbsp;&nbsp;&nbsp;* Ciencia Ficcion</a></li>
+    <li><a href="/genre/terror.html" class="mb1">&nbsp;&nbsp;&nbsp;* Terror</a></li>
+    <li><a href="/genre/suspenso.html" class="mb1">&nbsp;&nbsp;&nbsp;* Suspenso</a></li>
+    <li><a href="/genre/aventura.html" class="mb1">&nbsp;&nbsp;&nbsp;* Aventura</a></li>
+    <li><a href="/genre/comedia.html" class="mb1">&nbsp;&nbsp;&nbsp;* Comedia</a></li>
+    <li><a href="/genre/guerra.html" class="mb1">&nbsp;&nbsp;&nbsp;* Guerra</a></li>
+    <li><a href="/genre/animacion.html" class="mb1">&nbsp;&nbsp;&nbsp;* Animacion</a></li>
+    <li><a href="/genre/familiar.html" class="mb1">&nbsp;&nbsp;&nbsp;* Familiar</a></li>
+    <li><a href="/genre/documentales.html" class="mb1">&nbsp;&nbsp;&nbsp;* Documentales</a></li>
+    <li><a href="/genre/mexicanas.html" class="mb1">&nbsp;&nbsp;&nbsp;* Mexicanas</a></li>
+    <li><a href="/genre/romantica.html" class="mb1">&nbsp;&nbsp;&nbsp;* Romantica</a></li>
+    <li><a href="/genre/infantiles.html" class="mb1">&nbsp;&nbsp;&nbsp;* Infantiles</a></li>
+    <li><a href="/genre/subtituladas.html" class="mb1">&nbsp;&nbsp;&nbsp;* Subtituladas</a></li>
+    <li><a href="http://www.myhotamateurvideos.com/" TARGET = "_blank" class="mb1">&nbsp;&nbsp;&nbsp;* Adultos +18</a></li>
+    </ul>
+    '''
+    patron = '<img src="http.//www.peliculasaudiolatino.org/templates/images/mgeneros.jpg"(.*?)</ul>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
     data = matches[0]
@@ -212,7 +234,7 @@ def listado2(item):
         scrapedtitle = match[2]
         scrapedthumbnail = match[1]
         scrapedplot = match[3]
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if extra<>"":
         # Extrae la marca de siguiente página
@@ -226,7 +248,7 @@ def listado2(item):
                 scrapedthumbnail = ""
                 scrapedplot = ""
     
-                itemlist.append( Item(channel=__channel__, action="listado2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
+                itemlist.append( Item(channel=__channel__, action="listado2", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=extra , folder=True) )
 
     return itemlist
 

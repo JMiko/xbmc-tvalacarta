@@ -152,12 +152,13 @@ def series(item):
     
     for scrapedurl, scrapedthumbnail,scrapedtitle,line1,line2,scrapedplot in matches:
         title = scrapedtitle.strip()+" ("+line1.strip()+") ("+line2.strip()+")"
+        extra = line2.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapedthumbnail
         plot = scrapertools.htmlclean(scrapedplot)
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot, viewmode="movie_with_plot"))        
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot, extra=extra, viewmode="movie_with_plot"))        
 
     try:
         siguiente = scrapertools.get_match(data,'<a class="listsiguiente" href="([^"]+)" >Resultados Siguientes')
@@ -181,33 +182,40 @@ def episodios(item):
     scrapedthumbnail = scrapertools.get_match(data,'<meta property="og.image" content="([^"]+)"/>')
     idserie = scrapertools.get_match(data,"ajax/pagination_episodes/(\d+)/")
     logger.info("idserie="+idserie)
-    numero_pagina = item.extra
-    if numero_pagina=="":
-        numero_pagina="1"
+    if " Eps" in item.extra:
+        caps_x = item.extra
+        caps_x = caps_x.replace(" Eps","")
+        capitulos = int(caps_x)
+        paginas = capitulos/10
+        if capitulos%10>0:
+            paginas += 1
+    else:
+        paginas = 1
     logger.info("idserie="+idserie)
-    
-    headers = []
-    headers.append( [ "User-Agent" , "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:16.0) Gecko/20100101 Firefox/16.0" ] )
-    headers.append( [ "Referer" , item.url ] )
-    data = scrapertools.cache_page("http://jkanime.net/ajax/pagination_episodes/"+idserie+"/"+numero_pagina+"/")
-    logger.info("data="+data)
-    
-    '''
-    [{"id":"14199","title":"GetBackers - 1","number":"1","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14200","title":"GetBackers - 2","number":"2","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14201","title":"GetBackers - 3","number":"3","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14202","title":"GetBackers - 4","number":"4","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14203","title":"GetBackers - 5","number":"5","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14204","title":"GetBackers - 6","number":"6","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14205","title":"GetBackers - 7","number":"7","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14206","title":"GetBackers - 8","number":"8","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14207","title":"GetBackers - 9","number":"9","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14208","title":"GetBackers - 10","number":"10","animes_id":"122","timestamp":"2012-01-04 16:59:30"}]
-    '''
-    patron = '"id"\:"(\d+)","title"\:"([^"]+)","number"\:"(\d+)","animes_id"\:"(\d+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    itemlist = []
-    
-    #http://jkanime.net/get-backers/1/
-    for id,scrapedtitle,numero,animes_id in matches:
-        title = scrapedtitle.strip()
-        url = urlparse.urljoin(item.url,numero)
-        thumbnail = scrapedthumbnail
-        plot = scrapedplot
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+    for numero in range(1,paginas + 1):
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot))        
+        numero_pagina = str(numero)
+        headers = []
+        headers.append( [ "User-Agent" , "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:16.0) Gecko/20100101 Firefox/16.0" ] )
+        headers.append( [ "Referer" , item.url ] )
+        data = scrapertools.cache_page("http://jkanime.net/ajax/pagination_episodes/"+idserie+"/"+numero_pagina+"/")
+        logger.info("data="+data)
+    
+        '''
+        [{"id":"14199","title":"GetBackers - 1","number":"1","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14200","title":"GetBackers - 2","number":"2","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14201","title":"GetBackers - 3","number":"3","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14202","title":"GetBackers - 4","number":"4","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14203","title":"GetBackers - 5","number":"5","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14204","title":"GetBackers - 6","number":"6","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14205","title":"GetBackers - 7","number":"7","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14206","title":"GetBackers - 8","number":"8","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14207","title":"GetBackers - 9","number":"9","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14208","title":"GetBackers - 10","number":"10","animes_id":"122","timestamp":"2012-01-04 16:59:30"}]
+        '''
+        patron = '"id"\:"(\d+)","title"\:"([^"]+)","number"\:"(\d+)","animes_id"\:"(\d+)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+    
+        #http://jkanime.net/get-backers/1/
+        for id,scrapedtitle,numero,animes_id in matches:
+            title = scrapedtitle.strip()
+            url = urlparse.urljoin(item.url,numero)
+            thumbnail = scrapedthumbnail
+            plot = scrapedplot
+            if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot))        
 
     return itemlist
 

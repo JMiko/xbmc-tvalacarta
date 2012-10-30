@@ -72,6 +72,61 @@ def getCredentials():
     
     return [auth_token,user_token, logged, user_token]
 
+def mis_pelis(item):
+    
+    logger.info("[seriesly.py] mis_pelis")
+
+    # Obtiene de nuevo los tokens
+    auth_token, user_token, logged, loginmessage = getCredentials()
+    
+    # Extrae las entradas (carpetas)
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+
+    # Peliculas Usuario (Filtradas por categoria)
+    url='http://series.ly/api/userMovies.php?format=json'
+    data = scrapertools.cache_page(url, post=post)
+    movieList = load_json(data)
+    if movieList == None : movieList = []    
+    logger.info("hay %d peliculas" % len(movieList))
+
+    # compare function
+    def movie_compare_criteria( x, y) :
+        strx = x['title'].strip().lower()
+        stry = y['title'].strip().lower()
+        if strx == stry :
+            return 0
+        elif strx < stry :
+            return -1
+        else :
+            return 1
+
+    itemlist = []
+    try:
+        movieList = limpia_lista(movieList, 'title')
+        sortedlist = sorted(movieList, lambda x, y: movie_compare_criteria(x, y))
+    except: 
+        sortedlist = movieList
+        
+    for movieItem in sortedlist:
+        status = movieItem['status']
+        if status == 'Pending' : movieItem['estado'] = 'Pendiente'
+        elif status == 'Watched' : movieItem['estado'] = 'Vista'
+        elif status == 'Favourite' : movieItem['estado'] = 'Favorita'
+        else : movieItem['estado'] = '?';
+        # A√±ade al listado de XBMC
+        itemlist.append(
+            Item(channel=item.channel,
+                action = "peli_links",
+                title = '%(title)s (%(year)s) [%(estado)s]' % movieItem,
+                url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['idFilm']),
+                thumbnail = movieItem['poster'],
+                plot = "",
+                extra = '%s|%s' % ( qstr(auth_token), qstr(user_token) )
+            )
+        )
+    
+    return itemlist
+
 def mis_series(item):
     
     logger.info("[seriesly.py] mis_series")
@@ -222,15 +277,6 @@ def links(item):
         
     return itemlist
 
-def mis_pelis(item):
-    
-    itemlist = []    
-    itemlist.append( Item(channel=__channel__, title="Vistas", action="mis_pelis_categoria", url='Watched') )
-    itemlist.append( Item(channel=__channel__, title="Favoritas", action="mis_pelis_categoria", url='Favourite') )
-    itemlist.append( Item(channel=__channel__, title="Pendientes", action="mis_pelis_categoria", url='Pending') )
-
-    return itemlist
-
 def limpia_lista(movielist, campo):
         
     cleanlist = []
@@ -238,63 +284,6 @@ def limpia_lista(movielist, campo):
         if(movieItem[campo] is not None):
             cleanlist.append( movieItem)
     return cleanlist 
-
-def mis_pelis_categoria(item):
-
-    logger.info("[seriesly.py] mis_pelis_categoria")
-
-    # Obtiene de nuevo los tokens
-    cat_filter = item.url
-    auth_token, user_token, logged, loginmessage = getCredentials()
-    
-    # Extrae las entradas (carpetas)
-    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-
-    # Peliculas Usuario (Filtradas por categoria)
-    url='http://series.ly/api/userMovies.php?format=json'
-    data = scrapertools.cache_page(url, post=post)
-    movieList = load_json(data)
-    if movieList == None : movieList = []    
-    logger.info("hay %d peliculas" % len(movieList))
-
-    # compare function
-    def movie_compare_criteria( x, y) :
-        strx = x['title'].strip().lower()
-        stry = y['title'].strip().lower()
-        if strx == stry :
-            return 0
-        elif strx < stry :
-            return -1
-        else :
-            return 1
-
-    itemlist = []
-    try:
-        movieList = limpia_lista(movieList, 'title')
-        sortedlist = sorted(movieList, lambda x, y: movie_compare_criteria(x, y))
-    except: 
-        sortedlist = movieList
-        
-    for movieItem in sortedlist:
-        status = movieItem['status']
-        if status == cat_filter:
-            if status == 'Pending' : movieItem['estado'] = 'Pendiente';
-            elif status == 'Watched' : movieItem['estado'] = 'Vista';
-            elif status == 'Favourite' : movieItem['estado'] = 'Favorita';
-            else : movieItem['estado'] = '?';
-            # A√±ade al listado de XBMC
-            itemlist.append(
-                Item(channel=item.channel,
-                     action = "peli_links",
-                     title = '%(title)s (%(year)s) [%(estado)s]' % movieItem,
-                     url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['idFilm']),
-                     thumbnail = movieItem['poster'],
-                     plot = "",
-                     extra = '%s|%s' % ( qstr(auth_token), qstr(user_token) )
-                )
-            )
-    
-    return itemlist
 
 def peli_links(item):
 

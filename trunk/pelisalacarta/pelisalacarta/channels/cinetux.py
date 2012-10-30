@@ -58,7 +58,7 @@ def peliculas(item):
         scrapedplot = ""
         scrapedtitle = title + " ["+calidad+"]"
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg",  folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg",  folder=True) )
 
     patron  = '<div id="post-\d+">[^<]+'
     patron += '<div class="index_item index_item_ie"><a href="([^"]+)" rel="[^"]+" title="[^"]+"><img style="[^"]+" width="\d+" height="\d+" src=([^>]+)>[^<]+'
@@ -71,7 +71,7 @@ def peliculas(item):
         scrapedthumbnail = thumbnail[:-2]
         scrapedtitle = title[14:]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
 
     # Extrae el paginador
     patronvideos  = '<a href="([^"]+)"\s*><strong>\&raquo\;</strong></a>'
@@ -110,7 +110,7 @@ def bloque(item):
         scrapedtitle = scrapedtitle.capitalize()
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=True) )
 
     return itemlist
 
@@ -183,7 +183,7 @@ def findvideos(item):
         url = scrapedlink
         thumbnail = item.thumbnail
         plot = ""
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.fulltitle+" ["+scrapedlanguage+"]["+scrapedquality+"]", url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
 
     patron  = '<tr class="tabletr">[^<]+'
     patron += '<td class="opcion-td"><img[^>]+>([^>]+)</td>[^<]+'
@@ -198,7 +198,7 @@ def findvideos(item):
         url = scrapedlink
         thumbnail = item.thumbnail
         plot = ""
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.fulltitle+" ["+scrapedlanguage+"]["+scrapedquality+"]", url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" , folder=False) )
 
     patron  = '<tr class="tabletr">[^<]+'
     patron += '<td class="episode-server[^>]+><img[^>]+>([^>]+)</td>[^<]+'
@@ -213,7 +213,7 @@ def findvideos(item):
         url = scrapedlink
         thumbnail = item.thumbnail
         plot = ""
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.fulltitle+" ["+scrapedlanguage+"]["+scrapedquality+"]", url=url , thumbnail=thumbnail , plot=plot , folder=False) )
 
     if len(itemlist)==0:
         itemlist = servertools.find_video_items(data=data)
