@@ -24,51 +24,47 @@ def test_video_exists( page_url ):
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[streamcloud.py] url="+page_url)
-    video_urls = []
     
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
     data = scrapertools.cache_page( page_url , headers=headers )
+    #logger.info("data="+data)
     
-    patron =  'file\: "([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
+    try:
         media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
-        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [streamcloud]",media_url])
-        return video_urls
+    except:
+        '''
+        <input type="hidden" name="op" value="download1">
+        <input type="hidden" name="usr_login" value="">
+        <input type="hidden" name="id" value="6qag1lz5n1m6">
+        <input type="hidden" name="fname" value="UnacosaDVDrip.avi">
+        <input type="hidden" name="referer" value="">
+        <input type="hidden" name="hash" value="">
+        <input type="submit" name="imhuman" id="btn_download" class="button gray" value="Weiter zum Video">
+        '''
     
+        op = scrapertools.get_match(data,'<input type="hidden" name="op" value="([^"]+)"')
+        usr_login = ""
+        id = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)"')
+        fname = scrapertools.get_match(data,'<input type="hidden" name="fname" value="([^"]+)"')
+        referer = ""
+        hashstring = scrapertools.get_match(data,'<input type="hidden" name="hash" value="([^"]*)"')
+        imhuman = scrapertools.get_match(data,'<input type="submit" name="imhuman".*?value="([^"]+)">').replace(" ","+")
+        
+        import time
+        time.sleep(10)
+        
+        # Lo pide una segunda vez, como si hubieras hecho click en el banner
+        post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&hash="+hashstring+"&imhuman="+imhuman
+        headers.append(["Referer",page_url])
+        data = scrapertools.cache_page( page_url , post=post, headers=headers )
+        logger.info("data="+data)
     
-    patron  = '<input type="hidden" name="op" value="([^"]+)">[^<]+'
-    patron += '<input type="hidden" name="usr_login" value="">[^<]+'
-    patron += '<input type="hidden" name="id" value="([^"]+)">[^<]+'
-    patron += '<input type="hidden" name="fname" value="([^"]+)">[^<]+'
-    patron += '<input type="hidden" name="referer" value="">[^<]+'
-    patron += '<input type="hidden" name="hash" value="([^"]+)">[^<]+'
-    patron += '<input type="submit" name="imhuman".*?value="([^"]+)">'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    op = matches[0][0]
-    usr_login = ""
-    id = matches[0][1]
-    fname = matches[0][2]
-    referer = ""
-    hashstring = matches[0][3]
-    imhuman = matches[0][4].replace(" ","+")
-    
-    import time
-    time.sleep(10)
-    
-    # Lo pide una segunda vez, como si hubieras hecho click en el banner
-    post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&hash="+hashstring+"&imhuman="+imhuman
-    headers.append(["Referer",page_url])
-    data = scrapertools.cache_page( page_url , post=post, headers=headers )
-    logger.info("data="+data)
-
-    # Extrae la URL
-    media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
-    
-    
-    if len(matches)>0:
-        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [streamcloud]",media_url])
+        # Extrae la URL
+        media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
+        
+    video_urls = []
+    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [streamcloud]",media_url])
 
     for video_url in video_urls:
         logger.info("[streamcloud.py] %s - %s" % (video_url[0],video_url[1]))
