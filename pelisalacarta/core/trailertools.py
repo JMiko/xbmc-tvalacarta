@@ -22,17 +22,11 @@ from core import logger
 from core import config
 
 import os
-COOKIEFILE = os.path.join(config.get_data_path() , "cookies.lwp")
-
 CHANNELNAME = "trailertools"
-# Esto permite su ejecución en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
 
 DEBUG = True
 IMAGES_PATH = xbmc.translatePath( os.path.join( config.get_data_path(), 'resources' , 'images'  ) )
+
 def mainlist(params,url,category):
     logger.info("[trailertools.py] mainlist")
     titulo = ""
@@ -83,8 +77,7 @@ def buscartrailer(params,url,category):
 def GetFrom_Trailersdepeliculas(titulovideo):
     print "[trailertools.py] Modulo: GetFrom_Trailersdepeliculas(titulo = %s)"  % titulovideo
     devuelve = []
-    
-    
+
     titulo = LimpiarTitulo(titulovideo)
     # ---------------------------------------
     #  Busca el video en la pagina de www.trailerdepeliculas.org,
@@ -120,6 +113,7 @@ def GetFrom_Trailersdepeliculas(titulovideo):
         logger.info(" lista de links encontrados U "+str(len(match)))
     print '%s Trailers encontrados en Modulo: GetFrom_Trailersdepeliculas()' % str(c)
     return devuelve
+
 def GetFromYoutubePlaylist(titulovideo):
     print "[trailertools.py] Modulo: GetFromYoutubePlaylist(titulo = %s)"  % titulovideo
     devuelve = []    
@@ -167,8 +161,11 @@ def GetFromYoutubePlaylist(titulovideo):
         if c == 6:break
     print '%s Trailers encontrados en Modulo: GetFromYoutubePlaylist()' % str(c)
     return devuelve
+
 def gettrailer(titulovideo,category,solo="false"):
+
     print "[trailertools.py] Modulo: gettrailer(titulo = %s , category = %s)"  % (titulovideo,category)
+
     if not solo=="true":
         titulo = re.sub('\([^\)]+\)','',titulovideo)
         titulo = title = re.sub('\[[^\]]+\]','',titulo)
@@ -181,6 +178,7 @@ def gettrailer(titulovideo,category,solo="false"):
                                    
         titulo = LimpiarTitulo(titulo)
         print "el tituloooo es :%s" %titulo
+        
         trozeado = titulo.split()
         for trozo in trozeado:
             if trozo in sopa_palabras_invalidas:
@@ -224,6 +222,7 @@ def gettrailer(titulovideo,category,solo="false"):
                 xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
     
     return encontrados
+
 def GetTrailerbyKeyboard(titulo,category,solo="false"):
     print "[trailertools.py] Modulo: GetTrailerbyKeyboard(titulo = %s , category = %s)"  % (titulo,category)
     devuelve = []
@@ -241,6 +240,7 @@ def GetTrailerbyKeyboard(titulo,category,solo="false"):
             return devuelve
         else:return []
     else:return []    
+
 def alertnoencontrado(titulo):
     advertencia = xbmcgui.Dialog()
     #'Trailer no encontrado'

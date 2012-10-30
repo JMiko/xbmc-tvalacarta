@@ -447,6 +447,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         if keyboard.isConfirmed():
             title = keyboard.getText()
             descargas.savebookmark(titulo=title,url=url,thumbnail=thumbnail,server=server,plot=plot,fulltitle=title)
+            
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok(config.get_localized_string(30101) , title , config.get_localized_string(30109)) # 'se ha añadido a la lista de descargas'
         return

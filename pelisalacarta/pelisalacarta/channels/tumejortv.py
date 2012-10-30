@@ -87,7 +87,7 @@ def peliculas(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Ordena los listados alfabéticos
     if "filtro_letras" in item.url:
@@ -144,7 +144,7 @@ def series(item,extended=True):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
+        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
 
     # Ordena los listados alfabéticos
     if "filtro_letras" in item.url:
@@ -176,6 +176,7 @@ def findvideos(item):
         videoitem.action="play"
         videoitem.folder=False
         videoitem.title = "["+videoitem.server+"]"
+        videoitem.fulltitle=item.fulltitle
     
     patron = '<a title="[^>]+" href="(http://www.tumejortv.com/.*?/url/\d+)"[^>]+>([^<]+)</a></td><td>([^<]+)</td><td><img src="[^"]+" alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -203,7 +204,7 @@ def findepisodios(item):
             temporada = temporada.replace("TEMPORADA","").strip()
             if len(episodio)<2:
                 episodio = "0"+episodio
-            itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, show=item.show, plot=item.plot, folder=True, fulltitle=item.title))
+            itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, show=item.show, plot=item.plot, folder=True, fulltitle=item.title+" "+temporada+"x"+episodio+" "+titulo))
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findepisodios", show=item.show) )
