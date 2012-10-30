@@ -31,18 +31,17 @@ FILENIUM_SERVERS.extend(['linkto','uploadedto','gigasize','youtube','filepost','
 FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline','shareflare','rapidgator'])
 FILENIUM_SERVERS.extend(['filebox','filefactory','netload','nowdownload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
 FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles','zippyshare','glumbouploads','bayfiles','twoshared', 'fourshared','crocko','fiberupload','filereactor'])
-FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile','filenium'])
+FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile','filenium','nowvideo','sharpfile','vk','moevideos'])
 #wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
-REALDEBRID_SERVERS = ['one80upload','tenupload','onefichier','onehostclick','twoshared','fourfastfile','fourshared','abc','asfile','badongo','bayfiles','bitshare','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
-                    'dengee','diglo','extabit','fiberupload','filebox','filedino','filefactory','fileflyer','filekeen','filemade','filemates','fileover','filepost',
-                   'filereactor','filesend','filesmonster','filevelocity','freakshare','free','furk','fyels','gigasize','gigaup','glumbouploads','goldfile','hitfile','hipfile','hostingbulk',
-                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','muchshare','netload',
-                   'novafile','nowdownload','purevid','putbit','putlocker','redtube','rapidshare','rutube','ryushare','scribd','sendspace','sharebees','shareflare','shragle','slingfile','sockshare',
-                   'soundcloud','speedyshare','turbobit','unibytes','uploadc','uploadedto','uploading','uploadspace','uptobox',
-                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare','justintv']
-#wupload,fileserve
+REALDEBRID_SERVERS = ['one80upload','onefichier','twoshared','fourfastfile','fourshared','abc','bayfiles','bitshare','cbscom','cloudnator','cramit','crocko','cwtv','dailymotion',
+                    'dengee','extabit','extmatrix','filebox','filefactory','fileflyer','filegag','filehost','fileover','filepost','filerio','filerose','filesabc',
+                   'filesend','filesmonster','filevelocity','freakshare','gigasize','gigaup','glumbouploads','hostingbulk',
+                   'hotfile','hulkshare','hulu','jumbofiles','justintv','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','muchshare','netload',
+                   'pigsonic','purevid','putlocker','rapidgator','rapidshare','redtube','scribd','sendspace','sharebees','shareflare','sharpfile','slingfile','sockshare',
+                   'soundcloud','speedyshare','turbobit','uloadto','uploadc','uploadedto','uploading','uploadspace','uptobox',
+                   'userporn','vidbux','vidxden','vimeo','vipfile','wattv','youporn','youtube','yunfile','zippyshare']
 
 ALLDEBRID_SERVERS = ['one80upload','tenupload','onefichier','twoshared','fourfastfile','fourshared','asfile','badongo','bayfiles','bitshare','bulletupload','cramit','crocko','dateito','dengee',
                    'diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
