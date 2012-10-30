@@ -35,12 +35,21 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[modovideo.py] get_video_url(page_url='%s')" % page_url)
 
     video_urls = []
-    #http://www.modovideo.com/frame.php?v=teml3hpu3141n0lam2a04iufcsz7q7pt
+    
+    # Descarga la página
+    headers = []
+    headers.append(["User-Agent","Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"])
+    scrapertools.cache_page(page_url,headers=headers)
+
+    # Descarga el iframe
+    headers.append(["Referer",page_url])
     code = scrapertools.get_match(page_url,"http://www.modovideo.com/video\?v\=([a-zA-Z0-9]+)")
-    data = scrapertools.cachePage("http://www.modovideo.com/frame.php?v="+code)
+    #http://www.modovideo.com/frame.php?v=teml3hpu3141n0lam2a04iufcsz7q7pt
+    data = scrapertools.cachePage("http://www.modovideo.com/frame.php?v="+code , headers=headers)
 
     # Extrae la URL real
-    patronvideos  = 'player5plugin.video=([^&]+)&'
+    #<video id='player' src=http://s07.modovideo.com:80/vid/8734f19b6ec156e285a0e526fdc79566/508ea846/flv/0c4lymiwtfe2m9tdr2fp8dzxmbe3csv3.mp4 style=' width: 100%; height: 75%'  type='video/mp4' poster='' controls='controls' ></video></div>
+    patronvideos  = "<video id='player' src=(.*?) "
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
