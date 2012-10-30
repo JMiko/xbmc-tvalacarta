@@ -12,6 +12,17 @@ from core import scrapertools
 from core import logger
 from core import config
 
+def test_video_exists( page_url ):
+    logger.info("[divxstage.py] test_video_exists(page_url='%s')" % page_url)
+    
+    data = scrapertools.cache_page( url = page_url )
+    if "<h3>This file no longer exists" in data:
+        return False,"El archivo no existe<br/>en divxstage o ha sido borrado."
+    else:
+        return True,""
+
+    return True,""
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[divxstage.py] get_video_url(page_url='%s')" % page_url)
 
