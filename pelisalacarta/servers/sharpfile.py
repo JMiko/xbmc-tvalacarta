@@ -28,7 +28,7 @@ def find_videos(data):
     devuelve = []
 
     #http://www.sharpfile.com/8fgbj6dtq4xc/house.05x19.pionnerdj.avi.html
-    patronvideos = "'http://(www.sharpfile.com/.*?\.html)"
+    patronvideos = "http://(www.sharpfile.com/.*?\.html)"
     logger.info("[sharpfile.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     for match in matches:
