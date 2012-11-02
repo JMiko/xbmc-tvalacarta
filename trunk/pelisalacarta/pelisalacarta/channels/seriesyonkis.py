@@ -386,6 +386,7 @@ def sendcaptcha(url,challenge,text):
           'recaptcha_response_field' : text}
     form_data = urllib.urlencode(values)
     url = url.replace("seriesyonkis","seriescoco")
+    url = url.replace("peliculasyonkis","peliculascoco")
     logger.info("url="+url+", form_data="+form_data)
     request = urllib2.Request(url,form_data)
     request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')

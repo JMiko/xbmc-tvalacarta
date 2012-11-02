@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesyonkis</name>
-	<tag>23</tag>
-	<date>07/07/2012</date>
-	<changes>Modificado por cambios en la web. Por @perico.</changes>
+	<tag>24</tag>
+	<date>02/11/2012</date>
+	<changes>Solucionado el captcha de PeliculasYonkis</changes>
 </version>
