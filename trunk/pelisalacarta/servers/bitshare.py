@@ -46,6 +46,21 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
+    # http://bitshare.com/files/##/####.rar
+    patronvideos  = '(bitshare.com/files/[^/]+/.*?\.rar)'
+    logger.info("[bitshare.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[bitshare]"
+        url = "http://"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'bitshare' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
     # http://bitshare.com/files/tn74w9tm/Rio.2011.DVDRip.LATiNO.XviD.by.Glad31.avi.html
     patronvideos  = '(bitshare.com/files/[^/]+/.*?\.html)'
     logger.info("[bitshare.py] find_videos #"+patronvideos+"#")

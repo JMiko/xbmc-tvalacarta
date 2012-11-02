@@ -41,6 +41,21 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
+    #http://freakshare.com/files/##/###.rar
+    patronvideos  = '(freakshare.com/files/.*?\.rar)'
+    logger.info("[freakshare.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[freakshare]"
+        url = "http://"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'freakshare' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     #http://freakshare.com/files/wy6vs8zu/4x01-mundo-primitivo.avi.html
     patronvideos  = '(freakshare.com/files/.*?\.html)'
     logger.info("[freakshare.py] find_videos #"+patronvideos+"#")
