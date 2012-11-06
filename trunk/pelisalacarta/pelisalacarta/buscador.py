@@ -92,8 +92,8 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import documaniatv
     itemlist.extend( documaniatv.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import gnula
-    itemlist.extend( gnula.search( Item() , tecleado) )
+    #from pelisalacarta.channels import gnula
+    #itemlist.extend( gnula.search( Item() , tecleado) )
 
     from pelisalacarta.channels import jkanime
     itemlist.extend( jkanime.search( Item() , tecleado) )
