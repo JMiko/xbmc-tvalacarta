@@ -62,7 +62,7 @@ def find_videos(data):
     devuelve = []
 
     #<a href="http://www.nowvideo.eu/video/3695bce6e6288" target="_blank">1° Tempo</a>
-    patronvideos  = '<a href="(http://www.nowvideo.eu/video/[a-z0-9]+)"[^>]+>([^<]+)</a>'
+    patronvideos  = '<a href="(http://www.nowvideo.../video/[a-z0-9]+)"[^>]+>([^<]+)</a>'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -78,7 +78,7 @@ def find_videos(data):
 
     #http://www.nowvideo.eu/video/3695bce6e6288
     #http://www.nowvideo.eu/video/4fd0757fd4592
-    patronvideos  = '(nowvideo.eu/video/[a-z0-9]+)'
+    patronvideos  = '(nowvideo.../video/[a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -109,7 +109,7 @@ def find_videos(data):
 
     #http://embed.nowvideo.eu/embed.php?v=obkqt27q712s9&amp;width=600&amp;height=480
     #http://embed.nowvideo.eu/embed.php?v=4grxvdgzh9fdw&width=568&height=340
-    patronvideos  = 'nowvideo.eu/embed.php\?v\=([a-z0-9]+)'
+    patronvideos  = 'nowvideo.../embed.php\?v\=([a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -124,7 +124,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     #http://embed.nowvideo.eu/embed.php?width=600&amp;height=480&amp;v=9fb588463b2c8
-    patronvideos  = 'nowvideo.eu/embed.php\?.+?v\=([a-z0-9]+)'
+    patronvideos  = 'nowvideo.../embed.php\?.+?v\=([a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

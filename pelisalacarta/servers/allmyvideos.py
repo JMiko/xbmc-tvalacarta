@@ -79,7 +79,10 @@ def form(data, page_url):
         #'file' : 'http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjumszgt/video.mp4'
         #http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjtww5ha/video.mp4?start=0
         #http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjumszgt/video.mp4
-        location = scrapertools.get_match(unpacked,"'file'\s*\:\s*'([^']+)'")+"?start=0"+"|"+urllib.urlencode( {'Referer':'http://allmyvideos.net/player/player.swf','User-Agent':'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'} )
+        try:
+            location = scrapertools.get_match(unpacked,"'file'\s*\:\s*'([^']+)'")+"?start=0"+"|"+urllib.urlencode( {'Referer':'http://allmyvideos.net/player/player.swf','User-Agent':'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'} )
+        except:
+            location = scrapertools.get_match(unpacked,'"file"\s*\:\s*"([^"]+)"')+"?start=0"+"|"+urllib.urlencode( {'Referer':'http://allmyvideos.net/player/player.swf','User-Agent':'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'} )
         logger.info("location="+location)
         
         
@@ -132,14 +135,26 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         unpacked = unpacked.replace("\\","")
         
         #'file' : 'http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjumszgt/video.mp4'
+        #"file" : "http://d2605.allmyvideos.net:182/d/36mn2pp3yq5dh6lnapg4t2wqemadodnmj7hfyytjnkudpjjmjo665ztb/video.mp4"
         #http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjtww5ha/video.mp4?start=0
         #http://d2739.allmyvideos.net:182/d/y6miech5yq5dh6lnfxg4rygup54sl2d4ofgqf76ftqli47fzdjumszgt/video.mp4
-        location = scrapertools.get_match(unpacked,"'file'\s*\:\s*'([^']+)'")+"?start=0"+"|"+urllib.urlencode( {'Referer':'http://allmyvideos.net/player/player.swf','User-Agent':'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'} )
+        try:
+            location = scrapertools.get_match(unpacked,"'file'\s*\:\s*'([^']+)'")+"?start=0"+"|"+urllib.urlencode( {'Referer':'http://allmyvideos.net/player/player.swf','User-Agent':'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'} )
+        except:
+            location = scrapertools.get_match(unpacked,'"file"\s*\:\s*"([^"]+)"')+"?start=0"+"|"+urllib.urlencode( {'Referer':'http://allmyvideos.net/player/player.swf','User-Agent':'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'} )
         logger.info("location="+location)
     except:
+        import traceback,sys
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                logger.error(line_split)
         location=""
     
-    if location=="":
+    if location!="":
         '''
         <input type="hidden" name="op" value="download1">
         <input type="hidden" name="usr_login" value="">
@@ -150,8 +165,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         <input type="image"  id="submitButton" src="/images/continue-to-video.png" value="method_free" />
         '''
     
-    
-    video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [allmyvideos]",location ] )
+        video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [allmyvideos]",location ] )
 
     for video_url in video_urls:
         logger.info("[allmyvideos.py] %s - %s" % (video_url[0],video_url[1]))

@@ -91,14 +91,24 @@ def lista(item):
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , fulltitle = title, url=url , thumbnail=thumbnail , plot=plot , viewmode="movie", folder=True) )
 
     # Extrae el paginador
+    if item.extra == "":
+        pagina_actual = 1
+    else:
+        pagina_actual = int(item.extra)
+
     patronvideos  = '<a class="paginator-items" href="([^"]+)" title="Pagina de torrent[^"]+">([^<]+)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
+    contador_pagina = 1
+    
     for scrapedurl,scrapedtitle in matches:
-        title = ">> Página "+scrapedtitle
-        url = urlparse.urljoin(item.url,scrapedurl)
-        itemlist.append( Item(channel=__channel__, action="lista", title=title, url=url , folder=True) )
+        if contador_pagina == (pagina_actual + 1):
+            title = ">> Ir a pag "+scrapedtitle+" de "+str(len(matches))
+            url = urlparse.urljoin(item.url,scrapedurl)
+            itemlist.append( Item(channel=__channel__, action="lista", title=title, url=url , extra="%d" % contador_pagina , folder=True) )
+            break
+        contador_pagina = contador_pagina + 1
 
     return itemlist
 
