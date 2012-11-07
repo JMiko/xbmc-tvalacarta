@@ -158,7 +158,7 @@ def detalle_programa(item):
         url = url.replace("seriesyonkis.com/serie/","seriesyonkis.com/ficha/serie/")
     
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(url)
 
     # Obtiene el thumbnail
     try:
