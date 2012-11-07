@@ -167,7 +167,7 @@ def detalle_programa(item):
         pass
 
     try:
-        item.plot = scrapertools.get_match(data,'<div class="details">(.*?)</div>')
+        item.plot = scrapertools.htmlclean( scrapertools.get_match(data,'<div class="details">(.*?)</div>') )
     except:
         pass
 
