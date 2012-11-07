@@ -150,19 +150,31 @@ def series(item):
     return itemlist
 
 def detalle_programa(item):
+    
+    #http://www.seriesyonkis.com/serie/gungrave
+    #http://www.seriesyonkis.com/ficha/serie/gungrave
+    url = item.url
+    if "seriesyonkis.com/serie/" in url:
+        url = url.replace("seriesyonkis.com/serie/","seriesyonkis.com/ficha/serie/")
+    
+    # Descarga la página
     data = scrapertools.cache_page(item.url)
 
     # Obtiene el thumbnail
-    matches = re.compile('<div class="profile-info">.*?<img src="([^"]+)".*?</div>', re.S).findall(data)
-    if len(matches)>0:
-        item.thumbnail = urlparse.urljoin(item.url,matches[0])
+    try:
+        item.thumbnail = scrapertools.get_match(data,'<div class="profile-info"[^<]+<a[^<]+<img src="([^"]+)"')
+    except:
+        pass
 
-    ## <-- plot y titulo
-    patronvideos = '<h1 class="underline">([^<]+?)</h1> <div id="description"> <p>(.+?)<a href=' #titulo, plot
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-       item.plot = matches[0][1]
-       item.title = matches[0][0]
+    try:
+        item.plot = scrapertools.get_match(data,'<div class="details">(.*?)</div>')
+    except:
+        pass
+
+    try:
+        item.title = scrapertools.get_match(data,'<h1 class="underline"[^>]+>([^<]+)</h1>').strip()
+    except:
+        pass
 
     return item
 
