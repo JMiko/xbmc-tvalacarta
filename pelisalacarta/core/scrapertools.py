@@ -815,8 +815,6 @@ def htmlclean(cadena):
     cadena = cadena.replace("</em>","")
     cadena = cadena.replace("<b>","")
     cadena = cadena.replace("</b>","")
-    cadena = cadena.replace("<i>","")
-    cadena = cadena.replace("</i>","")
     cadena = cadena.replace("<u>","")
     cadena = cadena.replace("</u>","")
     cadena = cadena.replace("<li>","")
@@ -833,8 +831,9 @@ def htmlclean(cadena):
     cadena = re.compile("<option[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</option>","")
 
-    cadena = re.compile("<iframe[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = re.compile("<i[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</iframe>","")
+    cadena = cadena.replace("</i>","")
     
     cadena = re.compile("<table[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</table>","")
