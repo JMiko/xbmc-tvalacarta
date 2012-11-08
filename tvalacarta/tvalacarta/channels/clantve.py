@@ -68,6 +68,37 @@ def programas(item):
 
     return itemlist
 
+def detalle_programa(item):
+    
+    #http://www.rtve.es/infantil/series/monsuno/videos/
+    #http://www.rtve.es/infantil/series/hay-nuevo-scooby-doo/
+    url = item.url
+    if url.endswith("/videos"):
+        url = url.replace("/videos","")
+    
+    # Descarga la página
+    data = scrapertools.cache_page(url)
+    data = scrapertools.get_match(data,'<div class="contenido-serie">(.*?)</div>')
+
+    # Obtiene el thumbnail
+    try:
+        item.thumbnail = scrapertools.get_match(data,'<img.*?src="([^"]+)"')
+    except:
+        pass
+
+    try:
+        item.plot = scrapertools.htmlclean( scrapertools.get_match(data,'</h3>(.*?)</div>') )
+    except:
+        pass
+
+    try:
+        title = scrapertools.get_match(data,'<h3>[^<]+<a[^>]+>([^<]+)</a>[^<]+</h3>').strip()
+        item.title = scrapertools.entityunescape(title)
+    except:
+        pass
+
+    return item
+
 def episodios(item):
     logger.info("[clantv.py] episodios")
 
