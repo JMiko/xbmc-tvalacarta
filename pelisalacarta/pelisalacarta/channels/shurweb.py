@@ -21,7 +21,6 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-
 def isGeneric():
     return True
 
@@ -33,7 +32,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"       , url="http://www.shurweb.es/shurseries/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Animacion"                , action="series"       , url="http://www.shurweb.es/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Documentales"             , action="peliculas"    , url="http://www.shurweb.es/videoscategory/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-#    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
+    #itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
     return itemlist
 
 def menupeliculas(item):
@@ -188,6 +187,33 @@ def episodios(item):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
+
+def detalle_programa(item):
+
+    # Descarga la página
+    url = item.url
+    data = scrapertools.cache_page(url)
+
+    # Obtiene el thumbnail
+    try:
+        item.thumbnail = scrapertools.get_match(data,'<div class="serie_thumb"><img src="([^"]+)"/>')
+    except:
+        pass
+
+    try:
+        plot = scrapertools.get_match(data,'<div class="synopsis clearfix">(.*?)</div>')
+        plot = re.compile("<strong>Idiom[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
+        plot = re.compile("<strong>Calid[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
+        item.plot = plot
+    except:
+        pass
+
+    try:
+        item.title = scrapertools.get_match(data,'<h1 class="cat_head">([^<]+)</h1>').strip()
+    except:
+        pass
+
+    return item
 
 def peliculas(item,paginacion=True):
     logger.info("[shurweb.py] peliculas")
