@@ -204,7 +204,8 @@ def detalle_programa(item):
         plot = scrapertools.get_match(data,'<div class="synopsis clearfix">(.*?)</div>')
         plot = re.compile("<strong>Idiom[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
         plot = re.compile("<strong>Calid[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
-        item.plot = scrapertools.htmlclean(plot)
+        plot = re.compile("Sinopsis\:",re.DOTALL).sub("",plot)
+        item.plot = scrapertools.htmlclean(plot).strip()
     except:
         pass
 
