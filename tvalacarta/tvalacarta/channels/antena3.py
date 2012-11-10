@@ -153,20 +153,23 @@ def series(item):
     # Extrae las entradas (series)
     '''
     <div>
-    <a title="Vídeos de Share - Capítulos Completos" href="/videos/share.html">
-    <img title="Vídeos de Share - Capítulos Completos" href="/videos/share.html"
-    src="/clipping/2010/08/06/00246/10.jpg"
-    alt="Share"	
+    <a title="Vídeos de Soy tu dueña - Capítulos Completos - SERIES ANTENA 3 TELEVISION" href="/videos/soytu-duena.html">
+    <img title="Vídeos de Soy tu dueña - Capítulos Completos" href="/videos/soytu-duena.html"
+    src="/clipping/2012/10/22/00583/10.jpg"
+    alt="SERIES ANTENA 3 TELEVISION - Videos de Soy tu dueña"
     />
-    <a title="Vídeos de Share - Capítulos Completos" href="/videos/share.html"><h2><p>Share</p></h2></a>                    
+
+
+    <h2><p>Soy tu dueña</p></h2>
+
     </a>
     </div>
-    </li>
     '''
+    
     patron  = '<div>[^<]+'
     patron += '<a\W+title="[^"]+" href="([^"]+)"[^<]+'
-    patron += '<img.*?src="([^"]+)"[^<]+'
-    patron += '<a[^<]+<h2><p>([^<]+)</p>'
+    patron += '<img.*?src="([^"]+)"'
+    patron += '.*?<h2><p>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
