@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>letmewatchthis</name>
-	<tag>5</tag>
-	<date>25/09/2012</date>
-	<changes>Actualizada + Añadidas todas las secciones que faltaban + Arreglado el test</changes>
+	<tag>6</tag>
+	<date>11/11/2012</date>
+	<changes>Added sorted lists to movies and tv shows (by featured, release date, ... ) </changes>
 </version>
