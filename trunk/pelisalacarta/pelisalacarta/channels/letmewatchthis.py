@@ -28,11 +28,11 @@ def mainlist(item):
     logger.info("[letmewatchthis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="doaction" , title="Movies - Full List"   ,url="http://www.1channel.ch/", extra="showlinks"))
+    itemlist.append( Item(channel=__channel__, action="showsectionsmovies" , title="Movies"   ,url="http://www.1channel.ch/", extra="showlinks"))
     itemlist.append( Item(channel=__channel__, action="alphabetical"    , title="Movies - Alphabetical Order" ,   url="http://www.1channel.ch/", extra="1|showlinks"  ) )
     itemlist.append( Item(channel=__channel__, action="genre"    , title="Movies - Genre" ,   url="http://www.1channel.ch/", extra="showlinks"  ) )
     itemlist.append( Item(channel=__channel__, action="search"    , title="Movies - Search"   ,extra="1") )
-    itemlist.append( Item(channel=__channel__, action="doaction"    , title="TV Shows - Full List" ,url="http://www.1channel.ch/?tv", extra="tvshowepisodes"))
+    itemlist.append( Item(channel=__channel__, action="showsectionstvshows"    , title="TV Shows" ,url="http://www.1channel.ch/?tv", extra="tvshowepisodes"))
     itemlist.append( Item(channel=__channel__, action="alphabetical"    , title="TV Shows - Alphabetical Order" ,   url="http://www.1channel.ch/?tv", extra="2|tvshowepisodes"  ) )
     itemlist.append( Item(channel=__channel__, action="genre"    , title="TV Shows - Genre" ,   url="http://www.1channel.ch/?tv", extra="tvshowepisodes"  ) )
     itemlist.append( Item(channel=__channel__, action="search"    , title="TV Shows - Search"   ,extra="2"))
@@ -139,6 +139,24 @@ def play(item):
     
     return itemlist
 
+def showsectionsmovies(item):
+    return showsections(item, item.url + "?")
+def showsectionstvshows(item):
+    return showsections(item, item.url + "&")
+
+def showsections(item, url):
+    logger.info("[letmewatchthis.py] showsections")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - Featured"      ,url=url+"sort=featured", extra=item.extra  ) )
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - Release Date"  ,url=url+"sort=release", extra=item.extra  ) )
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - Top Rated"     ,url=url+"sort=ratings"   , extra=item.extra  ) )
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - Popular"       ,url=url+"sort=views"     , extra=item.extra  ) )
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - Favorites"     ,url=url+"sort=favorites" , extra=item.extra  ) )
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - Just Added"    ,url=url+"sort=date"      , extra=item.extra  ) )
+    itemlist.append( Item(channel=__channel__, action="doaction"    , title=item.title + " - A to Z"      ,url=url+"sort=alphabet", extra=item.extra  ) )
+    
+    return itemlist
 
 def doaction(item):
     logger.info("[letmewatchthis.py] search")
