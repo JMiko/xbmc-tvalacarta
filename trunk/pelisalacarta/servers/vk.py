@@ -125,9 +125,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 def get_mp4_video_link(match0,match1,match2,tipo):
     if match0.endswith("/"):
-        videourl = "%su%s/video/%s.%s" % (match0,match1,match2,tipo)
+        videourl = "%su%s/videos/%s.%s" % (match0,match1,match2,tipo)
     else:
-        videourl = "%s/u%s/video/%s.%s" % (match0,match1,match2,tipo)
+        videourl = "%s/u%s/videos/%s.%s" % (match0,match1,match2,tipo)
     return videourl
 
 def find_videos(data):
@@ -158,7 +158,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # http://vk.com/video97482389_161509127?section=all
-    patronvideos  = '(vk\..+?\/video[0-9]+_[0-9]+)'
+    patronvideos  = '(vk\.[a-z]+\/video[0-9]+_[0-9]+)'
     logger.info("[vk.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     #print data

@@ -95,7 +95,7 @@ def test_channels():
     para_probar.append("tumejortv")
     para_probar.append("tusnovelas")
     para_probar.append("unsoloclic")
-
+    
     funcionan = []
     no_funcionan = []
     
