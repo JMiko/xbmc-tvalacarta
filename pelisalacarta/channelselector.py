@@ -169,6 +169,10 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Series Online TV (12/11/2012)"     , channel="seriesonlinetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
+    itemlist.append( Item( title="Novelas de TV (12/11/2012)"        , channel="novelasdetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
+    itemlist.append( Item( title="Quiero Dibujos Animados (12/11/2012)", channel="quierodibujosanimados", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
+    itemlist.append( Item( title="peliculashd.pro (12/11/2012)"       , channel="peliculashdpro"       , language="ES" , category="F" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Cinemastreaming (IT) (5/11/2012)"  , channel="cinemastreaming"      , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
     itemlist.append( Item( title="Peliculamos (IT) (5/11/2012)"      , channel="peliculamos"          , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
     itemlist.append( Item( title="JKanime (15/10/2012)"              , channel="jkanime"              , language="ES" , category="A" , type="generic"  )) # jesus 15/10/2012
@@ -219,7 +223,7 @@ def channels_list():
     itemlist.append( Item( title="Cineblog01 (IT)"       , channel="cineblog01"           , language="IT"    , category="F,S,A,VOS"   , type="generic"  ))
     itemlist.append( Item( title="Cinegratis"            , channel="cinegratis"           , language="ES"    , category="F" , type="generic"  ))
     #itemlist.append( Item( title="Cinetube"              , channel="cinetube"             , language="ES"    , category="F,S,A,D,VOS" , type="generic"  ))
-    itemlist.append( Item( title="Cinemastreaming (IT) (5/11/2012)"  , channel="cinemastreaming"      , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
+    itemlist.append( Item( title="Cinemastreaming (IT)"  , channel="cinemastreaming"      , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Cinetemagay"           , channel="cinetemagay"          , language="ES"    , category="F" , type="generic"    )) # sdfasd 15/4/2012
     itemlist.append( Item( title="Cinetux"               , channel="cinetux"             , language="ES"    , category="F" , type="generic"  ))# jesus 16/7/2012
     if config.get_platform()=="boxee" or "xbmc" in config.get_platform(): itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES"    , category="F,S,VOS"     , type="generic"  ))
@@ -229,7 +233,7 @@ def channels_list():
     itemlist.append( Item( title="Discoverymx"           , channel="discoverymx"          , language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="Divx Online"           , channel="divxonline"           , language="ES"    , category="F"       , type="generic"  ))
     itemlist.append( Item( title="Divxatope (Torrent)"   , channel="divxatope"           , language="ES"    , category="F,S"       , type="generic"  ))
-    # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="DL-More (FR)"          , channel="dlmore"               , language="FR"    , category="S"       , type="generic"  ))
+    #itemlist.append( Item( title="DL-More (FR)"          , channel="dlmore"               , language="FR"    , category="S"       , type="generic"  ))
     itemlist.append( Item( title="DocumaniaTV"           , channel="documaniatv"          , language="ES"    , category="D"       , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Filmixt"               , channel="filmixt"              , language="ES"    , category="F"       , type="generic"  ))
     #itemlist.append( Item( title="Elite Torrent"        , channel="elitetorrent"       , language="ES"    , category="F,S,D"       , type="generic"     ))
@@ -256,6 +260,7 @@ def channels_list():
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES"    , category="F,D"     , type="generic"  ))
     #itemlist.append( Item( title="Newdivxonline"         , channel="newdivxonline"              , language="ES"    , category="F"     , type="generic"  ))
     itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES"    , category="F,VOS"       , type="generic" )) # xextil 05/05/2011
+    itemlist.append( Item( title="Novelas de TV"          , channel="novelasdetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
     #itemlist.append( Item( title="NKI"                   , channel="nki"                  , language="ES"    , category="S"       , type="generic" ))
     #itemlist.append( Item( title="No Megavideo"          , channel="nomegavideo"          , language="ES"    , category="F"       , type="xbmc"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="NoloMires"             , channel="nolomires"            , language="ES"    , category="F"       , type="xbmc"  ))
@@ -264,12 +269,14 @@ def channels_list():
     itemlist.append( Item( title="Peliculamos (IT)"      , channel="peliculamos"          , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
     itemlist.append( Item( title="Peliculasaudiolatino"  , channel="peliculasaudiolatino" , language="ES"    , category="F"       , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PeliculasEroticas"     , channel="peliculaseroticas"    , language="ES" , category="F" , type="xbmc"  ))
+    itemlist.append( Item( title="peliculashd.pro"       , channel="peliculashdpro"       , language="ES" , category="F" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Peliculasid"           , channel="peliculasid"          , language="ES"    , category="F,VOS"       , type="xbmc"  ))
     itemlist.append( Item( title="Peliculasyonkis"       , channel="peliculasyonkis_generico" , language="ES"    , category="F,VOS"   , type="generic" ))
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S,VOS"        , type="generic"  ))
     itemlist.append( Item( title="PelisPekes"            , channel="pelispekes"              , language="ES" , category="F"        , type="generic"  ))
     itemlist.append( Item( title="Pirate Streaming (IT)" , channel="piratestreaming"      , language="IT" , category="F" , type="generic"    )) # jesus 16/7/2012
     #itemlist.append( Item( title="PelisFlv"              , channel="pelisflv"             , language="ES" , category="F"          , type="xbmc"  ))
+    itemlist.append( Item( title="Quiero Dibujos Animados", channel="quierodibujosanimados", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
     # YA NO EXISTE itemlist.append( Item( title="Redes.tv"              , channel="redestv"              , language="ES" , category="D"          , type="xbmc"  ))
     itemlist.append( Item( title="Robinfilm (IT)"        , channel="robinfilm"            , language="IT" , category="F"          , type="generic"  )) # jesus 16/05/2011
     #itemlist.append( Item( title="Seriematic"            , channel="seriematic"           , language="ES" , category="S,D,A"      , type="generic"  ))
@@ -279,6 +286,7 @@ def channels_list():
     #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Series Hentai"         , channel="serieshentai"         , language="ES" , category="F" , type="generic"  )) # kira 10/04/2011
     # DESACTIVADO - SIN CONTENIDO itemlist.append( Item( title="Series21"              , channel="series21"             , language="ES" , category="S"          , type="xbmc"  ))
     itemlist.append( Item( title="Seriesdanko"           , channel="seriesdanko"          , language="ES" , category="S,VOS"          , type="generic" ))
+    itemlist.append( Item( title="Series Online TV"     , channel="seriesonlinetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S,VOS"          , type="generic" ))
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A,VOS"        , type="generic" , extra="Series" ))
     #itemlist.append( Item( title="ShurHD"       , channel="shurhd"             , language="ES"      , category="F,S" , type="generic"    ))
