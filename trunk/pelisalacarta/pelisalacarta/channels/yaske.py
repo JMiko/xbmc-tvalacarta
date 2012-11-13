@@ -31,8 +31,29 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Portada"            , action="peliculas", url="http://www.yaske.net/es/peliculas/"))
     itemlist.append( Item(channel=__channel__, title="Categorías"         , action="categorias", url="http://www.yaske.net/es/peliculas/"))
     itemlist.append( Item(channel=__channel__, title="Últimas agregadas"  , action="peliculas", url="http://www.yaske.net/es/peliculas/ultimas"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"             , action="search") )
 
     return itemlist
+	
+def search(item,texto):
+
+    logger.info("[yaske.py] search")
+    itemlist = []
+
+    try:
+        item.url = "http://www.yaske.net/es/peliculas/search/%s"
+        item.url = item.url % texto
+        item.extra = ""
+        itemlist.extend(peliculas(item))
+        itemlist = sorted(itemlist, key=lambda Item: Item.title) 
+        
+        return itemlist
+
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def peliculas(item):
     logger.info("[yaske.py] listado")
