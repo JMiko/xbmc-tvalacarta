@@ -53,7 +53,7 @@ def mainlist(item):
         plot = scrapedplot
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
 
     if len(itemlist)==0:
         infile = open( url )
@@ -71,7 +71,7 @@ def mainlist(item):
                 plot = scrapedplot
                 if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         
-                itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
+                itemlist.append( Item(channel=__channel__, action="play" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
 
     if len(itemlist)==0:
         
@@ -89,9 +89,13 @@ def play(item):
     for videoitem in itemlist:
         videoitem.channel=__channel__
         videoitem.folder=False
+        videoitem.title=item.title
+        videoitem.fulltitle=item.title
 
     if len(itemlist)==0:
-        itemlist.append( Item(url=item.url, server="directo", folder=False))
+        item.server="directo"
+        item.folder=False
+        itemlist.append( item )
 
     return itemlist
 
