@@ -125,7 +125,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
         icon_image = "DefaultVideo.png"
      
     listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
-    listitem.setInfo( "video", { "Title" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal, "Genre" : category } )
+    listitem.setInfo( "video", { "Title" : title, "FileName" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal, "Genre" : category } )
 
     if fanart!="":
         logger.info("fanart :%s" %fanart)
