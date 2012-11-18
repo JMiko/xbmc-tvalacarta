@@ -18,6 +18,7 @@ logger.info("[library_service.py] Actualizando series...")
 from platformcode.xbmc import library
 from platformcode.xbmc import launcher
 from pelisalacarta.channels import seriesyonkis
+from pelisalacarta.channels import seriesly
 from pelisalacarta.channels import cuevana
 import xbmcgui
 
@@ -51,6 +52,7 @@ try:
                 item = Item(url=serie[1], show=serie[0])
                 try:
                     if serie[2].strip()=='seriesyonkis': itemlist = seriesyonkis.episodios(item)
+                    if serie[2].strip()=='seriesly': itemlist = seriesly.episodios(item)
                     if serie[2].strip()=='cuevana': itemlist = cuevana.episodios(item)
                 except:
                     itemlist = []

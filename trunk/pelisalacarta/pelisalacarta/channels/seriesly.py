@@ -27,6 +27,21 @@ DEBUG = config.get_setting("debug")
 def isGeneric():
     return True
 
+"""Handler para library_service"""
+def episodios(item):
+    # Obtiene de nuevo los tokens
+    episode_list = serie_capitulos(item)
+    for episode in episode_list:
+        episode.extra = item.extra
+
+"""Handler para launcher (library)"""
+def findvideos(item):
+    return capitulo_links(item)
+
+"""Handler para launcher (library)"""
+def play(item):
+    return links(item)
+
 def mainlist(item):
     logger.info("[seriesly.py] mainlist")
     
@@ -113,9 +128,9 @@ def mis_pelis(item):
         elif status == 'Watched' : movieItem['estado'] = 'Vista'
         elif status == 'Favourite' : movieItem['estado'] = 'Favorita'
         else : movieItem['estado'] = '?';
-        # A√±ade al listado de XBMC
+        # Añade al listado de XBMC
         itemlist.append(
-            Item(channel=item.channel,
+            Item(channel=__channel__,
                 action = "peli_links",
                 title = '%(title)s (%(year)s) [%(estado)s]' % movieItem,
                 url = 'http://series.ly/api/detailMovie.php?idFilm=%s&format=json' % qstr(movieItem['idFilm']),
@@ -155,7 +170,7 @@ def mis_series(item):
             else : serieItem['estado'] = '?'
             # Añade al listado de XBMC
             itemlist.append(
-                Item(channel=item.channel,
+                Item(channel=__channel__,
                      action = 'serie_capitulos',
                      title = '%(title)s (%(seasons)d Temporadas) (%(episodes)d Episodios) [%(estado)s]' % serieItem,
                      url = 'http://series.ly/api/detailSerie.php?idSerie=%(idSerie)s&caps=1&format=json' % serieItem,
@@ -196,7 +211,7 @@ def serie_capitulos(item):
             episode['estado'] = ''
         
         itemlist.append(
-            Item(channel=item.channel,
+            Item(channel=__channel__,
                 action = 'capitulo_links',
                 title = '%(season)s - %(title)s%(estado)s' % episode,
                 url = 'http://series.ly/api/linksCap.php?idCap=%(idc)s&format=json' % episode,
@@ -207,8 +222,8 @@ def serie_capitulos(item):
             )
         )
 
-    #if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-    #    itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="serie_capitulos###"+item.extra, show=item.show) )
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+        itemlist.append( Item(channel='seriesly', title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="serie_capitulos###", show=item.show) )
 
     return itemlist
 
@@ -235,7 +250,7 @@ def capitulo_links(item):
         #else : link['hdtag'] = ' (?)'
 
         itemlist.append(
-            Item(channel=item.channel,
+            Item(channel=__channel__,
                 action = "links",
                 title = '%(info)s - %(host)s - %(lang)s(sub %(sub)s)' % link,
                 url = link['url'],
