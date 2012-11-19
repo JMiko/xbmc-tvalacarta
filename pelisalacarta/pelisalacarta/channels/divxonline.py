@@ -29,8 +29,8 @@ __language__ = "ES"
 DEBUG = config.get_setting("debug")
 
 Generate = False # poner a true para generar listas de peliculas
-Notas = False # indica si hay que aÒadir la nota a las pelÌculas
-LoadThumbs = True # indica si deben cargarse los carteles de las pelÌculas; en MacOSX cuelga a veces el XBMC
+Notas = False # indica si hay que a√±adir la nota a las pel√≠culas
+LoadThumbs = True # indica si deben cargarse los carteles de las pel√≠culas; en MacOSX cuelga a veces el XBMC
 
 def isGeneric():
     return True
@@ -39,15 +39,15 @@ def mainlist(item):
     logger.info("[divxonline.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="PelÌculas - Novedades",url="http://www.divxonline.info/"))
-    #itemlist.append( Item(channel=__channel__, action="categorias" , title="PelÌculas - CategorÌas",url="http://www.divxonline.info/"))
-    #itemlist.append( Item(channel=__channel__, action="peliculas"  , title="PelÌculas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
-    itemlist.append( Item(channel=__channel__, action="alfabetico"  , title="PelÌculas - A-Z"))
-    #itemlist.append( Item(channel=__channel__, action="pelisporanio"  , title="PelÌculas - Por aÒo de estreno"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Pel√≠culas - Novedades",url="http://www.divxonline.info/"))
+    #itemlist.append( Item(channel=__channel__, action="categorias" , title="Pel√≠culas - Categor√≠as",url="http://www.divxonline.info/"))
+    #itemlist.append( Item(channel=__channel__, action="peliculas"  , title="Pel√≠culas - Estrenos",url="http://www.divxonline.info/peliculas-estreno/1.html"))
+    itemlist.append( Item(channel=__channel__, action="alfabetico"  , title="Pel√≠culas - A-Z"))
+    #itemlist.append( Item(channel=__channel__, action="pelisporanio"  , title="Pel√≠culas - Por a√±o de estreno"))
     itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar"))
     return itemlist
 
-# Al llamarse "search" la funciÛn, el launcher pide un texto a buscar y lo aÒade como par·metro
+# Al llamarse "search" la funci√≥n, el launcher pide un texto a buscar y lo a√±ade como par√°metro
 def search(item,texto):
     logger.info("[divxonline.py] search")
     itemlist = []
@@ -55,7 +55,7 @@ def search(item,texto):
     if item.url=="":
         item.url = "http://www.divxonline.info/"
 
-    # Lanza la b˙squeda
+    # Lanza la b√∫squeda
     data=scrapertools.cachePagePost("http://www.divxonline.info/buscador.html","buscar="+texto+"&categoria=0&tipo=1&boton=")
 
     #logger.info(data)
@@ -79,7 +79,7 @@ def peliculas(item):
     logger.info("[divxonline.py] peliculas")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
@@ -100,7 +100,7 @@ def peliculas(item):
         scrapedplot = scrapertools.htmlclean(plot).strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # A√±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
 
     '''
@@ -132,9 +132,9 @@ def peliculas(item):
     <li><span class="color_azul-ficha">G&eacute;nero:</span> <a href="/peliculas/13/dramas/">Dramas</a></li>
     <li><span class="color_azul-ficha">Director(es):</span> </li>
     <li><span class="color_azul-ficha">Actor(es):</span> </li>
-    <li><span class="color_azul-ficha">Autorizada:</span> <a href="/peliculas/No-recomendada-a-menores-de-7-anos/1/">No recomendada a menores de 7 aÒos</a></b></li>
+    <li><span class="color_azul-ficha">Autorizada:</span> <a href="/peliculas/No-recomendada-a-menores-de-7-anos/1/">No recomendada a menores de 7 a√±os</a></b></li>
     <li><span class="color_azul-ficha">Vista:</span> 25080 veces<br /></li>
-    <li><span class="color_azul-ficha">Sinopsis:</span> La pelÌcula relata la vida del Padre Daens en BÈlgica a finales del siglo XIX. La acciÛn trancurre en la localidad belga de Aalst durante los primeros aÒos de este siglo. En este pueblo se inicia una revuelta para protestar por las duras condiciones de los obreros de las f·bricas. Cuando el religioso Adolf Daens escribr un artÌculo denunciando e...  <a href="/pelicula/6963/Daens-1993/">(leer m&aacute;s)</a></li>
+    <li><span class="color_azul-ficha">Sinopsis:</span> La pel√≠cula relata la vida del Padre Daens en B√©lgica a finales del siglo XIX. La acci√≥n trancurre en la localidad belga de Aalst durante los primeros a√±os de este siglo. En este pueblo se inicia una revuelta para protestar por las duras condiciones de los obreros de las f√°bricas. Cuando el religioso Adolf Daens escribr un art√≠culo denunciando e...  <a href="/pelicula/6963/Daens-1993/">(leer m&aacute;s)</a></li>
     
     </ul>
     </div>
@@ -156,7 +156,7 @@ def peliculas(item):
         scrapedplot = scrapertools.htmlclean(plot).strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # A√±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
 
     # Extrae el paginador
@@ -166,7 +166,7 @@ def peliculas(item):
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="!P·gina siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="!P√°gina siguiente" , url=urlparse.urljoin(item.url,matches[0]) , folder=True) )
 
     return itemlist
 
@@ -174,7 +174,7 @@ def alfabetico(item):
     logger.info("[divxonline.py] alfabetico")
     itemlist = []
 
-    letras = "9ABCDEFGHIJKLMN—OPQRSTUVWXYZ" # el 9 antes era 1, que curiosamente est· mal en la web divxonline (no funciona en el navegador)
+    letras = "9ABCDEFGHIJKLMN√ëOPQRSTUVWXYZ" # el 9 antes era 1, que curiosamente est√° mal en la web divxonline (no funciona en el navegador)
     for letra in letras:
         itemlist.append( Item(channel=__channel__, action="peliculas", title=str(letra), url = "http://www.divxonline.info/verpeliculas/"+str(letra)+"_pagina_1.html"))
 
@@ -201,15 +201,15 @@ def pelisporanio(item):
 
     return itemlist
 
-def movielist(item): # pelis sin ficha (en listados por gÈnero)
+def movielist(item): # pelis sin ficha (en listados por g√©nero)
     logger.info("[divxonline.py] movielist")
     itemlist=[]
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    data = stepinto(item.url,data,'Ver p·gina:(.*?)</p>')
+    data = stepinto(item.url,data,'Ver p√°gina:(.*?)</p>')
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<li><h2><a href="([^"]+?)">(.*?)</a>'
@@ -229,7 +229,7 @@ def movielist(item): # pelis sin ficha (en listados por gÈnero)
 
         # URL
         scrapedurl = urlparse.urljoin(item.url,match[0]) # url de la ficha divxonline
-        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la p·gina de reproducciÛn
+        scrapedurl = scrapedurl.replace("pelicula","pelicula-divx") # url de la p√°gina de reproducci√≥n
 
         # Thumbnail
         #scrapedthumbnail = urlparse.urljoin(url,match[1])
@@ -249,7 +249,7 @@ def movielist(item): # pelis sin ficha (en listados por gÈnero)
                 fareg = scrapedtitle + "\t\t" + scrapedtitle
             f.write(fareg+"\n")
 
-        # AÒade al listado de XBMC
+        # A√±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     if (Generate):
@@ -261,7 +261,7 @@ def findvideos(item):
     logger.info("[divxonline.py] findvideos(%s)" % item.tostring())
     itemlist = []
     
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url.replace("pelicula","pelicula-divx"))
     patron = '<table class="parrillaDescargas">(.*?)</table>'
     data = scrapertools.get_match(data,patron)
@@ -288,7 +288,7 @@ def findvideos(item):
         scrapedtitle = "Ver online "+scrapedtitle
         itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.title , url=scrapedurl , thumbnail=thumbnail , plot=item.plot , folder=False) )
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url.replace("pelicula","descarga-directa"))
     patron = '<table class="parrillaDescargas">(.*?)</table>'
     data = scrapertools.get_match(data,patron)
@@ -377,14 +377,14 @@ def Procesa (key, pt):
     return ct
 
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si todo est· ok en el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si todo est√° ok en el canal.
 def test():
     bien = True
     
     # mainlist
     mainlist_items = mainlist(Item())
     
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     peliculas_items = peliculas(mainlist_items[0])
     
     bien = False

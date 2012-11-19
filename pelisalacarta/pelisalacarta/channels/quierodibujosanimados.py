@@ -42,7 +42,7 @@ def series(item):
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
     for scrapedtitle,scrapedurl in matches:
-        title = scrapedtitle.strip()
+        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = ""
         plot = ""
@@ -95,7 +95,7 @@ def episodios(item):
     itemlist = []
     
     for scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot in matches:
-        title = scrapedtitle.strip()
+        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         plot = scrapertools.htmlclean(scrapedplot)

@@ -32,7 +32,7 @@ def mainlist(item):
     itemlist=[]
 
     itemlist.append( Item(channel=__channel__, title="Novedades"  , action="novedades" , url="http://www.bizzentte.com/"))
-    itemlist.append( Item(channel=__channel__, title="CategorÌas" , action="categorias" , url="http://www.bizzentte.com/"))
+    itemlist.append( Item(channel=__channel__, title="Categor√≠as" , action="categorias" , url="http://www.bizzentte.com/"))
     itemlist.append( Item(channel=__channel__, title="Buscar"     , action="search"))
 
     return itemlist
@@ -52,7 +52,7 @@ def categorias(item):
     logger.info("[documentalesatonline2.py] novedades")
     itemlist=[]
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -78,18 +78,18 @@ def novedades(item):
     logger.info("[documentalesatonline2.py] novedades")
     itemlist=[]
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cache_page(item.url)
     
     # Entradas
     '''
-    <h2 id="post-5250"><a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/" rel="bookmark">Chips: Implantes de futuro.2009 (Documental C.Odisea) (RFID) (EspaÒol)</a></h2>
+    <h2 id="post-5250"><a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/" rel="bookmark">Chips: Implantes de futuro.2009 (Documental C.Odisea) (RFID) (Espa√±ol)</a></h2>
     <div class="main">
-    <p>En este interesante documental, seguimos a Mark Stepanek mientras delibera si debe o no obtener una identificaciÛn por radiofrecuencia (RFID), es decir, implantarse un microchip, semejante al que pueda llevar una mascota, en su propia mano..</p>
+    <p>En este interesante documental, seguimos a Mark Stepanek mientras delibera si debe o no obtener una identificaci√≥n por radiofrecuencia (RFID), es decir, implantarse un microchip, semejante al que pueda llevar una mascota, en su propia mano..</p>
     <ul class="readmore">
     <li>&raquo;
     <a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/#comments">Comentarios</a>
-    <a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/#comments" title="Comentarios en Chips: Implantes de futuro.2009 (Documental C.Odisea) (RFID) (EspaÒol)">(3)</a>						</li>
+    <a href="http://www.bizzentte.com/2011/08/chips-implantes-de-futuro-2009-documental-c-odisea-rfid-espanol/#comments" title="Comentarios en Chips: Implantes de futuro.2009 (Documental C.Odisea) (RFID) (Espa√±ol)">(3)</a>						</li>
     </ul>
     </div>
     '''
@@ -108,13 +108,13 @@ def novedades(item):
 
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    # P·gina siguiente
+    # P√°gina siguiente
     patron  = '<a href="([^"]+)" >P..gina siguiente \&raquo\;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=__channel__, action="novedades", title="!P·gina siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="!P√°gina siguiente" , url=urlparse.urljoin(item.url,match) , folder=True) )
 
     return itemlist
 
@@ -134,12 +134,12 @@ def strip_ml_tags(in_text):
     join_char=''
     return join_char.join(s_list)
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
     from servers import servertools
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     peliculas_items = novedades(mainlist_items[0])
     bien = False
     for pelicula_item in peliculas_items:

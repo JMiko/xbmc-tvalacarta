@@ -28,7 +28,7 @@ def mainlist(item):
     logger.info("[mejortorrent.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas"    , action="peliculas"   , url="http://www.mejortorrent.com/torrents-de-peliculas.html"))
+    itemlist.append( Item(channel=__channel__, title="PelÃ­culas"    , action="peliculas"   , url="http://www.mejortorrent.com/torrents-de-peliculas.html"))
     itemlist.append( Item(channel=__channel__, title="Series"       , action="series"      , url="http://www.mejortorrent.com/torrents-de-series.html"))
     itemlist.append( Item(channel=__channel__, title="Documentales" , action="documentales", url="http://www.mejortorrent.com/torrents-de-documentales.html"))
 
@@ -38,7 +38,7 @@ def peliculas(item):
     logger.info("[mejortorrent.py] peliculas")
     itemlist = []
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
     patron  = '<a href="(/peli-descargar-torrent[^"]+)">[^<]+'
     patron += '<img src="([^"]+)"[^<]+</a>'
@@ -63,7 +63,7 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="PÃ¡gina siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -71,7 +71,7 @@ def series(item):
     logger.info("[mejortorrent.py] series")
     itemlist = []
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
     #<a href="/serie-descargar-torrents-11589-11590-Ahora-o-nunca-4-Temporada.html">
     #<img src="/uploads/imagenes/series/Ahora o nunca4.jpg" border="1"></a>  
@@ -98,7 +98,7 @@ def series(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="series", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="series", title="PÃ¡gina siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -106,7 +106,7 @@ def episodios(item):
     logger.info("[mejortorrent.py] episodios")
     itemlist = []
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(item.url)
     
     total_capis = scrapertools.get_match(data,"<input type='hidden' name='total_capis' value='(\d+)'>")

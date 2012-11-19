@@ -30,7 +30,7 @@ def mainlist(item):
     logger.info("[moviezet.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Pel�culas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
+    itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
     itemlist.append( Item(channel=__channel__, title="Series"     , action="series",    url="http://www.moviezet.com/shows/?page_id=2853"))
     itemlist.append( Item(channel=__channel__, title="Buscar"   , action="search", url="http://www.moviezet.com/?s="))
     
@@ -40,11 +40,11 @@ def peliculas(item):
     logger.info("[moviezet.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=__channel__, title="�ltimas pel�culas"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=date&order=desc"))
-    itemlist.append( Item(channel=__channel__, title="M�s Populares"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Últimas películas"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=date&order=desc"))
+    itemlist.append( Item(channel=__channel__, title="Más Populares"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
     itemlist.append( Item(channel=__channel__, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
     itemlist.append( Item(channel=__channel__, title="Generos"  , action="generos", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_genre"))
-    itemlist.append( Item(channel=__channel__, title="Por A�o"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
+    itemlist.append( Item(channel=__channel__, title="Por Año"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
     itemlist.append( Item(channel=__channel__, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=title&order=asc"))
 
     return itemlist
@@ -99,7 +99,7 @@ def novedades(item):
         scrapedthumbnail = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
@@ -110,7 +110,7 @@ def novedades(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="novedades", title="P�gina siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="novedades", title="Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -202,7 +202,7 @@ def episodios(item):
             itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , show = item.show , folder=True) )
 
     if config.get_platform().startswith("xbmc"):
-        itemlist.append( Item(channel=item.channel, title="Añadir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="AÃ±adir estos episodios a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
@@ -232,7 +232,7 @@ def findvideos(item):
     data = scrapertools.cachePage(url)
     logger.info("data="+data)
     
-    # Si es una serie tendr� ese enlace "watch-show"
+    # Si es una serie tendrá ese enlace "watch-show"
     try:
         url = scrapertools.get_match(data,'<a class="watch-show" href="([^"]+)">')
         data = scrapertools.cachePage(url)
@@ -276,16 +276,16 @@ def findvideos(item):
     return itemlist
   
 
-# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+# Al llamarse "search" la funciÃ³n, el launcher pide un texto a buscar y lo aÃ±ade como parÃ¡metro
 def search(item,texto):
     logger.info("[moviezet.py] search")
     
     try:
-        # La URL puede venir vacía, por ejemplo desde el buscador global
+        # La URL puede venir vacÃ­a, por ejemplo desde el buscador global
         if item.url=="":
             item.url="http://www.moviezet.com/?s=Search.."
     
-        # Reemplaza el texto en la cadena de búsqueda
+        # Reemplaza el texto en la cadena de bÃºsqueda
         item.url = item.url + texto
         
         
@@ -293,7 +293,7 @@ def search(item,texto):
         # Devuelve los resultados
         return listar(item)
         
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    # Se captura la excepciÃ³n, para no interrumpir al buscador global si un canal falla
     except:
         import sys
         for line in sys.exc_info():
@@ -305,7 +305,7 @@ def listar(item):
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
     logger.info(data)
-    #<a href="http://www.moviezet.com/movies/terminator-salvation/" title="Ver Terminator: La Salvaci�n Online"><img src="http://moviezet.com/wp-content/uploads/30.jpg" alt="Ver Terminator: La Salvaci�n Online" /></a>
+    #<a href="http://www.moviezet.com/movies/terminator-salvation/" title="Ver Terminator: La Salvación Online"><img src="http://moviezet.com/wp-content/uploads/30.jpg" alt="Ver Terminator: La Salvación Online" /></a>
     patronvideos  = '<div class="movie-thumb">.*?<a href="(.*?)" title="(.*?)"[^<]<img src="(.*?)".*?</a>'
 
 
@@ -320,7 +320,7 @@ def listar(item):
         scrapedthumbnail = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
@@ -330,16 +330,16 @@ def listar(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="listar", title="Página siguiente" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="listar", title="PÃ¡gina siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
-# Verificaci�n autom�tica de canales: Esta funci�n debe devolver "True" si est� ok el canal.
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     from servers import servertools
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los v�deos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
     peliculas_items = peliculas(mainlist_items[0])
     novedades_items = novedades(peliculas_items[0])
     bien = False

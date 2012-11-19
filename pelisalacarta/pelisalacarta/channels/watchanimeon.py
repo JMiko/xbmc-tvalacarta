@@ -29,7 +29,7 @@ __language__ = "EN"
 
 DEBUG = config.get_setting("debug")
 
-# Esto permite su ejecución en modo emulado
+# Esto permite su ejecuciÃ³n en modo emulado
 try:
     pluginhandle = int( sys.argv[ 1 ] )
 except:
@@ -44,11 +44,11 @@ def mainlist(params,url,category):
     # Menu principal
     xbmctools.addnewfolder( __channel__ , "newlist"         , category , "Novedades"                   ,"http://www.watchanimeon.com/","","")
     xbmctools.addnewfolder( __channel__ , "airinglist"      , category , "Series en curso"             ,"http://www.watchanimeon.com/","","")
-    xbmctools.addnewfolder( __channel__ , "catlist"         , category , "Series por categoría"        ,"http://www.watchanimeon.com/","","")
-    xbmctools.addnewfolder( __channel__ , "alphaserieslist" , category , "Series por orden alfabético" ,"http://www.watchanimeon.com/anime-list/","","")
-    xbmctools.addnewfolder( __channel__ , "allmovieslist"   , category , "Todas las películas"         ,"http://www.watchanimeon.com/anime/anime-movies/","","")
+    xbmctools.addnewfolder( __channel__ , "catlist"         , category , "Series por categorÃ­a"        ,"http://www.watchanimeon.com/","","")
+    xbmctools.addnewfolder( __channel__ , "alphaserieslist" , category , "Series por orden alfabÃ©tico" ,"http://www.watchanimeon.com/anime-list/","","")
+    xbmctools.addnewfolder( __channel__ , "allmovieslist"   , category , "Todas las pelÃ­culas"         ,"http://www.watchanimeon.com/anime/anime-movies/","","")
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
@@ -56,7 +56,7 @@ def mainlist(params,url,category):
 def newlist(params,url,category):
     logger.info("[watchanimeon.py] newlist")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Extrae las categorias
@@ -69,7 +69,7 @@ def newlist(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[2]+" ("+match[5]+")"
         scrapedurl = urlparse.urljoin(url,match[1])
@@ -77,10 +77,10 @@ def newlist(params,url,category):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -88,7 +88,7 @@ def newlist(params,url,category):
 def catlist(params,url,category):
     logger.info("[watchanimeon.py] catlist")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Extrae las categorias
@@ -96,7 +96,7 @@ def catlist(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[1]
         scrapedurl = urlparse.urljoin(url,match[0])
@@ -104,10 +104,10 @@ def catlist(params,url,category):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -115,7 +115,7 @@ def catlist(params,url,category):
 def catdetail(params,url,category):
     logger.info("[watchanimeon.py] catdetail")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Extrae las series de cada categoria
@@ -126,7 +126,7 @@ def catdetail(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[3]
         scrapedurl = urlparse.urljoin(url,match[0])
@@ -134,25 +134,25 @@ def catdetail(params,url,category):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
 
-    # Paginación
+    # PaginaciÃ³n
     patron  = '<span class="current"><a href="[^"]+" >[^<]+</a></span><span><a href="([^"]+)">[^<]+</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
-        scrapedtitle = "Página siguiente"
+        scrapedtitle = "PÃ¡gina siguiente"
         scrapedurl = urlparse.urljoin(url,matches[0]).replace(" ","+")
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "catdetail" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -160,7 +160,7 @@ def catdetail(params,url,category):
 def airinglist(params,url,category):
     logger.info("[watchanimeon.py] airinglist")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Extrae las categorias
@@ -174,7 +174,7 @@ def airinglist(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[2].strip() + " ("+match[0]+")"
         scrapedurl = urlparse.urljoin(url,match[1])
@@ -182,10 +182,10 @@ def airinglist(params,url,category):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -228,10 +228,10 @@ def alphaserieslist(params,url,category):
 def singleletterserieslist(params,url,category):
     logger.info("[watchanimeon.py] singleletterserieslist")
 
-    # El título es la letra elegida
+    # El tÃ­tulo es la letra elegida
     letra = urllib.unquote_plus( params.get("title") )
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Extrae el bloque con las entradas correspondientes a esa letra
@@ -247,7 +247,7 @@ def singleletterserieslist(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[1]
         scrapedurl = urlparse.urljoin(url,match[0])
@@ -255,10 +255,10 @@ def singleletterserieslist(params,url,category):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -266,7 +266,7 @@ def singleletterserieslist(params,url,category):
 def allmovieslist(params,url,category):
     logger.info("[watchanimeon.py] allmovieslist")
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Extrae el bloque con las entradas correspondientes a esa letra
@@ -282,7 +282,7 @@ def allmovieslist(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[1].replace("&#8211;","-")
         scrapedurl = urlparse.urljoin(url,match[0])
@@ -290,10 +290,10 @@ def allmovieslist(params,url,category):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -305,7 +305,7 @@ def detalleserie(params,url,category):
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )
     plot = urllib.unquote_plus( params.get("plot") )
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
 
     # Argumento
@@ -355,7 +355,7 @@ def detalleserie(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = match[1].replace("&#8211;","-")
         scrapedurl = urlparse.urljoin(url,match[0])
@@ -363,10 +363,10 @@ def detalleserie(params,url,category):
         scrapedplot = plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detallecapitulo" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
-    # Asigna el título, desactiva la ordenación, y cierra el directorio
+    # Asigna el tÃ­tulo, desactiva la ordenaciÃ³n, y cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
     xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
@@ -378,7 +378,7 @@ def detallecapitulo(params,url,category):
     thumbnail = urllib.unquote_plus( params.get("thumbnail") )
     plot = urllib.unquote_plus( params.get("plot") )
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -399,7 +399,7 @@ def detallecapitulo(params,url,category):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    # Las añade a XBMC
+    # Las aÃ±ade a XBMC
     for match in matches:
         scrapedtitle = "Ver serie completa"
         scrapedurl = urlparse.urljoin(url,match)
@@ -407,7 +407,7 @@ def detallecapitulo(params,url,category):
         scrapedplot = plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado de XBMC
+        # AÃ±ade al listado de XBMC
         xbmctools.addnewfolder( __channel__ , "detalleserie" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
 
     # Label (top-right)...

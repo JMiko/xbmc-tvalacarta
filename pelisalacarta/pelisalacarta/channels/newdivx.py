@@ -29,7 +29,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades", action="peliculas", url="http://www.newdivx.net"))
-    itemlist.append( Item(channel=__channel__, title="CategorÌas", action="categorias", url="http://www.newdivx.net"))
+    itemlist.append( Item(channel=__channel__, title="Categor√≠as", action="categorias", url="http://www.newdivx.net"))
     itemlist.append( Item(channel=__channel__, title="Buscar...", action="search") )
     return itemlist
 
@@ -47,7 +47,7 @@ def peliculas(item):
     logger.info("[newdivx.py] peliculas")
     itemlist=[]
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     if item.extra!="":
         data = scrapertools.cachePage( item.url , item.extra )
     else:
@@ -57,7 +57,7 @@ def peliculas(item):
     patronvideos = '<a href="([^"]+)"[^<]+<img src="([^"]+)" alt="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    # AÒade las entradas encontradas
+    # A√±ade las entradas encontradas
     for url,thumbnail,title in matches:
         scrapedtitle = title
         scrapedurl = urlparse.urljoin(item.url,url)
@@ -66,14 +66,14 @@ def peliculas(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    #Extrae la marca de siguiente p·gina
+    #Extrae la marca de siguiente p√°gina
     #<span>1</span> <a href="http://www.newdivx.net/peliculas-online/animacion/page/2/">2</a>
     patronvideos  = '</span> <a href="(http://www.newdivx.net.*?page/[^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "P·gina siguiente >>"
+        scrapedtitle = "P√°gina siguiente >>"
         scrapedurl = matches[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -85,7 +85,7 @@ def categorias(item):
     logger.info("[newdivx.py] categorias")
     itemlist=[]
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     '''
     <div class="case genres">
@@ -118,7 +118,7 @@ def categorias(item):
     patron = '<a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
-    # AÒade las entradas encontradas
+    # A√±ade las entradas encontradas
     for url,title in matches:
         scrapedtitle = title
         scrapedurl = urlparse.urljoin(item.url,url)
@@ -129,12 +129,12 @@ def categorias(item):
 
     return itemlist
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
     from servers import servertools
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     peliculas_items = peliculas(mainlist_items[0])
     bien = False
     for pelicula_item in peliculas_items:
