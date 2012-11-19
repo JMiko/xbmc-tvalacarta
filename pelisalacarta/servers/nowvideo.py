@@ -19,6 +19,8 @@ def test_video_exists( page_url ):
     
     if "The file is being converted" in data:
         return False,"El fichero está en proceso"
+    elif "This file no longer exists on our servers" in data:
+        return False,"El fichero ha sido borrado"
 
     return True,""
 
