@@ -19,7 +19,7 @@ __type__ = "generic"
 __title__ = "Italia film (IT)"
 __language__ = "IT"
 
-DEBUG = config.get_setting("debug")
+DEBUG = True #config.get_setting("debug")
 EVIDENCE = "   "
 
 def isGeneric():
@@ -28,17 +28,19 @@ def isGeneric():
 def mainlist(item):
     logger.info("[gnula.py] mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novit‡" , action="peliculas", url="http://italia-film.com/"))
-    itemlist.append( Item(channel=__channel__, title="Categorie" , action="categorias", url="http://italia-film.com/"))
+    itemlist.append( Item(channel=__channel__, title="Novit√†" , action="peliculas", url="http://italiafilm.tv/"))
+    itemlist.append( Item(channel=__channel__, title="Categorie" , action="categorias", url="http://italiafilm.tv/"))
     itemlist.append( Item(channel=__channel__, title="Cerca Film", action="search"))
     return itemlist
 
 def categorias(item):
     logger.info("[italiafilm.py] categorias")
     itemlist = []
+    logger.error("io")
 
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,"<h2>Categorie Film</h2>(.*?)</div>")
+    
+    data = scrapertools.get_match(data,"<h2>Categorie Film</h2>(.*?)</div>") #hey
     patron = '<li class="[^"]+"><a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -53,17 +55,17 @@ def categorias(item):
 
     return itemlist
 
-# Al llamarse "search" la funciÛn, el launcher pide un texto a buscar y lo aÒade como par·metro
+# Al llamarse "search" la funci√≥n, el launcher pide un texto a buscar y lo a√±ade como par√°metro
 def search(item,texto):
     logger.info("[italiafilm.py] search "+texto)
     itemlist = []
     texto = texto.replace(" ","%20")
-    item.url = "http://italia-film.com/index"
+    item.url = "http://italiafilm.tv"
     item.extra = "do=search&subaction=search&story="+texto+"&x=0&y=0"
 
     try:
         return peliculas(item)
-    # Se captura la excepciÛn, para no interrumpir al buscador global si un canal falla
+    # Se captura la excepci√≥n, para no interrumpir al buscador global si un canal falla
     except:
         import sys
         for line in sys.exc_info():
@@ -75,12 +77,14 @@ def peliculas(item):
     logger.info("[italiafilm.py] peliculas")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     if item.extra!="":
         post = item.extra
     else:
         post=None
     data = scrapertools.cachePage(item.url,post)
+    
+
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<a href="([^"]+)"><img class="news-item-image" title="([^"]+)" alt="[^"]+" src="([^"]+)"></a>[^<]+'
@@ -98,8 +102,37 @@ def peliculas(item):
         
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # A√±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+   #<h3 class="btl"><a href="http://www.italiafilm.tv/top-movies/501-dexter.html" >Dexter Serie Tv Streaming</a> </h3>
+   #<div class="maincont">
+   #   <div id='news-id-501'><!--dle_image_begin:http://locandine.org/image-0367_4E6A05C5.jpg|-->
+   #<img src="http://locandine.org/image-0367_4E6A05C5.jpg" alt="Dexter Serie Tv Streaming" title="Dexter Serie Tv Streaming"  />
+   #<!--dle_image_end--> <span style='background-color:yellow;'><font color='red'>Dexter</font></span>, il protagonista della serie,  un serial killer. La sua particolarit√† √® quella di uccidere solo in base ad un codice etico, il cosiddetto "codice Harry", dal nome del padre adottivo di <span style='background-color:yellow;'><font color='red'>Dexter</font></span>.Harry, dopo avere intuito il carattere omicida del figlio fin dalla sua adolescenza, √® riuscito a insegnargli come incanalare i suoi impulsi violenti nel modo "giusto", cos√¨ da soddisfare la sua sete di sangue uccidendo soltanto coloro che lo "meritano". <span style='background-color:yellow;'><font color='red'>Dexter</font></span>, quindi,  un serial killer di killer e uccide solo gli assassini incalliti che, in qualche modo, sono sfuggiti alla giustizia. Il padre adottivo gli ha insegnato anche come integrarsi nel mondo che lo circonda, nascondendo il suo vero io dietro una facciata. <span style='background-color:yellow;'><font color='red'>Dexter</font></span>, inoltre, lavora come ematologo alla scientifica della polizia di Miami.</div>
+   #   <div class="clr"></div>
+    patronvideos  = '<h3 class="btl"><a href="([^"]+)".*?'
+    patronvideos += '<img src="([^"]+)" alt="[^"]+" title="([^"]+)"'
+    #patronvideos += '.*?<!--dle_image_end-->([^<]+)</div>'
+    
+    logger.info("patronvideos:" + patronvideos)
+    
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    
+    for url,thumbnail,title in matches:
+        # Atributos
+        plot = "to_do"
+        scrapedtitle = title
+        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
+        scrapedplot = plot
+        
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # A√±ade al listado de XBMC
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<a href="([^"]+)"><span class="thide pnext">Avanti</span></a>'
@@ -115,7 +148,7 @@ def peliculas(item):
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # A√±ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='peliculas', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
@@ -132,12 +165,12 @@ def to_ita(text):
     text = text.replace('&#039;', '\'')
     return text
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
     from servers import servertools
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     peliculas_items = peliculas(mainlist_items[0])
     bien = False
     for pelicula_item in peliculas_items:
