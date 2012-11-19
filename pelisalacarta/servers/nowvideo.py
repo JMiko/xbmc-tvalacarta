@@ -38,10 +38,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     flashvars.autoplay="false";
     flashvars.cid="1";
     '''
+    domain = scrapertools.get_match(data,'flashvars.domain="([^"]+)"')
     file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
     key = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
     codes = scrapertools.get_match(data,'flashvars.cid="([^"]+)"')
-    url = "http://www.nowvideo.eu/api/player.api.php?file="+file+"&user=undefined&codes="+codes+"&pass=undefined&key="+key.replace(".","%2E").replace("-","%2D")
+    url = domain + "/api/player.api.php?file="+file+"&user=undefined&codes="+codes+"&pass=undefined&key="+key.replace(".","%2E").replace("-","%2D")
     data = scrapertools.cache_page( url )
     logger.info("data="+data)
     # url=http://f23.nowvideo.eu/dl/653d434d3cd95f1f7b9df894366652ba/4fc2af77/nnb7e7f45f276be5a75b10e8d6070f6f4c.flv&title=Title%26asdasdas&site_url=http://www.nowvideo.eu/video/3695bce6e6288&seekparm=&enablelimit=0
@@ -62,7 +63,7 @@ def find_videos(data):
     devuelve = []
 
     #<a href="http://www.nowvideo.eu/video/3695bce6e6288" target="_blank">1° Tempo</a>
-    patronvideos  = '<a href="(http://www.nowvideo.../video/[a-z0-9]+)"[^>]+>([^<]+)</a>'
+    patronvideos  = '<a href="(http://www.nowvideo.eu/video/[a-z0-9]+)"[^>]+>([^<]+)</a>'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -75,10 +76,24 @@ def find_videos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
+            
+    patronvideos  = '(nowvideo.co/video/[a-z0-9]+)'
+    logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
+    for match in matches:
+        titulo = "[nowvideo]"
+        url = "http://www2."+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'nowvideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
     #http://www.nowvideo.eu/video/3695bce6e6288
     #http://www.nowvideo.eu/video/4fd0757fd4592
-    patronvideos  = '(nowvideo.../video/[a-z0-9]+)'
+    patronvideos  = '(nowvideo.eu/video/[a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -109,7 +124,7 @@ def find_videos(data):
 
     #http://embed.nowvideo.eu/embed.php?v=obkqt27q712s9&amp;width=600&amp;height=480
     #http://embed.nowvideo.eu/embed.php?v=4grxvdgzh9fdw&width=568&height=340
-    patronvideos  = 'nowvideo.../embed.php\?v\=([a-z0-9]+)'
+    patronvideos  = 'nowvideo.eu/embed.php\?v\=([a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -124,7 +139,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     #http://embed.nowvideo.eu/embed.php?width=600&amp;height=480&amp;v=9fb588463b2c8
-    patronvideos  = 'nowvideo.../embed.php\?.+?v\=([a-z0-9]+)'
+    patronvideos  = 'nowvideo.eu/embed.php\?.+?v\=([a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
