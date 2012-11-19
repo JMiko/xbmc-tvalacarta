@@ -28,8 +28,8 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="PelÌculas"    , url="http://www.tumejortv.com/directorio/peliculas", extra="peliculas"))
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="PelÌculas VO" , url="http://www.tumejortv.com/directorio/peliculas_vo", extra="peliculas"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Pel√≠culas"    , url="http://www.tumejortv.com/directorio/peliculas", extra="peliculas"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Pel√≠culas VO" , url="http://www.tumejortv.com/directorio/peliculas_vo", extra="peliculas"))
     itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"       , url="http://www.tumejortv.com/directorio/series", extra="series"))
     itemlist.append( Item(channel=__channel__, action="submenu" , title="Series VO"    , url="http://www.tumejortv.com/directorio/series_vo", extra="series"))
 
@@ -44,7 +44,7 @@ def submenu(item):
     itemlist = []
 
     itemlist.append( Item(channel=__channel__, action=item.extra        , title="Novedades"                  , url=item.url))
-    itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Todas por orden alfabÈtico" , url=item.url, extra=item.extra))
+    itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Todas por orden alfab√©tico" , url=item.url, extra=item.extra))
 
     return itemlist
 
@@ -65,11 +65,11 @@ def peliculas(item):
     logger.info("[tumejortv.py] peliculas")
 
     url = item.url
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
-    # Extrae las pelÌculas
+    # Extrae las pel√≠culas
     patron  = '<div class="antlo_dir_all_container">'
     patron += '<div rel="tag" data-href="([^"]+)".*?'
     patron += '<div class="antlo_dir_img_container"><a[^<]+<img src="([^"]+)"[^>]+></a>'
@@ -89,11 +89,11 @@ def peliculas(item):
 
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Ordena los listados alfabÈticos
+    # Ordena los listados alfab√©ticos
     if "filtro_letras" in item.url:
         itemlist = sorted(itemlist, key=lambda Item: Item.title)    
 
-    # Extrae la p·gina siguiente
+    # Extrae la p√°gina siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -111,7 +111,7 @@ def series(item,extended=True):
     logger.info("[tumejortv.py] series")
 
     url = item.url
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -121,9 +121,9 @@ def series(item,extended=True):
     <div rel="tag" data-href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/" class="antlo_dir_pic_container color2" alt="G.C.B. (Golfas, Cursis Y Beatas)" title="G.C.B. (Golfas, Cursis Y Beatas)">
     <div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_nuevo.png" alt="G.C.B. (Golfas, Cursis Y Beatas)" title="G.C.B. (Golfas, Cursis Y Beatas)"/></div>
     <div class="antlo_dir_img_container"><a href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/"><img src="http://www.tumejortv.com/images/posters/bXc4yUxJvPx4Hszf.jpeg" alt="G.C.B. (Golfas, Cursis Y Beatas)"/></a>
-    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="EspaÒol" title="EspaÒol"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
+    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Espa√±ol" title="Espa√±ol"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
     <div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Serie </span><br/><a href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/"> G.C.B. (Golfas, Cursis Y Beata...</a></h3>
-    <h4 class="antlo_dir_video_cat">Temporada <span class="white">1</span> CapÌtulo <span class="white">10</span></h4><h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></div></div>
+    <h4 class="antlo_dir_video_cat">Temporada <span class="white">1</span> Cap√≠tulo <span class="white">10</span></h4><h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></div></div>
     '''
     patron  = '<div class="antlo_dir_all_container">'
     patron += '<div rel="tag" data-href="([^"]+)".*?'
@@ -146,11 +146,11 @@ def series(item,extended=True):
 
         itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
 
-    # Ordena los listados alfabÈticos
+    # Ordena los listados alfab√©ticos
     if "filtro_letras" in item.url:
         itemlist = sorted(itemlist, key=lambda Item: Item.title)    
 
-    # Extrae la p·gina siguiente
+    # Extrae la p√°gina siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -192,7 +192,7 @@ def findepisodios(item):
     itemlist=[]
     
     data = scrapertools.cache_page(item.url)
-    #<a href="#" class="antlo_temporadas_li" title="Haga clic para ver listado de capÌtulos"><img src="http://www.tumejortv.com/images/general/more.png" /> TEMPORADA 1<span style="float:right;"><img src="http://www.tumejortv.com/images/general/estreno.png" alt="EstrenoT"/></span></a><div><table class="antlo_links_table">
+    #<a href="#" class="antlo_temporadas_li" title="Haga clic para ver listado de cap√≠tulos"><img src="http://www.tumejortv.com/images/general/more.png" /> TEMPORADA 1<span style="float:right;"><img src="http://www.tumejortv.com/images/general/estreno.png" alt="EstrenoT"/></span></a><div><table class="antlo_links_table">
     patron = '<a href="\#" class="antlo_temporadas_li" title="Haga clic[^"]+"><img[^>]+>( TEMPORADA [^<]+)<(.*?)</table>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -207,11 +207,11 @@ def findepisodios(item):
             itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, show=item.show, plot=item.plot, folder=True, fulltitle=item.title+" "+temporada+"x"+episodio+" "+titulo))
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="AÒadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findepisodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="A√±adir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findepisodios", show=item.show) )
 
     return itemlist
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
     from servers import servertools
     # mainlist

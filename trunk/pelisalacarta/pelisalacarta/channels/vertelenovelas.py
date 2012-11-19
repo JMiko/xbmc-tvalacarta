@@ -30,10 +30,10 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="⁄ltimos capÌtulos agregados" , url="http://vertelenovelas.net/"))
+    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="√öltimos cap√≠tulos agregados" , url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="novedades"           , title="Nuevas telenovelas"     , url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="top"                 , title="Telenovelas TOP"        , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="emision"             , title="Telenovelas en emisiÛn" , url="http://vertelenovelas.net/"))
+    itemlist.append( Item(channel=__channel__, action="emision"             , title="Telenovelas en emisi√≥n" , url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="todas"               , title="Lista completa"         , url="http://vertelenovelas.net/"))
 
     return itemlist
@@ -42,13 +42,13 @@ def novedades_episodios(item):
     logger.info("[vertelenovelas.py] novedades_episodios")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     '''
     <div class="dia">
-    <a href="capitulo/la-voz-espana-5.html" title="La Voz EspaÒa 5">
+    <a href="capitulo/la-voz-espana-5.html" title="La Voz Espa√±a 5">
     <img src="http://vertelenovelas.net/image_files/la-voz-espana.jpg" width="70px" height="105px" align="left"/></a>
-    <div class="dia-titulo"><a href="capitulo/la-voz-espana-5.html" class="tts">La Voz EspaÒa 5</a></div>
+    <div class="dia-titulo"><a href="capitulo/la-voz-espana-5.html" class="tts">La Voz Espa√±a 5</a></div>
     10/13/2012<br /><br />
     '''
     patron  = '<div class="dia">[^<]+'
@@ -70,7 +70,7 @@ def novedades(item):
     logger.info("[vertelenovelas.py] novedades")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     '''
     <div class="cont_anime"><div class="anime_box"> <a href="mi-problema-con-las-mujeres.html" title="Mi problema con las mujeres"><img src="http://vertelenovelas.net/image_files/mi-problema-con-las-mujeres.jpg" alt="Mi problema con las mujeres"></a> <div></div> <span><h1><a href="mi-problema-con-las-mujeres.html" title="Mi problema con las mujeres">Mi problema con las mujeres</a></h1></span> </div></div>
@@ -93,7 +93,7 @@ def episodios(item):
     logger.info("[vertelenovelas.py] episodios")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     
     data = scrapertools.cachePage(item.url)
     patron  = '<li class="lc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
@@ -186,13 +186,13 @@ def top(item):
 
     return itemlist
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
 
     # mainlist
     mainlist_items = mainlist(Item())
     novedades_items = novedades_episodios(mainlist_items[1])
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     bien = False
     for singleitem in novedades_items:
         mirrors = findvideos( item=singleitem )

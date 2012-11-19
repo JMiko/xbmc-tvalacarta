@@ -29,10 +29,10 @@ def mainlist(item):
     logger.info("[gnula.py] mainlist")
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades"                            , action="home"       ,url="http://www.mcanime.net/"))
-    itemlist.append( Item(channel=__channel__, title="Foro anime en línea"                  , action="forum"      ,url="http://www.mcanime.net/foro/viewforum.php?f=113"))
+    itemlist.append( Item(channel=__channel__, title="Foro anime en lÃ­nea"                  , action="forum"      ,url="http://www.mcanime.net/foro/viewforum.php?f=113"))
     itemlist.append( Item(channel=__channel__, title="Descarga directa - Novedades"         , action="ddnovedades",url="http://www.mcanime.net/descarga_directa/anime"))
-    itemlist.append( Item(channel=__channel__, title="Descarga directa - Listado alfabético", action="ddalpha"    ,url="http://www.mcanime.net/descarga_directa/anime"))
-    itemlist.append( Item(channel=__channel__, title="Descarga directa - Categorías"        , action="ddcat"      ,url="http://www.mcanime.net/descarga_directa/anime"))
+    itemlist.append( Item(channel=__channel__, title="Descarga directa - Listado alfabÃ©tico", action="ddalpha"    ,url="http://www.mcanime.net/descarga_directa/anime"))
+    itemlist.append( Item(channel=__channel__, title="Descarga directa - CategorÃ­as"        , action="ddcat"      ,url="http://www.mcanime.net/descarga_directa/anime"))
     itemlist.append( Item(channel=__channel__, title="Enciclopedia - Estrenos"              , action="estrenos"   ,url="http://www.mcanime.net/enciclopedia/estrenos/anime"))
     return itemlist
 
@@ -40,7 +40,7 @@ def estrenos(item):
     logger.info("[mcanime.py] estrenos")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -51,7 +51,7 @@ def estrenos(item):
     <img src="/images/anime/th_9203.jpg" width="75" height="100" alt="" />
     </dd>
     <dt><a href="/enciclopedia/anime/cobra_the_animation_rokunin_no_yuushi/9203">Cobra The Animation: Rokunin no Yuushi</a> <i>(Serie)</i></dt>
-    <dd>Cobra es un conocido pirata espacial, pero decide cambiar su cara y borrar todas sus memorias. El ahora es un hombre normal, con un trabajo normal y una vida aburrida, pero comienza a recordar su verdadera identidad y sus aventuras comienzan de nuevo. <a href="/enciclopedia/anime/cobra_the_animation_rokunin_no_yuushi/9203">leer m·s.</a></dd>
+    <dd>Cobra es un conocido pirata espacial, pero decide cambiar su cara y borrar todas sus memorias. El ahora es un hombre normal, con un trabajo normal y una vida aburrida, pero comienza a recordar su verdadera identidad y sus aventuras comienzan de nuevo. <a href="/enciclopedia/anime/cobra_the_animation_rokunin_no_yuushi/9203">leer mÂ·s.</a></dd>
     <dd class="small mgn"><a href="/descarga_directa/anime/cobra_the_animation_rokunin_no_yuushi/9203" class="srch_dd">Descargar&nbsp;&nbsp;<img width="14" height="14" src="/images/dds/download_icon.gif" alt="[DD]" /></a></dd>                </dl>
     '''
     patron = '<dl id="[^"]+" class="min row.">(.*?)</dl>'
@@ -85,7 +85,7 @@ def estrenos(item):
             
             scrapedurl = urlparse.urljoin(item.url,matches2[0][1])
 
-        # AÒade al listado de XBMC
+        # AÃ’ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='ddseriedetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
     return itemlist
@@ -94,7 +94,7 @@ def home(item):
     logger.info("[mcanime.py] home")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -120,13 +120,13 @@ def home(item):
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
             itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra = scrapedextra , folder=True ) )
 
-    # Extrae la marca de siguiente p·gina
+    # Extrae la marca de siguiente pÂ·gina
     patronvideos = '<span class="next"><a href="([^"]+)">Anteriores</a>...</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        scrapedtitle = "P·gina siguiente"
+        scrapedtitle = "PÂ·gina siguiente"
         scrapedurl = urlparse.urljoin(item.url,matches[0])
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -138,7 +138,7 @@ def ddnovedades(item):
     logger.info("[mcanime.py] ddnovedades")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
@@ -160,7 +160,7 @@ def ddnovedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='ddpostdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Extrae la marca de siguiente p·gina
+    # Extrae la marca de siguiente pÂ·gina
     patronvideos = '<span class="current">[^<]+</span><a href="([^"]+)">[^<]+</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -178,7 +178,7 @@ def ddalpha(item):
     logger.info("[mcanime.py] ddalpha")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
@@ -201,7 +201,7 @@ def ddcat(item):
     logger.info("[mcanime.py] ddcat")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
@@ -217,7 +217,7 @@ def ddcat(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # AÃ’ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='ddlist', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
     return itemlist
@@ -226,7 +226,7 @@ def ddlist(item):
     logger.info("[mcanime.py] ddlist")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
@@ -242,7 +242,7 @@ def ddlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # AÃ’ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='ddseriedetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
     return itemlist
@@ -251,7 +251,7 @@ def ddseriedetail(item):
     logger.info("[mcanime.py] ddseriedetail")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
 
     # Foto de la serie de la enciclopedia
@@ -294,7 +294,7 @@ def ddseriedetail(item):
             scrapedplot = item.plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-            # AÒade al listado de XBMC
+            # AÃ’ade al listado de XBMC
             itemlist.append( Item(channel=__channel__, action='ddpostdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
     
     # Aportaciones de los usuarios
@@ -320,7 +320,7 @@ def ddseriedetail(item):
             scrapedplot = item.plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-            # AÒade al listado de XBMC
+            # AÃ’ade al listado de XBMC
             itemlist.append( Item(channel=__channel__, action='ddpostdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
     return itemlist
@@ -329,7 +329,7 @@ def ddpostdetail(item):
     logger.info("[mcanime.py] ddpostdetail")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -375,7 +375,7 @@ def forum(item):
     logger.info("[mcanime.py] forum")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
@@ -398,16 +398,16 @@ def forum(item):
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # AÒade al listado de XBMC
+        # AÃ’ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='forumdetail', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
-    # Extrae la siguiente p·gina
+    # Extrae la siguiente pÂ·gina
     patronvideos  = '<a href="([^"]+)" class="next">(Siguiente &raquo;)</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = "P·gina siguiente"
+        scrapedtitle = "PÂ·gina siguiente"
         scrapedurl = urlparse.urljoin(item.url,match[0].replace("&amp;","&"))
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -415,7 +415,7 @@ def forum(item):
         # Depuracion
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         
-        # AÒade al listado de XBMC
+        # AÃ’ade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action='forum', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True ) )
 
     return itemlist
@@ -424,18 +424,18 @@ def forumdetail(item):
     logger.info("[mcanime.py] forumdetail")
     itemlist=[]
     
-    # Descarga la p·gina
+    # Descarga la pÂ·gina
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
 
     # ------------------------------------------------------------------------------------
-    # Busca los enlaces a los mirrors, paginas, o capÌtulos de las series...
+    # Busca los enlaces a los mirrors, paginas, o capÃŒtulos de las series...
     # ------------------------------------------------------------------------------------
     patronvideos  = '([^"]+)" class="next">Siguiente'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     for match in matches:
         logger.info("Encontrada pagina siguiente")
-        itemlist.append( Item(channel=__channel__, action='list', title=">> Página siguiente" , url=urlparse.urljoin(item.url,match).replace("&amp;","&") , folder=True ) )
+        itemlist.append( Item(channel=__channel__, action='list', title=">> PÃ¡gina siguiente" , url=urlparse.urljoin(item.url,match).replace("&amp;","&") , folder=True ) )
 
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
@@ -485,13 +485,13 @@ def forumdetail(item):
     return itemlist
 
 
-# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+# VerificaciÃ³n automÃ¡tica de canales: Esta funciÃ³n debe devolver "True" si estÃ¡ ok el canal.
 def test():
     from servers import servertools
     
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los vÃ­deos de "Novedades" devuelve mirrors
     novedades_items = home(mainlist_items[0])
     bien = False
     for novedad_item in novedades_items:

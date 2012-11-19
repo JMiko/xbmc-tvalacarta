@@ -29,7 +29,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas" , title="Novedades"      , url="http://www.cine-online.eu/" ))
-    itemlist.append( Item(channel=__channel__ , action="generos"   , title="Por categorÌas" , url="http://www.cine-online.eu/" ))
+    itemlist.append( Item(channel=__channel__ , action="generos"   , title="Por categor√≠as" , url="http://www.cine-online.eu/" ))
     itemlist.append( Item(channel=__channel__ , action="search"    , title="Buscar" ))
 
     return itemlist
@@ -42,7 +42,7 @@ def search(item,texto):
     item.url = item.url+texto
     try:
         return peliculas(item)
-    # Se captura la excepciÛn, para no interrumpir al buscador global si un canal falla
+    # Se captura la excepci√≥n, para no interrumpir al buscador global si un canal falla
     except:
         import sys
         for line in sys.exc_info():
@@ -56,13 +56,13 @@ def generos(item):
     '''
     <li><a href='#'>Peliculas por Genero</a>
     <ul>
-    <li><a href='http://www.cine-online.eu/search/label/accion'>AcciÛn</a></li>
+    <li><a href='http://www.cine-online.eu/search/label/accion'>Acci√≥n</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Animaci%C3%B3n'>Animacion</a></li>
     <li><a href='http://www.cine-online.eu/search/label/aventuras'>Aventuras</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Belica'>Belica</a></li>
     <li><a href='http://www.cine-online.eu/search/label/ficcion'>Ficcion</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Comedia'>Comedia</a></li>
-    <li><a href='http://www.cine-online.eu/search/label/cine%20espa%C3%B1ol'>Cine EspaÒol</a></li>
+    <li><a href='http://www.cine-online.eu/search/label/cine%20espa%C3%B1ol'>Cine Espa√±ol</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Documental'>Documental</a></li>
     <li><a href='http://www.cine-online.eu/search/label/Drama'>Drama</a></li>
     <li><a href='http://adultos.cine-online.eu/'>Eroticas</a></li>
@@ -94,7 +94,7 @@ def peliculas(item):
     logger.info("[cineonlineeu.py] peliculas")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
@@ -133,7 +133,7 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="P·gina siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="P√°gina siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -188,14 +188,14 @@ def play(item):
 
     return itemlist
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si todo est· ok en el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si todo est√° ok en el canal.
 def test():
     bien = True
     
     # mainlist
     mainlist_items = mainlist(Item())
     
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     peliculas_items = peliculas(mainlist_items[0])
     
     bien = False
