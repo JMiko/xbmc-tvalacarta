@@ -4,89 +4,67 @@
 # Canal para trailers de ecartelera
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
-import os
-import sys
-import xbmc
-import xbmcgui
-import xbmcplugin
 
-from core import scrapertools
-from core import config
+import urlparse,urllib2,urllib,re
+import os, sys
+
 from core import logger
-from platformcode.xbmc import xbmctools
+from core import config
+from core import scrapertools
 from core.item import Item
 from servers import servertools
-from servers import vk
-
-from pelisalacarta import buscador
-
-__channel__ = "ecarteleratrailers"
-__category__ = "F"
-__type__ = "xbmc"
-__title__ = "Trailers ecartelera"
-__language__ = "ES,EN"
 
 DEBUG = config.get_setting("debug")
 
-# Esto permite su ejecuciÛn en modo emulado
-try:
-    pluginhandle = int( sys.argv[ 1 ] )
-except:
-    pluginhandle = ""
+__channel__ = "ecarteleratrailers"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "Trailers ecartelera"
+__language__ = "ES,EN"
 
-# Traza el inicio del canal
-logger.info("[ecarteleratrailers.py] init")
+def isGeneric():
+    return True
 
-def mainlist(params,url,category):
+def mainlist(item):
     logger.info("[ecarteleratrailers.py] mainlist")
+    itemlist=[]
 
-    if url=="":
-        url="http://www.ecartelera.com/videos/"
+    if item.url=="":
+        item.url="http://www.ecartelera.com/videos/"
     
     # ------------------------------------------------------
-    # Descarga la p·gina
+    # Descarga la p√°gina
     # ------------------------------------------------------
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
     # ------------------------------------------------------
-    # Extrae las pelÌculas
+    # Extrae las pel√≠culas
     # ------------------------------------------------------
     patron  = '<div class="cuadronoticia">.*?<img src="([^"]+)".*?'
     patron += '<div class="cnottxtv">.*?<h3><a href="([^"]+)">([^<]+)</a></h3>.*?'
     patron += '<img class="bandera" src="http\:\/\/www\.ecartelera\.com\/images\/([^"]+)"[^<]+'
     patron += '<br/>([^<]+)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG:
-        scrapertools.printMatches(matches)
+    if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        try:
-            scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
-        except:
-            scrapedtitle = match[2]
+        scrapedtitle = match[2] #unicode( , "iso-8859-1" , errors="replace" ).encode("utf-8")
+
         if match[3]=="fl_1.gif":
             scrapedtitle += " (Castellano)"
         elif match[3]=="fl_2.gif":
-            scrapedtitle += " (InglÈs)"
+            scrapedtitle += " (Ingl√©s)"
         
         scrapedurl = match[1]
         scrapedthumbnail = match[0]
         scrapedplot = match[4]
 
-        # Depuracion
-        if DEBUG:
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
-            logger.info("scrapedplot="+scrapedplot)
-
-        # AÒade al listado de XBMC
-        xbmctools.addnewvideo( __channel__ , "play" , category , "Directo" , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server="directo", viewmode="movie_with_plot", folder=False))
 
     # ------------------------------------------------------
-    # Extrae la p·gina siguiente
+    # Extrae la p√°gina siguiente
     # ------------------------------------------------------
     patron = '<a href="([^"]+)">Siguiente</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -99,49 +77,27 @@ def mainlist(params,url,category):
         scrapedthumbnail = ""
         scrapeddescription = ""
 
-        # Depuracion
-        if DEBUG:
-            logger.info("scrapedtitle="+scrapedtitle)
-            logger.info("scrapedurl="+scrapedurl)
-            logger.info("scrapedthumbnail="+scrapedthumbnail)
+        # A√±ade al listado de XBMC
+        itemlist.append( Item(channel=__channel__, action="mainlist" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, server="directo", folder=True))
 
-        # AÒade al listado de XBMC
-        xbmctools.addnewfolder( __channel__ , "mainlist" , category , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
+    return itemlist
 
-    # Label (top-right)...
-    xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
-
-    # Disable sorting...
-    xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
-
-    # End of directory...
-    xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
-
-# Reproducir un vÌdeo
-def play(params,url,category):
+# Reproducir un v√≠deo
+def play(item):
     logger.info("[ecarteleratrailers.py] play")
-
-    title = urllib.unquote_plus( params.get("title") )
-    thumbnail = urllib.unquote_plus( params.get("thumbnail") )
-    plot = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-    server = params["server"]
-    
-    # ------------------------------------------------------
-    # Descarga la p·gina
-    # ------------------------------------------------------
-    data = scrapertools.cachePage(url)
+    itemlist=[]
+    # Descarga la p√°gina
+    data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    # ------------------------------------------------------
-    # Extrae las pelÌculas
-    # ------------------------------------------------------
+    # Extrae las pel√≠culas
     patron  = "so\.addVariable\('file','([^']+)'\)"
     #patron  = "s1\.addParam\('flashvars'\,'file\=([^\&]+)\&"
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG:
-        scrapertools.printMatches(matches)
 
     if len(matches)>0:
-        url = urlparse.urljoin(url,matches[0])
+        url = urlparse.urljoin(item.url,matches[0])
         logger.info("[ecarteleratrailers.py] url="+url)
-        xbmctools.play_video(__channel__,server,url,category,title,thumbnail,plot)
+        itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="directo", folder=False))
+
+    return itemlist
