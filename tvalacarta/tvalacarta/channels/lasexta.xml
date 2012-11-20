@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>lasexta</name>
-	<tag>5</tag>
-	<date>09/08/2012</date>
-	<changes>Cambiada la versión por la de la web, más vídeos aunque con menos calidad</changes>
+	<tag>6</tag>
+	<date>20/11/2012</date>
+	<changes>Arreglada URL para los vídeos de Xplora</changes>
 </version>
