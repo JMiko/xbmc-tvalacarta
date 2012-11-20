@@ -23,7 +23,7 @@ def mainlist(item):
     itemlist.append( Item(channel="antena3", title="Series"         , action="series"       , url="http://www.lasexta.com/videos/series.html", folder=True) )
     itemlist.append( Item(channel="antena3", title="Noticias"       , action="series"     , url="http://www.lasexta.com/videos/noticias.html", folder=True) )
     itemlist.append( Item(channel="antena3", title="Programas"      , action="series"    , url="http://www.lasexta.com/videos/programas.html", folder=True) )
-    itemlist.append( Item(channel="antena3", title="Xplora"         , action="series"       , url="http://www.lasexta.com/videos/series-infantiles.html", folder=True) )
+    itemlist.append( Item(channel="antena3", title="Xplora"         , action="series"       , url="http://www.lasexta.com/videos/videos-xplora.html", folder=True) )
 
     return itemlist
 
