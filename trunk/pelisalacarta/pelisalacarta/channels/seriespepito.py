@@ -158,6 +158,7 @@ def alphaserieslist(item):
 
     return itemlist
 
+
 def detalle_programa(item,data=""):
     if data=="":
         data = scrapertools.cachePage(item.url)
