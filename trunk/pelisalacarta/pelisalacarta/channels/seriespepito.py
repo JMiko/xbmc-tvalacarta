@@ -112,7 +112,7 @@ def allserieslist(item):
 
     itemlist = []
     for match in matches:
-        scrapedtitle = match[1]
+        scrapedtitle = unicode( match[1].strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedurl = match[0]
         scrapedthumbnail = ""
         scrapedplot = ""
@@ -149,7 +149,7 @@ def alphaserieslist(item):
 
     itemlist = []
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        title = scrapedtitle
+        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
         url = scrapedurl
         thumbnail = scrapedthumbnail
         plot = ""
@@ -158,24 +158,20 @@ def alphaserieslist(item):
 
     return itemlist
 
-def detalle_programa(item):
-    data = scrapertools.cachePage(item.url)
+def detalle_programa(item,data=""):
+    if data=="":
+        data = scrapertools.cachePage(item.url)
+    
+    data2 = scrapertools.get_match(data,'<div class="noticia_cuerpo clearfix">(.*?)</div>')
 
     # Thumbnail
-    patron  = "<div class=\"bubble\">[^<]+<img src='([^']+)'"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        item.thumbnail = matches[0]
+    patron  = '<img src="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data2)
+    if len(matches)>0 and item.thumbnail=="":
+        item.thumbnail = matches[0].replace("%20"," ")
 
     # Argumento
-    patron  = '<div class="container">[^<]+'
-    patron += '<a name="info"></a><div class="header">[^<]+'
-    patron += '<h3 class="bookIcon">[^<]+</h3>[^<]+'
-    patron += '</div>[^<]+'
-    patron  = '<p>(.*?)</p>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        item.plot = scrapertools.htmlclean(matches[0])
+    item.plot = scrapertools.htmlclean(data2)
 
     return item
 
@@ -184,6 +180,10 @@ def episodelist(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    
+    # Completa plot y thumbnail
+    item = detalle_programa(item,data)
+    
     data = scrapertools.get_match(data,"<ul class='nav_lista_capitulos'>(.*?)<br")
     logger.info(data)
 
@@ -204,7 +204,7 @@ def episodelist(item):
 
     itemlist = []
     for scrapedurl,scrapedtitle,idiomas in matches:
-        title = scrapedtitle.strip()
+        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
         if "flag_es" in idiomas:
             title = title + " (Español)"
         if "flag_vo'" in idiomas:
@@ -218,8 +218,8 @@ def episodelist(item):
 
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=item.show))
 
-    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodelist", show=item.show,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg", viewmode="movie_with_plot"))
 
     return itemlist
 
