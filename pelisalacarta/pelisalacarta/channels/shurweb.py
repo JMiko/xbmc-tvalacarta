@@ -159,6 +159,7 @@ def episodios(item):
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
+    item = detalle_programa(item,data)
     # Extrae las entradas
     '''
     <li>
@@ -177,22 +178,24 @@ def episodios(item):
     for url,title in matches:
         scrapedtitle = title
         fulltitle = scrapedtitle
-        scrapedplot = ""
+        scrapedplot = item.plot
         scrapedurl = url
-        scrapedthumbnail = ""
+        scrapedthumbnail = item.thumbnail
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=item.show, context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=item.show, context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg", viewmode="movie_with_plot") )
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
-def detalle_programa(item):
+def detalle_programa(item,data=""):
+    logger.info("[shurweb.py] detalle_programa")
 
     # Descarga la página
     url = item.url
-    data = scrapertools.cache_page(url)
+    if data=="":
+        data = scrapertools.cache_page(url)
 
     # Obtiene el thumbnail
     try:
@@ -200,14 +203,11 @@ def detalle_programa(item):
     except:
         pass
 
-    try:
-        plot = scrapertools.get_match(data,'<div class="synopsis clearfix">(.*?)</div>')
-        plot = re.compile("<strong>Idiom[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
-        plot = re.compile("<strong>Calid[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
-        plot = re.compile("Sinopsis\:",re.DOTALL).sub("",plot)
-        item.plot = scrapertools.htmlclean(plot).strip()
-    except:
-        pass
+    plot = scrapertools.get_match(data,'<div class="synopsis clearfix">(.*?)</div>')
+    plot = re.compile("<strong>Idiom[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
+    plot = re.compile("<strong>Calid[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
+    plot = re.compile("Sinopsis\:",re.DOTALL).sub("",plot)
+    item.plot = scrapertools.htmlclean(plot).strip()
 
     try:
         item.title = scrapertools.get_match(data,'<h1 class="cat_head">([^<]+)</h1>').strip()
