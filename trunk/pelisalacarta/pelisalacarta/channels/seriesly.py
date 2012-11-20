@@ -48,7 +48,7 @@ def mainlist(item):
     itemlist = []
 
     if config.get_setting("serieslyaccount")!="true":
-        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="" , url="" , folder=False ) )
+        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="openconfig" , url="" , folder=False ) )
     else:
         auth_token, user_token = perform_login()
         if not "invalid login" in user_token:
@@ -64,6 +64,11 @@ def mainlist(item):
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
 
     return itemlist
+
+def openconfig(item):
+    if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
+        config.open_settings( )
+    return []
 
 def getCredentials():
     logged = False
