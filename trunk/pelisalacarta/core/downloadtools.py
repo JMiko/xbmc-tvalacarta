@@ -679,6 +679,15 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             import xbmcgui
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok( "No puedes descargar ese vídeo","Las descargas en RTMP aún no","están soportadas")
+        else:
+            import traceback,sys
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
 
     try:
         f.close()
