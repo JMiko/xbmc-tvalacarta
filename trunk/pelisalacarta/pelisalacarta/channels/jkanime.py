@@ -246,6 +246,17 @@ def findvideos(item):
 
     return itemlist
 
+def play(item):
+    logger.info("[jkanime.py] play")
+    
+    itemlist = []
+    
+    location = scrapertools.get_header_from_response(item.url,header_to_get="location")
+    logger.info("location="+location)
+    #http://jkanime.net/stream/jkget/00e47553476031a35fd158881ca9d49f/32021b728c40bb5779190e0a95b72d40/?t=6e
+    itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="directo", folder=False))
+    return itemlist
+
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     bien = True
