@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.31"/>
-    <property name="oldversionboxee" value="6.6"/>
-    <property name="oldversiondate" value="10/11/2012"/>
+    <property name="oldversion" value="3.2.32"/>
+    <property name="oldversionboxee" value="6.7"/>
+    <property name="oldversiondate" value="13/11/2012"/>
 
-    <property name="version" value="3.2.32"/>
-    <property name="versionboxee" value="6.7"/>
-    <property name="versiondate" value="13/11/2012"/>
+    <property name="version" value="3.2.33"/>
+    <property name="versionboxee" value="6.8"/>
+    <property name="versiondate" value="20/11/2012"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <!-- Para betas usar: -->
