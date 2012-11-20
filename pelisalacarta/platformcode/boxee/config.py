@@ -11,8 +11,8 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-TAG_VERSION = "6.7"
-TAG_VERSION_XBMC = "3.2.32"
+TAG_VERSION = "6.8"
+TAG_VERSION_XBMC = "3.2.33"
 
 print "[config.py] boxee config "+TAG_VERSION+" ("+TAG_VERSION_XBMC+")"
 
