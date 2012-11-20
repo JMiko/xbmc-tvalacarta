@@ -6,7 +6,7 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os,sys
-
+ 
 from core import logger
 from core import config
 from core import scrapertools
