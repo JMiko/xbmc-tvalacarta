@@ -31,7 +31,7 @@ def isGeneric():
 def mainlist(item):
     logger.info("[xhamster.py] mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="videos"      , title="Útimos videos" , url="http://www.xhamster.com/"))
+    itemlist.append( Item(channel=__channel__, action="videos"      , title="Ãštimos videos" , url="http://www.xhamster.com/"))
     itemlist.append( Item(channel=__channel__, action="listcategorias"    , title="Listado Categorias"))
     itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://xhamster.com/search.php?q=%s&qcat=video"))
     return itemlist
@@ -77,7 +77,7 @@ def videos(item):
     siguiente = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(siguiente)
     if len(siguiente)>0:
-        itemlist.append( Item(channel=__channel__, action='videos' , title=">> Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!Página siguiente") )
+        itemlist.append( Item(channel=__channel__, action='videos' , title=">> Pagina siguiente" , url=urlparse.urljoin( "http://www.xhamster.com" , siguiente[0] ), thumbnail="", plot="", show="!PÃ¡gina siguiente") )
     else:
         paginador = None
 
