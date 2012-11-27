@@ -4,6 +4,7 @@
 # Conector para videopremium
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+#LvX Edited Patched
 
 import urlparse,urllib2,urllib,re
 import os
@@ -21,7 +22,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     # Lee la URL
     data = scrapertools.cache_page( page_url )
-    bloque = scrapertools.get_match(data,'<Form method="POST"(.*)</.orm>')
+    logger.info("data="+data)
+    bloque = scrapertools.get_match(data,'<Form[^>]*method="POST"(.*)</.orm>')
     logger.info("bloque="+bloque)
     op = scrapertools.get_match(bloque,'<input type="hidden" name="op" value="([^"]+)"')
     usr_login = scrapertools.get_match(bloque,'<input type="hidden" name="usr_login" value="([^"]*)"')
@@ -34,7 +36,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #op=download1&usr_login=&id=buq4b8zunbm6&fname=Snow.Buddies-Avventura.In.Alaska.2008.iTALiAN.AC3.DVDRip.H264-PsYcOcReW.avi&referer=&method_free=Watch+Free%21
     post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&method_free="+method_free
     data = scrapertools.cache_page( page_url , post=post )
-    logger.info("data="+data)
+    #logger.info("data="+data)
     
     try:
         packed = scrapertools.get_match(data,"(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d\).*?</script>)")
@@ -48,6 +50,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     unpacked = unpackerjs.unpackjs(packed)
     logger.info("unpacked="+unpacked)
 
+
+    data=re.search("flowplayer\(\"vplayer\",\"(http://.*?)\",\{key:\\\\'[#\\$0-9-a-f]+\\\\',clip:\{url:\\\\'(.*?)\\\\',provider:\\\\'rtmp\\\\',.*?,netConnectionUrl:\\\\'([^']+)",unpacked)
+    '''
+    _TEMPLATE_LIVE_URL       = "%s/videochat playpath=stream_%s swfurl=%s swfvfy=true pageUrl=%s"
+            rtmp  = re.compile('rtmp="(.+?)"').findall(response)[0]
+            image = re.compile('image="(.+?)"').findall(response)[0]
+            id    = re.compile('id="(.+?)"').findall(response)[0]
+            livelink = _TEMPLATE_LIVE_URL % (rtmp,id,_SWF_URL,_TEMPLATE_URL % (code))
+    '''
+    location = data.group(3) + " playpath=" + data.group(2) + " swfurl=" +data.group(1) +" swfvfy=true pageUrl=" + page_url
+    logger.info("location="+location)
+    extension="videopremium.net"
+    '''
     location = scrapertools.get_match(data,"url\: '([^']+)'")
 
     try:
@@ -60,7 +75,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             extension = parsed_url[2][-4:]
         else:
             extension = ""
-
+    '''
     video_urls.append( [ extension + " [videopremium]",location ] )
 
     return video_urls
