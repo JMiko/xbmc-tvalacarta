@@ -17,9 +17,6 @@ from servers import servertools
 logger.info("[library_service.py] Actualizando series...")
 from platformcode.xbmc import library
 from platformcode.xbmc import launcher
-from pelisalacarta.channels import seriesyonkis
-from pelisalacarta.channels import seriesly
-from pelisalacarta.channels import cuevana
 import xbmcgui
 
 #Eliminar carpeta antes de actualizar
@@ -51,10 +48,42 @@ try:
                 logger.info("[library_service.py] Actualizando "+serie[0])
                 item = Item(url=serie[1], show=serie[0])
                 try:
-                    if serie[2].strip()=='seriesyonkis': itemlist = seriesyonkis.episodios(item)
-                    if serie[2].strip()=='seriesly': itemlist = seriesly.episodios(item)
-                    if serie[2].strip()=='cuevana': itemlist = cuevana.episodios(item)
+                    if serie[2].strip()=='veranime':
+                        from pelisalacarta.channels import veranime
+                        itemlist = veranime.episodios(item)
+                    if serie[2].strip()=='tumejortv':
+                        from pelisalacarta.channels import tumejortv
+                        itemlist = tumejortv.findepisodios(item)
+                    if serie[2].strip()=='shurweb':
+                        from pelisalacarta.channels import shurweb
+                        itemlist = shurweb.episodios(item)
+                    if serie[2].strip()=='seriespepito':
+                        from pelisalacarta.channels import seriespepito
+                        itemlist = seriespepito.episodelist(item)
+                    if serie[2].strip()=='seriesyonkis':
+                        from pelisalacarta.channels import seriesyonkis
+                        itemlist = seriesyonkis.episodios(item)
+                    if serie[2].strip()=='seriesly':
+                        from pelisalacarta.channels import seriesly
+                        itemlist = seriesly.episodios(item)
+                    if serie[2].strip()=='cuevana':
+                        from pelisalacarta.channels import cuevana
+                        itemlist = cuevana.episodios(item)
+                    if serie[2].strip()=='animeflv':
+                        from pelisalacarta.channels import animeflv
+                        itemlist = animeflv.serie(item)
+                    if serie[2].strip()=='moviezet':
+                        from pelisalacarta.channels import moviezet
+                        itemlist = moviezet.serie(item)
                 except:
+                    import traceback
+                    from pprint import pprint
+                    exc_type, exc_value, exc_tb = sys.exc_info()
+                    lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+                    for line in lines:
+                        line_splits = line.split("\n")
+                        for line_split in line_splits:
+                            logger.error(line_split)
                     itemlist = []
             else:
                 logger.info("[library_service.py] No actualiza "+serie[0]+" (no existe el directorio)")
