@@ -28,8 +28,8 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas"    , url="http://www.tumejortv.com/directorio/peliculas", extra="peliculas"))
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas VO" , url="http://www.tumejortv.com/directorio/peliculas_vo", extra="peliculas"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Peliculas"    , url="http://www.tumejortv.com/directorio/peliculas", extra="peliculas"))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Peliculas VO" , url="http://www.tumejortv.com/directorio/peliculas_vo", extra="peliculas"))
     itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"       , url="http://www.tumejortv.com/directorio/series", extra="series"))
     itemlist.append( Item(channel=__channel__, action="submenu" , title="Series VO"    , url="http://www.tumejortv.com/directorio/series_vo", extra="series"))
 
@@ -44,7 +44,7 @@ def submenu(item):
     itemlist = []
 
     itemlist.append( Item(channel=__channel__, action=item.extra        , title="Novedades"                  , url=item.url))
-    itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Todas por orden alfabético" , url=item.url, extra=item.extra))
+    itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Todas por orden alfabetico" , url=item.url, extra=item.extra))
 
     return itemlist
 
@@ -65,11 +65,11 @@ def peliculas(item):
     logger.info("[tumejortv.py] peliculas")
 
     url = item.url
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
-    # Extrae las películas
+    # Extrae las peliculas
     patron  = '<div class="antlo_dir_all_container">'
     patron += '<div rel="tag" data-href="([^"]+)".*?'
     patron += '<div class="antlo_dir_img_container"><a[^<]+<img src="([^"]+)"[^>]+></a>'
@@ -87,13 +87,13 @@ def peliculas(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideospeliculas" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Ordena los listados alfabéticos
+    # Ordena los listados alfabeticos
     if "filtro_letras" in item.url:
         itemlist = sorted(itemlist, key=lambda Item: Item.title)    
 
-    # Extrae la página siguiente
+    # Extrae la pagina siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -111,7 +111,7 @@ def series(item,extended=True):
     logger.info("[tumejortv.py] series")
 
     url = item.url
-    # Descarga la página
+    # Descarga la pagina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
@@ -121,9 +121,9 @@ def series(item,extended=True):
     <div rel="tag" data-href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/" class="antlo_dir_pic_container color2" alt="G.C.B. (Golfas, Cursis Y Beatas)" title="G.C.B. (Golfas, Cursis Y Beatas)">
     <div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_nuevo.png" alt="G.C.B. (Golfas, Cursis Y Beatas)" title="G.C.B. (Golfas, Cursis Y Beatas)"/></div>
     <div class="antlo_dir_img_container"><a href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/"><img src="http://www.tumejortv.com/images/posters/bXc4yUxJvPx4Hszf.jpeg" alt="G.C.B. (Golfas, Cursis Y Beatas)"/></a>
-    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
+    <div class="antlo_pic_more_info"><span class="color2">Serie  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="EspaÃÂ±ol" title="EspaÃÂ±ol"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p>
     <div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Serie </span><br/><a href="http://www.tumejortv.com/series/G-C-B---Golfas--Cursis-Y-Beatas-/"> G.C.B. (Golfas, Cursis Y Beata...</a></h3>
-    <h4 class="antlo_dir_video_cat">Temporada <span class="white">1</span> Capítulo <span class="white">10</span></h4><h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></div></div>
+    <h4 class="antlo_dir_video_cat">Temporada <span class="white">1</span> CapÃÂ­tulo <span class="white">10</span></h4><h5 class="antlo_dir_video_calidad">HDTV</h5></div></p></div></div>
     '''
     patron  = '<div class="antlo_dir_all_container">'
     patron += '<div rel="tag" data-href="([^"]+)".*?'
@@ -146,11 +146,11 @@ def series(item,extended=True):
 
         itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
 
-    # Ordena los listados alfabéticos
+    # Ordena los listados alfabeticos
     if "filtro_letras" in item.url:
         itemlist = sorted(itemlist, key=lambda Item: Item.title)    
 
-    # Extrae la página siguiente
+    # Extrae la pagina siguiente
     patron = '<a href="([^"]+)">SIGUIENTE</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -164,11 +164,62 @@ def series(item,extended=True):
 
     return itemlist
 
+def findepisodios(item):
+    logger.info("[tumejortv.py] findvideos")
+    
+    itemlist=[]
+    
+    data = scrapertools.cache_page(item.url)
+    #<a href="#" class="antlo_temporadas_li" title="Haga clic para ver listado de capitulos"><img src="http://www.tumejortv.com/images/general/more.png" /> TEMPORADA 1<span style="float:right;"><img src="http://www.tumejortv.com/images/general/estreno.png" alt="EstrenoT"/></span></a><div><table class="antlo_links_table">
+    patron = '<a href="\#" class="antlo_temporadas_li" title="Haga clic[^"]+"><img[^>]+>( TEMPORADA [^<]+)<(.*?)</table>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    for temporada,episodios in matches:
+
+        #<tr><td></td><td style="background-color:#f2f2f2;"><a title="Descargar - Ver" alt="Descargar - Ver" href="http://www.tumejortv.com/series/The-walking-Dead-2/temporada-3/capitulo-2/"> <img src="http://www.tumejortv.com/images/general/acceder.gif"><br />Descargar</a></td><td>2</td><td>107</td><td><a title="Descargar - Ver" alt="Descargar - Ver" href="http://www.tumejortv.com/series/The-walking-Dead-2/temporada-3/capitulo-2/"></a></td></tr>
+        #patronepisodio = '<tr><td></td><td[^>]+><a title="[^"]+" alt="[^"]+" href="([^"]+)"> <img[^>]+><br />[^<]+</a></td><td>([^<]+)</td><td>([^<]+)</td><td><a[^>]+>([^<]+)</a></td></tr>'
+        
+        #<tr><td> <a href="http://www.tumejortv.com/series/90210-La-Nueva-Geracion-/trailers/826" alt="Ver Trailer" title="Ver trailer"><img src="http://www.tumejortv.com/images/general/trailer.png" alt="Trailer"/></a></td><td style="background-color:#f2f2f2;"><a title="Descargar - Ver" alt="Descargar - Ver" href="http://www.tumejortv.com/series/90210-La-Nueva-Geracion-/temporada-3/capitulo-1/"> <img src="http://www.tumejortv.com/images/general/acceder.gif"><br />Descargar</a></td><td>1</td><td>52</td><td><a title="Descargar - Ver" alt="Descargar - Ver" href="http://www.tumejortv.com/ser
+        patronepisodio = '<tr>(.*?)</tr>'
+        matches2 = re.compile(patronepisodio,re.DOTALL).findall(episodios)
+        
+        for match2 in matches2:
+            
+            try:
+                url = scrapertools.get_match(match2,'<a title="Descargar - Ver" alt="Descargar - Ver" href="([^"]+)"')
+            except:
+                url=""
+            try:
+                episodio = scrapertools.get_match(match2,'</a></td><td>([^<]+)</td>')
+            except:
+                episodio = ""
+            try:
+                #</a></td><td>2</td><td>107</td>
+                num_enlaces = scrapertools.get_match(match2,'</a></td><td[^<]+</td><td>([^<]+)</td>')
+            except:
+                num_enlaces = ""
+            try:
+                titulo = scrapertools.get_match(match2,'<a[^>]+>([^<]+)</a></td></tr>')
+            except:
+                titulo = ""
+
+            if url!="":
+                temporada = temporada.replace("TEMPORADA","").strip()
+                if len(episodio)<2:
+                    episodio = "0"+episodio
+                itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, show=item.show, plot=item.plot, folder=True, fulltitle=item.title+" "+temporada+"x"+episodio+" "+titulo))
+
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findepisodios", show=item.show) )
+
+    return itemlist
+
 def findvideos(item):
     logger.info("[tumejortv.py] findvideos")
     
     data = scrapertools.cache_page(item.url)
-    
+    itemlist=[]
+    '''
     from servers import servertools
     itemlist = servertools.find_video_items(data=data)
     for videoitem in itemlist:
@@ -177,41 +228,127 @@ def findvideos(item):
         videoitem.folder=False
         videoitem.title = "["+videoitem.server+"]"
         videoitem.fulltitle=item.fulltitle
-    
-    patron = '<a title="[^>]+" href="(http://www.tumejortv.com/.*?/url/\d+)"[^>]+>([^<]+)</a></td><td>([^<]+)</td><td><img src="[^"]+" alt="([^"]+)"'
+    '''
+    '''
+    <tr>
+    <td  style="background-color:#F4FFF5;"  width="5px">
+    <img src="http://www.tumejortv.com/images/general/estreno2.png" alt="Estreno2"/>
+    </td>
+    <td style="background-color:#f2f2f2;padding:5px;">
+    <a href="http://www.vidxden.com/tt4vyii9k1r8" target="_blank" rel="nofollow">
+    <img src="http://www.tumejortv.com/images/general/acceder.gif">
+    <br /> Ver </a></td><td style="background-color:#F4FFF5;" >
+    <a rel="nofollow" title=" Ver " href="http://www.vidxden.com/tt4vyii9k1r8" target="_blank">
+    <img src="http://www.tumejortv.com/images/gestores/hmaSfmTfLQ3xULF2.png" alt="IMG" height="20px">
+    <br>vidxden</a></td>
+    <td style="background-color:#F4FFF5;" >1</td>
+    <td style="background-color:#F4FFF5;" >HDTV 720p AC3 5.1</td><td style="background-color:#F4FFF5;" >
+    <img src="http://www.tumejortv.com/resize_image.php?img=images/idioma/antlo-es.png&mw=80&mh=24" alt="EspaÃ±ol" title="EspaÃ±ol"/>
+    </td><td style="background-color:#F4FFF5;" >
+    <img src="http://www.tumejortv.com/resize_image.php?img=images/idioma/mM7jVs9QPgMysjip.png&mw=80&mh=24" alt="No" title="No"/>
+    </td>
+    <td style="background-color:#F4FFF5;" >Carlitos(o)</td>
+    <td style="background-color:#F4FFF5;" ><a rel="nofollow" href="http://www.vidxden.com/tt4vyii9k1r8" target="_blank" title=" Ver ">Capitulo 306</a></td></tr>
+    '''
+    #<label class="text_link">ONLINE</label>(.*?)<div id="antlo_listado_capitulos">
+    data = scrapertools.get_match(data,'<label class="text_link">ONLINE</label>(.*?)<div id="antlo_listado_capitulos">')
+    #patron = '<a title="[^>]+" href="(http://www.tumejortv.com/.*?/url/\d+)"[^>]+>([^<]+)</a></td><td>([^<]+)</td><td><img src="[^"]+" alt="([^"]+)"'
+    patron = '<tr>(.*?)</tr>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
-    for url,server,calidad,idioma in matches:
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=server.strip()+" ("+idioma+") ("+calidad+") -> En partes" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
+    for match in matches:
+        
+        try:
+            url = scrapertools.get_match(match,'<a rel="nofollow" title=" Ver " href="([^"]+)"')
+        except:
+            try:
+                url = scrapertools.get_match(match,'<a rel="nofollow" title=" Bajar " href="([^"]+)"')
+            except:
+                logger.info("No encuentro la url en #"+match+"#")
+                url=""
+        try:
+            #<br>vidxden</a></td>
+            #<td style="background-color:#F4FFF5;" >1</td>
+            #<td style="background-color:#F4FFF5;" >HDTV 720p AC3 5.1</td><td style="background-color:#F4FFF5;" >
+            calidad = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^>]+>([^<]+)</td>')
+        except:
+            logger.info("No encuentro la calidad en #"+match+"#")
+            calidad=""
+        try:
+            idioma = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^<]+</td><td[^<]+<img src="[^"]+" alt="([^"]+)"')
+        except:
+            logger.info("No encuentro el idioma en #"+match+"#")
+            idioma=""
+
+        if url!="":
+            vitemlist = servertools.find_video_items(data=url)
+            
+            if len(vitemlist)>0:
+                server = vitemlist[0].server
+            else:
+                try:
+                    server = scrapertools.get_match(match,'<br>([^<]+)</a></td>')
+                except:
+                    server="directo"
+
+            itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
 
     return itemlist
 
-def findepisodios(item):
-    logger.info("[tumejortv.py] findvideos")
-    
-    itemlist=[]
+def findvideospeliculas(item):
+    logger.info("[tumejortv.py] findvideospeliculas")
     
     data = scrapertools.cache_page(item.url)
-    #<a href="#" class="antlo_temporadas_li" title="Haga clic para ver listado de capítulos"><img src="http://www.tumejortv.com/images/general/more.png" /> TEMPORADA 1<span style="float:right;"><img src="http://www.tumejortv.com/images/general/estreno.png" alt="EstrenoT"/></span></a><div><table class="antlo_links_table">
-    patron = '<a href="\#" class="antlo_temporadas_li" title="Haga clic[^"]+"><img[^>]+>( TEMPORADA [^<]+)<(.*?)</table>'
+    itemlist=[]
+    
+    '''
+    <div class="antlo_dir_all_container"><div rel="tag" data-href="http://www.tumejortv.com/peliculas/Les-Lyonnais--2012-/" class="antlo_dir_pic_container color1" alt="Les Lyonnais [2012]" title="Les Lyonnais [2012]"><div class="antlo_dir_bandera"><img src="http://www.tumejortv.com/images/flags/f_estrenos_dvd.png" alt="Les Lyonnais [2012]" title="Les Lyonnais [2012]"/></div><div class="antlo_dir_img_container"><a href="http://www.tumejortv.com/peliculas/Les-Lyonnais--2012-/"><img src="http://www.tumejortv.com/images/posters/CtnWhhmQkMyCfJA9.jpeg" alt="Les Lyonnais [2012]"/></a><div class="antlo_pic_more_info"><span class="color1">Película  <img src="http://www.tumejortv.com/images/idioma/antlo-es.png" alt="Español" title="Español"/><img src="http://www.tumejortv.com/images/general/posee_trailer.png" alt="Trailer" title="Trailer" style="margin: 0 3px;"/></span></div></div><p><div class="antlo_dir_box_text_container"><h3 class="antlo_dir_video_title"><span style="font-size:1px;color:#3E3E3E;">Película </span><br/><a href="http://www.tumejortv.com/peliculas/Les-Lyonnais--2012-/"> Les Lyonnais [2012]</a></h3><span class="antlo_dir_video_cat">Drama</span><h5 class="antlo_dir_video_calidad">BluRay-RIP AC3 5.1</h5></div></p></div></div>
+    '''
+    #<label class="text_link">ONLINE</label>(.*?)<div id="antlo_listado_capitulos">
+    data = scrapertools.get_match(data,'DEO ONLINE</label>(.*?)<div id="antlo_panel_derecho">')
+    #patron = '<a title="[^>]+" href="(http://www.tumejortv.com/.*?/url/\d+)"[^>]+>([^<]+)</a></td><td>([^<]+)</td><td><img src="[^"]+" alt="([^"]+)"'
+    patron = '<tr>(.*?)</tr>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
-    for temporada,episodios in matches:
+    for match in matches:
         
-        patronepisodio = '<tr><td></td><td[^>]+><a title="[^"]+" alt="[^"]+" href="([^"]+)"> <img[^>]+><br />[^<]+</a></td><td>([^<]+)</td><td>([^<]+)</td><td><a[^>]+>([^<]+)</a></td></tr>'
-        matches2 = re.compile(patronepisodio,re.DOTALL).findall(episodios)
-        for url,episodio,num_enlaces,titulo in matches2:
-            temporada = temporada.replace("TEMPORADA","").strip()
-            if len(episodio)<2:
-                episodio = "0"+episodio
-            itemlist.append( Item(channel=__channel__, action="findvideos" , title=temporada+"x"+episodio+" "+titulo+" ("+num_enlaces+" enlaces)" , url=url, thumbnail=item.thumbnail, show=item.show, plot=item.plot, folder=True, fulltitle=item.title+" "+temporada+"x"+episodio+" "+titulo))
+        try:
+            url = scrapertools.get_match(match,'<a rel="nofollow" title=" Ver " href="([^"]+)"')
+        except:
+            try:
+                url = scrapertools.get_match(match,'<a rel="nofollow" title=" Bajar " href="([^"]+)"')
+            except:
+                logger.info("No encuentro la url en #"+match+"#")
+                url=""
+        try:
+            #<br>vidxden</a></td>
+            #<td style="background-color:#F4FFF5;" >1</td>
+            #<td style="background-color:#F4FFF5;" >HDTV 720p AC3 5.1</td><td style="background-color:#F4FFF5;" >
+            calidad = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^>]+>([^<]+)</td>')
+        except:
+            logger.info("No encuentro la calidad en #"+match+"#")
+            calidad=""
+        try:
+            idioma = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^<]+</td><td[^<]+<img src="[^"]+" alt="([^"]+)"')
+        except:
+            logger.info("No encuentro el idioma en #"+match+"#")
+            idioma=""
 
-    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findepisodios", show=item.show) )
+        if url!="":
+            vitemlist = servertools.find_video_items(data=url)
+            
+            if len(vitemlist)>0:
+                server = vitemlist[0].server
+            else:
+                try:
+                    server = scrapertools.get_match(match,'<br>([^<]+)</a></td>')
+                except:
+                    server="directo"
+
+            itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
 
     return itemlist
 
-# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     from servers import servertools
     # mainlist
