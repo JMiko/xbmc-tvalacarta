@@ -7,12 +7,13 @@
 import base64, re, urllib, string, sys, zipfile, os, os.path
 import xbmc
 import config
+import logger
 
 class ziptools:
 
     def extract(self, file, dir):
-        xbmc.output("file=%s" % file)
-        xbmc.output("dir=%s" % dir)
+        logger.info("file=%s" % file)
+        logger.info("dir=%s" % dir)
         
         if not dir.endswith(':') and not os.path.exists(dir):
             os.mkdir(dir)
@@ -22,23 +23,23 @@ class ziptools:
         num_files = len(zf.namelist())
 
         for name in zf.namelist():
-            xbmc.output("name=%s" % name)
+            logger.info("name=%s" % name)
             if not name.endswith('/'):
-                xbmc.output("no es un directorio")
+                logger.info("no es un directorio")
                 try:
                     (path,filename) = os.path.split(os.path.join(dir, name))
-                    xbmc.output("path=%s" % path)
-                    xbmc.output("name=%s" % name)
+                    logger.info("path=%s" % path)
+                    logger.info("name=%s" % name)
                     os.makedirs( path )
                 except:
                     pass
                 outfilename = os.path.join(dir, name)
-                xbmc.output("outfilename=%s" % outfilename)
+                logger.info("outfilename=%s" % outfilename)
                 try:
                     outfile = open(outfilename, 'wb')
                     outfile.write(zf.read(name))
                 except:
-                    xbmc.output("Error en fichero "+name)
+                    logger.info("Error en fichero "+name)
 
     def _createstructure(self, file, dir):
         self._makedirs(self._listdirs(file), dir)
