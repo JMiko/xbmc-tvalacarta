@@ -4,6 +4,7 @@
 # Utilidades para detectar vídeos de los diferentes conectores
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+#LvX Edited Patched
 import re,sys
 
 from core import scrapertools
@@ -17,8 +18,8 @@ FREE_SERVERS = []
 FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared', 'hulkshare', 'twitvid'])
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
-FREE_SERVERS.extend(['vidbux','videoweed','vidxden','vimeo','vk','watchfreeinhd','youtube'])
-FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull', 'vureel','nosvideo']) #,'videopremium'])
+FREE_SERVERS.extend(['vidbux','videoweed', 'vidxden','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
+FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull', 'vureel','nosvideo','videopremium'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -31,17 +32,18 @@ FILENIUM_SERVERS.extend(['linkto','uploadedto','gigasize','youtube','filepost','
 FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed','movshare','fooget','letitbit','shareonline','shareflare','rapidgator'])
 FILENIUM_SERVERS.extend(['filebox','filefactory','netload','nowdownload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
 FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles','zippyshare','glumbouploads','bayfiles','twoshared', 'fourshared','crocko','fiberupload','filereactor'])
-FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile','filenium','nowvideo','sharpfile','vk','moevideos'])
+FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile','filenium'])
 #wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
-REALDEBRID_SERVERS = ['one80upload','onefichier','twoshared','fourfastfile','fourshared','abc','bayfiles','bitshare','cbscom','cloudnator','cramit','crocko','cwtv','dailymotion',
-                    'dengee','extabit','extmatrix','filebox','filefactory','fileflyer','filegag','filehost','fileover','filepost','filerio','filerose','filesabc',
-                   'filesend','filesmonster','filevelocity','freakshare','gigasize','gigaup','glumbouploads','hostingbulk',
-                   'hotfile','hulkshare','hulu','jumbofiles','justintv','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','muchshare','netload',
-                   'pigsonic','purevid','putlocker','rapidgator','rapidshare','redtube','scribd','sendspace','sharebees','shareflare','sharpfile','slingfile','sockshare',
-                   'soundcloud','speedyshare','turbobit','uloadto','uploadc','uploadedto','uploading','uploadspace','uptobox',
-                   'userporn','vidbux','vidxden','vimeo','vipfile','wattv','youporn','youtube','yunfile','zippyshare']
+REALDEBRID_SERVERS = ['one80upload','tenupload','onefichier','onehostclick','twoshared','fourfastfile','fourshared','abc','asfile','badongo','bayfiles','bitshare','cbscom','cramit','crocko','cwtv','dailymotion','dateito',
+                    'dengee','diglo','extabit','fiberupload','filebox','filedino','filefactory','fileflyer','filekeen','filemade','filemates','fileover','filepost',
+                   'filereactor','filesend','filesmonster','filevelocity','freakshare','free','furk','fyels','gigasize','gigaup','glumbouploads','goldfile','hitfile','hipfile','hostingbulk',
+                   'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','muchshare','netload',
+                   'novafile','nowdownload','purevid','putbit','putlocker','redtube','rapidshare','rutube','ryushare','scribd','sendspace','sharebees','shareflare','shragle','slingfile','sockshare',
+                   'soundcloud','speedyshare','turbobit','unibytes','uploadc','uploadedto','uploading','uploadspace','uptobox',
+                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare','justintv']
+#wupload,fileserve
 
 ALLDEBRID_SERVERS = ['one80upload','tenupload','onefichier','twoshared','fourfastfile','fourshared','asfile','badongo','bayfiles','bitshare','bulletupload','cramit','crocko','dateito','dengee',
                    'diglo','easybytez','extabit','fileape','filebox','filedino','filefactory','fileflyer','filejungle','filekeen','filemade','fileover','filepost',
@@ -49,7 +51,7 @@ ALLDEBRID_SERVERS = ['one80upload','tenupload','onefichier','twoshared','fourfas
                    'hotfile','ifile','jumbofiles','letitbit','loadto','mediafire','megashare','megashares','mixturevideo','netload',
                    'przeklej','purevid','putlocker','rapidgator','rapidshare','scribd','sendspace','shareonline','shareflare','shragle','slingfile','sockshare',
                    'soundcloud','speedyshare','turbobit','unibytes', 'uploadc','uploadedto','uploadhere','uploading','uploadking','uploadspace','uploadstation','uptobox',
-                   'userporn','vidxden','vipfile','wupload','youtube','yunfile','zippyshare','zshare']               
+                   'nowdownload_','userporn','vidxden','vipfile','wupload','youtube','yunfile','zippyshare','zshare']               
                
 #Resultado de http://alldebrid.com/api.php?action=get_host
 #"10upload.com", "1fichier.com", "180upload.com", "2shared.com", "4fastfile.com", "4shared.com", "asfile.com", "badongo.com", "bayfiles.com", "bitshare.com", "buckshare.com", "bulletupload.com", "cloudnator.com", 
@@ -94,6 +96,28 @@ def find_video_items(item=None, data=None, channel=""):
         itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=server, page=item.page, url=scrapedurl, thumbnail=item.thumbnail, show=item.show , plot=item.plot , folder=False) )
 
     return itemlist
+
+def findvideosbyserver(data, serverid):
+    logger.info("[servertools.py] findvideos")
+    encontrados = set()
+    devuelve = []
+    try:
+        exec "from servers import "+serverid
+        exec "devuelve.extend("+serverid+".find_videos(data))"
+    except ImportError:
+        logger.info("No existe conector para "+serverid)
+    except:
+        logger.info("Error en el conector "+serverid)
+        import traceback,sys
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                logger.error(line_split)
+
+    return devuelve
 
 def findvideos(data):
     logger.info("[servertools.py] findvideos")

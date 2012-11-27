@@ -92,3 +92,37 @@ def find_videos(text):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+if __name__ == "__main__":
+    import getopt
+    import sys
+    options, arguments = getopt.getopt(sys.argv[1:], "", ["video_url=","login=","password="])
+    
+    video_url = ""
+    login = ""
+    password = ""
+    
+    logger.info("%s %s" % (str(options),str(arguments)))
+    
+    for option, argument in options:
+        print option,argument
+        if option == "--video_url":
+            video_url = argument
+        elif option == "--login":
+            login = argument
+        elif option == "--password":
+            password = argument
+        else:
+            assert False, "Opcion desconocida"
+
+    if video_url=="":
+        print "ejemplo de invocacion"
+        print "streamcloud --video_url http://xxx --login usuario --password secreto"
+    else:
+        
+        if login!="":
+            premium=True
+        else:
+            premium=False
+        
+        print get_video_url(video_url,premium,login,password)
