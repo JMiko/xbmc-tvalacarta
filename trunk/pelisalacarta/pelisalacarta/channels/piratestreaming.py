@@ -17,7 +17,7 @@ __channel__ = "piratestreaming"
 __category__ = "F"
 __type__ = "generic"
 __title__ = "piratestreaming"
-__language__ = "ES"
+__language__ = "IT"
 
 DEBUG = config.get_setting("debug")
 
@@ -27,7 +27,28 @@ def isGeneric():
 def mainlist(item):
     logger.info("[piratestreaming.py] mainlist")
     itemlist = []
+    itemlist.append( Item(channel=__channel__, title="NovitÃ "     , action="peliculas", url="http://www.piratestreaming.com/film-aggiornamenti.php"))
+    itemlist.append( Item(channel=__channel__, title="Per genere" , action="categorias", url="http://www.piratestreaming.com/"))
+    itemlist.append( Item(channel=__channel__, title="Cerca Film", action="search"))
+    return itemlist
+    
+def search(item,texto):
+    logger.info("[piratestreaming.py] search "+texto)
+    itemlist = []
+    texto = texto.replace(" ","%20")
+    item.url = "http://www.piratestreaming.com/cerca.php?all="+texto+"&SearchSubmit="
+    item.extra = ""
 
+    try:
+        return peliculas(item)
+    # Se captura la excepciÃ³n, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
+
+def categorias(item):
     '''
     <a href="#">Film</a> 
     <ul> 
@@ -58,7 +79,7 @@ def mainlist(item):
     <li><a href="http://www.piratestreaming.com/categoria/film/western.html">WESTERN</a></li> 
     </ul>
     '''
-    item.url = "http://www.piratestreaming.com/"
+    itemlist = []
     data = scrapertools.cache_page(item.url)
     data = scrapertools.get_match(data,'<a href="#">Film</a>[^<]+<ul>(.*?)</ul>' )
     patron  = '<li><a href="([^"]+)">([^<]+)</a></li>'
@@ -77,7 +98,7 @@ def peliculas(item):
     logger.info("[piratestreaming.py] peliculas")
     itemlist = []
 
-    # Descarga la página
+    # Descarga la pï¿½gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
@@ -88,12 +109,21 @@ def peliculas(item):
     <div id="fb-root"></div><fb:like href="http://www.piratestreaming.com/film/il-regno-di-gia-la-leggenda-dei-guardiani-streaming-ita.html" send="false" layout="button_count" show_faces="false" action="like" colorscheme="dark" font=""></fb:like>    </b>      
     </div>
     </div>
+    
+    <div class="featuredItem"> 
+    <a href="http://www.piratestreaming.com/film/paris-manhattan.html" class="featuredImg img rounded" rel="featured" style="border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; ">
+    <img src="http://www.imagerip.net/images/Of6FN.jpg" alt="Locandina Film" style="width: 80.8px; height: 109.6px;"></a>
+    <div class="featuredText">
+    <b> <a href="http://www.piratestreaming.com/film/paris-manhattan.html">Paris Manhattan </a><br><div style="height: 15px; width: 70px; display: inline-block; text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; background-position: initial initial; background-repeat: initial initial; " id="___plusone_0"><iframe allowtransparency="true" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 70px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 15px; " tabindex="0" vspace="0" width="100%" id="I0_1352901511754" name="I0_1352901511754" src="https://plusone.google.com/_/+1/fastbutton?bsv&amp;size=small&amp;hl=en-US&amp;origin=http%3A%2F%2Fwww.piratestreaming.com&amp;url=http%3A%2F%2Fwww.piratestreaming.com%2Ffilm%2Fparis-manhattan.html&amp;jsh=m%3B%2F_%2Fapps-static%2F_%2Fjs%2Fgapi%2F__features__%2Frt%3Dj%2Fver%3Dmq7ez1ykxXY.it.%2Fsv%3D1%2Fam%3D!9YrXPIrxx2-ITyEIjA%2Fd%3D1%2Frs%3DAItRSTOgKZowsoksby8_wLnRD0d_umAXMQ#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled&amp;id=I0_1352901511754&amp;parent=http%3A%2F%2Fwww.piratestreaming.com" title="+1"></iframe></div>
+    <div id="fb-root"></div><fb:like href="http://www.piratestreaming.com/film/paris-manhattan.html" send="false" layout="button_count" show_faces="false" action="like" colorscheme="dark" font="" fb-xfbml-state="rendered" class="fb_edge_widget_with_comment fb_iframe_widget"><span style="height: 20px; width: 98px; "><iframe id="f2834df314" name="f2e5c9573" scrolling="no" style="border: none; overflow: hidden; height: 20px; width: 98px; " title="Like this content on Facebook." class="fb_ltr" src="http://www.facebook.com/plugins/like.php?api_key=&amp;locale=it_IT&amp;sdk=joey&amp;channel_url=http%3A%2F%2Fstatic.ak.facebook.com%2Fconnect%2Fxd_arbiter.php%3Fversion%3D17%23cb%3Df2495f47c%26origin%3Dhttp%253A%252F%252Fwww.piratestreaming.com%252Ff153526b2c%26domain%3Dwww.piratestreaming.com%26relation%3Dparent.parent&amp;href=http%3A%2F%2Fwww.piratestreaming.com%2Ffilm%2Fparis-manhattan.html&amp;node_type=link&amp;width=90&amp;layout=button_count&amp;colorscheme=dark&amp;action=like&amp;show_faces=false&amp;send=false&amp;extended_social_context=false"></iframe></span></fb:like>  <a href="http://www.piratestreaming.com/video1" target="_blank" rel="nofollow"><img src="http://www.imagerip.net/images/W57R.png"></a>  </b>      
+    </div>
+    </div>
     '''
     patron  = '<div class="featuredItem">\s*'
-    patron += '<a href=(.*?) class="featuredImg img" rel="featured">'
-    patron += '<img[^<]+</a>[^<]+'
-    patron += '<div class="featuredText">[^<]+'
-    patron += '<b><a href=([^>]+)>([^<]+)</a>'
+    patron += '<a[^>]*>'
+    patron += '<img src="?(.*?)"? [^<]+</a>[^<]+'
+    patron += '<div class="featuredText">.*?'
+    patron += '<a href="?([^>"]+)"?>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -109,17 +139,17 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="Next Page >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
-# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+# Verificaciï¿½n automï¿½tica de canales: Esta funciï¿½n debe devolver "True" si estï¿½ ok el canal.
 def test():
     from servers import servertools
     
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los vï¿½deos de "Novedades" devuelve mirrors
     novedades_items = peliculas(mainlist_items[0])
     bien = False
     for novedades_item in novedades_items:
