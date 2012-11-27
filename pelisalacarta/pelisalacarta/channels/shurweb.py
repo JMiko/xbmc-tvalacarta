@@ -80,6 +80,8 @@ def menupelisanos(item):
     itemlist.append( Item(channel=__channel__, title="90's"        , action="peliculas"   , url="http://www.shurweb.es/peliculas/90s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="80's"        , action="peliculas"   , url="http://www.shurweb.es/peliculas/80s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="70's"        , action="peliculas"   , url="http://www.shurweb.es/peliculas/70s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="60's"        , action="peliculas"   , url="http://www.shurweb.es/peliculas/60s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Antiguas"        , action="peliculas"   , url="http://www.shurweb.es/peliculas/antiguas/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
