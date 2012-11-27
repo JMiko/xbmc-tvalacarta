@@ -47,7 +47,7 @@ def series(item):
 
     itemlist=[]
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cache_page(item.url)
     '''
     <div class="bl">
@@ -79,7 +79,7 @@ def episodios(item):
     temporadas_itemlist=temporadas(item)
     for temporada in temporadas_itemlist:
         
-        # Descarga la página de cada temporada
+        # Descarga la pÃ¡gina de cada temporada
         data = scrapertools.cache_page(temporada.url)
         patron  = '<li class="lcc">[^<]+<a href="([^"]+)" title="([^"]+)"[^<]+</a>[^<]+</li>'
         matches = re.compile(patron,re.DOTALL).findall(data)
@@ -91,7 +91,7 @@ def episodios(item):
             itemlist.append( Item(channel=item.channel, action="findvideos", title=scrapedtitle , fulltitle=item.title , url=scrapedurl , thumbnail=item.thumbnail, category="series" , plot=item.plot, show=item.show) )
 
     if config.get_platform().startswith("xbmc"):
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="AÃ±adir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
@@ -100,7 +100,7 @@ def temporadas(item):
     
     itemlist=[]
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cache_page(item.url)
     '''
     <li class="lcc">
@@ -123,7 +123,7 @@ def findvideos(item):
     
     itemlist=[]
 
-    # Descarga la página
+    # Descarga la pÃ¡gina
     data = scrapertools.cache_page(item.url)
     
     # Enlaces online

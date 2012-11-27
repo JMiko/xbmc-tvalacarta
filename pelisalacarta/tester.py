@@ -319,10 +319,16 @@ def test_encode():
 if __name__ == "__main__":
     #test_server_connectors()
     #test_cineraculo()
-    test_channels()
+    #test_channels()
     #test_samba()
     #test_fileserver_premium()
     #test_filenium()
     #test_json()
     #test_wupload()
     #test_encode()
+    
+    #from servers import streamcloud
+    #print streamcloud.get_video_url("")
+    
+    from servers import divxstage
+    print divxstage.get_video_url("http://www.divxstage.eu/video/t9ed8enzrq2n3")
