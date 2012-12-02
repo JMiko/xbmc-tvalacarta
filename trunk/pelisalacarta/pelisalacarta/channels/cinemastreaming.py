@@ -19,7 +19,7 @@ DEBUG = config.get_setting("debug")
 __category__ = "A"
 __type__ = "generic"
 __title__ = "cinemastreaming"
-__channel__ = "Cinemastreaming"
+__channel__ = "cinemastreaming"
 __language__ = "ES"
 __creationdate__ = "20121105"
 
