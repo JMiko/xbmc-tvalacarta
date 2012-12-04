@@ -269,11 +269,14 @@ def findvideos(item):
         videoitem.thumbnail = item.thumbnail
         videoitem.fulltitle = item.fulltitle
         
-        parsed_url = urlparse.urlparse(videoitem.url)
-        fichero = parsed_url.path
-        partes = fichero.split("/")
-        titulo = partes[ len(partes)-1 ]
-        videoitem.title = titulo + " - [" + videoitem.server+"]"
+        try:
+            parsed_url = urlparse.urlparse(videoitem.url)
+            fichero = parsed_url.path
+            partes = fichero.split("/")
+            titulo = partes[ len(partes)-1 ]
+            videoitem.title = titulo + " - [" + videoitem.server+"]"
+        except:
+            videoitem.title = item.title
         
     return itemlist
 

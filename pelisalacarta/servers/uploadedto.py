@@ -15,9 +15,11 @@ from core import config
 def test_video_exists( page_url ):
     logger.info("[uploadedto.py] test_video_exists(page_url='%s')" % page_url)
     
+    real_url = page_url.replace("uploaded.to","uploaded.net")
     # Vídeo borrado: uploaded.to/file/q4rkg1rw -> Redirige a otra página uploaded.to/410/q4rkg1rw
     # Video erróneo: uploaded.to/file/q4rkg1rx -> Redirige a otra página uploaded.to/404
-    location = scrapertools.get_header_from_response( url = page_url , header_to_get = "location")
+    location = scrapertools.get_header_from_response( url = real_url , header_to_get = "location")
+    logger.info("location="+location)
     if location=="":
         return True,""
     elif "410" in location:
@@ -41,22 +43,29 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         headers.append( ["X-Prototype-Version","1.6.1"] )
         headers.append( ["Referer","http://uploaded.to/"] )
         
-        data = scrapertools.cache_page( login_url, post=post, headers=headers)
-        logger.info("data="+data)
-        
+        setcookie = scrapertools.get_header_from_response( login_url, post=post, headers=headers, header_to_get="set-cookie")
+        logger.info("set-cookie="+setcookie)
+
         location = scrapertools.get_header_from_response( page_url , header_to_get = "location")
         logger.info("location="+location)
         #Set-Cookie3: auth=3315964ab4fac585fdd9d4228dc70264a1756ba; path="/"; domain=".uploaded.to"; path_spec; domain_dot; expires="2015-02-25 18:35:37Z"; version=0
         #Set-Cookie3: login="%26id%3D3315964%26pw%3Dde135af0befa087e897ee6bfa78f2511a1ed093f%26cks%3D854cca559368"; path="/"; domain=".uploaded.to"; path_spec; domain_dot; expires="2013-02-25 18:35:37Z"; version=0
         
-        cookie_data=config.get_cookie_data()
-        #logger.info("cookies="+cookie_data)
-        auth = scrapertools.get_match( cookie_data , 'auth=([a-z0-9]+)\; path="\/"\; domain=".uploaded.to"' )
+        #cookie_data=config.get_cookie_data()
+        #logger.info("cookie_data="+cookie_data)
+        cookie_data = setcookie
+        auth = scrapertools.get_match( cookie_data , 'auth=([a-z0-9]+)' )
         logger.info("auth="+auth)
-        login = scrapertools.get_match( cookie_data , 'login="([^"]+)"; path="/"; domain=".uploaded.to"' )
+        #%26id%3D7308170%26pw%3Df14c8daa489647d758a88474f509cd4277980f6b%26cks%3D204cffc6c96f
+        login = scrapertools.get_match( cookie_data , 'login=([a-zA-Z0-9\%]+)' )
         logger.info("login="+login)
+        
+        headers.append([ "Cookie", 'login='+login+'; auth='+auth])
+        temp_location = scrapertools.get_header_from_response( location , header_to_get = "location" , headers=headers)
+        logger.info("temp_location="+temp_location)
 
-        location = location + "|Cookie="+urllib.quote('auth='+auth+';login="'+login+'"')
+        #location = location + "|Cookie="+urllib.quote('login='+login+'; auth='+auth)
+        location = temp_location
     
         video_urls.append( ["(Premium) [uploaded.to]" , location] )
 
