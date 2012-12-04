@@ -34,7 +34,7 @@ def mainlist(item):
     logger.info("url="+url)
     
     # Si es una URL la descarga
-    if url.startswith("http://"):
+    if url.startswith("http://") or url.startswith("https://"):
         data = scrapertools.cache_page(url)
 
     # Si es un fichero local, lo abre

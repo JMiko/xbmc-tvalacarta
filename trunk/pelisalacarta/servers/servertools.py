@@ -24,7 +24,7 @@ FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', '
 # rutube
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
-PREMIUM_SERVERS = [''] #wupload','fileserve']#,'uploadedto']
+PREMIUM_SERVERS = ['uploadedto']
 
 # Lista de TODOS los servidores soportados por Filenium
 FILENIUM_SERVERS = []

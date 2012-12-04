@@ -145,7 +145,7 @@ def get_data_path():
 
 def get_cookie_data():
     import os
-    ficherocookies = os.path.join( get_data_path(), 'cookies.lwp' )
+    ficherocookies = os.path.join( get_data_path(), 'cookies.dat' )
 
     cookiedatafile = open(ficherocookies,'r')
     cookiedata = cookiedatafile.read()
