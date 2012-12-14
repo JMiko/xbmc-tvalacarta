@@ -30,7 +30,7 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Noticias"       , action="noticias"     , url="http://www.antena3.com/videos/noticias.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Programas"      , action="programas"    , url="http://www.antena3.com/videos/programas.html", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Infantil"       , action="series"       , url="http://www.antena3.com/videos/series-infantiles.html", folder=True) )
-    #itemlist.append( Item(channel=CHANNELNAME, title="TV Movies"      , action="tvmovies"     , url="http://www.antena3.com/videos/tv-movies.html", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Web series"     , action="series"       , url="http://www.antena3.com/videos/webseries.html", folder=True) )
 
     return itemlist
 
