@@ -23,7 +23,7 @@ def mainlist(item):
 
     itemlist = []
     data = scrapertools.cache_page("http://www.adnstream.com")
-    data = scrapertools.get_match(data,'<div class="botones" id="canales">(.*?)</div>')
+    data = scrapertools.get_match(data,'<div class="botones" id="canales"(.*?)</div>')
 
     # Extrae las entradas (carpetas)
     patron = '<a href="([^"]+)" title="[^"]+">([^<]+)</a>'
