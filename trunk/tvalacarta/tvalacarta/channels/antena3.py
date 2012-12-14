@@ -194,7 +194,10 @@ def episodios(item):
     logger.info(item.tostring())
     
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    try:
+        data = scrapertools.cachePage(item.url)
+    except:
+        data = ""
     #logger.info(data)
 
     # episodios
