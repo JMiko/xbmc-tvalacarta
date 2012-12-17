@@ -198,6 +198,9 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
     from servers import servertools
     import sys
     import xbmcgui
+    
+    url = url.replace(" ","%20")
+    
     try:
         logger.info("[xbmctools.py] play_video(channel=%s, server=%s, url=%s, category=%s, title=%s, thumbnail=%s, plot=%s, desdefavoritos=%s, desdedescargados=%s, desderrordescargas=%s, strmfile=%s, Serie=%s, subtitle=%s" % (channel,server,url,category,title,thumbnail,plot,desdefavoritos,desdedescargados,desderrordescargas,strmfile,Serie,subtitle))
     except:
