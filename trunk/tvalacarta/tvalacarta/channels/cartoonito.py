@@ -110,7 +110,7 @@ def episodios(item):
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedtitle = title.strip()
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="cartoonito" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
 
     # Extrae el resto de vídeos
     '''
@@ -134,7 +134,7 @@ def episodios(item):
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedtitle = title.strip()
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="boing" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", server="cartoonito" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail, page=item.url, show = item.show, folder=False) )
 
     return itemlist
 
