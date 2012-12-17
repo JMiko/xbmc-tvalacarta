@@ -21,7 +21,7 @@ def isGeneric():
 def mainlist(item):
     logger.info("[eltrece.py] mainlist")
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Destacadas" , action="novedades", url=MAIN_URL, extra="\+ Comentados", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Destacadas" , action="novedades", url=MAIN_URL, extra=". Comentados", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Capítulos completos" , action="novedades", url=MAIN_URL, extra="Capitulos completos", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="+ Vistos" , action="novedades", url=MAIN_URL, extra="Notas m", folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Últimos" , action="novedades", url=MAIN_URL, extra="Últimos", folder=True) )
@@ -36,38 +36,22 @@ def novedades(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     logger.info(data)
+    
+    try:
+        pagina_siguiente = scrapertools.get_match(data,'<div class="grid960-list".*?<div class="item-list"><ul class="pager pager-load-more[^<]+<li class="pager-next first last"><a href="([^"]+)">Mostrar m')
+    except:
+        pagina_siguiente=""
+    logger.info("pagina_siguiente="+pagina_siguiente)
 
-    '''
-    <div class="view-content">
-    <div class="grid960-list">      <h3>Capitulos completos </h3>
-    <!-- Add the end of line class when necessary -->
-    <div class="views_row views_row_1 views_row_odd views_row_first grid_3 alpha">  
-    <a href="/so%C3%B1ando-por-cantar/so%C3%B1ando-por-cantar-2012/00053367/6-de-julio-so%C3%B1ando-por-cantar"><img typeof="foaf:Image" src="http://cdn.eltrecetv.com.ar/sites/default/files/styles/180x101/public/sonando-viernes.jpg" width="180" height="101" alt="" /></a>    
-    <h5><a href="/programa/so%C3%B1ando-por-cantar/so%C3%B1ando-por-cantar-2012">Soñando por cantar...</a></h5>    
-    <h4><a href="/so%C3%B1ando-por-cantar/so%C3%B1ando-por-cantar-2012/00053367/6-de-julio-so%C3%B1ando-por-cantar">6 de julio -Soñando por cantar</a></h4>    
-    <span class="total_views">402</span>  </div>
-    ...
-    </div>    </div>    
-    <div class="item-list"><ul class="pager pager-load-more"><li class="pager-next first last"><a href="/homepage?page=1">Mostrar más videos ▼</a></li>
-    '''
-    patron  = '<div class="view-content">[^<]+'
-    patron += '<div class="grid960-list">\s+<h3>'+item.extra+'(.*?)'
-    patron += '</div>\s+</div>[^<]+'
-    patron += '<div class="item-list"><ul class="pager pager-load-more"><li class="pager-next first last"><a href="([^"]+)">Mostrar m'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    if len(matches)>1:
-        pagina_siguiente = matches[0][1]
-    else:
-        pagina_siguiente = ""
-    logger.info(pagina_siguiente)
-    data = matches[0][0]
-    logger.info(data)
+    try:
+        data = scrapertools.get_match(data,'<div class="view-content"[^<]+<div class="grid960-list"[^<]+<h3>'+item.extra+'(.*?)</div>\s+</div>[^<]+')
+    except:
+        pass
+    logger.info("data="+data)
 
     patron  = '<a href="([^"]+)"><img typeof="[^"]+" src="([^"]+)"[^<]+</a>[^<]+'
     patron += '<h5><a href="[^"]+">[^<]+</a></h5>[^<]+'
-    patron += '<h4><a href="[^"]+">([^>]+)</a></h4>'
+    patron += '<h4><a href="[^"]+">([^<]+)</a></h4>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
