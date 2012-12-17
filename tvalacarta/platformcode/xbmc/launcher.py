@@ -381,6 +381,33 @@ def run():
             texto = (config.get_localized_string(30051) % e.code) # "El sitio web no funciona correctamente (error http %d)"
             ok = ventana_error.ok ("plugin", texto)    
 
+# Parse XBMC params - based on script.module.parsedom addon    
+def get_params():
+    logger.info("get_params")
+    
+    param_string = sys.argv[2]
+    
+    logger.info("get_params "+str(param_string))
+    
+    commands = {}
+
+    if param_string:
+        split_commands = param_string[param_string.find('?') + 1:].split('&')
+    
+        for command in split_commands:
+            logger.info("get_params command="+str(command))
+            if len(command) > 0:
+                if "=" in command:
+                    split_command = command.split('=')
+                    key = split_command[0]
+                    value = urllib.unquote_plus(split_command[1])
+                    commands[key] = value
+                else:
+                    commands[command] = ""
+    
+    logger.info("get_params "+repr(commands))
+    return commands
+
 # Extract parameters from sys.argv
 def extract_parameters():
     logger.info("[launcher.py] extract_parameters")
@@ -388,9 +415,10 @@ def extract_parameters():
     logger.info("[launcher.py] sys.argv=%s" % str(sys.argv))
     
     # Crea el diccionario de parametros
-    params = dict()
-    if len(sys.argv)>=2 and len(sys.argv[2])>0:
-        params = dict(part.split('=') for part in sys.argv[ 2 ][ 1: ].split('&'))
+    #params = dict()
+    #if len(sys.argv)>=2 and len(sys.argv[2])>0:
+    #    params = dict(part.split('=') for part in sys.argv[ 2 ][ 1: ].split('&'))
+    params = get_params()
     logger.info("[launcher.py] params=%s" % str(params))
 
     if (params.has_key("channel")):
