@@ -50,22 +50,28 @@ def episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    logger.info(data)
     episodios_json = load_json(data)
     if episodios_json == None : episodios_json = []
 
     itemlist = []
     for video in episodios_json['videos']:
         scrapedthumbnail = video['thumbnailURL']
-        scrapedtitle = video['name'].encode("utf8","ignore")
-        scrapedplot = video['shortDescription'].encode("utf8","ignore")
+        if scrapedthumbnail is None:
+            scrapedthumbnail = ""
+        logger.info("scrapedthumbnail="+scrapedthumbnail)
+        scrapedtitle = video['name']#.encode("utf-8",errors="ignore")
+        #scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
+        
+        scrapedplot = video['shortDescription']#.encode("utf8","ignore")
         try:
-            scrapedtitle = video['customFields']['name_c'].encode("utf-8","ignore")
-            scrapedplot = video['customFields']['shortdescription_c'].encode("utf-8","ignore")
+            scrapedtitle = video['customFields']['name_c']#.encode("utf-8","ignore")
+            scrapedplot = video['customFields']['shortdescription_c']#.encode("utf-8","ignore")
         except:
             pass
-        scrapedurl = str(video['id'])
+        scrapedurl = "http://www.eitb.tv/es/#/video/"+str(video['id'])
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="eitb", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , folder=False) )
 
     return itemlist
 
