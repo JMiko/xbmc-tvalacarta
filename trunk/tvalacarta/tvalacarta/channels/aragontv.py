@@ -61,8 +61,11 @@ def programas(item):
         scrapedplot = match[3]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
+        if not "programas/vaughan" in scrapedurl:
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
+        else:
+            itemlist.extend( subcategorias(scrapedurl) )
 
     return itemlist
 
@@ -131,5 +134,37 @@ def episodios(item):
     if len(matches)>0:
         pageitem = Item(channel=CHANNELNAME, title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , show=item.show, folder=True)
         itemlist.extend( episodios(pageitem) )
+
+    return itemlist
+
+def subcategorias(pageurl):
+    logger.info("[aragontv.py] subcategorias [url]")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(pageurl)
+    #logger.info(data)
+
+    # Extrae las entradas
+    '''
+    <td colspan="2"><a href="http://alacarta.aragontelevision.es/programas/vaughan/basico-i" target="_blank"><img style="FLOAT: left" src="http://alacarta.aragontelevision.es/_archivos/ficheros/basico%20I_201.png" alt="" /></a></td>
+    '''
+    patron  = '<td colspan[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += '<img.*?src="([^"]+)"'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for url,thumbnail in matches:
+        scrapedtitle = scrapertools.get_match(url,'programas/(vaughan/.*?)$').replace("/"," ").upper()
+        scrapedurl = urlparse.urljoin(pageurl,url)
+        scrapedthumbnail = thumbnail
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
 
     return itemlist
