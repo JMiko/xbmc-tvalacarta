@@ -60,6 +60,7 @@ def get_videos(item,data):
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         title = scrapertools.htmlclean(scrapedtitle.replace("</h4>"," ")).strip()
+        title = unicode( title , "iso-8859-1" , errors="ignore").encode("utf-8")
         url = urlparse.urljoin(item.url,scrapedurl).replace(" ","%20")
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , server="", action="play" , show = item.title , folder=False) )
@@ -77,13 +78,14 @@ def programas(item):
     logger.info("[rtpa.py] programas")
 
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<div class="seccion programas">[^<]+<h3>Nuestros programas</h3>(.*?)</ul>')
+    data = scrapertools.get_match(data,'<div class="seccion programas">[^<]+<h3>Nuestros programas</h3>(.*?)<div class="separador">')
 
     itemlist = []
     patron  = '<li[^<]+<a href="([^"]+)"[^<]+<p[^>]+>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedtitle in matches:
         title = scrapedtitle.strip()
+        title = unicode( title , "iso-8859-1" , errors="ignore").encode("utf-8")
         url = urlparse.urljoin(item.url,scrapedurl).replace(" ","%20")
         thumbnail = ""
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="episodios" , show = item.title , folder=True) )
@@ -102,6 +104,7 @@ def episodios(item):
     except:
         title = scrapertools.get_match(data,'<div id="sobreElVideo">[^<]+<h3[^<]+</h3>[^<]+<p[^<]+</p>[^<]+<h4 class="programa">([^<]+)</h4>')
         title = title + " " + scrapertools.get_match(data,'<div id="sobreElVideo">[^<]+<h3[^<]+</h3>[^<]+<p class="fecha">([^<]+)</p>')
+    title = unicode( title , "iso-8859-1" , errors="ignore").encode("utf-8")
     url = scrapertools.get_match(data,"'file'\: '([^']+)'")
     thumbnail = scrapertools.get_match(data,"'image'\: '([^']+)'")
     thumbnail = urlparse.urljoin(item.url,thumbnail)
@@ -122,6 +125,7 @@ def episodios(item):
     matches = re.compile(patron,re.DOTALL).findall(data1)
     for scrapedurl,scrapedtitle,fecha,duracion in matches:
         title = scrapedtitle.strip()+" ("+fecha+") ("+duracion+")"
+        title = unicode( title , "iso-8859-1" , errors="ignore").encode("utf-8")
         url = urlparse.urljoin(item.url,scrapedurl).replace(" ","%20")
         thumbnail = ""
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url, server="", thumbnail=thumbnail , action="play" , show = item.title , folder=False) )
@@ -145,6 +149,7 @@ def episodios(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedthumbnail,fecha,scrapedtitle in matches:
         title = scrapedtitle.strip()+" ("+fecha+")"
+        title = unicode( title , "iso-8859-1" , errors="ignore").encode("utf-8")
         url = urlparse.urljoin(item.url,scrapedurl).replace(" ","%20")
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail, server="", action="play" , show = item.title , folder=False) )
@@ -158,8 +163,10 @@ def play(item):
     if item.server=="directo":
         itemlist.append(item)
     else:
-        data = scrapertools.cache_page(item.url)
-        url = scrapertools.get_match(data,"'file'\: '([^']+)'")    
+        data = scrapertools.cache_page(item.url.replace(" ","%20"))
+        filepart = scrapertools.get_match(data,"'file'\: '([^']+)'")
+        streamerpart =  scrapertools.get_match(data,"'streamer'\: '([^']+)'")
+        url = streamerpart+filepart
         itemlist.append( Item(channel=CHANNELNAME, title=item.title , server = "directo" , action="play" , url=url, thumbnail=item.thumbnail, folder=False) )
 
     return itemlist
