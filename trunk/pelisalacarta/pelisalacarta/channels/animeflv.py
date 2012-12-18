@@ -363,7 +363,7 @@ def test():
                 return false
     
     # Comprueba si alguno de los vídeos de "Novedades" devuelve mirrors
-    episodios_items = newlist(mainlist_items[0])
+    episodios_items = novedades(mainlist_items[0])
     
     bien = False
     for episodio_item in episodios_items:

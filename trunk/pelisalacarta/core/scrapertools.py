@@ -853,6 +853,9 @@ def htmlclean(cadena):
     cadena = re.compile("<strong[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</strong>","")
 
+    cadena = re.compile("<small[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</small>","")
+
     cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</span>","")
 
