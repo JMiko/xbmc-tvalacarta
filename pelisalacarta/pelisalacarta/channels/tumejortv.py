@@ -339,6 +339,7 @@ def findvideospeliculas(item):
             
             if len(vitemlist)>0:
                 server = vitemlist[0].server
+                url = vitemlist[0].url
             else:
                 try:
                     server = scrapertools.get_match(match,'<br>([^<]+)</a></td>')
