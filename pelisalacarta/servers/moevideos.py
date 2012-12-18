@@ -53,7 +53,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     else:
         #http://moevideo.net/?page=video&uid=81492.8c7b6086f4942341aa1b78fb92df
         code = scrapertools.get_match(page_url,"uid=([a-z0-9\.]+)")
-            
+
     # API de letitbit
     headers2 = []
     headers2.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
@@ -149,6 +149,21 @@ def find_videos(data):
             
     #http://moevideo.net/?page=video&uid=81492.8c7b6086f4942341aa1b78fb92df
     patronvideos  = 'moevideo.net/\?page\=video\&uid=([a-z0-9\.]+)'
+    logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[moevideos]"
+        url = "http://moevideo.net/?page=video&uid="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'moevideos' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://moevideo.net/swf/letplayerflx3.swf?file=23885.2b0a98945f7aa37acd1d6a0e9713
+    patronvideos  = 'moevideo.net/swf/letplayerflx3.swf\?file\=([a-z0-9\.]+)'
     logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
