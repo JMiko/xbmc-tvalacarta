@@ -57,6 +57,21 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    # <a href="http://www.dailymotion.com/video/xssekp_natgeo-huesos-con-historia-08-los-esqueletos-de-windy-pits_tech" target="_blank">[Natgeo] Huesos con Historia 08 - Los Esqueletos de Windy Pits</a><br />
+    patronvideos  = '<a href=".*?dailymotion.com/video/([a-z0-9]+)[^>]+([^<]+)</a>'
+    logger.info("[dailymotion.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for url,title in matches:
+        titulo = title[1:]+" [dailymotion]"
+        url = "http://www.dailymotion.com/video/"+url
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'dailymotion' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     # http://www.dailymotion.com/video/xrva9o
     patronvideos  = 'dailymotion.com/video/([a-z0-9]+)'
     logger.info("[dailymotion.py] find_videos #"+patronvideos+"#")
