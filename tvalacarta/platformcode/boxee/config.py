@@ -11,7 +11,10 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] boxee config 3.3.2"
+TAG_VERSION = "3.7"
+TAG_VERSION_XBMC = "3.3.3"
+
+print "[config.py] boxee config "+TAG_VERSION+" ("+TAG_VERSION_XBMC+")"
 
 import os,re
 import xbmc
@@ -20,7 +23,7 @@ import mc
 PLUGIN_NAME = "tvalacarta"
 
 def get_version():
-    return "3.3.2"
+    return TAG_VERSION
 
 def get_system_platform():
     return "boxee"

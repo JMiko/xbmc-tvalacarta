@@ -121,6 +121,9 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="ACB TV (17/12/2012)"                     , channel="acbtv"          , language="ES" , category="T" , type="generic"  ))  # jesus 17/12/2012
+    itemlist.append( Item( title="Telemadrid (17/12/2012)"                 , channel="telemadrid"     , language="ES" , category="A" , type="generic", extra="rtmp" ))  # jesus 17/12/2012
+    itemlist.append( Item( title="EITB (País Vasco) (17/12/2012)"          , channel="eitb"           , language="ES" , category="A" , type="generic", extra="rtmp" )) # jesus 17/12/2012
     itemlist.append( Item( title="RTPA (Asturias) (16/10/2012)"            , channel="rtpa"           , language="ES" , category="A" , type="generic"  ))  # jesus 16/10/2011
     itemlist.append( Item( title="xip/tv (30/07/2012)"                     , channel="xiptv"          , language="ES" , category="L" , type="generic"  ))  # jesus 30/07/2011
     itemlist.append( Item( title="Tvolucion.com (20/06/2012)"              , channel="tvolucion"      , language="ES" , category="N" , type="generic"  ))  # pedro 20/06/2012
@@ -143,6 +146,7 @@ def channels_history_list():
 def channels_list():
     itemlist = []
     itemlist.append( Item( title="7RM (Murcia)"               , channel="sieterm"              , language="ES" , category="A"   , type="generic" ))
+    itemlist.append( Item( title="ACB TV"                     , channel="acbtv"                , language="ES" , category="T" , type="generic"  ))  # jesus 17/12/2012
     itemlist.append( Item( title="ADNStream"                  , channel="adnstream"            , language="ES" , category="I,T" , type="generic" ))
     itemlist.append( Item( title="Antena3"                    , channel="antena3"              , language="ES" , category="I,N" , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="Aragón TV"                  , channel="aragontv"             , language="ES" , category="A"   , type="generic", extra="rtmp" ))  # jesus 25/01/2012
@@ -151,6 +155,7 @@ def channels_list():
     itemlist.append( Item( title="Clan TVE"                   , channel="clantve"              , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
+    itemlist.append( Item( title="EITB (País Vasco)"          , channel="eitb"                 , language="ES" , category="A"   , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="El cine de las 3 mellizas"  , channel="tresmellizas"         , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="El Trece TV (Argentina)"    , channel="eltrece"              , language="ES" , category="N"   , type="generic" ))
     itemlist.append( Item( title="Euronews"                   , channel="euronews"             , language="ES" , category="T"   , type="generic" ))
@@ -168,6 +173,7 @@ def channels_list():
     itemlist.append( Item( title="La Sexta"                   , channel="lasexta"              , language="ES" , category="N"   , type="generic" ))  # juanfran 07/02/2011
     itemlist.append( Item( title="Skai folders"               , channel="skai_folders"         , language="GR" , category="N"   , type="xbmc"   , extra="rtmp" ))  # dusan 04/12/2011
     itemlist.append( Item( title="Telefe (Argentina)"         , channel="telefe"               , language="ES" , category="N"   , type="generic", extra="rtmp" ))  # jesus 28/10/2011
+    itemlist.append( Item( title="Telemadrid"                 , channel="telemadrid"           , language="ES" , category="A"   , type="generic", extra="rtmp" ))  # jesus 17/12/2012
     itemlist.append( Item( title="TVE"                        , channel="rtve"                 , language="ES" , category="N"   , type="generic" ))
     itemlist.append( Item( title="Tvolucion.com"              , channel="tvolucion"            , language="ES" , category="N"   , type="generic" ))    
     itemlist.append( Item( title="Turbonick"                  , channel="turbonick"            , language="ES" , category="I"   , type="generic", extra="rtmp" ))

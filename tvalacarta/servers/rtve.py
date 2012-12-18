@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para boing
+# Conector para rtve
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
@@ -28,6 +28,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     itemlist = []
     logger.info("assetid="+codigo)
 
+    if url=="":
+        data = scrapertools.cache_page("http://pydowntv2.appspot.com/api?url="+page_url)
+        url = scrapertools.get_match(data,'"url_video"\: \["([^"]+)"\]')
+        
     if url=="":
         data = scrapertools.cache_page("http://www.piraminet.com/lab/calcular.php",post=urllib.urlencode({"url_original":page_url}))
         url = scrapertools.get_match(data,"<a href='([^']+)' class='enlace'><strong>Enlace del video</strong></a>")
