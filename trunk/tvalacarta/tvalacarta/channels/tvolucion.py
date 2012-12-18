@@ -500,7 +500,7 @@ def novelasr(item):
        
         
         # A–ade al listado
-        itemlist.append( Item(channel=__channel__, action="capitulo", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart=scrapedfanart,  plot=scrapedplot , extra=extra , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="capitulo", title=scrapedtitle , url=scrapedurl1 , thumbnail=scrapedthumbnail , fanart=scrapedfanart,  plot=scrapedplot , extra=extra , folder=True) )
     
     return itemlist
 
@@ -659,21 +659,24 @@ def capitulo(item):
     
     # Descarga la p‡gina
     data = scrapertools.cachePage(item.url)
+    print data
     urlbase = item.url
     extra = item.extra
     
     # Extrae las entradas de la pagina seleccionada
-    '''<td><a href="http://tvolucion.esmas.com/telenovelas/romantica/amor-bravio/175807/amor-bravio-capitulo-67">Regresa el padre de Ximena</a></td>
-        <td>En el capitulo 67 de Amor brav’o, Francisco se presenta con Dionisio para cobrar la herencia de Daniel y es reconocido como el pap‡ de Ximena</td>
+    '''<tr class="odd">
+        <td><a href="http://tvolucion.esmas.com/telenovelas/drama/amores-verdaderos/200767/amores-verdaderos-capitulo-75">Amenaza de muerte</a></td>
+        <td>En el capitulo 75 de Amores verdaderos, Leonardo amenaza a Beatriz, la maltrata y le asegura que si no regresa con l, la mata</td>
         <!-- <td class="right">8,572</td> -->
-        <td>00:43:18</td>
-        <td>05/06/12</td>
-        <td class="noborder">67</td>
-
+        <td>00:40:39</td>
+        <td>14/12/12</td>
+        <td class="noborder">75</td>
+        </tr>
+        
         '''
     # NOVELAS
     # patron = '<td><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)">([^<]+)</a>.*?<td>'
-    patron = '<td><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)">([^<]+)</a>.*?<td>([^<]+)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td class="noborder">(.*?)</td>'
+    patron = '<td><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)">([^<]+)</a>.*?<td>([^<]+)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td class="noborder">(.*?)</td>.*?</tr>'
     # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -684,10 +687,7 @@ def capitulo(item):
         scrapedthumbnail = item.thumbnail
         scrapedfanart = item.fanart
         scrapedplot = match[2]+ chr(10)+" DURACION : "+match[3]+chr(10)+" ESTRENO : "+match[4]  +chr(10)+item.fanart
-
-        
-        logger.info(scrapedtitle)
-        
+        print scrapedtitle
         # A–ade al listado
         itemlist.append( Item(channel=__channel__, action="video", title=scrapedtitle , url=scrapedurl , page=urlbase, thumbnail=scrapedthumbnail ,fanart=scrapedfanart,  plot=scrapedplot , extra=extra , folder=True) )
     
@@ -702,20 +702,45 @@ def capitulo(item):
         <li class="pre-fecha">Fecha:&nbsp;</li>
         <li class="fecha-pub-art">&nbsp;29/06/2012</li>
         </ul>
+
+       <R N="1"><U>http://tvolucion.esmas.com/telenovelas/drama/amores-verdaderos/200767/amores-verdaderos-capitulo-75/</U><UE>http://tvolucion.esmas.com/telenovelas/drama/amores-verdaderos/200767/amores-verdaderos-capitulo-75/</UE><T>Amenaza de muerte</T><RK>10</RK><CRAWLDATE>17 Dec 2012</CRAWLDATE><ENT_SOURCE>T2-A5AY6GP5HY2T5</ENT_SOURCE><FS NAME="date" VALUE="2012-12-17"/><S>Amenaza de muerte </S><LANG>en</LANG><HAS><L/><C SZ="1k" CID="9rajlf5d3UQJ" ENC="ISO-8859-1"/></HAS></R>
+        <R N="2"><U>http://tvolucion.esmas.com/telenovelas/drama/amores-verdaderos/200431/amores-verdaderos-capitulo-73/</U><UE>http://tvolucion.esmas.com/telenovelas/drama/amores-verdaderos/200431/amores-verdaderos-capitulo-73/</UE><T>Culpa de padres</T><RK>10</RK><ENT_SOURCE>T2-A5AY6GP5HY2T5</ENT_SOURCE><FS NAME="date" VALUE="2012-12-13"/><S>Culpa de padres </S><LANG>en</LANG><HAS><L/><C SZ="1k" CID="JsPJNG5nJo8J" ENC="ISO-8859-1"/></HAS></R>
+        
+        <li>
+		<a href="http://tvolucion.esmas.com/telenovelas/drama/amores-verdaderos/200767/amores-verdaderos-capitulo-75"><img src="http://m4v.tvolucion.com/m4v/boh/verda/b6206593f5defebda8ed2ed456a3230b/defebda8ed.jpg" /></a>
+		<h3>Amores verdaderos</h3>
+		<h4>Amenaza de muerte</h4>
+		<h4>Duraci—n: 00:40:39</h4>
+		<h4>Cap’tulo: 75</h4>
+		<h4>Fecha: 14/12/12</h4>
+        </li>
+        
+        <li>.*?<a href="([^"]+)"><img src="([^"]+)" /></a>.*?<h3>([^<]+)</h3>.*?<h4>([^<]+)</h4>.*?<h4>Duraci—n: ([^<]+)</h4>.*?<h4>Cap’tulo: ([^<]+)</h4>.*?<h4>Fecha: ([^<]+)</h4>.*?</li>
+        
+        0 link
+        1 poster
+        2 novela
+        3 episodio
+        4 duracion
+        5 capitulo
+        6 fecha
+        
         '''
-    patron = '<ul id="cont-fila-art">.*?<li class="thumb"><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)" target="_top"><img src="([^"]+)" align="left"></a></li>.*?<li class="nombrePrograma">(.*?)</li>.*?<li class="titulo-art">(.*?)</li>.*?<li class="Duracion">Duracion: (.*?)</li>.*?<li class="capitulo">Capitulo: (.*?)</li>.*?<li class="pre-fecha">Fecha:&nbsp;</li>.*?<li class="fecha-pub-art">&nbsp;(.*?)</li>.*?</ul>'
+    #patron = '<ul id="cont-fila-art">.*?<li class="thumb"><a href="http://tvolucion.esmas.com/telenovelas/([^"]+)" target="_top"><img src="([^"]+)" align="left"></a></li>.*?<li class="nombrePrograma">(.*?)</li>.*?<li class="titulo-art">(.*?)</li>.*?<li class="Duracion">Duracion: (.*?)</li>.*?<li class="capitulo">Capitulo: (.*?)</li>.*?<li class="pre-fecha">Fecha:&nbsp;</li>.*?<li class="fecha-pub-art">&nbsp;(.*?)</li>.*?</ul>'
+    #patron = '<li>.*?<a href="([^"]+)"><img src="([^"]+)" /></a>.*?<h3>(.*?)</h3>.*?<h4>(.*?)</h4>.*?<h4>Duraci—n: (.*?)</h4>.*?<h4>Cap’tulo: (.*?)</h4>.*?<h4>Fecha: (.*?)</h4>.*?</li>'
     # patron += 'href="([^"]+)"><img src="([^"]+)" alt="([^"]+)"'
+    patron = '<R N=".*?"><U>([^<]+)</U><UE>.*?capitulo-(.*?)/</UE><T>([^<]+)</T><RK>.*?</RK>.*?<ENT_SOURCE>.*?</ENT_SOURCE><FS NAME="date" VALUE="([^"]+)"/><S>(.*?)</S><LANG>.*?</LANG><HAS><L/><C SZ=".*?" CID=".*?" ENC=".*?"/></HAS></R>'
     print "intenta obtener patron 2"
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
-        scrapedurl = "http://tvolucion.esmas.com/telenovelas/"+match[0]+"/"
+        scrapedurl = match[0] #"http://tvolucion.esmas.com/telenovelas/"+match[0]+"/"
         print scrapedurl
-        scrapedtitle = match[5]+" - "+match[3]
-        scrapedthumbnail = match[1]
+        scrapedtitle = match[1]+" - "+match[2]
+        scrapedthumbnail = ""#match[1]
         scrapedfanart = item.fanart
-        scrapedplot = match[3]+ chr(10)+" DURACION : "+match[4]+chr(10)+" ESTRENO : "+match[6]  +chr(10)+match[0]
+        scrapedplot = ""#match[3]+ chr(10)+" DURACION : "+match[4]+chr(10)+" ESTRENO : "+match[6]  +chr(10)+match[0]
         
         
         logger.info(scrapedtitle)
