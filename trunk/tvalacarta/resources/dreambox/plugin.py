@@ -1566,5 +1566,5 @@ def main(session, **kwargs):
 def Plugins(**kwargs):
     print "[tvalacarta] Plugins"
     return [
-        PluginDescriptor(name = "tvalacarta", description = "tvalacarta 3.2 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc = main),
-        PluginDescriptor(name = "tvalacarta", description = "tvalacarta 3.2 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=main)]
+        PluginDescriptor(name = "tvalacarta", description = "tvalacarta 3.3.3 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_PLUGINMENU, fnc = main),
+        PluginDescriptor(name = "tvalacarta", description = "tvalacarta 3.3.3 para Dreambox", icon="plugin-icon.png", where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=main)]

@@ -2,15 +2,15 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-    <property name="version" value="3.3.2"/>
-    
-    <!-- Para betas usar: -->
-    <!--property name="version" value="3.2.5-beta-1"/-->
-    
-    <!-- Para versiones finales usar: -->
-    <!--property name="version" value="3.2.5"/-->
-    
-    <property name="versionboxee" value="3.6"/>
+    <property name="oldversion" value="3.3.2"/>
+    <property name="oldversionboxee" value="3.6"/>
+    <property name="oldversiondate" value="10/12/2012"/>
+
+    <property name="version" value="3.3.3"/>
+    <property name="versionboxee" value="3.7"/>
+    <property name="versiondate" value="17/12/2012"/>
+    <property name="versionchanges" value="Weekly release"/>
+
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
 
@@ -70,6 +70,10 @@
         <antcall target="copy-xbmc-addon-eden"/>
 		<zip destfile="${target}/xbmc-addon-eden/tvalacarta-xbmc-addon-eden-${version}.zip" basedir="${target}/xbmc-addon-eden"/>
 
+        <mkdir dir="${target}/xbmc-addon-frodo/plugin.video.tvalacarta"/>
+        <antcall target="copy-xbmc-addon-frodo"/>
+		<zip destfile="${target}/xbmc-addon-frodo/tvalacarta-xbmc-addon-frodo-${version}.zip" basedir="${target}/xbmc-addon-frodo"/>
+
         <mkdir dir="${target}/wiimc/tvalacarta"/>
         <antcall target="copy-wiimc"/>
         <zip destfile="${target}/wiimc/tvalacarta-wiimc-${version}.zip" basedir="${target}/wiimc"/>
@@ -100,54 +104,53 @@
     
     <!-- upload =============================================== -->
     <target name="upload" depends="package" description="Upload zip files to the web server">
+
         <echo message="Subiendo tvalacarta-xbmc-addon-dharma-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/xbmc-addon-dharma">
-				<include name="tvalacarta-xbmc-addon-dharma-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-dharma/tvalacarta-xbmc-addon-dharma-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
 
         <echo message="Subiendo tvalacarta-xbmc-addon-eden-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/xbmc-addon-eden">
-				<include name="tvalacarta-xbmc-addon-eden-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-eden/tvalacarta-xbmc-addon-eden-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo tvalacarta-xbmc-addon-frodo-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-frodo/tvalacarta-xbmc-addon-frodo-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
 
         <echo message="Subiendo tvalacarta-xbmc-plugin-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/xbmc-plugin">
-				<include name="tvalacarta-xbmc-plugin-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-plugin/tvalacarta-xbmc-plugin-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
 
         <echo message="Subiendo tvalacarta-wiimc-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/wiimc">
-				<include name="tvalacarta-wiimc-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/wiimc/tvalacarta-wiimc-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
 
         <echo message="Subiendo tvalacarta-rss-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/rss">
-				<include name="tvalacarta-rss-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/rss/tvalacarta-rss-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
 
         <echo message="Subiendo tvalacarta-plexmediaserver-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/plexmediaserver">
-				<include name="tvalacarta-plexmediaserver-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/plexmediaserver/tvalacarta-plexmediaserver-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
 
-        <echo message="Subiendo tvalacarta-boxee-${version}.zip"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir="${target}/boxee">
-				<include name="info.mimediacenter.tvalacarta-${version}.zip"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="${target}/boxee/info.mimediacenter.tvalacarta-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
     </target>
 
     <!-- publish =============================================== -->
@@ -192,6 +195,7 @@
                 <exclude name="tester.py"/>
                 <exclude name="tvalacarta.py"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
 				<exclude name="**/*.pyo"/>
@@ -234,6 +238,48 @@
                 <exclude name="tester.py"/>
 				<exclude name="tvalacarta.py"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <!--exclude name="platformcode/xbmceden/**"/-->
+			</fileset>
+        </copy>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.tvalacarta/addon.xml"/>
+        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.tvalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-xbmc-addon-frodo ============================================================ -->
+	<target name="copy-xbmc-addon-frodo">
+        <copy todir="${target}/xbmc-addon-frodo/plugin.video.tvalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+                <exclude name="default.tbn"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="logging.conf"/>
+                <exclude name="tvalacarta.log"/>
+                <exclude name="tvalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+				<exclude name="tvalacarta.py"/>
+				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
 				<exclude name="**/*.pyo"/>
@@ -272,6 +318,7 @@
                 <exclude name="tester.py"/>
 				<exclude name="tvalacarta.py"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
                 <exclude name="core/platform_name.py"/>
@@ -306,6 +353,7 @@
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
 				<exclude name="tvalacarta-version.xml"/>
 				<exclude name="tvalacarta.log"/>
 				<exclude name="tvalacarta.py"/>
@@ -364,6 +412,7 @@
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
                 <exclude name="core/platform_name.py"/>
                 <exclude name="**/.*"/>
                 <exclude name="**/.*/**"/>
@@ -402,6 +451,7 @@
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
                 <exclude name="core/platform_name.py"/>
                 <exclude name="**/.*"/>
                 <exclude name="**/.*/**"/>
@@ -424,96 +474,6 @@
             </fileset>
         </copy>
         <copy file="platformcode/rss/platform_name.py" tofile="${target}/rss/tvalacarta/core/platform_name.py"/>
-    </target>
-
-	<!-- copy-xbmc-addon-oficial-dharma ============================================================ -->
-	<target name="copy-xbmc-addon-oficial-dharma">
-        <copy todir="${target}/xbmc-addon-oficial-dharma/plugin.video.tvalacarta">
-            <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="addon*.xml"/>
-				<exclude name="build.xml"/>
-				<exclude name="tvalacarta.komodoproject"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-                <!--exclude name="resources/images/**"/-->
-				<exclude name="descriptor.xml"/>
-                <exclude name="default.tbn"/>
-                <exclude name="resources/images/posters/**"/>
-                <exclude name="resources/images/banners/**"/>
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-                <exclude name="platformcode/boxee/**"/>
-                <exclude name="platformcode/developer/**"/>
-                <exclude name="platformcode/plex/**"/>
-                <exclude name="platformcode/wiimc/**"/>
-                <exclude name="lib/elementtree/**"/>
-                <exclude name="lib/simplejson/**"/>
-                <exclude name="tester.py"/>
-                <exclude name="version.xml"/>
-                <exclude name="tvalacarta.py"/>
-                <exclude name="channelselector.xml"/>
-                <exclude name="core/updater.py"/>
-                <exclude name="core/descargados.py"/>
-                <exclude name="core/descargadoslist.py"/>
-                <exclude name="tvalacarta/channels/*.xml"/>
-                <exclude name="tvalacarta/channels/casttv.py"/>
-                <exclude name="tvalacarta/channels/animeforos.py"/>
-                <exclude name="resources/images/casttv/**"/>
-                <exclude name="resources/settings.conf"/>
-			</fileset>
-        </copy>
-        <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.tvalacarta/addon.xml"/>
-        <copy file="platformcode/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.tvalacarta/core/platform_name.py"/>
-    </target>
-
-	<!-- copy-xbmc-addon-oficial-eden ============================================================ -->
-	<target name="copy-xbmc-addon-oficial-eden">
-        <copy todir="${target}/xbmc-addon-oficial-eden/plugin.video.tvalacarta">
-            <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="addon*.xml"/>
-				<exclude name="build.xml"/>
-				<exclude name="tvalacarta.komodoproject"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/bookmarks/**"/>
-				<exclude name="**/library/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
-				<exclude name="**/parametrizacion*.*"/>
-                <!--exclude name="resources/images/**"/-->
-				<exclude name="descriptor.xml"/>
-                <exclude name="default.tbn"/>
-                <exclude name="resources/images/posters/**"/>
-                <exclude name="resources/images/banners/**"/>
-                <exclude name="resources/plexmediaserver/**"/>
-                <exclude name="resources/dreambox/**"/>
-                <exclude name="platformcode/boxee/**"/>
-                <exclude name="platformcode/developer/**"/>
-                <exclude name="platformcode/plex/**"/>
-                <exclude name="platformcode/wiimc/**"/>
-                <exclude name="tester.py"/>
-                <exclude name="version.xml"/>
-                <exclude name="tvalacarta.py"/>
-                <exclude name="channelselector.xml"/>
-                <exclude name="core/updater.py"/>
-                <exclude name="core/descargados.py"/>
-                <exclude name="core/descargadoslist.py"/>
-                <exclude name="tvalacarta/channels/*.xml"/>
-                <exclude name="tvalacarta/channels/casttv.py"/>
-                <exclude name="tvalacarta/channels/animeforos.py"/>
-                <exclude name="resources/images/casttv/**"/>
-                <exclude name="resources/settings.conf"/>
-			</fileset>
-        </copy>
-        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.tvalacarta/addon.xml"/>
-        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.tvalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-plexmediaserver ============================================================ -->
@@ -567,6 +527,7 @@
                 <exclude name="core/logger.py"/>
                 <exclude name="core/config.py"/>
 				<exclude name="tvalacarta.komodoproject"/>
+				<exclude name="core-old/**"/>
 				<exclude name="logging.conf"/>
 				<exclude name="upload.sh"/>
             </fileset>
@@ -624,6 +585,7 @@
                 <exclude name="core/platform_name.py"/>
                 <exclude name="core/config.py"/>
                 <exclude name="core/logger.py"/>
+				<exclude name="core-old/**"/>
 			</fileset>
         </copy>
         <copy todir="${target}/dreambox/tvalacarta">
@@ -632,5 +594,40 @@
         </copy>
     </target>
 
+    <target name="versionup"> <!-- depends="package"-->
+        <replaceregexp file="version.xml" match="&lt;tag&gt;(.*?)&lt;/tag&gt;" replace="&lt;tag&gt;${version}&lt;/tag&gt;"/>
+        <replaceregexp file="version.xml" match="&lt;date&gt;(.*?)&lt;/date&gt;" replace="&lt;date&gt;${versiondate}&lt;/date&gt;"/>
+        <replaceregexp file="version.xml" match="&lt;changes&gt;(.*?)&lt;/changes&gt;" replace="&lt;changes&gt;${versionchanges}&lt;/changes&gt;"/>
 
+
+        <replaceregexp file="default.py" match="__date__ = &quot;([^&quot;]+)&quot;" replace="__date__ = &quot;${versiondate}&quot;"/>
+        <replaceregexp file="default.py" match="__version__ = &quot;([^&quot;]+)&quot;" replace="__version__ = &quot;${version}&quot;"/>
+
+        <replaceregexp file="addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmceden/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmcdharma/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/wiimc/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
+        <!--replaceregexp file="platformcode/mediaserver/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/-->
+
+        <replaceregexp file="resources/dreambox/plugin.py" match="pelisalacarta ${oldversion} para Dreambox" replace="pelisalacarta ${version} para Dreambox" flags="g"/>
+
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION = &quot;${versionboxee}&quot;"/>
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION_XBMC = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION_XBMC = &quot;${version}&quot;"/>
+        
+        <replaceregexp file="platformcode/boxee/descriptor.xml" match="&lt;version&gt;(.*?)&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
+        <replaceregexp file="platformcode/boxee/index.xml" match="&lt;version&gt;${oldversionboxee}&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
+
+        <!--antcall target="package"/-->
+        
+        <!-- Pasos que quedan por automatizar
+        
+        Firmar boxee
+        Subir el xml de boxee
+        Subir los ZIP al servidor
+        Subir version.xml como pelisalacarta-version.xml
+        Subir index.xml de boxee y el zip de boxee al repo
+        Redactar texto para actualizar página de descargas
+        
+        -->
+    </target>
 </project>
