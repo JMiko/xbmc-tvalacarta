@@ -28,12 +28,8 @@ def mainlist(item):
     logger.info("[pelis24.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"    , action="peliculas", url="http://pelis24.com/"))
-    itemlist.append( Item(channel=__channel__, title="Estrenos"    , action="peliculas", url="http://pelis24.com/estrenos/"))
-    itemlist.append( Item(channel=__channel__, title="Castellano"    , action="peliculas", url="http://pelis24.com/pelicula-ca/"))
-    itemlist.append( Item(channel=__channel__, title="Latino"    , action="peliculas", url="http://pelis24.com/pelicula-latino/"))
-    itemlist.append( Item(channel=__channel__, title="Subtituladas"    , action="peliculas", url="http://pelis24.com/peliculasvose/"))
-    itemlist.append( Item(channel=__channel__, title="Recomendadas"    , action="peliculas", url="http://pelis24.com/pelicula-re/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"     , action="peliculas", url="http://pelis24.com/index.php"))
+    itemlist.append( Item(channel=__channel__, title="Clasificacion" , action="categorias", url="http://pelis24.com/index.php"))
     
     return itemlist
 
@@ -41,16 +37,14 @@ def peliculas(item):
     logger.info("[pelis24.py] peliculas")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,"<div id='dle-content'>(.*?)</div>")
+    '''
+    <a href="http://www.pelis24.com/hd/13290-the-pirates-band-of-misfits-2012-latino.html"><img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/piratasuna.jpg" width="145" height="211" alt="¬°Piratas! Una Loca Aventura (2012)" title="¬°Piratas! Una Loca Aventura (2012)"/><noscript><img src="http://imgs24.com/images/piratasuna.jpg" width="145" height="211" alt="¬°Piratas! Una Loca Aventura (2012)" title="¬°Piratas! Una Loca Aventura (2012)"/></noscript></a>&nbsp;&nbsp;
+    <a href="http://www.pelis24.com/pelicula-latino/14402-recreator-2012.html" ><img src="http://imgs24.com/images/recreator3.jpg" width="145" height="211" alt="Recreator (2012)" title="Recreator (2012)"/></a>&nbsp;&nbsp;
 
-    # Extrae las entradas (carpetas)
     '''
-    <a href="http://www.pelis24.com/pelicula-ca/13617-el-amor-de-tony-2010-castellano.html" ><img src="http://www.pelis24.com/uploads/posts/2012-06/1339789029_cartel_el_amor_de_tony_0.jpg" width="145" height="211" alt="el amor de tony (2010) - Castellano" title="el amor de tony (2010) - Castellano"/></a>&nbsp;&nbsp;
-    '''
-    patron  = '<a.*?href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)".*?alt="([^"]+)"'
+    patron  = '<a href="([^"]+)"[^<]+<img src="([^"]+)" width="\d+" height="\d+" alt="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -67,18 +61,18 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="P·gina siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="P√°gina siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
     from servers import servertools
     
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     novedades_items = peliculas(mainlist_items[0])
     bien = False
     for novedades_item in novedades_items:
