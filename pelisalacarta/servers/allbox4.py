@@ -13,7 +13,6 @@ from core import logger
 from core import config
 from core import unpackerjs
 
-
 def test_video_exists( page_url ):
     logger.info("[allbox4.py] test_video_exists(page_url='%s')" % page_url)
 
