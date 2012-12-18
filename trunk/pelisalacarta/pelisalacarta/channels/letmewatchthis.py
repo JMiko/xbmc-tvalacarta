@@ -104,39 +104,46 @@ def search(item,texto, categoria="*"):
 def play(item):
     logger.info("[letmewatchthis.py] play")
     
-    itemlist = servertools.find_video_items(item) 
-    if len(itemlist) == 0:  
-        try:
-            count = 0
-            exit = False
-            while(not exit and count < 5):
-                #A veces da error al intentar acceder
-                try:
-                    page = urllib2.urlopen(item.url)
-                    urlvideo = page.geturl() 
-                    exit = True
-                except:
-                    count = count + 1
-            if(exit):
-                    listavideos = servertools.findvideos(urlvideo)
-                    for video in listavideos:
-                        scrapedtitle = item.title.strip() + " - " + video[0].strip()
-                        scrapedurl = video[1]
-                        server = video[2]
-                        
-                        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=server, page=item.page, url=scrapedurl, thumbnail=item.thumbnail, show=item.show , plot=item.plot , folder=False) )
-
-        except:  
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line ) 
-                 
-    for videoitem in itemlist:
-        try:
-            videoitem.title = scrapertools.get_match(item.title,"Watch Version \d+ of (.*)\(")
-        except:
-            videoitem.title = item.title
+    location = scrapertools.get_header_from_response(item.url.replace(" ","%20"),header_to_get="location")
+    logger.info("[letmewatchthis.py] location="+location)
     
+    if location!="":
+        itemlist = servertools.find_video_items(data=location)
+    else:
+        item.url = item.url.replace(" ","%20")
+        itemlist = servertools.find_video_items(item) 
+        if len(itemlist) == 0:  
+            try:
+                count = 0
+                exit = False
+                while(not exit and count < 5):
+                    #A veces da error al intentar acceder
+                    try:
+                        page = urllib2.urlopen(item.url)
+                        urlvideo = page.geturl() 
+                        exit = True
+                    except:
+                        count = count + 1
+                if(exit):
+                        listavideos = servertools.findvideos(urlvideo)
+                        for video in listavideos:
+                            scrapedtitle = item.title.strip() + " - " + video[0].strip()
+                            scrapedurl = video[1]
+                            server = video[2]
+                            
+                            itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=server, page=item.page, url=scrapedurl, thumbnail=item.thumbnail, show=item.show , plot=item.plot , folder=False) )
+    
+            except:  
+                import sys
+                for line in sys.exc_info():
+                    logger.error( "%s" % line ) 
+                     
+        for videoitem in itemlist:
+            try:
+                videoitem.title = scrapertools.get_match(item.title,"Watch Version \d+ of (.*)\(")
+            except:
+                videoitem.title = item.title
+        
     return itemlist
 
 def showsectionsmovies(item):
@@ -332,30 +339,3 @@ def getkey(url):
         return matches[0]
     
     return ""
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
