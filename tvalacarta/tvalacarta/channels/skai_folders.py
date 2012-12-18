@@ -21,7 +21,7 @@ try:
 except:
 	pluginhandle = ""
 
-xbmc.output("[skai_folders.py] init")
+xbmc.log("[skai_folders.py] init")
 
 print "LANG="
 print xbmc.getLanguage
@@ -42,7 +42,7 @@ def unescape(s):
 
 
 def mainlist(params,url,category):
-	xbmc.output("[skai_folders.py] mainlist")
+	xbmc.log("[skai_folders.py] mainlist")
 
 	url = "http://folders.skai.gr/main"
 	locale = "el"
@@ -53,7 +53,7 @@ def mainlist(params,url,category):
 	# Download page
 	# --------------------------------------------------------
 	data = scrapertools.cachePage(url_loc)
-	#xbmc.output(data)
+	#xbmc.log(data)
 
 	# --------------------------------------------------------
 	# Extrae los programas
@@ -80,9 +80,9 @@ def mainlist(params,url,category):
 
 		# purification
 		if (DEBUG):
-			xbmc.output("scrapedtitle="+scrapedtitle)
-			xbmc.output("scrapedurl="+scrapedurl)
-			xbmc.output("scrapedthumbnail="+scrapedthumbnail)
+			xbmc.log("scrapedtitle="+scrapedtitle)
+			xbmc.log("scrapedurl="+scrapedurl)
+			xbmc.log("scrapedthumbnail="+scrapedthumbnail)
 
 		#Add to the list of XBMC
 		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -98,7 +98,7 @@ def mainlist(params,url,category):
 
 def videolist(params,url,category):
 
-	xbmc.output("[skai_folders.py] videolist")
+	xbmc.log("[skai_folders.py] videolist")
 
 	# --------------------------------------------------------
 	# DDownload page
@@ -122,7 +122,7 @@ def videolist(params,url,category):
 		scrapedplot = "XXX XXXX XXXXXXXXXXX XXXXXXXXX XXXXXXXXX XXXXXXXXX        X           X XXX  X  X X X X X X X  X"
 		
 		
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): xbmc.log("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Add to the list of XBMC
 		xbmctools.addnewvideo( CHANNELCODE , "play" , CHANNELNAME , "" , scrapedtitle , scrapedurl , scrapedthumbnail, scrapedplot )
@@ -140,7 +140,7 @@ def videolist(params,url,category):
 		scrapedurl = urlparse.urljoin(url,match)
 		scrapedthumbnail = ""
 		scrapedplot = ""
-		if (DEBUG): xbmc.output("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+		if (DEBUG): xbmc.log("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
 		# Add to the list of XBMC
 		xbmctools.addnewfolder( CHANNELCODE , "videolist" , CHANNELNAME , scrapedtitle , scrapedurl , scrapedthumbnail , scrapedplot )
@@ -155,7 +155,7 @@ def videolist(params,url,category):
 	xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def play(params,url,category):
-	xbmc.output("[skai_folders.py] play")
+	xbmc.log("[skai_folders.py] play")
 
 	title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
 	thumbnail = urllib.unquote_plus( params.get("thumbnail") )
@@ -176,7 +176,7 @@ def play(params,url,category):
 		return
 
 	url = matches[0]
-	xbmc.output("url="+url)
+	xbmc.log("url="+url)
 	
 	
 
