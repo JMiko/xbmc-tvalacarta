@@ -98,7 +98,7 @@ def episodios(item):
         #scrapedurl = urlparse.urljoin(url,match[2])
                 
         URLqueMola = urllib.quote(match[2]) #urllib.quote("http://mediaserver01.upv.es/UPRTV/TV/ActoInstitucionalUPV/2010-04-08 Acto_Insti Toma de posesión decano ADE.wmv")[5:]
-        URLconHTTPok = URLqueMola.replace("http%3A","http:")
+        URLconHTTPok = URLqueMola.replace("http%3A","http:").replace(" ","%20")
         scrapedurl = (URLconHTTPok)
         scrapedthumbnail = ""
         scrapedplot = "HAZ CLICK SOBRE EL NOMBRE PARA REPRODUCIR EL CAPÍTULO"

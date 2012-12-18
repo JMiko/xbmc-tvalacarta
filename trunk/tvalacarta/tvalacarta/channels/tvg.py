@@ -20,37 +20,81 @@ def isGeneric():
 def mainlist(item):
     logger.info("[tvg.py] mainlist")
     itemlist=[]
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"           , action="novedades" , url="http://www.crtvg.es/tvg/a-carta"))
-    itemlist.append( Item(channel=CHANNELNAME, title="Todos los programas" , action="categorias"  , url="http://www.crtvg.es/tvg/a-carta"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Novedades"     , action="novedades"     , url="http://www.crtvg.es/tvg/a-carta"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Programas A-Z" , action="programas"  , url="http://www.crtvg.es/tvg/a-carta"))
+    itemlist.append( Item(channel=CHANNELNAME, title="Categorías"    , action="categorias" , url="http://www.crtvg.es/tvg/a-carta"))
     return itemlist
 
 def novedades(item):
-    item.url = "http://www.crtvg.es/ax/tvgalacartahome"
-    return videos(item)
+    logger.info("[tvg.py] novedades")
+    itemlist = []
 
-def categorias(item):
-    logger.info("[tvg.py] categorias")
-    itemlist=[]
-
+    # Lee la página del programa
+    data = scrapertools.cache_page(item.url)
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    data = data.replace("\\","")
     #logger.info(data)
 
-    # Extrae las categorias (carpetas)
-    patron  = '<li id="categoria-[^"]+" class="first-level">[^<]+'
-    patron += '<a href="" title="[^"]+" onclick="return false;">([^<]+)</a>(.*?)</ul>'
+    # Extrae los videos
+    patron  = '<li id="programa-[^<]+'
+    patron += '<div id="imagen-programa-[^<]+'
+    patron += '<a href="([^"]+)"\s+title="([^"]+)"[^<]+<img src="([^"]+)".*?'
+    patron += '<div id="data-programa-[^"]+" class="listadoimagenes-data">(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = match[0].strip()
-        scrapedurl = ""
-        scrapedthumbnail = ""
+        scrapedtitle = match[1].strip()+" "+match[3].strip()
+        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
-        extra = match[1].strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="programas" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=extra , category = scrapedtitle , folder=True) )
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="tvg", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=False) )
+
+    return itemlist
+
+def categorias(item):
+    logger.info("[tvg.py] categorias")
+    itemlist=[]
+    
+    # Extrae los programas
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,"<!-- LISTADO POR CAT(.*?)</ul>")
+    
+    '''
+    <div class="item-a-carta titulo-a-carta">
+    <h3>
+    Series												</h3>
+    </div>
+    '''
+    '''
+    <div class="item-a-carta">
+    <a href="/tvg/a-carta/programa/15-zona-cerco-aos-matalobos"
+    title="15 Zona: cerco aos Matalobos">
+    15 Zona: cerco aos Matalobos
+    </a>
+    </div>
+    '''
+    patron = '<div class="item-a-carta(.*?)</div>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for bloque in matches:
+        if "<h3>" in bloque:
+            scrapedtitle = scrapertools.get_match(bloque,"<h3>([^<]+)</h3>").strip().upper()
+            scrapedurl=""
+        else:
+            scrapedtitle = "  "+scrapertools.get_match(bloque,'<a href="[^"]+"[^>]+>([^<]+)<').strip()
+            scrapedurl = urlparse.urljoin(item.url,scrapertools.get_match(bloque,'<a href="([^"]+)"[^>]+>[^<]+<').strip())
+
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videos" , url=scrapedurl, page=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , category = item.category , folder=True) )
 
     return itemlist
 
@@ -59,16 +103,29 @@ def programas(item):
     itemlist=[]
     
     # Extrae los programas
-    data = item.extra
+    data = scrapertools.cachePage(item.url)
     #logger.info("data="+data)
-    patron  = '<li id="programa-[^"]+" class="second-level">[^<]+'
-    patron += '<a href="#" title="[^"]+" onclick="return programaclickTvg\((\d+), (\d+), (\d+)\)">([^<]+)</a>'
+
+    data = scrapertools.get_match(data,"<!-- LISTADO DE LA A A LA Z -->(.*?)<!-- LISTADO POR CAT")
+    
+    '''
+    <div class="item-a-carta">
+    <a href="/tvg/a-carta/programa/15-zona-cerco-aos-matalobos"
+    title="15 Zona: cerco aos Matalobos">
+    15 Zona: cerco aos Matalobos
+    </a>
+    </div>
+    '''
+    
+    patron  = '<div class="item-a-carta"[^<]+'
+    patron += '<a href="([^"]+)"[^>]+>([^<]+)<'
+                                                
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = match[3].strip()
-        scrapedurl = "http://www.crtvg.es/ax/tvgalacarta/programa:%s/pagina:%s/seccion:%s" % (match[0],match[1],match[2])
+    
+    for url,title in matches:
+        scrapedtitle = title.strip()
+        scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -79,38 +136,46 @@ def programas(item):
     return itemlist
 
 def videos(item):
-    import urllib
     logger.info("[tvg.py] videos")
     itemlist = []
 
-    # Descarga la página
-    data = scrapertools.cache_page(item.url)
-    data = data.replace("\\","")
-    #logger.info(data)
+    # Lee la página del programa y extrae el id_programa
+    if "/ax/" in item.url:
+        headers=[]
+        headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:17.0) Gecko/20100101 Firefox/17.0"])
+        headers.append(["X-Requested-With","XMLHttpRequest"])
+        headers.append(["Referer",item.url])
+        data = scrapertools.cache_page(item.url, post="", headers=headers)
+        data = data.replace("\\n"," ")
+        data = data.replace("\\","")
+    else:
+        data = scrapertools.cache_page(item.url)
+        id_programa = scrapertools.get_match(data,"initAlaCartaBuscador.(\d+)")
+        
+        # Lee la primera página de episodios
+        #http://www.crtvg.es/ax/tvgalacartabuscador/programa:33517/pagina:1/seccion:294/titulo:/mes:null/ano:null/temporada:null
+        logger.info("[tvg.py] videos - hay programa")
+        url = "http://www.crtvg.es/ax/tvgalacartabuscador/programa:"+id_programa+"/pagina:1/seccion:294/titulo:/mes:null/ano:null/temporada:null"
+        headers=[]
+        headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:17.0) Gecko/20100101 Firefox/17.0"])
+        headers.append(["X-Requested-With","XMLHttpRequest"])
+        headers.append(["Referer",item.url])
+        data = scrapertools.cache_page(url, post="", headers=headers)
+        data = data.replace("\\n"," ")
+        data = data.replace("\\","")
+    logger.info("data="+data)
 
     # Extrae los videos
-    '''
-    {"listado":"<div id="programas-33522-tvg">  
-    <div class="a-carta-inside">               <h2>De viaxe</h2>                   
-    <ul id="programas-a-carta-tvg">       
-    <li id="programa-168965" class="listadoimagenes-li">  
-    <div id="imagen-programa-168965" class="listadoimagenes-imagen">                  
-    <a href="/tvg/a-carta/de-viaxe-13-11-2011" title="De viaxe (13/11/2011)"><img src="/files/single/20111114094844_deviaxeg.jpg" alt="De viaxe (13/11/2011)"/></a>        </div>  
-    <div id="info-programa-168965" class="listadoimagenes-info">  
-    <div id="titulo-programa-168965"class="listadoimagenes-titulo">  
-    <a href="/tvg/a-carta/de-viaxe-13-11-2011" title="De viaxe (13/11/2011)">De viaxe (13/11/2011)</a>                 </div>                  
-    <div id="data-programa-168965"class="listadoimagenes-data">                      13/11/2011                 </div>              </div>          </li>       
-    <li id="programa-162688" class="listadoimagenes-li">              <div id="imagen-programa-162688" class="listadoimagenes-imagen">                              <a href="/tvg/a-carta/de-viaxe-06-11-2011" title="De viaxe (06/11/2011)"><img src="/files/single/20111107100704_deviaxeg.jpg" alt="De viaxe (06/11/2011)"/></a>             </div>              <div id="info-programa-162688" class="listadoimagenes-info">                  <div id="titulo-programa-162688"class="listadoimagenes-titulo">                      <a href="/tvg/a-carta/de-viaxe-06-11-2011" title="De viaxe (06/11/2011)">De viaxe (06/11/2011)</a>                 </div>                                  <div id="data-programa-162688"class="listadoimagenes-data">                      06/11/2011                 </div>              </div>          </li>               <li id="programa-42111" class="listadoimagenes-li">              <div id="imagen-programa-42111" class="listadoimagenes-imagen">                              <a href="/tvg/a-carta/caion" title="Caiu00f3n"><img src="/files/single/deviaxe2.jpg" alt="Caiu00f3n"/></a>             </div>              <div id="info-programa-42111" class="listadoimagenes-info">                  <div id="titulo-programa-42111"class="listadoimagenes-titulo">                      <a href="/tvg/a-carta/caion" title="Caiu00f3n">Caiu00f3n</a>                 </div>                                  <div id="data-programa-42111"class="listadoimagenes-data">                      19/09/2010                 </div>              </div>          </li>               <li id="programa-42058" class="listadoimagenes-li">              <div id="imagen-programa-42058" class="listadoimagenes-imagen">                              <a href="/tvg/a-carta/poio-1" title="Poio"><img src="/files/single/20110407142628_deviaxe3.jpg" alt="Poio"/></a>             </div>              <div id="info-programa-42058" class="listadoimagenes-info">                  <div id="titulo-programa-42058"class="listadoimagenes-titulo">                      <a href="/tvg/a-carta/poio-1" title="Poio">Poio</a>                 </div>                                  <div id="data-programa-42058"class="listadoimagenes-data">                      09/05/2010                 </div>              </div>          </li>               <li id="programa-42051" class="listadoimagenes-li">              <div id="imagen-programa-42051" class="listadoimagenes-imagen">                              <a href="/tvg/a-carta/a-laracha-1" title="A Laracha"><img src="/files/single/20110407142720_deviaxe3.jpg" alt="A Laracha"/></a>             </div>              <div id="info-programa-42051" class="listadoimagenes-info">                  <div id="titulo-programa-42051"class="listadoimagenes-titulo">                      <a href="/tvg/a-carta/a-laracha-1" title="A Laracha">A Laracha</a>                 </div>                                  <div id="data-programa-42051"class="listadoimagenes-data">                      18/04/2010                 </div>              </div>          </li>               <li id="programa-42048" class="listadoimagenes-li">              <div id="imagen-programa-42048" class="listadoimagenes-imagen">                              <a href="/tvg/a-carta/rio-xubia" title="Ru00edo Xubia"><img src="/files/single/20110407142753_deviaxe3.jpg" alt="Ru00edo Xubia"/></a>             </div>              <div id="info-programa-42048" class="listadoimagenes-info">                  <div id="titulo-programa-42048"class="listadoimagenes-titulo">                      <a href="/tvg/a-carta/rio-xubia" title="Ru00edo Xubia">Ru00edo Xubia</a>                 </div>                                  <div id="data-programa-42048"class="listadoimagenes-data">                      11/04/2010                 </div>              </div>          </li>           </ul> t     </div>      </div> ","paginacion":"     <div id="navegador">          <ul>                                           <li class="paginador-inside active">                       <a href="#" title="1" onclick="return paginaclickTvg(33522, 1, 294);">                           1                      </a>                   </li>                                   <li class="paginador-inside">                       <a href="#" title="2" onclick="return paginaclickTvg(33522, 2, 294);">                           2                      </a>                   </li>                                   <li class="paginador-inside">                       <a href="#" title="3" onclick="return paginaclickTvg(33522, 3, 294);">                           3                      </a>                   </li>
-    <li class="next">                  <a href="#" title="Seguinte" onclick="return posteriorpaginaclickTvg(33522, 2, 294);">                                      <img src="/static/img/navegador-siguiente.png" alt="Seguinte" />                  </a>              </li>                                   </ul>      </div>      "}
-    '''
-    patron  = '<li id="programa-[^<]+'
-    patron += '<div id="imagen-programa-[^<]+'
-    patron += '<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
+    #<tr>                  <td class="a-carta-resultado-imagen">                      <a href="/tvg/a-carta/a-revista-fds-477893"                           title="A Revista FDS">
+    #<img src="/files/thumbs/LorenaPose.jpg" alt="A Revista FDS" width="75" height="42"/>                      </a>                                              </td>                  <td class="a-carta-resultado-titulo">                      <a href="/tvg/a-carta/a-revista-fds-477893" title="A Revista FDS">A Revista FDS</a>                 </td>                                     <td class="a-carta-resultado-data">                  02/12/2012 12:10                 </td>                              </tr>
+    patron  = '<tr[^<]+<td class="a-carta-resultado-imagen[^<]+'
+    patron += '<a href="([^"]+)"\s+title="([^"]+)"[^<]+<img src="([^"]+)".*?'
+    patron += '<td class="a-carta-resultado-data">(.*?)</td>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = match[1].strip()
+        scrapedtitle = match[1].strip()+" "+match[3].strip()
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
@@ -119,14 +184,15 @@ def videos(item):
         # Añade al listado de XBMC
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="tvg", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=False) )
 
-    # <a href="#" title="Seguinte" onclick="return posteriorpaginaclickTvg(33522, 2, 294);">
-    patron  = '<a href="\#" title="Seguinte" onclick="return posteriorpaginaclickTvg\((\d+), (\d+), (\d+)\)\;'
+    #<a href=\"#\" title=\"Seguinte\" onclick=\"return posteriorpaginaclick(33517, 2, 294)
+    patron  = '<a href="\#" title="Seguinte" onclick="return posteriorpaginaclick\((\d+), (\d+), (\d+)'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
         scrapedtitle = ">>> Página siguiente"
-        scrapedurl = "http://www.crtvg.es/ax/tvgalacarta/programa:%s/pagina:%s/seccion:%s" % (match[0],match[1],match[2])
+        #http://www.crtvg.es/ax/tvgalacartabuscador/programa:33517/pagina:2/seccion:294/titulo:/mes:null/ano:null/temporada:null
+        scrapedurl = "http://www.crtvg.es/ax/tvgalacartabuscador/programa:%s/pagina:%s/seccion:%s/titulo:/mes:null/ano:null/temporada:null" % (match[0],match[1],match[2])
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")

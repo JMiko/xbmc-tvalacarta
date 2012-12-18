@@ -77,8 +77,10 @@ def detalle_programa(item):
         url = url.replace("/videos","")
     
     # Descarga la página
+    print "url="+url
     data = scrapertools.cache_page(url)
-    data = scrapertools.get_match(data,'<div class="contenido-serie">(.*?)</div>')
+    data = scrapertools.get_match(data,'<div class="contenido-serie">(.*?</div>)')
+    print "data="+data
 
     # Obtiene el thumbnail
     try:
@@ -87,7 +89,7 @@ def detalle_programa(item):
         pass
 
     try:
-        item.plot = scrapertools.htmlclean( scrapertools.get_match(data,'</h3>(.*?)</div>') )
+        item.plot = scrapertools.htmlclean( scrapertools.get_match(data,'<div>(.*?)</div>') ).strip()
     except:
         pass
 
