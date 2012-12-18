@@ -34,8 +34,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     if premium:
-        # Login para conseguir la cookie    
-        login_url = "http://uploaded.to/io/login"
+        # Login para conseguir la cookie
+        logger.info("[uploadedto.py] -------------------------------------------")
+        logger.info("[uploadedto.py] login")
+        logger.info("[uploadedto.py] -------------------------------------------")
+        login_url = "http://uploaded.net/io/login"
         post = "id="+user+"&pw="+password
         headers = []
         headers.append( ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.1) Gecko/20100101 Firefox/10.0.1"] )
@@ -44,13 +47,18 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         headers.append( ["Referer","http://uploaded.to/"] )
         
         setcookie = scrapertools.get_header_from_response( login_url, post=post, headers=headers, header_to_get="set-cookie")
-        logger.info("set-cookie="+setcookie)
+        logger.info("Cabecera set-cookie="+setcookie)
+
+        logger.info("[uploadedto.py] -------------------------------------------")
+        logger.info("[uploadedto.py] obtiene la url")
+        logger.info("[uploadedto.py] -------------------------------------------")
 
         location = scrapertools.get_header_from_response( page_url , header_to_get = "location")
         logger.info("location="+location)
         #Set-Cookie3: auth=3315964ab4fac585fdd9d4228dc70264a1756ba; path="/"; domain=".uploaded.to"; path_spec; domain_dot; expires="2015-02-25 18:35:37Z"; version=0
         #Set-Cookie3: login="%26id%3D3315964%26pw%3Dde135af0befa087e897ee6bfa78f2511a1ed093f%26cks%3D854cca559368"; path="/"; domain=".uploaded.to"; path_spec; domain_dot; expires="2013-02-25 18:35:37Z"; version=0
         
+        '''
         #cookie_data=config.get_cookie_data()
         #logger.info("cookie_data="+cookie_data)
         cookie_data = setcookie
@@ -66,8 +74,28 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
         #location = location + "|Cookie="+urllib.quote('login='+login+'; auth='+auth)
         location = temp_location
-    
-        video_urls.append( ["(Premium) [uploaded.to]" , location] )
+        '''
+
+        logger.info("[uploadedto.py] -------------------------------------------")
+        logger.info("[uploadedto.py] obtiene el nombre del fichero")
+        logger.info("[uploadedto.py] -------------------------------------------")
+        try:
+            #content-disposition=attachment; filename="El Hobbit CAM LATINO Barbie.avi"
+            content_disposition = scrapertools.get_header_from_response( location , header_to_get = "content-disposition" , headers=headers)
+            if content_disposition!="":
+                filename = scrapertools.get_match(content_disposition,'filename="([^"]+)"')
+                extension = filename[-4:]
+        except:
+            extension = ""
+        
+        '''
+        temp_location = scrapertools.get_header_from_response( location , header_to_get = "location" , headers=headers)
+        logger.info("temp_location="+temp_location)
+        if temp_location!="":
+            location = temp_location
+        '''
+        
+        video_urls.append( [extension+" (Premium) [uploaded.to]" , location] )
 
     for video_url in video_urls:
         logger.info("[uploadedto.py] %s - %s" % (video_url[0],video_url[1]))
@@ -95,13 +123,13 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
             
     # http://uploaded.to/file/1haty8nt
-    patronvideos  = '(uploaded.to/file/[a-zA-Z0-9]+)'
+    patronvideos  = 'uploaded.to(/file/[a-zA-Z0-9]+)'
     logger.info("[uploadedto.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[uploaded.to]"
-        url = "http://"+match
+        url = "http://uploaded.net"+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'uploadedto' ] )
@@ -116,7 +144,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[uploaded.to]"
-        url = match.replace("http://ul.to/","http://uploaded.to/file/")
+        url = match.replace("http://ul.to/","http://uploaded.net/file/")
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'uploadedto' ] )
