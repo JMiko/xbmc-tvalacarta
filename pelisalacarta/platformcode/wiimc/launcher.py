@@ -24,7 +24,7 @@ logging.config.fileConfig( logging_conf )
 logger=logging.getLogger("wiimc")
 
 #TODO: Pasar esto a ¿config?
-VERSIONTAG = "3.2.35"
+VERSIONTAG = "3.2.37"
 
 #from lib import cerealizer
 #cerealizer.register(Item)

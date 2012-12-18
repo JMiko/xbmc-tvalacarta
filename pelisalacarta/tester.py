@@ -40,7 +40,6 @@ def test_channels():
     
     para_probar = []
     #para_probar.append("cineblog01")
-
     para_probar.append("animeflv")
     para_probar.append("animeid")
     para_probar.append("bajui")
@@ -70,11 +69,13 @@ def test_channels():
     para_probar.append("los_simpsons_online")
     para_probar.append("mcanime")
     '''
+    '''
 
+    '''
     '''
     para_probar.append("moviezet")
     para_probar.append("newdivx")
-    para_probar.append("newhd")
+    #para_probar.append("newhd")
     para_probar.append("peliculasonlineflv")
     para_probar.append("peliculasaudiolatino")
     para_probar.append("peliculaseroticas")
@@ -85,7 +86,7 @@ def test_channels():
     para_probar.append("robinfilm")
     para_probar.append("serieonline")
     para_probar.append("seriesid")
-    para_probar.append("serieshentai")
+    #para_probar.append("serieshentai")
     para_probar.append("seriesdanko")
     para_probar.append("seriespepito")
     para_probar.append("seriesyonkis")
@@ -127,85 +128,98 @@ def test_channels():
         print "   %s" % canal
     
 
+def test_one_server_connector(server,url,no_find_videos=False):
+    exec "from servers import "+server+" as serverconnector"
+    
+    try:
+        # Mira si el video existe
+        if "test_video_exists" in dir(serverconnector):
+            puede,motivo = serverconnector.test_video_exists(url)
+        else:
+            puede = True
+        
+        # Extrae la url
+        if "get_video_url" in dir(serverconnector) and puede:
+            video_urls = serverconnector.get_video_url(url)
+            funciona = (puede and len(video_urls)>0)
+        elif "get_long_url" in dir(serverconnector) and puede:
+            video_url = serverconnector.get_long_url(url)
+            funciona = True
+        
+    except:
+        funciona = False
+        import traceback
+        from pprint import pprint
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+        for line in lines:
+            line_splits = line.split("\n")
+            for line_split in line_splits:
+                print line_split
+
+    if not funciona and not no_find_videos:
+        # Detecta la url usando find_videos
+        detected_urls = serverconnector.find_videos(url)
+        url = detected_urls[0][1]
+        return test_one_server_connector(server,url,no_find_videos=True)
+
+    return funciona
+
 def test_server_connectors():
-    from servers import adnstream
-    from servers import bliptv
-    from servers import facebook
-    from servers import fourshared
-    from servers import gigabyteupload
-    from servers import megaupload
-    from servers import megavideo
-    from servers import movshare
-    from servers import stagevu
-    from servers import tutv
-    from servers import userporn
-    from servers import veoh
-    from servers import videobb
-    from servers import videoweed
-    from servers import videozer
-    from servers import vidxden
-    from servers import vimeo
-    from servers import vk
-    from servers import yahoo
-    from servers import youtube
-
-    # Comprueba que el conector funciona
-    #adnstream.get_video_url("zisLliNceS")
-    #bliptv.get_video_url("http://blip.tv/play/h45Xgs23eQI.html")    
-    #vidxden.get_video_url("http://www.vidxden.com/3360qika02mo/whale.wars.s04e10.hdtv.xvid-momentum.avi.html")    
-    #videobb.get_video_url("http://videobb.com/video/QEmaAV4W6PF5")    
-    #videozer.get_video_url("http://www.videozer.com/video/FuxQQP")
-    #videozer.get_video_url("http://videozer.com/embed/VojJbb")
-    #fourshared.get_video_url("http://www.4shared.com/embed/392975628/ff297d3f")
-    #gigabyteupload.get_video_url("http://www.gigabyteupload.com/download-0f1142b188b0866b")
-    #movshare.get_video_url("http://www.movshare.net/video/066km1u5mwvec")
-    #stagevu.get_video_url("http://stagevu.com/video/lgnxzviiiarc")
-    #tutv.get_video_url("http://tu.tv/videos/avatar-1x19-el-asedio-del-norte-i")
-    #tutv.get_video_url("http://tu.tv/tutv.swf?skin=skins/skin&xtp=18726")
-    #userporn.get_video_url("http://www.userporn.com/e/1gMOyqXd4Ld0")
-    #veoh.get_video_url("v21212001qyZAhXyp")
-    #videoweed.get_video_url("http://www.videoweed.es/file/yk6r8czj7gsk6")
-    #vimeo.get_video_url("http://vimeo.com/27307766")
-    #vk.get_video_url("http://vk.com/video_ext.php?oid=108221761&id=160708641&hash=489fb82ac0d63aa0&hd=1")
-    #yahoo.get_video_url("http://es.video.yahoo.com/juegos-1305738/ps3-4750064/ridge-racer-unbounded-gamescom-26319245.html")
-    youtube.get_video_url("http://www.youtube.com/watch?v=zlZgGlwBgro&feature=fvhl")
+    funcionan = []
+    no_funcionan = []
+    no_probados = []
     
-    # Comprueba que find_videos funciona
-    #data = scrapertools.cache_page("http://www.tvshows4all.com/whale-wars-season-4-episode-10-delivering-the-final-blow/")
-    #print videoweed.find_videos(data)
-
-    # Tiene videobb, videozer y vk en 2 calidades
-    #data = scrapertools.cache_page("http://www.newdivx.net/peliculas-online/animacion/2402-los-pitufos-2011.html")
-    #print videobb.find_videos(data) 
-    #print videozer.find_videos(data)
-    #print vk.find_videos(data) 
-
-    # Megavideo en formato ?d
-    #from core import config
-    #data = scrapertools.cache_page("http://house.seriespepito.com/capitulos-primera-temporada-1/capitulo-12-medicina-deportiva/")
-    #data = scrapertools.cache_page("http://star-wars-the-clone-wars.seriespepito.com/capitulos-tercera-temporada-3/capitulo-3/")
-    #data = scrapertools.cache_page("http://star-wars-the-clone-wars.seriespepito.com/capitulos-tercera-temporada-3/capitulo-8/")
-    #videos = megavideo.find_videos(data)
-    #data = scrapertools.cache_page("http://www.seriesdanko.com/2010/06/eureka-4x18-capitulo-18.html")
-    
-    # Vuelca todos los vídeos que encuentra
-    #video_urls = megavideo.get_video_url("http://www.megavideo.com/?d=UDHMBYAQ",True,"","")
-    #video_urls = megaupload.get_video_url("http://www.megaupload.com/?d=S2Q8NWDM",True,"","")
-    #for video_url in video_urls:
-    #    print video_url
+    para_probar = []
+    para_probar.append(["twitvid","http://www.telly.com/KN995?fromtwitvid=1"])
+    para_probar.append(["twitvid","http://www.telly.com/666IK?fromtwitvid=1"])
+    para_probar.append(["videoweed","http://embed.videoweed.es/embed.php?v=jgos3ftj8a1zg"])
+    para_probar.append(["videoweed","http://embed.videoweed.es/embed.php?v=76ev085tmn0m6"])
+    para_probar.append(["nowvideo","http://www.nowvideo.eu/video/zwm0bilyhk0cl"])
+    para_probar.append(["nowvideo","http://www.nowvideo.eu/video/hp8967i8oirnk"])
+    para_probar.append(["novamov","http://www.novamov.com/video/tb6ira2dj029b"])
+    para_probar.append(["novamov","http://www.novamov.com/video/yqesmw0th1ad9"])
+    para_probar.append(["adfly","http://adf.ly/Fp6BF"])
+    para_probar.append(["moevideos","http://moevideo.net/swf/letplayerflx3.swf?file=23885.2b0a98945f7aa37acd1d6a0e9713"])
+    para_probar.append(["moevideos","http://www.moevideos.net/online/106249"])
+    para_probar.append(["mediafire","http://www.mediafire.com/?aol88b96gm2rteb"])
+    para_probar.append(["dailymotion","http://www.dailymotion.com/video/xrf96h"])
     '''
-    videos_encontrados = []
-    videos = servertools.findvideos(data)
-    for video in videos:
-        server = video[2]
-        exec "from servers import %s as serverconnector" % server
-        video_urls = serverconnector.get_video_url( video[1] , premium = False)
-        for video_url in video_urls:
-            videos_encontrados.append( [server,video_url[0],video_url[1]])
-    
-    for entrada in videos_encontrados:
-        print entrada
     '''
+    
+    '''
+    para_probar.append(["videobam","http://videobam.com/FSxJO"])
+    para_probar.append(["putlocker","http://www.putlocker.com/embed/CCA6C5AC98145138"])
+    para_probar.append(["youtube","http://www.youtube.com/watch?v=nL-ww-XHtaY"])
+    para_probar.append(["vk","http://vk.com/video_ext.php?oid=181111963&id=163409395&hash=86346c98c3176dab"])
+    para_probar.append(["filebox","http://www.filebox.com/owif1u0k7ntq"])
+    para_probar.append(["sockshare","http://www.sockshare.com/file/966B46C2C1150B7D"])
+    para_probar.append(["allmyvideos","http://allmyvideos.net/ptatfdc3oego"])
+    para_probar.append(["nosvideo","http://nosvideo.com/?v=7ir2lzpe5xf2"])
+    para_probar.append(["streamcloud","http://streamcloud.eu/neuj4jw5w261"])
+    para_probar.append(["movshare","http://www.movshare.net/video/tk2uynzhbbio5"])
+    para_probar.append(["divxstage","http://www.divxstage.net/video/27wnoxhgtvmff"])
+    '''
+
+    # Verifica los conectores
+    for server,url in para_probar:
+        resultado = test_one_server_connector(server,url)
+        if resultado:
+            funcionan.append([server,url])
+        else:
+            no_funcionan.append([server,url])
+    
+    print "------------------------------------"
+    print " funcionan: %d" % len(funcionan)
+    for server,url in funcionan:
+        print "   %s [%s]" % (server,url)
+    print " no funcionan: %d" % len(no_funcionan)
+    for server,url in no_funcionan:
+        print "   %s [%s]" % (server,url)
+    print " no probados: %d" % len(no_probados)
+    for server,url in no_probados:
+        print "   %s [%s]" % (server,url)
+    
 
 def test_cineraculo():
     data = scrapertools.cache_page("http://www.cineraculo.com/vermegavideolink.aspx")
@@ -319,7 +333,7 @@ def test_encode():
 if __name__ == "__main__":
     #test_server_connectors()
     #test_cineraculo()
-    #test_channels()
+    test_channels()
     #test_samba()
     #test_fileserver_premium()
     #test_filenium()
@@ -330,5 +344,5 @@ if __name__ == "__main__":
     #from servers import streamcloud
     #print streamcloud.get_video_url("")
     
-    from servers import divxstage
-    print divxstage.get_video_url("http://www.divxstage.eu/video/t9ed8enzrq2n3")
+    #from servers import divxstage
+    #print divxstage.get_video_url("http://www.divxstage.eu/video/t9ed8enzrq2n3")
