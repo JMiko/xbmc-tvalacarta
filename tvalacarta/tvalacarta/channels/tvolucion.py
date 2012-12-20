@@ -470,7 +470,8 @@ def novelasr(item):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
-        scrapedurl1 = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]
+        #scrapedurl1 = "http://m.tvolucion.esmas.com/telenovelas/"+match[0]
+        scrapedurl1 = "http://tvolucion.esmas.com/telenovelas/"+match[0]
         string = match[0]+" "
         print "cadena " +string
         print string.find("/ ")
