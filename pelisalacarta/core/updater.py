@@ -177,6 +177,7 @@ def update(params):
     # Borra el zip descargado
     logger.info("[updater.py] borra fichero...")
     os.remove(localfilename)
+    logger.info("[updater.py] ...fichero borrado")
 
 def get_channel_remote_url(channel_name):
     if channel_name<>"channelselector":

@@ -60,13 +60,16 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         scrapertools.printMatches(matches)
         
         if len(matches)>0:
-            video_urls.append( ["."+matches[0].rsplit('.',1)[1][0:3]+" [sockshare]",matches[0]])
+            mediaurl = matches[0]
+            mediaurl = mediaurl.replace("&amp;","&")
+            video_urls.append( ["."+mediaurl.rsplit('.',1)[1][0:3]+" [sockshare]",mediaurl])
 
     else:
         logger.info("[sockshare.py] No encuentra Playlist=")
         
         # Patron alternativo para sockshare.ws
         mediaurl = scrapertools.get_match(data,'<input type="hidden" value="([^"]+)" id="videoFile"')
+        mediaurl = mediaurl.replace("&amp;","&")
         video_urls.append( [ "[sockshare]" , mediaurl ])
 
     for video_url in video_urls:

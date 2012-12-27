@@ -53,11 +53,28 @@ def novedades(item):
     </div>
     </div><!--/post-45732-->
     '''
+    '''
+    <div class="post-45923 post type-post status-publish format-standard hentry category-2012 category-blu-ray category-comedia category-drama category-mkv category-mkv-hd720p category-romance tag-chris-messina tag-jenna-fischer tag-lee-kirk tag-the-giant-mechanical-man-pelicula tag-topher-grace" id="post-45923">
+    <h2 class="title"><a href="http://unsoloclic.info/2012/12/the-giant-mechanical-man-2012-bluray-720p-hd/" rel="bookmark" title="Permanent Link to The Giant Mechanical Man (2012) BluRay 720p HD">The Giant Mechanical Man (2012) BluRay 720p HD</a></h2>
+    <div class="postdate"><img src="http://unsoloclic.info/wp-content/themes/TinyWeb/images/date.png" /> diciembre 24th, 2012 
+    <!-- 
+    <img src="http://unsoloclic.info/wp-content/themes/TinyWeb/images/user.png" /> deportv 
+    -->
+    </div>
+    <div class="entry">
+    <p style="text-align: center;"><a href="http://unsoloclic.info/2012/12/the-giant-mechanical-man-2012-bluray-720p-hd/"><img class="aligncenter size-full wp-image-45924" title="Giant Michanical Man Pelicula Descargar" src="http://unsoloclic.info/wp-content/uploads/2012/12/Giant-Michanical-Man-Pelicula-Descargar.jpg" alt="" width="380" height="500" /></a></p>
+    <p style="text-align: center;">
+    <div class="readmorecontent">
+    <a class="readmore" href="http://unsoloclic.info/2012/12/the-giant-mechanical-man-2012-bluray-720p-hd/" rel="bookmark" title="Permanent Link to The Giant Mechanical Man (2012) BluRay 720p HD">Seguir Leyendo</a>
+    </div>
+    </div>
+    </div><!--/post-45923-->
+    '''
     patron  = '<div class="post[^"]+" id="post-\d+">[^<]+'
     patron += '<h2 class="title"><a href="([^"]+)" rel="bookmark" title="[^"]+">([^<]+)</a></h2>[^<]+'
     patron += '<div class="postdate">.*?</div>[^<]+'
     patron += '<div class="entry">[^<]+'
-    patron += '<p><a[^<]+<img.*?src="([^"]+)"'
+    patron += '<p[^<]+<a[^<]+<img.*?src="([^"]+)"'
     
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -88,7 +105,9 @@ def findvideos(item):
     logger.info("[unsoloclic.py] findvideos")
     data = scrapertools.cache_page(item.url)
     itemlist=[]
-    patron = '<a href="(http.//[a-z0-9]+.linkbucks.c[^"]+)"[^>]+><img class="[^"]+" title="([^"]+)" src="([^"]+)"'
+    
+    #<a href="http://67cfb0db.linkbucks.com"><img title="billionuploads" src="http://unsoloclic.info/wp-content/uploads/2012/11/billonuploads2.png" alt="" width="380" height="50" /></a></p>
+    patron = '<a href="(http.//[a-z0-9]+.linkbucks.c[^"]+)[^>]+><img.*?title="([^"]+)" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for url,servertag,serverthumb in matches:
@@ -125,7 +144,15 @@ def play(item):
             data = scrapertools.cache_page(location)
             adfskipad_url = urlparse.urljoin(location,scrapertools.get_match(data,"var url \= '(/go/[^']+)'"))
             logger.info("adfskipad_url="+adfskipad_url)
-            
+
+            # Espera los 5 segundos
+            try:
+                from platformcode.xbmc import xbmctools
+                xbmctools.handle_wait(5,"adf.ly",'')
+            except:
+                import time
+                time.sleep(5)
+
             # Obtiene la URL del video
             location = scrapertools.get_header_from_response(adfskipad_url,header_to_get="location")
             logger.info("location="+location)
