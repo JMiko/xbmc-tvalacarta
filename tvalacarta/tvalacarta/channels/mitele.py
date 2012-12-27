@@ -155,12 +155,19 @@ def capitulos(item):
         scrapedplot = capitulo['post_content'].replace("<!--more-->","")
         scrapedplot = scrapertools.htmlclean(scrapedplot)
 
-        itemlist.append( Item(channel=item.channel, action="capitulo", title=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, category=item.category, show=item.show ))
+        itemlist.append( Item(channel=item.channel, action="play", title=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, category=item.category, show=item.show, folder=False ))
     
     if capitulos_json['hasNext']:
         item.extra = str(int(item.extra)+1)
         itemlist.extend( capitulos(item) )
     
+    return itemlist
+
+def play(item):
+    data = scrapertools.cache_page("http://web.pydowntv.com/api?url="+item.url)
+    url = scrapertools.get_match(data,'"url_video"\: \["([^"]+)"\]')
+    itemlist=[]
+    itemlist.append( Item(channel=item.channel, action="play", title=item.title, url=url, thumbnail=item.thumbnail, plot=item.plot, category=item.category, show=item.show, folder=False ))
     return itemlist
 
 def capitulo(item):
