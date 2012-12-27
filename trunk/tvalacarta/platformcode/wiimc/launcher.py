@@ -25,7 +25,7 @@ logger=logging.getLogger("wiimc")
 #cerealizer.register(Item)
 
 #TODO: Pasar esto a ¿config?
-VERSIONTAG = "3.3.3"
+VERSIONTAG = "3.3.4"
 
 def controller(plugin_name,port,host,path,headers):
 

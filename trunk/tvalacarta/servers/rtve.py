@@ -29,7 +29,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("assetid="+codigo)
 
     if url=="":
-        data = scrapertools.cache_page("http://pydowntv2.appspot.com/api?url="+page_url)
+        data = scrapertools.cache_page("http://web.pydowntv.com/api?url="+page_url)
         url = scrapertools.get_match(data,'"url_video"\: \["([^"]+)"\]')
         
     if url=="":

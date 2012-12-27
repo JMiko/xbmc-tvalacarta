@@ -2,13 +2,13 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-    <property name="oldversion" value="3.3.2"/>
-    <property name="oldversionboxee" value="3.6"/>
-    <property name="oldversiondate" value="10/12/2012"/>
+    <property name="oldversion" value="3.3.3"/>
+    <property name="oldversionboxee" value="3.7"/>
+    <property name="oldversiondate" value="17/12/2012"/>
 
-    <property name="version" value="3.3.3"/>
-    <property name="versionboxee" value="3.7"/>
-    <property name="versiondate" value="17/12/2012"/>
+    <property name="version" value="3.3.4"/>
+    <property name="versionboxee" value="3.8"/>
+    <property name="versiondate" value="25/12/2012"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <property name="target" value="target"/>
@@ -300,8 +300,8 @@
                 <!--exclude name="platformcode/xbmceden/**"/-->
 			</fileset>
         </copy>
-        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.tvalacarta/addon.xml"/>
-        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.tvalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.tvalacarta/addon.xml"/>
+        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-frodo/plugin.video.tvalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-plugin ============================================================ -->
