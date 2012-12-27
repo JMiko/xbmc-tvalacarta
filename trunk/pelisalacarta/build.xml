@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.36"/>
-    <property name="oldversionboxee" value="7.1"/>
-    <property name="oldversiondate" value="11/12/2012"/>
+    <property name="oldversion" value="3.2.37"/>
+    <property name="oldversionboxee" value="7.2"/>
+    <property name="oldversiondate" value="18/12/2012"/>
 
-    <property name="version" value="3.2.37"/>
-    <property name="versionboxee" value="7.2"/>
-    <property name="versiondate" value="18/12/2012"/>
+    <property name="version" value="3.2.38"/>
+    <property name="versionboxee" value="7.3"/>
+    <property name="versiondate" value="25/12/2012"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <!-- Para betas usar: -->
@@ -299,8 +299,8 @@
                 <!--exclude name="platformcode/xbmceden/**"/-->
 			</fileset>
         </copy>
-        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-plugin ============================================================ -->

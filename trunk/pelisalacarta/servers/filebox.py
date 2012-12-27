@@ -33,10 +33,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[filebox.py] URL ")
     data = scrapertools.cache_page(page_url)
     # Espera los 5 segundos
-    if "xbmc" in config.get_platform():
+    try:
         from platformcode.xbmc import xbmctools
         xbmctools.handle_wait(5,"filebox",'')
-    else:
+    except:
         import time
         time.sleep(5)
 

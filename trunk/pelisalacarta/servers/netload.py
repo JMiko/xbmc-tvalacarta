@@ -37,4 +37,19 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    # http://netload.in/datei2OuYAjcVGq.htm
+    patronvideos  = '(netload.in/[a-zA-Z0-9]+.htm)'
+    logger.info("[netload.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data+'"')
+
+    for match in matches:
+        titulo = "[netload]"
+        url = "http://"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'netload' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
     return devuelve

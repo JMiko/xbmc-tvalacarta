@@ -138,13 +138,13 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     #http://ul.to/mjphp9hl
-    patronvideos  = '(http://ul.to/[a-zA-Z0-9]+)'
+    patronvideos  = '(ul.to/[a-zA-Z0-9]+)'
     logger.info("[uploadedto.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[uploaded.to]"
-        url = match.replace("http://ul.to/","http://uploaded.net/file/")
+        url = match.replace("ul.to/","http://uploaded.net/file/")
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'uploadedto' ] )

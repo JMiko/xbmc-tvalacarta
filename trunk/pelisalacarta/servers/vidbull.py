@@ -48,7 +48,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     cifrado=""
     for match in matches:
         logger.info("match="+match)
-        if "mp4" in match or "flv" in match:
+        if "mp4" in match or "flv" in match or "video" in match:
             cifrado = match
             break
     
@@ -59,12 +59,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("descifrado="+descifrado)
     
     # Extrae la URL
-    media_url = scrapertools.get_match(descifrado,"s1.addVariable\('file','([^']+)'\)")
+    #media_url = scrapertools.get_match(descifrado,"s1.addVariable\('file','([^']+)'\)")
+    #<param name="src"value="http://fs10.vidbull.com:182/d/4zsdjpllljrwuximze6sd2yu4a4udufkfckbb5nyt2yku5c7qcqmh5y4/video.avi"/>
+    media_url = scrapertools.get_match(descifrado,'<param name="src"value="([^"]+)"')
     
     video_urls = []
     
     if len(matches)>0:
-        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidbull]",media_url+"|Referer="+urllib.quote("http://www.tusnovelas.com/archivos/player.swf")])
+        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidbull]",media_url])
 
     for video_url in video_urls:
         logger.info("[vidbull.py] %s - %s" % (video_url[0],video_url[1]))
