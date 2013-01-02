@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>animeflv</name>
-	<tag>5</tag>
-	<date>07/07/2012</date>
-	<changes>Ya salen todas las categorias y la paginacion en menu completo. Por @ignite.</changes>
+	<tag>6</tag>
+	<date>02/01/2013</date>
+	<changes>Se soluciona el problema por el que no se visualizaban los enlaces</changes>
 </version>
