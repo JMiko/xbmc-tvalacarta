@@ -295,14 +295,9 @@ def airlist(item):
 
 def findvideos(item):
     logger.info("[animeid.py] findvideos")
-    itemlist=[]
+    itemlist=[]    
     
-    from core import unpackerjs3
-
     # Busca el argumento
-    headers=[]
-    headers.append( [ "User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:12.0) Gecko/20100101 Firefox/12.0" ] )
-    headers.append(["Referer","http://animeflv.net/archivos/player.swf"])
     data = scrapertools.cache_page(item.url)
     patron = '<img src="[^"]+" class="simg" align="left"[^>]+>(.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -310,7 +305,17 @@ def findvideos(item):
         scrapedplot = matches[0]
     else:
         scrapedplot = item.plot
-    
+        
+    #<div id="tab1" class="tab_content" style=""><object id= </div>   
+    patron = '(<div id="tab[^"]+" class="tab_content[^>]+>.*?</div>)'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for match in matches:
+        # Ahora busca los vídeos
+        itemlist.extend( servertools.find_video_items(data=match) )
+        
+    '''
+    from core import unpackerjs3
     patron = "(<script>eval\(function\(p,a,c,k,e,d\).*?</script>)"
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -323,10 +328,13 @@ def findvideos(item):
         
         # hulkshare robado
         if "hl.php" in data:
+            headers=[]
+            headers.append( [ "User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:12.0) Gecko/20100101 Firefox/12.0" ] )
+            headers.append(["Referer","http://animeflv.net/archivos/player.swf"])
             url1 = scrapertools.get_match(data,"(http://prueba.animeflv.net/hl.php\?v=[a-zA-Z0-9\-]+)")
             location = scrapertools.get_header_from_response(url1,headers=headers, header_to_get="location")
             itemlist.append(Item(title=" - [hulkshare]",server="directo",url=location,action="play",folder=False))
-
+    '''
     for videoitem in itemlist:
         videoitem.channel = __channel__
         videoitem.plot = scrapedplot
