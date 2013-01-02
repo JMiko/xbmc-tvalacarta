@@ -45,21 +45,29 @@ def search(item,texto, categoria="*"):
     if item.url=="":
         item.url = "http://www.seriesyonkis.com/buscar/serie"
     url = "http://www.seriesyonkis.com/buscar/serie" # write ur URL here
-    post = 'keywords='+texto[0:18]
+    post = 'keyword='+texto[0:18] + '&search_type=serie'
     
     data = scrapertools.cache_page(url,post=post)
-    patron = '<li class="[^"]+"> <a title="([^"]+)" href="([^"]+)"><img width="[^"]+" height="[^"]+" class="thumb" src="([^"]+)"></a> <h3><a[^>]+>[^<]+</a></h3> <p>([^<]+)</p>'
+    return getsearchresults(item, data, "episodios")
+    
+def getsearchresults(item, data, action):
+    itemlist = []
+
+    patron='_results_wrapper">(.*?)<div id="tab-profesionales"'
     matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:        
+        #<li class="nth-child1n"> <figure> <a href="/pelicula/el-moderno-sherlock-holmes-1924" title="El moderno Sherlock Holmes (1924)"><img width="100" height="144" src="http://s.staticyonkis.com/img/peliculas/100x144/el-moderno-sherlock-holmes-1924.jpg" alt=""></a> <figcaption>8.0</figcaption> </figure> <aside> <h2><a href="/pelicula/el-moderno-sherlock-holmes-1924" title="El moderno Sherlock Holmes (1924)">El moderno Sherlock Holmes (1924)</a></h2> <p class="date">1924 | Estados Unidos | votos: 3</p> <div class="content">Película sobre el mundo del cine, Keaton es un proyeccionista que sueña con ser un detective cuando, milagrosamente, se encuentra dentro de la película que está proyectando. Allí intentará salvar a su amada de las garras del villano. Una de...</div> <p class="generos">  <a href="/genero/comedia">Comedia</a>  <a class="topic" href="/genero/cine-mudo">Cine mudo</a>  <a class="topic" href="/genero/mediometraje">Mediometraje</a>  <i>(1 más) <span class="aditional_links"> <span>  <a class="topic" href="/genero/sherlock-holmes">Sherlock Holmes</a>  </span> </span> </i>  </p> </aside> </li>
+        patron='<li[^>]+>.*?href="([^"]+)".*?title="([^"]+)".*?src="([^"]+).*?<div class="content">([^<]+)</div>.*?</li>'
+        results = re.compile(patron,re.DOTALL).findall(match)
+        for result in results:        
+            scrapedtitle = result[1]
+            scrapedurl = urlparse.urljoin(item.url,result[0])
+            scrapedthumbnail = result[2]
+            scrapedplot = result[3]
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-    for match in matches:
-        scrapedtitle = match[0]
-        scrapedurl = urlparse.urljoin(item.url,match[1])
-        scrapedthumbnail = match[2]
-        scrapedplot = match[3]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
-
+            itemlist.append( Item(channel=__channel__, action=action , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        
     return itemlist
 
 def lastepisodes(item):
