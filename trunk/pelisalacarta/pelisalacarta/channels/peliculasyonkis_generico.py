@@ -96,24 +96,12 @@ def search(item,texto):
     if item.url=="":
         item.url = "http://www.peliculasyonkis.com/buscar/pelicula"
     url = "http://www.peliculasyonkis.com/buscar/pelicula" # write ur URL here
-    post = 'keywords='+texto[0:18]
+    post = 'keyword='+texto[0:18]+'&search_type=pelicula'
     
     data = scrapertools.cache_page(url,post=post)
-    #<li class="blanco"> <a title="Brave Story (2006)" href="/pelicula/brave-story-2006"> <img width="50" height="71" class="thumb" src="http://s.staticyonkis.com/img/peliculas/100x144/brave-story-2006.jpg">
-    #</a> <h3>  <a title="Brave Story (2006)" href="/pelicula/brave-story-2006">Brave Story (2006)</a> </h3> <p>Brave Story narra la historia de Wataru, un niño de diez años que se introduce en un mundo fantástico llamado Vision, donde inicia la búsqueda de la Diosa del destino, ...</p> <div class="rating"><p>0</p><span>puntuación</span></div>
-    patron = '<li class="[^"]+"[^<]+<a title="([^"]+)" href="([^"]+)"[^<]+<img width="[^"]+" height="[^"]+" class="thumb" src="([^"]+)"[^<]+</a[^<]+<h3[^<]+<a[^<]+</a[^<]+</h3[^<]+<p>([^<]+)<'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-
-    for match in matches:
-        scrapedtitle = match[0]
-        scrapedurl = urlparse.urljoin(item.url,match[1])
-        scrapedthumbnail = match[2]
-        scrapedplot = match[3]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
-
-    return itemlist
+    
+    from pelisalacarta.channels import seriesyonkis
+    return seriesyonkis.getsearchresults(item, data, "findvideos")
 
 def lastepisodes(item):
     logger.info("[peliculasyonkis_generico.py] lastepisodes")

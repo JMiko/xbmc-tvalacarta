@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesyonkis</name>
-	<tag>24</tag>
-	<date>02/11/2012</date>
-	<changes>Solucionado el captcha de PeliculasYonkis</changes>
+	<tag>25</tag>
+	<date>02/01/2013</date>
+	<changes>Arreglado el buscador</changes>
 </version>
