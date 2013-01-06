@@ -8,7 +8,7 @@
 AppId={{2F379387-ABDF-4A7F-8F7D-E30122A31053}
 AppName=Descargar de Aragón TV
 AppVersion=1.0
-;AppVerName=Descargar de Telefe 1.1
+;AppVerName=Descargar de Aragón TV 1.1
 AppPublisher=Televisión a la carta
 AppPublisherURL=http://blog.tvalacarta.info/
 AppSupportURL=http://blog.tvalacarta.info/

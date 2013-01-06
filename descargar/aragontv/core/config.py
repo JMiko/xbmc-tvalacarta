@@ -40,7 +40,7 @@ def get_temp_file(filename):
     return os.path.join(get_data_path(),filename)
 
 def get_data_path():
-    data_path = os.path.join( os.path.expanduser("~") , ".descargar-telefe" )
+    data_path = os.path.join( os.path.expanduser("~") , ".descargar-aragontv" )
     if not os.path.exists(data_path):
         os.mkdir(data_path)
     return data_path
