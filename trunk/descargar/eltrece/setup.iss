@@ -8,8 +8,8 @@
 
 AppId={{C9181EC3-F379-44C9-8070-FCAB3E22A02C}
 AppName=Descargar de El Trece
-AppVersion=1.0
-;AppVerName=Descargar de El Trece 1.0
+AppVersion=1.1
+;AppVerName=Descargar de El Trece 1.1
 AppPublisher=Televisión a la carta
 AppPublisherURL=http://blog.tvalacarta.info/
 AppSupportURL=http://blog.tvalacarta.info/
