@@ -16,7 +16,7 @@ AppSupportURL=http://blog.tvalacarta.info/
 AppUpdatesURL=http://blog.tvalacarta.info/
 DefaultDirName={pf}\Televisión a la carta\Descargar de El Trece
 DefaultGroupName=Televisión a la carta
-LicenseFile=C:\py2exe\telefe\LICENSE.txt
+LicenseFile=C:\py2exe\eltrece\LICENSE.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -41,5 +41,5 @@ Name: "{commondesktop}\Descargar de El Trece"; Filename: "{app}\descargar.exe"; 
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Descargar de El Trece"; Filename: "{app}\descargar.exe"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\descargar.exe"; Description: "{cm:LaunchProgram,Descargar de Telefe}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\descargar.exe"; Description: "{cm:LaunchProgram,Descargar de El Trece}"; Flags: nowait postinstall skipifsilent
 
