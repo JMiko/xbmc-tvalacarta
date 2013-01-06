@@ -65,6 +65,7 @@ class MyDialog:
         # Obtiene el titulo y la URL del vídeo
         windows_mode = os.path.exists("rtmpdump.exe")
         from core import scrapertools
+        pageurl = pageurl.encode("utf-8")
         data = scrapertools.cachePage(pageurl)
         patron = "<title>(.*?)</title>"
         matches = re.compile(patron,re.DOTALL).findall(data)
@@ -112,7 +113,7 @@ class MyDialog:
         return title
 
 root = Tk()
-root.title("Descargar de Aragón TV - v1.0")
+root.title("Descargar de Aragón TV - v1.1")
 
 d = MyDialog(root)
 
