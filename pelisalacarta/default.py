@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta
-# XBMC (pre-dharma) entry point
+# XBMC entry point
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -9,8 +9,8 @@
 __plugin__  = "pelisalacarta"
 __author__  = "pelisalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/"
-__date__ = "25/12/2012"
-__version__ = "3.2.38"
+__date__ = "08/01/2013"
+__version__ = "3.2.40"
 
 import os
 import sys

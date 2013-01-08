@@ -30,11 +30,11 @@ def mainlist(item):
     
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="Últimos capítulos agregados" , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="novedades"           , title="Nuevas telenovelas"     , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="top"                 , title="Telenovelas TOP"        , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="emision"             , title="Telenovelas en emisión" , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="todas"               , title="Lista completa"         , url="http://vertelenovelas.net/"))
+    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="Capítulos recientes"            , url="http://vertelenovelas.net/"))
+    #itemlist.append( Item(channel=__channel__, action="canales"             , title="Novelas por canal de televisión", url="http://vertelenovelas.net/"))
+    itemlist.append( Item(channel=__channel__, action="top"                 , title="TOP de Telenovelas"             , url="http://vertelenovelas.net/"))
+    itemlist.append( Item(channel=__channel__, action="emision"             , title="Telenovelas en emisión"         , url="http://vertelenovelas.net/"))
+    itemlist.append( Item(channel=__channel__, action="todas"               , title="Lista completa"                 , url="http://vertelenovelas.net/"))
 
     return itemlist
 
@@ -44,25 +44,35 @@ def novedades_episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    '''
-    <div class="dia">
-    <a href="capitulo/la-voz-espana-5.html" title="La Voz España 5">
-    <img src="http://vertelenovelas.net/image_files/la-voz-espana.jpg" width="70px" height="105px" align="left"/></a>
-    <div class="dia-titulo"><a href="capitulo/la-voz-espana-5.html" class="tts">La Voz España 5</a></div>
-    10/13/2012<br /><br />
-    '''
-    patron  = '<div class="dia">[^<]+'
-    patron += '<a href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)"[^<]+</a>[^<]+'
-    patron += '<div class="dia-titulo"><a[^>]+>([^<]+)</a>'
+    data = scrapertools.get_match(data,'<div class="dt"> Capitulos Recientes</div>(.*?)</ul></div>')
+    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for url,scrapedthumbnail,scrapedtitle in matches:
-        scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,url)
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        url = urlparse.urljoin(item.url,scrapedurl)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , folder=True) )
+    
+    return itemlist
+
+def canales(item):
+    logger.info("[vertelenovelas.py] canales")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<div class="dt">Canales de Televison</div>(.*?)</ul></div>')
+    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        url = urlparse.urljoin(item.url,scrapedurl)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+        itemlist.append( Item(channel=__channel__, action="series", title=title , url=url , folder=True) )
     
     return itemlist
 
@@ -96,7 +106,8 @@ def episodios(item):
     # Descarga la página
     
     data = scrapertools.cachePage(item.url)
-    patron  = '<li class="lc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
+    #<li class="lcc"><a href="capitulo/herederos-de-una-venganza-121.html" class="lcc">Cap&iacute;tulo 121 de Herederos de una venganza</a></li>
+    patron  = '<li class="lcc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -142,48 +153,57 @@ def todas(item):
     logger.info("[vertelenovelas.py] todas")
     itemlist=[]
 
-    data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<div id="noti-titulo">Lista de Telenovelas</div>[^<]+<div class="dm">(.*?)</div>')
-    
-    patron = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<div class="dt">Lista completa de Telenovelas(.*?)</ul></div>')
+    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    for url,title in matches:
-        scrapedurl = urlparse.urljoin(item.url,url)
-        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=scrapedurl , folder=True) )
+    if DEBUG: scrapertools.printMatches(matches)
 
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        url = urlparse.urljoin(item.url,scrapedurl)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+        itemlist.append( Item(channel=__channel__, action="series", title=title , url=url , folder=True) )
+    
     return itemlist
 
 def emision(item):
     logger.info("[vertelenovelas.py] todas")
     itemlist=[]
 
-    data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'titulo">Telenovelas En Emis[^<]+</div>(.*?)</div>')
-    
-    patron = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<div class="dt">Telenovelas en Emisi[^<]+</div>(.*?)</ul></div>')
+    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    for url,title in matches:
-        scrapedurl = urlparse.urljoin(item.url,url)
-        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=scrapedurl , folder=True) )
+    if DEBUG: scrapertools.printMatches(matches)
 
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        url = urlparse.urljoin(item.url,scrapedurl)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , folder=True) )
+    
     return itemlist
 
 def top(item):
     logger.info("[vertelenovelas.py] todas")
-    itemlist=[]
+    itemlist = []
 
-    data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<div id="categoria-titulo">Telenovelas TOP</div>(.*?)</div>')
-    
-    patron = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<div class="dt">Top de Telenovelas</div>(.*?)</ul></div>')
+    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    for url,title in matches:
-        scrapedurl = urlparse.urljoin(item.url,url)
-        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=scrapedurl , folder=True) )
+    if DEBUG: scrapertools.printMatches(matches)
 
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        url = urlparse.urljoin(item.url,scrapedurl)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , folder=True) )
+    
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.

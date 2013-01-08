@@ -102,6 +102,20 @@ def novedades(item):
 
     return itemlist
 
+def findvideos(item):
+    logger.info("[internapoly.py] findvideos")
+
+    data = scrapertools.cache_page(item.url)
+    item.url = scrapertools.get_match(data,'<div class="separator"[^<]+<img[^<]+</div[^<]+.*?<a href="([^"]+)"')
+    data = scrapertools.cache_page(item.url)
+    
+    itemlist = servertools.find_video_items(data=data)
+        
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+
+    return itemlist
+
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     from servers import servertools
