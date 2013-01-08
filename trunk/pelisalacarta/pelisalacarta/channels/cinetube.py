@@ -21,9 +21,11 @@ __language__ = "ES"
 
 #DEBUG = config.get_setting("debug")
 DEBUG = False
+'''
 SESION = config.get_setting("session","cinetube")
 LOGIN = config.get_setting("login","cinetube")
 PASSWORD = config.get_setting("password","cinetube")
+'''
 
 def isGeneric():
     return True
@@ -33,19 +35,21 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Películas"                , action="menupeliculas"))
-    itemlist.append( Item(channel=__channel__, title="Series"                   , action="menuseries"))
-    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="menudocumentales"))
-    itemlist.append( Item(channel=__channel__, title="Anime"                    , action="menuanime"))
+    #itemlist.append( Item(channel=__channel__, title="Series"                   , action="menuseries"))
+    #itemlist.append( Item(channel=__channel__, title="Documentales"             , action="menudocumentales"))
+    #itemlist.append( Item(channel=__channel__, title="Anime"                    , action="menuanime"))
     
-    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )   
-    itemlist.append( Item(channel=__channel__, title="Buscar por Actor/Director", action="search" , url="actor-director") )
+    #itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )   
+    #itemlist.append( Item(channel=__channel__, title="Buscar por Actor/Director", action="search" , url="actor-director") )
 
+    '''
     if SESION=="true":
         perform_login(LOGIN,PASSWORD)
         itemlist.append( Item(channel=__channel__, title="Cerrar sesion ("+LOGIN+")", action="logout"))
     else:
         itemlist.append( Item(channel=__channel__, title="Iniciar sesion", action="login"))
-
+    '''
+    
     return itemlist
 
 def menupeliculas(item):
@@ -53,13 +57,118 @@ def menupeliculas(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Películas - Novedades"        , action="peliculas"        , url="http://www.cinetube.es/peliculas/"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Estrenos de Cine" , action="documentales"     , url="http://www.cinetube.es/peliculas/estrenos-de-cine/"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Estrenos en DVD"  , action="documentales"     , url="http://www.cinetube.es/peliculas/estrenos-dvd/"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Nueva Calidad"    , action="documentales"     , url="http://www.cinetube.es/peliculas/nueva-calidad/"))
-    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="listalfabetico"   , url="peliculas"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Categorías"       , action="listcategorias"   , url="peliculas"))
+    #itemlist.append( Item(channel=__channel__, title="Películas - Estrenos de Cine" , action="documentales"     , url="http://www.cinetube.es/peliculas/estrenos-de-cine/"))
+    #itemlist.append( Item(channel=__channel__, title="Películas - Estrenos en DVD"  , action="documentales"     , url="http://www.cinetube.es/peliculas/estrenos-dvd/"))
+    #itemlist.append( Item(channel=__channel__, title="Películas - Nueva Calidad"    , action="documentales"     , url="http://www.cinetube.es/peliculas/nueva-calidad/"))
+    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="letras"           , url="http://www.cinetube.es/peliculas/"))
+    itemlist.append( Item(channel=__channel__, title="Películas - Categorías"       , action="categorias"       , url="http://www.cinetube.es/peliculas/"))
     
-    itemlist.append( Item(channel=__channel__, title="Buscar Películas"             , action="search"           , url="peliculas") )
+    #itemlist.append( Item(channel=__channel__, title="Buscar Películas"             , action="search"           , url="peliculas") )
+
+    return itemlist
+
+
+def peliculas(item,paginacion=True):
+    logger.info("[cinetube.py] peliculas")
+
+    url = item.url
+
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+
+    # Extrae las entradas
+    patronvideos  = '<div class="imgmov[^<]+'
+    patronvideos += '<i[^<]+</i[^<]+'
+    patronvideos += '<img src="([^"]+)"[^<]+'
+    patronvideos += '<a href="([^"]+)"[^<]+<i[^<]+</i[^<]+'
+    patronvideos += '<strong>([^<]+)</strong[^<]+'
+    patronvideos += '<span[^>]+>(.*?)</span>'
+
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    itemlist = []
+    for scrapedthumbnail,scrapedurl,scrapedtitle,scrapedplot in matches:
+        title = scrapedtitle.strip()+" ("+scrapertools.htmlclean(scrapedplot).strip()+")"
+        title = title.replace("Calidad:","")
+        title = title.replace("Idiomas :","")
+        title = re.compile("\s+",re.DOTALL).sub(" ",title)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        plot = ""
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        # Añade al listado de XBMC
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot ) )
+
+    # Extrae el paginador
+    try:
+        next_page_url = scrapertools.get_match(data,'<a class="lnne icob" href="([^"]+)">Siguientes</a>')
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page_url) ) )
+    except:
+        pass
+        
+    return itemlist
+
+def letras(item):
+    logger.info("[cinetube.py] listalfabetico("+item.url+")")
+    
+    if "peliculas" in item.url:
+        action = "peliculas"
+    elif "series-anime" in item.url:
+        action="series"
+    elif "peliculas-anime" in item.url:
+        action="documentales"
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<ul class="lstabc[^>]+>(.*?)</ul>')
+
+    # Extrae las entradas
+    patron = '<li><a href="([^"]+)">([^<]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    itemlist = []
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        plot = ""
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        # Añade al listado
+        itemlist.append( Item(channel=__channel__, action=action, title=title , url=url , thumbnail=thumbnail , plot=plot) )
+
+    return itemlist
+
+def categorias(item):
+    logger.info("[cinetube.py] listcategorias")
+
+    if "peliculas" in item.url:
+        action = "peliculas"
+    elif "series-anime" in item.url:
+        action="series"
+    elif "peliculas-anime" in item.url:
+        action="documentales"
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<h3 class="tibk bgwh fx pore"><strong>Temáticas</strong></h3>(.*?)</ul>')
+
+    # Extrae las entradas
+    patron = '<li><a href="([^"]+)">([^<]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    itemlist = []
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        plot = ""
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        # Añade al listado
+        itemlist.append( Item(channel=__channel__, action=action, title=title , url=url , thumbnail=thumbnail , plot=plot) )
 
     return itemlist
 
@@ -212,73 +321,6 @@ def search(item,texto,categoria=""):
             logger.error( "%s" % line )
         return []
 
-def peliculas(item,paginacion=True):
-    logger.info("[cinetube.py] peliculas")
-
-    url = item.url
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-
-    # Extrae las entradas
-    patronvideos  = '<!--PELICULA-->[^<]+'
-    patronvideos += '<div class="peli_item textcenter">[^<]+'
-    patronvideos += '<div class=[\W]pelicula_img[\W]><a href=.*?.html[^>]+>[^<]+'
-    patronvideos += '<img src=["|\']([^"]+?)["|\'][^<]+</a>[^<]+'
-    patronvideos += '</div[^<]+<a href=["|\']([^"]+?)["|\'].*?<p class="white">([^<]+)</p>.*?<p><span class="rosa">([^>]+)</span></p><div class="icos_lg">(.*?)</div>'
-
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[2] + " [" + match[3] + "]"
-        '''
-        matchesconectores = re.compile('<img.*?alt="([^"]*)"',re.DOTALL).findall(match[4])
-        conectores = ""
-        for matchconector in matchesconectores:
-            logger.info("matchconector="+matchconector)
-            if matchconector=="":
-                matchconector = "megavideo"
-            conectores = conectores + matchconector + "/"
-        if len(matchesconectores)>0:
-            scrapedtitle = scrapedtitle + " (" + conectores[:-1] + ")"
-        scrapedtitle = scrapedtitle.replace("megavideo/megavideo","megavideo")
-        scrapedtitle = scrapedtitle.replace("megavideo/megavideo","megavideo")
-        scrapedtitle = scrapedtitle.replace("megavideo/megavideo","megavideo")
-        scrapedtitle = scrapedtitle.replace("descarga directa","DD")
-        '''
-
-        # Convierte desde UTF-8 y quita entidades HTML
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        fulltitle = scrapedtitle
-        # procesa el resto
-        scrapedplot = ""
-
-        scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[1])
-        scrapedthumbnail = match[0]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
-
-    # Extrae el paginador
-    #<li class="navs"><a class="pag_next" href="/peliculas-todas/2.html"></a></li>
-    patronvideos  = '<li class="navs"><a class="pag_next" href="([^"]+)"></a></li>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        scrapedurl = urlparse.urljoin(url,matches[0])
-        pagitem = Item(channel=__channel__, action="peliculas", title="!Página siguiente" , url=scrapedurl)
-        if not paginacion:
-            itemlist.extend( peliculas(pagitem) )
-        else:
-            itemlist.append( pagitem )
-        
-    return itemlist
-
 def documentales(item):
     logger.info("[cinetube.py] documentales")
 
@@ -373,85 +415,6 @@ def completo(item):
             siguiente = False
         else:
             data = scrapertools.cachePage(urlparse.urljoin(url,matches[0]))
-
-    return itemlist
-
-def listalfabetico(item):
-    logger.info("[cinetube.py] listalfabetico("+item.url+")")
-    
-    action = item.url
-    if item.url=="series-anime":
-        action="series"
-    if item.url=="peliculas-anime":
-        action="documentales"
-    
-    baseurl = "http://www.cinetube.es/"+item.url+"/"
-    
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, action=action , title="0-9", url=baseurl+"0-9/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="A"  , url=baseurl+"A/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="B"  , url=baseurl+"B/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="C"  , url=baseurl+"C/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="D"  , url=baseurl+"D/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="E"  , url=baseurl+"E/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="F"  , url=baseurl+"F/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="G"  , url=baseurl+"G/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="H"  , url=baseurl+"H/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="I"  , url=baseurl+"I/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="J"  , url=baseurl+"J/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="K"  , url=baseurl+"K/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="L"  , url=baseurl+"L/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="M"  , url=baseurl+"M/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="N"  , url=baseurl+"N/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="O"  , url=baseurl+"O/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="P"  , url=baseurl+"P/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="Q"  , url=baseurl+"Q/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="R"  , url=baseurl+"R/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="S"  , url=baseurl+"S/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="T"  , url=baseurl+"T/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="U"  , url=baseurl+"U/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="V"  , url=baseurl+"V/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="W"  , url=baseurl+"W/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="X"  , url=baseurl+"X/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="Y"  , url=baseurl+"Y/"))
-    itemlist.append( Item(channel=__channel__, action=action , title="Z"  , url=baseurl+"Z/"))
-
-    return itemlist
-
-def listcategorias(item):
-    logger.info("[cinetube.py] listcategorias")
-    
-    action = item.url
-    if item.url=="series-anime":
-        action="series"
-    if item.url=="peliculas-anime":
-        action="documentales"
-        
-    # Descarga la página
-    url = urlparse.urljoin("http://www.cinetube.es/",item.url)
-    data = scrapertools.cachePage(url)
-
-    # Extrae las entradas
-    patronvideos  = '<ul class="categorias">(.*?)</ul>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    if len(matches)==0:
-        return []
-
-    data = matches[0]
-    patronvideos  = '<li><a href="([^"]+)"><span>([^<]+)</span></a></li>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = scrapertools.entityunescape(match[1])
-        scrapedplot = ""
-        scrapedurl = urlparse.urljoin("http://www.cinetube.es/",match[0])
-        scrapedthumbnail = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado
-        itemlist.append( Item(channel=__channel__, action=action, title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
 
     return itemlist
 
@@ -635,30 +598,27 @@ def findvideos(item):
 
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-    
+
     # Busca el argumento
-    patronvideos  = '<meta name="description" content="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-        item.plot = scrapertools.htmlclean(matches[0])
-        logger.info("plot actualizado en detalle");
-    else:
-        logger.info("plot no actualizado en detalle");
+    try:
+        scrapedplot = scrapertools.get_match(data,'<meta name="description" content="([^"]+)"')
+    except:
+        scrapedplot = ""
 
     # Busca los enlaces a los mirrors, o a los capitulos de las series...
-    patronvideos = '<div class="tit_opts"><a href="([^"]+)"[^>]*>[^<]+'
-    patronvideos += '<p>(.*?)</p>[^<]+'
-    patronvideos += '<p><span>(.*?)</span>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    patron  = '<li class="rwbd ovhd"[^<]+'
+    patron += '<div class="cld2 flol"><img src="[^"]+"><span>([^<]+)</span></div[^<]+'
+    patron += '<div class="cld3 flol">([^<]+)</div[^<]+'
+    patron += '<div class="cld4 flol"><img src="([^"]+)"><a class="rpdbtn hide" href="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
 
     itemlist = []
-    for match in matches:
-        logger.info("Encontrado iframe mirrors "+match[0])
-        scrapedtitle = scrapertools.htmlclean(match[1] + " " + match[2]).strip()
-        scrapedurl = urlparse.urljoin(item.url,match[0].replace(" ","%20"))
-        scrapedthumbnail = ""
-        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail, category=item.category , extra=item.extra+" "+scrapedtitle, plot=item.plot, show=item.show, context="4", folder=False) )
+    for idioma,calidad,imgservidor,scrapedurl in matches:
+        title = "Ver en "+imgservidor.replace("/img/cnt/servidor/","").replace(".png","")+" ("+calidad+" "+idioma+")"
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,imgservidor)
+        plot = scrapedplot
+        itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.title , url=url , thumbnail=thumbnail, plot=plot, folder=True) )
 
     return itemlist
 

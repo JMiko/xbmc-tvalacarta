@@ -14,34 +14,24 @@ from core import config
 from core import unpackerjs
 import time
 
+def test_video_exists( page_url ):
+    logger.info("[vidbull.py] test_video_exists(page_url='%s')" % page_url)
+    
+    data = scrapertools.cache_page( page_url )
+    if "The file was removed by administrator" in data:
+        return False,"El archivo ya no est√° disponible<br/>en vidbull (ha sido borrado)"
+    else:
+        return True,""
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[vidbull.py] url="+page_url)
         
-    # Lo pide una vez
     data = scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']] )
-    
-    time.sleep(5)
-    '''
-    <input type="hidden" name="op" value="download2">
-    <input type="hidden" name="id" value="8sueg0neje36">
-    <input type="hidden" name="rand" value="qzeeevxsks6b57ax2et273j2d7bmdmypzhus3fi">
-    <input type="hidden" name="referer" value="">
-    
-    <input type="hidden" name="method_free" value="">
-    <input type="hidden" name="method_premium" value="">
-    '''
-    op = scrapertools.get_match( data , '<input type="hidden" name="op" value="([^"]+)">')
-    id = scrapertools.get_match( data , '<input type="hidden" name="id" value="([^"]+)">')
-    randval = scrapertools.get_match( data , '<input type="hidden" name="rand" value="([^"]+)">')
-
-    #op=download2&id=8sueg0neje36&rand=f5ine3x7qo2pa2upku5wbnjktdwvn325mulc4hy&referer=&method_free=&method_premium=&down_direct=1
-    post = "op="+op+"&id="+id+"&rand="+randval+"&referer=&method_free=&method_premium=&down_direct=1"
-    data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
     logger.info("data="+data)
 
     # Extrae el trozo cifrado
     '''
-    script type='text/javascript'>eval(function(p,a,c,k,e,d){while(c--)if(k[c])p=p.replace(new RegExp('\\b'+c.toString(a)+'\\b','g'),k[c]);return p}('2l 2=2k 2j(\'a://8.6/e/e.2i\',\'e\',\'2h\',\'2g\',\'9\');2.c(\'2f\',\'f\');2.c(\'2e\',\'2d\');2.c(\'2c\',\'f\');2.c(\'2b\',\'5\');2.c(\'2a\',\'29\');2.4(\'28\',\'../e/27.26\');2.4(\'25\',\'24\');2.4(\'m\',\'a://p.8.6:23/d/21/o.20\');2.4(\'1z\',\'a://p.8.6/i/1y/h.1x\');2.4(\'1w\',\'o\');2.4(\'1v.l\',\'1u\');2.4(\'1t\',\'1s\');2.4(\'1r\',\'j-3\');2.4(\'j.k\',\'a://8.6/h\');2.4(\'j.1q\',\'%1p+1o%1n%1m%1l%1k%1j.6%1i-h-1h.1g%22+1f%g+1e%g+1d%g+1c%1b+1a%19+18%17%n%16%14%n\');2.4(\'b.m\',\'a://8.6/13/12.11\');2.4(\'b.10\',\'f\');2.4(\'b.z\',\'15\');2.4(\'b.y\',\'1\');2.4(\'b.x\',\'0.7\');2.4(\'b.l\',\'w-v\');2.4(\'b.k\',\'a://8.6\');2.4(\'u\',\'t\');2.4(\'s\',\'a://8.6\');2.r(\'q\');',36,94,'||s1||addVariable||com||vidbull||http|logo|addParam||player|true|3D0|ytq373bhddsq||sharing|link|position|file|3E|video|fs4|flvplayer|write|aboutlink|VidBull|abouttext|right|top|out|over|timeout|hide|png|vidbull_playerlogo|images|2FIFRAME||3C|3D338|HEIGHT|3D640|WIDTH|3DNO|SCROLLING|MARGINHEIGHT|MARGINWIDTH|FRAMEBORDER|html|640x318|2Fembed|2Fvidbull|2F|3A|22http|3D|SRC|3CIFRAME|code|plugins|uniform|stretching|left|dock|provider|jpg|00005|image|flv|5fslq63iljrwuxim4m6wx32uxk7nv6rb3orixchf7fgrowdfiwuy5gqp||182|5271|duration|zip|modieus1|skin|opaque|wmode|bufferlength|autostart|always|allowscriptaccess|allowfullscreen|318|640|swf|SWFObject|new|var'.split('|')))
+    <script type='text/javascript'>eval(function(p,a,c,k,e,d){while(c--)if(k[c])p=p.replace(new RegExp('\\b'+c.toString(a)+'\\b','g'),k[c]);return p}('2j 2=2i 2h(\'6://8.5/b/b.2g\',\'b\',\'2f\',\'2e\',\'9\');2.g(\'2d\',\'k\');2.g(\'2c\',\'2b\');2.g(\'2a\',\'29\');2.4(\'28\',\'../b/27.26\');2.4(\'25\',\'24\');2.4(\'l\',\'6://n.8.5:23/d/21/20.1z\');2.4(\'1y\',\'6://n.8.5/i/1x/e.1w\');2.4(\'1v\',\'6\');2.4(\'1u.j\',\'1t\');2.4(\'1s\',\'1r\');2.4(\'1q\',\'f-3\');2.4(\'f.h\',\'6://8.5/e\');2.4(\'f.1p\',\'%1o%1n%1m%1l%1k%1j%1i.5%1h-e-1g.1f%22%1e%c%1d%c%1c%c%1b%1a%19%18%17%16%m%14%13%m\');2.4(\'a.l\',\'6://8.5/12/11.10\');2.4(\'a.z\',\'k\');2.4(\'a.y\',\'15\');2.4(\'a.x\',\'1\');2.4(\'a.w\',\'0.7\');2.4(\'a.j\',\'v-u\');2.4(\'a.h\',\'6://8.5\');2.4(\'t\',\'s r\');2.4(\'q\',\'6://8.5\');2.p(\'o\');',36,92,'||s1||addVariable|com|http||vidbull||logo|player|3D0||erk3r6bpfyxy|sharing|addParam|link||position|true|file|3E|fs11|flvplayer|write|aboutlink|dlf|VidBull|abouttext|right|top|out|over|timeout|hide|png|vidbull_playerlogo|images|2FIFRAME|3C||3D338|20HEIGHT|3D640|20WIDTH|3DNO|20SCROLLING|20MARGINHEIGHT|20MARGINWIDTH|20FRAMEBORDER|html|640x318|2Fembed|2Fvidbull|2F|3A|22http|3D|20SRC|3CIFRAME|code|plugins|uniform|stretching|left|dock|provider|jpg|00031|image|flv|video|45sbu63kljrwuxim7e6xp2koxj4sxpaxyivgkrzwu27ggj5rdrrayurf||182|2606|duration|zip|modieus1|skin|opaque|wmode|always|allowscriptaccess|allowfullscreen|318|640|swf|SWFObject|new|var'.split('|')))
     '''
     patron = "<script type='text/javascript'>(eval\(function\(p,a,c,k,e,d\).*?)</script>"
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -52,16 +42,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             cifrado = match
             break
     
-    # Extrae la URL del vÌdeo
+    # Extrae la URL del v√≠deo
     logger.info("cifrado="+cifrado)
     descifrado = unpackerjs.unpackjs(cifrado)
     descifrado = descifrado.replace("\\","")
     logger.info("descifrado="+descifrado)
     
     # Extrae la URL
-    #media_url = scrapertools.get_match(descifrado,"s1.addVariable\('file','([^']+)'\)")
-    #<param name="src"value="http://fs10.vidbull.com:182/d/4zsdjpllljrwuximze6sd2yu4a4udufkfckbb5nyt2yku5c7qcqmh5y4/video.avi"/>
-    media_url = scrapertools.get_match(descifrado,'<param name="src"value="([^"]+)"')
+    media_url = scrapertools.get_match(descifrado,"addVariable\('file','([^']+)'")
     
     video_urls = []
     
@@ -73,14 +61,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     return video_urls
 
-# Encuentra vÌdeos de este servidor en el texto pasado
+# Encuentra v√≠deos de este servidor en el texto pasado
 def find_videos(text):
     encontrados = set()
     devuelve = []
 
     # http://www.vidbull.com/3360qika02mo
     # http://vidbull.com/6efa0ns1dpxc.html
-    patronvideos  = 'vidbull.com/([A-Z0-9a-z\.]+)'
+    patronvideos  = 'vidbull.com/([A-Z0-9a-z\-\.]+)'
     logger.info("[vidbull.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 

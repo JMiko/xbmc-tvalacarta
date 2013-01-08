@@ -264,7 +264,6 @@ def serie(item):
 
     return itemlist
 
-
 def airlist(item):
     logger.info("[animeid.py] airlist")
 
@@ -291,69 +290,6 @@ def airlist(item):
 
         itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))
 
-    return itemlist
-
-def findvideos(item):
-    logger.info("[animeid.py] findvideos")
-    itemlist=[]    
-    
-    # Busca el argumento
-    data = scrapertools.cache_page(item.url)
-    patron = '<img src="[^"]+" class="simg" align="left"[^>]+>(.*?)</div>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        scrapedplot = matches[0]
-    else:
-        scrapedplot = item.plot
-        
-    #<div id="tab1" class="tab_content" style=""><object id= </div>   
-    patron = '(<div id="tab[^"]+" class="tab_content[^>]+>.*?</div>)'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    for match in matches:
-        # Ahora busca los vídeos
-        itemlist.extend( servertools.find_video_items(data=match) )
-        
-    '''
-    from core import unpackerjs3
-    patron = "(<script>eval\(function\(p,a,c,k,e,d\).*?</script>)"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    for match in matches:
-        data = unpackerjs3.unpackjs(match)
-        logger.info("data="+data)
-
-        # Ahora busca los vídeos
-        itemlist.extend( servertools.find_video_items(data=data) )
-        
-        # hulkshare robado
-        if "hl.php" in data:
-            headers=[]
-            headers.append( [ "User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:12.0) Gecko/20100101 Firefox/12.0" ] )
-            headers.append(["Referer","http://animeflv.net/archivos/player.swf"])
-            url1 = scrapertools.get_match(data,"(http://prueba.animeflv.net/hl.php\?v=[a-zA-Z0-9\-]+)")
-            location = scrapertools.get_header_from_response(url1,headers=headers, header_to_get="location")
-            itemlist.append(Item(title=" - [hulkshare]",server="directo",url=location,action="play",folder=False))
-    '''
-    for videoitem in itemlist:
-        videoitem.channel = __channel__
-        videoitem.plot = scrapedplot
-        videoitem.thumbnail = item.thumbnail
-        videoitem.fulltitle = item.title
-        videoitem.title = item.title + videoitem.title
-        
-    '''
-    #<div style="display:none;" id="videoi">i=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=</div>
-    codigo_video_plugin = scrapertools.get_match(data,'<div[^>]+>i\=([^<]+)</div>')
-    #http://prueba.animeflv.net/mf.php?id=yayIeoN8foWQv8p8qY9xgXy4d7W7wYnHhrDPs70=&paso=obtener
-    url="http://prueba.animeflv.net/mf.php?id="+codigo_video_plugin+"&paso=obtener"
-    data = scrapertools.cache_page(url)
-    #<embed allowfullscreen="true" src="/archivos/player.swf" bgcolor="#000" type="application/x-shockwave-flash" wmode="transparent" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="file=http://205.196.121.103/khff8ehdgfdg/mu0d5033k2ook7r/%5BVagoSubs%5D+Kurokos+Basketball+08+%5B480p%5D.mp4&autostart=true&provider=video" height="100%" width="100%">
-    mediaurl = scrapertools.get_match(data,'<embed.*?flashvars\="file\=([^\&]+)&')
-    logger.info("data="+data)
-    itemlist.append( Item( channel=__channel__, title=item.title+" (acceso plugin) - [directo]", action="play", url=mediaurl, server="directo", thumbnail=item.thumbnail, plot=scrapedplot, fulltitle=item.title, folder=False) )
-    '''
-    
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.

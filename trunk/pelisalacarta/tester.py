@@ -88,7 +88,7 @@ def test_channels():
     para_probar.append("seriesid")
     #para_probar.append("serieshentai")
     para_probar.append("seriesdanko")
-    para_probar.append("seriespepito")
+    #para_probar.append("seriespepito")   ¿Muy lento?
     para_probar.append("seriesyonkis")
     para_probar.append("shurhd")
     para_probar.append("shurweb")

@@ -43,7 +43,8 @@ def find_videos(data):
     devuelve = []
 
     # http://www.dailymotion.com/embed/video/xrva9o
-    patronvideos  = 'dailymotion.com/embed/video/([a-z0-9]+)'
+    # http://www.dailymotion.com/swf/video/xocczx
+    patronvideos  = 'dailymotion.com/(?:embed|swf)/video/([a-z0-9]+)'
     logger.info("[dailymotion.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

@@ -185,7 +185,7 @@ def find_videos(data):
     for match in matches:
         titulo = "[allmyvideos]"
         url = "http://"+match
-        if url not in encontrados:
+        if url not in encontrados and url!="http://allmyvideos.net/embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
             encontrados.add(url)
