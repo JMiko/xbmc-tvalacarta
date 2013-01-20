@@ -27,7 +27,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     post = "op=download2&id="+codigo+"&rand="+rand+"&referer=&method_free=&method_premium=&down_direct=1"
 
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
-    logger.info("data="+data)
+    #logger.info("data="+data)
 
     # Busca el video online o archivo de descarga
     patron = 'href="([^"]+)" target="_parent"><span class="style1">Download'

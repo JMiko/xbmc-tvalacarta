@@ -216,16 +216,24 @@ def play(item):
     logger.info("[tupornotv.py] play")
     itemlist = []
     
+    # Lee la pagina del video
     data = scrapertools.cachePage(item.url)
-    patronvideos  = "RunPlayer\('bm92YWxpZGFkbw==','1','(.+?)'\)"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-        url = "http://tuporno.tv/flvurl.php?codVideo=%s" %matches[0]
-        data = scrapertools.cachePage(url)
-        patron = "&kpt=(.+?)&"
-        matches = re.compile(patron).findall(data)
-        if len(matches)>0:
-            import base64
-            url = base64.decodestring(matches[0])
-            itemlist.append( Item(channel=__channel__, action="play", title=item.title , url=url , thumbnail=item.thumbnail , plot=item.plot, server="Directo", folder=False) )
+    codVideo = scrapertools.get_match(data,'body id="([^"]+)"')
+    logger.info("codVideo="+codVideo)
+    
+    # Lee la pagina con el codigo
+    # http://tuporno.tv/flvurl.php?codVideo=188098&v=MAC%2011,5,502,146
+    url = "http://tuporno.tv/flvurl.php?codVideo="+codVideo+"&v=MAC%2011,5,502,146"
+    data = scrapertools.cachePage(url)
+    logger.info("data="+data)
+    kpt = scrapertools.get_match(data,"kpt\=(.+?)\&")
+    logger.info("kpt="+kpt)
+    
+    # Decodifica
+    import base64
+    url = base64.decodestring(kpt)
+    logger.info("url="+url)
+
+    itemlist.append( Item(channel=__channel__, action="play", title=item.title , url=url , thumbnail=item.thumbnail , plot=item.plot, server="Directo", folder=False) )
+
     return itemlist

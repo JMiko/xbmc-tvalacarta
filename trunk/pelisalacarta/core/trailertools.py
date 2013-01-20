@@ -323,7 +323,31 @@ def getpost(url,values): # Descarga la pagina con envio de un Form
 ####################################################################################################
 # Buscador de Trailer : mediante el servicio de Apis de Google y Youtube                           #
 ####################################################################################################
-        
+
+# Show first 50 videos from YouTube that matches a search string
+def youtube_search(texto):
+    devuelve = []
+
+    # Fetch video list from YouTube feed
+    data = scrapertools.cache_page( "https://gdata.youtube.com/feeds/api/videos?q="+texto.replace(" ","+")+"&orderby=published&start-index=1&max-results=50&v=2&lr=es" )
+    
+    # Extract items from feed
+    matches = re.compile("<entry(.*?)</entry>",re.DOTALL).findall(data)
+
+    for entry in matches:
+        logger.info("entry="+entry)
+        # Not the better way to parse XML, but clean and easy
+        title = scrapertools.get_match(entry,"<titl[^>]+>([^<]+)</title>")
+        thumbnail = scrapertools.get_match(entry,"<media\:thumbnail url='([^']+)'")
+        try:
+            url = scrapertools.get_match(entry,"http\://www.youtube.com/watch\?v\=([0-9A-Za-z_-]{11})")
+        except:
+            url = scrapertools.get_match(entry,"https\://www.youtube.com/watch\?v\=([0-9A-Za-z_-]{11})")
+
+        devuelve.append( [ title,thumbnail,url ] )
+
+    return devuelve
+
 def GetVideoFeed(titulo,solo="false"):
     print "[trailertools.py] Modulo: GetVideoFeed(titulo = %s)"  % titulo
     if solo=="true":
@@ -335,88 +359,49 @@ def GetVideoFeed(titulo,solo="false"):
     devuelve = []
     encontrados = set()
     c = 0
-    yt = gdata.youtube.service.YouTubeService()
-    query = gdata.youtube.service.YouTubeVideoQuery()
-    query.vq = titulo+esp
-    print query.vq
-    query.orderby = 'relevance' #'viewCount'
-    query.racy = 'include'
-    #query.client = 'ytapi-youtube-search'
-    #query.alt = 'rss'
-    #query.v = '2'
-    feed = yt.YouTubeQuery(query)
+    entries = youtube_search(titulo+esp)
     
-    if solo=="true" :
-        for entry in feed.entry:
-            print 'Video title: %s' % entry.media.title.text
-            titulo2 = str(entry.media.title.text)
-            url = entry.media.player.url
-            duracion = int(entry.media.duration.seconds)
-            duracion = "%02d:%02d" % ( int( duracion / 60 ), duracion % 60, )
-            
-            for thumbnail in entry.media.thumbnail:
-                url_thumb = thumbnail.url
-            
-            devuelve.append([url,titulo2,url_thumb,duracion])
-            
-            
-        return (devuelve)        
-    else:    
-        for entry in feed.entry:
-            print 'Video title: %s' % entry.media.title.text
-            titulo2 = str(entry.media.title.text)
-            url = entry.media.player.url
-            duracion = int(entry.media.duration.seconds)
-            duracion = "%02d:%02d" % ( int( duracion / 60 ), duracion % 60, )
+    for title,thumbnail,url in entries:
+        print 'Video title: %s' % title
+        titulo2 = title
+        url = url
+        duracion = ""
+        if titulo in (string.lower(LimpiarTitulo(titulo2))): 
+            if url not in encontrados:
+                devuelve.append([url,titulo2,thumbnail,""])
+                encontrados.add(url)
+                c = c + 1
+            if c > 10:
+                return (devuelve)
+
+    if c < 6:
+        entries = youtube_search(titulo+esp)
+        for title,thumbnail,url in entries:
+            print 'Video title: %s' % title
+            titulo2 = title
+            url = url
+            duracion = ""
             if titulo in (string.lower(LimpiarTitulo(titulo2))): 
-                for thumbnail in entry.media.thumbnail:
-                    url_thumb = thumbnail.url
                 if url not in encontrados:
-                    devuelve.append([url,titulo2,url_thumb,duracion])
+                    devuelve.append([url,titulo2,thumbnail,""])
                     encontrados.add(url)
                     c = c + 1
                 if c > 10:
                     return (devuelve)
-        if c < 6:
-            query.vq =titulo+noesp
-            feed = yt.YouTubeQuery(query)
-            for entry in feed.entry:
-                print 'Video title: %s' % entry.media.title.text
-                titulo2 = str(entry.media.title.text)
-                url = entry.media.player.url
-                duracion = int(entry.media.duration.seconds)
-                duracion = "%02d:%02d" % ( int( duracion / 60 ), duracion % 60, )
-                if titulo in (string.lower(LimpiarTitulo(titulo2))):
-                    for thumbnail in entry.media.thumbnail:
-                        url_thumb = thumbnail.url
-                    
-                    if url not in encontrados:
-                        devuelve.append([url,titulo2,url_thumb,duracion])
-                        encontrados.add(url)
-                        c = c + 1
-                    if c > 10:
-                        return (devuelve)
-        if c < 6:
-            query.vq =titulo
-            feed = yt.YouTubeQuery(query)
-            for entry in feed.entry:
-                print 'Video title: %s' % entry.media.title.text
-                titulo2 = str(entry.media.title.text)
-                url = entry.media.player.url
-                duracion = int(entry.media.duration.seconds)
-                duracion = " (%02d:%02d)" % ( int( duracion / 60 ), duracion % 60, )
-                if titulo in (string.lower(LimpiarTitulo(titulo2))):
-                    for thumbnail in entry.media.thumbnail:
-                        url_thumb = thumbnail.url
-                    
-                    if url not in encontrados:
-                        devuelve.append([url,titulo2,url_thumb,duracion])
-                        encontrados.add(url)
-                        c = c + 1
-                    if c > 10:
-                        return (devuelve)
-
-
+    if c < 6:
+        entries = youtube_search(titulo)
+        for title,thumbnail,url in entries:
+            print 'Video title: %s' % title
+            titulo2 = title
+            url = url
+            duracion = ""
+            if titulo in (string.lower(LimpiarTitulo(titulo2))): 
+                if url not in encontrados:
+                    devuelve.append([url,titulo2,thumbnail,""])
+                    encontrados.add(url)
+                    c = c + 1
+                if c > 10:
+                    return (devuelve)
 
     print '%s Trailers encontrados en Modulo: GetVideoFeed()' % str(c)
     return (devuelve)
@@ -437,38 +422,4 @@ def youtubeplay(params,url,category):
 def alertaerror():
     ventana = xbmcgui.Dialog()
     ok= ventana.ok ("Plugin Pelisalacarta", "Uuppss...la calidad elegida en configuracion",'no esta disponible o es muy baja',"elijá otra calidad distinta y vuelva a probar")
-'''
 
-
-  yt_service = gdata.youtube.service.YouTubeService()
-  query = gdata.youtube.service.YouTubeVideoQuery()
-  query.vq = search_terms
-  query.orderby = 'viewCount'
-  query.racy = 'include'
-  feed = yt_service.YouTubeQuery(query)
-  PrintVideoFeed(feed)
-    
-  print 'Video title: %s' % entry.media.title.text
-  print 'Video published on: %s ' % entry.published.text
-  print 'Video description: %s' % entry.media.description.text
-  print 'Video category: %s' % entry.media.category[0].text
-  print 'Video tags: %s' % entry.media.keywords.text
-  print 'Video watch page: %s' % entry.media.player.url
-  print 'Video flash player URL: %s' % entry.GetSwfUrl()
-  print 'Video duration: %s' % entry.media.duration.seconds
-
-  # non entry.media attributes
-  print 'Video geo location: %s' % entry.geo.location()
-  print 'Video view count: %s' % entry.statistics.view_count
-  print 'Video rating: %s' % entry.rating.average
-
-  # show alternate formats
-  for alternate_format in entry.media.content:
-    if 'isDefault' not in alternate_format.extension_attributes:
-      print 'Alternate format: %s | url: %s ' % (alternate_format.type,
-                                                 alternate_format.url)
-
-  # show thumbnails
-  for thumbnail in entry.media.thumbnail:
-    print 'Thumbnail url: %s' % thumbnail.url
-'''

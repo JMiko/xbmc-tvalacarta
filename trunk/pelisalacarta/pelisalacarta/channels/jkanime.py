@@ -226,20 +226,25 @@ def findvideos(item):
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
-    '''
-    clip: {
-        url: 'http://jkanime.net/stream/jkget/a958097878b2e53826241592d85ecefb/acaa607e676ddf97bc2e856b813b4762/?t=6e',
-    '''
+    #180upload: sp1.e=hh7pmxk553kj
     try:
-        mediaurl = scrapertools.get_match(data,"clip\: {\s+url\: '([^']+)'")
-        itemlist.append( Item(channel=__channel__, action="play" , title="Ver el vídeo - Mirror 1" , url=mediaurl, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="directo", folder=False))
+        code = scrapertools.get_match(data,"sp1.e=([a-z0-9]+)")
+        mediaurl = "http://180upload.com/"+code
+        itemlist.append( Item(channel=__channel__, action="play" , title="Ver en 180upload" , url=mediaurl, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="one80upload", folder=False))
     except:
         pass
     
-    #flashvars="file=http://jkanime.net/stream/jkget/a958097878b2e53826241592d85ecefb/acaa607e676ddf97bc2e856b813b4762/&
+    #upafile: spu.e=idyoybh552bf
+    try:
+        code = scrapertools.get_match(data,"spu.e=([a-z0-9]+)")
+        mediaurl = "http://upafile.com/"+code
+        itemlist.append( Item(channel=__channel__, action="play" , title="Ver en upafile" , url=mediaurl, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="upafile", folder=False))
+    except:
+        pass
+
     try:
         mediaurl = scrapertools.get_match(data,'flashvars\="file\=([^\&]+)\&')
-        itemlist.append( Item(channel=__channel__, action="play" , title="Ver el vídeo - Mirror 2" , url=mediaurl, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="directo", folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title="Ver en jkanime" , url=mediaurl, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="directo", folder=False))
     except:
         pass
     
@@ -250,11 +255,17 @@ def play(item):
     logger.info("[jkanime.py] play")
     
     itemlist = []
-    
-    location = scrapertools.get_header_from_response(item.url,header_to_get="location")
-    logger.info("location="+location)
-    #http://jkanime.net/stream/jkget/00e47553476031a35fd158881ca9d49f/32021b728c40bb5779190e0a95b72d40/?t=6e
-    itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="directo", folder=False))
+
+    if item.server=="directo":
+        headers = []
+        headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:18.0) Gecko/20100101 Firefox/18.0"])
+        headers.append(["Referer","http://jkanime.net/assets/images/players/jkplayer.swf"])
+        location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
+        location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
+        logger.info("location="+location)
+        #http://jkanime.net/stream/jkget/00e47553476031a35fd158881ca9d49f/32021b728c40bb5779190e0a95b72d40/?t=6e
+    else:
+        itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=item.url, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server=item.server, folder=False))
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.

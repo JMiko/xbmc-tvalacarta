@@ -56,8 +56,9 @@ def run():
 
             #import channelselector as plugin
             #plugin.listchannels(params, url, category)
-            import xbmc
-            xbmc.executebuiltin( "Container.Refresh" )
+            if config.get_system_platform()!="xbox":
+                import xbmc
+                xbmc.executebuiltin( "Container.Refresh" )
 
         elif (action=="channeltypes"):
             import channelselector as plugin

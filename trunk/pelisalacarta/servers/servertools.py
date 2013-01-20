@@ -20,7 +20,7 @@ FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafir
 FREE_SERVERS.extend(['rapidtube','royalvids','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed', 'vidxden','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
-FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo'])
+FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -228,8 +228,9 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
                 exec "from servers import filenium as gen_conector"
                 
                 video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword"), video_password=video_password )
+                extension = gen_conector.get_file_extension(video_gen)
                 logger.info("[xbmctools.py] filenium url="+video_gen)
-                video_urls.append( [ "["+server+"][filenium]", video_gen ] )
+                video_urls.append( [ extension+" ["+server+"][filenium]", video_gen ] )
 
             # Obtiene enlaces realdebrid si tienes cuenta
             if server in REALDEBRID_SERVERS and config.get_setting("realdebridpremium")=="true":

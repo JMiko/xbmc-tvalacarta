@@ -34,7 +34,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades latino" , url="http://www.cinetux.org/", extra="Nuevo Latino", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
     itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades castellano" , url="http://www.cinetux.org/", extra="Nuevo Castellano", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
     itemlist.append( Item(channel=__channel__ , action="bloque", title="Nueva calidad disponible" , url="http://www.cinetux.org/", extra="Nueva Calidad", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
-    itemlist.append( Item(channel=__channel__ , action="generos", title="Por gÈneros" , url="http://www.cinetux.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
+    itemlist.append( Item(channel=__channel__ , action="generos", title="Por g√©neros" , url="http://www.cinetux.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
 
     return itemlist
 
@@ -42,7 +42,7 @@ def peliculas(item):
     logger.info("[cinetux.py] peliculas")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
@@ -80,7 +80,7 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="P·gina siguiente >>" , url=scrapedurl , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="P√°gina siguiente >>" , url=scrapedurl , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
 
     return itemlist
 
@@ -88,7 +88,7 @@ def bloque(item):
     logger.info("[cinetux.py] bloque")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     data = scrapertools.get_match(data,item.extra+'</h6>(.*?)</div>')
     
@@ -118,7 +118,7 @@ def generos(item):
     logger.info("[cinetux.py] generos")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     data = scrapertools.get_match(data,'neros</h6>(.*?)</div>')
     
@@ -138,7 +138,7 @@ def tags(item):
     logger.info("[cinetux.py] tags")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     data = scrapertools.get_match(data,'Tags</h6>(.*?)</div>')
     patron = "<a href='([^']+)'[^>]+>([^<]+)<"
@@ -161,12 +161,12 @@ def findvideos(item):
     data = scrapertools.cache_page(item.url)
     '''
     <tr class="tabletr">
-    <td class="episode-server" align="left"><img src="http://www.cinetux.org/imagenes/veronline.png" alt="" width="22" height="22" />OpciÛn 01</td>
+    <td class="episode-server" align="left"><img src="http://www.cinetux.org/imagenes/veronline.png" alt="" width="22" height="22" />Opci√≥n 01</td>
     <td class="episode-server-img" align="center">PutLocker</td>
-    <td class="episode-lang" align="center">EspaÒol</td>
+    <td class="episode-lang" align="center">Espa√±ol</td>
     <td align="center">DVD-SCR</td>
     <td class="center" align="center"><a rel="nofollow" target="_blank" class="myButtonLink" href="http://www.putlocker.com/file/BADCD9ACA395E318"></a></td>
-    <td align="center">AnÛnimo</td>
+    <td align="center">An√≥nimo</td>
     </tr>
     '''
     patron  = '<tr class="tabletr">[^<]+'
@@ -219,7 +219,7 @@ def findvideos(item):
         itemlist = servertools.find_video_items(data=data)
         i=1
         for videoitem in itemlist:
-            videoitem.title = "Ver OpciÛn %d en %s" % (i,videoitem.server)
+            videoitem.title = "Ver Opci√≥n %d en %s" % (i,videoitem.server)
             videoitem.fulltitle = item.fulltitle
             videoitem.channel=channel=__channel__
 
@@ -238,13 +238,13 @@ def play(item):
 
     return itemlist
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si est· ok el canal.
+# Verificaci√≥n autom√°tica de canales: Esta funci√≥n debe devolver "True" si est√° ok el canal.
 def test():
     from servers import servertools
     
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v√≠deos de "Novedades" devuelve mirrors
     novedades_items = peliculas(mainlist_items[0])
     bien = False
     for novedades_item in novedades_items:
