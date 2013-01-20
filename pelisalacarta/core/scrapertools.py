@@ -1025,9 +1025,10 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
             os.remove(ficherocookies)
 
     if header_to_get=="location":
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+        opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=DEBUG_LEVEL),urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
     else:
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=DEBUG_LEVEL),urllib2.HTTPCookieProcessor(cj))
+
     urllib2.install_opener(opener)
 
     # Contador

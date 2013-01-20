@@ -342,7 +342,7 @@ if __name__ == "__main__":
     #test_encode()
     
     #from servers import streamcloud
-    #print streamcloud.get_video_url("")
+    #print streamcloud.get_video_url("http://streamcloud.eu/5hfpkvjaunkg/ElSkyDVDRIP.avi.html")
     
     #from servers import divxstage
     #print divxstage.get_video_url("http://www.divxstage.eu/video/t9ed8enzrq2n3")

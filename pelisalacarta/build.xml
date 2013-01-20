@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.39"/>
-    <property name="oldversionboxee" value="7.4"/>
-    <property name="oldversiondate" value="02/01/2013"/>
+    <property name="oldversion" value="3.2.40"/>
+    <property name="oldversionboxee" value="7.5"/>
+    <property name="oldversiondate" value="08/01/2013"/>
 
-    <property name="version" value="3.2.40"/>
-    <property name="versionboxee" value="7.5"/>
-    <property name="versiondate" value="08/01/2013"/>
+    <property name="version" value="3.2.41"/>
+    <property name="versionboxee" value="7.6"/>
+    <property name="versiondate" value="15/01/2013"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <!-- Para betas usar: -->
@@ -80,7 +80,7 @@
     </target>
     
     <!-- upload =============================================== -->
-    <target name="upload" depends="package" description="Upload zip files to the web server">
+    <target name="upload" description="Upload zip files to the web server">
 
         <echo message="Subiendo pelisalacarta-xbmc-addon-dharma-${version}.zip"/>
         <exec executable="scp">
@@ -699,7 +699,7 @@
         <replaceregexp file="platformcode/boxee/descriptor.xml" match="&lt;version&gt;(.*?)&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
         <replaceregexp file="platformcode/boxee/index.xml" match="&lt;version&gt;${oldversionboxee}&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
 
-        <antcall target="package"/>
+        <!--antcall target="package"/-->
         
         <!-- Pasos que quedan por automatizar
         

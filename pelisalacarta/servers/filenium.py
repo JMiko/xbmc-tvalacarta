@@ -66,6 +66,20 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     return location
 
+def get_file_extension(location):
+    content_disposition_header = scrapertools.get_header_from_response(location,header_to_get="Content-Disposition")
+    logger.info("content_disposition="+content_disposition_header)
+    partes=content_disposition_header.split("=")
+    if len(partes)<=1:
+        extension=""
+    else:
+        fichero = partes[1]
+        fichero = fichero.replace("\\","")
+        fichero = fichero.replace("'","")
+        fichero = fichero.replace('"',"")
+        extension = fichero[-4:]
+    return extension
+
 def extract_authorization_header(url):
     # Obtiene login y password, y lo añade como cabecera Authorization
     partes = url[7:].split("@")
