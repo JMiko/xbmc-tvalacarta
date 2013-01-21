@@ -719,6 +719,13 @@ def get_match(data,patron,index=0):
     matches = re.findall( patron , data , flags=re.DOTALL )
     return matches[index]
 
+def find_single_match(data,patron,index=0):
+    try:
+        matches = re.findall( patron , data , flags=re.DOTALL )
+        return matches[index]
+    except:
+        return ""
+
 def entityunescape(cadena):
     return unescape(cadena)
 

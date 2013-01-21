@@ -10,6 +10,12 @@ from core import logger
 from core import scrapertools
 from core.item import Item
 
+import cgi
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[youtube.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
@@ -17,32 +23,26 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #page_url = "http://www.youtube.com/get_video_info?&video_id=zlZgGlwBgro"
     if not page_url.startswith("http"):
         page_url = "http://www.youtube.com/watch?v=%s" % page_url
+        logger.info("[youtube.py] page_url->'%s'" % page_url)
         
-    # Descarga
+    # Lee la página del video
     data = scrapertools.cache_page( page_url , headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3']] , )
-    #logger.info("-------------------------------------------------------------------------------------------")
-    #logger.info(data)
-    #logger.info("-------------------------------------------------------------------------------------------")
+    '''
+    data = scrapertools.get_match(data,"yt.playerConfig \= (.*?)yt.setConfig")
+    data = data.replace("\\","")
+    logger.info("-------------------------------------------------------------------------------------------")
+    logger.info("data="+data)
+    logger.info("-------------------------------------------------------------------------------------------")
 
-    options = data.split("&")
-    logger.info("-------------------------------------------------------------------------------------------")
-    for option in options:
-        logger.info(option)
-    logger.info("-------------------------------------------------------------------------------------------")
-    
-    patron = 'fmt_list=([^\&]+)\&'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)==0:
-        return
-    fmt_list = urllib.unquote(matches[0])
+    # "fmt_list": "37/1920x1080/9/0/115,22/1280x720/9/0/115,84/1280x720/9/0/115,35/854x480/9/0/115,34/640x360/9/0/115,18/640x360/9/0/115,82/640x360/9/0/115,5/320x240/7/0/0,36/320x240/99/0/0,17/176x144/99/0/0"
+    fmt_list = urllib.unquote( scrapertools.get_match(data,'"fmt_list"\: "([^"]+)"') )
     logger.info(fmt_list)
     fmt_list_array = fmt_list.split(",")
 
-    patron = 'fmt_stream_map=([^\&]+)\&'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)==0:
-        return
-    fmt_stream_map = urllib.unquote(matches[0])
+    # "url_encoded_fmt_stream_map": 
+    #    "fallback_host=tc.v15.cache6.c.youtube.com\u0026sig=6CB93CBC67CF3B593A6C5193A40246D43879EC12.3EC65E221B0113A8EAA63F0A059F91A24C0ABEF9\u0026itag=37\u0026url=http%3A%2F%2Fr6---sn-h5q7enel.c.youtube.com%2Fvideoplayback%3Fkey%3Dyt1%26ip%3D80.26.225.23%26sver%3D3%26expire%3D1358232284%26itag%3D37%26fexp%3D920704%252C912806%252C922403%252C922405%252C929901%252C913605%252C925710%252C929104%252C929110%252C908493%252C920201%252C913302%252C919009%252C911116%252C910221%252C901451%26source%3Dyoutube%26mv%3Dm%26newshard%3Dyes%26ms%3Dau%26upn%3DKJ4LhwFLl7g%26ratebypass%3Dyes%26id%3D9cbfb0c3e5c7b5a6%26mt%3D1358208854%26sparams%3Dcp%252Cgcr%252Cid%252Cip%252Cipbits%252Citag%252Cratebypass%252Csource%252Cupn%252Cexpire%26gcr%3Des%26ipbits%3D8%26cp%3DU0hUTVJOUF9NTkNONF9KSFRDOkJnNE9EUGNUeWtj\u0026quality=hd1080\u0026type=video%2Fmp4%3B+codecs%3D%22avc1.64001F%2C+mp4a.40.2%22
+    #     ,fallback_host=
+    fmt_stream_map = urllib.unquote( scrapertools.get_match(data,'"url_encoded_fmt_stream_map"\: "([^"]+)"') )
     logger.info(fmt_stream_map)
     fmt_stream_map_array = fmt_stream_map.split(",")
 
@@ -55,6 +55,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     for i in range(len(fmt_list_array)):
         try:
             video_url = urllib.unquote(fmt_stream_map_array[i])
+            logger.info("video_url="+video_url)
             video_url = urllib.unquote(video_url[4:])
             video_url = video_url.split(";")[0]
             logger.info(" [%s] - %s" % (fmt_list_array[i],video_url))
@@ -90,7 +91,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             
         except:
             pass
-    
+    '''
+    video_urls = scrapeWebPageForVideoLinks(data)
+
     video_urls.reverse()
     
     for video_url in video_urls:
@@ -98,160 +101,107 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     return video_urls
 
-def getuploads(user,startindex,maxresults,channel="",action="play"):
-    logger.info("[youtube.py] getuploads")
 
-    import gdata.youtube
-    import gdata.youtube.service
+def extractFlashVars(data):
+    flashvars = {}
+    found = False
 
-    # Obtiene el feed según el API de YouTube
-    url = "http://gdata.youtube.com/feeds/api/users/%s/uploads?orderby=updated&start-index=%d&max-results=%d" % (user,startindex,maxresults)
-    logger.info("[youtube.py] url="+url)
-    yt_service = gdata.youtube.service.YouTubeService()
-    feed = yt_service.GetYouTubeVideoFeed(url)
-    
-    itemlist = []
-    for entry in feed.entry:
-        '''
-        print 'Video title: %s' % entry.media.title.text
-        print 'Video published on: %s ' % entry.published.text
-        print 'Video description: %s' % entry.media.description.text
-        print 'Video category: %s' % entry.media.category[0].text
-        print 'Video tags: %s' % entry.media.keywords.text
-        print 'Video watch page: %s' % entry.media.player.url
-        print 'Video flash player URL: %s' % entry.GetSwfUrl()
-        print 'Video duration: %s' % entry.media.duration.seconds
-        
-        # non entry.media attributes
-        #print 'Video geo location: %s' % entry.geo.location()
-        #print 'Video view count: %s' % entry.statistics.view_count
-        #print 'Video rating: %s' % entry.rating.average
-        
-        # show alternate formats
-        #for alternate_format in entry.media.content:
-        #    if 'isDefault' not in alternate_format.extension_attributes:
-        #        print 'Alternate format: %s | url: %s ' % (alternate_format.type, alternate_format.url)
-        
-        # show thumbnails
-        for thumbnail in entry.media.thumbnail:
-            print 'Thumbnail url: %s' % thumbnail.url
-        '''
-        
-        item = Item(channel=channel, action=action, title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
-        itemlist.append( item )
-    
-    return itemlist
+    for line in data.split("\n"):
+        if line.strip().startswith("var swf = \""):
+            found = True
+            p1 = line.find("=")
+            p2 = line.rfind(";")
+            if p1 <= 0 or p2 <= 0:
+                continue
+            data = line[p1 + 1:p2]
+            break
 
-def getplaylists(user,startindex,maxresults,channel="",action="playlist"):
-    logger.info("[youtube.py] getplaylists")
-    import gdata.youtube
-    import gdata.youtube.service
+    if found:
+        data = json.loads(data)
+        data = data[data.find("flashvars"):]
+        data = data[data.find("\""):]
+        data = data[:1 + data[1:].find("\"")]
 
-    # Obtiene el feed segun el API de YouTube
-    url = "http://gdata.youtube.com/feeds/api/users/%s/playlists?start-index=%d&max-results=%d" % (user,startindex,maxresults)
-    logger.info("[youtube.py] url="+url)
-    yt_service = gdata.youtube.service.YouTubeService()
-    playlist_feed = yt_service.GetYouTubePlaylistFeed(uri=url)
+        for k, v in cgi.parse_qs(data).items():
+            flashvars[k] = v[0]
+    #logger.info("flashvars: " + repr(flashvars))
+    return flashvars
 
-    itemlist = []
-    for entry in playlist_feed.entry:
-        item = Item(channel=channel, action=action, title=entry.title.text, url=entry.id.text, thumbnail = "" , plot = "" )
-        itemlist.append( item )
+def scrapeWebPageForVideoLinks(data):
+    logger.info("")
+    links = {}
 
-    return itemlist
+    fmt_value = {
+        5: "240p h263 flv",
+        18: "360p h264 mp4",
+        22: "720p h264 mp4",
+        26: "???",
+        33: "???",
+        34: "360p h264 flv",
+        35: "480p h264 flv",
+        37: "1080p h264 mp4",
+        36: "3gpp",
+        38: "720p vp8 webm",
+        43: "360p h264 flv",
+        44: "480p vp8 webm",
+        45: "720p vp8 webm",
+        46: "520p vp8 webm",
+        59: "480 for rtmpe",
+        78: "400 for rtmpe",
+        82: "360p h264 stereo",
+        83: "240p h264 stereo",
+        84: "720p h264 stereo",
+        85: "520p h264 stereo",
+        100: "360p vp8 webm stereo",
+        101: "480p vp8 webm stereo",
+        102: "720p vp8 webm stereo",
+        120: "hd720",
+        121: "hd1080"
+        }
 
-def getplaylistvideos(url,startindex,maxresults,channel="",action="play"):
-    logger.info("[youtube.py] getplaylistvideos")
-    import gdata.youtube
-    import gdata.youtube.service
+    video_urls=[]
 
-    # Extrae el ID de la playlist
-    patron = 'http://.*?/([^/]+)/$'
-    matches = re.compile(patron,re.DOTALL).findall(url+"/")
-    idplaylist = matches[0]
-    logger.info(idplaylist)
-    
-    # Obtiene el feed segun el API de YouTube
-    url = "http://gdata.youtube.com/feeds/api/playlists/%s?start-index=%d&max-results=%d" % (idplaylist,startindex,maxresults)
-    logger.info("[youtube.py] url="+url)
-    yt_service = gdata.youtube.service.YouTubeService()
-    playlist_video_feed = yt_service.GetYouTubePlaylistVideoFeed(uri=url)
+    flashvars = extractFlashVars(data)
+    if not flashvars.has_key(u"url_encoded_fmt_stream_map"):
+        return links
 
-    itemlist = []
-    for entry in playlist_video_feed.entry:
-        item = Item(channel=channel, action=action, title=entry.title.text, url=entry.media.player.url, thumbnail = entry.media.thumbnail[len(entry.media.thumbnail)-1].url , plot = entry.media.description.text )
-        itemlist.append( item )
-    
-    return itemlist
+    if flashvars.has_key(u"ttsurl"):
+        logger.info("ttsurl="+flashvars[u"ttsurl"])
 
-def GetYoutubeVideoInfo(videoID,eurl=None):
-    '''
-    Return direct URL to video and dictionary containing additional info
-    >> url,info = GetYoutubeVideoInfo("tmFbteHdiSw")
-    >>
-    '''
-    
-    if not eurl:
-        params = urllib.urlencode({'video_id':videoID})
-    else :
-        params = urllib.urlencode({'video_id':videoID, 'eurl':eurl})
-    try:
-        conn = httplib.HTTPConnection("www.youtube.com")
-        conn.request("GET","/get_video_info?&%s"%params)
-        response = conn.getresponse()
-        data = response.read()
-    except:
-        alertaNone()
-        return ""
-    video_info = dict((k,urllib.unquote_plus(v)) for k,v in
-                               (nvp.split('=') for nvp in data.split('&')))
-    
-    conn.request('GET','/get_video?video_id=%s&t=%s&fmt=18' %
-                         ( video_info['video_id'],video_info['token']))
-    response = conn.getresponse()
-    direct_url = response.getheader('location')
-    return direct_url,video_info
-    
-def Extract_id(url):
-    # Extract video id from URL
-    mobj = re.match(_VALID_URL, url)
-    if mobj is None:
-        logger.info('ERROR: URL invalida: %s' % url)
-        alertaIDerror(url)
-        return ""
-    id = mobj.group(2)
-    return id
+    for url_desc in flashvars[u"url_encoded_fmt_stream_map"].split(u","):
+        url_desc_map = cgi.parse_qs(url_desc)
+        logger.info(u"url_map: " + repr(url_desc_map))
+        if not (url_desc_map.has_key(u"url") or url_desc_map.has_key(u"stream")):
+            continue
 
-def verify_url( url ):
-    # Extract real URL to video
-    request = urllib2.Request(url, None, std_headers)
-    data = urllib2.urlopen(request)
-    data.read(1)
-    url = data.geturl()
-    data.close()
-    return url
-        
+        try:
+            key = int(url_desc_map[u"itag"][0])
+            url = u""
+            if url_desc_map.has_key(u"url"):
+                url = urllib.unquote(url_desc_map[u"url"][0])
+            elif url_desc_map.has_key(u"conn") and url_desc_map.has_key(u"stream"):
+                url = urllib.unquote(url_desc_map[u"conn"][0])
+                if url.rfind("/") < len(url) -1:
+                    url = url + "/"
+                url = url + urllib.unquote(url_desc_map[u"stream"][0])
+            elif url_desc_map.has_key(u"stream") and not url_desc_map.has_key(u"conn"):
+                url = urllib.unquote(url_desc_map[u"stream"][0])
 
-def alertaCalidad():
-    import xbmcgui
-    ventana = xbmcgui.Dialog()
-    ok= ventana.ok ("Conector de Youtube", "La calidad elegida en configuracion",'no esta disponible o es muy baja',"elija otra calidad distinta y vuelva a probar")
-    
-def alertaNone():
-    import xbmcgui
-    ventana = xbmcgui.Dialog()
-    ok= ventana.ok ("Conector de Youtube", "!Aviso¡","El video no se encuentra disponible",'es posible que haya sido removido')
-    
-def alertaIDerror(url):
-    import xbmcgui
-    ventana = xbmcgui.Dialog()
-    ok= ventana.ok ("Conector de Youtube", "Lo sentimos, no se pudo extraer la ID de la URL"," %s" %url,'la URL es invalida ')
+            if url_desc_map.has_key(u"sig"):
+                url = url + u"&signature=" + url_desc_map[u"sig"][0]
+
+            #links[key] = url
+            video_urls.append( [ "("+fmt_value[key]+") [youtube]" , url ])
+        except:
+            logger.info("ERROR EN "+str(url_desc))
+
+    return video_urls
 
 def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    patronvideos  = 'youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})?'#'"http://www.youtube.com/v/([^"]+)"'
+    patronvideos  = 'youtube(?:-nocookie)?\.com/(?:(?:(?:v/|embed/))|(?:(?:watch(?:_popup)?(?:\.php)?)?(?:\?|#!?)(?:.+&)?v=))?([0-9A-Za-z_-]{11})'#'"http://www.youtube.com/v/([^"]+)"'
     logger.info("[youtube.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

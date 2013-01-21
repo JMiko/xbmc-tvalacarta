@@ -121,6 +121,9 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Disney Junior (15/01/2013)"              , channel="disneyjunior"   , language="ES" , category="I"   , type="generic"  ))  # jesus 15/01/2013
+    itemlist.append( Item( title="CYLTV (Castilla y León) (01/01/2013)"    , channel="cyltv"          , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
+    itemlist.append( Item( title="RTVCM (Castilla La Mancha) (01/01/2013)" , channel="rtvcm"          , language="ES" , category="A" , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="ACB TV (17/12/2012)"                     , channel="acbtv"          , language="ES" , category="T" , type="generic"  ))  # jesus 17/12/2012
     itemlist.append( Item( title="Telemadrid (17/12/2012)"                 , channel="telemadrid"     , language="ES" , category="A" , type="generic", extra="rtmp" ))  # jesus 17/12/2012
     itemlist.append( Item( title="EITB (País Vasco) (17/12/2012)"          , channel="eitb"           , language="ES" , category="A" , type="generic", extra="rtmp" )) # jesus 17/12/2012
@@ -154,7 +157,9 @@ def channels_list():
     itemlist.append( Item( title="Cartoonito"                 , channel="cartoonito"           , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Clan TVE"                   , channel="clantve"              , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
+    itemlist.append( Item( title="CYLTV (Castilla y León)"    , channel="cyltv"                , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
+    itemlist.append( Item( title="Disney Junior"              , channel="disneyjunior"         , language="ES" , category="I"   , type="generic"  ))  # jesus 15/01/2013
     itemlist.append( Item( title="EITB (País Vasco)"          , channel="eitb"                 , language="ES" , category="A"   , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="El cine de las 3 mellizas"  , channel="tresmellizas"         , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="El Trece TV (Argentina)"    , channel="eltrece"              , language="ES" , category="N"   , type="generic" ))
@@ -167,6 +172,7 @@ def channels_list():
     itemlist.append( Item( title="Kideos"                     , channel="kideos"               , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Mitele"                     , channel="mitele"               , language="ES" , category="I,N" , type="generic" ))
     itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"            , language="ES" , category="T"   , type="generic" ))
+    itemlist.append( Item( title="RTVCM (Castilla La Mancha)" , channel="rtvcm"                , language="ES" , category="A" , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="RTPA (Asturias)"            , channel="rtpa"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="RTVA (Andalucia)"           , channel="rtva"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="RTVV (Comunidad Valenciana)", channel="rtvv"                 , language="ES" , category="A"   , type="generic" ))

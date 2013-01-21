@@ -13,8 +13,6 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-print "[config.py] xbmceden config 3.3.2"
-
 import sys
 import os
 

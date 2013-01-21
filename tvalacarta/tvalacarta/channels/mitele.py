@@ -89,6 +89,7 @@ def temporadas(item):
 
     # Extrae las temporadas
     data = scrapertools.cachePage(item.url)
+    logger.info("data="+data)
     patron = 'temporadasBrowser\({\s+temporadas(.*?)\)'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)

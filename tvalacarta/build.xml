@@ -2,13 +2,13 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-    <property name="oldversion" value="3.3.3"/>
-    <property name="oldversionboxee" value="3.7"/>
-    <property name="oldversiondate" value="17/12/2012"/>
+    <property name="oldversion" value="3.3.5"/>
+    <property name="oldversionboxee" value="3.9"/>
+    <property name="oldversiondate" value="02/01/2012"/>
 
-    <property name="version" value="3.3.4"/>
-    <property name="versionboxee" value="3.8"/>
-    <property name="versiondate" value="25/12/2012"/>
+    <property name="version" value="3.3.6"/>
+    <property name="versionboxee" value="4.0"/>
+    <property name="versiondate" value="15/01/2013"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <property name="target" value="target"/>
@@ -103,7 +103,7 @@
     </target>
     
     <!-- upload =============================================== -->
-    <target name="upload" depends="package" description="Upload zip files to the web server">
+    <target name="upload" description="Upload zip files to the web server">
 
         <echo message="Subiendo tvalacarta-xbmc-addon-dharma-${version}.zip"/>
         <exec executable="scp">
@@ -594,7 +594,7 @@
         </copy>
     </target>
 
-    <target name="versionup"> <!-- depends="package"-->
+    <target name="versionup">
         <replaceregexp file="version.xml" match="&lt;tag&gt;(.*?)&lt;/tag&gt;" replace="&lt;tag&gt;${version}&lt;/tag&gt;"/>
         <replaceregexp file="version.xml" match="&lt;date&gt;(.*?)&lt;/date&gt;" replace="&lt;date&gt;${versiondate}&lt;/date&gt;"/>
         <replaceregexp file="version.xml" match="&lt;changes&gt;(.*?)&lt;/changes&gt;" replace="&lt;changes&gt;${versionchanges}&lt;/changes&gt;"/>
