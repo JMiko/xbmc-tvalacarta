@@ -1,0 +1,600 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<project name="mywebtv" default="package">
+	<description>mywebtv</description>
+
+    <property name="oldversion" value="1.0.0"/>
+    <property name="oldversionboxee" value="1.0"/>
+    <property name="oldversiondate" value="02/01/2013"/>
+
+    <property name="version" value="1.0.1"/>
+    <property name="versionboxee" value="1.1"/>
+    <property name="versiondate" value="22/01/2013"/>
+    <property name="versionchanges" value="Weekly release"/>
+
+    <!-- Para betas usar: -->
+    <!--property name="version" value="3.2.5-beta-1"/-->
+    
+    <!-- Para versiones finales usar: -->
+    <!--property name="version" value="3.2.5"/-->
+    
+    <property name="target" value="target"/>
+    <property file='${user.home}/build.properties'/>
+
+	<!-- init ===================================================================== -->
+	<target name="init" description="Reset the timestamp">
+        <tstamp>
+			<format property="hoy" pattern="yyyyMMdd" locale="es,ES"/>
+		</tstamp>
+	</target>
+
+    <!-- clean =============================================== -->
+    <target name="clean" description="Erases target directory" depends="init">
+        <!-- Declara un target comun -->
+    	<echo message="target=${target}"/>
+        <delete dir="${target}"/>
+    </target>
+
+    <!-- package =============================================== -->
+    <target name="package" depends="clean" description="Builds a package for each platform">
+
+        <mkdir dir="${target}/xbmc-plugin/mywebtv"/>
+        <antcall target="copy-xbmc-plugin"/>
+        <zip destfile="${target}/xbmc-plugin/mywebtv-xbmc-plugin-${version}.zip" basedir="${target}/xbmc-plugin"/>
+		
+        <mkdir dir="${target}/xbmc-addon-dharma/plugin.video.mywebtv"/>
+        <antcall target="copy-xbmc-addon-dharma"/>
+		<zip destfile="${target}/xbmc-addon-dharma/mywebtv-xbmc-addon-dharma-${version}.zip" basedir="${target}/xbmc-addon-dharma"/>
+
+        <mkdir dir="${target}/xbmc-addon-eden/plugin.video.mywebtv"/>
+        <antcall target="copy-xbmc-addon-eden"/>
+		<zip destfile="${target}/xbmc-addon-eden/mywebtv-xbmc-addon-eden-${version}.zip" basedir="${target}/xbmc-addon-eden"/>
+
+        <mkdir dir="${target}/xbmc-addon-frodo/plugin.video.mywebtv"/>
+        <antcall target="copy-xbmc-addon-frodo"/>
+		<zip destfile="${target}/xbmc-addon-frodo/mywebtv-xbmc-addon-frodo-${version}.zip" basedir="${target}/xbmc-addon-frodo"/>
+
+        <mkdir dir="${target}/boxee/info.mimediacenter.mywebtv"/>
+        <antcall target="copy-boxee"/>
+    	<zip destfile="${target}/boxee/info.mimediacenter.mywebtv-${version}.zip" basedir="${target}/boxee"/>
+        <copy file="${target}/boxee/info.mimediacenter.mywebtv-${version}.zip" tofile="${target}/boxee/info.mimediacenter.mywebtv-${versionboxee}.zip"/>
+
+        <!--mkdir dir="${target}/wiimc/pelisalacarta"/>
+        <antcall target="copy-wiimc"/>
+        <zip destfile="${target}/wiimc/pelisalacarta-wiimc-${version}.zip" basedir="${target}/wiimc"/>
+
+        <mkdir dir="${target}/rss/pelisalacarta"/>
+        <antcall target="copy-rss"/>
+        <zip destfile="${target}/rss/pelisalacarta-rss-${version}.zip" basedir="${target}/rss"/>
+
+        <mkdir dir="${target}/mediaserver/pelisalacarta"/>
+        <antcall target="copy-mediaserver"/>
+        <zip destfile="${target}/mediaserver/pelisalacarta-mediaserver-${version}.zip" basedir="${target}/mediaserver"/>
+
+        <mkdir dir="${target}/dreambox/pelisalacarta"/>
+        <antcall target="copy-dreambox"/>
+        <zip destfile="${target}/dreambox/pelisalacarta-dreambox-${version}.zip" basedir="${target}/dreambox"/>
+
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
+        <antcall target="copy-plexmediaserver"/>
+        <zip destfile="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip" basedir="${target}/plexmediaserver"/-->
+    </target>
+    
+    <!-- upload =============================================== -->
+    <target name="upload" description="Upload zip files to the web server">
+
+        <echo message="Subiendo mywebtv-xbmc-addon-dharma-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-dharma/mywebtv-xbmc-addon-dharma-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo mywebtv-xbmc-addon-eden-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-eden/mywebtv-xbmc-addon-eden-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo mywebtv-xbmc-addon-frodo-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-frodo/mywebtv-xbmc-addon-frodo-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo mywebtv-xbmc-plugin-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-plugin/mywebtv-xbmc-plugin-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <exec executable="scp">
+            <arg value="${target}/boxee/info.mimediacenter.mywebtv-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <!--echo message="Subiendo pelisalacarta-wiimc-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/wiimc/pelisalacarta-wiimc-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo pelisalacarta-rss-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/rss/pelisalacarta-rss-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo pelisalacarta-plexmediaserver-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/plexmediaserver/pelisalacarta-plexmediaserver-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo pelisalacarta-mediaserver-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/mediaserver/pelisalacarta-mediaserver-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec-->
+    </target>
+
+    <!-- publish =============================================== -->
+	<target name="publish" depends="upload" description="Notify the repositories that a new version is available">
+        <echo message="Actualizando el repositorio de Boxee"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}/download" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="${target}/boxee">
+				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip"/>
+            </fileset>
+            <fileset dir="platformcode/boxee">
+				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip.xml"/>
+            </fileset>
+        </ftp>
+        <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir="platformcode/boxee">
+				<include name="index.xml"/>
+            </fileset>
+        </ftp>
+
+        <echo message="Actualizando pelisalacarta-version.xml"/>
+        <copy file="version.xml" tofile="pelisalacarta-version.xml"/>
+        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
+            <fileset dir=".">
+				<include name="pelisalacarta-version.xml"/>
+            </fileset>
+        </ftp>
+        <delete file="pelisalacarta-version.xml"/>
+    </target>
+
+	<!-- copy-xbmc-addon-dharma ============================================================ -->
+	<target name="copy-xbmc-addon-dharma">
+        <copy todir="${target}/xbmc-addon-dharma/plugin.video.mywebtv">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+                <exclude name="mywebtv-version.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="core/logger.py"/>
+				<exclude name="core/config.py"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <!--exclude name="platformcode/xbmcdharma/**"/-->
+                <exclude name="platformcode/xbmceden/**"/>
+			</fileset>
+        </copy>
+        <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.mywebtv/addon.xml"/>
+        <copy file="platformcode/xbmcdharma/config.py" tofile="${target}/xbmc-addon-dharma/plugin.video.mywebtv/core/config.py"/>
+        <copy file="platformcode/xbmcdharma/logger.py" tofile="${target}/xbmc-addon-dharma/plugin.video.mywebtv/core/logger.py"/>
+    </target>
+
+	<!-- copy-xbmc-addon-eden ============================================================ -->
+	<target name="copy-xbmc-addon-eden">
+        <copy todir="${target}/xbmc-addon-eden/plugin.video.mywebtv">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+                <exclude name="mywebtv-version.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="core/logger.py"/>
+				<exclude name="core/config.py"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <!--exclude name="platformcode/xbmceden/**"/-->
+			</fileset>
+        </copy>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.mywebtv/addon.xml"/>
+        <copy file="platformcode/xbmceden/config.py" tofile="${target}/xbmc-addon-eden/plugin.video.mywebtv/core/config.py"/>
+        <copy file="platformcode/xbmceden/logger.py" tofile="${target}/xbmc-addon-eden/plugin.video.mywebtv/core/logger.py"/>
+    </target>
+
+	<!-- copy-xbmc-addon-frodo ============================================================ -->
+	<target name="copy-xbmc-addon-frodo">
+        <copy todir="${target}/xbmc-addon-frodo/plugin.video.mywebtv">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+                <exclude name="mywebtv-version.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="core/logger.py"/>
+				<exclude name="core/config.py"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <!--exclude name="platformcode/xbmceden/**"/-->
+			</fileset>
+        </copy>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.mywebtv/addon.xml"/>
+        <copy file="platformcode/xbmceden/config.py" tofile="${target}/xbmc-addon-frodo/plugin.video.mywebtv/core/config.py"/>
+        <copy file="platformcode/xbmceden/logger.py" tofile="${target}/xbmc-addon-frodo/plugin.video.mywebtv/core/logger.py"/>
+    </target>
+
+	<!-- copy-xbmc-plugin ============================================================ -->
+    <target name="copy-xbmc-plugin">
+        <copy todir="${target}/xbmc-plugin/mywebtv">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+                <exclude name="mywebtv-version.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="core/logger.py"/>
+				<exclude name="core/config.py"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+			</fileset>
+        </copy>
+        <copy file="platformcode/xbmc/config.py" tofile="${target}/xbmc-plugin/mywebtv/core/config.py"/>
+        <copy file="platformcode/xbmc/logger.py" tofile="${target}/xbmc-plugin/mywebtv/core/logger.py"/>
+    </target>
+
+    <target name="copy-boxee" description="Copy Boxee files for packaging">
+        <copy todir="${target}/boxee/info.mimediacenter.mywebtv">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+				<exclude name="build.xml"/>
+                <exclude name="mywebtv-version.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="core/logger.py"/>
+				<exclude name="core/config.py"/>
+
+                <!--exclude name="platformcode/boxee/**"/-->
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+			</fileset>
+        </copy>
+        <copy file="platformcode/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.mywebtv/descriptor.xml"/>
+        <copy file="platformcode/boxee/config.py" tofile="${target}/boxee/info.mimediacenter.mywebtv/core/config.py"/>
+        <copy file="platformcode/boxee/logger.py" tofile="${target}/boxee/info.mimediacenter.mywebtv/core/logger.py"/>
+    </target>
+
+	<!-- copy-wiimc ============================================================ -->
+    <target name="copy-wiimc">
+        <copy todir="${target}/wiimc/pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.log"/>
+				<exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="channelselector-*.py"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/images/squares/**"/>
+                <exclude name="resources/images/fanart/**"/>
+
+                <exclude name="pelisalacarta/channels/rv_*"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
+                <!--exclude name="platformcode/wiimc/**"/-->
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+            </fileset>
+        </copy>
+        <copy file="platformcode/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-mediaserver ============================================================ -->
+    <target name="copy-mediaserver">
+        <copy todir="${target}/mediaserver/pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.log"/>
+				<exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="channelselector-*.py"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="pelisalacarta/channels/rv_*"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/images/squares/**"/>
+                <exclude name="resources/images/fanart/**"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <!--exclude name="platformcode/mediaserver/**"/-->
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+            </fileset>
+        </copy>
+        <copy file="platformcode/mediaserver/platform_name.py" tofile="${target}/mediaserver/pelisalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-rss ============================================================ -->
+    <target name="copy-rss">
+        <copy todir="${target}/rss/pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+				<exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.log"/>
+				<exclude name="pelisalacarta-version.xml"/>
+                <exclude name="tester.py"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="channelselector-*.py"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/images/squares/**"/>
+                <exclude name="resources/images/fanart/**"/>
+
+                <exclude name="pelisalacarta/channels/rv_*"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
+                <!--exclude name="platformcode/rss/**"/-->
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+            </fileset>
+        </copy>
+        <copy file="platformcode/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py"/>
+    </target>
+
+	<!-- copy-plexmediaserver ============================================================ -->
+    <target name="copy-plexmediaserver">
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
+        <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images"/-->
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
+
+        <copy file="resources/plexmediaserver/Info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
+        <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
+        <copy file="resources/plexmediaserver/DefaultPrefs.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
+        <copy file="fanart.jpg" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/art-default.jpg"/>
+        <copy file="icon.png" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/icon-default.png"/>
+        <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
+            <fileset dir="resources/images"/>
+        </copy-->
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries">
+            <fileset dir="lib">
+                <exclude name="cerealizer/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+                <exclude name="**/*.xml"/>
+                <exclude name="**/*.txt"/>
+                <exclude name="tester.py"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="COPYING"/>
+                <exclude name="build.xml"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/bookmarks/**"/>
+                <exclude name="**/library/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+                <exclude name="**/parametrizacion*.*"/>
+                <exclude name="descriptor.xml"/>
+                <exclude name="resources/**"/>
+                <exclude name="default.tbn"/>
+                <exclude name="fanart-new.jpg"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon-old.png"/>
+                <exclude name="icon.png"/>
+                <exclude name="lib/**"/>
+                <exclude name="platformcode/**"/>
+                <exclude name="__init__.py"/>
+                <exclude name="core/logger.py"/>
+                <exclude name="core/config.py"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="channelselector-*.py"/>
+				<exclude name="logging.conf"/>
+				<exclude name="upload.sh"/>
+                <exclude name="pelisalacarta/channels/rv_*"/>
+            </fileset>
+        </copy>
+        <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
+        <copy file="platformcode/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+        <copy file="platformcode/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+        <copy file="platformcode/plex/platform_name.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+	</target>
+
+	<!-- copy-dreambox ============================================================ -->
+    <target name="copy-dreambox">
+        <copy todir="${target}/dreambox/pelisalacarta">
+            <fileset dir=".">
+				<exclude name="target/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="upload.sh"/>
+				<exclude name="pelisalacarta.komodoproject"/>
+				<exclude name="channelselector-*.py"/>
+				<exclude name="addon*.xml"/>
+				<exclude name="**/.*"/>
+				<exclude name="**/.*/**"/>
+				<exclude name="**/bookmarks/**"/>
+				<exclude name="**/library/**"/>
+				<exclude name="**/*.pyo"/>
+				<exclude name="**/*.pyc"/>
+				<exclude name="**/parametrizacion*.*"/>
+				<exclude name="descriptor.xml"/>
+                <exclude name="fanart.jpg"/>
+                <exclude name="icon.png"/>
+                <exclude name="resources/**"/>
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/xbmc/**"/>
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="tester.py"/>
+                <exclude name="changelog.txt"/>
+                <exclude name="default.py"/>
+                <exclude name="default.tbn"/>
+                <exclude name="LICENSE.txt"/>
+                <exclude name="logging.conf"/>
+                <exclude name="pelisalacarta-version.xml"/>
+                <exclude name="pelisalacarta.log"/>
+                <exclude name="pelisalacarta.py"/>
+                <exclude name="readme.txt"/>
+                <exclude name="pelisalacarta/channels/casttv.py"/>
+                <exclude name="pelisalacarta/channels/animeforos.py"/>
+                <exclude name="pelisalacarta/channels/notas.tb"/>
+                <exclude name="pelisalacarta/channels/tvshack.py"/>
+                <exclude name="lib/elementtree/**"/>
+                <exclude name="lib/gdata/**"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="core/config.py"/>
+                <exclude name="core/logger.py"/>
+                <exclude name="pelisalacarta/channels/rv_*"/>
+			</fileset>
+        </copy>
+        <copy todir="${target}/dreambox/pelisalacarta">
+            <fileset dir="resources/dreambox">
+			</fileset>
+        </copy>
+    </target>
+
+    <target name="test-boxee" depends="clean">
+        <mkdir dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
+        <antcall target="copy-boxee"/>
+
+        <delete dir="/Users/jesus/Library/Application Support/BOXEE/UserData/plugins/video/info.mimediacenter.pelisalacarta"/>
+        <delete dir="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta"/>
+
+        <copy todir="/Users/jesus/Library/Application Support/BOXEE/UserData/apps/info.mimediacenter.pelisalacarta">
+            <fileset dir="${target}/boxee/info.mimediacenter.pelisalacarta"/>
+        </copy>
+    </target>
+
+    <target name="test-plex" depends="clean">
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
+        <antcall target="copy-plexmediaserver"/>
+
+        <delete dir="/Users/jesus/Library/Application Support/Plex Media Server/Plug-ins/pelisalacarta.bundle"/>
+
+        <copy todir="/Users/jesus/Library/Application Support/Plex Media Server/Plug-ins/pelisalacarta.bundle">
+            <fileset dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
+        </copy>
+    </target>
+    
+    <target name="versionup">
+        <replaceregexp file="version.xml" match="&lt;tag&gt;(.*?)&lt;/tag&gt;" replace="&lt;tag&gt;${version}&lt;/tag&gt;"/>
+        <replaceregexp file="version.xml" match="&lt;date&gt;(.*?)&lt;/date&gt;" replace="&lt;date&gt;${versiondate}&lt;/date&gt;"/>
+        <replaceregexp file="version.xml" match="&lt;changes&gt;(.*?)&lt;/changes&gt;" replace="&lt;changes&gt;${versionchanges}&lt;/changes&gt;"/>
+
+        <replaceregexp file="default.py" match="__date__ = &quot;([^&quot;]+)&quot;" replace="__date__ = &quot;${versiondate}&quot;"/>
+        <replaceregexp file="default.py" match="__version__ = &quot;([^&quot;]+)&quot;" replace="__version__ = &quot;${version}&quot;"/>
+
+        <replaceregexp file="addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmceden/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmcdharma/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <!--replaceregexp file="platformcode/wiimc/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/mediaserver/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
+
+        <replaceregexp file="resources/dreambox/plugin.py" match="pelisalacarta ${oldversion} para Dreambox" replace="pelisalacarta ${version} para Dreambox" flags="g"/-->
+
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION = &quot;${versionboxee}&quot;"/>
+        <replaceregexp file="platformcode/boxee/config.py" match="TAG_VERSION_XBMC = &quot;([^&quot;]+)&quot;" replace="TAG_VERSION_XBMC = &quot;${version}&quot;"/>
+        
+        <replaceregexp file="platformcode/boxee/descriptor.xml" match="&lt;version&gt;(.*?)&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
+        <replaceregexp file="platformcode/boxee/index.xml" match="&lt;version&gt;${oldversionboxee}&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
+
+        <!-- Pasos que quedan por automatizar
+        
+        Firmar boxee
+        Subir el xml de boxee
+        Subir los ZIP al servidor
+        Subir version.xml como pelisalacarta-version.xml
+        Subir index.xml de boxee y el zip de boxee al repo
+        Redactar texto para actualizar página de descargas
+        
+        -->
+    </target>
+</project>
