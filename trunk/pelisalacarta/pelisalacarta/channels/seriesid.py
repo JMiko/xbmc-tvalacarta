@@ -179,19 +179,12 @@ def test():
     # mainlist
     mainlist_items = mainlist(Item())
     # Da por bueno el canal si alguna de las series "En emisión" devuelve mirrors
-    series_items = series(mainlist_items[0])
+    episodios_items = ultimos(mainlist_items[0])
     bien = False
     
-    for serie_item in series_items:
-        if serie_item.action=="scrappingTemp":
-            episodios_items = scrappingTemp(serie_item)
-            for episodio_item in episodios_items:
-                mirrors = servertools.find_video_items( item=episodio_item )
-                if len(mirrors)>0:
-                    return True
-        else:
-            mirrors = servertools.find_video_items( item=serie_item )
-            if len(mirrors)>0:
-                return True
+    for episodio_item in episodios_items:
+        mirrors = findvideos( item=episodio_item )
+        if len(mirrors)>0:
+            return True
 
     return False

@@ -20,7 +20,7 @@ def get_long_url( short_url ):
     # Busca la url de "Saltar el anuncio"
     #var url = '/go/a59f91b58940e169d612a806f03bffbc/aHR0cDovL2dvby5nbC9nT3c4OA';	
     skip_ad_url = urlparse.urljoin( short_url , scrapertools.get_match(data,"var url \= '(/go/[^']+)'") )
-    logger.info( "skip_ad_url=" + skip_ad_url )
+    logger.info( "[adfly.py] skip_ad_url=" + skip_ad_url )
     
     # Espera los 5 segundos
     try:
@@ -35,3 +35,9 @@ def get_long_url( short_url ):
     logger.info("location="+location)
 
     return location
+
+def test():
+    
+    location = get_long_url("http://adf.ly/Fp6BF")
+
+    return "http://vk.com/" in location

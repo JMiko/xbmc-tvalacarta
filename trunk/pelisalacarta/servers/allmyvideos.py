@@ -177,7 +177,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    # http://allmyvideos.net/fg85ovidfwxx
+    # http://allmyvideos.net/6lgjjav5cymi
     patronvideos  = '(allmyvideos.net/[a-z0-9]+)'
     logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -193,3 +193,9 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+
+    video_urls = get_video_url("http://allmyvideos.net/6lgjjav5cymi")
+
+    return len(video_urls)>0

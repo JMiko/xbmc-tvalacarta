@@ -29,7 +29,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Lee la URL
     data = scrapertools.cache_page( page_url )
     bloque = scrapertools.get_match(data,'<Form method="POST"(.*)</.orm>')
-    logger.info("bloque="+bloque)
+    #logger.info("bloque="+bloque)
     op = scrapertools.get_match(bloque,'<input type="hidden" name="op" value="([^"]+)"')
     id = scrapertools.get_match(bloque,'<input type="hidden" name="id" value="([^"]+)"')
     rand = scrapertools.get_match(bloque,'<input type="hidden" name="rand" value="([^"]*)"')
@@ -43,7 +43,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #op=download1&id=iij5rw25kh4c&rand=&referer=&usr_login=&fname=TED-TS-Screener.Castellano.Ro_dri.avi&method_free=&method_premium=&down_script=1&method_free=Continue+to+Video
     post = "op="+op+"&id="+id+"&rand="+rand+"&referer="+referer+"&usr_login="+usr_login+"&fname="+fname+"&method_free=&method_premium="+method_premium+"&down_script=1&method_free="+method_free
     data = scrapertools.cache_page( page_url , post=post )
-    logger.info("data="+data)
+    #logger.info("data="+data)
 
     # Saca el bloque packed y lo descifra
     packed = scrapertools.get_match(data,"(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d\).*?</script>)")
@@ -99,3 +99,10 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+
+def test():
+
+    video_urls = get_video_url("http://nosvideo.com/?v=zuxl97lozqmp")
+
+    return len(video_urls)>0

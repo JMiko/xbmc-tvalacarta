@@ -291,6 +291,7 @@ def findvideos(item):
                 except:
                     server="directo"
 
+            #http://www.tumejortv.com/peliculas/A-Roma-con-amor--2012--2/url/364905
             itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
 
     return itemlist
@@ -346,9 +347,21 @@ def findvideospeliculas(item):
                 except:
                     server="directo"
 
-            itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
-
+            if "www.tumejortv.com" in url:
+                itemlist.append( Item(channel=__channel__, action="findvideos_partes" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
+            else:
+                itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
     return itemlist
+
+def findvideos_partes(item):
+    logger.info("[tumejortv.py] findvideospeliculas")
+    
+    data = scrapertools.cache_page(item.url)
+    itemlist = servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel = __channel__
+
+    return itemlist    
 
 def test():
     from servers import servertools

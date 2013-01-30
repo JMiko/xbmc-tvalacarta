@@ -87,58 +87,21 @@ def peliculas(item):
     patron  = '<div class="ficha margen-inf1">[^<]+'
     patron += '<h2><a href="([^"]+)">([^<]+)</a></h2>[^<]+'
     patron += '<div class="foto-link">[^<]+'
-    patron += '<img src="([^"]+)".*?'
-    patron += '<li><span class="color_azul-ficha">Sinopsis:</span>(.*?)</li>'
+    patron += '<a[^<]+<img src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for url,title,thumbnail,plot in matches:
+    for url,title,thumbnail in matches:
         # Titulo
-        scrapedtitle = title
+        scrapedtitle = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = thumbnail
-        scrapedplot = scrapertools.htmlclean(plot).strip()
+        scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
-    '''
-    <div class="ficha margen-inf1">
-    <h2>Daens (1993)</h2>
-    <div class="foto-link">
-    <img src="http://imagenes.divxonline.info/divxonline.info_daens.jpg" width="150" height="200" style="border: 1px solid #FF9900" alt="Daens (1993)" title="Daens (1993)" />
-    <a href="/pelicula-divx/6963/Daens-1993/" class="boton-informacion">Ver online</a>
-    <a href="/descarga-directa/6963/Daens-1993/" class="boton-descargar">Descargar</a>
-    </div>
-    <ul>
-    <li>
-    <div class="tituloPeliculaVotar">
-    <span class="color_azul-ficha">Valoraci&oacute;n:</span>
-    </div>
-    <div class="formPeliculaVotar">
-    <form id="ratings6963" class="ratings" action="/votar.php" method="post">
-    <input type="radio" name="rate" value="1:6963" title="P&eacute;sima" id="rate16963" /> <label for="rate16963">P&eacute;sima</label><br />
-    <input type="radio" name="rate" value="2:6963" title="Mala" id="rate26963" /> <label for="rate26963">Mala</label><br />
-    <input type="radio" name="rate" value="3:6963" title="Regular" id="rate36963" /> <label for="rate36963">Regular</label><br />
-    <input type="radio" name="rate" value="4:6963" title="Buena" id="rate46963" checked="checked"/> <label for="rate46963">Buena</label><br />
-    <input type="radio" name="rate" value="5:6963" title="Excelente" id="rate56963" /> <label for="rate56963">Excelente</label><br />
-    <input type="submit" value="Votar" />
-    </form>
-    <p id="respvotar6963"></p>
-    </div>
-    <div class="fix"></div>
-    </li>
-    <li><span class="color_azul-ficha">G&eacute;nero:</span> <a href="/peliculas/13/dramas/">Dramas</a></li>
-    <li><span class="color_azul-ficha">Director(es):</span> </li>
-    <li><span class="color_azul-ficha">Actor(es):</span> </li>
-    <li><span class="color_azul-ficha">Autorizada:</span> <a href="/peliculas/No-recomendada-a-menores-de-7-anos/1/">No recomendada a menores de 7 años</a></b></li>
-    <li><span class="color_azul-ficha">Vista:</span> 25080 veces<br /></li>
-    <li><span class="color_azul-ficha">Sinopsis:</span> La película relata la vida del Padre Daens en Bélgica a finales del siglo XIX. La acción trancurre en la localidad belga de Aalst durante los primeros años de este siglo. En este pueblo se inicia una revuelta para protestar por las duras condiciones de los obreros de las fábricas. Cuando el religioso Adolf Daens escribr un artículo denunciando e...  <a href="/pelicula/6963/Daens-1993/">(leer m&aacute;s)</a></li>
-    
-    </ul>
-    </div>
-    '''
     patron  = '<div class="ficha margen-inf1">[^<]+'
     patron += '<h2>([^<]+)</h2>[^<]+'
     patron += '<div class="foto-link">[^<]+'

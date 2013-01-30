@@ -125,8 +125,8 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import seriesly
     itemlist.extend( seriesly.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import seriesdanko
-    itemlist.extend( seriesdanko.search( Item() , tecleado) )
+    #from pelisalacarta.channels import seriesdanko
+    #itemlist.extend( seriesdanko.search( Item() , tecleado) )
 
     from pelisalacarta.channels import veranime
     itemlist.extend( veranime.search( Item() , tecleado) )

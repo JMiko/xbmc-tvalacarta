@@ -44,6 +44,7 @@ def videos(item):
     
     base_thumbnail_url = scrapertools.get_match(data,"var IMGthumb \= '([^']+)'")
     base_url = scrapertools.get_match(data,"var URLthumb \= '([^']+)'")
+    base_url = urlparse.urljoin("http://beeg.com/",base_url)
 
     # Lista de IDs
     id_list = []
