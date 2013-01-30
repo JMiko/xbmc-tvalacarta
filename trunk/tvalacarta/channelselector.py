@@ -121,6 +121,14 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Conectate (Argentina) (29/01/2013)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="CCTV Español (China) (29/01/2013)"       , channel="cctvspan"             , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="DW Español (Alemania) (29/01/2013)"      , channel="dwspan"               , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="RT Español (Rusia) (29/01/2013)"         , channel="rtspan"               , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="HispanTV (Iran) (29/01/2013)"            , channel="hispantv"             , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="elgourmet.com (29/01/2013)"              , channel="elgourmet"            , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="Disney Latino (29/01/2013)"              , channel="disneylatino"         , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
+    itemlist.append( Item( title="Mundo Nick (29/01/2013)"                 , channel="mundonick"            , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
     itemlist.append( Item( title="Disney Junior (15/01/2013)"              , channel="disneyjunior"   , language="ES" , category="I"   , type="generic"  ))  # jesus 15/01/2013
     itemlist.append( Item( title="CYLTV (Castilla y León) (01/01/2013)"    , channel="cyltv"          , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="RTVCM (Castilla La Mancha) (01/01/2013)" , channel="rtvcm"          , language="ES" , category="A" , type="generic"  ))  # jesus 01/01/2013
@@ -155,23 +163,31 @@ def channels_list():
     itemlist.append( Item( title="Aragón TV"                  , channel="aragontv"             , language="ES" , category="A"   , type="generic", extra="rtmp" ))  # jesus 25/01/2012
     itemlist.append( Item( title="Boing"                      , channel="boing"                , language="ES" , category="I"   , type="generic" ))   # juanfran 07/02/2011
     itemlist.append( Item( title="Cartoonito"                 , channel="cartoonito"           , language="ES" , category="I"   , type="generic" ))
+    itemlist.append( Item( title="CCTV Español (China)"       , channel="cctvspan"             , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Clan TVE"                   , channel="clantve"              , language="ES" , category="I"   , type="generic" ))
+    itemlist.append( Item( title="Conectate (Argentina)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
     itemlist.append( Item( title="CYLTV (Castilla y León)"    , channel="cyltv"                , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
     itemlist.append( Item( title="Disney Junior"              , channel="disneyjunior"         , language="ES" , category="I"   , type="generic"  ))  # jesus 15/01/2013
+    itemlist.append( Item( title="Disney Latino"              , channel="disneylatino"         , language="ES" , category="L"   , type="generic" ))
+    itemlist.append( Item( title="DW Español (Alemania)"      , channel="dwspan"               , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="EITB (País Vasco)"          , channel="eitb"                 , language="ES" , category="A"   , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="El cine de las 3 mellizas"  , channel="tresmellizas"         , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="El Trece TV (Argentina)"    , channel="eltrece"              , language="ES" , category="N"   , type="generic" ))
+    itemlist.append( Item( title="elgourmet.com"              , channel="elgourmet"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Euronews"                   , channel="euronews"             , language="ES" , category="T"   , type="generic" ))
     itemlist.append( Item( title="Extremadura TV"             , channel="extremaduratv"        , language="ES" , category="A"   , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="Giralda TV (Sevilla)"       , channel="giraldatv"            , language="ES" , category="L"   , type="generic" ))  # jesus 20/01/2010
+    itemlist.append( Item( title="HispanTV (Iran)"            , channel="hispantv"             , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Hogarutil"                  , channel="hogarutil"            , language="ES" , category="T"   , type="generic", extra="background" ))
     itemlist.append( Item( title="IB3 (Islas Baleares)"       , channel="ib3"                  , language="ES" , category="A"   , type="generic" ))  # jesus 20/01/2010
     itemlist.append( Item( title="Internautas TV"             , channel="internautastv"        , language="ES" , category="T"   , type="generic" ))
     itemlist.append( Item( title="Kideos"                     , channel="kideos"               , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Mitele"                     , channel="mitele"               , language="ES" , category="I,N" , type="generic" ))
+    itemlist.append( Item( title="Mundo Nick"                 , channel="mundonick"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"            , language="ES" , category="T"   , type="generic" ))
+    itemlist.append( Item( title="RT Español (Rusia)"         , channel="rtspan"               , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="RTVCM (Castilla La Mancha)" , channel="rtvcm"                , language="ES" , category="A" , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="RTPA (Asturias)"            , channel="rtpa"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="RTVA (Andalucia)"           , channel="rtva"                 , language="ES" , category="A"   , type="generic" ))
