@@ -50,8 +50,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[putlocker.py] url="+page_url)
     data = scrapertools.cache_page(page_url)
 
-    patron  = '<form method="post">[^<]+'
-    patron += '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
+    patron  = '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
     patron += '<input name="confirm" type="submit" value="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
