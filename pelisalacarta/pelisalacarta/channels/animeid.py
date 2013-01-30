@@ -207,8 +207,7 @@ def test():
                 return false
 
     # Da por bueno el canal si alguno de los vídeos de las series en "Destacados" devuelve mirrors
-    series_items = destacados(mainlist_items[0])
-    episodios_items = serie(series_items[0])
+    episodios_items = novedades_episodios(mainlist_items[0])
     bien = False
     for episodio_item in episodios_items:
         mirrors = servertools.find_video_items(item=episodio_item)

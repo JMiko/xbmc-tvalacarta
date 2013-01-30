@@ -23,6 +23,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page(page_url)
     logger.info("data="+data)
     url = scrapertools.get_match(data,'video_path="([^"]+)"')
+    logger.info("url="+url)
     import urlparse
     url = urlparse.urljoin( page_url, url )
     location = scrapertools.get_header_from_response(url,header_to_get="location")
@@ -52,3 +53,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.telly.com/0DN7PH?fromtwitvid=1")
+
+    return len(video_urls)>0

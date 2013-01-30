@@ -47,7 +47,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         usr_login = ""
         id = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)"')
         fname = scrapertools.get_match(data,'<input type="hidden" name="fname" value="([^"]+)"')
-        referer = ""
+        referer = page_url
         hashstring = scrapertools.get_match(data,'<input type="hidden" name="hash" value="([^"]*)"')
         imhuman = scrapertools.get_match(data,'<input type="submit" name="imhuman".*?value="([^"]+)">').replace(" ","+")
         
@@ -126,3 +126,8 @@ if __name__ == "__main__":
             premium=False
         
         print get_video_url(video_url,premium,login,password)
+
+def test():
+    video_urls = get_video_url("http://streamcloud.eu/132qd8f6gaj2")
+
+    return len(video_urls)>0

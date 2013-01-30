@@ -178,3 +178,9 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+
+    video_urls = get_video_url("http://moevideo.net/?page=video&uid=13992.10e45e309d5c767a10f23c07d73c")
+
+    return len(video_urls)>0

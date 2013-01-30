@@ -127,6 +127,65 @@ def test_channels():
     for canal in no_probados:
         print "   %s" % canal
     
+def test_connectors():
+    #print test_one_connector("adfly")
+    #return
+
+    funcionan = []
+    no_funcionan = []
+    no_probados = []
+    para_probar = []
+
+    para_probar.append("adfly")
+    para_probar.append("adnstream")
+    no_probados.append(["allbox4","Fuera de servicio"])
+    para_probar.append("allmyvideos")
+    no_probados.append(["bayfiles","Solo premium"])
+    no_probados.append(["cramit","Solo premium"])
+
+    #para_probar.append("bayfiles")
+    no_probados.append(["bitshare","Solo premium"])
+    #para_probar.append("bliptv")
+    no_probados.append(["cineraculo","Fuera de servicio"])
+    #para_probar.append("cramit")
+
+    para_probar.append("letitbit")
+    para_probar.append("moevideos")
+    para_probar.append("nosvideo")
+    para_probar.append("nowvideo")
+    para_probar.append("putlocker")
+    para_probar.append("sockshare")
+    para_probar.append("vk")
+
+    # Verifica los conectores
+    for server in para_probar:
+        try:
+            resultado = test_one_connector(server)
+            if resultado:
+                funcionan.append([server,0,0])
+            else:
+                no_funcionan.append([server,0,0,""])
+        except:
+            no_funcionan.append([server,0,0,"Excepción"])
+    
+    print "------------------------------------"
+    print " funcionan: %d" % len(funcionan)
+    for server,ok,nok in funcionan:
+        print "   %s [%d/%d]" % (server,ok,nok)
+
+    print " no funcionan: %d" % len(no_funcionan)
+    for server,ok,nok,detalle in no_funcionan:
+        print "   %s [%d/%d] %s" % (server,ok,nok,detalle)
+
+    print " no probados: %d" % len(no_probados)
+    for server,motivo in no_probados:
+        print "   %s (%s)" % (server,motivo)
+    
+
+def test_one_connector(server):
+
+    exec "from servers import "+server+" as serverconnector"
+    return serverconnector.test()
 
 def test_one_server_connector(server,url,no_find_videos=False):
     exec "from servers import "+server+" as serverconnector"
@@ -331,9 +390,10 @@ def test_encode():
     print urllib2.quote(urllib2.quote(url))
 
 if __name__ == "__main__":
-    #test_server_connectors()
+    test_connectors()
+    #test_channels()
+
     #test_cineraculo()
-    test_channels()
     #test_samba()
     #test_fileserver_premium()
     #test_filenium()

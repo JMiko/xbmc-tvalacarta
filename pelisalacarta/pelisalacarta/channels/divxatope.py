@@ -160,7 +160,7 @@ def test():
     
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
     for mainlist_item in mainlist_items:
-        if "DVD-Rip Castellano" in mainlist_item.title:
+        if "DVDRip Castellano" in mainlist_item.title:
             peliculas_items = lista(mainlist_item)
             break
     

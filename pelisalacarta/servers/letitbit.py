@@ -33,8 +33,12 @@ def test_video_exists( page_url ):
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[letitbit.py] get_video_url(page_url='%s')" % page_url)
-    video_urls = []
-    return video_urls
+
+    # Extrae el id del vídeo
+    code = scrapertools.get_match(page_url,"letitbit.net/download/(\d+\.[a-z0-9]+)")
+    
+    import moevideos
+    return moevideos.get_video_url("http://moevideo.net/?page=video&uid="+code)
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
@@ -43,6 +47,7 @@ def find_videos(data):
 
     #http://letitbit.net/download/12300.151ef074afcb8f56a43d97bd64ef/Nikita.S02E15.HDTV.XviD-ASAP.avi.html
     #http://www.letitbit.net/download/33293.34678a8198db5c640085f0386d60/kells.part2.rar.html
+    #http://letitbit.net/download/83307.84ab4737dc0fd6d7ee90d0458d0c/legion.avi.html
     patronvideos  = '(letitbit.net/download/.*?\.html)'
     logger.info("[letitbit.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -58,3 +63,9 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+
+    video_urls = get_video_url("http://letitbit.net/download/83307.84ab4737dc0fd6d7ee90d0458d0c/legion.avi.html")
+
+    return len(video_urls)>0

@@ -16,12 +16,35 @@ def test_video_exists( page_url ):
     logger.info("[putlocker.py] test_video_exists(page_url='%s')" % page_url)
 
     location = scrapertools.get_header_from_response( url = page_url , header_to_get = "location")
-    if location=="":
-        return True,""
-    elif "&404" in location:
+    if "&404" in location:
         return False,"El archivo no existe<br/>en putlocker o ha sido borrado."
-    else:
-        return True,""
+    
+    data = scrapertools.cache_page(page_url)
+
+    patron  = '<form method="post">[^<]+'
+    patron += '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
+    patron += '<input name="confirm" type="submit" value="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    if len(matches)==0: return True,""
+
+    post = matches[0][1]+"="+matches[0][0]+"&confirm="+(matches[0][2].replace(" ","+"))
+    headers = []
+    headers.append( ['User-Agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20100101 Firefox/10.0.2'] )
+    headers.append( [ "Accept" , "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ])
+    headers.append( ['Referer',page_url] )
+
+    data = scrapertools.cache_page( page_url , post=post, headers=headers )
+    logger.info("data="+data)
+
+    if '<div id="disabled">Encoding to enable streaming is in progresss. Try again soon.</div>' in data:
+        try:
+            title = scrapertools.get_match(data,"<title>PutLocker - ([^<]+)</title>")
+        except:
+            title=""
+        return False,"El video \""+title+"\"<br/>esta pendiente de recodificar"
+
+    return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[putlocker.py] url="+page_url)
@@ -56,7 +79,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         data = scrapertools.downloadpageWithoutCookies(xmlurl)
         logger.info("data="+data)
         # Extrae la URL
-        mediaurl = scrapertools.get_match(data,'</link><media\:content url="(.+?)"')
+        try:
+            mediaurl = scrapertools.get_match(data,'</link><media\:content url="(.+?)"')
+        except:
+            mediaurl = scrapertools.get_match(data,'<media\:content url="(.+?)"')
         logger.info("mediaurl="+mediaurl)
         # web  http://media-a7.putlocker.com/download/17/ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv?h=T6eVK5WKEn3fDwKLcFkAog&e=1341894542&f=%27ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv%27
         # xbmc http://media-a7.putlocker.com/download/17/ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv?h=yFVjhTW95m3LqyqUH1yUDA&amp;e=1341894600&amp;f='ecopolis_._6_episodio_final_documaniatv.com_3b1c3.flv'
@@ -67,6 +93,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         video_urls.append( [".flv [putlocker]",mediaurl] )
 
     else:
+        logger.info("data="+data)
         logger.info("[putlocker.py] No encuentra Playlist")
         #url: 'http://s3.putlocker.ch:86/2015.mp4?key=2daad71cdc34f5a2e10665cf0efe1356'
         videourl = scrapertools.get_match(data,"url\: '([^']+)'")
@@ -175,3 +202,9 @@ def find_videos(text):
     
     
     return devuelve
+
+def test():
+
+    video_urls = get_video_url("http://www.putlocker.com/file/7ABA0AEA59F27851")
+
+    return len(video_urls)>0

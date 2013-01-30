@@ -174,3 +174,9 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+
+    video_urls = get_video_url("http://vk.com/video_ext.php?oid=190230445&id=164616513&hash=ef16fcd83b58b192&hd=1")
+
+    return len(video_urls)>0

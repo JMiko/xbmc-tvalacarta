@@ -311,7 +311,7 @@ def test():
     
     bien = False
     for episodio_item in episodios_items:
-        mirrors = findvideos(item=episodio_item)
+        mirrors = servertools.find_video_items(item=episodio_item)
         if len(mirrors)>0:
             bien = True
             break

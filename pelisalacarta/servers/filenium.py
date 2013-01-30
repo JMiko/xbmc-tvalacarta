@@ -37,7 +37,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         #logger.info("[filenium.py] torrent url (location='%s')" % location)
         
         if "xbmc" in config.get_platform():
-            location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
+            #location = location.replace("http://cdn.filenium.com","http://"+user+":"+password+"@cdn.filenium.com")
+            location = location.replace("http://","http://"+user+":"+password+"@")
         else:
             location = location.replace("/?.zip","")
             user = user.replace(".","%2e")
@@ -67,17 +68,21 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     return location
 
 def get_file_extension(location):
-    content_disposition_header = scrapertools.get_header_from_response(location,header_to_get="Content-Disposition")
-    logger.info("content_disposition="+content_disposition_header)
-    partes=content_disposition_header.split("=")
-    if len(partes)<=1:
+
+    try:
+        content_disposition_header = scrapertools.get_header_from_response(location,header_to_get="Content-Disposition")
+        logger.info("content_disposition="+content_disposition_header)
+        partes=content_disposition_header.split("=")
+        if len(partes)<=1:
+            extension=""
+        else:
+            fichero = partes[1]
+            fichero = fichero.replace("\\","")
+            fichero = fichero.replace("'","")
+            fichero = fichero.replace('"',"")
+            extension = fichero[-4:]
+    except:
         extension=""
-    else:
-        fichero = partes[1]
-        fichero = fichero.replace("\\","")
-        fichero = fichero.replace("'","")
-        fichero = fichero.replace('"',"")
-        extension = fichero[-4:]
     return extension
 
 def extract_authorization_header(url):
