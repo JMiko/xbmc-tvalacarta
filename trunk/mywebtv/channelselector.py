@@ -34,14 +34,15 @@ def listchannels(params,url,category):
             else:
                 logger.info("[channelselector.py] Verificar actualizaciones desactivado")
 
-    addfolder("Tivion","tivion","mainlist")
+    addfolder("Community Links","community_links","mainlist")
     addfolder("Delicast","delicast","mainlist")
     #addfolder("TheHaine","thehaine","mainlist")
-    addfolder("Community Links","community_links","mainlist")
+    addfolder("Justin.tv","justintv","mainlist")
+    addfolder("SimpleTV","simpletv","mainlist")
+    addfolder("Tivion","tivion","mainlist")
     addfolder("TVenLinux","tvenlinux","mainlist")
     addfolder("TVE","tve","mainlist")
     addfolder("TVOnlineApp.com","tvonlineapp","mainlist")
-    addfolder("Justin.tv","justintv","mainlist")
     addfolder("Favoritos","favoritos","mainlist")
     addfolder("Configuración","configuracion","mainlist")
 
