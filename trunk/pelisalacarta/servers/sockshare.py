@@ -18,8 +18,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page(page_url)
 
     #<input type="hidden" value="72bed17fd0fa62ac" name="hash" /> <input name="agreeButton" type="submit" value="Continue as Free User" disabled="disabled" id="agreeButton" class="confirm_button" />
-    patron  = '<form method="post">[^<]+'
-    patron += '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
+    patron  = '<input type="hidden" value="([0-9a-f]+?)" name="([^"]+)">[^<]+'
     patron += '<input name="(confirm)" type="submit" value="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)

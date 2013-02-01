@@ -182,5 +182,6 @@ def find_videos(data):
 def test():
 
     video_urls = get_video_url("http://moevideo.net/?page=video&uid=13992.10e45e309d5c767a10f23c07d73c")
+    video_urls = get_video_url("http://www.moevideos.net/online/164016")
 
     return len(video_urls)>0
