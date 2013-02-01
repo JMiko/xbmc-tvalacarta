@@ -20,7 +20,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
 
     #http://flashx.tv/video/4KB84GO238XX/themakingofalady720phdtvx264-bia
-    hash = scrapertools.get_match(page_url,"flashx.tv/video/([A-Z0-9]+)")
+    if "player/embed.php" in page_url:
+        hash = scrapertools.get_match(page_url,"play.flashx.tv/player/embed.php[^h]+hash=([A-Z0-9]+)")
+    else:
+        hash = scrapertools.get_match(page_url,"flashx.tv/video/([A-Z0-9]+)")
+    
     url = "http://play.flashx.tv/nuevo/player/cst.php?hash="+hash
     data = scrapertools.cache_page(url)
     media_url = scrapertools.get_match(data,"<file>([^<]+)</file>")
@@ -39,7 +43,12 @@ def find_videos(data):
 
     #http://flashx.tv/video/4KB84GO238XX/themakingofalady720phdtvx264-bia
     data = urllib.unquote(data)
-    patronvideos  = '(flashx.tv/video/[A-Z0-9]+/[a-z0-9\-]+)'
+    
+    if "player/embed.php" in data:
+        patronvideos  = '(play.flashx.tv/player/embed.php[^h]+hash=[A-Z0-9]+)'
+    else:
+        patronvideos  = '(flashx.tv/video/[A-Z0-9]+/[a-z0-9\-]+)'
+        
     logger.info("[flashx.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
