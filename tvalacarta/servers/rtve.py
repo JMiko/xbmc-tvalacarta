@@ -16,8 +16,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[rtve.py] get_video_url(page_url='%s')" % page_url)
 
     # Extrae el código
-    #http://www.rtve.es/mediateca/videos/20100410/telediario-edicion/741525.shtml
-    #http://www.rtve.es/alacarta/videos/espana-entre-el-cielo-y-la-tierra/espana-entre-el-cielo-y-la-tierra-la-mancha-por-los-siglos-de-los-siglos/232969/
     logger.info("url="+page_url)
     patron = 'http://.*?/([0-9]+)/'
     data = page_url
@@ -29,50 +27,18 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("assetid="+codigo)
 
     if url=="":
+        url = "http://www.rtve.es/ztnr/consumer/xl/video/alta/" + codigo + "_es_292525252525111"
+        logger.info("url="+url)
+
+        location = scrapertools.get_header_from_response(url,header_to_get="location")
+
+        if location != "":
+            url = location.replace("www.rtve.es", "media5.rtve.es")
+
+    if url=="":
         data = scrapertools.cache_page("http://web.pydowntv.com/api?url="+page_url)
         url = scrapertools.get_match(data,'"url_video"\: \["([^"]+)"\]')
-        
-    if url=="":
-        data = scrapertools.cache_page("http://www.piraminet.com/lab/calcular.php",post=urllib.urlencode({"url_original":page_url}))
-        url = scrapertools.get_match(data,"<a href='([^']+)' class='enlace'><strong>Enlace del video</strong></a>")
 
-    '''
-    if url=="":
-        logger.info("[rtve.py] Probando nuevo sistema")
-
-        # Ponemos el id en el siguiente enlace
-        url = "http://www.rtve.es/ztnr/?idasset="+codigo
-        logger.info("url="+url)
-        data = scrapertools.cache_page(url)
-        logger.info("data="+data)
-
-        # Cuando la página carga nos muestra el nuevo id
-        category = scrapertools.get_match(data,"<td>Category</td>[^<]+<th>([^<]+)</th>")
-        
-        patron  = '<td\s+class="s\d+">(\d+)</td>[^<]+'
-        patron += '<td\s+class="s\d+">([^<]+)</td>[^<]+'
-        patron += '<td\s+class="s\d+">([^<]+)</td>[^<]+'
-        patron += '<td\s+class="s\d+">([^<]+)</td>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        for idpreset,videoaudio,tipo,lenguaje in matches:
-            
-            # Ponemos el nuevo id en el siguiente enlace:
-            #http://www.rtve.es/ztnr/preset.jsp?idpreset=910988&lenguaje=es&tipo=video
-            url = "http://www.rtve.es/ztnr/preset.jsp?idpreset="+idpreset+"&lenguaje="+lenguaje+"&tipo="+videoaudio
-            logger.info("url="+url)
-            data = scrapertools.cache_page(url)
-            logger.info("data="+data)
-
-            # De ahí sacamos el video
-            # <li><em>File Name</em>&nbsp;<span class="titulo">mp4/4/1/1340907208714.mp4</span></li>
-            finalurl = scrapertools.get_match(data,'<li><em>File Name</em>&nbsp;<span class="titulo">([^<]+)</span></li>')
-            
-            # Ahora solo nos falta el principio del enlace y quedaría así:
-            url = "http://www.rtve.es/resources/"+category+"/"+finalurl
-            logger.info("url="+url)
-    '''
-    
     if url=="":
         try:
             # Compone la URL
