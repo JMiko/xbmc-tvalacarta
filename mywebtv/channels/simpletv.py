@@ -32,26 +32,28 @@ def mainlist(params,url,category):
     logger.info("[simpletv.py] mainlist")
 
     # Lee el script
-    data = scrapertools.cachePage("https://googledrive.com/host/0B0MauuTdUSzpOFJsUmlVa1lueTQ/SimpleTV.html")
-    #data = data.replace("\n", " ")
-    #data = data.replace("\n\r", " ")
-    #data = " ".join(data.split())
-    logger.info(data)
-    #EXTINF:-1 $ExtFilter="España",Canales canal +:Canal + Golf  rtmp://$OPT:rtmp-raw=rtmp://cdn.icricket.tv/secure/?auth=a8cc0c8414a61b02ea371455659383ec50edb5a2d4a9 f playpath=ch8.stream swfUrl=http://www.igoal.tv/player.swf live=1 pageUrl=http://www.igoal.tv/get.php?id=22&reload=1357758436395
-    patron = '#EXTINF:-1 \$ExtFilter=(.*?),(.*?)(?:\n|\r|\r\n?)(?:\n|\r|\r\n?)(.*?)(?:\n|\r|\r\n?)'
+    data = scrapertools.cachePage("http://chitawar.blogspot.com.es/p/blog-page_20.html")
+    patron = '<li><span style="color: magenta;">SIMPLETV:</span> <span style="color: red;">(.*?)</span></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if matches:
+        #data = scrapertools.cachePage("https://content.wuala.com/contents/chitawar/SimpleTv/SimpleTV.html?key=0IcbTMekYCnn&id=1,2191838,11-414,2191838,18")
+        data = scrapertools.cachePage(matches[0])
+        #logger.info(data)
+        patron = '#EXTINF:-1 \$ExtFilter="(.*?)",(.*?)(?:\n|\r|\r\n?)(?:\n|\r|\r\n?)(.*?)(?:\n|\r|\r\n?)'
 
-    # Busca el bloque con los canales
-    matches = re.compile(patron,re.DOTALL|re.MULTILINE).findall(data)
+        # Busca el bloque con los canales
+        matches = re.compile(patron,re.DOTALL|re.MULTILINE).findall(data)
 
-    scrapertools.printMatches(matches)
-    for match in matches:
-        if "Canales +18" in match[1]: continue
-        if "Radios" in match[1]: continue
-        if not "rtmp" in match[2]: continue
-        scrapedfilter = match[0]
-        scrapedtitle = match[1]
-        scrapedurl = match[2].replace("rtmp://$OPT:rtmp-raw=","").replace("live=1", "live=true")
-        xbmctools.addnewfolder( CHANNELCODE , "play" , CHANNELNAME , scrapedtitle , scrapedurl , "", "" )
+        scrapertools.printMatches(matches)
+        for match in matches:
+            if "Canales +18" in match[1]: continue
+            if "Radios" in match[1]: continue
+            if "Radios" in match[0]: continue
+            if not "rtmp" in match[2]: continue
+            #scrapedfilter = match[0]
+            scrapedtitle = match[0].upper() + ' - ' + match[1].upper()
+            scrapedurl = match[2].replace("rtmp://$OPT:rtmp-raw=","").replace("live=1", "live=true") + " timeout=300"
+            xbmctools.addnewfolder( CHANNELCODE , "play" , CHANNELNAME , scrapedtitle , scrapedurl , "", "" )
 
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
