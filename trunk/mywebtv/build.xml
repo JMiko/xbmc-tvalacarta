@@ -2,14 +2,14 @@
 <project name="mywebtv" default="package">
 	<description>mywebtv</description>
 
-    <property name="oldversion" value="1.0.1"/>
-    <property name="oldversionboxee" value="1.1"/>
-    <property name="oldversiondate" value="22/01/2013"/>
+    <property name="oldversion" value="1.0.3"/>
+    <property name="oldversionboxee" value="1.3"/>
+    <property name="oldversiondate" value="05/02/2013"/>
 
-    <property name="version" value="1.0.2"/>
-    <property name="versionboxee" value="1.2"/>
-    <property name="versiondate" value="29/01/2013"/>
-    <property name="versionchanges" value="Weekly release"/>
+    <property name="version" value="1.0.4"/>
+    <property name="versionboxee" value="1.4"/>
+    <property name="versiondate" value="05/02/2013"/>
+    <property name="versionchanges" value="Quick fix for simpletv"/>
 
     <!-- Para betas usar: -->
     <!--property name="version" value="3.2.5-beta-1"/-->

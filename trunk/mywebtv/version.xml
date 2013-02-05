@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>mywebtv</name>
-	<tag>1.0.2</tag>
-	<date>29/01/2013</date>
-	<changes>Weekly release</changes>
+	<tag>1.0.4</tag>
+	<date>05/02/2013</date>
+	<changes>Quick fix for simpletv</changes>
 </version>
