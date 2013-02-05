@@ -121,6 +121,7 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina) (01/02/2013)"      , channel="cda"            , language="ES" , category="L"   , type="generic" )) # Juan Pablo 01/02/2013
     itemlist.append( Item( title="Conectate (Argentina) (29/01/2013)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
     itemlist.append( Item( title="CCTV Español (China) (29/01/2013)"       , channel="cctvspan"             , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
     itemlist.append( Item( title="DW Español (Alemania) (29/01/2013)"      , channel="dwspan"               , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
@@ -166,6 +167,7 @@ def channels_list():
     itemlist.append( Item( title="CCTV Español (China)"       , channel="cctvspan"             , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Clan TVE"                   , channel="clantve"              , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Conectate (Argentina)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" ))
+    itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina)", channel="cda"            , language="ES" , category="L"   , type="generic" )) # Juan Pablo 01/02/2013
     itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
     itemlist.append( Item( title="CYLTV (Castilla y León)"    , channel="cyltv"                , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
