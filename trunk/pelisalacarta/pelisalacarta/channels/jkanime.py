@@ -178,8 +178,10 @@ def episodios(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
+    
     scrapedplot = scrapertools.get_match(data,'<meta name="description" content="([^"]+)"/>')
     scrapedthumbnail = scrapertools.get_match(data,'<meta property="og.image" content="([^"]+)"/>')
+    
     idserie = scrapertools.get_match(data,"ajax/pagination_episodes/(\d+)/")
     logger.info("idserie="+idserie)
     if " Eps" in item.extra:
@@ -191,6 +193,7 @@ def episodios(item):
             paginas += 1
     else:
         paginas = 1
+    
     logger.info("idserie="+idserie)
     for numero in range(1,paginas + 1):
 
@@ -202,13 +205,14 @@ def episodios(item):
         logger.info("data="+data)
     
         '''
+        [{"number":"1","title":"Rose of Versailles - 1"},{"number":"2","title":"Rose of Versailles - 2"},{"number":"3","title":"Rose of Versailles - 3"},{"number":"4","title":"Rose of Versailles - 4"},{"number":"5","title":"Rose of Versailles - 5"},{"number":"6","title":"Rose of Versailles - 6"},{"number":"7","title":"Rose of Versailles - 7"},{"number":"8","title":"Rose of Versailles - 8"},{"number":"9","title":"Rose of Versailles - 9"},{"number":"10","title":"Rose of Versailles - 10"}]
         [{"id":"14199","title":"GetBackers - 1","number":"1","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14200","title":"GetBackers - 2","number":"2","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14201","title":"GetBackers - 3","number":"3","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14202","title":"GetBackers - 4","number":"4","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14203","title":"GetBackers - 5","number":"5","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14204","title":"GetBackers - 6","number":"6","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14205","title":"GetBackers - 7","number":"7","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14206","title":"GetBackers - 8","number":"8","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14207","title":"GetBackers - 9","number":"9","animes_id":"122","timestamp":"2012-01-04 16:59:30"},{"id":"14208","title":"GetBackers - 10","number":"10","animes_id":"122","timestamp":"2012-01-04 16:59:30"}]
         '''
-        patron = '"id"\:"(\d+)","title"\:"([^"]+)","number"\:"(\d+)","animes_id"\:"(\d+)"'
+        patron = '"number"\:"(\d+)","title"\:"([^"]+)"'
         matches = re.compile(patron,re.DOTALL).findall(data)
     
         #http://jkanime.net/get-backers/1/
-        for id,scrapedtitle,numero,animes_id in matches:
+        for numero,scrapedtitle in matches:
             title = scrapedtitle.strip()
             url = urlparse.urljoin(item.url,numero)
             thumbnail = scrapedthumbnail
@@ -248,6 +252,11 @@ def findvideos(item):
     except:
         pass
     
+    try:
+        mediaurl = scrapertools.get_match(data,"url\: '(http://jkanime.net/stream/jkget/[^']+)'")
+        itemlist.append( Item(channel=__channel__, action="play" , title="Ver en jkanime" , url=mediaurl, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server="directo", folder=False))
+    except:
+        pass
 
     return itemlist
 
