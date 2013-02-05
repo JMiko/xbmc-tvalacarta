@@ -35,17 +35,13 @@ def mainlist(item):
     logger.info("[cinetemagay.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Cine gay online" , url="http://www.cinegayonline.net/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-jX_4yJbTpYw/T5GQHb5TgzI/AAAAAAAAAOE/GM4IHqBygb4/s938/cg2.jpg"))
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Latin Queer Channel" , url="http://latinqueerchannel.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://3.bp.blogspot.com/-r8c6teBc_3I/TbmJiNtv0UI/AAAAAAAAC-0/KrthDgHEebM/banner-latin1.jpg"))
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Modo gay" , url="http://www.modogay.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/--oGFfDhcJg8/T4iGRMsNFOI/AAAAAAAABV4/oXKs9PMbrYU/s1600/mgbanner2.jpg"))         
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Películas gay online" , url="http://www.peliculasgayonline.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-w6UbvMoq5aI/TxofB_ZAluI/AAAAAAAAEUg/j7_yYF0HNmc/s320/zonalogo.jpg"))               
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Tu nueva esquina gay" , url="http://www.tuesquinagay5.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/_ErGLbQH-vrA/TM89_RA3I3I/AAAAAAAAANY/n7CKPO3oCoE/s0-R/4501630360_186f3cdc55_o.jpg"))           
-    itemlist.append( Item(channel=__channel__, action="lista_2"  , title="[ESP] Crónicas de hefestion" , url="http://cronicasdehefestion.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-0lCbGrGkYzM/TyQ9a73qFcI/AAAAAAAAOK8/aQk2ZegBN9I/s1600/Banner%2B3.png"))           
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Cortosgay" , url="http://www.cortosgay.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/-66icrLESK28/TjEWQFsSwKI/AAAAAAAAAZU/PYbNsjO8JSA/s890/cortosgay1%25282%2529.jpg"))         
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ESP] Homoqueer" , url="http://homoqueer.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://img269.imageshack.us/img269/1092/logotypeo.png"))         
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Cine gay online" , url="http://www.cinegayonline.net/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-jX_4yJbTpYw/T5GQHb5TgzI/AAAAAAAAAOE/GM4IHqBygb4/s938/cg2.jpg"))
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Latin Queer Channel" , url="http://latinqueerchannel.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://3.bp.blogspot.com/-r8c6teBc_3I/TbmJiNtv0UI/AAAAAAAAC-0/KrthDgHEebM/banner-latin1.jpg"))
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Modo gay" , url="http://www.modogay.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/--oGFfDhcJg8/T4iGRMsNFOI/AAAAAAAABV4/oXKs9PMbrYU/s1600/mgbanner2.jpg"))         
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Películas gay online (incluye cine adulto)" , url="http://www.peliculasgayonline.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-w6UbvMoq5aI/TxofB_ZAluI/AAAAAAAAEUg/j7_yYF0HNmc/s320/zonalogo.jpg"))               
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="P.g.p.a" , url="http://pgpa.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://themes.googleusercontent.com/image?id=1PViTUnIUSKDy0JJydtqwXOzvZKG0IIJYN8IFx4v__-n881NSni7O3gGUXyMmHxVs8wah"))           
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Tu nueva esquina gay" , url="http://www.tuesquinagay5.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/_ErGLbQH-vrA/TM89_RA3I3I/AAAAAAAAANY/n7CKPO3oCoE/s0-R/4501630360_186f3cdc55_o.jpg"))           
 
-#( no hay soporte para filesmonster)    itemlist.append( Item(channel=__channel__, action="lista"  , title="[ING] Rariteri" , url="http://rariteti.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail=""))         
-   
     return itemlist
 
 
@@ -111,7 +107,7 @@ def lista(item):
     variable=str(variable)
     variable_url = item.url.split("index=")[0]
     url_nueva=variable_url+"index="+variable
-    itemlist.append( Item(channel=__channel__, action="lista", title="Ir a la pÃ¡gina siguiente (desde "+variable+")" , url=url_nueva , thumbnail="" , plot="Pasar a la pÃ¡gina siguiente (en grupos de 100)\n\n"+url_nueva) )
+    itemlist.append( Item(channel=__channel__, action="lista", title="Ir a la página siguiente (desde "+variable+")" , url=url_nueva , thumbnail="" , plot="Pasar a la página siguiente (en grupos de 100)\n\n"+url_nueva) )
    
     return itemlist
 
@@ -179,7 +175,7 @@ def lista_2(item):
     variable=str(variable)
     variable_url = item.url.split("index=")[0]
     url_nueva=variable_url+"index="+variable
-    itemlist.append( Item(channel=__channel__, action="lista", title="Ir a la pÃ¡gina siguiente (desde "+variable+")" , url=url_nueva , thumbnail="" , plot="Pasar a la pÃ¡gina siguiente (en grupos de 100)\n\n"+url_nueva) )
+    itemlist.append( Item(channel=__channel__, action="lista", title="Ir a la página siguiente (desde "+variable+")" , url=url_nueva , thumbnail="" , plot="Pasar a la página siguiente (en grupos de 100)\n\n"+url_nueva) )
    
     return itemlist
 

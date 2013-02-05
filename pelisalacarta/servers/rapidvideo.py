@@ -40,7 +40,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     if len(matches)>0:
         for location,altura in matches:
-            video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:]+" ["+str(altura)+"p][rapidvideo]",location] )
+            reallocation = location + '|' + 'Referer=' + urllib.quote("http://www.rapidvideo.com/jwplayer6/jwplayer.flash.swf")
+            video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:]+" ["+str(altura)+"p][rapidvideo]",reallocation] )
 
     for video_url in video_urls:
         logger.info("[rapidvideo.py] %s - %s" % (video_url[0],video_url[1]))

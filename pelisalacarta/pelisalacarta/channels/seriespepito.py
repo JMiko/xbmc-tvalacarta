@@ -41,9 +41,14 @@ def novedades(item):
     data = scrapertools.cachePage(item.url)
     data = scrapertools.get_match(data,'<ul class="lista_series">(.*?)</ul>')
     
-    patron  = '<li>[^<]+'
-    patron += '<a href="([^"]+)"[^<]+'
-    patron += "<img src='([^']+)'[^>]+>(.*?)</li>"
+    '''
+    <li><a title="Ripper Street" href="http://ripper-street.seriespepito.com/">
+    <img alt="Ripper Street" src="http://www.seriespepito.com/uploads/series/1659-ripper-street-thumb.jpg" />
+    Ripper Street</a><br/><a title="Temporada 5 de Ripper Street" href="http://ripper-street.seriespepito.com/temporada-5/">Temp: 5</a>&nbsp;<a title="Capítulo 5 Temporada 5 de Ripper Street" href="http://ripper-street.seriespepito.com/temporada-5/capitulo-5/">Cap: 5</a></li>
+    '''
+    patron  = '<li[^<]+'
+    patron += '<a title="[^"]+" href="([^"]+)"[^<]+'
+    patron += '<img alt="[^"]+" src="([^"]+)"[^>]+>(.*?)</li>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -53,7 +58,7 @@ def novedades(item):
         logger.info("title="+scrapedtitle)
         title = scrapertools.htmlclean(scrapedtitle).strip()
         title = title.replace("\r","").replace("\n","")
-        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        #title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         title = re.compile("\s+",re.DOTALL).sub(" ",title)
         logger.info("title="+title)
 
@@ -72,10 +77,10 @@ def lomasvisto(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'Lo mas visto de Pepito[^<]+</div>[^<]+<ul class=\'nav\'>(.*?)</ul>')
-    patron  = '<li>[^<]+'
-    patron += '<a href="([^"]+)"[^<]+'
-    patron += "<img src='([^']+)'[^>]+>(.*?)</li>"
+    data = scrapertools.get_match(data,'s visto de esta semana en Pepito</div><ul class="nav">(.*?)</ul>')
+    #<a class="clearfix top" href="http://arrow.seriespepito.com/"><img class="thumb_mini" alt="Arrow" src="http://www.seriespepito.com/uploads/series/1545-arrow-thumb.jpg" />Arrow</a></li>
+    patron  = '<a.*?href="([^"]+)"[^<]+'
+    patron += '<img.*?src="([^"]+)"[^>]+>([^<]+)</a>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -85,7 +90,7 @@ def lomasvisto(item):
         logger.info("title="+scrapedtitle)
         title = scrapertools.htmlclean(scrapedtitle).strip()
         title = title.replace("\r","").replace("\n","")
-        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        #title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         title = re.compile("\s+",re.DOTALL).sub(" ",title)
         logger.info("title="+title)
 
@@ -143,13 +148,14 @@ def alphaserieslist(item):
     data = scrapertools.cachePage(item.url)
     data = scrapertools.get_match(data,'<ul class="lista_series">(.*?)</ul>')
 
-    patron = '<li><a href="([^"]+)" title="([^"]+)"><img src=\'([^\']+)\''
+    patron = '<li><a title="([^"]+)" href="([^"]+)"[^<]+<img alt="[^"]+" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
-    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
+    for scrapedtitle,scrapedurl,scrapedthumbnail in matches:
+        #title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
+        title = scrapedtitle.strip()
         url = scrapedurl
         thumbnail = scrapedthumbnail
         plot = ""
@@ -163,16 +169,19 @@ def detalle_programa(item,data=""):
     if data=="":
         data = scrapertools.cachePage(item.url)
     
-    data2 = scrapertools.get_match(data,'<div class="noticia_cuerpo clearfix">(.*?)</div>')
-
-    # Thumbnail
-    patron  = '<img src="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data2)
-    if len(matches)>0 and item.thumbnail=="":
-        item.thumbnail = matches[0].replace("%20"," ")
+    #<img class="img-polaroid imgcolserie" alt="Battlestar Galactica 2003" src="http://www.seriespepito.com/uploads/series/121-battlestar-galactica-2003.jpg"></center>
+    try:
+        data2 = scrapertools.get_match(data,'<img class="img-polaroid imgcolserie" alt="[^"]+" src="([^"]+)"')
+        item.thumbnail = data2.replace("%20"," ")
+    except:
+        pass
 
     # Argumento
-    item.plot = scrapertools.htmlclean(data2)
+    try:
+        data2 = scrapertools.get_match(data,'<div class="subtitulo">\s+Sinopsis.*?</div>(.*?)</div>')
+        item.plot = scrapertools.htmlclean(data2)
+    except:
+        pass
 
     return item
 
@@ -180,37 +189,45 @@ def episodelist(item):
     logger.info("[seriespepito.py] list")
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    data = scrapertools.cache_page(item.url)
     
     # Completa plot y thumbnail
     item = detalle_programa(item,data)
-    
-    data = scrapertools.get_match(data,"<ul class='nav_lista_capitulos'>(.*?)<br")
+
+    data = scrapertools.get_match(data,'<div class="accordion"(.*?)<div class="subtitulo">')
     logger.info(data)
 
     # Extrae los capítulos
     '''
-    <li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-15/' title='Capitulo 15'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x15 - Capitulo 15</a>
-    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-16/' title='Capitulo 16'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x16 - Capitulo 16</a>
-    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-17/' title='Capitulo 17'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x17 - Capitulo 17</a>
-    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-18/' title='Capitulo 18'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x18 - Capitulo 18</a>
-    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-19/' title='Capitulo 19'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x19 - Capitulo 19</a>
-    <span class='flag flag_vo'></span><span class='flag flag_vos'></span></li><li><a  href='http://hart-of-dixie.seriespepito.com/capitulos-primera-temporada-1/capitulo-20/' title='Capitulo 20'><i class='icon-film'></i> Hart of dixie (Doctora en Alabama) 1x20 - Capitulo 20</a>
+    <tbody>
+    <tr>
+    <td>
+    <a class="asinenlaces" title="&nbsp;0x01&nbsp;-&nbsp;Battlestar Galactica 2003&nbsp;-&nbsp;Capitulo 1" href="http://battlestar-galactica-2003.seriespepito.com/temporada-0/capitulo-1/">
+    <i class="icon-film"></i>&nbsp;&nbsp;
+    <strong>0x01</strong>
+    &nbsp;-&nbsp;Battlestar Galactica 2003&nbsp;-&nbsp;Capitulo 1&nbsp;</a><button id="capvisto_121_0_1" class="btn btn-warning btn-mini sptt pull-right bcapvisto ctrl_over" data-tt_my="left center" data-tt_at="right center" data-tt_titulo="Marca del último capítulo visto" data-tt_texto="Este es el último capítulo que has visto de esta serie." data-id="121" data-tem="0" data-cap="1" type="button"><i class="icon-eye-open"></i></button></td></tr><tr><td><a  title="&nbsp;0x02&nbsp;-&nbsp;Battlestar Galactica 2003&nbsp;-&nbsp;Capitulo 2" href="http://battlestar-galactica-2003.seriespepito.com/temporada-0/capitulo-2/"><i class="icon-film"></i>&nbsp;&nbsp;<strong>0x02</strong>&nbsp;-&nbsp;Battlestar Galactica 2003&nbsp;-&nbsp;Capitulo 2&nbsp;<span class="flag flag_0"></span></a><button id="capvisto_121_0_2" class="btn btn-warning btn-mini sptt pull-right bcapvisto ctrl_over" data-tt_my="left center" data-tt_at="right center" data-tt_titulo="Marca del último capítulo visto" data-tt_texto="Este es el último capítulo que has visto de esta serie." data-id="121" data-tem="0" data-cap="2" type="button"><i class="icon-eye-open"></i></button></td></tr></tbody>
     '''
-    patron  = "<li><a\s+href='([^']+)'[^>]+>"
-    patron += "<i[^<]+</i>"
-    patron += "([^<]+)</a>(.*?)</li>"
+    patron  = '<tr>'
+    patron += '<td>'
+    patron += '<a.*?href="([^"]+)"[^<]+'
+    patron += '<i[^<]+</i[^<]+'
+    patron += '<strong>([^<]+)</strong>'
+    patron += '([^<]+)<(.*?)<button'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
-    for scrapedurl,scrapedtitle,idiomas in matches:
-        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
-        if "flag_es" in idiomas:
+    for scrapedurl,scrapedepisode,scrapedtitle,idiomas in matches:
+        #title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
+        title = scrapedepisode + " " + scrapedtitle.strip()
+        title = scrapertools.entityunescape(title)
+        if "flag_0" in idiomas:
             title = title + " (Español)"
-        if "flag_vo'" in idiomas:
+        if "flag_1" in idiomas:
+            title = title + " (Latino)"
+        if "flag_2" in idiomas:
             title = title + " (VO)"
-        if "flag_vos" in idiomas:
+        if "flag_3" in idiomas:
             title = title + " (VOS)"
         url = scrapedurl
         thumbnail = item.thumbnail
@@ -232,27 +249,37 @@ def findvideos(item):
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
     '''
-    <tr><td><div class='flag flag_es'></div></td><td>16/09/2012</td><td><img src='http://nowvideo.eu/favicon.ico' width='16px' height='16px' style='border:0;background:none; margin:0 3px 0 0; padding:0' >
-    <b>nowvideo.eu</b></td><td><a class='btn btn-mini enlace_link' href='http://www.nowvideo.eu/video/50565ad5b8843' target='_blank' rel='nofollow' alt=''><i class='icon-play'></i> Ver</a></td><td>kubik</td><td></td></tr><tr><td>
+    <tr>
+    <td class="tdidioma"><span class="flag flag_2"></span></td>
+    <td>25/06/2012</td>
+    <td class="tdservidor"><img src="http://www.seriespepito.com/uploads/servidores/76-imagen_img.png" alt="Moevideos" />&nbsp;Moevideos</td>
+    <td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="Ver..." href="http://falling-skies.seriespepito.com/temporada-2/capitulo-3/385944/"><i class="icon-play"></i>&nbsp;&nbsp;Ver</a></td>
+    <td class="tdusuario"><a id="a_ava_71" href="http://www.seriespepito.com/usuarios/perfil/d02560dd9d7db4467627745bd6701e809ffca6e3">mater</a></td>
+    <td class="tdcomentario"></td>
+    <td class="tdreportar"><button class="btn btn-danger btn-mini hide sptt breportar" data-tt_my="left center" data-tt_at="right center" data-tt_titulo="Reportar problemas..." data-tt_texto="¿Algún problema con el enlace?, ¿esta roto?, ¿el audio esta mal?, ¿no corresponde el contenido?, repórtalo y lo revisaremos, ¡gracias!." data-enlace="385944" type="button"><i class="icon-warning-sign icon-white"></i></button></td>
+    </tr>
     '''
     # Listas de enlaces
-    patron  = "<tr><td><div class='([^']+')></div></td>"
-    patron += "<td>[^<]+</td>"
-    patron += "<td><img src='([^']+)'[^>]+>"
-    patron += "<b>([^<]+)</b></td><td><a class='[^']+' href='([^']+)'"
+    patron  = '<tr[^<]+'
+    patron += '<td class="tdidioma"><span class="([^"]+)"></span></td[^<]+'
+    patron += '<td>[^<]+</td[^<]+'
+    patron += '<td class="tdservidor"><img src="([^"]+)"[^>]+>([^<]+)</td[^<]+'
+    patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="Ver..." href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for idiomas,scrapedthumbnail,servidor,scrapedurl in matches:
         url = urlparse.urljoin(item.url,scrapedurl)
-        title = "Ver en "+servidor
+        title = "Ver en "+scrapertools.entityunescape(servidor).strip()
         plot = ""
 
-        if "flag_es" in idiomas:
+        if "flag_0" in idiomas:
             title = title + " (Español)"
-        if "flag_vo'" in idiomas:
+        if "flag_1" in idiomas:
+            title = title + " (Latino)"
+        if "flag_2" in idiomas:
             title = title + " (VO)"
-        if "flag_vos" in idiomas:
+        if "flag_3" in idiomas:
             title = title + " (VOS)"
 
         itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
