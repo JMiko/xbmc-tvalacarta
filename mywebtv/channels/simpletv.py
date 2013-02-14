@@ -36,9 +36,7 @@ def mainlist(params,url,category):
     patron = '<li><span style="color: magenta;">SIMPLETV:</span> <span style="color: red;">(.*?)</span></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if matches:
-        #data = scrapertools.cachePage("https://content.wuala.com/contents/chitawar/SimpleTv/SimpleTV.html?key=0IcbTMekYCnn&id=1,2191838,11-414,2191838,18")
         data = scrapertools.cachePage(matches[0])
-        #logger.info(data)
         patron = '#EXTINF:-1 \$ExtFilter="(.*?)",(.*?)(?:\n|\r|\r\n?)(?:\n|\r|\r\n?)(.*?)(?:\n|\r|\r\n?)'
 
         # Busca el bloque con los canales
@@ -46,13 +44,15 @@ def mainlist(params,url,category):
 
         scrapertools.printMatches(matches)
         for match in matches:
-            if "Canales +18" in match[1]: continue
-            if "Radios" in match[1]: continue
-            if "Radios" in match[0]: continue
-            if not "rtmp" in match[2]: continue
-            #scrapedfilter = match[0]
+            if "Canales +18".upper() in match[1].upper(): continue
+            if "Radios".upper() in match[1].upper(): continue
+            if "Radios".upper() in match[0].upper(): continue
+            if "Estrenos".upper() in match[0].upper(): continue
             scrapedtitle = match[0].upper() + ' - ' + match[1].upper()
-            scrapedurl = match[2].replace("rtmp://$OPT:rtmp-raw=","").replace("live=1", "live=true") + " timeout=300"
+            if "rtmp" in match[2]:
+                scrapedurl = match[2].replace("rtmp://$OPT:rtmp-raw=","").replace("live=1", "live=true") + " timeout=120"
+            else:
+                scrapedurl = match[2]               
             xbmctools.addnewfolder( CHANNELCODE , "play" , CHANNELNAME , scrapedtitle , scrapedurl , "", "" )
 
     # Cierra el directorio
