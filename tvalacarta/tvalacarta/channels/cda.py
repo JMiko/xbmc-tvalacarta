@@ -8,8 +8,6 @@
 # Desarrollo basado sobre otros canales de tvalacarta
 #------------------------------------------------------------
 
-import xbmc
-import xbmcgui
 import re
 
 from core import logger
@@ -21,6 +19,7 @@ DEBUG = True
 PLOT = True
 CHANNELNAME = "cda"
 MAIN_URL = "http://cda.gob.ar"
+
 
 def isGeneric():
     return True
@@ -139,26 +138,9 @@ def calidades(item):
         if (DEBUG): logger.info("stream=" + sStreamUrl)
 
         # Añado el item de la calidad al listado.
-        itemlist.append( Item(channel=CHANNELNAME, title=object['name'].title()+' ('+object['bitrate']+'kbps)', action="reproducir", url=sStreamUrl, thumbnail=item.thumbnail, extra=ititle, folder=False ) )
+        itemlist.append( Item(channel=CHANNELNAME, title=object['name'].title()+' ('+object['bitrate']+'kbps)', action="play", url=sStreamUrl, thumbnail=item.thumbnail, extra=ititle, folder=False ) )
 
     return itemlist
-
-
-def reproducir(item):
-    logger.info("[cda.py] reproducir")
-
-    try:
-        xlistitem = xbmcgui.ListItem( item.extra, thumbnailImage=item.thumbnail, path=item.url)
-    except:
-        xlistitem = xbmcgui.ListItem( item.extra, thumbnailImage=item.thumbnail, )
-    xlistitem.setInfo( "video", { "Title": item.extra } )
-
-    playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-    playlist.clear()
-    playlist.add(item.url, xlistitem)
-
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
-    xbmcPlayer.play(playlist)
 
 
 def to_utf8(dct):

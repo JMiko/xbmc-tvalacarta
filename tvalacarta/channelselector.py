@@ -121,7 +121,8 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina) (01/02/2013)"      , channel="cda"            , language="ES" , category="L"   , type="generic" )) # Juan Pablo 01/02/2013
+    itemlist.append( Item( title="MuchMusic Latinoamérica (11/02/2013)"      , channel="muchla"            , language="ES" , category="N"   , type="generic" )) # Juan Pablo 11/02/2013
+    itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina) (01/02/2013)"      , channel="cda"            , language="ES" , category="N"   , type="generic" )) # Juan Pablo 01/02/2013
     itemlist.append( Item( title="Conectate (Argentina) (29/01/2013)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
     itemlist.append( Item( title="CCTV Español (China) (29/01/2013)"       , channel="cctvspan"             , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
     itemlist.append( Item( title="DW Español (Alemania) (29/01/2013)"      , channel="dwspan"               , language="ES" , category="L"   , type="generic" )) # richard 29/01/2013
@@ -167,7 +168,7 @@ def channels_list():
     itemlist.append( Item( title="CCTV Español (China)"       , channel="cctvspan"             , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Clan TVE"                   , channel="clantve"              , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Conectate (Argentina)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" ))
-    itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina)", channel="cda"            , language="ES" , category="L"   , type="generic" )) # Juan Pablo 01/02/2013
+    itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina)", channel="cda"            , language="ES" , category="N"   , type="generic" )) # Juan Pablo 01/02/2013
     itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
     itemlist.append( Item( title="CYLTV (Castilla y León)"    , channel="cyltv"                , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
@@ -187,6 +188,7 @@ def channels_list():
     itemlist.append( Item( title="Internautas TV"             , channel="internautastv"        , language="ES" , category="T"   , type="generic" ))
     itemlist.append( Item( title="Kideos"                     , channel="kideos"               , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Mitele"                     , channel="mitele"               , language="ES" , category="I,N" , type="generic" ))
+    itemlist.append( Item( title="MuchMusic Latinoamérica"    , channel="muchla"               , language="ES" , category="N"   , type="generic" )) # Juan Pablo 11/02/2013
     itemlist.append( Item( title="Mundo Nick"                 , channel="mundonick"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"            , language="ES" , category="T"   , type="generic" ))
     itemlist.append( Item( title="RT Español (Rusia)"         , channel="rtspan"               , language="ES" , category="L"   , type="generic" ))
