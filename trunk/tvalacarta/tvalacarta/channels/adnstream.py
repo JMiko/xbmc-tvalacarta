@@ -86,7 +86,7 @@ def videos(item):
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapedthumbnail
-        itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="play" , show = item.show , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="play" , server="adnstream", show = item.show , folder=False) )
 
     # Página siguiente
     # <a href="/canal/Pasion-de-Gavilanes/2" class="flecha">Next &gt;</a>
@@ -105,14 +105,21 @@ def get_video_detail(item):
     
     return item
 
-def play(item):
-    logger.info("[adnstream.py] play")
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # El canal tiene estructura programas -> episodios -> play
+    canales = mainlist(Item())
+    if len(canales)==0:
+        return False
 
-    itemlist = []
-    id_video = scrapertools.get_match(item.url,".*?video/([^/]+)/")
-    data = scrapertools.cache_page("http://www.adnstream.com/get_playlist.php?lista=video&param="+id_video)
-    mediaurl = scrapertools.get_match(data,'<media.content type="[^"]+" url="([^"]+)"')
+    subcanales = mainlist(canales[1])
+    if len(subcanales)==0:
+        return False
 
-    itemlist.append( Item(channel=CHANNELNAME, title=item.title , server = "directo" , action="play" , url=mediaurl, thumbnail=item.thumbnail, folder=False) )
-
-    return itemlist
+    videos = mainlist(Item(url="http://www.adnstream.com/canal/Dartacan/"))
+    if len(videos)==0:
+        return False
+    
+    return bien

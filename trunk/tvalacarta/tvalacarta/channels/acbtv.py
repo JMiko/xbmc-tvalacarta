@@ -20,18 +20,15 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[acbtv.py] mainlist")
+    logger.info("acbtv.mainlist")
     return programas(item)
 
 def programas(item):
-    logger.info("[acbtv.py] programas")
-
+    logger.info("acbtv.programas")
     itemlist = []
 
     # Descarga la página
     data = scrapertools.cache_page(MAIN_URL)
-    
-    # Extrae canales
     patron = '<a href="(http.//acbtv.acb.com/channel/[^"]+)" class="nombre" title="([^"]+)"><img alt="[^"]+" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
@@ -44,23 +41,23 @@ def programas(item):
     return itemlist
 
 def episodios(item):
-    logger.info("[acbtv.py] episodios")
+    logger.info("acbtv.episodios")
 
     itemlist = []
 
     # Descarga la página
     channel_id = scrapertools.get_match(item.url,"channel/(.+)$")
-    logger.info("channel_id="+channel_id)
+    logger.info("acbtv.episodios channel_id="+channel_id)
     
     channel_videos_url = "http://acbtv.acb.com/component/0/"+item.extra+"/first_block_second_part/"+channel_id
-    logger.info("channel_videos_url="+channel_videos_url)
+    logger.info("acbtv.episodios channel_videos_url="+channel_videos_url)
 
     data = scrapertools.cache_page(channel_videos_url)
     data = data.replace("\\u003E",">")
     data = data.replace("\\u003C","<")
     data = data.replace("\\n","")
     data = data.replace('\\"','"')
-    logger.info("data="+data)
+    #logger.info("data="+data)
     
     # Extrae videos
     '''
@@ -91,3 +88,20 @@ def episodios(item):
     itemlist.append( Item(channel=CHANNELNAME, title=">> Página siguiente" , url=item.url,  thumbnail=thumbnail , action="episodios" , extra = next_extra , folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # El canal tiene estructura programas -> episodios -> play
+    programas = mainlist(Item())
+    
+    # Con que algún programa tenga episodios se da por bueno el canal
+    bien = False
+    for programa in programas:
+        exec "episodios = "+programa.action+"(programa)"
+        if len(episodios)>0:
+            bien = True
+            break
+    
+    return bien

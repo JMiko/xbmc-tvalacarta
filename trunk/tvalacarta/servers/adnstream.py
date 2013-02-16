@@ -15,22 +15,14 @@ from core import config
 def get_video_url( page_url , premium = False , user="" , password="" , video_password="" ):
     logger.info("[adnstream.py] get_video_url(page_url='%s')" % page_url)
 
-    # TODO: Esto sólo funciona con el ID del vídeo, no con la URL
-    code = page_url
-    
-    mediaurl = "http://www.adnstream.tv/get_playlist.php?lista=video&param="+code+"&c=463"
-    data = scrapertools.cachePage(mediaurl)
-
-    # Extrae la URL real
-    patronvideos   = '<guid>' +code+ '</guid>.*?'
-    patronvideos  += 'video/x-flv" url="(.*?)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    if len(matches)>0:
-        video_urls = [['[adnstream]' , matches[0]]]
+    if page_url.startswith("http:"):
+        id_video = scrapertools.get_match(item.url,".*?video/([^/]+)/")
     else:
-        video_urls = []
+        id_video = page_url
+
+    data = scrapertools.cache_page("http://www.adnstream.com/get_playlist.php?lista=video&param="+id_video)
+    media_url = scrapertools.get_match(data,'<media.content type="[^"]+" url="([^"]+)"')
+    video_urls = [[ scrapertools.get_filename_from_url(media_url)[-4:]+' [adnstream]' , media_url]]
 
     return video_urls
 
