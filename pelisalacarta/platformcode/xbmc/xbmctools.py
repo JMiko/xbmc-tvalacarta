@@ -48,7 +48,7 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
     
     if DEBUG:
         try:
-            logger.info('[xbmctools.py] addnewfolder( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
+            logger.info('[xbmctools.py] addnewfolderextra( "'+extradata+'","'+canal+'" , "'+accion+'" , "'+category+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
         except:
             logger.info('[xbmctools.py] addnewfolder(<unicode>)')
     listitem = xbmcgui.ListItem( title, iconImage="DefaultFolder.png", thumbnailImage=thumbnail )
@@ -64,7 +64,7 @@ def addnewfolderextra( canal , accion , category , title , url , thumbnail , plo
         title = title.encode ("utf-8") #This only aplies to unicode strings. The rest stay as they are.
     except:
         pass
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s&show=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus(title) , urllib.quote_plus(fulltitle) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ))
+    itemurl = '%s?fanart=%s&channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&extradata=%s&Serie=%s&show=%s' % ( sys.argv[ 0 ] , fanart, canal , accion , urllib.quote_plus( category ) , urllib.quote_plus(title) , urllib.quote_plus(fulltitle) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ))
 
     if Serie != "": #Añadimos opción contextual para Añadir la serie completa a la biblioteca
         addSerieCommand = "XBMC.RunPlugin(%s?channel=%s&action=addlist2Library&category=%s&title=%s&fulltitle=%s&url=%s&extradata=%s&Serie=%s&show=%s)" % ( sys.argv[ 0 ] , canal , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus(fulltitle) , urllib.quote_plus( url ) , urllib.quote_plus( extradata ) , Serie, urllib.quote_plus( show ) )
@@ -169,7 +169,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     except:
         pass
     
-    itemurl = '%s?channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s&viewmode=%s&show=%s&extradata=%s' % ( sys.argv[ 0 ] , canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle), urllib.quote_plus(viewmode), urllib.quote_plus( show ) , urllib.quote_plus(extra) )
+    itemurl = '%s?fanart=%s&channel=%s&action=%s&category=%s&title=%s&fulltitle=%s&url=%s&thumbnail=%s&plot=%s&server=%s&Serie=%s&subtitle=%s&viewmode=%s&show=%s&extradata=%s' % ( sys.argv[ 0 ] , fanart, canal , accion , urllib.quote_plus( category ) , urllib.quote_plus( title ) , urllib.quote_plus( fulltitle ) , urllib.quote_plus( url ) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ) , server , Serie , urllib.quote_plus(subtitle), urllib.quote_plus(viewmode), urllib.quote_plus( show ) , urllib.quote_plus(extra) )
     #logger.info("[xbmctools.py] itemurl=%s" % itemurl)
     if totalItems == 0:
         ok = xbmcplugin.addDirectoryItem( handle = pluginhandle, url=itemurl, listitem=listitem, isFolder=False)

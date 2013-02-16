@@ -20,7 +20,7 @@ FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafir
 FREE_SERVERS.extend(['rapidtube','royalvids','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed', 'vidxden','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
-FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','letitbit','rapidvideo'])
+FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','letitbit','rapidvideo','fileflyer'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -51,7 +51,7 @@ ALLDEBRID_SERVERS = ['one80upload','onefichier','twoshared','fourfastfile','four
                    'filesend','filesmonster','filestay','freakshare','gigasize','hotfile','hulkshare','jumbofiles','letitbit','loadto','mediafire','megashares','mixturevideo','netload',
                    'nitrobits','oteupload','purevid','putlocker','rapidgator','rapidshare','redtube','scribd','secureupload','sharebees','shareflare','slingfile','sockshare',
                    'soundcloud','speedload','speedyshare','turbobit', 'uloadto', 'uploadc','uploadedto','uploading','uptobox',
-                   'userporn','vimeo','vipfile','youporn','youtube','yunfile','zippyshare']               
+                   'userporn','vimeo','vipfile','youporn','youtube','yunfile','zippyshare','lumfile']               
                
 #Resultado de http://alldebrid.com/api.php?action=get_host
 #"10upload.com", "1fichier.com", "180upload.com", "2shared.com", "4fastfile.com", "4shared.com", "asfile.com", "badongo.com", "bayfiles.com", "bitshare.com", "buckshare.com", "bulletupload.com", "cloudnator.com", 
@@ -260,8 +260,12 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
                 exec "from servers import alldebrid as gen_conector"
                 video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("alldebridpremium")=="true") , user=config.get_setting("alldebriduser") , password=config.get_setting("alldebridpassword"), video_password=video_password )
                 logger.info("[xbmctools.py] alldebrid url="+video_gen)
-                if video_gen!="":
+                if video_gen.startswith("http"):
                     video_urls.append( [ "[alldebrid]", video_gen ] )
+                else:
+                    # Si Alldebrid da error pero tienes un enlace válido, no te dice nada
+                    if len(video_urls)==0:
+                        return [],False,video_gen.strip()
 
             
             if muestra_dialogo:

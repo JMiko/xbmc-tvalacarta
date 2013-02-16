@@ -159,6 +159,7 @@ def findvideos(item):
 
     # Busca el argumento
     data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
     '''
     <tr class="tabletr">
     <td class="episode-server" align="left"><img src="http://www.cinetux.org/imagenes/veronline.png" alt="" width="22" height="22" />Opción 01</td>
@@ -226,7 +227,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[cinetux.py] play")
+    logger.info("[cinetux.py] play item.url="+item.url)
     itemlist=[]
     itemlist = servertools.find_video_items(data=item.url)
     i=1

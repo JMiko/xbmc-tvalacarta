@@ -19,8 +19,14 @@ def get_long_url(url):
     # Descarga la página de linkbucks
     data = scrapertools.cache_page(url)
 
-    # Extrae la URL de adf.ly y descarga la página
+    # Extrae la URL de linkbucks y descarga la página
     location = scrapertools.get_match(data,"Lbjs.TargetUrl \= '([^']+)'")
     logger.info("[linkbucks.py] -> location="+location)
 
     return location
+
+def test():
+    
+    location = get_long_url("http://f2975ef2.linkbucks.com/")
+
+    return "adf.ly" in location

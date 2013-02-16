@@ -64,3 +64,8 @@ def find_videos(data):
     
     #
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.hulkshare.com/dl/5ju6iuif5e68")
+
+    return len(video_urls)>0

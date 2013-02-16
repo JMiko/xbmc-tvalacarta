@@ -20,8 +20,8 @@ def run():
     config.verify_directories_created()
     
     # Extract parameters from sys.argv
-    params, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password = extract_parameters()
-    logger.info("[launcher.py] channel_name=%s, title=%s, fulltitle=%s, url=%s, thumbnail=%s, plot=%s, action=%s, server=%s, extra=%s, subtitle=%s, category=%s, show=%s, password=%s" % (channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password))
+    params, fanart, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password = extract_parameters()
+    logger.info("[launcher.py] fanart=%s, channel_name=%s, title=%s, fulltitle=%s, url=%s, thumbnail=%s, plot=%s, action=%s, server=%s, extra=%s, subtitle=%s, category=%s, show=%s, password=%s" % (fanart, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password))
 
     try:
         # Accion por defecto - elegir canal
@@ -119,7 +119,7 @@ def run():
             else:            
                 logger.info("[launcher.py] multiplatform channel")
                 from core.item import Item
-                item = Item(channel=channel_name, title=title , fulltitle=fulltitle, url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle, viewmode=viewmode, show=show, password=password)
+                item = Item(channel=channel_name, title=title , fulltitle=fulltitle, url=url, thumbnail=thumbnail , plot=plot , server=server, category=category, extra=extra, subtitle=subtitle, viewmode=viewmode, show=show, password=password, fanart=fanart)
                 
                 '''
                 if item.subtitle!="":
@@ -294,8 +294,8 @@ def run():
                     if action!="findvideos":
                         exec "itemlist = channel."+action+"(item)"
                             
-                        for item in itemlist:
-                            logger.info("viemode="+item.viewmode)
+                        #for item in itemlist:
+                        #    logger.info("viemode="+item.viewmode)
                     else:
 
                         # Intenta ejecutar una posible funcion "findvideos" del canal
@@ -437,6 +437,11 @@ def extract_parameters():
     else:
         thumbnail = ""
 
+    if params.has_key("fanart"):                                                                                                                                                
+        fanart = urllib.unquote_plus( params.get("fanart") )                                                                                                                  
+    else:                                                                                                                                                                         
+        fanart = ""  
+
     if params.has_key("plot"):
         plot = urllib.unquote_plus( params.get("plot") )
     else:
@@ -470,4 +475,4 @@ def extract_parameters():
         else:
             show = ""
 
-    return params, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password
+    return params, fanart, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password

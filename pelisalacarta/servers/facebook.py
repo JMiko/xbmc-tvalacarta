@@ -17,6 +17,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     page_url = page_url.replace("amp;","")
     data = scrapertools.cache_page(page_url)
+    logger.info("data="+data)
 
     video_urls = []
 
@@ -74,3 +75,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
             
     return devuelve
+
+def test():
+    #video_urls = get_video_url("http://www.facebook.com/v/194008590634623")
+
+    return len(video_urls)>0

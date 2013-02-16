@@ -47,7 +47,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         usr_login = ""
         id = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)"')
         fname = scrapertools.get_match(data,'<input type="hidden" name="fname" value="([^"]+)"')
-        referer = page_url
+        referer = scrapertools.get_match(data,'<input type="hidden" name="referer" value="([^"]*)"')
         hashstring = scrapertools.get_match(data,'<input type="hidden" name="hash" value="([^"]*)"')
         imhuman = scrapertools.get_match(data,'<input type="submit" name="imhuman".*?value="([^"]+)">').replace(" ","+")
         
