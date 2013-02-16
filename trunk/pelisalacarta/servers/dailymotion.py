@@ -19,6 +19,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     data = scrapertools.cache_page(page_url)
+    logger.info("data="+data)
     sequence = re.compile('"sequence":"(.+?)"').findall(data)
     newseqeunce = urllib.unquote(sequence[0]).decode('utf8').replace('\\/', '/')
 
@@ -89,3 +90,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.dailymotion.com/video/xrva9o")
+
+    return len(video_urls)>0

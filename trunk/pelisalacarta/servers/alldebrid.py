@@ -35,8 +35,11 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         if "login" in data:
             server_error = " AllDebrid : Tu Cuenta puede haber expirado."
             
-        if "Hoster unsupported or under maintenance" in data:
+        elif "Hoster unsupported or under maintenance" in data:
             server_error = " AllDebrid : Host no soportado o en mantenimiento."
+
+        elif '"error":"' in data:
+            server_error = " Alldebrid ERROR<br/>"+scrapertools.get_match(data,'"error"\:"([^"]+)"')
 
         logger.info(data)
         return server_error

@@ -126,35 +126,21 @@ def findvideos(item):
 
 def play(item):
     logger.info("[unsoloclic.py] play")
-    data = scrapertools.cache_page(item.url)
     itemlist=[]
 
     if item.server=="linkbucks":
         logger.info("Es linkbucks")
         
-        # Descarga la página de linkbucks
-        data = scrapertools.cache_page(item.url)
-
-        # Extrae la URL de adf.ly y descarga la página
-        location = scrapertools.get_match(data,"Lbjs.TargetUrl \= '([^']+)'")
-        logger.info("adf_url="+location)
+        # Averigua el enlace
+        from servers import linkbucks
+        location = linkbucks.get_long_url(item.url)
+        logger.info("location="+location)
         
         # Extrae la URL de saltar el anuncio en adf.ly
         if location.startswith("http://adf"):
-            data = scrapertools.cache_page(location)
-            adfskipad_url = urlparse.urljoin(location,scrapertools.get_match(data,"var url \= '(/go/[^']+)'"))
-            logger.info("adfskipad_url="+adfskipad_url)
-
-            # Espera los 5 segundos
-            try:
-                from platformcode.xbmc import xbmctools
-                xbmctools.handle_wait(5,"adf.ly",'')
-            except:
-                import time
-                time.sleep(5)
-
-            # Obtiene la URL del video
-            location = scrapertools.get_header_from_response(adfskipad_url,header_to_get="location")
+            # Averigua el enlace
+            from servers import adfly
+            location = adfly.get_long_url(location)
             logger.info("location="+location)
 
         from servers import servertools

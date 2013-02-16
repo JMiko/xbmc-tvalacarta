@@ -554,7 +554,7 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             for additional_header in additional_headers:
                 logger.info("[downloadtools.py] additional_header: "+additional_header)
                 name = re.findall( "(.*?)=.*?" , additional_header )[0]
-                value = urllib.unquote(re.findall( ".*?=(.*?)$" , additional_header )[0])
+                value = urllib.unquote_plus(re.findall( ".*?=(.*?)$" , additional_header )[0])
                 headers.append( [ name,value ] )
     
             url = url.split("|")[0]

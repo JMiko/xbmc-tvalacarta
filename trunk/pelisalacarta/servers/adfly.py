@@ -16,12 +16,10 @@ def get_long_url( short_url ):
     logger.info("[adfly.py] get_long_url(short_url='%s')" % short_url)
     
     data = scrapertools.cache_page( short_url )
-    
-    # Busca la url de "Saltar el anuncio"
-    #var url = '/go/a59f91b58940e169d612a806f03bffbc/aHR0cDovL2dvby5nbC9nT3c4OA';	
-    skip_ad_url = urlparse.urljoin( short_url , scrapertools.get_match(data,"var url \= '(/go/[^']+)'") )
-    logger.info( "[adfly.py] skip_ad_url=" + skip_ad_url )
-    
+    #var zzz = 'http://freakshare.com/files/ivkf5hm4/The.Following.S01E01.UNSOLOCLIC.INFO.avi.html'
+    location = scrapertools.get_match(data,"var zzz \= '([^']+)'")
+    logger.info("location="+location)
+
     # Espera los 5 segundos
     try:
         from platformcode.xbmc import xbmctools
@@ -30,14 +28,24 @@ def get_long_url( short_url ):
         import time
         time.sleep(5)
 
-    # Obtiene la url larga
-    location = scrapertools.get_header_from_response(skip_ad_url,header_to_get="location")
+    if "adf.ly" in location:
+        # Obtiene la url larga
+        data = scrapertools.cache_page(location)
+        logger.info("data="+data)
+
+        location = scrapertools.get_match(data,'<META HTTP-EQUIV\="Refresh".*?URL=([^"]+)"')
+
     logger.info("location="+location)
 
     return location
 
 def test():
     
-    location = get_long_url("http://adf.ly/Fp6BF")
+    location = get_long_url("http://adf.ly/HnJnC")
+    ok = ("freakshare.com" in location)
 
-    return "http://vk.com/" in location
+    if ok:
+        location = get_long_url("http://adf.ly/Fp6BF")
+        ok = "http://vk.com/" in location
+
+    return ok

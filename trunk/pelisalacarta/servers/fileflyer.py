@@ -27,6 +27,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[fileflyer.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
 
+    data = scrapertools.cache_page(page_url)
+    location = scrapertools.get_match(data,'<td class="dwnlbtn"[^<]+<a id="[^"]+" title="[^"]+" class="[^"]+" href="([^"]+)"')
+                                            
+    video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:]+" [fileflyer]" , location ] )
+
+    for video_url in video_urls:
+        logger.info("[fileflyer.py] %s - %s" % (video_url[0],video_url[1]))
+
     return video_urls
 
 # Encuentra vídeos del servidor en el texto pasado
@@ -49,6 +57,9 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    
-
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.fileflyer.com/view/Pi1BSCJ")
+
+    return len(video_urls)>0

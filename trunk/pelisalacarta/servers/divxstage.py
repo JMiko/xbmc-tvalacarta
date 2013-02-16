@@ -50,18 +50,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
     location = scrapertools.get_match(data,"url=([^\&]+)\&")
 
-    try:
-        import urlparse
-        parsed_url = urlparse.urlparse(location)
-        logger.info("parsed_url="+str(parsed_url))
-        extension = parsed_url.path[-4:]
-    except:
-        if len(parsed_url)>=4:
-            extension = parsed_url[2][-4:]
-        else:
-            extension = ""
-
-    video_urls.append( [ extension+" [divxstage]" , location ] )
+    video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:]+" [divxstage]" , location ] )
 
     for video_url in video_urls:
         logger.info("[divxstage.py] %s - %s" % (video_url[0],video_url[1]))
@@ -73,7 +62,7 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    # divxstage http://www.divxstage.net/video/2imiqn8w0w6dx"
+    # divxstage http://www.divxstage.net/video/of7ww1tdv62gf"
     patronvideos  = 'http://www.divxstage.[\w]+/video/([\w]+)'
     logger.info("[divxstage.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -90,3 +79,8 @@ def find_videos(data):
             
             
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.divxstage.net/video/of7ww1tdv62gf")
+
+    return len(video_urls)>0
