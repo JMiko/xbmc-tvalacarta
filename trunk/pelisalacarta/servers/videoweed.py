@@ -95,3 +95,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.videoweed.es/file/57dd5d423d39c")
+
+    return len(video_urls)>0

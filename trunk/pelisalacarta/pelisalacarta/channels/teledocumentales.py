@@ -75,7 +75,7 @@ def ultimo(item):
 
     #Extrae la marca de siguiente p�gina
     #<span class='current'>1</span><a href='http://delatv.com/page/2' class='page'>2</a>
-    patronvideos  = '<div class="navigation">.*?<a href="(.*?)" class="next">.*?' #"</span><a href='(http://www.cine-adicto.com/page/[^']+)'"
+    patronvideos = '<div class="navigation">.*?<a href="([^"]+)" class="next">.*?'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     

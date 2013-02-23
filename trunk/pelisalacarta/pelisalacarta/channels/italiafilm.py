@@ -39,8 +39,7 @@ def categorias(item):
     logger.error("io")
 
     data = scrapertools.cache_page(item.url)
-    
-    data = scrapertools.get_match(data,"<h2>Categorie Film</h2>(.*?)</div>") #hey
+    data = scrapertools.get_match(data,'<li class="level2"[^<]+<span>Categorie film</span>(.*?)</ul>')
     patron = '<li class="[^"]+"><a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -83,12 +82,9 @@ def peliculas(item):
     else:
         post=None
     data = scrapertools.cachePage(item.url,post)
-    
-
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="([^"]+)"><img class="news-item-image" title="([^"]+)" alt="[^"]+" src="([^"]+)"></a>[^<]+'
-    patronvideos += '<span class="shortstoryintro">[^<]+'
+    patronvideos  = '<a href="([^"]+)"><img class="news-item-image" title="([^"]+)" alt="[^"]+" src="([^"]+)">.*?'
     patronvideos += '<div id="news[^>]+>([^<]+)</div>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -103,67 +99,46 @@ def peliculas(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
 
-   #<h3 class="btl"><a href="http://www.italiafilm.tv/top-movies/501-dexter.html" >Dexter Serie Tv Streaming</a> </h3>
-   #<div class="maincont">
-   #   <div id='news-id-501'><!--dle_image_begin:http://locandine.org/image-0367_4E6A05C5.jpg|-->
-   #<img src="http://locandine.org/image-0367_4E6A05C5.jpg" alt="Dexter Serie Tv Streaming" title="Dexter Serie Tv Streaming"  />
-   #<!--dle_image_end--> <span style='background-color:yellow;'><font color='red'>Dexter</font></span>, il protagonista della serie,  un serial killer. La sua particolarità è quella di uccidere solo in base ad un codice etico, il cosiddetto "codice Harry", dal nome del padre adottivo di <span style='background-color:yellow;'><font color='red'>Dexter</font></span>.Harry, dopo avere intuito il carattere omicida del figlio fin dalla sua adolescenza, è riuscito a insegnargli come incanalare i suoi impulsi violenti nel modo "giusto", così da soddisfare la sua sete di sangue uccidendo soltanto coloro che lo "meritano". <span style='background-color:yellow;'><font color='red'>Dexter</font></span>, quindi,  un serial killer di killer e uccide solo gli assassini incalliti che, in qualche modo, sono sfuggiti alla giustizia. Il padre adottivo gli ha insegnato anche come integrarsi nel mondo che lo circonda, nascondendo il suo vero io dietro una facciata. <span style='background-color:yellow;'><font color='red'>Dexter</font></span>, inoltre, lavora come ematologo alla scientifica della polizia di Miami.</div>
-   #   <div class="clr"></div>
-    patronvideos  = '<h3 class="btl"><a href="([^"]+)".*?'
-    patronvideos += '<img src="([^"]+)" alt="[^"]+" title="([^"]+)"'
-    #patronvideos += '.*?<!--dle_image_end-->([^<]+)</div>'
-    
-    logger.info("patronvideos:" + patronvideos)
-    
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    for url,thumbnail,title in matches:
-        # Atributos
-        plot = "to_do"
-        scrapedtitle = title
-        scrapedurl = urlparse.urljoin(item.url,url)
-        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
-        scrapedplot = plot
-        
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-
-
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="([^"]+)"><span class="thide pnext">Avanti</span></a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        # Atributos
-        scrapedtitle = ">> Pagina seguente"
-        scrapedurl = urlparse.urljoin(item.url,match)
-        scrapedthumbnail = ""
-        scrapedplot = ""
-
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action='peliculas', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+    # Siguiente
+    try:
+        pagina_siguiente = scrapertools.get_match(data,'<a href="([^"]+)">Avanti')
+        pagina_siguiente = urlparse.urljoin(item.url,pagina_siguiente)
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=">> Pagina seguente" , url=pagina_siguiente , folder=True) )
+    except:
+        pass
 
     return itemlist
 
-def to_ita(text):
-    text = text.replace('&amp;', '&')
-    text = text.replace('&#224;', 'a\'')
-    text = text.replace('&#232;', 'e\'')
-    text = text.replace('&#233;', 'e\'')
-    text = text.replace('&#236;', 'i\'')
-    text = text.replace('&#242;', 'o\'')
-    text = text.replace('&#249;', 'u\'')
-    text = text.replace('&#215;', 'x')
-    text = text.replace('&#039;', '\'')
-    return text
+def findvideos(item):
+    logger.info("[italiafilm.py] findvideos")
+
+    data = scrapertools.cache_page(item.url)
+    itemlist=[]
+    
+    from servers import servertools
+    itemlist.extend(servertools.find_video_items(data=data))
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.action="play"
+        videoitem.folder=False
+        videoitem.title = "["+videoitem.server+"]"
+
+    patronvideos  = '<a href="(http://www.italiafilm.tv/engine/go.php[^"]+)"[^>]*>([^<]+)</a>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, action='play', title=title , url=url , folder=False) )
+
+    return itemlist
+
+def play(item):
+    logger.info("[italiafilm.py] play")
+
+    if item.url.startswith("http://www.italiafilm.tv/engine/go.php"):
+        item.url = scrapertools.get_header_from_response(url=item.url, header_to_get="location")
+        item.server = servertools.get_server_from_url(item.url)
+    return [item]
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():

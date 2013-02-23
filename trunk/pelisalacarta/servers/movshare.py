@@ -104,3 +104,9 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    #http://www.movshare.net/video/6090de0821098
+    video_urls = get_video_url("http://www.movshare.net/video/6090de0821098")
+
+    return len(video_urls)>0

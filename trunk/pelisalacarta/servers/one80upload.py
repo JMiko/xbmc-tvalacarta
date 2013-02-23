@@ -55,17 +55,33 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    #http://180upload.com/rtp8y30mlfj0
-    #http%3A%2F%2F180upload.com%2F5k344aiotajv
+    #http://180upload.com/embed-6z7cwbswemsv.html
     data = urllib.unquote(data)
-    patronvideos  = '(180upload.com/[a-z0-9]+)'
+    patronvideos  = '180upload.com/embed-([a-z0-9]+)\.html'
     logger.info("[one80upload.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[180upload]"
-        url = "http://"+match
-        if url not in encontrados:
+        url = "http://180upload.com/"+match
+        if url not in encontrados and match!="embed":
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'one80upload' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://180upload.com/rtp8y30mlfj0
+    #http%3A%2F%2F180upload.com%2F5k344aiotajv
+    data = urllib.unquote(data)
+    patronvideos  = '180upload.com/([a-z0-9]+)'
+    logger.info("[one80upload.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[180upload]"
+        url = "http://180upload.com/"+match
+        if url not in encontrados and match!="embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'one80upload' ] )
             encontrados.add(url)
@@ -73,3 +89,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://180upload.com/6z7cwbswemsv")
+
+    return len(video_urls)>0

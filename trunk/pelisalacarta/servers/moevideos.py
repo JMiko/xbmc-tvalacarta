@@ -48,7 +48,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         headers.append(['Referer',page_url])
         post = "id=1&enviar2=ver+video"
         data = scrapertools.cache_page( page_url , post=post, headers=headers )
-        code = scrapertools.get_match(data,"video.php\?file\=([^\&]+)\&")
+        code = scrapertools.get_match(data,'flashvars\="file\=([^"]+)"')
         logger.info("code="+code)
     else:
         #http://moevideo.net/?page=video&uid=81492.8c7b6086f4942341aa1b78fb92df
@@ -180,8 +180,7 @@ def find_videos(data):
     return devuelve
 
 def test():
-
-    video_urls = get_video_url("http://moevideo.net/?page=video&uid=13992.10e45e309d5c767a10f23c07d73c")
     video_urls = get_video_url("http://www.moevideos.net/online/164016")
+    video_urls = get_video_url("http://moevideo.net/?page=video&uid=60823.6717786f74cd87a6cbeeb8c9e48d")
 
     return len(video_urls)>0

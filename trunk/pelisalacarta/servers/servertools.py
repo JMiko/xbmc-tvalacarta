@@ -18,9 +18,9 @@ FREE_SERVERS = []
 FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','downupload','facebook','fourshared', 'hulkshare', 'twitvid'])
 FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafire','modovideo','moevideos','movshare','novamov','ovfile','putlocker'])
 FREE_SERVERS.extend(['rapidtube','royalvids','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
-FREE_SERVERS.extend(['vidbux','videoweed', 'vidxden','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
+FREE_SERVERS.extend(['vidbux','videoweed','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
-FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','letitbit','rapidvideo','fileflyer'])
+FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','rapidvideo','fileflyer','playedto'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -141,6 +141,15 @@ def findvideos(data):
                 line_splits = line.split("\n")
                 for line_split in line_splits:
                     logger.error(line_split)
+
+    return devuelve
+
+def get_server_from_url(url):
+    encontrado = findvideos(url)
+    if len(encontrado)>0:
+        devuelve = encontrado[0][2]
+    else:
+        devuelve = "directo"
 
     return devuelve
 

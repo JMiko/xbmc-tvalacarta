@@ -27,8 +27,8 @@ def mainlist(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Novedades"           , url="http://www.cinegratis.net/peliculas/novedades/", extra="No+Estrenos"))
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos"            , url="http://www.cinegratis.net/estrenos-de-cine/", extra="Estrenos+de+Cine"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Novedades"           , url="http://www.cinegratis.org/peliculas/novedades/", extra="No+Estrenos"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos"            , url="http://www.cinegratis.org/estrenos-de-cine/", extra="Estrenos+de+Cine"))
     #itemlist.append( Item(channel=__channel__, action="peliscat"   , title="Películas - Géneros"             , url="http://www.cinegratis.net/index.php?module=generos"))
     #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Idiomas"             , url="http://www.cinegratis.net/index.php?module=peliculas"))
     #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Calidades"           , url="http://www.cinegratis.net/index.php?module=peliculas"))
@@ -46,18 +46,15 @@ def peliculas(item):
     else:
         data = scrapertools.cache_page(item.url)
 
+    print data
+
     # Extrae los items
-    '''
-    patron  = "<td class='asd2'.*?"
-    patron += "<table.*?<a.*?href='([^']+)'>([^<]+)</a>.*?"
-    patron += "<img src='([^']+)'"#.*?"
-    '''
     patron = "<td class='asd2'[^<]+<table(.*?)</table>"
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
+    scrapertools.printMatches(matches)
 
     for bloque in matches:
-        url = scrapertools.get_match(bloque,"<a class='style1' style='[^']+' href='([^']+)'>[^<]+</a>")
+        url = scrapertools.get_match(bloque,"<a class='style1' style='[^']+' href='([^']+)'>")
         titulo = scrapertools.get_match(bloque,"<a class='style1' style='[^']+' href='[^']+'>([^<]+)</a>").strip()
         thumbnail = scrapertools.get_match(bloque,"<img src='([^']+)'")
         
@@ -111,7 +108,9 @@ def findvideos(item):
     scrapertools.printMatches(matches)
 
     for servidor,calidad,idioma,partes,url in matches:
-        itemlist.append( Item(channel=__channel__, action="play" , title=servidor + " (" + idioma + ")" , url=url, folder=False))
+        titulo = servidor + " (" + idioma + ")"
+        titulo = unicode(titulo,"iso-8859-1").encode("utf-8")
+        itemlist.append( Item(channel=__channel__, action="play" , title=titulo , url=url, folder=False))
 
     return itemlist
 
@@ -119,7 +118,7 @@ def play(item):
     logger.info("[divxonline.py] play")
     itemlist=[]
     data = scrapertools.cachePage(item.url)
-    logger.info("data="+data)
+    #logger.info("data="+data)
     itemlist = servertools.find_video_items(data=data)
     i=1
     for videoitem in itemlist:

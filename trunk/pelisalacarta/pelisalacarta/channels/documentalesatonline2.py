@@ -93,8 +93,22 @@ def novedades(item):
     </ul>
     </div>
     '''
+    '''
+    <div class="entry">
+    <div class="latest">
+    <h2 id="post-6553"><a href="http://www.bizzentte.com/2013/02/equipo-de-investigacion-lasexta-todos-los-capitulos-de-la-4%c2%aa-temporada-espanol/" rel="bookmark">Equipo de Investigación (laSexta) (Todos los capítulos de la 4ª Temporada) (Español)</a></h2>
+    <div class="main">
+    <a href="http://www.bizzentte.com/2013/02/equipo-de-investigacion-lasexta-todos-los-capitulos-de-la-4%c2%aa-temporada-espanol/" title="Equipo de Investigación (laSexta) (Todos los capítulos de la 4ª Temporada) (Español)"><img src="http://www.bizzentte.com/wp-content/uploads/2013/01/Equipo-de-investigacion-4x00-Portada.jpg" alt="Equipo de Investigación (laSexta) (Todos los capítulos de la 4ª Temporada) (Español)" class="listimg" /></a>
+    <p>Os dejo toda la 4ª temporada en HDTV..</p>
+    <ul class="readmore">
+    <li>&raquo;
+    <a href="http://www.bizzentte.com/2013/02/equipo-de-investigacion-lasexta-todos-los-capitulos-de-la-4%c2%aa-temporada-espanol/#comments">Comentarios</a>
+    <a href="http://www.bizzentte.com/2013/02/equipo-de-investigacion-lasexta-todos-los-capitulos-de-la-4%c2%aa-temporada-espanol/#respond" title="Comentarios en Equipo de Investigación (laSexta) (Todos los capítulos de la 4ª Temporada) (Español)">(0)</a>                     </li>
+    </ul>
+    </div>
+    '''
     patron  = '<h2 id="post-[^"]+"><a href="([^"]+)"[^>]+>([^<]+)</a></h2>[^<]+'
-    patron += '<div class="main">[^<]+'
+    patron += '<div class="main">.*?'
     patron += '<p>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)

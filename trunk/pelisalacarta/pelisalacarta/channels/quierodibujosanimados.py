@@ -36,7 +36,7 @@ def series(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<h4 style="margin-top:10px;">Dibujos</h4>(.*?)<h4')
+    data = scrapertools.get_match(data,'<h4 style="[^"]+">Dibujos</h4>(.*?)<h4')
     
     patron = '<a target="_top" title="([^"]+)" href="(/cat[^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)    
@@ -58,10 +58,10 @@ def episodios(item):
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
     '''
-    <h2><a   target="_self"     title="Agallas en: Todos quieren dirigir" href="/Agallas-en-Todos-quieren-dirigir/912" class="">Agallas en: Todos quieren dirigir</a></h2>
+    <h2><a   target="_self"     title="Donald en: El amor es cosa de dos" href="/Donald-en-El-amor-es-cosa-de-dos/990" class="">Donald en: El amor es cosa de dos</a></h2>
     <div class="titulo_inf">
-    <a title="Agallas El perro cobarde" href="/cat/agallas-el-perro-cobarde/16" class="">Agallas El perro cobarde</a>					<div class="estrellas">			<style> 
-    #stars_912 {
+    <a title="El Pato Donald" href="/cat/el-pato-donald/8" class="">El Pato Donald</a>                  <div class="estrellas">         <style> 
+    #stars_990 {
     background-image:url(/ico/estrellas16.png);
     background-repeat: no-repeat;
     background-position: -96px 0px;
@@ -69,18 +69,19 @@ def episodios(item):
     width:80px;
     display:block;
     }
-    #stars_912 span { width:8px; height:16px; display:block; float:left; }
-    </style>		
-    <div id="stars_912"></div>
+    #stars_990 span { width:8px; height:16px; display:block; float:left; }
+    </style>        
+    <div id="stars_990"></div>
     </div>
     </div>
     <div class="texto">
-    
-    <div id="foto"><a target="_self" title="Agallas en: Todos quieren dirigir" href="/Agallas-en-Todos-quieren-dirigir/912" class=""><img src="/i/thm-Todos-quieren-dirigir.jpg" /></a></div>
-    
-    <span class=""><p>&nbsp;En la casa de Muriel y Justo, una noche reciben una visita muy tenebrosa, Bentun Tarantela, un director de cine independiente....Muriel queda impresionada y le invita a entrar en la casa. Este director quiere hacer una pel&iacute;cula en la casa...Coraje se asusta much&iacute;simo, &iquest;Por qu&eacute;?...Cap&iacute;tulo titulado <strong>&quot;Todos quieren dirigir&quot;.</strong></p></span>					<div class="leer_mas">
-    <a href="/Agallas-en-Todos-quieren-dirigir/912" class="">Ver dibujos animados</a>					</div>
+
+    <div id="foto"><a target="_self" title="Donald en: El amor es cosa de dos" href="/Donald-en-El-amor-es-cosa-de-dos/990" class=""><img alt="Donald en: El amor es cosa de dos"  src="/i/thm-El-amor-es-cosa-de-dos.jpg" /></a></div>
+
+    <span class=""><p style="text-align: justify;">En esta ocasi&oacute;n el divertido Pato Donald, se viste con sus mejores galas para ir a visitar a una bella dama. Sus sobrinos pretenden acompa&ntilde;arle a la cita pero....Cap&iacute;tulo titulado <strong>&quot;El amor es cosa de dos&quot;</strong>.</p></span>                 <div class="leer_mas">
+    <a href="/Donald-en-El-amor-es-cosa-de-dos/990" class="">Ver dibujos animados</a>                   </div>
     </div>
+
     '''
     patron  = '<h2><a[^<]+</a></h2>[^<]+'
     patron += '<div class="titulo_inf">[^<]+'
@@ -88,8 +89,8 @@ def episodios(item):
     patron += '<div id="stars[^<]+</div>[^<]+'
     patron += '</div>[^<]+'
     patron += '</div>[^<]+'
-    patron += '<div class="texto">[^<]+'
-    patron += '<div id="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img src="([^"]+)"[^<]+</a></div>[^<]+'
+    patron += '<div class="texto"[^<]+'
+    patron += '<div id="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img\s+alt="[^"]+"\s+src="([^"]+)"[^<]+</a></div>[^<]+'
     patron += '<span class="">(.*?)</span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []

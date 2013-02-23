@@ -134,14 +134,18 @@ def findvideos(item):
     </td> <td align="center"><b>vk</b>
     </td> <td align="left"><span style="margin-left:20px;"><img src="http://www.yaske.net/imagenes/flags/la_la.png" width="23"> Latino</span></td> <td align="center" class="center">
     <span title="DVD SCREENER" style="text-transform:capitalize;">dvd screener</span></td> <td align="center" class="center">
-    <a href="http://www.yaske.net/es/reproductor/pelicula/1748/10734/" class="verLink" title="Los mercenarios 2" target="_blank"><img align="middle" width="100" height="26"  src="http://3.bp.blogspot.com/-ueSY010WZK0/UAgWBc6FIGI/AAAAAAAAHVw/P0Qe5GbwJS4/s1600/veron.png" /></a>
-    </td> <td align="center" class="episode-uploader"><span>
-    <iframe src="http://www.facebook.com/plugins/like.php?href=http://www.yaske.net/es/pelicula/0001748/ver-the-expendables-2-online.html?ref=opcion11&amp;send=false&amp;layout=button_count&amp;width=75&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:75px; height:21px;" allowTransparency="true"></iframe>
-    </span></td> <td align="center" class="center" style="overflow:hidden"><a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.yaske.net/es/pelicula/0001748/ver-the-expendables-2-online.html?ref=opcion11" data-count="horizontal">Tweet</a></td> </tr>  </tbody>
+    '''
+    '''
+    <tr bgcolor="#e6e3e3"><td align="left" >
+    <a href="http://www.yaske.net/es/reproductor/pelicula/2148/14587/" title="El origen de los guardianes" target="_blank" style="text-decoration: none;"><img src="http://www.yaske.net/imagenes/servers/veronline.png" height="19" width="19"><font color="black">Opcion 1</font></a>
+    </td> <td align="left"><span style="margin-left:15px;"><img src="http://www.google.com/s2/favicons?domain=www.rapidvideo.com" />rapidvideo</span>
+    </td> <td align="left"><span style="margin-left:15px;"><img src="http://www.yaske.net/imagenes/flags/es_es.png" width="19"> Spanish</span></td> 
+    <td align="center" class="center">
+    <span title="DVD SCREENER" style="text-transform:capitalize;">dvd screener</span></td> <td align="center">
     '''
     patron  = '<tr[^<]+<td[^<]+'
-    patron += '<a href="([^"]+)" title="[^"]+"[^<]+<img[^<]+<b><font[^>]+>([^<]+)</font></b></a>[^<]+'
-    patron += '</td[^<]+<td[^<]+<b>([^<]+)</b>[^<]+'
+    patron += '<a href="([^"]+)" title="[^"]+"[^<]+<img[^<]+<font[^>]+>([^<]+)</font></a>[^<]+'
+    patron += '</td[^<]+<td[^<]+<span[^<]+<img[^>]+>([^<]+)</span>[^<]+'
     patron += '</td[^<]+<td[^<]+<span[^<]+<img[^>]+>([^<]+)</span></td[^<]+<td[^<]+'
     patron += '<span title="([^"]+)"'
 

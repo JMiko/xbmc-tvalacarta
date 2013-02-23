@@ -49,34 +49,53 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     from core import unpackerjs
     unpacked = unpackerjs.unpackjs(packed)
     logger.info("unpacked="+unpacked)
-
-
-    data=re.search("flowplayer\(\"vplayer\",\"(http://.*?)\",\{key:\\\\'[#\\$0-9-a-f]+\\\\',clip:\{url:\\\\'(.*?)\\\\',provider:\\\\'rtmp\\\\',.*?,netConnectionUrl:\\\\'([^']+)",unpacked)
     '''
-    _TEMPLATE_LIVE_URL       = "%s/videochat playpath=stream_%s swfurl=%s swfvfy=true pageUrl=%s"
-            rtmp  = re.compile('rtmp="(.+?)"').findall(response)[0]
-            image = re.compile('image="(.+?)"').findall(response)[0]
-            id    = re.compile('id="(.+?)"').findall(response)[0]
-            livelink = _TEMPLATE_LIVE_URL % (rtmp,id,_SWF_URL,_TEMPLATE_URL % (code))
+    23:47:40 T:2955980800  NOTICE: unpacked=('var vast=\'\';var flashvars={"comment":"VideoPremium.NET","st":"http://videopremium.net/uplayer/styles/video156-623.txt",
+        "file":"rtmp://tengig0.lb.videopremium.net/play/mp4:8x0mq9hanl3a.f4v",
+        p2pkey:"mp4:8x0mq9hanl3a.f4v",vast_preroll:vast};var params={bgcolor:"#ffffff",allowFullScreen:"true",allowScriptAccess:"always",id:"vplayer"};new swfobject.embedSWF("http://videopremium.net/uplayer/uppod.swf","vplayer","728","450","9.0.115.0",false,flashvars,params);',,paramsflashvars,
     '''
-    location = data.group(3) + " playpath=" + data.group(2) + " swfurl=" +data.group(1) +" swfvfy=true pageUrl=" + page_url
+    '''
+    Property 'app' String 'play'
+    Property 'swfUrl' String 'http://videopremium.net/uplayer/uppod.swf'
+    Property 'pageUrl' String 'http://videopremium.net/8x0mq9hanl3a'
+    Property 'tcUrl' String 'rtmp://e5.videopremium.net/play'
+    play: String 'mp4:8x0mq9hanl3a.f4v'
+    '''
+    '''
+    00:55:30 T:2955980800   ERROR: Valid RTMP options are:
+    00:55:30 T:2955980800   ERROR:      socks string   Use the specified SOCKS proxy
+    00:55:30 T:2955980800   ERROR:        app string   Name of target app on server
+    00:55:30 T:2955980800   ERROR:      tcUrl string   URL to played stream
+    00:55:30 T:2955980800   ERROR:    pageUrl string   URL of played media's web page
+    00:55:30 T:2955980800   ERROR:     swfUrl string   URL to player SWF file
+    00:55:30 T:2955980800   ERROR:   flashver string   Flash version string (default MAC 10,0,32,18)
+    00:55:30 T:2955980800   ERROR:       conn AMF      Append arbitrary AMF data to Connect message
+    00:55:30 T:2955980800   ERROR:   playpath string   Path to target media on server
+    00:55:30 T:2955980800   ERROR:   playlist boolean  Set playlist before play command
+    00:55:30 T:2955980800   ERROR:       live boolean  Stream is live, no seeking possible
+    00:55:30 T:2955980800   ERROR:  subscribe string   Stream to subscribe to
+    00:55:30 T:2955980800   ERROR:        jtv string   Justin.tv authentication token
+    00:55:30 T:2955980800   ERROR:       weeb string   Weeb.tv authentication token
+    00:55:30 T:2955980800   ERROR:      token string   Key for SecureToken response
+    00:55:30 T:2955980800   ERROR:     swfVfy boolean  Perform SWF Verification
+    00:55:30 T:2955980800   ERROR:     swfAge integer  Number of days to use cached SWF hash
+    00:55:30 T:2955980800   ERROR:    swfsize integer  Size of the decompressed SWF file
+    00:55:30 T:2955980800   ERROR:    swfhash string   SHA256 hash of the decompressed SWF file
+    00:55:30 T:2955980800   ERROR:      start integer  Stream start position in milliseconds
+    00:55:30 T:2955980800   ERROR:       stop integer  Stream stop position in milliseconds
+    00:55:30 T:2955980800   ERROR:     buffer integer  Buffer time in milliseconds
+    00:55:30 T:2955980800   ERROR:    timeout integer  Session timeout in seconds
+    '''
+    rtmpurl=scrapertools.get_match(unpacked,'"file"\:"([^"]+)"').replace("tengig0.lb.videopremium.net","e5.videopremium.net")
+    playpath=scrapertools.get_match(unpacked,'p2pkey\:"([^"]+)"')
+    swfurl=scrapertools.get_match(unpacked,'embedSWF\("([^"]+)"')
+    pageurl = page_url
+    app="play"
+    tcurl="rtmp://e5.videopremium.net/play"
+    location = rtmpurl+" playpath="+playpath+" swfurl="+swfurl+" pageUrl="+page_url+" tcurl="+tcurl+" app="+app #swfvfy=true 
+
     logger.info("location="+location)
-    extension="videopremium.net"
-    '''
-    location = scrapertools.get_match(data,"url\: '([^']+)'")
-
-    try:
-        import urlparse
-        parsed_url = urlparse.urlparse(location)
-        logger.info("parsed_url="+str(parsed_url))
-        extension = parsed_url.path[-4:]
-    except:
-        if len(parsed_url)>=4:
-            extension = parsed_url[2][-4:]
-        else:
-            extension = ""
-    '''
-    video_urls.append( [ extension + " [videopremium]",location ] )
+    video_urls.append( [ "RTMP [videopremium]",location ] )
 
     return video_urls
 
@@ -100,8 +119,6 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
-    return devuelve
-
     #http://videopremium.net/buq4b8zunbm6
     #http://videopremium.net/0yo7kkdsfdh6/21.Jump.Street.2012.Subbed.ITA.DVDRIP.XviD-ZDC.CD1.avi.flv.html
     patronvideos  = '(videopremium.net/[a-z0-9]+)'
@@ -119,3 +136,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://videopremium.net/8x0mq9hanl3a")
+    return len(video_urls)>0
