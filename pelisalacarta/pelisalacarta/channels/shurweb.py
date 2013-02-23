@@ -224,7 +224,7 @@ def peliculas(item,paginacion=True):
     # Descarga la página
     data = scrapertools.cachePage(url)
     # Extrae las entradas
-    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">[^<]+<img width="123" height="100" src="([^"]+)" class=" wp-post-image" alt="[^"]+"  />[^<]+<span class="time">([^<]+)</span>[^<]+</a>'
+    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">[^<]+<img width="123" height="100" src="([^"]+)"[^<]+<span class="time">([^<]+)</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []

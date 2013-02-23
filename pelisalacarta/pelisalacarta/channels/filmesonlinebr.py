@@ -36,23 +36,14 @@ def novedades(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    '''
-    <div class="item">
-    <div class="thumbwrap">
-    <div class="thumbnail" style="background: url(http://2.bp.blogspot.com/-pdT9EL18mAk/UDLTMyo-SiI/AAAAAAAAFXE/GXGncCeLY_0/s400/7yu46het.jpg) top left no-repeat;">
-    <a href="http://www.filmesonlinebr.net/o-vingador-do-futuro-dublado/" Title="Assistir O Vingador do Futuro &#8211; Dublado Online"><img class="thumbnail" src="http://2.bp.blogspot.com/-pdT9EL18mAk/UDLTMyo-SiI/AAAAAAAAFXE/GXGncCeLY_0/s400/7yu46het.jpg" alt="O Vingador do Futuro &#8211; Dublado" /></a> 
-    </div>  
-    </div>
-    '''
     patron  = '<div class="item"[^<]+'
     patron += '<div class="thumbwrap"[^<]+'
-    patron += '<div class="thumbnail" style="background\: url\(([^\)]+)\)[^<]+'
-    patron += '<a href="([^"]+)"[^<]+<img class="thumbnail" src="[^"]+" alt="([^"]+)" /></a>'
+    patron += '<a href="([^"]+)"[^<]+<img src="([^"]+)" alt="([^"]+)"'
     
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for scrapedthumbnail,scrapedurl,title in matches:
+    for scrapedurl,scrapedthumbnail,title in matches:
         scrapedtitle = title.replace("&#8211; ","(")+")"
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
