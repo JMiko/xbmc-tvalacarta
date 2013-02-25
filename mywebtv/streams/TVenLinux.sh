@@ -2,14 +2,23 @@
 
 ###############################################
 #              www.TVenLinux.com              #
-#           Actualizado: 23/01/2013           #
+#           Actualizado: 04/02/2013           #
 #   Autor: Busindre (busilezas[@]gmail.com)   #
 #  Programación TV: www.programacion-tdt.com  #
 ###############################################
 
 # http://xmltvepg.wanwizard.eu/rytecxmltvdplus.gz --> Programacion más completa en xml (http://www.rytec.be/)
+# Mirar los rtsp que no van cn mplayer para pasalro a otro reproductor cvlc "rtsp://cdns724ste1010.multistream.net:80/iberoamericatvlive/Continuidad-500" --sout=file/ts:go.mpg
 
 ############################### Configuración. (Mirar en la web www.tvenlinux.com alguna otra posibilidad no documentada aquí.).
+
+# Filtrar por Ubicación geográfica, Temática y País (Listar separando por ",").
+# Ubicación ---> ALL:Todos LA:Latinoamerica REG:Regional LOC:Local
+# Temática ----> INF:Infantil NOT:Noticias MUS:Música DEP:Deportes MIX:Varios
+# País --------> ES:España AR:Argentina CL:Chile CO:Colombia CU:Cuba EC:Ecuador MX:México PY:Paraguay PE:Perú VE:Venezuela
+# NOTA: Si se indica solo el país, por ejemplo españa (ES), no se mostrarán canales deportivos, infantiles, musicales ni informativos de España.
+# Motrar todos los Canales de España, Perú y todos los deportivos e infantiles. SHOW_CANALES=ES,INF,DEP
+SHOW_CANALES=ALL
 
 # Segundos que estará descargando el streaming de TV antes de empezar a reproducirlo, aumentar los segundos para conexiones lentas.
 CACHE_STREAMING=12 
@@ -33,7 +42,7 @@ MPLAYER_HELP=0
 REPRODUCTOR="mplayer"
 
 ID=`date '+%s'` 
-V_script="23/01/2013";
+V_script="04/02/2013";
 
 #touch /tmp/versiontv # Descomentar esta linea (Quitar la primera almohadilla) si se quiere que TVenLinux NO busque actualizaciones de forma automática.
 
@@ -80,6 +89,16 @@ elif [ $MPLAYER_HELP -eq 0 -a $KDE -eq 0 -a $tvhelp -eq 2 -a "$REPRODUCTOR" = "m
 
 
 fi
+}
+
+################################ Función para recuperar la programación.
+
+function cmd_prog {
+	echo ""$(grep -A 1 "$1" /tmp/programacion  | grep -i Programa | sed -e 's/Programa://'); 
+}
+
+function cmd_prog2 {
+	echo ""$(grep -A 1 "$1" /tmp/programacion2 | grep -i Programa | sed -e 's/Programa://');
 }
 
 ############################### Función para forzar configuración antigua para streamings descargados con mplayer, ya que no aceptan las opciones de reproducción por defecto.
@@ -224,7 +243,6 @@ elif [ $rtmpdump -eq 1  -a $KDE -eq 0 ]; then
 	exit
 fi
 
-
 ################################ Curl como dependencia / Programación de cada canal. 
 
 whereis -B "/usr/sbin" "/usr/local/sbin" "/sbin" "/usr/bin" "/usr/local/bin" "/bin" -b curl | grep -i "/curl" > /dev/null 2>&1
@@ -240,13 +258,16 @@ elif [ $curl -eq 1 -a $KDE -eq 0 ]; then
 
 else
 	version # Comprobamos la versión del script llamando a la función para avisar al usuario.
+
 	curl -s http://www.programacion-tdt.com/ahora.php | iconv -t utf-8 -f iso-8859-1 | grep -A 1 -i "<td" |  sed -e 's/<td width="250" valign="top">/Canal: /' -e 's/<\/td>/ /' -e 's/<\/tr>/ /' -e 's/<td width="70%"><span class="ind">/Programa: /' -e 's/<\/span> comenzó/ [/' -e 's/minutos/minutos ]/'  -e 's/segundos/segundos ]/' -e 's/     //' > /tmp/programacion
+	
+	curl -s http://www.formulatv.com/programacion/ | iconv -t utf-8 -f iso-8859-1 | grep -i -A 1 "prga-i" | sed -e 's/.*prga-i"><a title="/Canal: /' -e 's/" href.*/ /' -e 's/.*prga-p">/Programa: /' -e 's/\t*<.*>//' > /tmp/programacion2
+
 	curl=0;
+
 fi
 
-
-
-grep "Paramount Channel" /tmp/programacion > /dev/null 2>&1
+grep "Nitro" /tmp/programacion  > /dev/null 2>&1 && grep "Nitro" /tmp/programacion2 > /dev/null 2>&1
 programacion=$?
 if [ $programacion -eq 1 -a $curl -eq 0 -a $KDE -eq 1 ]; then # Si no se encontraron los canales en el fichero pero sí está instalado curl (Fallo al conectar).
 	zenity --no-wrap --warning --timeout=2 --text='No se ha podido descargar la programación de cada canal' ;
@@ -256,455 +277,352 @@ elif [ $programacion -eq 1 -a $curl -eq 0 -a $KDE -eq 0 ]; then
 	kdialog --warningcontinuecancel 'No se ha podido descargar la programación de cada canal' ;
 	curl=1;
 
-
-elif [ $curl -eq 0 ]; then  # Si curl está instalado y se ha podido descargar la lista de canales.
-
-	AHORA=`date`;
-
-	rtve1=`grep -A 1 "TVE1 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	rtve2=`grep -A 1 "La 2 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	rtve24=`grep -A 1 "Canal 24h $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	tdp=`grep -A 1 "Teledeporte $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Antena_3=`grep -A 1 "Antena 3 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	La_Sexta=`grep -A 1 "La Sexta $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Cuatro=`grep -A 1 "Cuatro $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Tele5=`grep -A 1 "Telecinco $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Xplora=`grep -A 1 "xplora $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Nitro=`grep -A 1 "Nitro $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Neox=`grep -A 1 "A3 Neox $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	La_Sexta_3=`grep -A 1 "La Sexta 3 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Paramount=`grep -A 1 "Paramount Channel $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Intereconomia=`grep -A 1 "Intereconomia TV $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Energy=`grep -A 1 "Energy $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	FDF=`grep -A 1 "FDF $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	Divinity=`grep -A 1 "Divinity $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'` 
-	trecetv=`grep -A 1 "13 TV $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Cyl7=`grep -A 1 "cyl7 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	BarcelonaTV=`grep -A 1 "Barcelona TV $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Aragon_TV=`grep -A 1 "Aragon Television $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Galicia_TV_AM=`grep -A 1 "Galicia TV America $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	TPA_a7=`grep -A 1 "TPA a7 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Andalucia=`grep -A 1 "Canal Sur $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Canal9_24=`grep -A 1 "Noudos $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	IB3=`grep -A 1 "IB3 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	TV3=`grep -A 1 "TV3 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Esport3=`grep -A 1 "Esport3 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	TV3_24=`grep -A 1 "3 24 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Super3=`grep -A 1 "Canal Super3 $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Canal_8=`grep -A 1 "8tv $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`
-	Telemadrid_Otra=`grep -A 1 "La Otra $" /tmp/programacion | grep -i Programa | sed -e 's/Programa://'`	
-
-	TV3CAT=" - "
-	StvRioja=" - "
-	TVRioja=" - "
-	BusinessTV=" - ";
-	Canarias_NET=" - ";
-	Canarias=" - ";
-	Lancelot=" - "
-	Eldia_TV=" - "
-	Onda_Azul=" - ";
-	Ribera_TV=" - "
-	Telemadrid_SAT=" - ";
-	Etb_SAT=" - ";
-	Canal_Vasco=" - ";
-	Discovery_Channel=" - ";
-	TNT=" - ";
-	Xtrm=" - ";
-	SyFy=" - ";
-	Cosmo=" - ";
-	Galicia_TV_EU=" - "
-	Teleminho=" - "
-	Canal_33=" - "
-	Abteve=" - "
-	KissTV=" - "
-	UnaCadiz=" - "
-	EuroNews_ES=" - "
-	France24=" - "
-	PressTV=" - "
-	TeleBilbao=" - "
-	UnaCordoba=" - "
-	Telebahia=" - "
-	ImasTV=" - "
-	ZaragozaTV=" - "
-	TeleToledo=" - "
-	Huelva_CNH=" - "
-	LevanteTV=" - "
-	InformacionTV=" - "
-	PTV_Malaga=" - "
-	CostadelSol_TV=" - "
-	M95TV=" - "
-	Humorbox=" - "
-	MusicBox=" - "
-	ShansonTV=" - "
-	Russian_Today=" - "
-	TeleSur=" - "
-	AtelTV=" - "
-	DatTV=" - "
-	VTV=" - "
-	IslaTV=" - "
-	PromarTV=" - "
-	DeluxeMusic=" - "
-	GoticaTV=" - "
-	LobasTV=" - "
-	PartyTV=" - "
-	Unlove=" - "
-	Eska=" - "
-	TV105=" - "
-	RMC_TV=" - "
-	LaBelleTV=" - "
-	SoleilTV=" - "
-	Funtv=" - "
-	RblTV=" - "
-	StreetclipTV=" - "
-	Canal_Extremadura=" - "
-	Aljazeera_Eng=" - "
-	Esne_TV=" - "
-	Huelva_TV=" - "
-	LUX_Mallorca=" - "
-	Huesca_TV=" - "
-	TeleB=" - "
-	TV_Girona=" - "
-	RtvCE=" - "
-	TVMelilla=" - "
-	TVCS=" - "
-	Astrocanalshop=" - "
-	Ondamex=" - "
-	CubaVision=" - "
-	Panamericana=" - "
-	Global_TV=" - "
-	ATV_Sur=" - "
-	AricaTV=" - "
-	Cetelmon_TV=" - "
-	SolidariaTV=" - "
-	Hispan_TV=" - "
-	VoTV=" - "
-	RedBull=" - "
-	TileSport=" - "
-	Al_Iraqiya_Sports=" - "
-	SportItalia=" - "
-	SkyPoker=" - "
-	Canal2=" - "
-	Canal9=" - "
-	Digital_Channel=" - "
-	Enlace=" - "
-	Canal33=" - "
-	TVinet=" - "
-	Itv=" - "
-	RedTV=" - "
-	MegaTV=" - "
-	MetroTV=" - "
-	TVnuevotiempo=" - "
-	RTC=" - "
-	TVu=" - "
-	TVlota=" - "
-	SenadoTV=" - "
-	UATV=" - "
-	UNIACCTV=" - "
-	UMAGTV=" - "
-	Horas24=" - "
-	VaughanTV=" - "
-	TamTV=" - "
-	TVes=" - "
-	TicTV=" - "
-	TrpTV=" - "
-	ArgentinisimaTV=" - "
-	Canal10=" - "
-	CBA24=" - "
-	Canal21=" - "
-	Canal3=" - "
-	Canal5=" - "
-	Canal7=" - "
-	Canal_9=" - "
-	Canal_Provincial=" - "
-	El_Rural=" - "
-	El_trece=" - "
-	Construir_TV=" - "
-	PakaPaka=" - "
-	QMusica=" - "
-	Canal26=" - "
-	TN=" - "
-	TN_HD=" - "
-	Zona31=" - "
-	N9=" - "
-	Canal13=" - "
-	Canal10_Tucuman=" - "
-	LapachoTV=" - "
-	TVO=" - "
-	FacetasDeportivas=" - "
-	Cable_Noticias=" - "
-	Canal_Tiempo=" - "
-	Tu_Kanal=" - "
-	PyC=" - "
-	Canal_Capital=" - "
-	CMB=" - "
-	CristoVision=" - "
-	TeleVida=" - "
-	RTVC=" - "
-	RTVC2=" - "
-	TeleCaribe=" - "
-	TelePacifico=" - "
-	RPC=" - "
-	Paravision=" - "
-	TeleFuturo=" - "
-	TelevisaHD=" - "
-	Milenio=" - "
-	OnceTV=" - "
-	Canal66=" - "
-	Canal44=" - "
-	Congreso=" - "
-	Canal_Justicia=" - "
-	Cortes_Diputados=" - "
-	Kanal_D=" - "
-	Sat7_Kids=" - "
-	SmileofaChildTV=" - "
-	NASA=" - "
-	Barbaraki_TV=" - "
-	Minika_GO=" - "
-	Minika_Cocuk=" - "
-	Yumurcak=" - "
-	Gang_Cartoon_Channel=" - "
-	RTS=" - "
-	Canal1=" - "
-	Ecuadortv=" - "
-	Oromar=" - "
-
 fi
 
-############################## Temáticas de cada canal (Solo zenity).
+################################ Carga de valores de Canales, temáticas y Programación
 
-	rtve1_tm=" Público generalista"
-	rtve2_tm=" Público cultural"
-	rtve24_tm=" Noticias 24/7 (ESP)"
-	tdp_tm=" Público deportes"
-	Antena_3_tm=" Generalista"
-	La_Sexta_tm=" Generalista"
-	Cuatro_tm=" Generalista"
-	Tele5_tm=" Generalista/Amarillista"
-	Xplora_tm=" Documentales/Masculino"
-	Nitro_tm=" Series/Cine/Masculino"
-	Neox_tm=" Series/Jóvenes"
-	La_Sexta_3_tm=" Cine"
-	Paramount_tm=" Cine"
-	Intereconomia_tm=" Política/Religión"
-	Energy_tm=" Documentales/Masculino"
-	FDF_tm=" Series Tele5"
-	Divinity_tm=" Series/Docu/Femenino"
-	trecetv_tm=" Cine/Religión"
-	Cyl7_tm=" Local Castilla León"
-	BarcelonaTV_tm=" Local ciudad BCN"
-	Aragon_TV_tm=" Local Aragón"
-	Galicia_TV_AM_tm=" Local Galicia"
-	TVRioja_tm=" Local La Rioja"
-	TPA_a7_tm=" Local Asturias"
-	Andalucia_tm=" Local Andalucía"
-	Canal9_24_tm=" Local Valencia"
-	IB3_tm=" Local Baleares"
-	TV3_tm=" Local Cataluña"
-	Esport3_tm=" Deportes Cataluña"
-	TV3_24_tm=" Noticias 24/7 (CAT)"
-	Super3_tm=" Infantil Cataluña"
-	Canal_8_tm=" Local Cataluña"
-	TV3CAT_tm=" Local Cataluña"
-	StvRioja_tm=" Local La Rioja"
-	BusinessTV_tm=" Política/Economía";
-	Canarias_NET_tm=" Local Canarias";
-	Canarias_tm=" Local Canarias";
-	Lancelot_tm=" Local Lanzarote"
-	Eldia_TV_tm=" Local Tenerife"
-	Onda_Azul_tm=" Local Málaga";
-	Ribera_TV_tm=" Local La Ribera"
-	Telemadrid_SAT_tm=" Local Madrid";
-	Telemadrid_Otra_tm=" Local Madrid";
-	Etb_SAT_tm=" Local Vasco";
-	Canal_Vasco_tm=" Local Vasco";
-	Discovery_Channel_tm=" Documentales";
-	TNT_tm=" Series/Cine"
-	Xtrm_tm=" Cine/Acción";
-	SyFy_tm=" Ciencia ficción";
-	Cosmo_tm=" Canal femenino" 
-	Galicia_TV_EU_tm=" Local Galicia"
-	Teleminho_tm=" Local Ourense"
-	Canal_33_tm=" Cultural Cataluña"
-	Abteve_tm=" Local Albacete"
-	KissTV_tm=" Música 24/7"
-	UnaCadiz_tm=" Local Cádiz"
-	EuroNews_ES_tm=" Noticias 24/7 (ESP)"
-	France24_tm=" Noticias 24/7 (ENG)"
-	PressTV_tm=" Noticias 24/7 (ENG)"
-	NASA_tm=" Didáctico ciencia (ENG)"
-	TeleBilbao_tm=" Local Bilbao"
-	UnaCordoba_tm=" Local Córdoba"
-	Telebahia_tm=" Local Santander"
-	ImasTV_tm=" Local Ciudad Real"
-	ZaragozaTV_tm=" Local Zaragoza"
-	TeleToledo_tm=" Local Toledo"
-	Huelva_CNH_tm=" Local Huelva"
-	LevanteTV_tm=" Local Levante"
-	InformacionTV_tm=" Local Alicante"
-	PTV_Malaga_tm=" Local Málaga"
-	CostadelSol_TV_tm=" Local Costa del Sol"
-	M95TV_tm=" Local Marbella"
-	Humorbox_tm=" Música 24/7 (RUS)"
-	MusicBox_tm=" Música 24/7 (RUS)"
-	ShansonTV_tm=" Música 24/7 (RUS/Global)"
-	Russian_Today_tm=" Noticias 24/7 (ESP)"
-	TeleSur_tm=" Generalista Venezuela"
-	AtelTV_tm=" Generalista Venezuela"
-	DatTV_tm=" Generalista Venezuela"
-	VTV_tm=" Generalista Venezuela"
-	IslaTV_tm=" Generalista Venezuela"
-	PromarTV_tm=" Generalista Venezuela"
-	TamTV_tm=" Noticias / Cultura Mérida"
-	TVes_tm=" Generalista Venezuela"
-	TicTV_tm=" Generalista Venezuela"
-	TrpTV_tm=" Generalista Venezuela"
-	TVO_tm=" Generalista Venezuela"
-	DeluxeMusic_tm=" Música 24/7"
-	GoticaTV_tm=" Música 24/7 Gótica"
-	LobasTV_tm=" Música 24/7 Divas"
-	PartyTV_tm=" Música 24/7"
-	Unlove_tm=" Música 24/7"
-	Eska_tm=" Música 24/7 (POL/Global)"
-	TV105_tm=" Música 24/7"
-	RMC_TV_tm=" Música 24/7 (FR/ITA)"
-	LaBelleTV_tm=" Música 24/7 (FR)"
-	SoleilTV_tm=" Música 24/7 (FR)"
-	Funtv_tm=" Música 24/7 (RUS/Global)"
-	RblTV_tm=" Música 24/7 (RUS/Global)"
-	StreetclipTV_tm=" Música 24/7 Rock Metal"
-	Canal_Extremadura_tm=" Local Extremadura"
-	Aljazeera_Eng_tm=" Noticias 24/7 (ENG)"
-	Esne_TV_tm=" Religión Arizona (ESP)"
-	Huelva_TV_tm=" Local Huelva"
-	LUX_Mallorca_tm=" Local Mallorca"
-	Huesca_TV_tm=" Local Huesca"
-	TeleB_tm=" Local Badalona"
-	TV_Girona_tm=" Local Girona"
-	RtvCE_tm=" Local Ceuta"
-	TVMelilla_tm=" Local Melilla"
-	TVCS_tm=" Local Castellón"
-	Astrocanalshop_tm=" Teletienda"
-	Ondamex_tm=" Tarot/Contactos"
-	CubaVision_tm=" Generalista Cuba"
-	Panamericana_tm=" Generalista Perú"
-	Global_TV_tm=" Generalista Perú"
-	ATV_Sur_tm=" Generalista Perú"
-	AricaTV_tm=" Generalista Chile"
-	Canal2_tm=" Generalista Chile"
-	Canal9_tm=" Generalista Chile"
-	Digital_Channel_tm=" Generalista Chile"
-	Enlace_tm=" Generalista Chile"
-	Canal33_tm=" Generalista Chile"
-	TVinet_tm=" Generalista Chile"
-	Itv_tm=" Generalista Chile"
-	RedTV_tm=" Generalista Chile"
-	MegaTV_tm=" Generalista Chile"
-	MetroTV_tm=" TV Metro de Santiago"
-	TVnuevotiempo_tm=" Religión Chile"
-	RTC_tm=" Generalista Chile"
-	TVlota_tm=" Generalista Chile"
-	SenadoTV_tm=" TV Senado Chile"
-	TVu_tm=" Universidad Concepción"
-	UNIACCTV_tm=" Universidad ACC"
-	UATV_tm=" Universidad Autónoma"
-	UMAGTV_tm=" Universidad Magallanes"
-	Horas24_tm=" Generalista Chile"
-	Cetelmon_TV_tm=" Religión Alicante"
-	SolidariaTV_tm=" Religión Vitoria"
-	Hispan_TV_tm=" Noticias 24/7 Irán (ESP)"
-	VoTV_tm=" Local Cataluña"
-	RedBull_tm=" Deportes/Música (ENG)"
-	TileSport_tm=" Deportes 24/7 (GRE)"
-	Al_Iraqiya_Sports_tm=" Deportes 24/7 (IRQ)"
-	SportItalia_tm=" Deportes 24/7 (ITA)"
-	SkyPoker_tm=" Poker 24/7 (ENG)"
-	VaughanTV_tm=" Aprender Inglés (ENG/ESP)"
-	Canal10_tm=" Local Córdoba"
-	CBA24_tm=" Local Córdoba"
-	ArgentinisimaTV_tm=" Generalista Argentina"
-	Canal3_tm=" Generalista Argentina"
-	Canal7_tm=" Generalista Argentina"
-	Canal_9_tm=" Generalista Argentina"
-	Canal_Provincial_tm=" Generalista Argentina"
-	Zona31_tm=" Generalista Argentina"
-	El_trece_tm=" Generalista Argentina"
-	Canal13_tm=" Generalista Argentina"
-	Canal10_Tucuman_tm=" Local Tucumán"
-	LapachoTV_tm=" Generalista Argentina"
-	N9_tm=" Generalista/Noticias"
-	Canal21_tm=" Religión Buenos Aires"
-	Construir_TV_tm=" Tema construcción"
-	El_Rural_tm=" Mundo rural"
-	PakaPaka_tm=" Infantil/Educativo"
-	QMusica_tm=" Música 24/7 (ESP)"
-	Canal5_tm=" Noticias 24/7"
-	Canal26_tm=" Noticias 24/7"
-	TN_tm=" Noticias 24/7"
-	TN_HD_tm=" Noticias 24/7 HD"
-	FacetasDeportivas_tm=" Deportes 24/7"
-	Cable_Noticias_tm=" Noticias 24/7"
-	Canal_Tiempo_tm=" Meteorología/Noticias"
-	Tu_Kanal_tm=" Generalista Colombia"
-	PyC_tm=" Generalista Colombia"
-	Canal_Capital_tm=" Generalista Colombia"
-	CMB_tm=" Religión Colombia"
-	CristoVision_tm=" Religión Colombia"
-	TeleVida_tm=" Religión Colombia"
-	RTVC_tm=" Generalista Colombia"
-	RTVC2_tm=" Generalista Colombia"
-	TeleCaribe_tm=" Generalista Colombia"
-	TelePacifico_tm=" Generalista Colombia"
-######
+AHORA=`date`;
+i=0;
+# Nombre					Temática				Programación
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "ES" ]]; then
+	canales[i]="rtve1";		tematica[i]=" Público generalista";		prog[i++]=`cmd_prog "TVE1 $"`;
+	canales[i]="rtve2";		tematica[i]=" Público cultural";		prog[i++]=`cmd_prog "La 2 $"`;
+	canales[i]="Antena_3";		tematica[i]=" Generalista";			prog[i++]=`cmd_prog "Antena 3 $"`;
+	canales[i]="Cuatro";		tematica[i]=" Generalista";			prog[i++]=`cmd_prog  "Cuatro $"`;
+	canales[i]="Tele5";		tematica[i]=" Generalista/Amarillista";		prog[i++]=`cmd_prog "Telecinco $"`;
+	canales[i]="La_Sexta";		tematica[i]=" Generalista";			prog[i++]=`cmd_prog "La Sexta $"`;
+	canales[i]="Xplora";		tematica[i]=" Documentales/Masculino";		prog[i++]=`cmd_prog "xplora $"`;
+	canales[i]="Energy";		tematica[i]=" Documentales/Masculino";		prog[i++]=`cmd_prog "Energy $"`;
+	canales[i]="Nitro";		tematica[i]=" Series/Cine/Masculino";		prog[i++]=`cmd_prog "Nitro $"`;
+	canales[i]="Neox";		tematica[i]=" Series/Jóvenes";			prog[i++]=`cmd_prog "A3 Neox $"`;
+	canales[i]="Divinity";		tematica[i]=" Series/Docu/Femenino";		prog[i++]=`cmd_prog "Divinity $"`;
+	canales[i]="SyFy";		tematica[i]=" Ciencia ficción";			prog[i++]=`cmd_prog2 "SyFy España $"`;
+	canales[i]="Xtrm";		tematica[i]=" Cine/Acción";			prog[i++]=`cmd_prog2 "XTREM $"`;
+	canales[i]="TNT";		tematica[i]=" Series/Cine";			prog[i++]=`cmd_prog2 "TNT España $"`;
+	canales[i]="FDF";		tematica[i]=" Series Tele5";			prog[i++]=`cmd_prog "FDF $"`;
+	canales[i]="Cosmo";		tematica[i]=" Canal femenino";			prog[i++]=`cmd_prog2 "Cosmopolitan $"`;
+	canales[i]="13TV";		tematica[i]=" Cine/Religión";			prog[i++]=`cmd_prog "13 TV $"`;
+	canales[i]="Paramount";		tematica[i]=" Cine";				prog[i++]=`cmd_prog "Paramount Channel $"`;
+	canales[i]="Esne_TV";		tematica[i]=" Religión Arizona (ESP)";		prog[i++]=" - ";
+	canales[i]="La_Sexta_3";	tematica[i]=" Cine";				prog[i++]=`cmd_prog "La Sexta 3 $"`;
+	canales[i]="BusinessTV";	tematica[i]=" Política/Economía";		prog[i++]=" - ";
+	canales[i]="Intereconomia";	tematica[i]=" Política/Religión";		prog[i++]=`cmd_prog "Intereconomia TV $"`;
+	canales[i]="Discovery_Channel"; tematica[i]=" Documentales";			prog[i++]=`cmd_prog2 "Discovery Channel $"`;
+	canales[i]="IberoamericaTV";	tematica[i]=" Mundo latino";			prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
 
-	RPC_tm=" Generalista Paraguay"
-	Paravision_tm=" Generalista Paraguay"
-	TeleFuturo_tm=" Generalista Paraguay"
-	TelevisaHD_tm=" Generalista Mexico"
-	Milenio_tm=" Noticias/Política" 
-	OnceTV_tm=" Generalista Mexico"
-	Canal66_tm=" Noticias/Reportajes"
-	Canal44_tm=" Noticias/Reportajes"
-	Congreso_tm=" Canal del congreso"
-	Canal_Justicia_tm=" Ministerio Justicia"
-	Cortes_Diputados_tm=" Cortes Dicupatos"
-	Kanal_D_tm=" Infantil/Educativo (SR)"
-	Sat7_Kids_tm=" Infantil/Educativo (EN)"
-	SmileofaChildTV_tm=" Infantil/Educativo (EN)"
-	Barbaraki_TV_tm=" Infantil/Educativo (RUS)"
-	Minika_GO_tm=" Infantil/Educativo (TUR)"
-	Minika_Cocuk_tm=" Infantil/Educativo (TUR)"
-	Yumurcak_tm=" Infantil/Educativo (TUR)"
-	Gang_Cartoon_Channel_tm=" Infantil/Anime (THA)"
-	RTS_tm=" Generalista Ecuador"
-	Canal1_tm=" Generalista Ecuador"
-	Ecuadortv_tm=" Generalista Ecuador"
-	Oromar_tm=" Generalista Ecuador"
-
-############################## Canales.
-
-if [ $curl -eq 0  -a $KDE -eq 1 ]; then
-	CANAL=`zenity --window-icon="/usr/share/icons/hicolor/48x48/devices/totem-tv.png" --list --title="TVenLinux ($V_script)" --text="Seleccione un canal" --height=450 --width=750 --column="Canales" --column="Temática" --column="Emisión $AHORA " "rtve1" "$rtve1_tm" "$rtve1" "rtve2" "$rtve2_tm" "$rtve2" "rtve24" "$rtve24_tm" "$rtve24" "Antena_3" "$Antena_3_tm" "$Antena_3" "Cuatro" "$Cuatro_tm" "$Cuatro" "Tele5" "$Tele5_tm" "$Tele5" "La_Sexta" "$La_Sexta_tm" "$La_Sexta" "Xplora" "$Xplora_tm" "$Xplora" "Discovery_Channel" "$Discovery_Channel_tm" "$Discovery_Channel" "Energy" "$Energy_tm" "$Energy" "Nitro" "$Nitro_tm" "$Nitro" "Neox" "$Neox_tm" "$Neox" "Divinity" "$Divinity_tm" "$Divinity" "SyFy" "$SyFy_tm" "$SyFy" "Xtrm" "$Xtrm_tm" "$Xtrm" "TNT" "$TNT_tm" "$TNT" "FDF" "$FDF_tm" "$FDF" "Cosmo" "$Cosmo_tm" "$Cosmo" "13TV" "$trecetv_tm" "$trecetv" "Intereconomia" "$Intereconomia_tm" "$Intereconomia" "BusinessTV" "$BusinessTV_tm" "$BusinessTV" "La_Sexta_3" "$La_Sexta_3_tm" "$La_Sexta_3" "Paramount" "$Paramount_tm" "$Paramount" "VaughanTV" "$VaughanTV_tm" "$VaughanTV"  "Kanal_D" "$Kanal_D_tm" "$Kanal_D" "Sat7_Kids" "$Sat7_Kids_tm" "$Sat7_Kids" "SmileofaChildTV" "$SmileofaChildTV_tm" "$SmileofaChildTV" "Barbaraki_TV" "$Barbaraki_TV_tm" "$Barbaraki_TV" "Minika_GO" "$Minika_GO_tm" "$Minika_GO" "Minika_Cocuk" "$Minika_Cocuk_tm" "$Minika_Cocuk" "Yumurcak" "$Yumurcak_tm" "$Yumurcak" "Gang_Cartoon_Channel" "$Gang_Cartoon_Channel_tm" "$Gang_Cartoon_Channel" "Aljazeera_Eng" "$Aljazeera_Eng_tm" "$Aljazeera_Eng"  "EuroNews_ES" "$EuroNews_ES_tm" "$EuroNews_ES" "France24" "$France24_tm" "$France24" "PressTV" "$PressTV_tm" "$PressTV" "NASA" "$NASA_tm" "$NASA" "Russian_Today" "$Russian_Today_tm" "$Russian_Today" "Cetelmon_TV" "$Cetelmon_TV_tm" "$Cetelmon_TV" "Ondamex" "$Ondamex_tm" "$Ondamex" "KissTV" "$KissTV_tm" "$KissTV" "DeluxeMusic" "$DeluxeMusic_tm" "$DeluxeMusic" "Eska" "$Eska_tm" "$Eska" "GoticaTV" "$GoticaTV_tm" "$GoticaTV" "Humorbox" "$Humorbox_tm" "$Humorbox" "Funtv" "$Funtv_tm" "$Funtv" "RblTV" "$RblTV_tm" "$RblTV" "LobasTV" "$LobasTV_tm" "$LobasTV" "MusicBox" "$MusicBox_tm" "$MusicBox" "PartyTV" "$PartyTV_tm" "$PartyTV" "RMC_TV" "$RMC_TV_tm" "$RMC_TV" "ShansonTV" "$ShansonTV_tm" "$ShansonTV" "TV105" "$TV105_tm" "$TV105" "Unlove" "$Unlove_tm" "$Unlove" "StreetclipTV" "$StreetclipTV_tm" "$StreetclipTV" "SoleilTV" "$SoleilTV_tm" "$SoleilTV" "LaBelleTV" "$LaBelleTV_tm" "$LaBelleTV" "Esport3" "$Esport3_tm" "$Esport3" "Al_Iraqiya_Sports" "$Al_Iraqiya_Sports_tm" "$Al_Iraqiya_Sports" "SkyPoker" "$SkyPoker_tm" "$SkyPoker" "SportItalia" "$SportItalia_tm" "$SportItalia" "tdp" "$tdp_tm" "$tdp" "TileSport" "$TileSport_tm" "$TileSport" "RedBull" "$RedBull_tm" "$RedBull" "Abteve" "$Abteve_tm" "$Abteve" "Andalucia" "$Andalucia_tm" "$Andalucia" "Aragon_TV" "$Aragon_TV_tm" "$Aragon_TV" "BarcelonaTV" "$BarcelonaTV_tm" "$BarcelonaTV" "Canal_33" "$Canal_33_tm" "$Canal_33" "Canal_8" "$Canal_8_tm" "$Canal_8" "Canal_Extremadura" "$Canal_Extremadura_tm" "$Canal_Extremadura" "Canal9_24" "$Canal9_24_tm" "$Canal9_24" "Canarias" "$Canarias_tm" "$Canarias" "Canarias_NET" "$Canarias_NET_tm" "$Canarias_NET" "Lancelot" "$Lancelot_tm" "$Lancelot" "CostadelSol_TV" "$CostadelSol_TV_tm" "$CostadelSol_TV" "Cyl7" "$Cyl7_tm" "$Cyl7" "Eldia_TV" "$Eldia_TV_tm" "$Eldia_TV" "Etb_SAT" "$Etb_SAT_tm" "$Etb_SAT" "Canal_Vasco" "$Canal_Vasco_tm" "$Canal_Vasco" "Galicia_TV_AM" "$Galicia_TV_AM_tm" "$Galicia_TV_AM" "Galicia_TV_EU" "$Galicia_TV_EU_tm" "$Galicia_TV_EU" "Teleminho" "$Teleminho_tm" "$Teleminho" "Hispan_TV" "$Hispan_TV_tm" "$Hispan_TV" "Huelva_CNH" "$Huelva_CNH_tm" "$Huelva_CNH" "Huelva_TV" "$Huelva_TV_tm" "$Huelva_TV" "Huesca_TV" "$Huesca_TV_tm" "$Huesca_TV" "IB3" "$IB3_tm" "$IB3" "ImasTV" "$ImasTV_tm" "$ImasTV" "InformacionTV" "$InformacionTV_tm" "$InformacionTV" "LevanteTV" "$LevanteTV_tm" "$LevanteTV" "LUX_Mallorca" "$LUX_Mallorca_tm" "$LUX_Mallorca" "M95TV" "$M95TV_tm" "$M95TV" "Onda_Azul" "$Onda_Azul_tm" "$Onda_Azul" "PTV_Malaga" "$PTV_Malaga_tm" "$PTV_Malaga" "Ribera_TV" "$Ribera_TV_tm" "$Ribera_TV" "RtvCE" "$RtvCE_tm" "$RtvCE" "Super3" "$Super3_tm" "$Super3" "StvRioja" "$StvRioja_tm" "$StvRioja" "TeleB" "$TeleB_tm" "$TeleB" "Telebahia" "$Telebahia_tm" "$Telebahia" "TeleBilbao" "$TeleBilbao_tm" "$TeleBilbao" "Telemadrid_SAT" "$Telemadrid_SAT_tm" "$Telemadrid_SAT" "Telemadrid_Otra" "$Telemadrid_Otra_tm" "$Telemadrid_Otra" "TeleToledo" "$TeleToledo_tm" "$TeleToledo" "TPA_a7" "$TPA_a7_tm" "$TPA_a7" "TV_Girona" "$TV_Girona_tm" "$TV_Girona" "TV3" "$TV3_tm" "$TV3" "TV3CAT" "$TV3CAT_tm" "$TV3CAT" "TV3_24" "$TV3_24_tm" "$TV3_24" "TVCS" "$TVCS_tm" "$TVCS" "TVMelilla" "$TVMelilla_tm" "$TVMelilla" "TVRioja" "$TVRioja_tm" "$TVRioja" "UnaCadiz" "$UnaCadiz_tm" "$UnaCadiz" "UnaCordoba" "$UnaCordoba_tm" "$UnaCordoba" "VoTV" "$VoTV_tm" "$VoTV" "ZaragozaTV" "$ZaragozaTV_tm" "$ZaragozaTV" "Esne_TV" "$Esne_TV_tm" "$Esne_TV" "Astrocanalshop" "$Astrocanalshop_tm" "$Astrocanalshop" "SolidariaTV" "$SolidariaTV_tm" "$SolidariaTV" "" "" "" "Global_TV" "$Global_TV_tm" "$Global_TV" "ATV_Sur" "$ATV_Sur_tm" "$ATV_Sur" "Panamericana" "$Panamericana_tm" "$Panamericana" "" "" "" "CubaVision" "$CubaVision_tm" "$CubaVision" "" "" "" "AricaTV" "$AricaTV_tm" "$AricaTV" "Canal2" "$Canal2_tm" "$Canal2" "Canal9" "$Canal9_tm" "$Canal9" "Digital_Channel" "$Digital_Channel_tm" "$Digital_Channel" "Enlace" "$Enlace_tm" "$Enlace" "Canal33" "$Canal33_tm" "$Canal33" "TVinet" "$TVinet_tm" "$TVinet" "Itv" "$Itv_tm" "$Itv" "RedTV" "$RedTV_tm" "$RedTV" "MegaTV" "$MegaTV_tm" "$MegaTV" "MetroTV" "$MetroTV_tm" "$MetroTV" "TVnuevotiempo" "$TVnuevotiempo_tm" "$TVnuevotiempo" "RTC" "$RTC_tm" "$RTC" "TVu" "$TVu_tm" "$TVu" "TVlota" "$TVlota_tm" "$TVlota" "SenadoTV" "$SenadoTV_tm" "$SenadoTV" "UNIACCTV" "$UNIACCTV_tm" "$UNIACCTV" "UATV" "$UATV_tm" "$UATV" "UMAGTV" "$UMAGTV_tm" "$UMAGTV" "Horas24" "$Horas24_tm" "$Horas24" "" "" "" "TeleSur" "$TeleSur_tm" "$TeleSur" "AtelTV" "$AtelTV_tm" "$AtelTV" "DatTV" "$DatTV_tm" "$DatTV" "VTV" "$VTV_tm" "$VTV" "IslaTV" "$IslaTV_tm" "$IslaTV" "PromarTV" "$PromarTV_tm" "$PromarTV" "TamTV" "$TamTV_tm" "$TamTV" "TVes" "$TVes_tm" "$TVes" "TicTV" "$TicTV_tm" "$TicTV" "TrpTV" "$TrpTV_tm" "$TrpTV" "TVO" "$TVO_tm" "$TVO" "" "" "" "Canal10" "$Canal10_tm" "$Canal10" "CBA24" "$CBA24_tm" "$CBA24" "ArgentinisimaTV" "$ArgentinisimaTV_tm" "$ArgentinisimaTV" "Canal3" "$Canal3_tm" "$Canal3" "Canal7" "$Canal7_tm" "$Canal7" "Canal_9" "$Canal_9_tm" "$Canal_9" "Canal_Provincial" "$Canal_Provincial_tm" "$Canal_Provincial" "Zona31" "$Zona31_tm" "$Zona31" "El_trece" "$El_trece_tm" "$El_trece" "Canal21" "$Canal21_tm" "$Canal21" "Construir_TV" "$Construir_TV_tm" "$Construir_TV" "El_Rural" "$El_Rural_tm" "$El_Rural" "PakaPaka" "$PakaPaka_tm" "$PakaPaka" "QMusica" "$QMusica_tm" "$QMusica" "Canal5" "$Canal5_tm" "$Canal5" "Canal26" "$Canal26_tm" "$Canal26" "N9" "$N9_tm" "$N9" "TN" "$TN_tm" "$TN" "TN_HD" "$TN_HD_tm" "$TN_HD" "Canal13" "$Canal13_tm" "$Canal13" "Canal10_Tucuman" "$Canal10_Tucuman_tm" "$Canal10_Tucuman" "LapachoTV" "$LapachoTV_tm" "$LapachoTV" "" "" "" "FacetasDeportivas" "$FacetasDeportivas_tm" "$FacetasDeportivas" "" "" "" "Cable_Noticias" "$Cable_Noticias_tm" "$Cable_Noticias" "Canal_Tiempo" "$Canal_Tiempo_tm" "$Canal_Tiempo" "Tu_Kanal" "$Tu_Kanal_tm" "$Tu_Kanal" "PyC" "$PyC_tm" "$PyC" "Canal_Capital" "$Canal_Capital_tm" "$Canal_Capital" "CMB" "$CMB_tm" "$CMB" "CristoVision" "$CristoVision_tm" "$CristoVision" "TeleVida" "$TeleVida_tm" "$TeleVida" "RTVC" "$RTVC_tm" "$RTVC" "RTVC2" "$RTVC2_tm" "$RTVC2" "TeleCaribe" "$TeleCaribe_tm" "$TeleCaribe" "TelePacifico" "$TelePacifico_tm" "$TelePacifico" "" "" "" "RPC" "$RPC_tm" "$RPC" "Paravision" "$Paravision_tm" "$Paravision" "TeleFuturo" "$TeleFuturo_tm" "$TeleFuturo" "" "" "" "TelevisaHD" "$TelevisaHD_tm" "$TelevisaHD" "Milenio" "$Milenio_tm" "$Milenio" "OnceTV" "$OnceTV_tm" "$OnceTV" "Canal66" "$Canal66_tm" "$Canal66" "Canal44" "$Canal44_tm" "$Canal44" "Congreso" "$Congreso_tm" "$Congreso" "Canal_Justicia" "$Canal_Justicia_tm" "$Canal_Justicia" "Cortes_Diputados" "$Cortes_Diputados_tm" "$Cortes_Diputados" "" "" "" "RTS" "$RTS_tm" "$RTS" "Canal1" "$Canal1_tm" "$Canal1" "Ecuadortv" "$Ecuadortv_tm" "$Ecuadortv" "Oromar" "$Oromar_tm" "$Oromar"`
-
-elif [ $curl -eq 0  -a $KDE -eq 0 ]; then
-	CANAL=`kdialog  --title "TVenLinux ($V_script)" --geometry 650x600 --menu "Seleccione un canal  [ $AHORA ]" "rtve1" "rtve1     ---   $rtve1" "rtve2" "rtve2     ---   $rtve2" "rtve24" "rtve24     ---   $rtve24" "Antena_3" "Antena_3     ---   $Antena_3" "Cuatro" "Cuatro     ---   $Cuatro" "Tele5" "Tele5     ---   $Tele5" "La_Sexta" "La_Sexta     ---   $La_Sexta" "Xplora" "Xplora     ---   $Xplora" "Discovery_Channel" "Discovery_Channel     ---   $Discovery_Channel_tm" "Energy" "Energy     ---   $Energy" "Nitro" "Nitro     ---   $Nitro" "Neox" "Neox     ---   $Neox" "Divinity" "Divinity     ---   $Divinity" "SyFy" "SyFy     ---   $SyFy_tm" "Xtrm" "Xtrm     ---   $Xtrm_tm" "TNT" "TNT     ---   $TNT_tm" "FDF" "FDF     ---   $FDF" "Cosmo" "Cosmo     ---   $Cosmo_tm" "13TV" "13TV     ---   $trecetv" "Intereconomia" "Intereconomia     ---   $Intereconomia" "BusinessTV" "BusinessTV     ---   $BusinessTV_tm" "La_Sexta_3" "La_Sexta_3     ---   $La_Sexta_3" "Paramount" "Paramount     ---   $Paramount" "VaughanTV" "VaughanTV     ---   $VaughanTV_tm" "Kanal_D" "Kanal_D     ---   $Kanal_D_tm" "Sat7_Kids" "Sat7_Kids     ---   $Sat7_Kids_tm" "SmileofaChildTV" "SmileofaChildTV     ---   $SmileofaChildTV_tm" "Barbaraki_TV" "Barbaraki_TV     ---   $Barbaraki_TV_tm" "Minika_GO" "Minika_GO     ---   $Minika_GO_tm" "Minika_Cocuk" "Minika_Cocuk     ---   $Minika_Cocuk_tm" "Yumurcak" "Yumurcak     ---   $Yumurcak_tm" "Gang_Cartoon_Channel" "Gang_Cartoon_Channel     ---   $Gang_Cartoon_Channel_tm" "Aljazeera_Eng" "Aljazeera_Eng     ---   $Aljazeera_Eng_tm" "EuroNews_ES" "EuroNews_ES     ---   $EuroNews_ES_tm" "France24" "France24     ---   $France24_tm" "PressTV" "PressTV     ---   $PressTV_tm" "Russian_Today" "Russian_Today     ---   $Russian_Today_tm" "NASA" "NASA     ---   $NASA_tm" "Cetelmon_TV" "Cetelmon_TV     ---   $Cetelmon_TV_tm" "Ondamex" "Ondamex     ---   $Ondamex_tm" "KissTV" "KissTV     ---   $KissTV_tm" "DeluxeMusic" "DeluxeMusic     ---   $DeluxeMusic_tm" "Eska" "Eska     ---   $Eska_tm" "GoticaTV" "GoticaTV     ---   $GoticaTV_tm" "Humorbox" "Humorbox     ---   $Humorbox_tm" "Funtv" "Funtv     ---   $Funtv_tm" "RblTV" "RblTV     ---   $RblTV_tm" "LobasTV" "LobasTV     ---   $LobasTV_tm" "MusicBox" "MusicBox     ---   $MusicBox_tm" "PartyTV" "PartyTV     ---   $PartyTV_tm" "RMC_TV" "RMC_TV     ---   $RMC_TV_tm" "ShansonTV" "ShansonTV     ---   $ShansonTV_tm" "TV105" "TV105     ---   $TV105_tm" "Unlove" "Unlove     ---   $Unlove_tm" "StreetclipTV" "StreetclipTV     ---   $StreetclipTV_tm" "SoleilTV" "SoleilTV     ---   $SoleilTV_tm" "LaBelleTV" "LaBelleTV     ---   $LaBelleTV_tm" "Esport3" "Esport3     ---   $Esport3" "Al_Iraqiya_Sports" "Al_Iraqiya_Sports     ---   $Al_Iraqiya_Sports_tm" "SkyPoker" "SkyPoker     ---   $SkyPoker_tm" "SportItalia" "SportItalia     ---   $SportItalia_tm" "tdp" "tdp     ---   $tdp" "TileSport" "TileSport     ---   $TileSport_tm" "RedBull" "RedBull     ---   $RedBull_tm" "Abteve" "Abteve     ---   $Abteve_tm" "Andalucia" "Andalucia     ---   $Andalucia" "Aragon_TV" "Aragon_TV     ---   $Aragon_TV_tm" "BarcelonaTV" "BarcelonaTV     ---   $BarcelonaTV" "Canal_33" "Canal_33     ---   $Canal_33_tm" "Canal_8" "Canal_8     ---   $Canal_8" "Canal_Extremadura" "Canal_Extremadura     ---   $Canal_Extremadura_tm" "Canal9_24" "Canal9_24     ---   $Canal9_24" "Canarias" "Canarias     ---   $Canarias_tm" "Canarias_NET" "Canarias_NET     ---   $Canarias_NET_tm" "Lancelot" "Lancelot     ---   $Lancelot_tm" "CostadelSol_TV" "CostadelSol_TV     ---   $CostadelSol_TV_tm" "Cyl7" "Cyl7     ---   $Cyl7" "Eldia_TV" "Eldia_TV     ---   $Eldia_TV_tm" "Etb_SAT" "Etb_SAT     ---   $Etb_SAT_tm" "Canal_Vasco" "Canal_Vasco     --->   $Canal_Vasco" "Galicia_TV_AM" "Galicia_TV_AM     ---   $Galicia_TV_AM" "Galicia_TV_EU" "Galicia_TV_EU     ---   $Galicia_TV_EU_tm" "Teleminho" "Teleminho     ---   $Teleminho_tm" "Hispan_TV" "Hispan_TV     ---   $Hispan_TV_tm" "Huelva_CNH" "Huelva_CNH     ---   $Huelva_CNH_tm" "Huelva_TV" "Huelva_TV     ---   $Huelva_TV_tm" "Huesca_TV" "Huesca_TV     ---   $Huesca_TV_tm" "IB3" "IB3     ---   $IB3" "ImasTV" "ImasTV     ---   $ImasTV_tm" "InformacionTV" "InformacionTV     ---   $InformacionTV_tm" "LevanteTV" "LevanteTV     ---   $LevanteTV_tm" "LUX_Mallorca" "LUX_Mallorca     ---   $LUX_Mallorca_tm" "M95TV" "M95TV     ---   $M95TV_tm" "Onda_Azul" "Onda_Azul     ---   $Onda_Azul_tm" "PTV_Malaga" "PTV_Malaga     ---   $PTV_Malaga_tm" "Ribera_TV" "Ribera_TV     ---   $Ribera_TV_tm" "RtvCE" "RtvCE     ---   $RtvCE_tm" "Super3" "Super3     ---   $Super3" "StvRioja" "StvRioja     ---   $StvRioja_tm" "TeleB" "TeleB     ---   $TeleB_tm" "Telebahia" "Telebahia     ---   $Telebahia_tm" "TeleBilbao" "TeleBilbao     ---   $TeleBilbao_tm" "Telemadrid_SAT" "Telemadrid_SAT     ---   $Telemadrid_SAT_tm" "Telemadrid_Otra" "Telemadrid_Otra     ---   $Telemadrid_Otra_tm" "TeleToledo" "TeleToledo     ---   $TeleToledo_tm" "TPA_a7" "TPA_a7     ---   $TPA_a7" "TV_Girona" "TV_Girona     ---   $TV_Girona_tm" "TV3" "TV3     ---   $TV3" "TV3CAT" "TV3CAT     ---   $TV3CAT_tm" "TV3_24" "TV3_24     ---   $TV3_24" "TVCS" "TVCS     ---   $TVCS_tm" "TVMelilla" "TVMelilla     ---   $TVMelilla_tm" "TVRioja" "TVRioja     ---   $TVRioja_tm" "UnaCadiz" "UnaCadiz     ---   $UnaCadiz_tm" "UnaCordoba" "UnaCordoba     ---   $UnaCordoba_tm" "VoTV" "VoTV     ---   $VoTV_tm" "ZaragozaTV" "ZaragozaTV     ---   $ZaragozaTV_tm" "Esne_TV" "Esne_TV     ---   $Esne_TV_tm" "Astrocanalshop" "Astrocanalshop     ---   $Astrocanalshop_tm" "SolidariaTV" "SolidariaTV     ---   $SolidariaTV_tm" "" "" "Global_TV" "Global_TV     ---   $Global_TV_tm" "ATV_Sur" "ATV_Sur     ---   $ATV_Sur_tm" "Panamericana" "Panamericana     ---   $Panamericana_tm" "" "" "CubaVision" "CubaVision     ---   $CubaVision_tm" "" "" "AricaTV" "AricaTV     ---   $AricaTV_tm" "Canal2" "Canal2     ---   $Canal2_tm" "Canal9" "Canal9     ---   $Canal9_tm" "Digital_Channel" "Digital_Channel     ---   $Digital_Channel_tm" "Enlace" "Enlace     ---   $Enlace_tm" "Canal33" "Canal33     ---   $Canal33_tm" "TVinet" "TVinet     ---   $TVinet_tm" "Itv" "Itv     ---   $Itv_tm" "RedTV" "RedTV     ---   $RedTV_tm" "MegaTV" "MegaTV     ---   $MegaTV_tm" "MetroTV" "MetroTV     ---   $MetroTV_tm" "TVnuevotiempo" "TVnuevotiempo     ---   $TVnuevotiempo_tm" "RTC" "RTC     ---   $RTC_tm" "TVu" "TVu     ---   $TVu_tm" "TVlota" "TVlota     ---   $TVlota_tm" "SenadoTV" "SenadoTV     ---   $SenadoTV_tm" "UNIACCTV" "UNIACCTV     ---   $UNIACCTV_tm" "UATV" "UATV     ---   $UATV_tm" "UMAGTV" "UMAGTV     ---   $UMAGTV_tm" "Horas24" "Horas24     ---   $Horas24_tm" "" "" "TeleSur" "TeleSur     ---   $TeleSur_tm" "AtelTV" "AtelTV     ---   $AtelTV_tm" "DatTV" "DatTV     ---   $DatTV_tm" "VTV" "VTV     ---   $VTV_tm" "IslaTV" "IslaTV     ---   $IslaTV_tm" "PromarTV" "PromarTV     ---   $PromarTV_tm" "TamTV" "TamTV     ---   $TamTV_tm" "TVes" "TVes     ---   $TVes_tm" "TicTV" "TicTV     ---   $TicTV_tm" "TrpTV" "TrpTV     ---   $TrpTV_tm" "TVO" "TVO     ---   $TVO_tm" "" "" "Canal10" "Canal10     ---   $Canal10_tm" "CBA24" "CBA24     ---   $CBA24_tm" "ArgentinisimaTV" "ArgentinisimaTV     ---   $ArgentinisimaTV_tm" "Canal3" "Canal3     ---   $Canal3_tm" "Canal7" "Canal7     ---   $Canal7_tm" "Canal_9" "Canal_9     ---   $Canal_9_tm" "Canal_Provincial" "Canal_Provincial     ---   $Canal_Provincial_tm" "Zona31" "Zona31     ---   $Zona31_tm" "El_trece" "El_trece     ---   $El_trece_tm" "Canal21" "Canal21     ---   $Canal21_tm" "Construir_TV" "Construir_TV     ---   $Construir_TV_tm" "El_Rural" "El_Rural     ---   $El_Rural_tm" "PakaPaka" "PakaPaka     ---   $PakaPaka_tm" "QMusica" "QMusica     ---   $QMusica_tm" "Canal5" "Canal5     ---   $Canal5_tm" "Canal26" "Canal26     ---   $Canal26_tm" "TN" "TN     ---   $TN_tm" "TN_HD" "TN_HD     --->   $TN_HD_tm" "N9" "N9     ---   $N9_tm" "Canal13" "Canal13     ---   $Canal13_tm" "Canal10_Tucuman" "Canal10_Tucuman     ---   $Canal10_Tucuman_tm" "LapachoTV" "LapachoTV     ---   $LapachoTV_tm" "" "" "FacetasDeportivas" "FacetasDeportivas     ---   $FacetasDeportivas_tm" "" "" "Cable_Noticias" "Cable_Noticias     ---   $Cable_Noticias_tm" "Canal_Tiempo" "Canal_Tiempo     ---   $Canal_Tiempo_tm" "Tu_Kanal" "Tu_Kanal     ---   $Tu_Kanal_tm" "PyC" "PyC     ---   $PyC_tm" "Canal_Capital" "Canal_Capital     ---   $Canal_Capital_tm" "CMB" "CMB     ---   $CMB_tm" "CristoVision" "CristoVision     ---   $CristoVision_tm" "TeleVida" "TeleVida     ---   $TeleVida_tm" "RTVC" "RTVC     ---   $RTVC_tm" "RTVC2" "RTVC2     ---   $RTVC2_tm" "TeleCaribe" "TeleCaribe     ---   $TeleCaribe_tm" "TelePacifico" "TelePacifico     ---   $TelePacifico_tm" "" "" "RPC" "RPC     ---   $RPC_tm" "Paravision" "Paravision     ---   $Paravision_tm" "TeleFuturo" "TeleFuturo     ---   $TeleFuturo_tm" "" "" "TelevisaHD" "TelevisaHD     ---   $TelevisaHD_tm" "Milenio" "Milenio     ---   $Milenio_tm" "OnceTV" "OnceTV     ---   $OnceTV_tm" "Canal66" "Canal66     ---   $Canal66_tm" "Canal44" "Canal44     ---   $Canal44_tm" "Congreso" "Congreso     ---   $Congreso_tm" "Canal_Justicia" "Canal_Justicia     ---   $Canal_Justicia_tm" "Cortes_Diputados" "Cortes_Diputados     ---   $Cortes_Diputados_tm" "" "" "RTS" "RTS     ---   $RTS_tm" "Canal1" "Canal1     ---   $Canal1_tm" "Ecuadortv" "Ecuadortv     ---   $Ecuadortv_tm" "Oromar" "Oromar     ---   $Oromar_tm"`
-
-
-
-
-elif [ $curl -eq 1  -a $KDE -eq 1 ]; then
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "ES" ]] || [[ "$SHOW_CANALES" =~ "REG" ]]; then
+	canales[i]="Andalucia";		tematica[i]=" Regional Andalucía";		prog[i++]=`cmd_prog "Canal Sur $"`;
+	canales[i]="Aragon_TV";		tematica[i]=" Regional Aragón";			prog[i++]=`cmd_prog "Aragon Television $"`;
+	canales[i]="TPA_a7";		tematica[i]=" Regional Asturias";		prog[i++]=`cmd_prog "TPA a7 $"`;
+	canales[i]="StvRioja";		tematica[i]=" Regional La Rioja";		prog[i++]=" - ";
+	canales[i]="Cyl7";		tematica[i]=" Regional Castilla León";		prog[i++]=`cmd_prog "cyl7 $"`;
+	canales[i]="Etb_SAT";		tematica[i]=" Regional Vasco";			prog[i++]=" - ";
+	canales[i]="TV3";		tematica[i]=" Regional Cataluña";		prog[i++]=`cmd_prog "TV3 $"`;
+	canales[i]="TV3CAT";		tematica[i]=" Regional Cataluña";		prog[i++]=`cmd_prog2 "TV3 $"`;
+	canales[i]="Canal9_24";		tematica[i]=" Regional Valencia";		prog[i++]=`cmd_prog "Noudos $"`;
+	canales[i]="Canarias";		tematica[i]=" Regional Canarias";		prog[i++]=`cmd_prog2 "TV Canaria $"`;
+	canales[i]="Canarias_NET";	tematica[i]=" Regional Canarias";		prog[i++]=" - ";
+	canales[i]="Galicia_TV_AM";	tematica[i]=" Regional Galicia";		prog[i++]=`cmd_prog "Galicia TV America $"`;
+	canales[i]="Galicia_TV_EU";	tematica[i]=" Regional Galicia";		prog[i++]=`cmd_prog2 "TVG $"`;
+	canales[i]="Telemadrid_Otra";	tematica[i]=" Regional Madrid";			prog[i++]=`cmd_prog "La Otra $"`;
+	canales[i]="Telemadrid_SAT";	tematica[i]=" Regional Madrid";			prog[i++]=" - ";
+	canales[i]="Canal_Extremadura";	tematica[i]=" Regional Extremadura";		prog[i++]=`cmd_prog2 "Canal Extremadura $"`;
 	
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "ES" ]] || [[ "$SHOW_CANALES" =~ "LOC" ]]; then
+	canales[i]="Abteve";		tematica[i]=" Local Albacete";			prog[i++]=" - ";
+	canales[i]="TeleB";		tematica[i]=" Local Badalona";			prog[i++]=" - ";
+	canales[i]="IB3";		tematica[i]=" Local Baleares";			prog[i++]=`cmd_prog "IB3 $"`;
+	canales[i]="TeleBilbao";	tematica[i]=" Local Bilbao";			prog[i++]=" - ";
+	canales[i]="UnaCadiz";		tematica[i]=" Local Cádiz";			prog[i++]=" - ";
+	canales[i]="TVCS";		tematica[i]=" Local Castellón";			prog[i++]=" - ";
+	canales[i]="VoTV";		tematica[i]=" Local Cataluña";			prog[i++]=" - ";
+	canales[i]="Canal_8";		tematica[i]=" Local Cataluña";			prog[i++]=`cmd_prog "8tv $"`;
+	canales[i]="Canal_33";		tematica[i]=" Cultural Cataluña";		prog[i++]=" - ";
+	canales[i]="ImasTV";		tematica[i]=" Local Ciudad Real";		prog[i++]=" - ";
+	canales[i]="RtvCE";		tematica[i]=" Local Ceuta";			prog[i++]=" - ";
+	canales[i]="TV_Girona";		tematica[i]=" Local Girona";			prog[i++]=" - ";
+	canales[i]="Huelva_TV";		tematica[i]=" Local Huelva";			prog[i++]=" - ";
+	canales[i]="Huesca_TV";		tematica[i]=" Local Huesca";			prog[i++]=" - ";
+	canales[i]="Lancelot";		tematica[i]=" Local Lanzarote";			prog[i++]=" - ";
+	canales[i]="LevanteTV";		tematica[i]=" Local Levante";			prog[i++]=" - ";
+	canales[i]="Onda_Azul";		tematica[i]=" Local Málaga";			prog[i++]=" - ";
+	canales[i]="PTV_Malaga";	tematica[i]=" Local Málaga";			prog[i++]=" - ";
+	canales[i]="M95TV";		tematica[i]=" Local Marbella";			prog[i++]=" - ";
+	canales[i]="TVMelilla";		tematica[i]=" Local Melilla";			prog[i++]=" - ";
+	canales[i]="Teleminho";		tematica[i]=" Local Ourense";			prog[i++]=" - ";
+	canales[i]="Ribera_TV";		tematica[i]=" Local La Ribera";			prog[i++]=" - ";
+	canales[i]="TVRioja";		tematica[i]=" Local Rioja";			prog[i++]=" - ";
+	canales[i]="Telebahia";		tematica[i]=" Local Santander";			prog[i++]=" - ";
+	canales[i]="SolidariaTV";	tematica[i]=" Religión Vitoria";		prog[i++]=" - ";
+	canales[i]="ZaragozaTV";	tematica[i]=" Local Zaragoza";			prog[i++]=" - ";
+	canales[i]="Eldia_TV";		tematica[i]=" Local Tenerife";			prog[i++]=" - ";
+	canales[i]="TeleToledo";	tematica[i]=" Local Toledo";			prog[i++]=" - ";
+	canales[i]="Canal_Vasco";	tematica[i]=" Local Vasco";			prog[i++]=" - ";
+	canales[i]="LUX_Mallorca";	tematica[i]=" Local Mallorca";			prog[i++]=" - ";
+	canales[i]="CostadelSol_TV";	tematica[i]=" Local Costa del Sol";		prog[i++]=" - ";
+	canales[i]="InformacionTV";	tematica[i]=" Local Alicante";			prog[i++]=" - ";
+	canales[i]="Cetelmon_TV";	tematica[i]=" Religión Alicante";		prog[i++]=" - ";
+	canales[i]="BarcelonaTV";	tematica[i]=" Local ciudad BCN";		prog[i++]=`cmd_prog "Barcelona TV $"`;
+	canales[i]="Huelva_CNH";	tematica[i]=" Local Huelva";			prog[i++]=" - ";
+	canales[i]="UnaCordoba";	tematica[i]=" Local Córdoba";			prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "INF" ]]; then
+	canales[i]="Super3";		tematica[i]=" Infantil Cataluña";		prog[i++]=`cmd_prog "Canal Super3 $"`;
+	canales[i]="Kanal_D";		tematica[i]=" Infantil/Educativo (SR)";		prog[i++]=" - ";
+	canales[i]="Sat7_Kids";		tematica[i]=" Infantil/Educativo (EN)";		prog[i++]=" - ";
+	canales[i]="Minika_GO";		tematica[i]=" Infantil/Educativo (TUR)";	prog[i++]=" - ";
+	canales[i]="Yumurcak";		tematica[i]=" Infantil/Educativo (TUR)";	prog[i++]=" - ";
+	canales[i]="SmileofaChildTV";	tematica[i]=" Infantil/Educativo (EN)";		prog[i++]=" - ";
+	canales[i]="Barbaraki_TV";	tematica[i]=" Infantil/Educativo (RUS)";	prog[i++]=" - ";
+	canales[i]="Gang_Cartoon_Channel";tematica[i]=" Infantil/Anime (THA)";		prog[i++]=" - ";
+	canales[i]="Minika_Cocuk";	tematica[i]=" Infantil/Educativo (TUR)";	prog[i++]=" - ";	
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "NOT" ]]; then
+	canales[i]="rtve24";		tematica[i]=" Noticias 24/7 (ESP)";		prog[i++]=`cmd_prog "Canal 24h $"`;
+	canales[i]="Hispan_TV";		tematica[i]=" Noticias 24/7 Irán (ESP)";	prog[i++]=" - ";
+	canales[i]="France24";		tematica[i]=" Noticias 24/7 (ENG)";		prog[i++]=" - ";
+	canales[i]="PressTV";		tematica[i]=" Noticias 24/7 (ENG)";		prog[i++]=" - ";
+	canales[i]="TV3_24";		tematica[i]=" Noticias 24/7 (CAT)";		prog[i++]=`cmd_prog "3 24 $"`;
+	canales[i]="Canal5";		tematica[i]=" Noticias 24/7";			prog[i++]=" - ";
+	canales[i]="Canal26";		tematica[i]=" Noticias 24/7";			prog[i++]=" - ";
+	canales[i]="TN";		tematica[i]=" Noticias 24/7";			prog[i++]=" - ";
+	canales[i]="TN_HD";		tematica[i]=" Noticias 24/7 HD";		prog[i++]=" - ";
+	canales[i]="Cable_Noticias";	tematica[i]=" Noticias 24/7";			prog[i++]=" - ";
+	canales[i]="Aljazeera_Eng";	tematica[i]=" Noticias 24/7 (ENG)";		prog[i++]=" - ";
+	canales[i]="EuroNews_ES";	tematica[i]=" Noticias 24/7 (ESP)";		prog[i++]=" - ";
+	canales[i]="Russian_Today";	tematica[i]=" Noticias 24/7 (ESP)";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "MUS" ]]; then
+	canales[i]="KissTV";		tematica[i]=" Música 24/7";			prog[i++]=" - ";
+	canales[i]="LobasTV";		tematica[i]=" Música 24/7 Divas";		prog[i++]=" - ";
+	canales[i]="PartyTV";		tematica[i]=" Música 24/7";			prog[i++]=" - ";
+	canales[i]="TV105";		tematica[i]=" Música 24/7";			prog[i++]=" - ";
+	canales[i]="Unlove";		tematica[i]=" Música 24/7";			prog[i++]=" - ";
+	canales[i]="QMusica";		tematica[i]=" Música 24/7 (ESP)";		prog[i++]=" - ";
+	canales[i]="MusicBox";		tematica[i]=" Música 24/7 (RUS)";		prog[i++]=" - ";
+	canales[i]="GoticaTV";		tematica[i]=" Música 24/7 Gótica";		prog[i++]=" - ";
+	canales[i]="StreetclipTV";	tematica[i]=" Música 24/7 Rock Metal";		prog[i++]=" - ";
+	canales[i]="Eska";		tematica[i]=" Música 24/7 (POL/Global)";	prog[i++]=" - ";
+	canales[i]="Humorbox";		tematica[i]=" Música 24/7 (RUS)";		prog[i++]=" - ";
+	canales[i]="Funtv";		tematica[i]=" Música 24/7 (RUS/Global)";	prog[i++]=" - ";
+	canales[i]="RblTV";		tematica[i]=" Música 24/7 (RUS/Global)";	prog[i++]=" - ";
+	canales[i]="RMC_TV";		tematica[i]=" Música 24/7 (FR/ITA)";		prog[i++]=" - ";
+	canales[i]="ShansonTV";		tematica[i]=" Música 24/7 (RUS/Global)";	prog[i++]=" - ";
+	canales[i]="LaBelleTV";		tematica[i]=" Música 24/7 (FR)";		prog[i++]=" - ";
+	canales[i]="DeluxeMusic";	tematica[i]=" Música 24/7";			prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+	
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "DEP" ]]; then
+	canales[i]="Plus_campeones";	tematica[i]=" Fútbol";				prog[i++]=" - ";
+	canales[i]="FacetasDeportivas";	tematica[i]=" Deportes 24/7";			prog[i++]=" - ";
+	canales[i]="Al_Iraqiya_Sports";	tematica[i]=" Deportes 24/7 (IRQ)";		prog[i++]=" - ";
+	canales[i]="Esport3";		tematica[i]=" Deportes Cataluña (CAT)";		prog[i++]=`cmd_prog "Esport3 $"`;
+	canales[i]="RedBull";		tematica[i]=" Deportes/Música (ENG)";		prog[i++]=" - ";
+	canales[i]="TileSport";		tematica[i]=" Deportes 24/7 (GRE)";		prog[i++]=" - ";
+	canales[i]="Plus_Liga";		tematica[i]=" Fútbol";				prog[i++]=" - ";
+	canales[i]="Plus_Futbol";	tematica[i]=" Fútbol";				prog[i++]=" - ";
+	canales[i]="SportItalia";	tematica[i]=" Deportes 24/7 (ITA)";		prog[i++]=" - ";
+	canales[i]="tdp";		tematica[i]=" Deportes";			prog[i++]=`cmd_prog "Teledeporte $"`;
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "MIX" ]]; then
+	canales[i]="NASA";		tematica[i]=" Didáctico ciencia (ENG)";		prog[i++]=" - ";
+	canales[i]="SkyPoker";		tematica[i]=" Poker 24/7 (ENG)";		prog[i++]=" - ";
+	canales[i]="VaughanTV";		tematica[i]=" Aprender Inglés (ENG/ESP)";	prog[i++]="";
+	canales[i]="Ondamex";		tematica[i]=" Tarot/Contactos";			prog[i++]=" - ";
+	canales[i]="Astrocanalshop";	tematica[i]=" Teletienda";			prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+	
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "AR" ]]; then
+
+	canales[i]="Canal3";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="Canal7";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="Canal_9";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="N9";		tematica[i]=" Generalista/Noticias";		prog[i++]=" - ";
+	canales[i]="Canal13";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="LapachoTV";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="Zona31";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="El_trece";		tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="Canal21";		tematica[i]=" Religión Buenos Aires";		prog[i++]=" - ";
+	canales[i]="El_Rural";		tematica[i]=" Mundo rural";			prog[i++]=" - ";
+	canales[i]="PakaPaka";		tematica[i]=" Infantil/Educativo";		prog[i++]=" - ";
+	canales[i]="Canal10";		tematica[i]=" Local Córdoba";			prog[i++]=" - ";
+	canales[i]="CBA24";		tematica[i]=" Local Córdoba";			prog[i++]=" - ";
+	canales[i]="ArgentinisimaTV";	tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="Canal_Provincial";	tematica[i]=" Generalista Argentina";		prog[i++]=" - ";
+	canales[i]="Construir_TV";	tematica[i]=" Tema construcción";		prog[i++]=" - ";
+	canales[i]="Canal10_Tucuman";	tematica[i]=" Local Tucumán";			prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "CL" ]]; then
+	canales[i]="AricaTV";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="Canal2";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="Canal9";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="Enlace";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="Canal33";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="TVinet";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="Itv";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="RedTV";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="MegaTV";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="Horas24";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="RTC";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="TVlota";		tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+	canales[i]="MetroTV";		tematica[i]=" TV Metro de Santiago";		prog[i++]=" - ";
+	canales[i]="TVu";		tematica[i]=" Universidad Concepción";		prog[i++]=" - ";
+	canales[i]="SenadoTV";		tematica[i]=" TV Senado Chile";			prog[i++]=" - ";
+	canales[i]="UNIACCTV";		tematica[i]=" Universidad ACC";			prog[i++]=" - ";
+	canales[i]="UATV";		tematica[i]=" Universidad Autónoma";		prog[i++]=" - ";
+	canales[i]="UMAGTV";		tematica[i]=" Universidad Magallanes";		prog[i++]=" - ";
+	canales[i]="TVnuevotiempo";	tematica[i]=" Religión Chile";			prog[i++]=" - ";
+	canales[i]="Digital_Channel";	tematica[i]=" Generalista Chile";		prog[i++]=" - ";
+
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "CO" ]]; then
+	canales[i]="Tu_Kanal";		tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="PyC";		tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="RTVC";		tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="RTVC2";		tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="CMB";		tematica[i]=" Religión Colombia";		prog[i++]=" - ";
+	canales[i]="CristoVision";	tematica[i]=" Religión Colombia";		prog[i++]=" - ";
+	canales[i]="TeleVida";		tematica[i]=" Religión Colombia";		prog[i++]=" - ";
+	canales[i]="TeleCaribe";	tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="TelePacifico";	tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="Canal_Tiempo";	tematica[i]=" Meteorología/Noticias";		prog[i++]=" - ";
+	canales[i]="Canal_Capital";	tematica[i]=" Generalista Colombia";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "CU" ]]; then
+	canales[i]="CubaVision";	tematica[i]=" Generalista Cuba";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "EC" ]]; then
+	canales[i]="RTS";		tematica[i]=" Generalista Ecuador";		prog[i++]=" - ";
+	canales[i]="Canal1";		tematica[i]=" Generalista Ecuador";		prog[i++]=" - ";
+	canales[i]="Ecuadortv";		tematica[i]=" Generalista Ecuador";		prog[i++]=" - ";
+	canales[i]="Oromar";		tematica[i]=" Generalista Ecuador";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "MX" ]]; then
+	canales[i]="TelevisaHD";	tematica[i]=" Generalista Mexico";		prog[i++]=" - ";
+	canales[i]="OnceTV";		tematica[i]=" Generalista Mexico";		prog[i++]=" - ";
+	canales[i]="Milenio";		tematica[i]=" Noticias/Política";		prog[i++]=" - ";
+	canales[i]="Canal66";		tematica[i]=" Noticias/Reportajes";		prog[i++]=" - ";
+	canales[i]="Canal44";		tematica[i]=" Noticias/Reportajes";		prog[i++]=" - ";
+	canales[i]="Congreso";		tematica[i]=" Canal del congreso";		prog[i++]=" - ";
+	canales[i]="Canal_Justicia";	tematica[i]=" Ministerio Justicia";		prog[i++]=" - ";
+	canales[i]="Cortes_Diputados";	tematica[i]=" Cortes Diputados";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "PY" ]]; then
+	canales[i]="RPC";		tematica[i]=" Generalista Paraguay";		prog[i++]=" - ";
+	canales[i]="Paravision";	tematica[i]=" Generalista Paraguay";		prog[i++]=" - ";
+	canales[i]="TeleFuturo";	tematica[i]=" Generalista Paraguay";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "PE" ]]; then
+	canales[i]="Global_TV";		tematica[i]=" Generalista Perú";		prog[i++]=" - ";
+	canales[i]="ATV_Sur";		tematica[i]=" Generalista Perú";		prog[i++]=" - ";
+	canales[i]="Panamericana";	tematica[i]=" Generalista Perú";		prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "LA" ]] || [[ "$SHOW_CANALES" =~ "VE" ]]; then
+	canales[i]="TeleSur";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="AtelTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="DatTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="VTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="IslaTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="PromarTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="TVes";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="TicTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="TrpTV";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="TVO";		tematica[i]=" Generalista Venezuela";		prog[i++]=" - ";
+	canales[i]="TamTV";		tematica[i]=" Noticias / Cultura Mérida";	prog[i++]=" - ";
+	canales[i]="";			tematica[i]="";					prog[i++]="";
+fi
+
+
+############################## Canales en Pantalla.
+
+if [ $curl -eq 0  -a $KDE -eq 1 ]; then # Muestra la programación (Zenity)
+
+  j=0;
+  for (( i=0; i<$(( ${#canales[*]} )); i++ ))
+  do
+   listado[j]="${canales[$i]}";
+   listado[j+1]="${tematica[$i]}";
+   listado[j+2]="${prog[$i]}";
+   j=$j+3;
+  done
+
+	CANAL=`zenity --window-icon="/usr/share/icons/hicolor/48x48/devices/totem-tv.png" --list --title="TVenLinux ($V_script)" --text="Seleccione un canal" --height=450 --width=750 --column="Canales" --column="Temática" --column="Emisión $AHORA " "${listado[@]}"`
+
+elif [ $curl -eq 0  -a $KDE -eq 0 ]; then # Muestra la programación (Kde)
+
+  j=0;
+  for (( i=0; i<$(( ${#canales[*]} )); i++ ))
+  do
+    listado[j]="${canales[$i]}";
+    listado[j+1]="${canales[$i]}                ${tematica[$i]}               ${prog[$i]}";
+    j=$j+2;
+  done
+
+  CANAL=`kdialog  --title "TVenLinux ($V_script)" --geometry 650x600 --menu "Seleccione un canal  [ $AHORA ]" "${listado[@]}"`
+
+elif [ $curl -eq 1  -a $KDE -eq 1 ]; then # NO Muestra la programación, solo temática (Zenity)
+
+  j=0;
+  for (( i=0; i<$(( ${#canales[*]} )); i++ ))
+  do
+    listado[j]="${canales[$i]}";
+    listado[j+1]="${tematica[$i]}";
+    j=$j+2;
+  done
 	# Si no se pudo conectar a la programación mostramos este dialogo sin la programación.
-	CANAL=`zenity --window-icon="/usr/share/icons/hicolor/48x48/devices/totem-tv.png" --list --title="TVenLinux ($V_script)" --text="Seleccione un canal" --height=450 --width=370 --column="Canales" --column="Temática" "rtve1" "$rtve1_tm" "rtve2" "$rtve2_tm" "rtve24" "$rtve24_tm" "Antena_3" "$Antena_3_tm" "Cuatro" "$Cuatro_tm" "Tele5" "$Tele5_tm" "La_Sexta" "$La_Sexta_tm" "Xplora" "$Xplora_tm" "Discovery_Channel" "$Discovery_Channel_tm" "Energy" "$Energy_tm" "Nitro" "$Nitro_tm" "Neox" "$Neox_tm" "Divinity" "$Divinity_tm" "SyFy" "$SyFy_tm" "Xtrm" "$Xtrm_tm" "TNT" "$TNT_tm" "FDF" "$FDF_tm" "Cosmo" "$Cosmo_tm" "13TV" "$trecetv_tm" "Intereconomia" "$Intereconomia_tm" "BusinessTV" "$BusinessTV_tm" "La_Sexta_3" "$La_Sexta_3_tm" "Paramount" "$Paramount_tm" "VaughanTV" "$VaughanTV_tm" "Kanal_D" "$Kanal_D_tm" "Sat7_Kids" "$Sat7_Kids_tm" "SmileofaChildTV" "$SmileofaChildTV_tm" "Barbaraki_TV" "$Barbaraki_TV_tm" "Minika_GO" "$Minika_GO_tm" "Minika_Cocuk" "$Minika_Cocuk_tm" "Yumurcak" "$Yumurcak_tm" "Gang_Cartoon_Channel" "$Gang_Cartoon_Channel_tm" "Aljazeera_Eng" "$Aljazeera_Eng_tm" "EuroNews_ES" "$EuroNews_ES_tm" "France24" "$France24_tm" "PressTV" "$PressTV_tm" "Russian_Today" "$Russian_Today_tm" "NASA" "$NASA_tm" "Cetelmon_TV" "$Cetelmon_TV_tm" "Ondamex" "$Ondamex_tm" "KissTV" "$KissTV_tm" "DeluxeMusic" "$DeluxeMusic_tm" "Eska" "$Eska_tm" "GoticaTV" "$GoticaTV_tm" "Humorbox" "$Humorbox_tm" "Funtv" "$Funtv_tm" "RblTV" "$RblTV_tm" "LobasTV" "$LobasTV_tm" "MusicBox" "$MusicBox_tm" "PartyTV" "$PartyTV_tm" "RMC_TV" "$RMC_TV_tm" "ShansonTV" "$ShansonTV_tm" "TV105" "$TV105_tm" "Unlove" "$Unlove_tm" "StreetclipTV" "$StreetclipTV_tm" "SoleilTV" "$SoleilTV_tm" "LaBelleTV" "$LaBelleTV_tm" "Esport3" "$Esport3_tm" "Al_Iraqiya_Sports" "$Al_Iraqiya_Sports_tm" "SkyPoker" "$SkyPoker_tm" "SportItalia" "$SportItalia_tm" "tdp" "$tdp_tm" "TileSport" "$TileSport_tm" "RedBull" "$RedBull_tm" "Abteve" "$Abteve_tm" "Andalucia" "$Andalucia_tm" "Aragon_TV" "$Aragon_TV_tm" "BarcelonaTV" "$BarcelonaTV_tm" "Canal_33" "$Canal_33_tm" "Canal_8" "$Canal_8_tm" "Canal_Extremadura" "$Canal_Extremadura_tm" "Canal9_24" "$Canal9_24_tm" "Canarias" "$Canarias_tm" "Canarias_NET" "$Canarias_NET_tm" "Lancelot" "$Lancelot_tm" "CostadelSol_TV" "$CostadelSol_TV_tm" "Cyl7" "$Cyl7_tm" "Eldia_TV" "$Eldia_TV_tm" "Etb_SAT" "$Etb_SAT_tm" "Canal_Vasco" "$Canal_Vasco_tm" "Galicia_TV_AM" "$Galicia_TV_AM_tm" "Galicia_TV_EU" "$Galicia_TV_EU_tm" "Teleminho" "$Teleminho_tm" "Hispan_TV" "$Hispan_TV_tm" "Huelva_CNH" "$Huelva_CNH_tm" "Huelva_TV" "$Huelva_TV_tm" "Huesca_TV" "$Huesca_TV_tm" "IB3" "$IB3_tm" "ImasTV" "$ImasTV_tm" "InformacionTV" "$InformacionTV_tm" "LevanteTV" "$LevanteTV_tm" "LUX_Mallorca" "$LUX_Mallorca_tm" "M95TV" "$M95TV_tm" "Onda_Azul" "$Onda_Azul_tm" "PTV_Malaga" "$PTV_Malaga_tm" "Ribera_TV" "$Ribera_TV_tm" "RtvCE" "$RtvCE_tm" "Super3" "$Super3_tm" "StvRioja" "$StvRioja_tm" "TeleB" "$TeleB_tm" "Telebahia" "$Telebahia_tm" "TeleBilbao" "$TeleBilbao_tm" "Telemadrid_SAT" "$Telemadrid_SAT_tm" "Telemadrid_Otra" "$Telemadrid_Otra_tm" "TeleToledo" "$TeleToledo_tm" "TPA_a7" "$TPA_a7_tm" "TV_Girona" "$TV_Girona_tm" "TV3" "$TV3_tm" "TV3CAT" "$TV3CAT_tm" "TV3_24" "$TV3_24_tm" "TVCS" "$TVCS_tm" "TVMelilla" "$TVMelilla_tm" "TVRioja" "$TVRioja_tm" "UnaCadiz" "$UnaCadiz_tm" "UnaCordoba" "$UnaCordoba_tm" "VoTV" "$VoTV_tm" "ZaragozaTV" "$ZaragozaTV_tm" "Esne_TV" "$Esne_TV_tm" "Astrocanalshop" "$Astrocanalshop_tm" "SolidariaTV" "$SolidariaTV_tm" "" "" "Global_TV" "$Global_TV_tm" "ATV_Sur" "$ATV_Sur_tm" "Panamericana" "$Panamericana_tm" "" "" "CubaVision" "$CubaVision_tm" "" "" "AricaTV" "$AricaTV_tm" "Canal2" "$Canal2_tm" "Canal9" "$Canal9_tm" "Digital_Channel" "$Digital_Channel_tm" "Enlace" "$Enlace_tm" "Canal33" "$Canal33_tm" "TVinet" "$TVinet_tm" "Itv" "$Itv_tm" "RedTV" "$RedTV_tm" "MegaTV" "$MegaTV_tm" "MetroTV" "$MetroTV_tm" "TVnuevotiempo" "$TVnuevotiempo_tm" "RTC" "$RTC_tm" "TVu" "$TVu_tm" "TVlota" "$TVlota_tm" "SenadoTV" "$SenadoTV_tm" "UNIACCTV" "$UNIACCTV_tm" "UATV" "$UATV_tm" "UMAGTV" "$UMAGTV_tm" "Horas24" "$Horas24_tm" "" "" "TeleSur" "$TeleSur_tm" "AtelTV" "$AtelTV_tm" "DatTV" "$DatTV_tm" "VTV" "$VTV_tm" "IslaTV" "$IslaTV_tm" "PromarTV" "$PromarTV_tm" "TamTV" "$TamTV_tm" "TVes" "$TVes_tm" "TicTV" "$TicTV_tm" "TrpTV" "$TrpTV_tm" "TVO" "$TVO_tm" "" "" "Canal10" "$Canal10_tm" "CBA24" "$CBA24_tm" "ArgentinisimaTV" "$ArgentinisimaTV_tm" "Canal3" "$Canal3_tm" "Canal7" "$Canal7_tm" "Canal_9" "$Canal_9_tm" "Canal_Provincial" "$Canal_Provincial_tm" "Zona31" "$Zona31_tm" "El_trece" "$El_trece_tm" "Canal21" "$Canal21_tm" "Construir_TV" "$Construir_TV_tm" "El_Rural" "$El_Rural_tm" "PakaPaka" "$PakaPaka_tm" "QMusica" "$QMusica_tm" "Canal5" "$Canal5_tm" "Canal26" "$Canal26_tm" "TN" "$TN_tm" "TN_HD" "$TN_HD_tm" "N9" "$N9_tm" "Canal13" "$Canal13_tm" "Canal10_Tucuman" "$Canal10_Tucuman_tm" "LapachoTV" "$LapachoTV_tm" "" "" "FacetasDeportivas" "$FacetasDeportivas_tm" "" "" "Cable_Noticias" "$Cable_Noticias_tm" "Canal_Tiempo" "$Canal_Tiempo_tm" "Tu_Kanal" "$Tu_Kanal_tm" "PyC" "$PyC_tm" "Canal_Capital" "$Canal_Capital_tm" "CMB" "$CMB_tm" "CristoVision" "$CristoVision_tm" "TeleVida" "$TeleVida_tm" "RTVC" "$RTVC_tm" "RTVC2" "$RTVC2_tm" "TeleCaribe" "$TeleCaribe_tm" "TelePacifico" "$TelePacifico_tm" "" "" "RPC" "$RPC_tm" "Paravision" "$Paravision_tm" "TeleFuturo" "$TeleFuturo_tm" "" "" "TelevisaHD" "$TelevisaHD_tm" "Milenio" "$Milenio_tm" "OnceTV" "$OnceTV_tm" "Canal66" "$Canal66_tm" "Canal44" "$Canal44_tm" "Congreso" "$Congreso_tm" "Canal_Justicia" "$Canal_Justicia_tm" "Cortes_Diputados" "$Cortes_Diputados_tm" "" "" "RTS" "$RTS_tm" "Canal1" "$Canal1_tm" "Ecuadortv" "$Ecuadortv_tm" "Oromar" "$Oromar_tm"`
+	CANAL=`zenity --window-icon="/usr/share/icons/hicolor/48x48/devices/totem-tv.png" --list --title="TVenLinux ($V_script)" --text="Seleccione un canal" --height=450 --width=370 --column="Canales" --column="Temática" "${listado[@]}"`
 
 
-elif [ $curl -eq 1  -a $KDE -eq 0 ]; then
-	
-	CANAL=`kdialog  --title "TVenLinux ($V_script)" --geometry 100x600 --menu "Seleccione un Canal" "rtve1" "rtve1" "rtve2" "rtve2" "rtve24" "rtve24" "Antena_3" "Antena_3" "Cuatro" "Cuatro" "Tele5" "Tele5" "La_Sexta" "La_Sexta" "Xplora" "Xplora" "Discovery_Channel" "Discovery_Channel" "Energy" "Energy" "Nitro" "Nitro" "Neox" "Neox" "Divinity" "Divinity" "SyFy" "SyFy" "Xtrm" "Xtrm" "TNT" "TNT" "FDF" "FDF" "Cosmo" "Cosmo" "13TV" "13TV" "Intereconomia" "Intereconomia" "BusinessTV" "BusinessTV" "La_Sexta_3" "La_Sexta_3" "Paramount" "Paramount" "VaughanTV" "VaughanTV" "Kanal_D" "Kanal_D" "Sat7_Kids" "Sat7_Kids" "SmileofaChildTV" "SmileofaChildTV" "Barbaraki_TV" "Barbaraki_TV" "Minika_GO" "Minika_GO" "Minika_Cocuk" "Minika_Cocuk" "Yumurcak" "Yumurcak" "Gang_Cartoon_Channel" "Gang_Cartoon_Channel" "Aljazeera_Eng" "Aljazeera_Eng" "EuroNews_ES" "EuroNews_ES" "France24" "France24" "PressTV" "PressTV" "Russian_Today" "Russian_Today" "NASA" "NASA" "Cetelmon_TV" "Cetelmon_TV" "Ondamex" "Ondamex" "KissTV" "KissTV" "DeluxeMusic" "DeluxeMusic" "Eska" "Eska" "GoticaTV" "GoticaTV" "Humorbox" "Humorbox" "Funtv" "Funtv" "RblTV" "RblTV" "LobasTV" "LobasTV" "MusicBox" "MusicBox" "PartyTV" "PartyTV" "RMC_TV" "RMC_TV" "ShansonTV" "ShansonTV" "TV105" "TV105" "Unlove" "Unlove" "StreetclipTV" "StreetclipTV" "SoleilTV" "SoleilTV" "LaBelleTV" "LaBelleTV" "Esport3" "Esport3" "Al_Iraqiya_Sports" "Al_Iraqiya_Sports" "SkyPoker" "SkyPoker" "SportItalia" "SportItalia" "tdp" "tdp" "TileSport" "TileSport" "RedBull" "RedBull" "Abteve" "Abteve" "Andalucia" "Andalucia" "Aragon_TV" "Aragon_TV" "BarcelonaTV" "BarcelonaTV" "Canal_33" "Canal_33" "Canal_8" "Canal_8" "Canal_Extremadura" "Canal_Extremadura" "Canal9_24" "Canal9_24" "Canarias" "Canarias" "Canarias_NET" "Canarias_NET" "Lancelot" "Lancelot" "CostadelSol_TV" "CostadelSol_TV" "Cyl7" "Cyl7" "Eldia_TV" "Eldia_TV" "Etb_SAT" "Etb_SAT" "Canal_Vasco" "Canal_Vasco" "Galicia_TV_AM" "Galicia_TV_AM" "Galicia_TV_EU" "Galicia_TV_EU" "Teleminho" "Teleminho" "Hispan_TV" "Hispan_TV" "Huelva_CNH" "Huelva_CNH" "Huelva_TV" "Huelva_TV" "Huesca_TV" "Huesca_TV" "IB3" "IB3" "ImasTV" "ImasTV" "InformacionTV" "InformacionTV" "LevanteTV" "LevanteTV" "LUX_Mallorca" "LUX_Mallorca" "M95TV" "M95TV" "Onda_Azul" "Onda_Azul" "PTV_Malaga" "PTV_Malaga" "Ribera_TV" "Ribera_TV" "RtvCE" "RtvCE" "Super3" "Super3" "StvRioja" "StvRioja" "TeleB" "TeleB" "Telebahia" "Telebahia" "TeleBilbao" "TeleBilbao" "Telemadrid_SAT" "Telemadrid_SAT" "Telemadrid_Otra" "Telemadrid_Otra" "TeleToledo" "TeleToledo" "TPA_a7" "TPA_a7" "TV_Girona" "TV_Girona" "TV3" "TV3" "TV3CAT" "TV3CAT" "TV3_24" "TV3_24" "TVCS" "TVCS" "TVMelilla" "TVMelilla" "TVRioja" "TVRioja" "UnaCadiz" "UnaCadiz" "UnaCordoba" "UnaCordoba" "VoTV" "VoTV" "ZaragozaTV" "ZaragozaTV" "Esne_TV" "Esne_TV" "Astrocanalshop" "Astrocanalshop" "SolidariaTV" "SolidariaTV" "" "" "Global_TV" "Global_TV" "ATV_Sur" "ATV_Sur" "Panamericana" "Panamericana" "" "" "CubaVision" "CubaVision"  "" "" "AricaTV" "AricaTV" "Canal2" "Canal2" "Canal9" "Canal9" "Digital_Channel" "Digital_Channel" "Enlace" "Enlace" "Canal33" "Canal33" "TVinet" "TVinet" "Itv" "Itv" "RedTV" "RedTV" "MegaTV" "MegaTV" "MetroTV" "MetroTV" "TVnuevotiempo" "TVnuevotiempo" "RTC" "RTC" "TVu" "TVu" "TVlota" "TVlota" "SenadoTV" "SenadoTV" "UNIACCTV" "UNIACCTV" "UATV" "UATV" "UMAGTV" "UMAGTV" "Horas24" "Horas24" "" "" "TeleSur" "TeleSur" "AtelTV" "AtelTV" "DatTV" "DatTV" "VTV" "VTV" "IslaTV" "IslaTV" "PromarTV" "PromarTV" "TamTV" "TamTV" "TVes" "TVes" "TicTV" "TicTV" "TrpTV" "TrpTV" "TVO" "TVO" "" "" "Canal10" "Canal10" "CBA24" "CBA24" "ArgentinisimaTV" "ArgentinisimaTV" "Canal3" "Canal3" "Canal7" "Canal7" "Canal_9" "Canal_9" "Canal_Provincial" "Canal_Provincial" "Zona31" "Zona31" "El_trece" "El_trece" "Canal21" "Canal21" "Construir_TV" "Construir_TV" "El_Rural" "El_Rural" "PakaPaka" "PakaPaka" "QMusica" "QMusica" "Canal5" "Canal5" "Canal26" "Canal26" "TN" "TN" "TN_HD" "TN_HD" "N9" "N9" "Canal13" "Canal13" "Canal10_Tucuman" "Canal10_Tucuman" "LapachoTV" "LapachoTV" "" "" "FacetasDeportivas" "FacetasDeportivas" "" "" "Cable_Noticias" "Cable_Noticias" "Canal_Tiempo" "Canal_Tiempo" "Tu_Kanal" "Tu_Kanal" "PyC" "PyC" "Canal_Capital" "Canal_Capital" "CMB" "CMB" "CristoVision" "CristoVision" "TeleVida" "TeleVida" "RTVC" "RTVC" "RTVC2" "RTVC2" "TeleCaribe" "TeleCaribe" "TelePacifico" "TelePacifico" "" "" "RPC" "RPC" "Paravision" "Paravision" "TeleFuturo" "TeleFuturo" "" "" "TelevisaHD" "TelevisaHD" "Milenio" "Milenio" "OnceTV" "OnceTV" "Canal66" "Canal66" "Canal44" "Canal44" "Congreso" "Congreso" "Canal_Justicia" "Canal_Justicia" "Cortes_Diputados" "Cortes_Diputados" "" "" "RTS" "RTS" "Canal1" "Canal1" "Ecuadortv" "Ecuadortv" "Oromar" "Oromar"`
+elif [ $curl -eq 1  -a $KDE -eq 0 ]; then # NO Muestra la programación, solo temática (Kde)
+
+  j=0;
+  for (( i=0; i<$(( ${#canales[*]} )); i++ ))
+  do
+    listado[j]="${canales[$i]}";
+    listado[j+1]="${canales[$i]}		${tematica[$i]}";
+    j=$j+2;
+  done
+	CANAL=`kdialog  --title "TVenLinux ($V_script)" --geometry 440x600 --menu "Seleccione un Canal" "${listado[@]}"`
 
 
 fi
 
-if [ $fifo -eq 0 -o $fifo -eq 2 ]; then # Se crea la fifo y forzamos usar mplayer sin opciones con la pila
+############################## Opción FIFO
+
+if [ $fifo -eq 0 -o $fifo -eq 2 ]; then # Se crea la fifo y forzamos usar mplayer sin parámetros con la pila.
 	mkfifo /tmp/$CANAL."$ID"
 	SAVE=0
 	
@@ -712,6 +630,8 @@ if [ $fifo -eq 0 -o $fifo -eq 2 ]; then # Se crea la fifo y forzamos usar mplaye
 		REPRODUCTOR="mplayer_fifo"
 	fi
 fi
+
+############################## Descarga el streaming del canal seleccionado.
 
 case $CANAL in
 
@@ -733,7 +653,7 @@ case $CANAL in
 
 	Xplora) rtmpdump -m 200 -r "rtmp://antena3fms35geobloqueolivefs.fplive.net:1935/antena3fms35geobloqueolive-live/stream-xplora" -W "http://www.antena3.com/static/swf/A3Player.swf" -p "http://www.lasexta.com/xplora/directo" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	Nitro) rtmpdump -m 200 -a "live" -r "rtmp://173.193.205.81/live" -y "nitrolacajatv?id=126587" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/embedplayer/nitrolacajatv/1/670/400"  -q -v > /tmp/$CANAL."$ID" & ;;
+	Nitro) rtmpdump -m 200 -a "live" -r "rtmp://173.193.223.184/live" -y "nitrolacajatv?id=126587" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/"  -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Neox) rtmpdump -m 200 -r "rtmp://live.zcast.us:1935/liveorigin/_definst_" -y "neoxlacaja-lI7mjw6RDa" -W "http://player.zcast.us/player58.swf" -p "http://zcast.us/gen.php?ch=neoxlacaja-lI7mjw6RDa&width=670&height=400" -q -v > /tmp/$CANAL."$ID" & ;;
 
@@ -748,9 +668,13 @@ case $CANAL in
 
 	Energy) rtmpdump -m 200 -r "rtmp://50.7.28.130/live" -y "lacajatvenergy" -W "http://www.udemy.com/static/flash/player5.9.swf" -p "http://www.castamp.com/embed.php?c=lacajatvenergy&vwidth=670&vheight=400" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	FDF) rtmpdump -m 200 -a "live" -r "rtmp://46.23.67.114/live" -y "fffdf?id=29750" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/fffdf/1/650/400"  -q -v > /tmp/$CANAL."$ID" & ;;
+	FDF) rtmpdump -m 200 -a "liveedge" -r "rtmp://bahrain.zcast.us/liveedge" -y "fdflacaja-65889" -W "http://player.zcast.us/player58.swf" -p "http://zcast.us"  -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Aragon_TV) rtmpdump -m 200 -r "rtmp://aragontvlivefs.fplive.net/aragontvlive-live" -y "stream_normal_abt" -W "http://alacarta.aragontelevision.es/streaming/flowplayer.commercial-3.2.7.swf" -p "http://alacarta.aragontelevision.es/streaming/streaming.html" -q -v > /tmp/$CANAL."$ID" & ;;
+
+	# IberoamericaTV) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/iberoamericatvlive/Continuidad-500"  > /dev/null 2>&1 & mplayer_conf_change ;; 
+
+	IberoamericaTV) cvlc -q "rtsp://cdns724ste1010.multistream.net:80/iberoamericatvlive/Continuidad-500" --sout=file/ts:/tmp/$CANAL."$ID" > /dev/null 2>&1 & mplayer_conf_change ;;
 
 	Huesca_TV) rtmpdump -m 200 -r "rtmp://streaming2.radiohuesca.com/live/" -W "http://player.longtailvideo.com/player5.3.swf" -y "huescatv" -p "http://www.intertelevision.com/spain/localiatv.php" -v > /tmp/$CANAL."$ID" & ;;
 
@@ -828,7 +752,7 @@ case $CANAL in
 
 	Discovery_Channel) rtmpdump -m 200 -r "rtmp://184.173.181.44/live" -y "discoverylacajatv?id=14680" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/discoverylacajatv/1/650/400" -q > /tmp/$CANAL."$ID" & ;;
 
-	TNT) rtmpdump -m 200 -a "live" -r "rtmp://198.105.209.116/live" -y "tnf5768?id=148001" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/embedplayer/tnf5768/1/650/400" -q -v > /tmp/$CANAL."$ID" & ;;
+	TNT) rtmpdump -m 200 -a "live" -r "rtmp://184.173.181.3/live" -y "tn769r?id=150642" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/embedplayer/tnf5768/1/650/400" -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Xtrm) rtmpdump -m 200 -r "rtmp://93.174.93.58/freelivestreamHD" -y "xtrmlacajatv" -W "http://freelivestream.tv/swfs/player.swf" -p "http://freelivestream.tv/embedPlayer.php?file=xtrmlacajatv&width=670&height=400&ckattempt=1" -q -v > /tmp/$CANAL."$ID" & ;;
 
@@ -1070,13 +994,18 @@ case $CANAL in
 
 	TeleVida) rtmpdump -m 200 -a "live" -r "rtmp://streaming3.vcb.com.co/live" -y "myStream" -W "http://eventos.vcb.com.co/mobile/player.swf" -p "http://eventos.vcb.com.co"  -q -v > /tmp/$CANAL."$ID" & ;;
 
-	RTVC) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/rtvclive/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
-	
-	RTVC2) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/rtvc2live/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+	#RTVC) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/rtvclive/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+	RTVC) cvlc -q "rtsp://cdns724ste1010.multistream.net:80/rtvclive/live-200" --sout=file/ts:/tmp/$CANAL."$ID" > /dev/null 2>&1 & mplayer_conf_change ;;
 
-	TeleCaribe) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/telecaribelive/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+	#RTVC2) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/rtvc2live/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+	RTVC2)  cvlc -q "rtsp://cdns724ste1010.multistream.net:80/rtvc2live/live-200" --sout=file/ts:/tmp/$CANAL."$ID" > /dev/null 2>&1 & mplayer_conf_change ;;
 
-	TelePacifico) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/telepacificolive/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+	#TeleCaribe) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/telecaribelive/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+	TeleCaribe) cvlc -q "rtsp://cdns724ste1010.multistream.net:80/telecaribelive/live-200" --sout=file/ts:/tmp/$CANAL."$ID" > /dev/null 2>&1 & mplayer_conf_change ;;
+
+	#TelePacifico) mplayer -really-quiet -dumpstream -dumpfile /tmp/$CANAL."$ID" "rtsp://cdns724ste1010.multistream.net:80/telepacificolive/live-200" > /dev/null 2>&1 & mplayer_conf_change ;;
+
+	TelePacifico)  cvlc -q  "rtsp://cdns724ste1010.multistream.net:80/telepacificolive/live-200"  --sout=file/ts:/tmp/$CANAL."$ID" > /dev/null 2>&1 & mplayer_conf_change ;;
 
 	######
 
@@ -1129,8 +1058,13 @@ case $CANAL in
 
 	Oromar) rtmpdump -m 200 -a "ustreamVideo/10684956" -r "rtmp://flash82.ustream.tv:1935/ustreamVideo/10684956" -y "streams/live_1" -W "http://static-cdn1.ustream.tv/swf/live/viewer.rsl:360.swf" -p "http://www.ustream.tv/embed/10684956"  -q -v > /tmp/$CANAL."$ID" & ;;
 
-	*) echo -e "\n \e[00;36mBorrando ficheros temporales y saliendo,... \e[00m\n" && rm /tmp/versiontv /tmp/tvhelp > /dev/null 2>&1 ; exit ;;
+	Plus_Liga) rtmpdump -m 200 -a "live" -r "rtmp://173.192.223.68/live" -y "5383845828?id=32745" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/5383845828/1/650/400"  -q -v > /tmp/$CANAL."$ID" & ;;
 
+	Plus_campeones)  rtmpdump -m 200 -a "live" -r "rtmp://67.228.235.73/live" -y "show2222?id=150957" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/embedplayer/show2222/1/650/440"  -q -v > /tmp/$CANAL."$ID" & ;; 
+
+	Plus_Futbol)  rtmpdump -m 200 -a "live" -r "rtmp://184.173.146.13/live" -y "plusligaonlinefut?id=33679" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/plusligaonlinefut/1/650/400"  -q -v > /tmp/$CANAL."$ID" & ;;
+
+	*) echo -e "\n \e[00;36mBorrando ficheros temporales y saliendo,... \e[00m\n" && rm /tmp/versiontv /tmp/tvhelp > /dev/null 2>&1 ; exit ;;
 esac
 
 
