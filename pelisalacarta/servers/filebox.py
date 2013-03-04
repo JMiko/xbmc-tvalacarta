@@ -48,21 +48,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     data = scrapertools.cache_page( page_url , post=post, headers=[['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'],['Referer',page_url]] )
     logger.info("data="+data)
-    # Busca el video online o archivo de descarga 
-    patron = 'href="([^"]+)">>>> Download File <<<<'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    #scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        logger.info("[filebox.py] encuentra archivo de descarga="+matches[0])
-    else:
-        logger.info("[filebox.py] buscando video para ver online")
-        patron = "this\.play\('([^']+)'"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        
-
-    if len(matches)>0:
-        video_urls.append( ["."+matches[0].rsplit('.',1)[1]+" [filebox]",matches[0]])
+    media_url = scrapertools.get_match(data,"this.play\('([^']+)'")
+    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [filebox]",media_url])
 
     for video_url in video_urls:
         logger.info("[filebox.py] %s - %s" % (video_url[0],video_url[1]))
@@ -105,3 +92,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.filebox.com/sstr2hlxt398")
+
+    return len(video_urls)>0

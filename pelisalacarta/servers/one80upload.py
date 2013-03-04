@@ -13,6 +13,12 @@ from core import logger
 from core import config
 
 def test_video_exists( page_url ):
+    
+    data = scrapertools.cache_page(page_url)
+    
+    if "<b>File Not Found" in data:
+        return False,"El fichero ha sido borrado"
+    
     return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
@@ -91,6 +97,6 @@ def find_videos(data):
     return devuelve
 
 def test():
-    video_urls = get_video_url("http://180upload.com/6z7cwbswemsv")
+    video_urls = get_video_url("http://180upload.com/ec7y3nmvkh1y")
 
     return len(video_urls)>0

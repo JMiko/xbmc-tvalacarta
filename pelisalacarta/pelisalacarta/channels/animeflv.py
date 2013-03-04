@@ -30,15 +30,15 @@ def mainlist(item):
     logger.info("[animeflv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="novedades" , title="Novedades"                         , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="Lista2"    , title="Ultimas series agregadas o subidas", url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="airlist"   , title="Animes en emision"                 , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="letras"    , title="Listado Alfabetico"                , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="genero"  , title="Listado por Genero"                , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="completo", title="Listado Completo de Animes"        , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="completo", title="Listado Completo de Ovas"          , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="completo", title="Listado Completo de Peliculas"     , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="search"  , title="Buscar"                            , url="http://animeflv.net/buscar/" ))
+    itemlist.append( Item(channel=__channel__, action="novedades" , title="Últimos episodios"            , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="series"    , title="Ultimas series"               , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="airlist"   , title="Series en emision"            , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="letras"    , title="Listado Alfabetico"           , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="genero"    , title="Listado por Genero"           , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="completo"  , title="Listado Completo de Animes"   , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="completo"  , title="Listado Completo de Ovas"     , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="completo"  , title="Listado Completo de Peliculas", url="http://animeflv.net/" ))
+    #itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar"                       , url="http://animeflv.net/buscar/" ))
   
     return itemlist
 
@@ -49,7 +49,7 @@ def search(item,texto):
     texto = texto.replace(" ","+")
     item.url = item.url+texto
     try:
-        return Lista2(item)
+        return series(item)
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys
@@ -61,34 +61,20 @@ def genero(item):
     logger.info("[animeflv.py] genero")
 
     itemlist = []
-    
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Accion", url="http://animeflv.net/genero/accion.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Aventura", url="http://animeflv.net/genero/aventura.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Carreras", url="http://animeflv.net/genero/carreras.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Comedia", url="http://animeflv.net/genero/comedia.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Cyberpunk", url="http://animeflv.net/genero/cyberpunk.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Deportes", url="http://animeflv.net/genero/deportes.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Drama", url="http://animeflv.net/genero/drama.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Ecchi", url="http://animeflv.net/genero/ecchi.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Escolares", url="http://animeflv.net/genero/escolares.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Fantasia", url="http://animeflv.net/genero/fantasia.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Ficcion", url="http://animeflv.net/genero/ficcion.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Harem", url="http://animeflv.net/genero/harem.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Horror", url="http://animeflv.net/genero/horror.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Josei", url="http://animeflv.net/genero/josei.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Magia", url="http://animeflv.net/genero/magia.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Mecha", url="http://animeflv.net/genero/mecha.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Militar", url="http://animeflv.net/genero/militar.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Musica", url="http://animeflv.net/genero/musica.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Parodias", url="http://animeflv.net/genero/parodias.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Psicologico", url="http://animeflv.net/genero/psicologico.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="R. de la vida", url="http://animeflv.net/genero/recuentos-de-la-vida.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Romance", url="http://animeflv.net/genero/romance.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Seinen", url="http://animeflv.net/genero/seinen.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Shojo", url="http://animeflv.net/genero/shojo.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Shonen", url="http://animeflv.net/genero/shonen.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Yaoi", url="http://animeflv.net/genero/yaoi.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2", title="Yuri", url="http://animeflv.net/genero/yuri.html"))
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,'<div class="caja_b3"><div id="genuno">(.*?)</div></div>')
+
+    patron = '<li><a href="([^"]+)"[^>]*>([^"]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)    
+
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapertools.entityunescape(scrapedtitle)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="series" , title=title , url=url, thumbnail=thumbnail, plot=plot))
     return itemlist
 
 def completo(item):
@@ -113,51 +99,52 @@ def completo(item):
 
     for match in matches:
         scrapedtitle = match[1]
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         fulltitle = scrapedtitle
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))        
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))        
     return itemlist
 
 def letras(item):
     logger.info("[animeflv.py] letras")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="0-9", url="http://animeflv.net/letra/0-9.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="A"  , url="http://animeflv.net/letra/a.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="B"  , url="http://animeflv.net/letra/b.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="C"  , url="http://animeflv.net/letra/c.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="D"  , url="http://animeflv.net/letra/d.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="E"  , url="http://animeflv.net/letra/e.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="F"  , url="http://animeflv.net/letra/f.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="G"  , url="http://animeflv.net/letra/g.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="H"  , url="http://animeflv.net/letra/h.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="I"  , url="http://animeflv.net/letra/i.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="J"  , url="http://animeflv.net/letra/j.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="K"  , url="http://animeflv.net/letra/k.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="L"  , url="http://animeflv.net/letra/l.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="M"  , url="http://animeflv.net/letra/m.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="N"  , url="http://animeflv.net/letra/n.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="O"  , url="http://animeflv.net/letra/o.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="P"  , url="http://animeflv.net/letra/p.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="Q"  , url="http://animeflv.net/letra/q.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="R"  , url="http://animeflv.net/letra/r.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="S"  , url="http://animeflv.net/letra/s.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="T"  , url="http://animeflv.net/letra/t.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="U"  , url="http://animeflv.net/letra/u.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="V"  , url="http://animeflv.net/letra/v.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="W"  , url="http://animeflv.net/letra/w.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="X"  , url="http://animeflv.net/letra/x.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="Y"  , url="http://animeflv.net/letra/y.html"))
-    itemlist.append( Item(channel=__channel__, action="Lista2" , title="Z"  , url="http://animeflv.net/letra/z.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="0-9", url="http://animeflv.net/letra/0-9.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="A"  , url="http://animeflv.net/letra/a.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="B"  , url="http://animeflv.net/letra/b.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="C"  , url="http://animeflv.net/letra/c.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="D"  , url="http://animeflv.net/letra/d.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="E"  , url="http://animeflv.net/letra/e.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="F"  , url="http://animeflv.net/letra/f.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="G"  , url="http://animeflv.net/letra/g.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="H"  , url="http://animeflv.net/letra/h.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="I"  , url="http://animeflv.net/letra/i.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="J"  , url="http://animeflv.net/letra/j.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="K"  , url="http://animeflv.net/letra/k.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="L"  , url="http://animeflv.net/letra/l.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="M"  , url="http://animeflv.net/letra/m.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="N"  , url="http://animeflv.net/letra/n.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="O"  , url="http://animeflv.net/letra/o.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="P"  , url="http://animeflv.net/letra/p.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="Q"  , url="http://animeflv.net/letra/q.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="R"  , url="http://animeflv.net/letra/r.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="S"  , url="http://animeflv.net/letra/s.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="T"  , url="http://animeflv.net/letra/t.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="U"  , url="http://animeflv.net/letra/u.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="V"  , url="http://animeflv.net/letra/v.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="W"  , url="http://animeflv.net/letra/w.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="X"  , url="http://animeflv.net/letra/x.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="Y"  , url="http://animeflv.net/letra/y.html"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="Z"  , url="http://animeflv.net/letra/z.html"))
 
     return itemlist
 
 
-def Lista2(item):
-    logger.info("[animeflv.py] Lista2")
+def series(item):
+    logger.info("[animeflv.py] series")
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
@@ -175,7 +162,7 @@ def Lista2(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle, viewmode="movie"))
 
     patron = '<a href="([^"]+)">Siguiente</a><a href="([^"]+)">Ultima</a> </span></div></center><div class="cont_anime">'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -186,7 +173,7 @@ def Lista2(item):
             scrapedthumbnail = ""
             scrapedplot = ""
 
-            itemlist.append( Item(channel=__channel__, action="Lista2", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="series", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     return itemlist
 
 def novedades(item):
@@ -213,34 +200,37 @@ def novedades(item):
 
     return itemlist
 
-def serie(item):
-    logger.info("[animeflv.py] serie")
+def episodios(item):
+    logger.info("[animeflv.py] episodios")
+    itemlist = []
     
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
     # Saca el argumento
-    patronplot  = '<div class="sinop">(.*?)</div>'
-    matches = re.compile(patronplot,re.DOTALL).findall(data)
+    try:
+        scrapedplot = scrapertools.get_match(data,'<div class="caja_cont">(.*?)</div></div>')
+        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedplot = scrapertools.htmlclean(scrapedplot)
+    except:
+        pass
     
-    if len(matches)>0:
-        scrapedplot = scrapertools.htmlclean( matches[0] )
-    
+    try:
+        scrapedthumbnail = scrapertools.get_match(data,'<div class="contenedor_principal".*?<img src="([^"]+)"')
+        scrapedthumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+    except:
+        pass
+
     # Saca enlaces a los episodios
-    patron  = 'Listado de capitulos(.*?)</ul>'
+    data = scrapertools.get_match(data,'Listado de capitulos(.*?)</ul>')
+    patron = '<li class="lcc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        data = matches[0]
-        patronvideos = '<li class="lcc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        
-    itemlist = []
-    
+
     for match in matches:
         scrapedtitle = match[1]
         scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = scrapertools.entityunescape( scrapedtitle )
-        
+
         try:
             episodio = scrapertools.get_match(scrapedtitle,"Capítulo (\d+)")
             if len(episodio)==1:
@@ -253,14 +243,14 @@ def serie(item):
         
         fulltitle = scrapedtitle
         scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = item.thumbnail
+        #scrapedthumbnail = item.thumbnail
         #scrapedplot = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show, fulltitle=fulltitle))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show, fulltitle=fulltitle, viewmode="movie_with_plot"))
     
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="serie", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
 
     return itemlist
 
@@ -288,7 +278,7 @@ def airlist(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="serie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))
 
     return itemlist
 

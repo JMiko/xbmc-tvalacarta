@@ -270,9 +270,12 @@ def play(item):
         headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:18.0) Gecko/20100101 Firefox/18.0"])
         headers.append(["Referer","http://jkanime.net/assets/images/players/jkplayer.swf"])
         location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
+        logger.info("location="+location)
         location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
         logger.info("location="+location)
+        location = location + "|" + urllib.urlencode({'Referer':'http://jkanime.net/assets/images/players/jkplayer.swf'})
         #http://jkanime.net/stream/jkget/00e47553476031a35fd158881ca9d49f/32021b728c40bb5779190e0a95b72d40/?t=6e
+        itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server=item.server, folder=False))
     else:
         itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=item.url, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server=item.server, folder=False))
     return itemlist

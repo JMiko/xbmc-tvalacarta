@@ -518,14 +518,25 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
     
         # despues
         if os.path.exists(nombrefichero):
+            #try:
+            #    import xbmcvfs
+            #    f = xbmcvfs.File(nombrefichero)
+            #    existSize = f.size(nombrefichero)
+            #except:
             f = open(nombrefichero, 'r+b')
             existSize = os.path.getsize(nombrefichero)
+            
             logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
             grabado = existSize
             f.seek(existSize)
         else:
             existSize = 0
             logger.info("[downloadtools.py] downloadfile: el fichero no existe")
+            
+            #try:
+            #    import xbmcvfs
+            #    f = xbmcvfs.File(nombrefichero,"w")
+            #except:
             f = open(nombrefichero, 'wb')
             grabado = 0
     
@@ -611,6 +622,10 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
         while len(bloqueleido)>0:
             try:
                 # Escribe el bloque leido
+                #try:
+                #    import xbmcvfs
+                #    f.write( bloqueleido )
+                #except:
                 f.write(bloqueleido)
                 grabado = grabado + len(bloqueleido)
                 percent = int(float(grabado)*100/float(totalfichero))
@@ -662,9 +677,15 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
                     return -2
     
             except:
-                logger.info("ERROR en la descarga del fichero")
-                for line in sys.exc_info():
-                    logger.error( "%s" % line )
+                import traceback,sys
+                from pprint import pprint
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+                for line in lines:
+                    line_splits = line.split("\n")
+                    for line_split in line_splits:
+                        logger.error(line_split)
+
                 f.close()
                 if not silent:
                     progreso.close()

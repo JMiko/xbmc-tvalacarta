@@ -28,12 +28,50 @@ def mainlist(item):
     logger.info("[animeid.py] mainlist")
     
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="novedades_series"    , title="Últimas series agregadas" , url="http://animeid.tv/" ))
-    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="Últimos capítulos"        , url="http://animeid.tv/" ))
-    itemlist.append( Item(channel=__channel__, action="generos"             , title="Listado por genero"       , url="http://animeid.tv/" ))
-    itemlist.append( Item(channel=__channel__, action="letras"              , title="Listado alfabetico"       , url="http://animeid.tv/" ))
+    itemlist.append( Item(channel=__channel__, action="novedades_series"    , title="Últimas series"     , url="http://animeid.tv/" ))
+    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="Últimos episodios"  , url="http://animeid.tv/" ))
+    itemlist.append( Item(channel=__channel__, action="generos"             , title="Listado por genero" , url="http://animeid.tv/" ))
+    itemlist.append( Item(channel=__channel__, action="letras"              , title="Listado alfabetico" , url="http://animeid.tv/" ))
+    itemlist.append( Item(channel=__channel__, action="search"              , title="Buscar..." ))
 
     return itemlist
+
+def search(item,texto):
+    logger.info("[anime.py] search")
+    itemlist = []
+
+    if item.url=="":
+        item.url="http://animeid.tv/ajax/search?q="
+    texto = texto.replace(" ","+")
+    item.url = item.url+texto
+    try:
+        headers = []
+        headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:19.0) Gecko/20100101 Firefox/19.0"])
+        headers.append(["Referer","http://animeid.tv/"])
+        headers.append(["X-Requested-With","XMLHttpRequest"])
+        data = scrapertools.cache_page(item.url, headers=headers)
+        data = data.replace("\\","")
+        logger.info("data="+data)
+        patron = '{"id":"([^"]+)","text":"([^"]+)","date":"[^"]*","image":"([^"]+)","link":"([^"]+)"}'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        
+        for id,scrapedtitle,scrapedthumbnail,scrapedurl in matches:
+            title = scrapedtitle
+            url = urlparse.urljoin(item.url,scrapedurl)
+            thumbnail = scrapedthumbnail
+            plot = ""
+            if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+            itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title))
+
+        return itemlist
+
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def novedades_series(item):
     logger.info("[animeid.py] novedades_series")
@@ -144,6 +182,8 @@ def series(item):
 
         itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie_with_plot"))
 
+    itemlist = sorted(itemlist, key=lambda item: item.title)
+
     try:
         page_url = scrapertools.get_match(data,'<li><a href="([^"]+)">&gt;</a></li>')
         itemlist.append( Item(channel=__channel__, action="series" , title=">> Página siguiente" , url=urlparse.urljoin(item.url,page_url), thumbnail="", plot=""))
@@ -157,6 +197,17 @@ def episodios(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
+
+    try:
+        scrapedplot = scrapertools.get_match(data,'<meta name="description" content="([^"]+)"')
+    except:
+        pass
+
+    try:
+        scrapedthumbnail = scrapertools.get_match(data,'<link rel="image_src" href="([^"]+)"')
+    except:
+        pass
+
     data = scrapertools.get_match(data,'<ul id="listado">(.*?)</ul>')
     patron  = '<li><a href="([^"]+)">(.*?)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -165,11 +216,11 @@ def episodios(item):
     for url,title in matches:
         scrapedtitle = scrapertools.htmlclean(title)
         scrapedurl = urlparse.urljoin(item.url,url)
-        scrapedthumbnail = ""
-        scrapedplot = ""
+        #scrapedthumbnail = ""
+        #scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie_with_plot"))
 
     return itemlist
 
