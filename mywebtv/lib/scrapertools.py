@@ -324,31 +324,53 @@ def printMatches(matches):
 		logger.info("[scrapertools.py] %d %s" % (i , match))
 		i = i + 1
 
+
 def entityunescape(cadena):
-	cadena = cadena.replace('&amp;','&')
-	cadena = cadena.replace('&Agrave;','À')
-	cadena = cadena.replace('&Aacute;','Á')
-	cadena = cadena.replace('&Eacute;','É')
-	cadena = cadena.replace('&Iacute;','Í')
-	cadena = cadena.replace('&Oacute;','Ó')
-	cadena = cadena.replace('&Uacute;','Ú')
-	cadena = cadena.replace('&ntilde;','ñ')
-	cadena = cadena.replace('&Ntilde;','Ñ')
-	cadena = cadena.replace('&agrave;','à')
-	cadena = cadena.replace('&aacute;','á')
-	cadena = cadena.replace('&eacute;','é')
-	cadena = cadena.replace('&iacute;','í')
-	cadena = cadena.replace('&oacute;','ó')
-	cadena = cadena.replace('&uacute;','ú')
-	cadena = cadena.replace('&iexcl;','¡')
-	cadena = cadena.replace('&iquest;','¿')
-	cadena = cadena.replace('&ordf;','ª')
-	cadena = cadena.replace('&quot;','"')
-	cadena = cadena.replace('&hellip;','...')
-	cadena = cadena.replace('&#39;','\'')
-	cadena = cadena.replace('&Ccedil;','Ç')
-	cadena = cadena.replace('&ccedil;','ç')
-	return cadena
+    return unescape(cadena)
+
+def unescape(text):
+    """Removes HTML or XML character references 
+       and entities from a text string.
+       keep &amp;, &gt;, &lt; in the source code.
+    from Fredrik Lundh
+    http://effbot.org/zone/re-sub.htm#unescape-html
+    """
+    def fixup(m):
+        text = m.group(0)
+        if text[:2] == "&#":
+            # character reference
+            try:
+                if text[:3] == "&#x":   
+                    return unichr(int(text[3:-1], 16)).encode("utf-8")
+                else:
+                    return unichr(int(text[2:-1])).encode("utf-8")
+                  
+            except ValueError:
+                logger.info("error de valor")
+                pass
+        else:
+            # named entity
+            try:
+                '''
+                if text[1:-1] == "amp":
+                    text = "&amp;amp;"
+                elif text[1:-1] == "gt":
+                    text = "&amp;gt;"
+                elif text[1:-1] == "lt":
+                    text = "&amp;lt;"
+                else:
+                    print text[1:-1]
+                    text = unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode("utf-8")
+                '''
+                import htmlentitydefs
+                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode("utf-8")
+            except KeyError:
+                logger.info("keyerror")
+                pass
+            except:
+                pass
+        return text # leave as is
+    return re.sub("&#?\w+;", fixup, text)
 
 def getRandom(str):
 	return binascii.hexlify(md5.new(str).digest())
@@ -393,35 +415,100 @@ def getLocationHeaderFromResponse(url):
 	return location
 
 def htmlclean(cadena):
-	cadena = cadena.replace("<center>","")
-	cadena = cadena.replace("</center>","")
-	cadena = cadena.replace("<em>","")
-	cadena = cadena.replace("</em>","")
-	cadena = cadena.replace("<b>","")
-	cadena = cadena.replace("</b>","")
-	cadena = cadena.replace("<p>","")
-	cadena = cadena.replace("</p>","")
-	cadena = cadena.replace("</span>","")
-	cadena = cadena.replace("</a>","")
-	cadena = cadena.replace("<strong>","")
-	cadena = cadena.replace("</strong>","")
-	cadena = cadena.replace("</ul>","")
-	cadena = cadena.replace("<li>","")
-	cadena = cadena.replace("</li>","")
-	cadena = cadena.replace("</dd>","")
-	cadena = cadena.replace("</div>","")
+    cadena = cadena.replace("<center>","")
+    cadena = cadena.replace("</center>","")
+    cadena = cadena.replace("<cite>","")
+    cadena = cadena.replace("</cite>","")
+    cadena = cadena.replace("<em>","")
+    cadena = cadena.replace("</em>","")
+    cadena = cadena.replace("<b>","")
+    cadena = cadena.replace("</b>","")
+    cadena = cadena.replace("<u>","")
+    cadena = cadena.replace("</u>","")
+    cadena = cadena.replace("<li>","")
+    cadena = cadena.replace("</li>","")
+    cadena = cadena.replace("<tbody>","")
+    cadena = cadena.replace("</tbody>","")
+    cadena = cadena.replace("<tr>","")
+    cadena = cadena.replace("</tr>","")
+    cadena = cadena.replace("<![CDATA[","")
+    cadena = cadena.replace("<Br />","")
+    cadena = cadena.replace("<BR />","")
+    cadena = cadena.replace("<Br>","")
 
-	cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<a[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<ul[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
-	cadena = cadena.replace("\t","")
-	cadena = entityunescape(cadena)
-	return cadena
+    cadena = re.compile("<option[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</option>","")
+
+    cadena = re.compile("<i[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</iframe>","")
+    cadena = cadena.replace("</i>","")
+    
+    cadena = re.compile("<table[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</table>","")
+    
+    cadena = re.compile("<td[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</td>","")
+    
+    cadena = re.compile("<div[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</div>","")
+    
+    cadena = re.compile("<dd[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</dd>","")
+
+    cadena = re.compile("<font[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</font>","")
+    
+    cadena = re.compile("<strong[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</strong>","")
+
+    cadena = re.compile("<small[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</small>","")
+
+    cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</span>","")
+
+    cadena = re.compile("<a[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</a>","")
+    
+    cadena = re.compile("<p[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</p>","")
+
+    cadena = re.compile("<ul[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</ul>","")
+    
+    cadena = re.compile("<h1[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</h1>","")
+    
+    cadena = re.compile("<h2[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</h2>","")
+
+    cadena = re.compile("<h3[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</h3>","")
+
+    cadena = re.compile("<h4[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</h4>","")
+
+    cadena = re.compile("<!--[^-]+-->",re.DOTALL).sub("",cadena)
+    
+    cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
+    
+    cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
+
+    cadena = re.compile("<object[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</object>","")
+    cadena = re.compile("<param[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</param>","")
+    cadena = re.compile("<embed[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</embed>","")
+
+    cadena = re.compile("<title[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</title>","")
+
+    cadena = re.compile("<link[^>]*>",re.DOTALL).sub("",cadena)
+
+    cadena = cadena.replace("\t","")
+    cadena = entityunescape(cadena)
+    return cadena
 
 def get_match(data,patron,index=0):
     matches = re.findall( patron , data , flags=re.DOTALL )

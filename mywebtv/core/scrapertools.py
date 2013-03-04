@@ -718,6 +718,7 @@ def get_match(data,patron,index=0):
     matches = re.findall( patron , data , flags=re.DOTALL )
     return matches[index]
 
+
 def entityunescape(cadena):
     return unescape(cadena)
 
@@ -765,7 +766,7 @@ def unescape(text):
         return text # leave as is
     return re.sub("&#?\w+;", fixup, text)
 
-    # Convierte los codigos html "&ntilde;" y lo reemplaza por "ñ" caracter unicode utf-8
+# Convierte los codigos html "&ntilde;" y lo reemplaza por "ñ" caracter unicode utf-8
 def decodeHtmlentities(string):
     string = entitiesfix(string)
     entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
@@ -804,7 +805,6 @@ def entitiesfix(string):
     string = string.replace("&#161"  ,"&#161;")
     string = string.replace(";;"     ,";")
     return string
-
 
 def htmlclean(cadena):
     cadena = cadena.replace("<center>","")
@@ -901,7 +901,6 @@ def htmlclean(cadena):
     cadena = cadena.replace("\t","")
     cadena = entityunescape(cadena)
     return cadena
-
 
 def slugify(title):
     

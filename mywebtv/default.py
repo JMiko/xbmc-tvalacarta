@@ -10,7 +10,7 @@ __plugin__  = "mywebtv"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/mywebtv/"
 __date__    = "01 Enero 2013"
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 import os
 import sys
