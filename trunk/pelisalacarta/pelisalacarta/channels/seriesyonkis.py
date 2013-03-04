@@ -251,31 +251,27 @@ def findvideos(item):
     try:
         Nro = 0
         fmt=id=""
-        
+
+        # Acota la zona de búsqueda
         data = scrapertools.cache_page(item.url)    
+        data = scrapertools.get_match(data,'<div id="section-content"(.*?)<h2 class="header-subtitle p2p')
         
-        #Solo queremos los links de ONLINE
-        #matches = re.compile('<h2 class="header-subtitle veronline">.*?<h2 class="header-subtitle descargadirecta">', re.S).findall(data)
-        #ONLINE + DESCARGA
-        matches = re.compile('<h2 class="header-subtitle veronline">.*?<section class="buy_show">', re.S).findall(data)
-        #logger.info("1")
-        if len(matches)==0:
-            logger.info("no encuentra cabecera 1")
-        else:
-            data = matches[0]
-        #logger.info("2")
-        
+        # Procesa línea por línea
         matches = re.compile('<tr>.*?</tr>', re.S).findall(data)
-        #logger.info("3")
         scrapertools.printMatches(matches)
-        #logger.info("4")
-        if len(matches)==0:
-            logger.info("no encuentra cabecera 2")
 
         for match in matches:
-            #logger.info(match)
+            logger.info(match)
             #<tr> <td class="episode-server"> <a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22"> Reproducir</a> </td> <td class="episode-server-img"><a href="/s/ngo/2/0/0/4/967" title="Reproducir No estamos solos 2x1" target="_blank"><span class="server megavideo"></span></a></td> <td class="episode-lang"><span class="flags esp" title="Español">esp</span></td> <td class="center"><span class="flags no_sub" title="Sin subtítulo o desconocido">no</span></td> <td> <span class="episode-quality-icon" title="Calidad del episodio"> <i class="sprite quality5"></i> </span> </td> <td class="episode-notes"><span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>Calidad: 6, Duración: 85.8 min, Peso: 405.79 MB, Resolución: 640x368</li> </ul> </div> </td> <td class="episode-uploader">lksomg</td> <td class="center"><a href="#" class="errorlink" data-id="2004967"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="" /></a></td> </tr>
-            patron = '<a href="(/s/ngo/[^"]+)".*?<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?class="public_sprite meter04 quality([^"]+)"'
+            #<tr> <td class="episode-server" data-value="0"> <a href="/s/ngo/5/5/9/8/737" title="Descargar Capítulo 514 1x514 de rapidgator" target="_blank"><img src="http://s.staticyonkis.com/img/descargadirecta.png" height="22" width="22" alt="descarga directa" /> Descargar</a>  <span class="public_sprite like_green vote_link_positive user_not_logged" data-id="5598737" data-type="+" title="Voto positivo">[positivo]</span> <span class="public_sprite dislike_red vote_link_negative user_not_logged" data-id="5598737" data-type="-" title="Voto negativo">[negativo]</span> </td> <td class="episode-server-img"><a href="/s/ngo/5/5/9/8/737" title="Descargar Capítulo 514 1x514" target="_blank"><span class="server rapidgator"></span></a></td> <td class="episode-lang"><span class="flags spa" title="Español">spa</span></td> <td class="episode-subtitle subtitles center"><span class="flags no_sub" title="Sin información">no_sub</span></td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>hdtv</li>  </ul> </div> </td> <td class="episode-uploader"> <span title="repomen77">repomen77</span> </td> <td class="episode-error bug center"><a href="#" class="errorlink" data-id="5598737"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="error" /></a></td> </tr>
+            #<a href="/s/ngo/5/5/9/8/737"
+            #<span class="server rapidgator"></span></a></td> <td class="episode-lang">
+            #<span class="flags spa" title="Español">spa</span></td> <td class="episode-subtitle subtitles center">
+            #<span class="flags no_sub" title="Sin información">no_sub</span></td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3>
+            #<div class="arrow-tip-right-dark sprite"></div> <ul> <li>hdtv</li>  </ul> </div> </td> <td class="episode-uploader"> <span title="repomen77">repomen77</span> </td> <td class="episode-error bug center"><a href="#" class="errorlink" data-id="5598737"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="error" /></a></td> </tr>
+            patron  = '<a href="(/s/ngo/[^"]+)".*?'
+            patron += '<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?'
+            patron += '<div class="arrow-tip-right-dark sprite"></div> <ul> <li>([^<]+)<'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para zinwa
+# Conector para zippyshare
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -16,14 +16,20 @@ def test_video_exists( page_url ):
     return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[zinwa.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[zippyshare.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
 
-    data = scrapertools.cache_page(page_url)
-    mediaurl = scrapertools.get_match(data,'file\: "([^"]+)"')
+    headers=[]
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:19.0) Gecko/20100101 Firefox/19.0"])
+
+    data = scrapertools.cache_page(page_url,headers=headers)
+
+    location = scrapertools.get_match(data,"var submitCaptcha.*?document.location \= '([^']+)'")
+    mediaurl = urlparse.urljoin(page_url,location)+"|"+urllib.urlencode({'Referer' : page_url})
+
     extension = scrapertools.get_filename_from_url(mediaurl)[-4:]
     
-    video_urls.append( [ extension + " [zinwa]",mediaurl ] )
+    video_urls.append( [ extension + " [zippyshare]",mediaurl ] )
 
     return video_urls
 
@@ -32,17 +38,17 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    #http://zinwa.com/frap5b3uhesl
-    patronvideos  = '(zinwa.com/[a-z0-9]+)'
-    logger.info("[zinwa.py] find_videos #"+patronvideos+"#")
+    #http://www5.zippyshare.com/v/11178679/file.html
+    patronvideos  = '([a-z0-9]+\.zippyshare.com/v/\d+/file.html)'
+    logger.info("[zippyshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[zinwa]"
+        titulo = "[zippyshare]"
         url = "http://"+match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'zinwa' ] )
+            devuelve.append( [ titulo , url , 'zippyshare' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -50,5 +56,5 @@ def find_videos(data):
     return devuelve
 
 def test():
-    video_urls = get_video_url("http://zinwa.com/frap5b3uhesl")
+    video_urls = get_video_url("http://www5.zippyshare.com/v/11178679/file.html")
     return len(video_urls)>0

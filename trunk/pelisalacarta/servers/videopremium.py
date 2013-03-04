@@ -14,7 +14,7 @@ from core import logger
 from core import config
 
 def test_video_exists( page_url ):
-    return True,""
+    return False,"Actualmente videopremium no está soportado<br/>en pelisalacarta"
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[videopremium.py] get_video_url(page_url='%s')" % page_url)

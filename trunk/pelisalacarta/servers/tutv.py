@@ -29,6 +29,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             id = extract_id(matches[0])
         else:
             id = ""
+    
+    if id=="":
+        id = scrapertools.get_match(page_url,"tu.tv/iframe/(\d+)")
 
     # Descarga el descriptor
     url = "http://tu.tv/visualizacionExterna2.php?web=undefined&codVideo="+id
