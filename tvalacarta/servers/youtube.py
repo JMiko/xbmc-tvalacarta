@@ -101,13 +101,12 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     return video_urls
 
-
 def extractFlashVars(data):
     flashvars = {}
     found = False
 
     for line in data.split("\n"):
-        if line.strip().startswith("var swf = \""):
+        if line.strip().startswith("yt.playerConfig = "):
             found = True
             p1 = line.find("=")
             p2 = line.rfind(";")
@@ -118,12 +117,7 @@ def extractFlashVars(data):
 
     if found:
         data = json.loads(data)
-        data = data[data.find("flashvars"):]
-        data = data[data.find("\""):]
-        data = data[:1 + data[1:].find("\"")]
-
-        for k, v in cgi.parse_qs(data).items():
-            flashvars[k] = v[0]
+        flashvars = data["args"]
     #logger.info("flashvars: " + repr(flashvars))
     return flashvars
 
@@ -249,3 +243,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://www.youtube.com/watch?v=Kk-435429-M")
+    return len(video_urls)>0

@@ -190,7 +190,7 @@ def channels_list():
     itemlist.append( Item( title="Mitele"                     , channel="mitele"               , language="ES" , category="I,N" , type="generic" ))
     itemlist.append( Item( title="MuchMusic Latinoamérica"    , channel="muchla"               , language="ES" , category="N"   , type="generic" )) # Juan Pablo 11/02/2013
     itemlist.append( Item( title="Mundo Nick"                 , channel="mundonick"            , language="ES" , category="L"   , type="generic" ))
-    itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"            , language="ES" , category="T"   , type="generic" ))
+    #itemlist.append( Item( title="Publico.tv"                 , channel="publicotv"            , language="ES" , category="T"   , type="generic" ))
     itemlist.append( Item( title="RT Español (Rusia)"         , channel="rtspan"               , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="RTVCM (Castilla La Mancha)" , channel="rtvcm"                , language="ES" , category="A" , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="RTPA (Asturias)"            , channel="rtpa"                 , language="ES" , category="A"   , type="generic" ))

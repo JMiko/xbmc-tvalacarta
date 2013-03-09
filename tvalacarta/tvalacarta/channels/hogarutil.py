@@ -39,6 +39,7 @@ def programas(item):
     itemlist = []
     for thumbnail,alt,url,title in matches:
         scrapedtitle = title.strip()
+        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = thumbnail
         scrapedplot = ""
@@ -75,6 +76,7 @@ def episodios(item):
     itemlist = []
     for thumbnail,show,fecha,url,titulo in matches:
         scrapedtitle = titulo + " " + fecha
+        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
         scrapedplot = ""
@@ -121,6 +123,7 @@ def episodios(item):
         #if DEBUG: scrapertools.printMatches(matches)
         for titulo,url,etiqueta in matches:
             scrapedtitle = titulo
+            scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
             scrapedurl = urlparse.urljoin(item.url,url)
             scrapedthumbnail = item.thumbnail
             scrapedplot = ""
@@ -138,14 +141,19 @@ def detalle(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
-    #<script type="text/javascript">GENERAL.videoKewego("#ms-player2-in-1","0b2650924acs","680","380","")</script>
-    patron  = 'GENERAL.videoKewego.".ms-player2-in-([^"]+)","([^"]+)","\d+","\d+","".'
+    #<script type="text/javascript">GENERAL.videoKewego("#ms-player2-in","e593660eb78s","680","380","",true)</script>
+    id = scrapertools.get_match(data,'GENERAL.videoKewego.".ms-player2-in","([^"]+)"')
+
+    patron  = '<li id="ms-player-thumb-videos-(\d+)"[^<]+'
+    patron += '<a href="([^"]+)" class="clearfix">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for parte,id in matches:
+    for parte,url in matches:
         scrapedtitle = "Parte "+parte
-        scrapedurl = "http://www.hogarutil.com/backend/kewego.php?accion=player&id="+id+"&ancho=100%25&alto=100%25&preview="
+        scrapedtitle = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
+        #http://www.hogarutil.com/backend/kewego.php?accion=player&id=e593660eb78s&ancho=680&alto=380&preview=&autostart=1
+        scrapedurl = "http://www.hogarutil.com/backend/kewego.php?accion=player&id="+id+"&ancho=680&alto=380&preview=&autostart=1"
         scrapedthumbnail = item.thumbnail
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -171,6 +179,7 @@ def play(item):
     <param name="wmode" value="opaque" /><video  poster="http://api.kewego.com/video/getHTML5Thumbnail/?playerKey=d09a64ff5131&amp;sig=fc0d7bbd18es" height="100%" width="100%" preload="none"  controls="controls"></video><script src="http://sa.kewego.com/embed/assets/kplayer-standalone.js"></script><script defer="defer">kitd.html5loader("flash_kplayer_fc0d7bbd18es");</script></object></div>
     '''
     data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
     player_key = scrapertools.get_match(data,'data-playerkey="([^"]+)"')
     sig = scrapertools.get_match(data,'data-sig="([^"]+)"')
     

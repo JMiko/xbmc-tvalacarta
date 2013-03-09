@@ -147,3 +147,25 @@ def youtube_videos(item):
         # Appends a new item to the xbmc item list
         itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="youtube", url=url, thumbnail=thumbnail, plot=plot , folder=False) )
     return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    items_mainlist = mainlist(Item())
+    
+    items_programas = disneyweb(items_mainlist[0])
+    if len(items_programas)==0:
+        return False
+
+    items_videos = play(items_programas[0])
+    if len(items_videos)==0:
+        return False
+
+    for youtube_item in items_mainlist[1:]:
+        items_videos = youtube_videos(youtube_item)
+        if len(items_videos)==0:
+            return False
+
+    return bien

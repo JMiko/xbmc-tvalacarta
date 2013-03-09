@@ -69,7 +69,10 @@ def episodios(item):
         logger.info("entry="+entry)
         
         title = scrapertools.get_match(entry,"<titl[^>]+>([^<]+)</title>")
-        plot = scrapertools.get_match(entry,"<media\:desc[^>]+>([^<]+)")
+        try:
+            plot = scrapertools.get_match(entry,"<media\:desc[^>]+>([^<]+)")
+        except:
+            plot = ""
         thumbnail = scrapertools.get_match(entry,"<media\:thumbnail url='([^']+)'")
         url = scrapertools.get_match(entry,"(http\://www.youtube.com/watch\?v\=[0-9A-Za-z_-]{11})")
 
@@ -77,3 +80,17 @@ def episodios(item):
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="play" , server="youtube", show = item.title , folder=False) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    items_programas = mainlist(Item())
+    if len(items_programas)==0:
+        return False
+
+    items_episodios = episodios(items_programas[0])
+    if len(items_episodios)==0:
+        return False
+
+    return bien

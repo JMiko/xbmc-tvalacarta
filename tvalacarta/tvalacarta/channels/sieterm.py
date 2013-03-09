@@ -154,3 +154,18 @@ def videolist(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = item.show , folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # El canal tiene estructura programas -> episodios -> play
+    programas = mainlist(Item())
+    if len(programas)==0:
+        return False
+
+    episodios = videolist(programas[1])
+    if len(episodios)==0:
+        return False
+
+    return bien

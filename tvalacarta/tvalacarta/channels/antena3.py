@@ -467,3 +467,23 @@ def get_rtmp_links(item,data):
         i=i+1
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    for item in items:
+        exec "itemlist="+item.action+"(item)"
+    
+        if len(itemlist)==0:
+            return False
+
+    # La sección de ultimos videos devuelve enlaces
+    episodios = ultimosvideos(items[1])
+    videos = detalle(episodios[0])
+    if len(videos)==0:
+        return False
+
+    return bien
