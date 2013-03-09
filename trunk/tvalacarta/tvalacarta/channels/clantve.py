@@ -173,3 +173,18 @@ def episodios(item):
         itemlist.append( Item(channel=item.channel, title=">> Añadir la serie completa a la lista de descarga", url=item.url, action="download_all_episodes##episodios", show=item.show) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # El canal tiene estructura programas -> episodios -> play
+    items_programas = mainlist(Item())
+    if len(items_programas)==0:
+        return False
+
+    items_episodios = episodios(items_programas[0])
+    if len(items_episodios)==0:
+        return False
+
+    return bien

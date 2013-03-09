@@ -97,3 +97,18 @@ def episodios(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=False) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    items = mainlist(Item())
+    items_programas = series(items[0])
+    if len(items_programas)==0:
+        return False
+
+    items_episodios = episodios(items_programas[0])
+    if len(items_episodios)==0:
+        return False
+
+    return bien

@@ -1,25 +1,119 @@
-﻿# -*- coding: utf-8 -*-
-#------------------------------------------------------------
-# pelisalacarta - XBMC Plugin
-# Canal para http://conectate.gov.ar
-# creado por rsantaella
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-#------------------------------------------------------------
-
-import urlparse,urllib2,urllib,reimport os, sys
-
-from core import loggerfrom core import configfrom core import scrapertoolsfrom core.item import Itemfrom servers import servertools
-__channel__ = "hispantv"
-__category__ = "F"
-__type__ = "generic"
-__title__ = "hispantv"
-__language__ = "ES"
-__creationdate__ = "20121130"
-__vfanart__ = "http://www.dw.de/cssi/dwlogo-print.gif"
-
-DEBUG = config.get_setting("debug")
-
-def isGeneric():
-    return True
-
-def mainlist(item):    logger.info("[hispantv.py] mainlist")        # Descarga la página    data = scrapertools.cachePage("http://217.218.67.151/programs.aspx")    #<a href='section.aspx?id=351010509'><img src='images/prog_logos/351010509.jpg' /><div class='title'>Al-Ándalus</div>    patron = '<a href=\'([^"]+)\'><img src=\'([^"]+)\' /><div class=\'title\'>(.*?)</div>'    matches = re.compile(patron,re.DOTALL).findall(data)    if DEBUG: scrapertools.printMatches(matches)	    itemlist = []    for match in matches:        scrapedtitle = scrapertools.htmlclean(match[2])        scrapedthumbnail = 'http://217.218.67.151/'+match[1]        scrapedurl   = 'http://217.218.67.151/'+match[0]        itemlist.append( Item(channel=__channel__, action="videos", title=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail,  folder=True))    return itemlistdef videos(item):    logger.info("[hispantv.py] episodios")    # Descarga la página    data = scrapertools.cachePage(item.url)    data = data.replace("\n", " ")    data = data.replace("\r", " ")    logger.info(data)    #<a href='/detail/2012/08/25/192620/al-ndalus-parte-34-hispantv'>Al-Ándalus - Granada, el último Reino Nazarí</a></div><img src='http://www.hispantv.ir/sp_photo/20120818/Al Andalus P33.jpg' /></a></div>    #<a href='/detail/2012/09/01/193426/al-ndalus---la-alhambra---parte-35'>Al-Ándalus - La Alhambra</a></div><div class='sectionDatetime'>01/09/2012 06:09</div>    patron = "<div class='sectionTitle'><a href='(.*?)'>(.*?)</a>"    matches = re.compile(patron,re.DOTALL).findall(data)    if DEBUG: scrapertools.printMatches(matches)	    itemlist = []    for match in matches:        scrapedurl   = 'http://217.218.67.151'+match[0]        scrapedtitle = scrapertools.htmlclean(match[1])        scrapedthumbnail = '' #match[3]        itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, folder=False) )            return itemlistdef play(item):    logger.info("[hispantv.py] play")        data = scrapertools.cachePage(item.url)	    logger.info(data)    itemlist = []        #'file', 'http://www.hispantv.ir/video/20120825/al_andalus_p34_(granada,_el_ultimo_reino_nazari).flv'    patron = "'file', '(.*?)'"    matches = re.compile(patron,re.DOTALL).findall(data)    if DEBUG: scrapertools.printMatches(matches)    for match in matches:        scrapedurl = match        itemlist.append( Item(channel=__channel__, action="play",  server="directo",  title=item.title, url=scrapedurl, folder=False))    return itemlist
+﻿# -*- coding: utf-8 -*-
+#------------------------------------------------------------
+# pelisalacarta - XBMC Plugin
+# Canal para http://conectate.gov.ar
+# creado por rsantaella
+# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+#------------------------------------------------------------
+
+import urlparse,urllib2,urllib,re
+import os, sys
+
+from core import logger
+from core import config
+from core import scrapertools
+from core.item import Item
+from servers import servertools
+
+__channel__ = "hispantv"
+__category__ = "F"
+__type__ = "generic"
+__title__ = "hispantv"
+__language__ = "ES"
+__creationdate__ = "20121130"
+__vfanart__ = "http://www.dw.de/cssi/dwlogo-print.gif"
+
+DEBUG = config.get_setting("debug")
+
+def isGeneric():
+    return True
+
+def mainlist(item):
+    logger.info("[hispantv.py] mainlist")    
+    itemlist = []
+
+    item.url="http://www.hispantv.es/programs.aspx"
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    '''
+    <div class="ProgDiv">
+    <div class="ImageDiv">
+    <img class="Image" alt="iran" src="/images/prog_logos/351010515.jpg"/>
+    </div>
+    <div class="HSpacer"></div>
+    <div class="TextDiv">
+    <div class="TextTitle"><a href="/section.aspx?id=351010515">El Color del Dinero</a></div>
+    <div class="TextBody">
+    Programa que analiza temas económicos, y en especial la crisis económica europea y sus consecuencias en la Unión Europea.
+    </div>
+    </div>
+    '''
+    patron  = '<div class="ProgDiv"[^<]+'
+    patron += '<div class="ImageDiv"[^<]+'
+    patron += '<img class="Image" alt="[^"]+" src="([^"]+)"/[^<]+'
+    patron += '</div[^<]+'
+    patron += '<div class="HSpacer"></div[^<]+'
+    patron += '<div class="TextDiv"[^<]+'
+    patron += '<div class="TextTitle"><a href="([^"]+)">([^<]+)</a></div[^<]+'
+    patron += '<div class="TextBody">([^<]+)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    
+    for scrapedthumbnail,scrapedurl,scrapedtitle,scrapedplot in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        plot = scrapedplot.strip()
+        itemlist.append( Item(channel=__channel__, action="videos", title=title, url=url, thumbnail=thumbnail,  folder=True))
+
+    return itemlist
+
+def videos(item):
+    logger.info("[hispantv.py] episodios")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = data.replace("\n", " ")
+    data = data.replace("\r", " ")
+    logger.info(data)
+    '''
+    <div style="width:100%;float:left;height:20px;"></div></div><div style="width:100%;float:left;border-bottom:solid 1px #dddddd;height:120px;"><div style="width:100%;float:left;height:20px;"></div>
+    <div style="width:100%;float:left;height:80px;"><div style="width:140px;overflow:hidden;float:left;height:80px;">
+    <img alt="CategoryDetail" src="sp_photo/20121202/mrg pregunta.jpg" style="height:80px;width:140px;"/></div><div style="width:20px;overflow:hidden;float:left;height:80px;"></div>
+    <div style="width:470px;text-align:left;overflow:hidden;float:left;height:80px;">
+    <div class="CatPageDetailTitle"><a class="CatPageDetailTitleLink" href="/detail/2012/12/02/203768/una-pregunta-sencilla-actos-patrioticos">Una pregunta sencilla - Actos patrióticos</a></div>
+    <div class="CatPageDetailDetail">Petróleo, preguntas sencillas, muchas respuestas.
+    
+    En este episodio escucharemos las respuestas de las siguientes preguntas:
+    ¿Qué provoca la drásti ...</div><div class="CatPageDetailDate">02/12/2012 05:00 GMT</div></div></div><
+    '''
+    patron  = '<img alt="CategoryDetail" src="([^"]+)".*?'
+    patron += '<a class="CatPageDetailTitleLink" href="([^"]+)">([^<]+)</a></div[^<]+'
+    patron += '<div class="CatPageDetailDetail">([^<]+)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for scrapedthumbnail,scrapedurl,scrapedtitle,scrapedplot in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail).replace(" ","%20")
+        url = urlparse.urljoin(item.url,scrapedurl)
+        plot = scrapedplot.strip()
+        itemlist.append( Item(channel=__channel__, action="play", title=title, url=url, thumbnail=thumbnail,  folder=False))
+        
+    return itemlist
+
+def play(item):
+    logger.info("[hispantv.py] play")    
+    data = scrapertools.cachePage(item.url)
+    logger.info(data)
+    itemlist = []
+    
+    #videoFile='/video/20121205/Una_pregunta_sencilla_20121205_P12.flv'
+    patron = "videoFile\='([^']+)'"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+    for match in matches:
+        scrapedurl = urlparse.urljoin(item.url,match)
+        itemlist.append( Item(channel=__channel__, action="play",  server="directo",  title=item.title, url=scrapedurl, folder=False))
+
+
+    return itemlist

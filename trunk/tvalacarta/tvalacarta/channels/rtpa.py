@@ -96,6 +96,7 @@ def episodios(item):
     logger.info("[rtpa.py] episodios")
     itemlist = []
 
+    item.url = item.url.replace(" ","%20")
     data = scrapertools.cache_page(item.url)
 
     # Episodio actual
@@ -164,9 +165,13 @@ def play(item):
         itemlist.append(item)
     else:
         data = scrapertools.cache_page(item.url.replace(" ","%20"))
-        filepart = scrapertools.get_match(data,"'file'\: '([^']+)'")
-        streamerpart =  scrapertools.get_match(data,"'streamer'\: '([^']+)'")
-        url = streamerpart+filepart
+        #'file': 'http://rtpa.ondemand.flumotion.com/rtpa/ondemand/vod/27171_1.mp4',
+        try:
+            filepart = scrapertools.get_match(data,"'file'\: '([^']+)'")
+            streamerpart =  scrapertools.get_match(data,"'streamer'\: '([^']+)'")
+            url = streamerpart+filepart
+        except:
+            url = scrapertools.get_match(data,"'file'\: '([^']+)'")
         itemlist.append( Item(channel=CHANNELNAME, title=item.title , server = "directo" , action="play" , url=url, thumbnail=item.thumbnail, folder=False) )
 
     return itemlist

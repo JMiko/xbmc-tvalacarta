@@ -109,7 +109,7 @@ def get_video_detail(item):
 def test():
     bien = True
     
-    # El canal tiene estructura programas -> episodios -> play
+    # El canal tiene estructura canal -> subcanal -> videos
     canales = mainlist(Item())
     if len(canales)==0:
         return False

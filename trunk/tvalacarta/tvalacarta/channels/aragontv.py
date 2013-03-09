@@ -20,13 +20,8 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[aragontv.py] mainlist")
-
-    itemlist = []
-
-    itemlist.append( Item(channel=CHANNELNAME, title="Programas" , action="programas" , url="http://alacarta.aragontelevision.es/programas", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="En directo" , action="play" , server="directo" , url="rtmp://aragontvlivefs.fplive.net/aragontvlive-live/stream_normal_abt", folder=False ) )
-
-    return itemlist
+    item.url="http://alacarta.aragontelevision.es/programas"
+    return programas(item)
 
 def programas(item):
     logger.info("[aragontv.py] programas [item="+item.tostring()+" show="+item.show+"]")
@@ -168,3 +163,19 @@ def subcategorias(pageurl):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # El canal tiene estructura programas -> episodios -> play
+    items = mainlist(Item())
+    items_programas = programas(items[0])
+    if len(items_programas)==0:
+        return False
+
+    items_episodios = episodios(items_programas[0])
+    if len(items_episodios)==0:
+        return False
+
+    return bien

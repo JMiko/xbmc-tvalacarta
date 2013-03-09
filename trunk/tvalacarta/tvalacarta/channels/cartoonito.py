@@ -138,12 +138,19 @@ def episodios(item):
 
     return itemlist
 
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
-    itemsmainlist = mainlist(None)
-    for item in itemsmainlist: print item.tostring()
+    bien = True
+    
+    # El canal tiene estructura programas -> episodios -> play
+    programas_list = mainlist(Item())
+    if len(programas_list)==0:
+        return False
 
-    itemsseries = series(itemsmainlist[1])
-    itemsepisodios = episodios(itemsseries[4])
+    for programa in programas_list:
+        if programa.title=="Bananas en pijama":
+            episodios_list = episodios(programa)
+            if len(episodios_list)==0:
+                return False
 
-if __name__ == "__main__":
-    test()
+    return bien

@@ -27,95 +27,24 @@ def mainlist(item):
 
     return itemlist
 
-    # Descarga la pagina
-    #item.url = MAIN_URL
-    #return programas(item)
-
-def programas(item):
-    logger.info("[sexta.py] programas")
-    itemlist = []
-
-    # Descarga la página
-    data = scrapertools.cache_page(item.url)
-    #logger.info(data)
-
-    # Extrae los programas
-    patron  = '<div class="mod_promocion_producto">[^<]+'
-    patron += '<div class="">[^<]+'
-    patron += '<a title="([^"]+)" href="([^"]+)">[^<]+'
-    patron += '<img title="[^"]+" src="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
     
-    for scrapedtitle,scrapedurl,scrapedthumbnail in matches:
-        scrapedurl = urlparse.urljoin(item.url,scrapedurl)
-        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="episodios" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=urlparse.urljoin(item.url,scrapedthumbnail) , show = scrapedtitle, folder=True) )
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    import antena3
+    for item in items:
+        exec "itemlist=antena3."+item.action+"(item)"
     
-    return itemlist
+        if len(itemlist)==0:
+            return False
 
-def episodios(item):
-    logger.info("[sexta.py] episodios")
-    itemlist = []
+    # La sección de programas devuelve enlaces
+    series = antena3.series(items[2])
+    episodios = antena3.episodios(series[0])
+    videos = antena3.detalle(episodios[0])
+    if len(videos)==0:
+        return False
 
-    # Descarga la página principal
-    datapre = scrapertools.cache_page(item.url)
-    #logger.info(datapre)
-
-    # Accede a la sección 'todos los programas'
-    patron  = '<a title="PROGRAMAS COMPLETOS" href="([^"]+)"'
-    episodiosurl = re.compile(patron,re.DOTALL).search(datapre).group(1);
-    logger.info("URL episodios: " + episodiosurl)
-    data = scrapertools.cache_page(episodiosurl)
-    logger.info(data)
-
-    # Extrae la parte de programas
-    patron = '<div class="visor">(.*)<!-- fin clase visor -->'
-    episodiosdata = re.compile(patron,re.DOTALL).search(data).group(1);
-
-    # Extrae las series
-    patron  = '<img title="[^"]+"[^s]+src="([^"]+)"'
-    patron += '[^a]+alt="[^"]+"[^h]+href="([^"]+)".*?'
-    patron += '<h2><p>([^<]+)<'
-    matches = re.compile(patron,re.DOTALL).findall(episodiosdata)
-    if DEBUG: scrapertools.printMatches(matches)
-    
-    for scrapedthumbnail,scrapedurl,scrapedtitle in matches:
-
-        scrapedurl = urlparse.urljoin(item.url,scrapedurl)
-        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="partes" , url=urlparse.urljoin(item.url,scrapedurl), thumbnail=scrapedthumbnail , show = scrapedtitle, folder=True) )
-
-    return itemlist
-
-def partes(item):
-    logger.info("[sexta.py] partes")
-    itemlist = []
-
-    # Descarga la página
-    dataplayer = scrapertools.cache_page(item.url)
-    logger.info(dataplayer)
-
-    #player_capitulo.xml='/chapterxml//60000001/60000007/2012/10/03/00008.xml';
-    patron  = "player_capitulo.xml='([^']+)'"
-    partesurl = re.compile(patron,re.DOTALL).search(dataplayer).group(1);
-    xmldata = scrapertools.cache_page(urlparse.urljoin('http://www.lasexta.com',partesurl))
-    logger.info(xmldata)
-
-    # url prefix
-    patron  = '<urlVideoMp4><!\[CDATA\[(.*?)\]\]></urlVideoMp4>'
-    prefix  = re.compile(patron,re.DOTALL).search(xmldata).group(1);
-    logger.info(prefix)
-
-    patron  = '<archivoMultimedia>[^<]+<archivo><!\[CDATA\[([^\]]+)'
-    matches = re.compile(patron,re.DOTALL).findall(xmldata)
-    if DEBUG: scrapertools.printMatches(matches)
-    logger.info("matches="+str(matches))
-    i=1
-    for url in matches:
-        scrapedtitle = "("+str(i)+") "+item.title
-        scrapedurl = urlparse.urljoin(prefix.replace('rtmp:','http:'),url).replace('http:','rtmp:')
-        scrapedthumbnail = item.thumbnail
-        scrapedplot = item.plot
-        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail , show = scrapedtitle, folder=False) )
-        i=i+1
-
-    return itemlist
+    return bien

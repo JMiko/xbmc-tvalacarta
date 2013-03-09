@@ -4,7 +4,12 @@
 # Canal para Giralda TV
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
+import os
+import sys
+
 import urlparse,re
+import urllib
+import datetime
 
 from core import logger
 from core import scrapertools
@@ -16,68 +21,83 @@ CHANNELNAME = "giraldatv"
 def isGeneric():
     return True
 
+# Entry point
 def mainlist(item):
-    logger.info("[giraldatv.py] mainlist")
-    item = Item(url="http://www.giraldatv.es/alacarta.html")
-    return programas(item)
+    item.url = "http://gdata.youtube.com/feeds/api/users/giraldatv/playlists?v=2&start-index=1&max-results=30"
+    return youtube_playlists(item)
 
-def programas(item):
-    logger.info("[giraldatv.py] programas")
+# Show all YouTube playlists for the selected channel
+def youtube_playlists(item):
+    logger.info("giraldatv.youtube_playlists ")
+    itemlist=[]
 
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #print data
-
-    # Extrae los programas
-    '''
-    <td align="center" valign="middle"><a onClick="_gaq.push(['_trackEvent', 'Cabecera', 'A la carta', 'En el corazon sevilla']);" href="http://www.giraldatv.es/enelcorazonsevilla/" target="_top"><img src="http://www.giraldatv.es/img/logoenelcorazonsevilla.png" alt="En el corazon sevilla" class="borde" title="En el corazon sevilla" border=0></a></td>
-    '''
-    patron  = "<td.*?<a on.lick=\"_gaq.push\(\['_trackEvent', 'Cabecera', 'A la carta', '([^']+)'\]\)\;\""
-    patron += ' href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    itemlist = []
-    for match in matches:
-        scrapedtitle = match[0]
-        scrapedurl = urlparse.urljoin(item.url,match[1])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
-        scrapedplot = ""
-
-        scrapedpage = scrapedurl
-        if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] plot=["+scrapedplot+"]")
-        #logger.info(scrapedplot)
-
-        # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , page=scrapedpage, show=scrapedtitle , folder=True) )
-
-    return itemlist
-
-def episodios(item):
-    logger.info("[giraldatv.py] episodios")
-
-    itemlist = []
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-
-    # Extrae los capítulos
-    '''
-    contentArray[8] = new Content(371,6220,7149,8, 'En el corazón... Sevilla 1x13 (2/2)', 'En el corazón... Sevilla 1x13 (2/2)', 'Hoy hablamos de Antonia Colomé', 'http://files.velocix.com/c653/giralda_tv/gt101214_corazon_sevilla_01x13_antonia_colome_b_gitv_16x9_1800.mov', 'true', 'http://www.vidzapper.net/live/assets/images/metacontent/741F3B3E-2031-48A5-BF70-22F54DEB7299.JPEG', '1667', '0', '0', 'true', 'en el corazon,sevilla,antonia colome', 'http://files.velocix.com/c653/giralda_tv/gt101214_corazon_sevilla_01x13_antonia_colome_b_gitv_16x9_1800.mov', 'http://www.vidzapper.net/live/assets/images/metacontent/741F3B3E-2031-48A5-BF70-22F54DEB7299_thumb.JPEG',1, 'Content', 'Content', 'false', 'http://www.giraldatv.es/enelcorazonsevilla', 'true', 'false', 'nonadult', 'None', '00:00:00:000', '00:00:00:000', 'plain', 'true', 'false', '', 'false', 'false'
-    '''
-    patron = "new Content\(.*?'([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)'"
-    matches = re.compile(patron,re.DOTALL).findall(data)
+    # Fetch video list from YouTube feed
+    data = scrapertools.cache_page( item.url )
+    logger.info("data="+data)
     
-    # Extrae los items
-    for match in matches:
-        scrapedtitle = match[0]
-        scrapedurl = match[3]
-        scrapedthumbnail = match[5]
-        scrapedplot = match[2]
-        if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    # Extract items from feed
+    pattern = "<entry(.*?)</entry>"
+    matches = re.compile(pattern,re.DOTALL).findall(data)
+    
+    for entry in matches:
+        logger.info("entry="+entry)
+        
+        # Not the better way to parse XML, but clean and easy
+        title = scrapertools.find_single_match(entry,"<titl[^>]+>([^<]+)</title>")
+        plot = scrapertools.find_single_match(entry,"<media\:descriptio[^>]+>([^<]+)</media\:description>")
+        thumbnail = scrapertools.find_single_match(entry,"<media\:thumbnail url='([^']+)'")
+        url = scrapertools.find_single_match(entry,"<content type\='application/atom\+xml\;type\=feed' src='([^']+)'/>")
 
-        # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo", page=item.page, url=scrapedurl, thumbnail=scrapedthumbnail, show=item.show , plot=scrapedplot , folder=False) )
-
+        # Appends a new item to the xbmc item list
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="youtube_videos" , url=url, thumbnail=thumbnail, plot=plot , folder=True) )
     return itemlist
+
+# Show all YouTube videos for the selected playlist
+def youtube_videos(item):
+    logger.info("giraldatv.youtube_videos ")
+    itemlist=[]
+
+    # Fetch video list from YouTube feed
+    data = scrapertools.cache_page( item.url )
+    logger.info("data="+data)
+    
+    # Extract items from feed
+    pattern = "<entry(.*?)</entry>"
+    matches = re.compile(pattern,re.DOTALL).findall(data)
+    
+    for entry in matches:
+        logger.info("entry="+entry)
+        
+        # Not the better way to parse XML, but clean and easy
+        title = scrapertools.find_single_match(entry,"<titl[^>]+>([^<]+)</title>")
+        title = title.replace("Disney Junior España | ","")
+        plot = scrapertools.find_single_match(entry,"<summa[^>]+>([^<]+)</summa")
+        thumbnail = scrapertools.find_single_match(entry,"<media\:thumbnail url='([^']+)'")
+        video_id = scrapertools.find_single_match(entry,"http\://www.youtube.com/watch\?v\=([0-9A-Za-z_-]{11})")
+        url = video_id
+
+        # Appends a new item to the xbmc item list
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="youtube", url=url, thumbnail=thumbnail, plot=plot , folder=False) )
+    return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    items_mainlist = mainlist(Item())
+    
+    items_programas = disneyweb(items_mainlist[0])
+    if len(items_programas)==0:
+        return False
+
+    items_videos = play(items_programas[0])
+    if len(items_videos)==0:
+        return False
+
+    for youtube_item in items_mainlist[1:]:
+        items_videos = youtube_videos(youtube_item)
+        if len(items_videos)==0:
+            return False
+
+    return bien

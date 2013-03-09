@@ -1,26 +1,17 @@
 ﻿# -*- coding: utf-8 -*-
-
 #------------------------------------------------------------
-
 # pelisalacarta - XBMC Plugin
-
 # creado por rsantaella
-
 #------------------------------------------------------------
-
-
 
 import urlparse,urllib2,urllib,re
 import os, sys
-
-
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-
 
 __channel__ = "disneylatino"
 __category__ = "F"
@@ -30,16 +21,12 @@ __language__ = "ES"
 __creationdate__ = "20121216"
 __vfanart__ = ""
 
-
-
 DEBUG = config.get_setting("debug")
 
 def isGeneric():
-
     return True
 
 def mainlist(item):
-
     logger.info("[disneylatino.py] mainlist")
 
     itemlist = []
@@ -56,7 +43,7 @@ def characters(item):
     data = scrapertools.cachePage(item.url)
     if (data == ""):
         return itemlist
-	
+    
     logger.info(data)
 
     scrapedurl = item.url
@@ -69,7 +56,7 @@ def characters(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     if DEBUG: scrapertools.printMatches(matches)
-	
+    
 
     for match in matches:
         scrapedthumbnail = 	"http://www.disneylatino.com" + match[2]
@@ -86,7 +73,7 @@ def categories(item):
     data = scrapertools.cachePage(item.url)
     if (data == ""):
         return itemlist
-	
+    
     logger.info(data)
 
     #<a href="#" data-filter="all">Todos</a></li>
@@ -95,7 +82,7 @@ def categories(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     if DEBUG: scrapertools.printMatches(matches)
-	
+    
 
     for match in matches:
         scrapedurl = "http://befsn.disneylatino.com/index.php/catalog/videos.json?" + item.extra + "&category=" + match[0] + "&page=%d&itemsPerPage=25"
@@ -104,7 +91,7 @@ def categories(item):
         itemlist.append( Item(channel=__channel__, action="videos", extra="1", title=scrapedtitle, url=scrapedurl,  folder=True) )
 
     return itemlist
-	
+    
 def videos(item):
 
     logger.info("[disneylatino.py] videos")
@@ -113,13 +100,13 @@ def videos(item):
     data = scrapertools.cachePage(item.url % page)
     if (data == ""):
         return itemlist
-	
+    
     logger.info(data)
 
     import json
     videos_json = json.loads(data)
     if videos_json == None : videos_json = []
-	
+    
 
     for video in videos_json['videos']:
         scrapedurl = video['id']
@@ -130,7 +117,7 @@ def videos(item):
     if (page < int(videos_json['pages'])):
         itemlist.append( Item(channel=__channel__, action="videos", extra= str(page + 1), title="!Pagina siguiente.", url=item.url,  folder=True) )        
     return itemlist
-	
+    
 def play(item):
 
     logger.info("[disneylatino.py] play")
@@ -139,7 +126,7 @@ def play(item):
     data = scrapertools.cachePage("http://befsn.disneylatino.com/index.php/catalog/video.json?country=venezuela&id=" + item.url)
     if (data == ""):
         return itemlist
-	
+    
     logger.info(data)
 
     import json
