@@ -126,3 +126,8 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     return devuelve
+
+def test():
+    video_urls = get_video_url("http://tu.tv/iframe/2676719")
+
+    return len(video_urls)>0

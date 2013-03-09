@@ -176,7 +176,8 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
-    itemlist.append( Item( title="Malvin.tv (12/02/2013)"               , channel="malvin"          , language="ES"    , category="F,S,D"       , type="xbmc"  )) 
+    itemlist.append( Item( title="Newpct (08/03/2013)"               , channel="newpct"          , language="ES"    , category="F,S,D,A"       , type="generic"  )) # jesus 08/03/2013
+    itemlist.append( Item( title="Malvin.tv (12/02/2013)"            , channel="malvin"          , language="ES"    , category="F,D"       , type="generic"  )) 
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PelisX (01/02/2013)"               , channel="pelisx"          , language="ES"    , category="F"       , type="generic"  )) # ZeDinis 01/02/2013
     itemlist.append( Item( title="Nukety (25/12/2012)"               , channel="nukety"          , language="ES"    , category="F,S"       , type="generic"  )) 
     itemlist.append( Item( title="Instreaming (IT) (27/11/2012)"     , channel="instreaming"          , language="IT"    , category="F,S"       , type="generic"  )) 
@@ -267,7 +268,7 @@ def channels_list():
     itemlist.append( Item( title="La Guarida de bizzente", channel="documentalesatonline2", language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S,VOS"     , type="generic"  ))
     itemlist.append( Item( title="lossimpsonsonline.com.ar", channel="los_simpsons_online"       , language="ES"    , category="S"     , type="generic"  ))
-    itemlist.append( Item( title="Malvin.tv"               , channel="malvin"              , language="ES"    , category="F,S,D"       , type="xbmc"  ))
+    itemlist.append( Item( title="Malvin.tv"               , channel="malvin"              , language="ES"    , category="F,D"       , type="generic"  ))
     itemlist.append( Item( title="Mejor Torrent"               , channel="mejortorrent"              , language="ES"    , category="F,S,D"       , type="generic"  ))
     itemlist.append( Item( title="MCAnime"               , channel="mcanime"              , language="ES"    , category="A"       , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))
@@ -276,6 +277,7 @@ def channels_list():
     itemlist.append( Item( title="NewDivx"               , channel="newdivx"              , language="ES"    , category="F,D"     , type="generic"  ))
     #itemlist.append( Item( title="Newdivxonline"         , channel="newdivxonline"              , language="ES"    , category="F"     , type="generic"  ))
     #itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES"    , category="F,VOS"       , type="generic" )) # xextil 05/05/2011
+    itemlist.append( Item( title="Newpct"               , channel="newpct"          , language="ES"    , category="F,S,D,A"       , type="generic"  )) # jesus 08/03/2013
     itemlist.append( Item( title="Novelas de TV"          , channel="novelasdetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Nukety"                 , channel="nukety"          , language="ES"    , category="F,S"       , type="generic"  )) 
     #itemlist.append( Item( title="NKI"                   , channel="nki"                  , language="ES"    , category="S"       , type="generic" ))

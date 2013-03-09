@@ -142,8 +142,7 @@ def findvideos(item):
     for videoitem in itemlist:
         videoitem.channel = __channel__
 
-        parsed_url = urlparse.urlparse(videoitem.url)
-        fichero = parsed_url.path
+        fichero = scrapertools.get_filename_from_url(videoitem.url)
         partes = fichero.split("/")
         titulo = partes[ len(partes)-1 ]
         videoitem.title = titulo + " - [" + videoitem.server+"]"

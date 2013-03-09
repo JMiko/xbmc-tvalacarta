@@ -361,7 +361,7 @@ def get_params():
                 if "=" in command:
                     split_command = command.split('=')
                     key = split_command[0]
-                    value = urllib.unquote_plus(split_command[1])
+                    value = split_command[1] #urllib.unquote_plus()
                     commands[key] = value
                 else:
                     commands[command] = ""

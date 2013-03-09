@@ -27,7 +27,10 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[personal.py] mainlist")
+    return personal_channel(item)
+
+def personal_channel(item):
+    logger.info("[personal.py] personal_channel")
 
     itemlist = []
     url = config.get_setting("personalchannelurl")
@@ -43,17 +46,42 @@ def mainlist(item):
         data = infile.read()
         infile.close()
     
+    # Paginación
+    if item.extra=="":
+        pagina_a_mostrar = 1
+    else:
+        pagina_a_mostrar = int(item.extra)
+    
     patron = '<item[^<]+<title>([^<]+)</title[^<]+<link>([^<]+)</link[^<]+<description>([^<]+)</description[^<]+<media.thumbnail url="([^"]+)"[^<]+<media.thumbnail url="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
+    contador = 1
+    pagina_actual = 1
+    maximo = int(config.get_setting("personalchannelpage"))
     for scrapedtitle,scrapedurl,scrapedplot,scrapedthumbnail,fanart in matches:
-        title = scrapedtitle.strip()
-        url = scrapedurl
-        thumbnail = scrapedthumbnail
-        plot = scrapedplot
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="play" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
+        # Si está en la página que debe mostrar añade los items
+        if pagina_actual == pagina_a_mostrar:
+
+            title = scrapedtitle.strip()
+            url = scrapedurl
+            thumbnail = scrapedthumbnail
+            plot = scrapedplot
+            if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+    
+            itemlist.append( Item(channel=__channel__, action="play" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
+        
+            contador = contador + 1
+            if contador > maximo:
+                itemlist.append( Item(channel=__channel__, action="personal_channel" , title=">> Página siguiente" , extra=str(pagina_actual+1), folder=True))
+                break
+
+        # Si no está en la página que debe mostrar, simplemente deja pasar el contador
+        else:
+            contador = contador + 1
+            if contador > maximo:
+                pagina_actual = pagina_actual + 1
+                contador = 1
 
     if len(itemlist)==0:
         infile = open( url )

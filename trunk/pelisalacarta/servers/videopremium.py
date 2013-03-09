@@ -14,12 +14,12 @@ from core import logger
 from core import config
 
 def test_video_exists( page_url ):
-    return False,"Actualmente videopremium no está soportado<br/>en pelisalacarta"
+    return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[videopremium.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
-    
+   
     # Lee la URL
     data = scrapertools.cache_page( page_url )
     logger.info("data="+data)
@@ -37,7 +37,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&method_free="+method_free
     data = scrapertools.cache_page( page_url , post=post )
     #logger.info("data="+data)
-    
+   
     try:
         packed = scrapertools.get_match(data,"(<script type='text/javascript'>eval\(function\(p,a,c,k,e,d\).*?</script>)")
     except:
@@ -86,13 +86,13 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     00:55:30 T:2955980800   ERROR:     buffer integer  Buffer time in milliseconds
     00:55:30 T:2955980800   ERROR:    timeout integer  Session timeout in seconds
     '''
-    rtmpurl=scrapertools.get_match(unpacked,'"file"\:"([^"]+)"').replace("tengig0.lb.videopremium.net","e5.videopremium.net")
+    rtmpurl=scrapertools.get_match(unpacked,'"file"\:"([^"]+)"').replace("tengig0.lb.videopremium.net","e4.videopremium.net")
     playpath=scrapertools.get_match(unpacked,'p2pkey\:"([^"]+)"')
     swfurl=scrapertools.get_match(unpacked,'embedSWF\("([^"]+)"')
     pageurl = page_url
     app="play"
-    tcurl="rtmp://e5.videopremium.net/play"
-    location = rtmpurl+" playpath="+playpath+" swfurl="+swfurl+" pageUrl="+page_url+" tcurl="+tcurl+" app="+app #swfvfy=true 
+    tcurl="rtmp://e4.videopremium.net/play"
+    location = rtmpurl+" playpath="+playpath+" swfurl="+swfurl+" pageUrl="+page_url+" tcurl="+tcurl+" app="+app #swfvfy=true
 
     logger.info("location="+location)
     video_urls.append( [ "RTMP [videopremium]",location ] )
@@ -140,3 +140,4 @@ def find_videos(data):
 def test():
     video_urls = get_video_url("http://videopremium.net/8x0mq9hanl3a")
     return len(video_urls)>0
+
