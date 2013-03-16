@@ -16,6 +16,9 @@ import binascii
 import xbmctools
 from core import config
 from core import logger
+from core.item import Item
+
+import simpletv_multiplataforma
 
 try:
     pluginhandle = int( sys.argv[ 1 ] )
@@ -31,29 +34,9 @@ CHANNELCODE = "simpletv"
 def mainlist(params,url,category):
     logger.info("[simpletv.py] mainlist")
 
-    # Lee el script
-    data = scrapertools.cachePage("http://chitawar.blogspot.com.es/p/blog-page_20.html")
-    patron = '<li><span style="color: magenta;">SIMPLETV:</span> <span style="color: red;">(.*?)</span></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if matches:
-        data = scrapertools.cachePage(matches[0])
-        patron = '#EXTINF:-1 \$ExtFilter="(.*?)",(.*?)(?:\n|\r|\r\n?)(?:\n|\r|\r\n?)(.*?)(?:\n|\r|\r\n?)'
-
-        # Busca el bloque con los canales
-        matches = re.compile(patron,re.DOTALL|re.MULTILINE).findall(data)
-
-        scrapertools.printMatches(matches)
-        for match in matches:
-            if "Canales +18".upper() in match[1].upper(): continue
-            if "Radios".upper() in match[1].upper(): continue
-            if "Radios".upper() in match[0].upper(): continue
-            if "Estrenos".upper() in match[0].upper(): continue
-            scrapedtitle = match[0].upper() + ' - ' + match[1].upper()
-            if "rtmp" in match[2]:
-                scrapedurl = match[2].replace("rtmp://$OPT:rtmp-raw=","").replace("live=1", "live=true") + " timeout=120"
-            else:
-                scrapedurl = match[2]               
-            xbmctools.addnewfolder( CHANNELCODE , "play" , CHANNELNAME , scrapedtitle , scrapedurl , "", "" )
+    itemlist = simpletv_multiplataforma.mainlist(Item())
+    for item in itemlist:
+        xbmctools.addnewfolder( CHANNELCODE , "play" , CHANNELNAME , item.title , item.url , "", "" )
 
     # Cierra el directorio
     xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )

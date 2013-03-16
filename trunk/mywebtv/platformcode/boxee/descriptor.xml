@@ -1,7 +1,7 @@
 <app>
   <id>info.mimediacenter.mywebtv</id>
   <name>mywebtv</name>
-  <version>1.6</version>
+  <version>1.7</version>
   <description>Ver la TV por streaming</description>
   <thumb>http://www.mimediacenter.info/boxee/mywebtv.png</thumb>
   <repositoryid>info.mimediacenter</repositoryid>
