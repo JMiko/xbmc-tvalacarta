@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>20</tag>
-	<date>21/10/2012</date>
-	<changes>Se comprueban los tokens al hacer login, si estos son invalidos los pide de nuevo (hasta 5 intentos). Soluciona el problema de dar a un enlace y que no aparezca nada.</changes>
+	<tag>21</tag>
+	<date>17/03/2013</date>
+	<changes>Vuelta a la versión anterior, la nueva no parece funcionar bien.</changes>
 </version>
