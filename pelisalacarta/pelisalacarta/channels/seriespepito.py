@@ -259,12 +259,22 @@ def findvideos(item):
     <td class="tdreportar"><button class="btn btn-danger btn-mini hide sptt breportar" data-tt_my="left center" data-tt_at="right center" data-tt_titulo="Reportar problemas..." data-tt_texto="¿Algún problema con el enlace?, ¿esta roto?, ¿el audio esta mal?, ¿no corresponde el contenido?, repórtalo y lo revisaremos, ¡gracias!." data-enlace="385944" type="button"><i class="icon-warning-sign icon-white"></i></button></td>
     </tr>
     '''
+    '''
+    <tr>
+    <td class="tdidioma"><span class="flag flag_3"></span></td>
+    <td>28/12/2011</td>
+    <td class="tdservidor"><img src="http://www.seriespepito.com/uploads/servidores/44-imagen_img.png" alt="Uploaded" />&nbsp;Uploaded</td>
+    <td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="Bajar..." href="http://rizzoli-and-isles.seriespepito.com/temporada-2/capitulo-15/329503/"><i class="icon-download"></i>&nbsp;Bajar</a></td>
+    <td class="tdusuario"><a href="http://www.seriespepito.com/usuarios/perfil/9109c85a45b703f87f1413a405549a2cea9ab556">Pepito</a></td>
+    <td class="tdcomentario"></td>
+    <td class="tdreportar"><button class="btn btn-danger btn-mini hide sptt breportar" data-tt_my="left center" data-tt_at="right center" data-tt_titulo="Reportar problemas..." data-tt_texto="¿Algún problema con el enlace?, ¿esta roto?, ¿el audio esta mal?, ¿no corresponde el contenido?, repórtalo y lo revisaremos, ¡gracias!." data-enlace="329503" type="button"><i class="icon-warning-sign icon-white"></i></button></td>
+    '''
     # Listas de enlaces
     patron  = '<tr[^<]+'
     patron += '<td class="tdidioma"><span class="([^"]+)"></span></td[^<]+'
     patron += '<td>[^<]+</td[^<]+'
     patron += '<td class="tdservidor"><img src="([^"]+)"[^>]+>([^<]+)</td[^<]+'
-    patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="Ver..." href="([^"]+)"'
+    patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="[^"]+" href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -282,7 +292,7 @@ def findvideos(item):
         if "flag_3" in idiomas:
             title = title + " (VOS)"
 
-        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, show=item.show, folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -299,6 +309,7 @@ def play(item):
             videoitem.title = "Mirror %d%s" % (i,videoitem.title)
             videoitem.fulltitle = item.fulltitle
             videoitem.channel=channel=__channel__
+            videoitem.show = item.show
             itemlist.append(videoitem)
             i=i+1
 

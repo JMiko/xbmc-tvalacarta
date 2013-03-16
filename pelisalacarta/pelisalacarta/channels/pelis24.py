@@ -29,8 +29,12 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades"     , action="peliculas", url="http://pelis24.com/index.php"))
-    itemlist.append( Item(channel=__channel__, title="Clasificacion" , action="categorias", url="http://pelis24.com/index.php"))
-    
+    itemlist.append( Item(channel=__channel__, title="Estrenos" , action="peliculas", url="http://pelis24.com/estrenos/"))
+    itemlist.append( Item(channel=__channel__, title="Recientes" , action="peliculas", url="http://pelis24.com/index.php?do=lastnews"))
+    itemlist.append( Item(channel=__channel__, title="HD 720p" , action="peliculas", url="http://pelis24.com/hd/"))
+    itemlist.append( Item(channel=__channel__, title="HD 480p" , action="peliculas", url="http://pelis24.com/peliculas480p/"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas en Castellano" , action="peliculas", url="http://pelis24.com/pelicula-ca/"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas 3D" , action="peliculas", url="http://pelis24.com/pelicula-3d"))
     return itemlist
 
 def peliculas(item):
@@ -39,7 +43,8 @@ def peliculas(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    bloque = scrapertools.get_match(data,"<div id='dle-content'>(.*?)<div class=\"dpad\">")
+    bloque = scrapertools.get_match(data,"<div id='dle-content'>(.*?)<div id=\"sidebar\" class=\"lcol\"")
+
     '''
     <div id='dle-content'>
     <a href="http://www.pelis24.com/peliculas/688-siempre-a-tu-lado-hachiko-espanol-online.html"><img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/pel029020.jpg" width="145" height="211" alt="Siempre a tu lado, Hachiko (2009)" title="Siempre a tu lado, Hachiko (2009)"/><noscript><img src="http://imgs24.com/images/pel029020.jpg" width="145" height="211" alt="Siempre a tu lado, Hachiko (2009)" title="Siempre a tu lado, Hachiko (2009)"/></noscript></a>&nbsp;&nbsp;
@@ -62,15 +67,18 @@ def peliculas(item):
     <a href="http://www.pelis24.com/peliculasvose/14138-cosmopolis-2012.html"><img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/cosmopopx.jpg" width="145" height="211" alt="Cosmopolis (2012)" title="Cosmopolis (2012)"/><noscript><img src="http://imgs24.com/images/cosmopopx.jpg" width="145" height="211" alt="Cosmopolis (2012)" title="Cosmopolis (2012)"/></noscript></a>&nbsp;&nbsp;
     <a href="http://www.pelis24.com/pelicula-ca/14529-promesas-del-este-2007.html"><img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/promesasde.jpg" width="145" height="211" alt="Promesas del Este (2007)" title="Promesas del Este (2007)"/><noscript><img src="http://imgs24.com/images/promesasde.jpg" width="145" height="211" alt="Promesas del Este (2007)" title="Promesas del Este (2007)"/></noscript></a>&nbsp;&nbsp;
     <a href="http://www.pelis24.com/hd/14528-prometheus-2012.html"><img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/prometwrw.jpg" width="145" height="211" alt="Prometheus (2012)" title="Prometheus (2012)"/><noscript><img src="http://imgs24.com/images/prometwrw.jpg" width="145" height="211" alt="Prometheus (2012)" title="Prometheus (2012)"/></noscript></a>&nbsp;&nbsp;
-    <div class="dpad">
-    <div class="basenavi">
-    <div class="navigation"><span>1</span> <a href="http://www.pelis24.com/page/2/">2</a> <a href="http://www.pelis24.com/page/3/">3</a> <a href="http://www.pelis24.com/page/4/">4</a> <a href="http://www.pelis24.com/page/5/">5</a> <a href="http://www.pelis24.com/page/6/">6</a> <a href="http://www.pelis24.com/page/7/">7</a> <a href="http://www.pelis24.com/page/8/">8</a> <a href="http://www.pelis24.com/page/9/">9</a> <a href="http://www.pelis24.com/page/10/">10</a> <span class="nav_ext">...</span> <a href="http://www.pelis24.com/page/131/">131</a></div>
-    <div class="nextprev">
-    <span><span class="thide pprev">Anterior</span></span>
-    <a href="http://www.pelis24.com/page/2/"><span class="thide pnext">Siguiente</span></a>
-    </div>
-    '''
-    patron  = '<a href="([^"]+)"><img style="[^>]+" data-cfsrc="([^"]+)".*?alt="([^"]+)"'
+	<div class="dpad">
+	<div class="basenavi">
+		<div class="navigation"><span>1</span> <a href="http://www.pelis24.com/estrenos/page/2/">2</a> <a href="http://www.pelis24.com/estrenos/page/3/">3</a> <a href="http://www.pelis24.com/estrenos/page/4/">4</a> <a href="http://www.pelis24.com/estrenos/page/5/">5</a> <a href="http://www.pelis24.com/estrenos/page/6/">6</a> <a href="http://www.pelis24.com/estrenos/page/7/">7</a> <a href="http://www.pelis24.com/estrenos/page/8/">8</a> <a href="http://www.pelis24.com/estrenos/page/9/">9</a> <a href="http://www.pelis24.com/estrenos/page/10/">10</a> </div>
+		<div class="nextprev">
+			<span><span class="thide pprev">Anterior</span></span>
+			<a href="http://www.pelis24.com/estrenos/page/2/"><span class="thide pnext">Siguiente</span></a>
+		</div>
+'''
+    patron = '<a href="([^"]+)" ><img src="([^"]+)" width="[^"]+" height="[^"]+" alt="[^"]+" title="([^"]+)"/></a>&nbsp;&nbsp;'
+
+
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 

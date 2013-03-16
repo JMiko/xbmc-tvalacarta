@@ -1195,6 +1195,21 @@ def get_filename_from_url(url):
 
     return filename
 
+def get_domain_from_url(url):
+    
+    import urlparse
+    parsed_url = urlparse.urlparse(url)
+    try:
+        filename = parsed_url.netloc
+    except:
+        # Si falla es porque la implementación de parsed_url no reconoce los atributos como "path"
+        if len(parsed_url)>=4:
+            filename = parsed_url[1]
+        else:
+            filename = ""
+
+    return filename
+
 # Parses the title of a tv show episode and returns the season id + episode id in format "1x01"
 def get_season_and_episode(title):
     logger.info("get_season_and_episode('"+title+"')")
