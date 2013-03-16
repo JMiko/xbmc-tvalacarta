@@ -259,7 +259,8 @@ def findvideos(item):
     for match in matches:
         
         try:
-            url = scrapertools.get_match(match,'<a rel="nofollow" title=" Ver " href="([^"]+)"')
+            #
+            url = scrapertools.get_match(match,'<a rel="nofollow" href="([^"]+)" target="_blank" title=" Ver "')
         except:
             try:
                 url = scrapertools.get_match(match,'<a rel="nofollow" title=" Bajar " href="([^"]+)"')
@@ -281,18 +282,8 @@ def findvideos(item):
             idioma=""
 
         if url!="":
-            vitemlist = servertools.find_video_items(data=url)
-            
-            if len(vitemlist)>0:
-                server = vitemlist[0].server
-            else:
-                try:
-                    server = scrapertools.get_match(match,'<br>([^<]+)</a></td>')
-                except:
-                    server="directo"
-
             #http://www.tumejortv.com/peliculas/A-Roma-con-amor--2012--2/url/364905
-            itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
 
     return itemlist
 
@@ -336,21 +327,11 @@ def findvideospeliculas(item):
             idioma=""
 
         if url!="":
-            vitemlist = servertools.find_video_items(data=url)
-            
-            if len(vitemlist)>0:
-                server = vitemlist[0].server
-                url = vitemlist[0].url
-            else:
-                try:
-                    server = scrapertools.get_match(match,'<br>([^<]+)</a></td>')
-                except:
-                    server="directo"
-
             if "www.tumejortv.com" in url:
-                itemlist.append( Item(channel=__channel__, action="findvideos_partes" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
+                itemlist.append( Item(channel=__channel__, action="findvideos_partes" , title=server.strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
             else:
-                itemlist.append( Item(channel=__channel__, action="play" , title=server.strip()+" ("+idioma+") ("+calidad+")" , server=server, url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
+                itemlist.append( Item(channel=__channel__, action="play" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
+
     return itemlist
 
 def findvideos_partes(item):
@@ -361,7 +342,19 @@ def findvideos_partes(item):
     for videoitem in itemlist:
         videoitem.channel = __channel__
 
-    return itemlist    
+    return itemlist
+
+def play(item):
+    logger.info("[tumejortv.py] play")
+
+    from servers import servertools
+    itemlist = servertools.find_video_items(data=item.url)
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.action="play"
+        videoitem.folder=False
+
+    return itemlist
 
 def test():
     from servers import servertools

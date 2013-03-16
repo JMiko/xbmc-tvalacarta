@@ -30,8 +30,8 @@ def mainlist(item):
     logger.info("[newpct.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas", url="http://www.newpct.com/", extra="Peliculas" ))
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"   , url="http://www.newpct.com/", extra="Series" ))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas", url="http://www.newpct.com/include.inc/load.ajax/load.topbar.php?userName=", extra="Peliculas" ))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"   , url="http://www.newpct.com/include.inc/load.ajax/load.topbar.php?userName=", extra="Series" ))
     #itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar" ))
   
     return itemlist

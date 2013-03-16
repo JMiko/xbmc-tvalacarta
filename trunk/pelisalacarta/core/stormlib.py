@@ -13,6 +13,13 @@ __server__ = "oc1.lopezepol.com"
 
 SERVER="https://"+__server__+"/stormtv/public/"
 PATH=config.get_data_path()+"stormtv/temp/"
+def mkdir_p(path):       
+    try:                     
+      os.makedirs(path)
+    except OSError as exc: # Python >2.5                             
+           if exc.errno == errno.EEXIST and os.path.isdir(path):
+              pass                                                              
+           else: raise 
 
 def getpreferences():
     print "[stormlib.py] getpreferences "                     
@@ -20,6 +27,12 @@ def getpreferences():
     user_pass=config.get_setting("stormtvpassword")                             
     #server= "https://"+__server__+"/stormtv_v2/public/"                             
     #path=config.get_data_path()+"stormtv_v2/temp/"
+    if not os.path.exists(PATH):                                                
+       print "Creating data_path "+PATH                                         
+       try:                                                                     
+         mkdir_p(PATH)                                                       
+       except:                                                                  
+         pass
     urllib.urlretrieve (SERVER+"followers/preferences/user/"+user_id+"/pass/"+user_pass, PATH+"preferences.xml")
     #comprobar si hay error de usuario
     xml=PATH+"preferences.xml"

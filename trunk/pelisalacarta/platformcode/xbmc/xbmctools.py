@@ -263,7 +263,10 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
                     else:
                         opciones.append(config.get_localized_string(30156)) # "Quitar de lista de descargas"
     
-            opciones.append(config.get_localized_string(30158)) # "Enviar a JDownloader"
+            if config.get_setting("jdownloader_enabled")=="true":
+                opciones.append(config.get_localized_string(30158)) # "Enviar a JDownloader"
+            if config.get_setting("pyload_enabled")=="true":
+                opciones.append(config.get_localized_string(30158).replace("jDownloader","pyLoad")) # "Enviar a pyLoad"
 
         if default_action=="3":
             seleccion = len(opciones)-1
@@ -344,6 +347,18 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         else:
             data = scrapertools.cachePage(config.get_setting("jdownloader")+"/action/add/links/grabber0/start1/web="+url+ " " +thumbnail)
 
+        return
+
+    if opciones[seleccion]==config.get_localized_string(30158).replace("jDownloader","pyLoad"): # "Enviar a pyLoad"
+        logger.info("Enviando a pyload...")
+
+        if Serie!="":
+            package_name = Serie
+        else:
+            package_name = "pelisalacarta"
+
+        from core import pyload_client
+        pyload_client.download(url=url,package_name=package_name)
         return
 
     elif opciones[seleccion]==config.get_localized_string(30164): # Borrar archivo en descargas
