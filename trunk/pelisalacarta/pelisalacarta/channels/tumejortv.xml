@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>tutvsite</name>
-	<tag>5</tag>
-	<date>03/07/2012</date>
-	<changes>Actualizado por cambios en la web</changes>
+	<tag>6</tag>
+	<date>17/03/2013</date>
+	<changes>Arreglado error en enlaces por partes</changes>
 </version>
