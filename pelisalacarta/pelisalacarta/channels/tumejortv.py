@@ -328,7 +328,7 @@ def findvideospeliculas(item):
 
         if url!="":
             if "www.tumejortv.com" in url:
-                itemlist.append( Item(channel=__channel__, action="findvideos_partes" , title=server.strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
+                itemlist.append( Item(channel=__channel__, action="findvideos_partes" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=True, fulltitle=item.title))
             else:
                 itemlist.append( Item(channel=__channel__, action="play" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
 
