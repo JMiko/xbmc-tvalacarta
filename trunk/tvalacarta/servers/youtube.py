@@ -103,21 +103,28 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 def extractFlashVars(data):
     flashvars = {}
-    found = False
-
+    #found = False
+    patron = '<script>.*?ytplayer.config = (.*?);</script>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    if matches:
+        data = json.loads(matches[0])
+        flashvars = data["args"]
+    '''
     for line in data.split("\n"):
-        if line.strip().startswith("yt.playerConfig = "):
+        #if line.strip().startswith("yt.playerConfig = "):
+        if "ytplayer.config = " in line.strip():
             found = True
-            p1 = line.find("=")
+            p1 = line.find("ytplayer.config = ")
             p2 = line.rfind(";")
             if p1 <= 0 or p2 <= 0:
                 continue
             data = line[p1 + 1:p2]
             break
-
     if found:
         data = json.loads(data)
         flashvars = data["args"]
+    '''
     #logger.info("flashvars: " + repr(flashvars))
     return flashvars
 
