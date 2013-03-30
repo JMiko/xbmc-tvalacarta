@@ -77,7 +77,10 @@ def iswatched(title,chap_dictionary):
        		#print status                                                                                                                                                      
        		title=title+" ["+status+"]"                                                                                                                                               
        		#print chap_dictionary[matcheschap[0]]+"#"
-    return title, matcheschap[0][0].lower()
+	matches=matcheschap[0][0].lower()
+    else:
+	matches="false"
+    return title, matches
 
 def getwatched(tvs_id):
     print "[stormlib.py] getwatched"+tvs_id

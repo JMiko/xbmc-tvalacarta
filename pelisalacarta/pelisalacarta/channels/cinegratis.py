@@ -27,8 +27,8 @@ def mainlist(item):
     logger.info("[cinegratis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Novedades"           , url="http://www.cinegratis.org/peliculas/novedades/", extra="No+Estrenos"))
-    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos"            , url="http://www.cinegratis.org/estrenos-de-cine/", extra="Estrenos+de+Cine"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Novedades"           , url="http://www.cinegratis.net/peliculas/novedades/", extra="No+Estrenos"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"   , title="Películas - Estrenos"            , url="http://www.cinegratis.net/estrenos-de-cine/", extra="Estrenos+de+Cine"))
     #itemlist.append( Item(channel=__channel__, action="peliscat"   , title="Películas - Géneros"             , url="http://www.cinegratis.net/index.php?module=generos"))
     #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Idiomas"             , url="http://www.cinegratis.net/index.php?module=peliculas"))
     #itemlist.append( Item(channel=__channel__, action="pelisalfa"  , title="Películas - Calidades"           , url="http://www.cinegratis.net/index.php?module=peliculas"))

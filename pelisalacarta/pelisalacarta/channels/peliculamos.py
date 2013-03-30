@@ -28,104 +28,153 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[peliculamos.py] mainlist")
-    item.url="http://peliculamos.net/"
-    return generos(item)
 
-def generos(item):
-    logger.info("[peliculamos.py] generos")
     itemlist = []
-    
-    data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<h2[^>]+>Categorie</h2>(.*?)</ul>')
-    
-    patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)    
-
-    for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle
-        url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = ""
-        plot = ""
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="listado" , title=title , url=url, thumbnail=thumbnail, plot=plot))        
+    itemlist.append( Item(channel=__channel__, title="Anime e cartoni"      , action="anime"))
+    itemlist.append( Item(channel=__channel__, title="Film"                 , action="film"))
+    itemlist.append( Item(channel=__channel__, title="Telefilm / Serie TV"  , action="serie"))
 
     return itemlist
 
-def listado(item):
-    logger.info("[peliculamos.py] listado")
+def anime(item):
+    logger.info("[peliculamos.py] anime")
 
-    # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
-    '''
-    <div id="post-5150" class="post-5150 post type-post status-publish format-standard hentry category-animazione category-commedia category-family tag-hotel-transylvania tag-ita tag-nowvideo tag-putlocker tag-streaming tag-vk">
-    <h2 class="h2 entry-title">
-    <a href="http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/" rel="bookmark" title="Permalink to Hotel Transylvania Streaming ITA VK Putlocker">Hotel Transylvania Streaming ITA VK Putlocker</a></h2>
-    <div class="posted-on">
-    <span class="meta-prep meta-prep-author">Posted on</span> <a href="http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/" title="October 26, 2012 8:01 pm" rel="bookmark"><span class="entry-date">October 26, 2012 8:01 pm</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="http://peliculamos.net/author/cismpg/" title="View all posts by Cismpg" rel="vcard:url">Cismpg</a></span> <a href="http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/#comments" class="raindrops-comment-link"><span class="raindrops-comment-string point"></span><em> Comment</em></a>			</div>
-    <div class="entry-content clearfix">
-    <div class="rw-left"><div class="rw-ui-container rw-class-blog-post rw-urid-51510"></div><div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"><meta itemprop="ratingValue" content="5" /><meta itemprop="ratingCount" content="1" /></div></div><div class="fblike" style="height:25px; height:25px; overflow:hidden;"><iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fpeliculamos.net%2Fhotel-transylvania-streaming-ita-vk-putlocker%2F&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=like&amp;font=arial&amp;colorscheme=light" scrolling="no" frameborder="0" allow Transparency="true" style="border:none; overflow:hidden; width:450px;"></iframe></div><p><strong><img class="alignleft" src="http://mr.comingsoon.it/imgdb/locandine/140x200/48989.png" alt="" width="140" height="200" />Hotel Transylvania</strong></p>
-    <p><em>Genere: Animazione, Commedia, Family</em></p>
-    <p><em>Anno: 2012</em></p>
-    <p><em>Regia: Genndy Tartakovsky</em></p>
-    <p><em>Attori: Adam Sandler, Selena Gomez, Steve Buscemi, Kevin James, David Spade, Andy Samberg</em></p><!--Ad Injection:random-->
-    <div style=''><center> <!-- Begin BidVertiser code -->
-    <SCRIPT LANGUAGE="JavaScript1.1" SRC="http://bdv.bidvertiser.com/BidVertiser.dbm?pid=484093&bid=1202522" type="text/javascript"></SCRIPT>
-    <noscript><a href="http://www.bidvertiser.com/bdv/BidVertiser/bdv_publisher_toolbar_creator.dbm">toolbar maker</a></noscript>
-    <!-- End BidVertiser code --> </center></div>
-    <p><em>Paese: USA</em></p>
-    <p><em>Durata: 91 Min</em></p>
-    <p><strong>Trama: </strong>Benvenuti all&#8217;Hotel Transylvania, il sontuoso resort a cinque stelle di Dracula dove i mostri e le loro rispettive famiglie possono divertirsi, liberi di essere sé stessi, senza alcuna presenza umana a dar loro fastidio. Durante uno speciale fine settimana, Dracula invita alcuni dei mostri più famosi del mondo a celebrare insieme il 118mo compleanno della figlia Mavis. Tra questi, Frankenstein e consorte, la Mummia, l&#8217;Uomo Invisibile, una famiglia di lupi mannari, e tanti altri. Per Drac, intrattenere tutti questi mostri leggendari non è certo un problema, ma il suo mondo sembra sgretolarsi quando all&#8217;albergo arriva un ragazzo che si prende una bella cotta per la giovane Mavis.</p>
-    <p><strong>Trailer:</strong><strong></strong></p>
-    <p><object id="_fp_0.368953057564795" width="640" height="360" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" name="player"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="wmode" value="transparent" /><param name="quality" value="high" /><param name="flashvars" value="config=http%3A//www.comingsoon.it/Video/Player/embed/32/%3Fsrc%3DMP4/9117.mp4%26lnkUrl%3DaHR0cDovL3d3dy5jb21pbmdzb29uLml0L0ZpbG0vU2NoZWRhL1ZpZGVvLz9rZXk9NDg5ODktOTExNw.." /><param name="src" value="http://mr.comingsoon.it/js/flowplayer/3209/flowplayer-3.2.9.swf" /><embed id="_fp_0.368953057564795" width="640" height="360" type="application/x-shockwave-flash" src="http://mr.comingsoon.it/js/flowplayer/3209/flowplayer-3.2.9.swf" allowfullscreen="true" allowscriptaccess="always" wmode="transparent" quality="high" flashvars="config=http%3A//www.comingsoon.it/Video/Player/embed/32/%3Fsrc%3DMP4/9117.mp4%26lnkUrl%3DaHR0cDovL3d3dy5jb21pbmdzb29uLml0L0ZpbG0vU2NoZWRhL1ZpZGVvLz9rZXk9NDg5ODktOTExNw.." name="player" /></object></p>
-    <p><strong>Streaming:</strong> </p>
-    <p><span class='st_facebook_large' st_title='Hotel Transylvania Streaming ITA VK Putlocker' st_url='http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/' displayText='share'></span>
-    </span><span class='st_twitter_large' st_title='Hotel Transylvania Streaming ITA VK Putlocker' st_url='http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/' displayText='share'></span>
-    </span><span class='st_email_large' st_title='Hotel Transylvania Streaming ITA VK Putlocker' st_url='http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/' displayText='share'></span>
-    </span><span class='st_sharethis_large' st_title='Hotel Transylvania Streaming ITA VK Putlocker' st_url='http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/' displayText='share'></span>
-    </span><span class='st_fblike_large' st_title='Hotel Transylvania Streaming ITA VK Putlocker' st_url='http://peliculamos.net/hotel-transylvania-streaming-ita-vk-putlocker/' displayText='share'></span>
-    </span><span class='st_plusone_large' st_title='Ho
-    '''
-    patron  = '<div id="post-[^<]+'
-    patron += '<h2 class="h2 entry-title">[^<]+'
-    patron += '<a href="([^"]+)"[^>]+>([^<]+)</a></h2>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
-    
-    for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle.strip()
-        url = urlparse.urljoin(item.url,scrapedurl)
+    itemlist.append( Item(channel=__channel__, title="Elenco"         , action="todas", url="http://peliculamos.net/elenco-anime-e-cartoni/", extra='Elenco Anime e Cartoni'))
+    itemlist.append( Item(channel=__channel__, title="Ultimi inseriti", action="ultimas", url="http://peliculamos.net/elenco-anime-e-cartoni/ultimi-anime-e-cartoon-inseriti/"))
+
+    return itemlist
+
+def serie(item):
+    logger.info("[peliculamos.py] serie")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Elenco"         , action="todas", url="http://peliculamos.net/telefilm-serie-tv/", extra='Elenco Telefilm/Serie TV'))
+    itemlist.append( Item(channel=__channel__, title="Ultime puntate" , action="ultimos_episodios", url="http://peliculamos.net/telefilm-serie-tv/ultime-puntate-inserite/"))
+    itemlist.append( Item(channel=__channel__, title="Ultime serie"   , action="ultimas_series", url="http://peliculamos.net/telefilm-serie-tv/ultime-serie-inserite/"))
+
+    return itemlist
+
+def film(item):
+    logger.info("[peliculamos.py] film")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Elenco"         , action="todas", url="http://peliculamos.net/film-elenco/", extra='Elenco Film'))
+    itemlist.append( Item(channel=__channel__, title="Ultimi 100 film inseriti", action="todas", url="http://peliculamos.net/ultimi-100-film-inseriti/", extra='Ultimi 100 Film Inseriti'))
+
+    data = scrapertools.cache_page("http://peliculamos.net/")
+    data = scrapertools.get_match(data,'<a href="http://peliculamos.net/film-elenco/">Elenco Film</a><ul(.*?)</ul')
+    patron = '<li class="[^"]+"><a href="([^"]+)">([^<]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)    
+
+    for url,title in matches:
+        itemlist.append( Item(channel=__channel__, action="todas" , title=title , url=url, extra="Animazione"))        
+
+    return itemlist
+
+def todas(item):
+    logger.info("[peliculamos.py] todas")
+    itemlist=[]
+
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,'<h1 class="entry-title">'+item.extra+'</h1>(.*?)</ul>')
+    #<li><strong><a href="http://peliculamos.net/futurama-streaming-putlocker-nowvideo/">Futurama</a></strong></li>
+    #<li><a href="http://peliculamos.net/full-metal-alchimist-brotherhood-streaming-putlocker-nowvideo/"><strong>Full Metal Alchimist</strong></a></li>
+    patron = '<li>(.*?)</li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)    
+
+    for match in matches:
+        title = scrapertools.get_match(match,'<a[^>]+>(.*?)</a>')
+        title = scrapertools.htmlclean(title)
+        url = scrapertools.get_match(match,'<a.*?href="([^"]+)"')
         thumbnail = ""
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot))        
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot))        
 
-    try:
-        siguiente = scrapertools.get_match(data,'<a href="([^<]+)"[^<]+<span class="meta-nav"[^<]+</span> Older posts</a>')
-        scrapedurl = urlparse.urljoin(item.url,siguiente)
-        scrapedtitle = ">> Pagina Siguiente"
-        scrapedthumbnail = ""
-        scrapedplot = ""
+    return itemlist
 
-        itemlist.append( Item(channel=__channel__, action="listado", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-    except:
-        pass
+def ultimas(item):
+    logger.info("[peliculamos.py] ultimas")
+    itemlist=[]
+
+    data = scrapertools.cache_page(item.url)
+    #<li class="associated-post"><a href="http://peliculamos.net/i-griffin-streaming-ita-putlocker-vk-nowvideo/" title="I Griffin Streaming Ita Putlocker VK Nowvideo">I Griffin Streaming Ita Putlocker VK Nowvideo</a></li>
+    patron = '<li class="associated-post"><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
+    matches = re.compile(patron,re.DOTALL).findall(data)    
+
+    for url,title in matches:
+        thumbnail = ""
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot))        
+
+    return itemlist
+
+def ultimos_episodios(item):
+    logger.info("[peliculamos.py] ultimos_episodios")
+    itemlist=[]
+
+    data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+    #<p style="text-align: center;"><a href="http://peliculamos.net/the-vampire-diaries-stagione-4-streaming-sub-ita-vk/"><strong>The Vampire Diaries 4&#215;18 Sub ITA</strong></a></p>
+    #<p style="text-align: center;"><a href="http://peliculamos.net/criminal-minds-streaming-putlocker-nowvideo-download/"><strong>Criminal Minds 8&#215;07 ITA</strong></a></p>
+
+    patron = '<p style="text-align\: center\;"><a href="([^"]+)">(.*?)</a></p>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for url,title in matches:
+        thumbnail = ""
+        plot = ""
+        title = scrapertools.entityunescape(title)
+        title = scrapertools.htmlclean(title)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot))        
+
+    return itemlist
+
+def ultimas_series(item):
+    logger.info("[peliculamos.py] ultimas_series")
+    itemlist=[]
+
+    data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+    #<div class="associated-post"><h3 class="post-title"><a href="http://peliculamos.net/the-new-normal-streaming-ita-vk/" title="The New Normal streaming ita Vk">The New Normal streaming ita Vk</a></h3><div class="post-excerpt"><div class="fblike" style="height:25px; height:25px; overflow:hidden;"><iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fpeliculamos.net%2Fthe-new-normal-streaming-ita-vk%2F&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=like&amp;font=arial&amp;colorscheme=light" scrolling="no" frameborder="0" allow Transparency="true" style="border:none; overflow:hidden; width:450px;"></iframe></div><p>David e Bryan sono una coppia di Beverly Hills, che hanno tutto dalla vita; una relazione stabile, delle brillanti carriere e una bella casa, l&#8217;unica che manca nella loro vita è un figlio. Ma le cose cambiano quando incontrano Goldie, una giovane madre single dal passato burrascoso, trasferitasi a Los Angeles con la figlia di [...]</p></div></div><div class="associated-post"><h3 class="post-title"><a href="http:
+
+    patron  = '<div class="associated-post"><h3 class="post-title"><a href="([^"]+)" title="[^"]+">([^"]+)</a></h3><div class="post-excerpt">'
+    patron += '<div[^<]+<iframe[^<]+</iframe></div><p>([^<]+)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for url,title,plot in matches:
+        thumbnail = ""
+        title = scrapertools.entityunescape(title)
+        title = scrapertools.htmlclean(title)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot))        
+
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     bien = True
     
-    # mainlist
+    from servers import servertools
     mainlist_items = mainlist(Item())
     
-    # Comprueba que todas las opciones tengan algo (excepto el buscador)
+    # El menú es películas, series, anime
     for mainlist_item in mainlist_items:
-        if mainlist_item.action!="search":
-            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
-            if len(itemlist)==0:
-                mirrors = findvideos(item=itemlist[0])
+        exec "submenu_itemlist = "+mainlist_item.action+"(mainlist_item)"
+
+        # El submenu es todas, ultimas, etc.
+        for submenu_item in submenu_itemlist:
+            exec "video_itemlist = "+submenu_item.action+"(submenu_item)"
+
+            for video_item in video_itemlist:
+                mirrors = servertools.find_video_items(item=video_item)
                 if len(mirrors)>0:
                     return True
 

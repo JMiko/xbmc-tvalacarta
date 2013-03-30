@@ -416,11 +416,12 @@ def getfilefromtitle(url,title):
     logger.info("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
     
     #nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+    import scrapertools
     if plataforma=="xbox":
-        nombrefichero = title[:38] + url[-4:]
+        nombrefichero = title[:38] + scrapertools.get_filename_from_url(url)[-4:]
         nombrefichero = limpia_nombre_excepto_1(nombrefichero)
     else:
-        nombrefichero = title + url[-4:]
+        nombrefichero = title + scrapertools.get_filename_from_url(url)[-4:]
         logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
         if "videobb" in url or "videozer" in url or "putlocker" in url:
             nombrefichero = title + ".flv"
@@ -452,7 +453,7 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
-def downloadbest(video_urls,title):
+def downloadbest(video_urls,title,continuar=False):
     
     # Le da la vuelta, para poner el de más calidad primero ( list() es para que haga una copia )
     invertida = list(video_urls)
@@ -470,7 +471,7 @@ def downloadbest(video_urls,title):
         
         # Descarga
         try:
-            ret = downloadfile(url,fullpath)
+            ret = downloadfile(url,fullpath,continuar=continuar)
         # Llegados a este punto, normalmente es un timeout
         except urllib2.URLError, e:
             ret = -2
@@ -496,7 +497,7 @@ def downloadbest(video_urls,title):
     
     return -2
     
-def downloadfile(url,nombrefichero,headers=[],silent=False):
+def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
 
@@ -516,8 +517,8 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             pass
         logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
     
-        # despues
-        if os.path.exists(nombrefichero):
+        # El fichero existe y se quiere continuar
+        if os.path.exists(nombrefichero) and continuar:
             #try:
             #    import xbmcvfs
             #    f = xbmcvfs.File(nombrefichero)
@@ -529,6 +530,13 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
             grabado = existSize
             f.seek(existSize)
+
+        # el fichero ya existe y no se quiere continuar, se aborta
+        elif os.path.exists(nombrefichero) and not continuar:
+            logger.info("[downloadtools.py] downloadfile: el fichero existe, no se descarga de nuevo")
+            return
+
+        # el fichero no existe
         else:
             existSize = 0
             logger.info("[downloadtools.py] downloadfile: el fichero no existe")

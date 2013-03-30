@@ -63,7 +63,7 @@ def menupeliculas(item):
     itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="letras"           , url="http://www.cinetube.es/peliculas/"))
     itemlist.append( Item(channel=__channel__, title="Películas - Categorías"       , action="categorias"       , url="http://www.cinetube.es/peliculas/"))
     
-    #itemlist.append( Item(channel=__channel__, title="Buscar Películas"             , action="search"           , url="peliculas") )
+    itemlist.append( Item(channel=__channel__, title="Buscador..."                  , action="search"           , url="peliculas") )
 
     return itemlist
 
@@ -608,13 +608,13 @@ def findvideos(item):
     # Busca los enlaces a los mirrors, o a los capitulos de las series...
     patron  = '<li class="rwbd ovhd"[^<]+'
     patron += '<div class="cld2 flol"><img src="[^"]+"><span>([^<]+)</span></div[^<]+'
-    patron += '<div class="cld3 flol">([^<]+)</div[^<]+'
+    patron += '<div class="cld3 flol">(.*?)</div[^<]+'
     patron += '<div class="cld4 flol"><img src="([^"]+)"><a class="rpdbtn hide" href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     itemlist = []
     for idioma,calidad,imgservidor,scrapedurl in matches:
-        title = "Ver en "+imgservidor.replace("/img/cnt/servidor/","").replace(".png","")+" ("+calidad+" "+idioma+")"
+        title = "Ver en "+imgservidor.replace("/img/cnt/servidor/","").replace(".png","")+" ("+scrapertools.htmlclean(calidad)+" "+idioma+")"
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,imgservidor)
         plot = scrapedplot

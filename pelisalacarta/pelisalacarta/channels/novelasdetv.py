@@ -28,18 +28,15 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[novelasdetv.py] mainlist")
-
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, action="series", title="Novelas Populares" , url="http://www.novelasdetv.com"))
-    itemlist.append( Item(channel=__channel__, action="series", title="Mas novelas" , url="http://www.novelasdetv.com"))
-
-    return itemlist
+    return series(Item(url="http://www.novelasdetv.com", channel=__channel__))
 
 def series(item):
     logger.info("[novelasdetv.py] series")
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
+
+    data = scrapertools.get_match(data,'<div class="accordion" id="accordion2">(.*?)</aside>')
     '''
     <div class="accordion-group">
     <div class="accordion-heading">
@@ -57,7 +54,6 @@ def series(item):
     </div>
     </div>
     '''
-    data = scrapertools.get_match(data,'<div class="accordion-group"[^<]+<div class="accordion-heading"[^<]+<a class="accordion-toggle[^>]+>\s+'+item.title+'(.*?)</ul')
 
     patron = "<li><a href=([^>]+)>([^<]+)</a></li>"
     matches = re.compile(patron,re.DOTALL).findall(data)    
@@ -184,15 +180,15 @@ def test():
     bien = True
     
     # mainlist
-    mainlist_items = mainlist(Item())
+    serie_itemlist = mainlist(Item())
     
     # Comprueba que todas las opciones tengan algo (excepto el buscador)
-    for mainlist_item in mainlist_items:
-        if mainlist_item.action!="search":
-            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
-            if len(itemlist)==0:
-                mirrors = findvideos(item=itemlist[0])
-                if len(mirrors)>0:
-                    return True
+    for serie_item in serie_itemlist:
+        episodio_itemlist = episodios(serie_item)
+
+        for episodio_item in episodio_itemlist:
+            mirrors = findvideos(item=episodio_item)
+            if len(mirrors)>0:
+                return True
 
     return False
