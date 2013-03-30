@@ -71,8 +71,8 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import cineblog01
     itemlist.extend( cineblog01.search( Item() , tecleado) )
 
-    #from pelisalacarta.channels import cinetube
-    #itemlist.extend( cinetube.search( Item() , tecleado) )
+    from pelisalacarta.channels import cinetube
+    itemlist.extend( cinetube.search( Item() , tecleado, "F") )
 
     from pelisalacarta.channels import cineonlineeu
     itemlist.extend( cineonlineeu.search( Item() , tecleado) )

@@ -28,6 +28,7 @@ def mainlist(item):
     logger.info("[cinetux.py] mainlist")
 
     itemlist = []
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="Destacadas o actualizadas" , url="http://www.cinetux.org/destacados", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Novedades" , url="http://www.cinetux.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
     itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades subtitulado" , url="http://www.cinetux.org/", extra="Nuevo Sub", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
     itemlist.append( Item(channel=__channel__ , action="bloque", title="Novedades DVD" , url="http://www.cinetux.org/", extra="ltimo DVDRIP", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg" ))
@@ -45,12 +46,60 @@ def peliculas(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
+    '''
+    <div style="width: 620px; padding: 0; margin-left: 10px;"><center><div id="post-18159">
+    <!--PELICULA--><div class="movielist textcenter">
+    <div id="titlecat"><a href="http://www.cinetux.org/2013/03/ver-pelicula-juramento-de-venganza-online-gratis-2009.html" rel="bookmark" title="Ver Película Juramento de Venganza Online Gratis (2009)"><img style="border: 1px solid #FDC101; padding: 1px;" width="130" height="190" src=http://1.bp.blogspot.com/_qNP_wQsK6pg/S4bJOWtjwII/AAAAAAAAALQ/3L0f3yP5c4g/s320/197276.jpg />
+    <div style="margin-top:2px;">Ver Película Juramen...</div>
+    </a></div>
+    <div style="margin-top:5px;margin-bottom:5px;"><span class="rating"><img src="http://www.cinetux.org/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.png" alt="0 votes, average: 0,00 out of 5" title="0 votes, average: 0,00 out of 5" class="post-ratings-image" /><img src="http://www.cinetux.org/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.png" alt="0 votes, average: 0,00 out of 5" title="0 votes, average: 0,00 out of 5" class="post-ratings-image" /><img src="http://www.cinetux.org/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.png" alt="0 votes, average: 0,00 out of 5" title="0 votes, average: 0,00 out of 5" class="post-ratings-image" /><img src="http://www.cinetux.org/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.png" alt="0 votes, average: 0,00 out of 5" title="0 votes, average: 0,00 out of 5" class="post-ratings-image" /><img src="http://www.cinetux.org/wp-content/plugins/wp-postratings/images/stars_crystal/rating_off.png" alt="0 votes, average: 0,00 out of 5" title="0 votes, average: 0,00 out of 5" class="post-ratings-image" /></span></div>
+    <center><span class="linkcat"><a href="http://www.cinetux.org/genero/thriller" title="Ver todas las entradas en Thriller" rel="category tag">Thriller</a></span></center>
+    </div>
+    <!--FIN PELICULA-->
+    </div><!-- POST META 18159 END -->
+    </center></div>
+    '''
+
     # Extrae las entradas (carpetas)
-    patron  = '<!--PELICULA--><div class="peli_item textcenter">[^<]+'
-    patron += '<div class="pelicula_img">[^<]+'
-    patron += '<a href="([^"]+)[^<]+<img width="\d+" height="\d+" src="([^"]+)".*?'
-    patron += '<div style="color[^>]+>(.*?)</div></a>[^<]+'
-    patron += '<span class="rosa">([^<]+)</span>'
+    patron  = '<!--PELICULA--><div class="movielist textcenter[^<]+'
+    patron += '<div id="titlecat[^<]+<a href="([^"]+)" rel="bookmark" title="([^"]+)"><img style="[^"]+" width="[^"]+" height="[^"]+" src=(.*?) /[^<]+'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for scrapedurl,title,thumbnail in matches:
+        scrapedplot = ""
+        scrapedthumbnail = thumbnail[:-2]
+        scrapedtitle = title[14:]
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
+
+
+    '''
+    <!--PELICULA--></p>
+    <div class="peli_item textcenter">
+    <div class="pelicula_img">
+    <a href="http://www.cinetux.org/2013/02/ver-pelicula-red-dawn-amanecer-rojo-online-gratis-2012.html">
+    <img alt="" src="http://1.bp.blogspot.com/-TuZFuLOtYlE/ULWlFNDJYZI/AAAAAAAAAfY/rZ1k2-Kebm8/s270/red-dawn-poster1.jpg" width="134" height="193" /></a></div>
+    <div class="dvdrip"> </div>
+    <p><a href="http://www.cinetux.org/2013/02/ver-pelicula-red-dawn-amanecer-rojo-online-gratis-2012.html">
+    <span style="color: white; font-size: 13px;">Red Dawn<br />(Amanecer Rojo)</span></a><br /> <span class="rosa">DVD-RIP</span><span class="icos_lg"><br /> <img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/-sBVn6JyvTeA/TeA7nERPF4I/AAAAAAAADM4/2iRloiVHCG8/lat.png" /><img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/--2xClYCIiwY/TeA7nUAYXXI/AAAAAAAADNE/Mr530W5fFFk/sub.png" /><img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/-t8w6a8_Hk-w/TeA7nd5Ad9I/AAAAAAAADNI/UYV40sR_sfc/online.png" /><img style="border: 0pt none;" alt="" src="https://lh5.googleusercontent.com/-35yef7ubBv8/TeA7nNfUXJI/AAAAAAAADM0/RCQqAiWLX9o/descarga.png" /> </span></p>
+
+    <p><!--FIN PELICULA--><!--PELICULA--></p>
+    <div class="peli_item textcenter">
+    <div class="pelicula_img">
+    <a href="http://www.cinetux.org/2013/02/ver-pelicula-hermosas-criaturas-online-gratis-2013.html">
+    <img alt="" src="http://2.bp.blogspot.com/-K5OrpjDrhhc/UQZiWg0OanI/AAAAAAAACw4/qHjVfRwOyj0/s270/hermosas+criaturas.jpg" width="134" height="193" /></a></div>
+    <div class="estreno"> </div>
+    <p><a href="http://www.cinetux.org/2013/02/ver-pelicula-hermosas-criaturas-online-gratis-2013.html">
+    <span style="color: white; font-size: 13px;">Hermosas Criaturas</span></a><br /> <span class="rosa">TS-SCREENER</span><span class="icos_lg"><br /> <img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/-d-kbbyjdxYI/TeA7nHuZ8mI/AAAAAAAADM8/Ii149s3ed2c/espanol.png" /><img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/-sBVn6JyvTeA/TeA7nERPF4I/AAAAAAAADM4/2iRloiVHCG8/lat.png" /><img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/--2xClYCIiwY/TeA7nUAYXXI/AAAAAAAADNE/Mr530W5fFFk/sub.png" /><img style="border: 0pt none;" alt="" src="http://3.bp.blogspot.com/-t8w6a8_Hk-w/TeA7nd5Ad9I/AAAAAAAADNI/UYV40sR_sfc/online.png" /><img style="border: 0pt none;" alt="" src="https://lh5.googleusercontent.com/-35yef7ubBv8/TeA7nNfUXJI/AAAAAAAADM0/RCQqAiWLX9o/descarga.png" /> </span></p>
+    '''
+
+    patron  = '<!--PELICULA--></p[^<]+'
+    patron += '<div class="peli_item textcenter"[^<]+'
+    patron += '<div class="pelicula_img"[^<]+'
+    patron += '<a href="([^"]+)[^<]+<img alt="" src="([^"]+)".*?'
+    patron += '<span style="color[^>]+>(.*?)</span></a><br[^<]+'
+    patron += '<span class="rosa">(.*?)</span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -249,7 +298,7 @@ def test():
     novedades_items = peliculas(mainlist_items[0])
     bien = False
     for novedades_item in novedades_items:
-        mirrors = servertools.find_video_items( item=novedades_item )
+        mirrors = findvideos( item=novedades_item )
         if len(mirrors)>0:
             bien = True
             break

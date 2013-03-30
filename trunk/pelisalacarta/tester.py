@@ -5,7 +5,7 @@
 # http://blog.tvalacarta.info/plugin-xbmc/tvalacarta/
 #------------------------------------------------------------
 
-import re,urllib,urllib2,sys
+import re,urllib,urllib2,sys,os
 sys.path.append ("lib")
 
 from core import platform_name
@@ -18,267 +18,49 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-def test_one_channel(channelid):
-    try:
-        exec "from pelisalacarta.channels import "+channelid+" as channelmodule"
-        resultado = channelmodule.test()
-    except:
-        import traceback
-        from pprint import pprint
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
-        for line in lines:
-            line_splits = line.split("\n")
-            for line_split in line_splits:
-                print line_split
+def test_add_documaniatv_to_download_list():
+    from core import descargas
+    from pelisalacarta.channels import documaniatv as channel
+    mainlist_items = channel.mainlist(Item())
+    mainlist_items[0].url="http://www.documaniatv.com/newvideos.html?&page=60"
+    pendientes = channel.novedades(mainlist_items[0])
+    i = 0
+    while True:
 
-        resultado = False
-
-    return resultado
-
-def test_channels():
-    
-    para_probar = []
-    #para_probar.append("cineblog01")
-    para_probar.append("animeflv")
-    para_probar.append("animeid")
-    para_probar.append("bajui")
-    para_probar.append("beeg")
-    para_probar.append("cinegratis")
-    para_probar.append("cineonlineeu")
-    para_probar.append("cinetemagay")
-    para_probar.append("cinetux")
-    #para_probar.append("cinevos")
-    para_probar.append("cuevana")
-    #para_probar.append("descargacineclasico")
-    para_probar.append("descargaya")
-    para_probar.append("discoverymx")
-    para_probar.append("divxatope")
-    para_probar.append("divxonline")
-    #para_probar.append("dlmore")
-    para_probar.append("documaniatv")
-    para_probar.append("documentalesatonline2")
-    #para_probar.append("ecarteleratrailers")
-    para_probar.append("filmesonlinebr")
-    para_probar.append("filmsenzalimiti")
-    #para_probar.append("gaypornshare")
-    para_probar.append("gnula")
-    para_probar.append("internapoli")
-    para_probar.append("italiafilm")
-    para_probar.append("letmewatchthis")
-    para_probar.append("los_simpsons_online")
-    para_probar.append("mcanime")
-    '''
-    '''
-
-    '''
-    '''
-    para_probar.append("moviezet")
-    para_probar.append("newdivx")
-    #para_probar.append("newhd")
-    para_probar.append("peliculasonlineflv")
-    para_probar.append("peliculasaudiolatino")
-    para_probar.append("peliculaseroticas")
-    para_probar.append("peliculasid")
-    para_probar.append("peliculasyonkis_generico")
-    para_probar.append("pelis24")
-    para_probar.append("pelispekes")
-    para_probar.append("robinfilm")
-    para_probar.append("serieonline")
-    para_probar.append("seriesid")
-    #para_probar.append("serieshentai")
-    para_probar.append("seriesdanko")
-    #para_probar.append("seriespepito")   ¿Muy lento?
-    para_probar.append("seriesyonkis")
-    para_probar.append("shurhd")
-    para_probar.append("shurweb")
-    para_probar.append("sipeliculas")
-    para_probar.append("tumejortv")
-    para_probar.append("tusnovelas")
-    para_probar.append("unsoloclic")
-    
-    funcionan = []
-    no_funcionan = []
-    
-    no_probados = []
-    no_probados.append("gaypornshare")
-    no_probados.append("justintv")
-    no_probados.append("mocosoftx")
-    no_probados.append("seriesly")
-    no_probados.append("cinetube")
-    no_probados.append("sonolatino")
-
-    # Verifica los canales
-    for canal in para_probar:
-        resultado = test_one_channel(canal)
-        if resultado:
-            funcionan.append(canal)
-        else:
-            no_funcionan.append(canal)
-    
-    print "------------------------------------"
-    print " funcionan: %d" % len(funcionan)
-    for canal in funcionan:
-        print "   %s" % canal
-    print " no funcionan: %d" % len(no_funcionan)
-    for canal in no_funcionan:
-        print "   %s" % canal
-    print " no probados: %d" % len(no_probados)
-    for canal in no_probados:
-        print "   %s" % canal
-    
-def test_connectors():
-    #print test_one_connector("adfly")
-    #return
-
-    funcionan = []
-    no_funcionan = []
-    no_probados = []
-    para_probar = []
-
-    para_probar.append("adfly")
-    para_probar.append("adnstream")
-    no_probados.append(["allbox4","Fuera de servicio"])
-    para_probar.append("allmyvideos")
-    no_probados.append(["bayfiles","Solo premium"])
-    no_probados.append(["cramit","Solo premium"])
-
-    #para_probar.append("bayfiles")
-    no_probados.append(["bitshare","Solo premium"])
-    #para_probar.append("bliptv")
-    no_probados.append(["cineraculo","Fuera de servicio"])
-    #para_probar.append("cramit")
-
-    para_probar.append("letitbit")
-    para_probar.append("moevideos")
-    para_probar.append("nosvideo")
-    para_probar.append("nowvideo")
-    para_probar.append("putlocker")
-    para_probar.append("sockshare")
-    para_probar.append("vk")
-
-    # Verifica los conectores
-    for server in para_probar:
+        os.remove("/Users/jesus/.developer/cookies.dat")
         try:
-            resultado = test_one_connector(server)
-            if resultado:
-                funcionan.append([server,0,0])
+            # Los elementos "play" son para descargar
+            if pendientes[i].action=="play":
+
+                playitem = channel.play(pendientes[i])[0]
+
+                title = pendientes[i].title
+                url = playitem.url
+                server = playitem.server
+                thumbnail = pendientes[i].thumbnail
+                plot = pendientes[i].plot
+                fulltitle = pendientes[i].title
+
+                print "Añadiendo "+title+", server="+server+", url="+url
+
+                descargas.savebookmark(titulo=title,url=url,thumbnail=thumbnail,server=server,plot=plot,fulltitle=title,savepath="/Users/jesus/Downloads/documaniatv/list/")
+            
+            # Los elementos "novedades" son páginas
             else:
-                no_funcionan.append([server,0,0,""])
+                pendientes.extend( channel.novedades(pendientes[i]) )
         except:
-            no_funcionan.append([server,0,0,"Excepción"])
-    
-    print "------------------------------------"
-    print " funcionan: %d" % len(funcionan)
-    for server,ok,nok in funcionan:
-        print "   %s [%d/%d]" % (server,ok,nok)
+            pass
 
-    print " no funcionan: %d" % len(no_funcionan)
-    for server,ok,nok,detalle in no_funcionan:
-        print "   %s [%d/%d] %s" % (server,ok,nok,detalle)
+        i = i + 1
 
-    print " no probados: %d" % len(no_probados)
-    for server,motivo in no_probados:
-        print "   %s (%s)" % (server,motivo)
-    
+        if i>len(pendientes):
+            break
 
-def test_one_connector(server):
-
-    exec "from servers import "+server+" as serverconnector"
-    return serverconnector.test()
-
-def test_one_server_connector(server,url,no_find_videos=False):
-    exec "from servers import "+server+" as serverconnector"
-    
-    try:
-        # Mira si el video existe
-        if "test_video_exists" in dir(serverconnector):
-            puede,motivo = serverconnector.test_video_exists(url)
-        else:
-            puede = True
-        
-        # Extrae la url
-        if "get_video_url" in dir(serverconnector) and puede:
-            video_urls = serverconnector.get_video_url(url)
-            funciona = (puede and len(video_urls)>0)
-        elif "get_long_url" in dir(serverconnector) and puede:
-            video_url = serverconnector.get_long_url(url)
-            funciona = True
-        
-    except:
-        funciona = False
-        import traceback
-        from pprint import pprint
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        lines = traceback.format_exception(exc_type, exc_value, exc_tb)
-        for line in lines:
-            line_splits = line.split("\n")
-            for line_split in line_splits:
-                print line_split
-
-    if not funciona and not no_find_videos:
-        # Detecta la url usando find_videos
-        detected_urls = serverconnector.find_videos(url)
-        url = detected_urls[0][1]
-        return test_one_server_connector(server,url,no_find_videos=True)
-
-    return funciona
-
-def test_server_connectors():
-    funcionan = []
-    no_funcionan = []
-    no_probados = []
-    
-    para_probar = []
-    para_probar.append(["twitvid","http://www.telly.com/KN995?fromtwitvid=1"])
-    para_probar.append(["twitvid","http://www.telly.com/666IK?fromtwitvid=1"])
-    para_probar.append(["videoweed","http://embed.videoweed.es/embed.php?v=jgos3ftj8a1zg"])
-    para_probar.append(["videoweed","http://embed.videoweed.es/embed.php?v=76ev085tmn0m6"])
-    para_probar.append(["nowvideo","http://www.nowvideo.eu/video/zwm0bilyhk0cl"])
-    para_probar.append(["nowvideo","http://www.nowvideo.eu/video/hp8967i8oirnk"])
-    para_probar.append(["novamov","http://www.novamov.com/video/tb6ira2dj029b"])
-    para_probar.append(["novamov","http://www.novamov.com/video/yqesmw0th1ad9"])
-    para_probar.append(["adfly","http://adf.ly/Fp6BF"])
-    para_probar.append(["moevideos","http://moevideo.net/swf/letplayerflx3.swf?file=23885.2b0a98945f7aa37acd1d6a0e9713"])
-    para_probar.append(["moevideos","http://www.moevideos.net/online/106249"])
-    para_probar.append(["mediafire","http://www.mediafire.com/?aol88b96gm2rteb"])
-    para_probar.append(["dailymotion","http://www.dailymotion.com/video/xrf96h"])
-    '''
-    '''
-    
-    '''
-    para_probar.append(["videobam","http://videobam.com/FSxJO"])
-    para_probar.append(["putlocker","http://www.putlocker.com/embed/CCA6C5AC98145138"])
-    para_probar.append(["youtube","http://www.youtube.com/watch?v=nL-ww-XHtaY"])
-    para_probar.append(["vk","http://vk.com/video_ext.php?oid=181111963&id=163409395&hash=86346c98c3176dab"])
-    para_probar.append(["filebox","http://www.filebox.com/owif1u0k7ntq"])
-    para_probar.append(["sockshare","http://www.sockshare.com/file/966B46C2C1150B7D"])
-    para_probar.append(["allmyvideos","http://allmyvideos.net/ptatfdc3oego"])
-    para_probar.append(["nosvideo","http://nosvideo.com/?v=7ir2lzpe5xf2"])
-    para_probar.append(["streamcloud","http://streamcloud.eu/neuj4jw5w261"])
-    para_probar.append(["movshare","http://www.movshare.net/video/tk2uynzhbbio5"])
-    para_probar.append(["divxstage","http://www.divxstage.net/video/27wnoxhgtvmff"])
-    '''
-
-    # Verifica los conectores
-    for server,url in para_probar:
-        resultado = test_one_server_connector(server,url)
-        if resultado:
-            funcionan.append([server,url])
-        else:
-            no_funcionan.append([server,url])
-    
-    print "------------------------------------"
-    print " funcionan: %d" % len(funcionan)
-    for server,url in funcionan:
-        print "   %s [%s]" % (server,url)
-    print " no funcionan: %d" % len(no_funcionan)
-    for server,url in no_funcionan:
-        print "   %s [%s]" % (server,url)
-    print " no probados: %d" % len(no_probados)
-    for server,url in no_probados:
-        print "   %s [%s]" % (server,url)
-    
+def test_download_all_episodes():
+    from pelisalacarta.channels import seriespepito as channel
+    item = Item(show="Last resort", extra="episodios", url="http://last-resort.seriespepito.com/")
+    from platformcode.xbmc import launcher
+    launcher.download_all_episodes(item,channel,first_episode="")
 
 def test_cineraculo():
     data = scrapertools.cache_page("http://www.cineraculo.com/vermegavideolink.aspx")
@@ -390,7 +172,8 @@ def test_encode():
     print urllib2.quote(urllib2.quote(url))
 
 if __name__ == "__main__":
-    test_connectors()
+    #test_download_all_episodes()
+    test_add_documaniatv_to_download_list()
     #test_channels()
 
     #test_cineraculo()

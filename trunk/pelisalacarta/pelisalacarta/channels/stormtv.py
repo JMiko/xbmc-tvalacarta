@@ -31,20 +31,10 @@ PREFERENCES  =stormlib.getpreferences()
 LANG =stormlib.getlang()
 SERVERS =stormlib.getservers()
 SERVER = "https://"+__server__+"/stormtv/public/"
+
 def isGeneric():
     return True
-'''
-def mainlist(item):
-    logger.info("[seriesyonkis.py] mainlist")
-    #server= "https://"+__server__+"/stormtv/public/"
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lastepisodes"      , title="Ultimos capÃ­tulos" , url="http://",fanart=SERVER+"logo.jpg"))
-    itemlist.append( Item(channel=__channel__, action="listalfabetico"    , title="Listado alfabetico", url="http://",fanart=server+"logo.jpg"))
-    itemlist.append( Item(channel=__channel__, action="follow"    , title="Series Siguiendo", url="http://",fanart=server+"logo.jpg"))
-    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://",fanart=server+"logo.jpg"))
 
-    return itemlist
-'''
 def search(item,texto, categoria="*"):
     logger.info("[stormtv.py] search "+texto )
     itemlist = []
@@ -68,14 +58,9 @@ def search(item,texto, categoria="*"):
     	name = name.encode("utf-8")
     	id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                    
         fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                
-        poster = serie.getElementsByTagName("poster")[0].childNodes[0].data                                                
-    	#seriesyonkis = id
-    	#plot=""
-    	#scrapedplot=plot      
-        # Depuracion
-        #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
+        poster = serie.getElementsByTagName("poster")[0].childNodes[0].data
+	type=serie.getElementsByTagName("type")[0].childNodes[0].data                                                
     	itemlist.append( Item(channel=__channel__, action="channel" , title=name, fulltitle=name , url=id, thumbnail=SERVER+poster, plot="", viewmode="movie", show=id,fanart=SERVER+fanart))
-
     return itemlist
 
 def mkdir_p(path):
@@ -91,7 +76,6 @@ def mainlist(item):
     if (PREFERENCES=="0"):
     	user_id = config.get_setting("stormtvuser")                                                                                                                                   
     	user_pass = config.get_setting("stormtvpassword")                                                                                                                             
-    	#server= "https://"+__server__+"/stormtv/public/"                                                                                                                              
     	path=config.get_data_path()+"stormtv/temp/"
     	if not os.path.exists(path): 
        		logger.info ("[stormtv.py]Creating data_path "+path)
@@ -114,7 +98,6 @@ def mainlist(item):
     		id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                    
         	fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                
         	poster = serie.getElementsByTagName("poster")[0].childNodes[0].data                                                
-        	#plot = serie.getElementsByTagName("plot")[0].childNodes[0].data 
     		plot=""
     		art=SERVER+fanart      
 
@@ -135,7 +118,6 @@ def channel(item):
 	name = ""
 	url = ""
 	action=""
-	#server = "https://"+__server__+"/stormtv/public/tvseries/getchannelsxml/id/"+storm_show
 	path=config.get_data_path()+"stormtv/temp/"                                   
 	urllib.urlretrieve (SERVER+"tvseries/getchannelsxml/id/"+storm_show, path+"temp.xml")            
         xml=path+"temp.xml"                                                                                              
@@ -143,11 +125,15 @@ def channel(item):
         node = doc.documentElement                                                                                           
         series = doc.getElementsByTagName("channel")  
         itemlist = []  
-        #print "fanart="+item.fanart                                                                      
         for serie in series:                                                                                                 
-	        name=serie.getElementsByTagName("name")[0].childNodes[0].data                                                 
+	        name=serie.getElementsByTagName("name")[0].childNodes[0].data
+		type=serie.getElementsByTagName("type")[0].childNodes[0].data                                                 
                 url=serie.getElementsByTagName("url")[0].childNodes[0].data
-                itemlist.append( Item(channel=__channel__, action="channeltvs" , title=name, fulltitle=name , url=url, thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show, fanart=storm_fanart, extra=action))                                                      
+		if (type=="1"):
+                	itemlist.append( Item(channel=__channel__, action="channeltvs" , title=name, fulltitle=name , url=url, thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show, fanart=storm_fanart, extra=action))                                                      
+		else:
+			#Si es una pelicula u otra cosa
+			itemlist.append( Item(channel=__channel__, action="findvideos" , title=name, fulltitle="peliculasyonkis_generico" , url=url, thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show, fanart=storm_fanart, extra=action))	
 	# Si no es una serie favorita añade el item para añadirla o para quitarla en caso de que este añadida como favorita	
 	if (stormlib.isfollow(item.show)=='0'):	
 		itemlist.append( Item(channel=__channel__, action="addfollow" , title="Add fav", show=item.show,fanart=item.fanart))
@@ -166,7 +152,6 @@ def removefollow(item):
     stormlib.removefollow(item.show)  
 
 def channeltvs(item):
-	biblioteca= {"seriesyonkis":1,"seriespepito":2}
 	logger.info("[stormtv.py] Channeltvs")
 	storm_fanart=item.fanart
 	storm_plot=item.plot
@@ -174,20 +159,22 @@ def channeltvs(item):
 	storm_show=item.show	
 	storm_channel_name=item.fulltitle
 	storm_title=item.title
-	#fulltitle=item.fulltitle
-	if (storm_channel_name=="seriespepito"):                                                                                                                                        
-           action="episodelist"                                                                                                                                      
-        else:                                                                                                                                                             
-           action="episodios"	
+        action="episodios"	
 	item=Item(channel=__channel__,url=item.url)
 	exec "import pelisalacarta.channels."+storm_channel_name+" as channel"
 	# El action nos devolvera el listado de capitulos (episodelist o episodios)
 	exec "itemlist_p = channel."+action+"(item)"
 	# le quitamos el ultimo elemento que es añadir a la biblioteca de xbmc solo si es seriespepito o seriesyonkis
-	if (storm_channel_name in biblioteca):
-		itemlist = itemlist_p[0:len(itemlist_p)-1]
-	else:
-		itemlist = itemlist_p
+	patternbiblio="esta serie a la biblioteca"
+	patterndescarga="Descargar todos los episodios de la serie"
+	#si el ultimo elemento de la lista es descargar la serie completa lo quitamos
+	if (len(re.compile(patterndescarga,re.DOTALL).findall(itemlist_p[len(itemlist_p)-1].title))>0):
+	   itemlist_p = itemlist_p[0:len(itemlist_p)-1] 
+
+	#Si el ultimo elemento de la lista es añadir a la biblioteca lo quitamos	
+	if (len(re.compile(patternbiblio,re.DOTALL).findall(itemlist_p[len(itemlist_p)-1].title))>0):                                                                                    
+           itemlist_p = itemlist_p[0:len(itemlist_p)-1]
+	itemlist=itemlist_p
 	storm_itemlist=[]
 	if (config.get_setting("stormtvaccount")=="true"):
 	        from core import stormlib
@@ -198,10 +185,11 @@ def channeltvs(item):
 		if (config.get_setting("stormtvaccount")=="true"):    
 	                from core import stormlib                     
 	                title, extra = stormlib.iswatched(item.title,chap_dictionary)
+	                #hace falta saber cuantos hemos visto para dejar los n ultimos vistos
 	        else:                                                           
 	                extra=""                                                
 	        logger.info("[stormtv.py] extra="+extra)  	
-		storm_itemlist.append( Item(channel=__channel__,action="findvideos", fulltitle=storm_channel_name, title=title, url=item.url,thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show,fanart=storm_fanart, extra=extra))
+		storm_itemlist.append( Item(channel=__channel__,action="findvideos", server=item.server,fulltitle=storm_channel_name, title=title, url=item.url,thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show,fanart=storm_fanart, extra=extra))
 	return storm_itemlist
 
 
@@ -215,11 +203,16 @@ def findvideos(item):
         storm_channel_name=item.fulltitle                                                                                                                                                   
         storm_title=item.title
         free_url=item.url
-        action="findvideos"                                                                                                                                                          
-	item=Item(channel=__channel__,url=item.url)                                                                                                                               
-        exec "import pelisalacarta.channels."+storm_channel_name+" as channel"                                                                                                          
+        action="findvideos"
+        from servers import servertools                                                                                                                                                          
+	item=Item(channel=__channel__,url=item.url)
+        exec "import pelisalacarta.channels."+storm_channel_name+" as channel"
         # El action nos devolvera el listado de posibles enlaces                                                                                             
-        exec "itemlist = channel."+action+"(item)"                                                                                                                                
+        try:
+        	exec "itemlist = channel."+action+"(item)"
+        except:
+        	#from servers import servertools
+        	itemlist= servertools.find_video_items(item)                                                                                                                                
         storm_itemlist=[]
         #lang=LANG
        	#logger.info("[stormtv.py] Findvideos"+LANG) 
@@ -250,8 +243,10 @@ def findvideos(item):
         #logger.info("pat_free"+pat_free)
         #server=SERVERS
         strue=0
-        ltrue=0	                                                    
+        ltrue=0
+        verified=[]
 	for item in itemlist:
+		fserver=item.server
 		logger.info("[stormtv.py] title"+item.title)
 		title=item.title.lower()
 		if (SERVERS!="0"):
@@ -260,11 +255,13 @@ def findvideos(item):
 				if (storm_channel_name=="seriesdanko"):
 					matches_free=re.compile(pat_free,re.DOTALL).findall(item.thumbnail)
 					#logger.info("matches[0]"+matches_free[0])
-					if (len(matches_free)>0):                                              
+					if (len(matches_free)>0):
 					   item.title=item.title+" ("+matches_free[0]+")"
+					
 				else:
 					matches_free= re.compile(pat_free,re.DOTALL).findall(title)
 				if (len(matches_free)>0):
+					vserver=matches_free[0]
 					if (DEBUG):logger.info("free"+title)
 					strue=1
 				else:
@@ -274,6 +271,7 @@ def findvideos(item):
 					if (storm_channel_name=="seriesdanko"):                                                                                                            
 					   matches_filenium=re.compile(pat_filenium,re.DOTALL).findall(item.thumbnail)
 					   if (len(matches_filenium)>0):
+						vserver=matches_filenium[0]
 					   	item.title=item.title+" ("+matches_filenium[0]+")"
 					   	#logger.info("matches[0]"+matches_filenium[0])                                                                       
 					else:
@@ -283,7 +281,9 @@ def findvideos(item):
 						#titulo=item.title.lower()
 					   	matches_filenium= re.compile(pat_filenium,re.DOTALL).findall(title)
 					if (len(matches_filenium)>0):
+						vserver=matches_filenium[0]
 						if (DEBUG):logger.info("Filenium"+item.title)
+						print ("[stormtv.py] findvideos"+matches_filenium[0])
 						strue=1
 					else:
 						strue=0
@@ -295,6 +295,7 @@ def findvideos(item):
 					else:
 					   matches_all=re.compile(pat_all,re.DOTALL).findall(title)
 					if (len(matches_all)>0):
+						vserver=matches_all[0]
 						if (DEBUG): logger.info("Alldebrid"+item.title)
 						strue=1
 					else:
@@ -307,6 +308,7 @@ def findvideos(item):
 					else:
 					   matches_real=re.compile(pat_real,re.DOTALL).findall(title)
 					if (len(matches_real)>0):
+						vserver=matches_real[0]
 						if (DEBUG):logger.info("Real"+item.title)
 						strue=1
 					else:
@@ -314,7 +316,13 @@ def findvideos(item):
 		else:
 			if (DEBUG):logger.info("[stormtv.py] strue=1")
 			strue=1
-			
+		#Comprobamos si el enlace existe
+		# de momento solo para filenium
+		#if (config.get_setting("fileniumpremium")=="true"):
+			#logger.info("[stormtv.py] findvideos"+matches_filenium[0])	
+			#exec "import servers."+matches_filenium[0]+" as tserver" 
+			#res,test= tserver.test_vide_exists(item.url)                                                                                                   
+			#logger.info("[stormtv.py] findvideos"+res+"#"+test)
 		#Comprobamos el idioma
 		if (LANG!="0"):
 			logger.info("lang="+item.title)
@@ -355,12 +363,26 @@ def findvideos(item):
 			ltrue=1
 			#storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter))
 		if ((strue==1)&(ltrue==1)):
-			storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter))
+		    if (vserver not in verified):                                                                                         
+                           try:                                                                                                                      
+                              exec "import servers."+vserver+" as tserver"                                                          
+                              res,test= tserver.test_video_exists(item.url)                                                                     
+                              if (res):                                                                                                         
+                                      print("[stormtv.py] findvideos"+"True#"+test)                                                             
+                                      item.title="[Verificado]"+item.title                                                                      
+                                      #strue=1                                                                                                   
+                                      verified.append(vserver)                                                                      
+                              else:                                                                                                             
+                                      print("[stormtv.py] findvideos false")                                                                    
+                                      strue=0                                                                                                   
+                           except:                                                                                                                   
+                                 pass
+		    storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter, server=vserver))
 	if (SERVERS=="2"):
 		storm_itemlist.append( Item(channel=__channel__, action="free" , title="Buscar gratuitos", fulltitle=storm_channel_name , url=free_url, thumbnail=storm_thumbnail,plot=storm_plot, fanart=storm_fanart,show = storm_show,extra=storm_chapter))
-	return storm_itemlist
+	return sorted(storm_itemlist, key=lambda item: item.title,  reverse=True) 
 
-#hacer que saque los enlaces free
+#Modificar para que se corresponda con findvideos hacer que saque los enlaces free
 def free(item):
         logger.info("[stormtv.py] Free")                                                                                                                                    
         storm_fanart=item.fanart                                                                                                                                                  
@@ -384,7 +406,8 @@ def free(item):
 	    pat_free=pat_free+fserver+"|"                                                                                                                                     
 	pat_free=pat_free[:len(pat_free)-1]+")"
 	strue=0                                                                                                                                                                   
-	ltrue=0                                                                                                                                                                   
+	ltrue=0 
+	verified=[]                                                                                                                                                                  
 	for item in itemlist:
 	    title=item.title.lower()
 	    if (storm_channel_name=="seriesdanko"):                                                                                                           
@@ -394,7 +417,8 @@ def free(item):
 	    else:                                                                                                                                                     
 	       matches_free= re.compile(pat_free,re.DOTALL).findall(title)                                                                                  
 	    if (len(matches_free)>0):                                                                                                                         
-	        logger.info("[stormtv.py] Free :"+item.title)                                                                                                            
+	        logger.info("[stormtv.py] Free :"+item.title) 
+		vserver=matches_free[0]                                                                                                           
 	        strue=1                                                                                                                                   
 	    else:                                                                                                                                             
 	        strue=0 
@@ -433,9 +457,24 @@ def free(item):
       	          	ltrue=1                                                                                                                                           
 	    else:                                                                                                                                                             
 	    	ltrue=1
-            if ((strue==1)&(ltrue==1)):                                                                                                                                       
-             	storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter))	
-	return storm_itemlist    	   
+            if ((strue==1)&(ltrue==1)):
+		if (vserver not in verified):                                                                                                                                 
+                           try:                                                                                                                                                   
+                              exec "import servers."+vserver+" as tserver"                                                                                                        
+                              res,test= tserver.test_video_exists(item.url)                                                                                                       
+                              if (res):                                                                                                                                           
+                                      print("[stormtv.py] findvideos"+"True#"+test)                                                                                               
+                                      item.title="[Verificado]"+item.title                                                                                                        
+                                      #strue=1                                                                                                                                    
+                                      verified.append(vserver)                                                                                                                    
+                              else:                                                                                                                                               
+                                      print("[stormtv.py] findvideos false")                                                                                                      
+                                      strue=0                                                                                                                                     
+                           except:                                                                                                                                                
+                                 pass                                                                                                                                       
+             	storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter, server=item.server))	
+	#return storm_itemlist
+	return sorted(storm_itemlist, key=lambda item: item.title,  reverse=True)    	   
 def play(item):
 	logger.info("[stormtv.py] Play")
 	storm_fanart=item.fanart
@@ -449,10 +488,16 @@ def play(item):
 	if (config.get_setting("stormtvaccount")=="true"):                                                                                                                        
 	   from core import stormlib                                                                                                                                        
 	   stormlib.setwatched(storm_show,storm_chapter)
-	item=Item(channel=__channel__,url=item.url)
+	item_storm=Item(channel=__channel__,url=item.url)
 	exec "import pelisalacarta.channels."+storm_channel_name+" as channel"                                                                                                          
-	# El action nos devolvera el enlace que se reproducira                                                                                                                  
-	exec "itemlist = channel."+action+"(item)"                                                                                                                                
+	# El action nos devolvera el enlace que se reproducira
+	try:                                                                                                                  
+		exec "itemlist = channel."+action+"(item_storm)"
+		#return itemlist
+	except:
+		#from platformcode.xbmc import xbmctools
+		itemlist=[]	
+		itemlist.append(Item(channel="shurweb", server=item.server, url=item.url, category=item.category, title=item.title, thumbnail=item.thumbnail, plot=item.plot,  extra=item.extra, subtitle=item.subtitle,  fulltitle=item.fulltitle)) 
 	return itemlist
 	                 	
 # VerificaciÃ³n automÃ¡tica de canales: Esta funciÃ³n debe devolver "True" si estÃ¡ ok el canal.

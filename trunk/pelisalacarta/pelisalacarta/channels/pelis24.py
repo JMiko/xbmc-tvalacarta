@@ -43,6 +43,7 @@ def peliculas(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    
     bloque = scrapertools.get_match(data,"<div id='dle-content'>(.*?)<div id=\"sidebar\" class=\"lcol\"")
 
     '''
@@ -77,8 +78,6 @@ def peliculas(item):
 '''
     patron = '<a href="([^"]+)" ><img src="([^"]+)" width="[^"]+" height="[^"]+" alt="[^"]+" title="([^"]+)"/></a>&nbsp;&nbsp;'
 
-
-
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -91,7 +90,8 @@ def peliculas(item):
 
 
     # Extrae el paginador
-    patronvideos  = '<span>[^<]+</span>[^<]+<a href="([^"]+)">'
+    patronvideos  = '<a href="([^"]+)"><span class="thide pnext">Siguiente</span></a>'
+    
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 

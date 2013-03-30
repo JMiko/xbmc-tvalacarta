@@ -276,6 +276,9 @@ def run():
                     f.write(item.show+","+item.url+","+item.channel+"\n")
                     f.close();
 
+                elif action=="download_all_episodes":
+                    download_all_episodes(item,channel)
+
                 elif action=="search":
                     logger.info("[launcher.py] search")
                     import xbmc
@@ -476,3 +479,118 @@ def extract_parameters():
             show = ""
 
     return params, fanart, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password
+
+def download_all_episodes(item,channel,first_episode=""):
+    logger.info("[launcher.py] download_all_episodes, show="+item.show)
+    show_title = item.show
+
+    # Obtiene el listado desde el que se llamó
+    action = item.extra
+
+    # Esta marca es porque el item tiene algo más aparte en el atributo "extra"
+    if "###" in item.extra:
+        action = item.extra.split("###")[0]
+        item.extra = item.extra.split("###")[1]
+
+    exec "episode_itemlist = channel."+action+"(item)"
+    from servers import servertools
+    from core import downloadtools
+    from core import scrapertools
+
+    best_server = "streamcloud"
+    worst_server = "moevideos"
+
+    # Para cada episodio
+    if first_episode=="":
+        empezar = True
+    else:
+	empezar = False
+    for episode_item in episode_itemlist:
+        logger.info("[launcher.py] download_all_episodes, episode="+episode_item.title)
+        episode_title = scrapertools.get_match(episode_item.title,"(\d+x\d+)")
+	logger.info("[launcher.py] download_all_episodes, episode="+episode_title)
+
+	if first_episode!="" and episode_title==first_episode:
+	    empezar = True
+
+	if not empezar:
+	    continue
+
+        # Extrae los mirrors
+        mirrors_itemlist = channel.findvideos(episode_item)
+
+        descargado = False
+
+        new_mirror_itemlist_1 = []
+        new_mirror_itemlist_2 = []
+        new_mirror_itemlist_3 = []
+        new_mirror_itemlist_4 = []
+        new_mirror_itemlist_5 = []
+        new_mirror_itemlist_6 = []
+
+        for mirror_item in mirrors_itemlist:
+            
+            # Si está en español va al principio, si no va al final
+            if "(Español)" in mirror_item.title:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_1.append(mirror_item)
+                else:
+                    new_mirror_itemlist_2.append(mirror_item)
+            elif "(VOS)" in mirror_item.title:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_3.append(mirror_item)
+                else:
+                    new_mirror_itemlist_4.append(mirror_item)
+            else:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_5.append(mirror_item)
+                else:
+                    new_mirror_itemlist_6.append(mirror_item)
+
+        mirrors_itemlist = new_mirror_itemlist_1 + new_mirror_itemlist_2 + new_mirror_itemlist_3 + new_mirror_itemlist_4 + new_mirror_itemlist_5 + new_mirror_itemlist_6
+
+        for mirror_item in mirrors_itemlist:
+            logger.info("[launcher.py] download_all_episodes, mirror="+mirror_item.title)
+
+            if "(Español)" in mirror_item.title:
+                idioma="(Español)"
+            elif "(VOS)" in mirror_item.title:
+                idioma="(VOS)"
+            elif "(VO)" in mirror_item.title:
+                idioma="(VO)"
+            else:
+                idioma="(Desconocido)"
+            logger.info("[launcher.py] download_all_episodes, downloading mirror")
+            video_items = channel.play(mirror_item)
+
+            if len(video_items)>0:
+                video_item = video_items[0]
+
+                # Comprueba que esté disponible
+                video_urls, puedes, motivo = servertools.resolve_video_urls_for_playing( video_item.server , video_item.url , video_password="" , muestra_dialogo=False)
+
+                # Lo añade a la lista de descargas
+                if puedes:
+                    logger.info("[launcher.py] download_all_episodes, downloading mirror started...")
+                    # El vídeo de más calidad es el último
+                    mediaurl = video_urls[len(video_urls)-1][1]
+                    devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+" "+idioma+" ["+video_item.server+"]",continuar=False)
+
+                    if devuelve==0:
+                        logger.info("[launcher.py] download_all_episodes, download ok")
+                        descargado = True
+                        break
+                    elif devuelve==-1:
+                        advertencia = xbmcgui.Dialog()
+                        resultado = advertencia.ok("plugin" , "Descarga abortada")
+                        return
+                    else:
+                        logger.info("[launcher.py] download_all_episodes, download error, try another mirror")
+                        break
+
+                else:
+                    logger.info("[launcher.py] download_all_episodes, downloading mirror not available... trying next")
+
+        if not descargado:
+            logger.info("[launcher.py] download_all_episodes, EPISODIO NO DESCARGADO "+episode_title)
+

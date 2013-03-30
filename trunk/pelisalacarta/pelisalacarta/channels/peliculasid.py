@@ -149,7 +149,7 @@ def listvideos(item):
             scrapedplot = ""
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle.strip() , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5", viewmode="movie"  ))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle.strip() , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, extra = scrapedplot , context= "4|5", viewmode="movie", folder=False  ))
         
 
     # Extrae la marca de siguiente página
@@ -165,6 +165,19 @@ def listvideos(item):
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="listvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot ))
         
+    return itemlist
+
+def play(item):
+    logger.info("[peliculasid.py] play")
+    itemlist=[]
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    logger.info("data="+data)
+    #so.addVariable('file','http://peliculasid.net/plugins/rip-google.php?id=pAFm6wNHwrsPmbxHWNcec9MTjNZETYmyPJy0liipFm0#.mp4');
+    mediaurl = scrapertools.get_match(data,"so.addVariable\('file','([^']+)'")
+    itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=mediaurl, thumbnail="", plot="", server="directo"))
+
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.

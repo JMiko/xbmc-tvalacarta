@@ -88,7 +88,24 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    #
     patronvideos  = "movshare.net/embed/([a-z0-9]+)"
+    logger.info("[movshare.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[movshare]"
+        url = "http://www.movshare.net/video/"+match
+
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'movshare' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://embed.movshare.net/embed.php?v=xepscujccuor7&width=1000&height=450
+    patronvideos  = "movshare.net/embed.php\?v\=([a-z0-9]+)"
     logger.info("[movshare.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

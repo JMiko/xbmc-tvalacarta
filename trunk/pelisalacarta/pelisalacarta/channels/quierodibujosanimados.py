@@ -120,16 +120,19 @@ def episodios(item):
 def test():
     bien = True
     
+    from servers import servertools
+
     # mainlist
-    mainlist_items = mainlist(Item())
+    serie_itemlist = mainlist(Item())
     
     # Comprueba que todas las opciones tengan algo (excepto el buscador)
-    for mainlist_item in mainlist_items:
-        if mainlist_item.action!="search":
-            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
-            if len(itemlist)==0:
-                mirrors = findvideos(item=itemlist[0])
-                if len(mirrors)>0:
-                    return True
+    for serie_item in serie_itemlist:
+        episodio_itemlist = episodios(serie_item)
+
+        for episodio_item in episodio_itemlist:
+            mirrors = servertools.find_video_items(item=episodio_item)
+
+            if len(mirrors)>0:
+                return True
 
     return False

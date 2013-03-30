@@ -105,13 +105,15 @@ def test():
     
     # mainlist
     mainlist_items = mainlist(Item())
+
+    from servers import servertools
     
-    # Comprueba que todas las opciones tengan algo (excepto el buscador)
+    # Comprueba que alguna de las opciones tengan algo (excepto el buscador)
     for mainlist_item in mainlist_items:
         if mainlist_item.action!="search":
             exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
-            if len(itemlist)==0:
-                mirrors = findvideos(item=itemlist[0])
+            if len(itemlist)>0:
+                mirrors = servertools.find_video_items(item=itemlist[0])
                 if len(mirrors)>0:
                     return True
 
