@@ -121,9 +121,9 @@ def filterchannels(category):
 
 def channels_history_list():
     itemlist = []
+    itemlist.append( Item( title="Telemundo (30/03/2013)"                  , channel="telemundo"            , language="ES" , category="N"   , type="generic" )) # rsantaella 30/03/2013
     itemlist.append( Item( title="Once TV (Mexico) (22/03/2013)"           , channel="oncetvmex"            , language="ES" , category="N"   , type="generic" )) # rsantaella 22/03/2013
     itemlist.append( Item( title="TAL (Televisión de América Latina) (22/03/2013)", channel="tal"           , language="ES" , category="N"   , type="generic" )) # rsantaella 22/03/2013
-    #itemlist.append( Item( title="Telemundo (22/03/2013)"                  , channel="telemundo"            , language="ES" , category="N"   , type="generic" )) # rsantaella 22/03/2013
     itemlist.append( Item( title="Cadena Tres (México) (22/03/2013)"          , channel="cadenatres"           , language="ES" , category="N"   , type="generic" )) # rsantaella 22/03/2013
 
     itemlist.append( Item( title="MuchMusic Latinoamérica (11/02/2013)"      , channel="muchla"            , language="ES" , category="N"   , type="generic" )) # Juan Pablo 11/02/2013
@@ -208,7 +208,7 @@ def channels_list():
     itemlist.append( Item( title="TAL (Televisión de América Latina)", channel="tal"           , language="ES" , category="N"   , type="generic" ))  # rsantaella 22/03/2013
     itemlist.append( Item( title="Telefe (Argentina)"         , channel="telefe"               , language="ES" , category="N"   , type="generic", extra="rtmp" ))  # jesus 28/10/2011
     itemlist.append( Item( title="Telemadrid"                 , channel="telemadrid"           , language="ES" , category="A"   , type="generic", extra="rtmp" ))  # jesus 17/12/2012
-    #itemlist.append( Item( title="Telemundo"                  , channel="telemundo"            , language="ES" , category="N"   , type="generic" )) # rsantaella 22/03/2013
+    itemlist.append( Item( title="Telemundo"                  , channel="telemundo"            , language="ES" , category="N"   , type="generic" )) # rsantaella 30/03/2013
     itemlist.append( Item( title="TVE"                        , channel="rtve"                 , language="ES" , category="N"   , type="generic" ))
     itemlist.append( Item( title="Tvolucion.com"              , channel="tvolucion"            , language="ES" , category="N"   , type="generic" ))    
     itemlist.append( Item( title="Turbonick"                  , channel="turbonick"            , language="ES" , category="I"   , type="generic", extra="rtmp" ))
