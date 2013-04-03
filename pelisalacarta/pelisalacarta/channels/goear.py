@@ -32,26 +32,32 @@ def mainlist(item):
 ############################################## GENERA EL MENU PRINCIPAL###########################################################
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar Canciones"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar Canciones"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mas Escuchadas"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mas Escuchadas"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mejor Calidad"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mejor Calidad"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mas Recientes"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mas Recientes"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar PlayList"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar PlayList"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por "Número de Canciones"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por "Número de Canciones"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     
     itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por "Más Reciente"'     
-    ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title="Mostrar los PlayList de un Usuario"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user_azul.png')))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Mostrar los PlayList de un Usuario"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+
     return itemlist
     
 #################################################################################################################################
-
 
 def search(item,texto):
     logger.info("[goear.py] search")
@@ -105,7 +111,6 @@ def search(item,texto):
         if item.title=='Mostrar los PlayList de un Usuario':
             return list_my_playlist(item)
         
- 
         
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
@@ -162,7 +167,8 @@ def search_results(item):
     for match in matches:
         scrapedurl = match
         scrapedurl = scrapedurl.replace("search","http://www.goear.com/search")
-        scrapedtitle = "Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
+        scrapedurl = scrapedurl.replace(" ","+")
+        scrapedtitle = ">> Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -196,14 +202,10 @@ def play_cancion(item):
 #                                                    BLOQUE PLAYLIST                                                            #
 #################################################################################################################################
 
-
 def search_playlist_results(item):
     logger.info("[goear.py] search_playlist_results")
     data = scrapertools.cachePage(item.url)
     patron = '<a title="[^"]+" href="[^/]+/([^/]+)/[^"]+"><span class="song">(.*?)</p></li>'
-    
-    #<a title="Escuchar Mike Oldfield 01" href="playlist/0d9ead9/mike-oldfield-01"><span class="song">Mike Oldfield 01</span></span></a><p class="comment">Playlist con 12 canciones</p></li><li >
-    #<a title="Escuchar Mike Oldfield" href="playlist/c1ad5c2/mike-oldfield"><span class="song">Mike Oldfield</span></span></a><p class="comment">Playlist con 1 canciones</p></li>          </ol><!-- los resultados se mostrarán de 10 en 10 -->
     
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -249,36 +251,13 @@ def search_playlist_results(item):
     for match in matches:
         scrapedurl = match
         scrapedurl = scrapedurl.replace("playlist-search","http://www.goear.com/playlist-search")
-        scrapedtitle = "Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
+        scrapedurl = scrapedurl.replace(" ","+")
+        scrapedtitle = ">> Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="search_playlist_results" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="search_playlist_results" , title=scrapedtitle, url=scrapedurl, plot=scrapedplot))
     return itemlist
-
-
-
-###############################################################################################################################
-#                                  LEE EL NOMBRE DEL USUARIO Y MUESTRA SUS PLAYLIST                                           #
-###############################################################################################################################
-
-
-#def obtener_user_de_un_playlist(item):
-#    logger.info("[goear.py] obtener_user_de_un_playlist")
-#    data = scrapertools.cachePage(item.url)
-#    patron = '<span class="user">([^<]+)</span>'
-    #<span class="user">Yuneta</span>
-#    matches = re.compile(patron,re.DOTALL).findall(data)
-#    if DEBUG: scrapertools.printMatches(matches)
-#    itemlist = []
-#    for scrapedurl in matches:
-        # fabrica el link tipo item.url = "http://www.goear.com/USUARIO/playlist/1"
-#        scrapedurl = "http://www.goear.com/" + scrapedurl + "/playlist/1"
-#        scrapedtitle = "hola"
-#        scrapedplot=""
-#        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
-#        itemlist.append( Item(channel=__channel__, action="list_my_playlist" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
-#    return itemlist
 
 
 
@@ -337,11 +316,11 @@ def list_my_playlist(item):
     if DEBUG: scrapertools.printMatches(matches)
     for match in matches:
         scrapedurl = match
-        scrapedtitle = "Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
+        scrapedtitle = ">> Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="list_my_playlist" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="list_my_playlist" , title=scrapedtitle, url=scrapedurl, plot=scrapedplot))
     return itemlist
 
 
