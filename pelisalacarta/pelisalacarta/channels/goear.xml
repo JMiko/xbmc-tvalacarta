@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<version>
+	<name>goear</name>
+	<tag>1</tag>
+	<date>16/03/20132</date>
+	<changes>
+	    Arreglado problema con la paginación. 
+	</changes>
+</version>
