@@ -272,20 +272,27 @@ def findvideos(item):
         patron2  = '<a href="([^"]+)[^<]+</a>[^<]+</div>[^<]+'
         patron2 += '<div class="enlace_contenedor_servidor_ server ([^"]+)"></div>[^<]+'
         patron2 += '<div class="enlace_contenedor_idioma[^"]+" title="([^"]+)"><div></div></div>[^<]+'
-        patron2 += '<div class="enlace_contenedor_idioma[^"]+" title="([^"]*)"'
+        patron2 += '<div class="enlace_contenedor_idioma[^"]+" title="([^"]*)"><div></div></div>[^<]+'
+	patron2 += '<div class="enlace_contenedor_info"><p><b>(.*?)</b></p></div>'
         matches2 = re.compile(patron2,re.DOTALL).findall(match)
-        for url,server,audio,subtitulos in matches2:
+        for url,server,audio,subtitulos,info in matches2:
+	    patronhd="720p"
+	    matcheshd=re.compile(patronhd,re.DOTALL).findall(info)
+	    if (len(matcheshd)>0):
+		title="[HD] Ver en "+server+" (audio "+audio+", subtitulos "+subtitulos+")"
+	    else:
+		title="Ver en "+server+" (audio "+audio+", subtitulos "+subtitulos+")"
+	    print "#"+info+"#"
             if subtitulos=="":
                 subtitulos="no"
-        
-            itemlist.append( Item(channel=__channel__, action="play", title="Ver en "+server+" (audio "+audio+", subtitulos "+subtitulos+")" , url=url , thumbnail=item.thumbnail , show=item.show, plot=item.plot , folder=False) )
+            itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=item.thumbnail , show=item.show, plot=item.plot , folder=False) )
 
     return itemlist
 
 def play(item):
     logger.info("[serieonline.py] play")
     itemlist = []
-    
+    print("play"+item.server)
     data = scrapertools.cachePage(item.url)
     
     from servers import servertools
@@ -294,7 +301,6 @@ def play(item):
         videoitem.channel = item.channel
         videoitem.folder=False
         videoitem.action="play"
-
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.

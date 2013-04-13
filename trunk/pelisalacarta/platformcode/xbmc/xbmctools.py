@@ -546,38 +546,6 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         #    logger.info("[xbmctools.py] Con subtitulos")
         #    setSubtitles()
         
-    # Descarga en segundo plano para vidxden, sólo en modo free
-    elif server=="vidxden" and seleccion==0:
-        from core import downloadtools
-        import thread,os
-        import xbmc
-        
-        logger.info("[xbmctools.py] ---------------------------------")
-        logger.info("[xbmctools.py] DESCARGA EN SEGUNDO PLANO")
-        logger.info("[xbmctools.py]   de "+mediaurl)
-        temp_file = config.get_temp_file("background.file")
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
-        logger.info("[xbmctools.py]   a "+temp_file)
-        logger.info("[xbmctools.py] ---------------------------------")
-        thread.start_new_thread(downloadtools.downloadfile, (mediaurl,temp_file), {'silent':True})
-
-        handle_wait(60,"Descarga en segundo plano","Se está descargando un trozo antes de empezar")
-
-        playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-        playlist.clear()
-        playlist.add( temp_file, xlistitem )
-    
-        player_type = xbmc.PLAYER_CORE_AUTO
-        xbmcPlayer = xbmc.Player( player_type )
-        xbmcPlayer.play(playlist)
-        
-        while xbmcPlayer.isPlaying():
-            xbmc.sleep(5000)
-            logger.info("sigo aquí...")
-
-        logger.info("fin")
-        
     else:
         logger.info("b7")
         if config.get_setting("player_mode")=="0":
@@ -620,6 +588,46 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         elif config.get_setting("player_mode")=="2":
             logger.info("b10")
             xbmc.executebuiltin( "PlayMedia("+mediaurl+")" )
+        
+        elif config.get_setting("player_mode")=="3":
+            logger.info("b11")
+            import download_and_play
+            download_and_play.download_and_play( mediaurl , "download_and_play.tmp" , config.get_setting("downloadpath") )
+            return
+
+    # Descarga en segundo plano para vidxden, sólo en modo free
+    '''
+    elif server=="vidxden" and seleccion==0:
+        from core import downloadtools
+        import thread,os
+        import xbmc
+        
+        logger.info("[xbmctools.py] ---------------------------------")
+        logger.info("[xbmctools.py] DESCARGA EN SEGUNDO PLANO")
+        logger.info("[xbmctools.py]   de "+mediaurl)
+        temp_file = config.get_temp_file("background.file")
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+        logger.info("[xbmctools.py]   a "+temp_file)
+        logger.info("[xbmctools.py] ---------------------------------")
+        thread.start_new_thread(downloadtools.downloadfile, (mediaurl,temp_file), {'silent':True})
+
+        handle_wait(60,"Descarga en segundo plano","Se está descargando un trozo antes de empezar")
+
+        playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+        playlist.clear()
+        playlist.add( temp_file, xlistitem )
+    
+        player_type = xbmc.PLAYER_CORE_AUTO
+        xbmcPlayer = xbmc.Player( player_type )
+        xbmcPlayer.play(playlist)
+        
+        while xbmcPlayer.isPlaying():
+            xbmc.sleep(5000)
+            logger.info("sigo aquí...")
+
+        logger.info("fin")
+    '''
 
     if config.get_setting("subtitulo") == "true" and view:
         logger.info("b11")
@@ -855,16 +863,21 @@ def renderItems(itemlist, params, url, category, isPlayable='false'):
         xbmcplugin.setPluginCategory( handle=pluginhandle, category=category )
         xbmcplugin.addSortMethod( handle=pluginhandle, sortMethod=xbmcplugin.SORT_METHOD_NONE )
 
+        # Modos biblioteca
+        # MediaInfo3 - 503
+        #
+        # Modos fichero
+        # WideIconView - 505
+        # ThumbnailView - 500
+        
         if config.get_setting("forceview")=="true":
             if viewmode=="list":
                 xbmc.executebuiltin("Container.SetViewMode(50)")
             elif viewmode=="movie_with_plot":
-                # Confluence - Thumbnail
                 xbmc.executebuiltin("Container.SetViewMode(503)")
             elif viewmode=="movie":
-                # Confluence - Info de medios 2
                 xbmc.executebuiltin("Container.SetViewMode(500)")
-        
+
     xbmcplugin.endOfDirectory( handle=pluginhandle, succeeded=True )
 
 def wait2second():

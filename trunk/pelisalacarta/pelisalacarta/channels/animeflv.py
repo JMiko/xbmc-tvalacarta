@@ -282,6 +282,24 @@ def airlist(item):
 
     return itemlist
 
+def findvideos(item):
+    logger.info("[animeflv.py] findvideos")
+
+    data = scrapertools.cache_page(item.url)
+    itemlist=[]
+    
+    data = data.replace("\\/","/")
+
+    from servers import servertools
+    itemlist.extend(servertools.find_video_items(data=data))
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.action="play"
+        videoitem.folder=False
+        videoitem.title = "["+videoitem.server+"]"
+
+    return itemlist
+
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     bien = True
@@ -301,7 +319,7 @@ def test():
     
     bien = False
     for episodio_item in episodios_items:
-        mirrors = servertools.find_video_items(item=episodio_item)
+        mirrors = findvideos(episodio_item)
         if len(mirrors)>0:
             bien = True
             break

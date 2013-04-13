@@ -270,6 +270,8 @@ def channels_list():
     itemlist.append( Item( title="LetMeWatchThis"        , channel="letmewatchthis"       , language="EN"    , category="F,S,VOS"     , type="generic"  ))
     itemlist.append( Item( title="lossimpsonsonline.com.ar", channel="los_simpsons_online"       , language="ES"    , category="S"     , type="generic"  ))
     itemlist.append( Item( title="Malvin.tv"               , channel="malvin"              , language="ES"    , category="F,D"       , type="generic"  ))
+    itemlist.append( Item( title="Megapass"               , channel="megapass"             , language="ES"    , category="F,S,D"       , type="generic"  ))
+    itemlist.append( Item( title="Megaspain"              , channel="megaspain"            , language="ES"    , category="F,S,D"       , type="generic"  ))
     itemlist.append( Item( title="Mejor Torrent"               , channel="mejortorrent"              , language="ES"    , category="F,S,D"       , type="generic"  ))
     itemlist.append( Item( title="MCAnime"               , channel="mcanime"              , language="ES"    , category="A"       , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="MocosoftX"             , channel="mocosoftx"            , language="ES" , category="F" , type="generic"  ))

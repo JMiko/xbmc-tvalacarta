@@ -28,10 +28,10 @@ def mainlist(item):
     logger.info("[malvin.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Estrenos"     , action="movielist", url="http://www.malvin.tv/"))
-    itemlist.append( Item(channel=__channel__, title="Películas"    , action="lista",     url="http://www.malvin.tv/search/label/Online"))
-    itemlist.append( Item(channel=__channel__, title="Documentales" , action="lista",     url="http://www.malvin.tv/search/label/Documentales"))
-    itemlist.append( Item(channel=__channel__, title="Generos"      , action="generos",   url="http://www.malvin.tv/"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos"     , action="movielist", url="http://www.malvin.biz/"))
+    itemlist.append( Item(channel=__channel__, title="Películas"    , action="lista",     url="http://www.malvin.biz/search/label/Online"))
+    itemlist.append( Item(channel=__channel__, title="Documentales" , action="lista",     url="http://www.malvin.biz/search/label/Documentales"))
+    itemlist.append( Item(channel=__channel__, title="Generos"      , action="generos",   url="http://www.malvin.biz/"))
 
     return itemlist
 

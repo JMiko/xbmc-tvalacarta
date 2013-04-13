@@ -35,6 +35,14 @@ SERVER = "https://"+__server__+"/stormtv/public/"
 def isGeneric():
     return True
 
+def searchtype(item):
+	itemlist = []                                                                                                                                                             
+        itemlist.append( Item(channel=__channel__, action="search"    , thumbnail=SERVER+"buscar.jpg", title="Buscar", url="",fanart=SERVER+"logo.jpg"))
+	itemlist.append( Item(channel=__channel__,action="genresearch",thumbnail=SERVER+"buscar.jpg",title="Buscar por Genero", url="",fanart=SERVER+"logo.jpg"))
+	itemlist.append( Item(channel=__channel__,action="yearsearch",thumbnail=SERVER+"buscar.jpg",title="Buscar por AÃ±o", url="",fanart=SERVER+"logo.jpg"))
+	return itemlist
+
+
 def search(item,texto, categoria="*"):
     logger.info("[stormtv.py] search "+texto )
     itemlist = []
@@ -59,8 +67,13 @@ def search(item,texto, categoria="*"):
     	id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                    
         fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                
         poster = serie.getElementsByTagName("poster")[0].childNodes[0].data
-	type=serie.getElementsByTagName("type")[0].childNodes[0].data                                                
-    	itemlist.append( Item(channel=__channel__, action="channel" , title=name, fulltitle=name , url=id, thumbnail=SERVER+poster, plot="", viewmode="movie", show=id,fanart=SERVER+fanart))
+	type=serie.getElementsByTagName("type")[0].childNodes[0].data
+	try:                                                                                                                                                              
+                        plot=serie.getElementsByTagName("plot")[0].childNodes[0].data                                                                                             
+                        plot=plot.encode("utf-8")                                                                                                                                 
+        except:                                                                                                                                                           
+                        plot=""                                               
+    	itemlist.append( Item(channel=__channel__, action="channel" , title=name, fulltitle=name , url=id, thumbnail=SERVER+poster, plot=plot, viewmode="movie", show=id,fanart=SERVER+fanart))
     return itemlist
 
 def mkdir_p(path):
@@ -86,7 +99,7 @@ def mainlist(item):
           		pass            
 
     	itemlist = []
-    	itemlist.append( Item(channel=__channel__, action="search"    , thumbnail=SERVER+"buscar.jpg", title="Buscar", url="",fanart=SERVER+"logo.jpg"))
+	itemlist.append( Item(channel=__channel__,action="searchtype",thumbnail=SERVER+"buscar.jpg",title="Buscar", url="",fanart=SERVER+"logo.jpg"))
     	urllib.urlretrieve (SERVER+"tvseries/following/user/"+user_id+"/pass/"+user_pass, path+"temp.xml")                             
     	xml=path+"/"+"temp.xml"                                                                                                    
     	doc = minidom.parse(xml)                                                                                                   
@@ -98,7 +111,11 @@ def mainlist(item):
     		id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                    
         	fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                
         	poster = serie.getElementsByTagName("poster")[0].childNodes[0].data                                                
-    		plot=""
+    		try:
+			plot=serie.getElementsByTagName("plot")[0].childNodes[0].data
+			plot=plot.encode("utf-8")
+		except:
+			plot=""
     		art=SERVER+fanart      
 
         	# Depuracion
@@ -109,6 +126,95 @@ def mainlist(item):
     	itemlist=[]
     	itemlist.append( Item(channel=__channel__, action="channel" , title="Usuario o contraseña incorrectas", fulltitle="" , url="", thumbnail="", plot="", viewmode="movie", show="" ,fanart=""))
     return itemlist
+def genresearch(item):
+	user_id = config.get_setting("stormtvuser")                                                                                                                               
+        user_pass = config.get_setting("stormtvpassword")                                                                                                                         
+        path=config.get_data_path()+"stormtv/temp/"
+        urllib.urlretrieve (SERVER+"tvseries/genres", path+"temp.xml")                                                                        
+        xml=path+"/"+"temp.xml"                                                                                                                                                   
+        doc = minidom.parse(xml)                                                                                                                                                  
+        node = doc.documentElement                                                                                                                                                
+        genres = doc.getElementsByTagName("genre")
+	if (DEBUG): print len(genres)
+	itemlist=[]
+	for genre in genres:
+		name = genre.getElementsByTagName("name")[0].childNodes[0].data
+		if (DEBUG): logger.info("###"+name+"$$")
+		id = genre.getElementsByTagName("id")[0].childNodes[0].data
+		itemlist.append( Item(channel=__channel__, action="genretvs" , title=name, fulltitle=name , url=id, thumbnail=SERVER+"logo.jpg", plot="", viewmode="movie", show=id ,fanart=SERVER+"logo.jpg"))
+	return itemlist
+def yearsearch(item):                                                                                                                                                            
+        user_id = config.get_setting("stormtvuser")                                                                                                                               
+        user_pass = config.get_setting("stormtvpassword")                                                                                                                         
+        path=config.get_data_path()+"stormtv/temp/"                                                                                                                               
+        urllib.urlretrieve (SERVER+"tvseries/years", path+"temp.xml")                                                                                                            
+        xml=path+"/"+"temp.xml"                                                                                                                                                   
+        doc = minidom.parse(xml)                                                                                                                                                  
+        node = doc.documentElement                                                                                                                                                
+        years = doc.getElementsByTagName("year")                                                                                                                                
+        if (DEBUG): print len(years)                                                                                                                                                         
+        itemlist=[]                                                                                                                                                               
+        for year in years:                                                                                                                                                      
+                name = year.getElementsByTagName("name")[0].childNodes[0].data                                                                                                   
+                if (DEBUG): logger.info("[stormtv.py] yearsearch ###"+name+"$$")                                                                                                                                             
+                id = year.getElementsByTagName("id")[0].childNodes[0].data                                                                                                       
+                itemlist.append( Item(channel=__channel__, action="yeartvs" , title=name, fulltitle=name , url=id, thumbnail=SERVER+"logo.jpg", plot="", viewmode="movie_with_plot", show=id ,fanart=SERVER+"logo.jpg"))
+        return itemlist
+def yeartvs(item):
+	user_id = config.get_setting("stormtvuser")                                                                                                                               
+        user_pass = config.get_setting("stormtvpassword")                                                                                                                         
+        path=config.get_data_path()+"stormtv/temp/"                                                                                                                               
+        urllib.urlretrieve (SERVER+"tvseries/yeartvs/year/"+item.url, path+"temp.xml")                                                                                          
+        xml=path+"/"+"temp.xml"                                                                                                                                                   
+        doc = minidom.parse(xml)                                                                                                                                                  
+        node = doc.documentElement                                                                                                                                                
+        series = doc.getElementsByTagName("serie")                                                                                                                                
+        itemlist=[]                                                                                                                                                               
+        for serie in series:                                                                                                                                                      
+                name = serie.getElementsByTagName("name")[0].childNodes[0].data                                                                                                   
+                name = name.encode("utf-8")                                                                                                                                       
+                id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                                                                       
+                fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                                                               
+                poster = serie.getElementsByTagName("poster")[0].childNodes[0].data                                                                                               
+                try:                                                                                                                                                              
+                        plot=serie.getElementsByTagName("plot")[0].childNodes[0].data                                                                                             
+                        plot=plot.encode("utf-8")                                                                                                                                 
+                except:                                                                                                                                                           
+                        plot=""                                                                                                                                                   
+                art=SERVER+fanart                                                                                                                                                 
+                                                                                                                                                                                  
+                # Depuracion                                                                                                                                                      
+                #if (DEBUG): logger.info("title=["+name+"], url=["+id+"], thumbnail=["+art+"]")                                                                                   
+                itemlist.append( Item(channel=__channel__, action="channel" , title=name, fulltitle=name , url=id, thumbnail=SERVER+poster, plot=plot, viewmode="movie_with_plot", show=id ,fanart=art))
+        return itemlist 
+def genretvs(item):
+	user_id = config.get_setting("stormtvuser")                                                                                                                               
+        user_pass = config.get_setting("stormtvpassword")                                                                                                                         
+        path=config.get_data_path()+"stormtv/temp/"                                                                                                                               
+        urllib.urlretrieve (SERVER+"tvseries/genretvs/genre/"+item.url, path+"temp.xml")                                                                                                            
+        xml=path+"/"+"temp.xml"                                                                                                                                                   
+        doc = minidom.parse(xml)                                                                                                                                                  
+        node = doc.documentElement                                                                                                                                                
+        series = doc.getElementsByTagName("serie")
+	itemlist=[]                                                                                                                                
+        for serie in series:                                                                                                                                                      
+                name = serie.getElementsByTagName("name")[0].childNodes[0].data                                                                                                   
+                name = name.encode("utf-8")                                                                                                                                       
+                id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                                                                       
+                fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                                                               
+                poster = serie.getElementsByTagName("poster")[0].childNodes[0].data                                                                                               
+                try:                                                                                                                                                              
+                        plot=serie.getElementsByTagName("plot")[0].childNodes[0].data                                                                                             
+                        plot=plot.encode("utf-8")                                                                                                                                 
+                except:                                                                                                                                                           
+                        plot=""
+                art=SERVER+fanart                                                                                                                                                 
+                                                                                                                                                                                  
+                # Depuracion                                                                                                                                                      
+                #if (DEBUG): logger.info("title=["+name+"], url=["+id+"], thumbnail=["+art+"]")                                                                                   
+                itemlist.append( Item(channel=__channel__, action="channel" , title=name, fulltitle=name , url=id, thumbnail=SERVER+poster, plot=plot, viewmode="movie_with_plot", show=id ,fanart=art))
+	return itemlist 
+
 def channel(item):
 	logger.info("[stormtv.py] Channel")
 	storm_show=item.show
