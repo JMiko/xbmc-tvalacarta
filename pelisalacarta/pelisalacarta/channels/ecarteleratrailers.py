@@ -88,10 +88,11 @@ def play(item):
     itemlist=[]
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
+    logger.info(data)
 
     # Extrae las películas
-    patron  = "so\.addVariable\('file','([^']+)'\)"
+    #'file': 'http://www.ecartelera.com/video/3400/3446.mp4',
+    patron  = "'file'\: '([^']+)'"
     #patron  = "s1\.addParam\('flashvars'\,'file\=([^\&]+)\&"
     matches = re.compile(patron,re.DOTALL).findall(data)
 
@@ -101,3 +102,22 @@ def play(item):
         itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="directo", folder=False))
 
     return itemlist
+
+
+# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
+def test():
+    from servers import servertools
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    if len(mainlist_items)==0:
+        print "ecartelera: Lista de canales vacía"
+        return False
+    
+    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
+    video_items = play(mainlist_items[0])
+    if len(mainlist_items)==0:
+        print "ecartelera: No devuelve videos"
+        return False
+
+    return True

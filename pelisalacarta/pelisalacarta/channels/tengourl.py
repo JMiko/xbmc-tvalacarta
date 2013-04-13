@@ -51,3 +51,6 @@ def search(item,texto):
         itemlist.append( Item(channel=__channel__, action="search", title="No hay ningún vídeo compatible en esa URL"))
     
     return itemlist
+
+def test():
+    return True

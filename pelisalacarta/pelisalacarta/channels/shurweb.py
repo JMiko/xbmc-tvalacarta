@@ -223,6 +223,7 @@ def peliculas(item,paginacion=True):
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
+
     # Extrae las entradas
     patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">[^<]+<img width="123" height="100" src="([^"]+)"[^<]+<span class="time">([^<]+)</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -237,6 +238,37 @@ def peliculas(item,paginacion=True):
         scrapedthumbnail = match[2]
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , viewmode="movie", context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
+
+    #<span class="i_next fr" ><a href="http://www.shurweb.es/videoscategory/animacion/page/2/" >Ver Más Videos</a> </span>
+    try:    
+        next_page_url = scrapertools.get_match(data,'<span class="i_next fr" ><a href="([^"]+)" >Ver M')
+        itemlist.append( Item(channel=__channel__, title=">> Página siguiente", action="peliculas", url=urlparse.urljoin(item.url,next_page_url),fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    except:
+        pass
+
+    return itemlist
+
+def findvideos(item):
+    logger.info("[shurweb.py] findvideos")
+    itemlist=[]
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+
+    item.plot = scrapertools.get_match(data,'<h3 class="wp-tab-title">Info</h3[^<]+<div class="wp-tab-content">.*?<p class="uploaded_date">[^<]+</p>(.*?)</div>')
+    item.plot = scrapertools.htmlclean(item.plot).strip()
+
+    from servers import servertools
+    itemlist.extend(servertools.find_video_items(data=data))
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.action="play"
+        videoitem.folder=False
+        videoitem.title = "Vídeo en "+videoitem.server
+        videoitem.fulltitle = item.fulltitle
+        videoitem.plot = item.plot
+        videoitem.thumbnail = item.thumbnail
+        videoitem.viewmode = "movie_with_plot"
 
     return itemlist
 

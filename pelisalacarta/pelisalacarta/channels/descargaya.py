@@ -69,6 +69,7 @@ def hilos(item):
     for scrapedurl,scrapedtitle in matches:
         url = urlparse.urljoin(item.url,scrapedurl)
         title = scrapedtitle
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+""+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , folder=True) )
 

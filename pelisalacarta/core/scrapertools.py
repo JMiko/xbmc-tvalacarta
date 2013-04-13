@@ -828,6 +828,8 @@ def htmlclean(cadena):
     cadena = cadena.replace("<BR />","")
     cadena = cadena.replace("<Br>","")
 
+    cadena = re.compile("<script.*?</script>",re.DOTALL).sub("",cadena)
+
     cadena = re.compile("<option[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</option>","")
 
