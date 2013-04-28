@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>
-    <string id="30001">Check for updates:</string>
-    <string id="30002">Automatic update channels:</string>
-    <string id="30003">Enable adult mode:</string>
-    <string id="30004">Enable debug logging:</string>
-    <string id="30005">Favorites path:</string>
-</strings>
