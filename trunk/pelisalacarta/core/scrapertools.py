@@ -421,27 +421,44 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     logger.info("[scrapertools.py] ---------------------------")
 
     req = Request(url, post, txheaders)
-    if timeout is None:
-        handle=urlopen(req)
-    else:        
-        #Disponible en python 2.6 en adelante --> handle = urlopen(req, timeout=timeout)
-        #Para todas las versiones:
-        deftimeout = socket.getdefaulttimeout()
-        try:
+
+    try:
+
+        if timeout is None:
+            handle=urlopen(req)
+        else:        
+            #Para todas las versiones:
+            deftimeout = socket.getdefaulttimeout()
             socket.setdefaulttimeout(timeout)
             handle=urlopen(req)            
-        except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line ) 
+            socket.setdefaulttimeout(deftimeout)
         
-        socket.setdefaulttimeout(deftimeout)
-    
-    # Actualiza el almacén de cookies
-    cj.save(ficherocookies)
+        # Actualiza el almacén de cookies
+        cj.save(ficherocookies)
 
-    # Lee los datos y cierra
-    data=handle.read()
+        # Lee los datos y cierra
+        if handle.info().get('Content-Encoding') == 'gzip':
+            logger.info("[scrapertools.py] gzipped")
+            fin = inicio
+            import StringIO
+            data=handle.read()
+            compressedstream = StringIO.StringIO(data)
+            import gzip
+            gzipper = gzip.GzipFile(fileobj=compressedstream)
+            data = gzipper.read()
+            gzipper.close()
+            fin = time.clock()
+        else:
+            logger.info("[scrapertools.py] normal")
+            data = handle.read()
+    except urllib2.HTTPError,e:
+        logger.info("error "+repr(e))
+        import traceback
+        traceback.print_exc()
+        data = e.read()
+        #logger.info("data="+repr(data))
+        return data
+
     info = handle.info()
     logger.info("[scrapertools.py] Respuesta")
     logger.info("[scrapertools.py] ---------------------------")

@@ -286,9 +286,19 @@ def findvideos(item):
     logger.info("[animeflv.py] findvideos")
 
     data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+    packed = scrapertools.get_match(data,"(<script>eval\(function\(p,a,c,k,e,d\).*?split\('\|'\),0,\{\}\)\))")+"</script>"
+    logger.info("packed="+packed)
+    from core import jsunpack
+    unpacked = jsunpack.unpack(packed)
+    logger.info("unpacked="+unpacked)
+
     itemlist=[]
     
+    data = unpacked
+    data = data.replace("\\\\","")
     data = data.replace("\\/","/")
+    logger.info("data="+data)
 
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))

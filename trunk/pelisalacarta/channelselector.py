@@ -180,7 +180,7 @@ def channels_history_list():
     itemlist.append( Item( title="Malvin.tv (12/02/2013)"            , channel="malvin"          , language="ES"    , category="F,D"       , type="generic"  )) 
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PelisX (01/02/2013)"               , channel="pelisx"          , language="ES"    , category="F"       , type="generic"  )) # ZeDinis 01/02/2013
     itemlist.append( Item( title="Nukety (25/12/2012)"               , channel="nukety"          , language="ES"    , category="F,S"       , type="generic"  )) 
-    itemlist.append( Item( title="Instreaming (IT) (27/11/2012)"     , channel="instreaming"          , language="IT"    , category="F,S"       , type="generic"  )) 
+    #itemlist.append( Item( title="Instreaming (IT) (27/11/2012)"     , channel="instreaming"          , language="IT"    , category="F,S"       , type="generic"  )) 
     itemlist.append( Item( title="Film per tutti (IT) (27/11/2012)"  , channel="filmpertutti"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     itemlist.append( Item( title="Watch Cartoon Online (23/11/2012)" , channel="watchcartoononline"   , language="EN" , category="F,S", type="generic" )) # jesus 23/11/2012
     itemlist.append( Item( title="Series Online TV (12/11/2012)"     , channel="seriesonlinetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
@@ -257,7 +257,7 @@ def channels_list():
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Gaypornshare"             , channel="gaypornshare"            , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Goear"                   , channel="goear"                , language="ES" , category="M" , type="generic"  )) # vcalvo 15/12/2011
     itemlist.append( Item( title="Gnula"                   , channel="gnula"                , language="ES" , category="F" , type="generic"  )) # vcalvo 15/12/2011
-    itemlist.append( Item( title="Instreaming (IT)" , channel="instreaming"          , language="IT"    , category="F,S"       , type="generic"  )) 
+    #itemlist.append( Item( title="Instreaming (IT)" , channel="instreaming"          , language="IT"    , category="F,S"       , type="generic"  )) 
     #itemlist.append( Item( title="Internapoli City (IT)" , channel="internapoli"          , language="IT"    , category="F"       , type="generic"  )) 
     itemlist.append( Item( title="Italia film (IT)"      , channel="italiafilm"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     
@@ -296,7 +296,7 @@ def channels_list():
     itemlist.append( Item( title="Peliculasyonkis"       , channel="peliculasyonkis_generico" , language="ES"    , category="F,VOS"   , type="generic" ))
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S,VOS"        , type="generic"  ))
     itemlist.append( Item( title="PelisPekes"            , channel="pelispekes"              , language="ES" , category="F"        , type="generic"  ))
-    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PelisX"               , channel="pelisx"          , language="ES"    , category="F"       , type="generic"  )) # ZeDinis 01/02/2013
+    #if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PelisX"               , channel="pelisx"          , language="ES"    , category="F"       , type="generic"  )) # ZeDinis 01/02/2013
     itemlist.append( Item( title="Pirate Streaming (IT)" , channel="piratestreaming"      , language="IT" , category="F" , type="generic"    )) # jesus 16/7/2012
     #itemlist.append( Item( title="PelisFlv"              , channel="pelisflv"             , language="ES" , category="F"          , type="xbmc"  ))
     itemlist.append( Item( title="Quiero Dibujos Animados", channel="quierodibujosanimados", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012

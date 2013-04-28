@@ -4,7 +4,7 @@
 # Canal para stormtv 
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Por JuRR
-# v0.1
+# v0.5.1
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -79,7 +79,7 @@ def search(item,texto, categoria="*"):
 def mkdir_p(path):
     try:
            os.makedirs(path)
-    except OSError as exc: # Python >2.5
+    except OSError , exc: 
            if exc.errno == errno.EEXIST and os.path.isdir(path):
               pass
            else: raise    
@@ -351,7 +351,13 @@ def findvideos(item):
         strue=0
         ltrue=0
         verified=[]
+        vserver=""
+  	excluded=[]
+	excluded.append("letitbit") 
 	for item in itemlist:
+		#Si el canal es shurweb le añadimos (spa)
+		if (storm_channel_name=="shurweb"):                                                                                                                               
+                        item.title=item.title+" (spa)"
 		fserver=item.server
 		logger.info("[stormtv.py] title"+item.title)
 		title=item.title.lower()
@@ -430,7 +436,7 @@ def findvideos(item):
 			#res,test= tserver.test_vide_exists(item.url)                                                                                                   
 			#logger.info("[stormtv.py] findvideos"+res+"#"+test)
 		#Comprobamos el idioma
-		if (LANG!="0"):
+		if ((LANG!="0")&(strue==1)):
 			logger.info("lang="+item.title)
 			if (storm_channel_name=="serieonline"):                                                                                                                           
 			   item.title=stormlib.audio_serieonline(item.title)	
@@ -446,13 +452,13 @@ def findvideos(item):
 				if (LANG in ["2","4","6","0"]):
 					if (DEBUG):logger.info("[stormlib.py] findvideos: encontrado match vos")
 					ltrue=1
+
 				else:
 					ltrue=0
-					#storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail,  plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter))
 			elif (len(matches_vo)>0):
 				if (LANG in ["3","5","6","0"]):
 					if (DEBUG):logger.info("[stormlib.py] findvideos: encontrado match vo")
-					ltrue=1
+					ltrue=1                                                                                                                                   
 				else:
 					ltrue=0
 			elif (len(matches_spa)>0):
@@ -465,30 +471,53 @@ def findvideos(item):
 				if (DEBUG):logger.info("[stormlib.py] findvideos: No se ha encontrado ningun tipo.")
 				ltrue=1
 		else:
-			if (DEBUG):logger.info("[stormtv.py] ltrue=1")
+			if (DEBUG):logger.info("[stormtv.py] ltrue=0")
 			ltrue=1
-			#storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter))
-		if ((strue==1)&(ltrue==1)):
-		    if (vserver not in verified):                                                                                         
-                           try:                                                                                                                      
-                              exec "import servers."+vserver+" as tserver"                                                          
-                              res,test= tserver.test_video_exists(item.url)                                                                     
-                              if (res):                                                                                                         
-                                      print("[stormtv.py] findvideos"+"True#"+test)                                                             
-                                      item.title="[Verificado]"+item.title                                                                      
-                                      #strue=1                                                                                                   
-                                      verified.append(vserver)                                                                      
-                              else:                                                                                                             
-                                      print("[stormtv.py] findvideos false")                                                                    
-                                      strue=0                                                                                                   
-                           except:                                                                                                                   
-                                 pass
-		    storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter, server=vserver))
+		if ((strue==1)&(ltrue==1)):                                                                                                                                           
+                #seriesyonkis es un poco distinto para comprobar, de momento hacemos bypass :)                                                                                    
+                 if (storm_channel_name<>"seriesyonkis"):                                                                                                                          
+                   if ((vserver not in verified)&(vserver not in excluded)):                                                                                                      
+                           try:                                                                                                                                                   
+                              exec "import servers."+vserver+" as tserver"                                                                                                        
+                           except:                                                                                                                                                
+                                print "[stormtv.py] Free Verify no existe el servidor"                                                                                            
+                           try:                                                                                                                                                   
+                              data =scrapertools.cache_page(item.url)                                                                                                             
+                           except:                                                                                                                                                
+                                print "[stormtv.py] Free Verify no se puede descargar la pagina"                                                                                  
+                           #Shurweb y otros canales que usan la funcion generica de findvideos tienen el enlace directamente, no hay que descargar la pagina.                     
+                           if ((storm_channel_name<>"shurweb")&(storm_channel_name<>"animeflv")):                                                                                 
+                                print "dentro del if<>shurweb"                                                                                                                   
+                                try:                                                                                                                                              
+                                        resultado = tserver.find_videos(data)                                                                                                     
+                                except:                                                                                                                                           
+                                        print "[stormtv.py] Free Verify no find_videos"                                                                                           
+                                try:                                                                                                                                              
+                                        res,test= tserver.test_video_exists(resultado[0][1])                                                                                      
+                                except:                                                                                                                                           
+                                        print "[stormtv.py] Free Verified fallo test_video_exist "+vserver                                                                        
+                                        res=False                                                                                                                                 
+                           else:                                                                                                                                                  
+                                print "dentro del else<>shurweb"                                                                                                                 
+                                try:                                                                                                                                              
+                                        res,test= tserver.test_video_exists(data)                                                                                                 
+                                except:                                                                                                                                           
+                                        print "[stormtv.py] Verified fallo test_video_exist "+vserver                                                                             
+                                        res=False                                                                                                                                 
+                           if (res):                                                                                                                                              
+                              print("[stormtv.py] Free Verify"+"True#"+test)                                                                                                      
+                              item.title="[Verificado]"+item.title                                                                                                                
+                              verified.append(vserver)                                                                                                                            
+                              strue=1                                                                                                                                             
+                           else:                                                                                                                                                  
+                              print("[stormtv.py] findvideos false")                                                                                                              
+                              strue=0             
+		if ((strue==1)&(ltrue==1)):                                                                                                                                       
+                        storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail,  plot=storm_plot, folder=False, fanart=storm_fanart,show = storm_show,extra=storm_chapter, server=item.server)) 	 
 	if (SERVERS=="2"):
 		storm_itemlist.append( Item(channel=__channel__, action="free" , title="Buscar gratuitos", fulltitle=storm_channel_name , url=free_url, thumbnail=storm_thumbnail,plot=storm_plot, fanart=storm_fanart,show = storm_show,extra=storm_chapter))
 	return sorted(storm_itemlist, key=lambda item: item.title,  reverse=True) 
 
-#Modificar para que se corresponda con findvideos hacer que saque los enlaces free
 def free(item):
         logger.info("[stormtv.py] Free")                                                                                                                                    
         storm_fanart=item.fanart                                                                                                                                                  
@@ -513,8 +542,15 @@ def free(item):
 	pat_free=pat_free[:len(pat_free)-1]+")"
 	strue=0                                                                                                                                                                   
 	ltrue=0 
-	verified=[]                                                                                                                                                                  
+	#Verified contendrá la lista de servidores que hemos podido comprobar
+	verified=[]
+	#Excluded contendrá los servidores que no podemos verificar
+	excluded=[]
+	excluded.append("letitbit")                                                                                                                                                                  
 	for item in itemlist:
+	    #Si el canal es shurweb le añadimos (spa)                                                                                                                         
+            if (storm_channel_name=="shurweb"):                                                                                                                               
+                item.title=item.title+" (spa)"
 	    title=item.title.lower()
 	    if (storm_channel_name=="seriesdanko"):                                                                                                           
 	       matches_free=re.compile(pat_free,re.DOTALL).findall(item.thumbnail)
@@ -563,22 +599,48 @@ def free(item):
       	          	ltrue=1                                                                                                                                           
 	    else:                                                                                                                                                             
 	    	ltrue=1
-            if ((strue==1)&(ltrue==1)):
-		if (vserver not in verified):                                                                                                                                 
-                           try:                                                                                                                                                   
-                              exec "import servers."+vserver+" as tserver"                                                                                                        
-                              res,test= tserver.test_video_exists(item.url)                                                                                                       
-                              if (res):                                                                                                                                           
-                                      print("[stormtv.py] findvideos"+"True#"+test)                                                                                               
-                                      item.title="[Verificado]"+item.title                                                                                                        
-                                      #strue=1                                                                                                                                    
-                                      verified.append(vserver)                                                                                                                    
-                              else:                                                                                                                                               
-                                      print("[stormtv.py] findvideos false")                                                                                                      
-                                      strue=0                                                                                                                                     
-                           except:                                                                                                                                                
-                                 pass                                                                                                                                       
-             	storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter, server=item.server))	
+	
+	    if ((strue==1)&(ltrue==1)):
+		#seriesyonkis es un poco distinto para comprobar, de momento hacemos bypass :)
+	        if (storm_channel_name<>"seriesyonkis"):                                                        
+                   if ((vserver not in verified)&(vserver not in excluded)):                         
+                           try:                                                                      
+                              exec "import servers."+vserver+" as tserver"                           
+                           except:                                                                   
+                                print "[stormtv.py] Free Verify no existe el servidor"                  
+                           try:                                                                      
+                              data =scrapertools.cache_page(item.url)                                
+                           except:                                                                   
+                                print "[stormtv.py] Free Verify no se puede descargar la pagina" 
+			   #Shurweb y otros canales que usan la funcion generica de findvideos tienen el enlace directamente, no hay que descargar la pagina.       
+                           if ((storm_channel_name<>"shurweb")&(storm_channel_name<>"animeflv")):                                                  
+                                #print "dentro del if<>shurweb"                                       
+                                try:                                                                 
+                                        resultado = tserver.find_videos(data)                        
+                                except:                                                              
+                                        print "[stormtv.py] Free Verify no find_videos"                 
+                                try:                                                                 
+                                        res,test= tserver.test_video_exists(resultado[0][1])                                                                                      
+                                except:                                                                                                                                           
+                                        print "[stormtv.py] Free Verified fallo test_video_exist "+vserver                                                                             
+                                        res=False                                                                                                                                 
+                           else:                                                                                                                                                  
+                                #print "dentro del else<>shurweb"                                                                                                                  
+                                try:                                                                                                                                              
+                                        res,test= tserver.test_video_exists(data)                                                                                                 
+                                except:                                                                                                                                           
+                                        print "[stormtv.py] Verified fallo test_video_exist "+vserver                                                                             
+                                        res=False                                                                                                                                 
+                           if (res):                                                                                                                                              
+                              print("[stormtv.py] Free Verify"+"True#"+test)                                                                                                       
+                              item.title="[Verificado]"+item.title                                                                                                                
+                              verified.append(vserver)                                                                                                                            
+                              strue=1                                                                                                                                             
+                           else:                                                                                                                                                  
+                              print("[stormtv.py] findvideos false")                                                                                                              
+                              strue=0
+		if ((strue==1)&(ltrue==1)):
+             		storm_itemlist.append( Item(channel=__channel__, action="play" , title=item.title, fulltitle=storm_channel_name , url=item.url, thumbnail=storm_thumbnail, plot=storm_plot, folder=False,fanart=storm_fanart,show = storm_show,extra=storm_chapter, server=item.server))	
 	#return storm_itemlist
 	return sorted(storm_itemlist, key=lambda item: item.title,  reverse=True)    	   
 def play(item):

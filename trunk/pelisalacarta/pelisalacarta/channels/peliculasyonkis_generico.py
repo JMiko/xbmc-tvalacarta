@@ -101,7 +101,11 @@ def search(item,texto):
     data = scrapertools.cache_page(url,post=post)
     
     from pelisalacarta.channels import seriesyonkis
-    return seriesyonkis.getsearchresults(item, data, "findvideos")
+    itemlist = seriesyonkis.getsearchresults(item, data, "findvideos")
+    for item in itemlist:
+        item.channel=__channel__
+
+    return itemlist
 
 def lastepisodes(item):
     logger.info("[peliculasyonkis_generico.py] lastepisodes")
@@ -188,6 +192,7 @@ def findvideos(item):
     # Acota la zona de búsqueda
     data = scrapertools.cache_page(item.url)    
     data = scrapertools.get_match(data,'<div id="section-content"(.*?)<h2 class="header-subtitle magnet"')
+    logger.info("data="+data)
     
     # Procesa línea por línea
     matches = re.compile('<tr.*?</tr>', re.S).findall(data)
@@ -202,6 +207,20 @@ def findvideos(item):
         #<span class="flags lat" title="Español Latino" data-visible="true">lat</span></td> <td class="episode-subtitle subtitles center">
         #<span class="flags no_sub" title="Sin información" data-visible="true">no_sub</span></td> <td class="episode-quality">
         #<span class="episode-quality-icon" title="Calidad alta"> <i class="public_sprite meter04 quality4"></i> </span> </td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>  1.3 Gb  </li>  </ul> </div> </td> <td class="episode-source center"><span title="Blu-Ray, DVD... - Calidad alta">BR/DVD</span></td> <td class="episode-uploader"><span title="88TodoPelis88">88Todo...</span></td> <td class="episode-error bug center"><a href="#" class="errorlink" data-id="5558986" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="error" /></a></td> </tr>  <tr data-server="nowvideo" data-la
+
+        '''
+        <tr data-server="vk" data-lang="spa" data-sub="no_sub"> 
+        <td class="episode-server" data-value="1"> 
+        <a href="/s/ngo/2/6/4/8/694" title="Reproducir Los colegas del barrio (1996) en vk" target="_blank">
+        <img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22" alt="ver online" />Reproducir</a>  
+        <span class="public_sprite like_green vote_link_positive user_not_logged" data-id="2648694" data-type="+" title="Voto positivo">[positivo]</span> 
+        <span class="public_sprite dislike_red vote_link_negative user_not_logged" data-id="2648694" data-type="-" title="Voto negativo">[negativo]</span> </td> 
+        <td class="episode-server-img"><a href="/s/ngo/2/6/4/8/694" title="Reproducir Los colegas del barrio (1996) " target="_blank">
+        <span class="server vk"></span></a></td> 
+        <td class="episode-lang"><span class="flags spa" title="Español">spa</span></td> 
+        <td class="episode-subtitle subtitles center"><span class="flags no_sub" title="Sin información">no_sub</span></td> <td class="quality"> 
+        <span class="episode-quality-icon" title="Calidad alta"> <i class="public_sprite meter04 quality4"></i> </span> </td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>    </li>  </ul> </div> </td> <td class="source center"><span title="Blu-Ray, DVD... - Calidad alta">BR/DVD</span></td> <td class="episode-uploader"><span title="--3286--">--3286--</span></td
+        '''
         
         patron  = '<a href="(/s/ngo/[^"]+)".*?'
         patron += '<span class="server ([^"]+)".*?'

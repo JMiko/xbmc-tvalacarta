@@ -358,13 +358,14 @@ def play(item):
 
 def test():
     from servers import servertools
+    
     # mainlist
     mainlist_items = mainlist(Item())
     submenu_items = submenu(mainlist_items[0])
     peliculas_items = peliculas(submenu_items[0])
     bien = False
     for pelicula_item in peliculas_items:
-        mirrors = findvideos(item=pelicula_item)
+        mirrors = findvideospeliculas(item=pelicula_item)
         if len(mirrors)>0:
             bien = True
             break

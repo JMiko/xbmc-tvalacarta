@@ -331,7 +331,8 @@ def test():
 
         for episode_item in episode_items:
             mediaurls = findvideos( episode_item )
-            if len(mediaurls)>=0 and len( play(mediaurls[0]) )>0:
-                return True
+            for mediaurl in mediaurls:
+                if len( play(mediaurl) )>0:
+                    return True
 
     return False

@@ -82,7 +82,7 @@ def videos(item):
             scrapedplot = ""
             # Depuracion
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-            itemlist.append( Item(channel=__channel__, action="video" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, folder=False))
 
     #Paginador
     print "paginador"
@@ -108,7 +108,7 @@ def listcategorias(item):
     
 
 # OBTIENE LOS ENLACES SEGUN LOS PATRONES DEL VIDEO Y LOS UNE CON EL SERVIDOR
-def video(item):
+def play(item):
     logger.info("[xhamster.py] play")
     data = scrapertools.downloadpage(item.url)
     itemlist = []
@@ -125,3 +125,18 @@ def video(item):
 
     return itemlist
 
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Ultimos videos" devuelve mirrors
+    videos_items = videos(mainlist_items[0])
+    
+    bien = False
+    for video_item in videos_items:
+        play_items = play(video_item)
+        if len(play_items)>0:
+            return True
+    
+    return False

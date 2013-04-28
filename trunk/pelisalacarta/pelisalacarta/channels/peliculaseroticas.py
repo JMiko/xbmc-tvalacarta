@@ -240,9 +240,10 @@ def test():
     # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
     mainlist_items = mainlist(Item())
     novedades_items = novedades(mainlist_items[0])
+
     bien = False
     for novedades_item in novedades_items:
-        mirrors = servertools.find_video_items( item=novedades_item )
+        mirrors = detail( item=novedades_item )
         if len(mirrors)>0:
             bien = True
             break

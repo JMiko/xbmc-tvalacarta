@@ -45,32 +45,32 @@ def menupeliculas(item):
 
 def menupelisaz(item):
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="A"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/a/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="B"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/b/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="C"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/c/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="D"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/d/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="E"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/e/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="F"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/f/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="G"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/g/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="H"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/h/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="I"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/i/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="J"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/j/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="K"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/k/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="L"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/l/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="M"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/m/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="N"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/n/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="O"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/o/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="P"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/p/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Q"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/q/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="R"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/r/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="S"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="T"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/t/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="U"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/u/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="V"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/v/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="W"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/w/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="X"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/x/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Y"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/y/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Z"        , action="peliculas"   , url="http://www.shurweb.es/lista-de-peliculas/z/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="A"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/a/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="B"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/b/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="C"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/c/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="D"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/d/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="E"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/e/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="F"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/f/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="G"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/g/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="H"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/h/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="I"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/i/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="J"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/j/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="K"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/k/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="L"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/l/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="M"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/m/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="N"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/n/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="O"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/o/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="P"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/p/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Q"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/q/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="R"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/r/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="S"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="T"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/t/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="U"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/u/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="V"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/v/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="W"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/w/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="X"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/x/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Y"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/y/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Z"        , action="peliculas_ordenadas"   , url="http://www.shurweb.es/lista-de-peliculas/z/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     return itemlist
 
 def menupelisanos(item):
@@ -188,6 +188,7 @@ def episodios(item):
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="episodios", show=item.show))
 
     return itemlist
 
@@ -246,6 +247,11 @@ def peliculas(item,paginacion=True):
     except:
         pass
 
+    return itemlist
+
+def peliculas_ordenadas(item):
+    itemlist = peliculas(item)
+    itemlist.sort(key=lambda item: item.title.lower().strip())
     return itemlist
 
 def findvideos(item):

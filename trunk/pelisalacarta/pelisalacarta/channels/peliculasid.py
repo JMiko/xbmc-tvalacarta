@@ -189,7 +189,7 @@ def test():
     peliculas_items = listvideos(mainlist_items[0])
     bien = False
     for pelicula_item in peliculas_items:
-        mirrors = servertools.find_video_items( item=pelicula_item )
+        mirrors = play( item=pelicula_item )
         if len(mirrors)>0:
             bien = True
             break

@@ -237,8 +237,8 @@ def run():
                 
                         try:
                             #(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
-                            # Añade todos menos el último (el que dice "Añadir esta serie...")
-                            if i<len(itemlist):
+                            # Añade todos menos el que dice "Añadir esta serie..." o "Descargar esta serie..."
+                            if item.action!="add_serie_to_library" and item.action!="download_all_episodes":
                                 nuevos = nuevos + library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle, extra=item.extra )
                         except IOError:
                             import sys
@@ -561,7 +561,11 @@ def download_all_episodes(item,channel,first_episode=""):
             else:
                 idioma="(Desconocido)"
             logger.info("[launcher.py] download_all_episodes, downloading mirror")
-            video_items = channel.play(mirror_item)
+
+            if hasattr(channel, 'play'):
+                video_items = channel.play(mirror_item)
+            else:
+                video_items = [mirror_item]
 
             if len(video_items)>0:
                 video_item = video_items[0]

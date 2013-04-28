@@ -7,6 +7,7 @@
 
 import urlparse,urllib2,urllib,re
 import os, sys
+import base64
 
 from core import logger
 from core import config
@@ -140,6 +141,30 @@ def findvideos(item):
         
         scrapedtitle = "Descarga directa "+scrapedtitle
         itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , fulltitle=item.title , url=scrapedurl , thumbnail=thumbnail , plot=item.plot , folder=False) )
+
+    return itemlist
+
+def play(item):
+    logger.info("[seriesonlinetv.py] play")
+    itemlist = []
+    
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    logger.info("data1="+data)
+    data = scrapertools.get_match(data,"(<script type=\"text/javascript\">decodeBase64\('[^']+'\))")
+    logger.info("data2="+data)
+
+    import divxonline
+    data = divxonline.decryptinks(data)
+    logger.info("data3="+data)
+
+    itemlist = servertools.find_video_items(data=data)
+    i=1
+    for videoitem in itemlist:
+        videoitem.title = videoitem.title
+        videoitem.fulltitle = item.fulltitle
+        videoitem.channel=channel=__channel__
+        i=i+1
 
     return itemlist
 

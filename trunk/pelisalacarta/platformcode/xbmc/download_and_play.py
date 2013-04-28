@@ -9,6 +9,7 @@
 
 import os
 import sys
+import re
 import urlparse
 import urllib
 import urllib2
@@ -39,27 +40,41 @@ def download_and_play(url,file_name,download_path):
     # Espera
     logger.info("[download_and_play.py] Waiting...")
 
-    dialog = xbmcgui.DialogProgress()
-    dialog.create('Descargando...', 'Cierra esta ventana para empezar la reproducción')
-    dialog.update(0)
+    while True:
+        cancelled=False
+        dialog = xbmcgui.DialogProgress()
+        dialog.create('Descargando...', 'Cierra esta ventana para empezar la reproducción')
+        dialog.update(0)
 
-    cancelled=False
-    while not cancelled and download_thread.is_alive():
-        dialog.update( download_thread.get_progress() , "Cierra esta ventana para empezar la reproducción", "Velocidad: "+str(int(download_thread.get_speed()/1024))+" KB/s" , "Tiempo restante: "+str( downloadtools.sec_to_hms(download_thread.get_remaining_time())) )
-        xbmc.sleep(1000)
+        while not cancelled and download_thread.is_alive():
+            dialog.update( download_thread.get_progress() , "Cancela esta ventana para empezar la reproducción", "Velocidad: "+str(int(download_thread.get_speed()/1024))+" KB/s "+str(download_thread.get_actual_size())+"MB de "+str(download_thread.get_total_size())+"MB" , "Tiempo restante: "+str( downloadtools.sec_to_hms(download_thread.get_remaining_time())) )
+            xbmc.sleep(1000)
 
-        if dialog.iscanceled():
-            cancelled=True
+            if dialog.iscanceled():
+                cancelled=True
+                break
+
+        dialog.close()
+
+        logger.info("[download_and_play.py] End of waiting")
+
+        # Lanza el reproductor
+        player = CustomPlayer()
+        player.set_download_thread(download_thread)
+        player.PlayStream( download_thread.get_file_name() )
+
+        # Fin de reproducción
+        logger.info("[download_and_play.py] Fin de reproducción")
+
+        if player.is_stopped():
+            logger.info("[download_and_play.py] Terminado por el usuario")
             break
-
-    dialog.close()
-
-    logger.info("[download_and_play.py] End of waiting")
-
-    # Lanza el reproductor
-    player = CustomPlayer()
-    player.set_download_thread(download_thread)
-    player.PlayStream( download_thread.get_file_name() )
+        else:
+            if not download_thread.is_alive():
+                logger.info("[download_and_play.py] La descarga ha terminado")
+                break
+            else:
+                logger.info("[download_and_play.py] Continua la descarga")
 
     # Cuando el reproductor acaba, si continúa descargando lo para ahora
     logger.info("[download_and_play.py] Download thread alive="+str(download_thread.is_alive()))
@@ -71,12 +86,20 @@ def download_and_play(url,file_name,download_path):
 class CustomPlayer(xbmc.Player):
     def __init__( self, *args, **kwargs ):
         logger.info("CustomPlayer.__init__")
+        self.actualtime=0
+        self.totaltime=0
+        self.stopped=False
         xbmc.Player.__init__( self )
 
     def PlayStream(self, url):  
         logger.info("CustomPlayer.PlayStream url="+url)
         self.play(url)
+        self.actualtime=0
+        self.url=url
         while self.isPlaying():
+            self.actualtime = self.getTime()
+            self.totaltime = self.getTotalTime()
+            logger.info("CustomPlayer.PlayStream actualtime="+str(self.actualtime)+" totaltime="+str(self.totaltime))
             xbmc.sleep(3000)
 
     def set_download_thread(self,download_thread):
@@ -98,11 +121,14 @@ class CustomPlayer(xbmc.Player):
 
     def onPlayBackEnded(self):
         logger.info("CustomPlayer.onPlayBackEnded PLAYBACK ENDED")
-        self.force_stop_download_thread()
 
     def onPlayBackStopped(self):
         logger.info("CustomPlayer.onPlayBackStopped PLAYBACK STOPPED")
+        self.stopped=True
         self.force_stop_download_thread()
+
+    def is_stopped(self):
+        return self.stopped
 
 # Download in background
 class DownloadThread(threading.Thread):
@@ -116,6 +142,8 @@ class DownloadThread(threading.Thread):
         self.force_stop_file_name = os.path.join( self.download_path , "force_stop.tmp" )
         self.velocidad=0
         self.tiempofalta=0
+        self.actual_size=0
+        self.total_size=0
 
         if os.path.exists(self.force_stop_file_name):
             os.remove(self.force_stop_file_name)
@@ -144,6 +172,12 @@ class DownloadThread(threading.Thread):
 
     def get_remaining_time(self):
         return self.tiempofalta
+
+    def get_actual_size(self):
+        return self.actual_size
+
+    def get_total_size(self):
+        return self.total_size
 
     def download_file(self):
         headers=[]
@@ -216,6 +250,8 @@ class DownloadThread(threading.Thread):
             totalfichero = int(connexion.headers["Content-Length"])
         except:
             totalfichero = 1
+
+        self.total_size = int(float(totalfichero) / float(1024*1024))
                 
         logger.info("Content-Length=%s" % totalfichero)        
         blocksize = 100*1024
@@ -247,6 +283,7 @@ class DownloadThread(threading.Thread):
                 self.progress=percent;
                 totalmb = float(float(totalfichero)/(1024*1024))
                 descargadosmb = float(float(grabado)/(1024*1024))
+                self.actual_size = int(descargadosmb)
     
                 # Lee el siguiente bloque, reintentando para no parar todo al primer timeout
                 reintentos = 0
