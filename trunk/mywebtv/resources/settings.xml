@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <setting id="updatecheck2" type="bool" label="30001" default="true"/>
-    <setting id="updatechannels" type="bool" label="30002" default="true"/>
-    <setting id="enableadultmode" type="bool" label="30003" default="false"/>
-    <setting id="debug" type="bool" label="30004" default="false"/>
-    <setting id="bookmarkpath" type="text" source="video" option="writeable" label="30005" default=""/>
-</settings>
