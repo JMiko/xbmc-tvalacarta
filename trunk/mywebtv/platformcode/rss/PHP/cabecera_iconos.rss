@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<!--
+#   CABECERA_ICONOS.RSS
+-->
+
+<onEnter>
+	itemCountMove = getPageInfo("itemCount");
+	columnCount = 4;
+     screenXp = 16;
+     screenYp = 9;
+     startitem = "";
+</onEnter>	
+
+<onRefresh>
+  itemCount = getPageInfo("itemCount");
+  middleItem = Integer(itemCount / 2);
+  if(startitem == "middle") setFocusItemIndex(middleItem);
+  else if(startitem == "last") setFocusItemIndex(itemCount);
+  redrawDisplay();
+</onRefresh>
+
+<!--
+  	imageTopSide="image/up_frame.jpg"
+	itemBackgroundColor="28:35:51"
+	imageBorderColor="242:43:1"
+	menuBorderColor="55:55:55"
+  	imageFocus=""
+  	imageUnFocus=""
+	sliding=yes
+  	backgroundColor=0:0:0	
+
+	itemGrid.focusElementBackground.image="/usr/local/bin/image/focusItemBackground.png"
+	itemGrid.elementBackground.image="/usr/local/bin/image/itemBackground.png"
+
+	imageFocusItemBackground="/usr/local/bin/image/focusItemBackground.png"
+	imageItemBackground="/usr/local/bin/image/itemBackground.png"
+	imageFocus ="/usr/local/bin/image/IMAGE_NEWRSS_MENU_BTFOC.bmp"
+  	BackgroundDark="no"	
+
+-->
+<mediaDisplay name="photoView"
+	centerXPC=null 
+	centerYPC=null
+	centerHeightPC=70
+	centerWidthPC=100
+     centerColor="56:70:102" 
+
+	sideColorBottom="28:35:51"
+	sideBottomHeightPC=0
+	bottomYPC=0
+
+	sideColorTop="28:35:51"
+	sideTopHeightPC=15
+
+	sideColorLeft="0:0:0" 
+
+  	infoHeightPC=26	
+  	infoYPC=90
+
+  	fontSize=20
+	columnCount=4	
+	rowCount=2
+	itemGapXPC=2
+	itemGapYPC=2
+	sliding=no
+	imageBorderPC="1"
+	imageBorderColor="255:255:255"
+	showHeader=no
+	showDefaultInfo=yes
+  	backgroundColor="56:70:102"	
+	itemBackgroundColor="56:70:102"
+	imageBackgroundColor="56:70:102"  	
+>
+<!--  	imageParentFocus="image/start_playlist.jpg" -->
+
+   <image offsetXPC=23 offsetYPC=3.5 widthPC=54 heightPC=9>image/bg-column-item.png</image> <!--  infobar.png</image> -->
+   <image offsetXPC=82 offsetYPC=3.5 widthPC=15 heightPC=15>image/pelisalacartalogo.png</image>
+
+	<!-- backgroundDisplay>       
+		<image offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100">image/videos.jpg</image>    
+	</backgroundDisplay -->
+   <text align="center" redraw="yes" offsetXPC=20 offsetYPC=5 widthPC=60 heightPC=6 fontSize=28 backgroundColor=-1:-1:-1 foregroundColor=200:200:200>
+       <script>getPageInfo("pageTitle");</script>
+   </text>
+
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_01.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_02.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_03.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_04.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_05.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_06.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_07.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+   <idleImage idleImageYPC="45" idleImageHeightPC="10">image/POPUP_LOADING_08.png<idleImageWidthPC><script>10 * screenYp / screenXp;</script></idleImageWidthPC><idleImageXPC><script>45 + 10 * (1 - screenYp / screenXp) / 2;</script></idleImageXPC></idleImage>
+
+   <onUserInput>
+      <script>
+      ret = "false";
+      userInput = currentUserInput();
+      majorContext = getPageInfo("majorContext");
+      if (userInput == "pagedown" || userInput == "pageup" || userInput == "PD" || userInput == "PG") {
+          idx = Integer(getFocusItemIndex());
+          if (userInput == "pagedown") {
+               idx -= -columnCount;
+               if(idx &gt;= itemSizeMove) idx = itemSizeMove-1;
+          }
+          else {
+               idx -= columnCount;
+               if(idx &lt; 0) idx = 0;
+          }
+          setFocusItemIndex(idx);
+          setItemFocus(idx);
+          redrawDisplay();
+          ret = "true";
+      }
+      ret;
+      </script>
+   </onUserInput>
+
+   <itemDisplay>
+      <script> 
+          imageW = 90/columnCount*4; imageH = imageW; 
+		idx = getQueryItemIndex();
+		focus = getFocusItemIndex();
+      </script>
+	 <image>
+	     <script>getItemInfo(idx, "image");</script>
+	     <widthPC><script>if(focus==idx) 100; else imageW * 2 / 3;</script></widthPC>
+		<heightPC><script>if(focus==idx) 100; else imageH * 2 / 3;</script></heightPC>
+		<offsetXPC><script>if(focus==idx) 0; else 50 - imageW * 3 / 8;</script></offsetXPC>
+		<offsetYPC><script>if(focus==idx) 0; else imageH / 6;</script></offsetYPC>
+	</image>
+  </itemDisplay>	
+</mediaDisplay>
+
