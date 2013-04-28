@@ -49,49 +49,33 @@ def search(item,texto):
 
 def videos(item):
     logger.info("[submityourtapes.py] videos")
-    data = scrapertools.downloadpageGzip(item.url)
 
     itemlist = [] 
-    matches = re.compile(r"""<div class='content_item' style="width: 242px;">.*?<br style='clear: both'>.*?</div>.*?</div>""",re.DOTALL).findall(data)
-    for match in matches:
-        
-        info = re.compile(r"""<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)" alt="([^"]+)" name="([^"]+)" border="1" id='([^"]+)' width="240" height="180""""", re.S).findall(match)
-        if len(info) == 1:
-            video = info[0]
-            
-        time = re.compile(r"""<span style='([^']+)'>([^']+)</span>""", re.S).findall(match)
-        posted = re.compile(r"""<div style='float:right'>Posted: ([^']+)<br /></div>""", re.S).findall(match)
-        
-        try:
-            scrapedtitle = unicode( video[1], "utf-8" ).encode("iso-8859-1")
-        except:
-            scrapedtitle = video[1]
-
-        if len(time) > 0:
-            scrapedtitle = scrapedtitle + "("+time[0][1]+")"
-            
-        if len(posted) > 0:
-            scrapedtitle = scrapedtitle + "["+posted[0]+"]"
-        
-        scrapedurl =  urlparse.urljoin( "http://www.submityourtapes.com/", video[0] )
-        scrapedthumbnail = urlparse.urljoin( "http://www.submityourtapes.com/", video[2] )
-        scrapedplot = ""
+    '''
+    <div class='content_item'>
+    <a href="/videos/264559/hard-doggy-creampie.html"><img src="http://static2.cdn.submityourtapes.com/thumbs/240x180/b/7/5/126302/264559/0.jpg" alt="Blonde Wife Gets Facial" title="HARD Doggy Creampie" name="im264559" border="1" id='im264559' width="240" height="180" onmouseover="if (typeof(startm)=='function') {startm(this);}" onmouseout="if (typeof(endm)=='function') {endm(this,4);}" /></a><br />
+    '''
+    data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+    patron  = "<div class='content_item'[^<]+"
+    patron += '<a href="([^"]+)"><img src="([^"]+)" alt="[^"]+" title="([^"]+)"'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        title = scrapedtitle
+        url =  urlparse.urljoin( item.url , scrapedurl )
+        thumbnail = urlparse.urljoin( item.url , scrapedthumbnail )
+        plot = ""
         # Depuracion
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")            
-        itemlist.append( Item(channel=__channel__, action="video" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle))
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")            
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, folder=False))
 
-    #Paginador
-    print "paginador"
-    matches = re.compile('<a href="([^"]+)">Next</a>', re.DOTALL).findall(data)
-    if len(matches)>0:
-        scrapedurl =  urlparse.urljoin( "http://www.submityourtapes.com/", matches[0] )
-        print scrapedurl
-        paginador = Item(channel=__channel__, action="videos" , title="!Página siguiente" , url=scrapedurl, thumbnail="", plot="", extra = "" , show=item.show)
-    else:
-        paginador = None
-    
-    if paginador is not None:
-        itemlist.append( paginador )
+    # Paginador
+    try:
+        next_url = scrapertools.get_match(data,'<span class=\'current\'>\d+</span> <a href="([^"]+)">')
+        next_url = urlparse.urljoin(item.url,next_url)
+        itemlist.append( Item(channel=__channel__, action="videos" , title=">> Página siguiente" , url=next_url) )
+    except:
+        pass
 
     return itemlist
 
@@ -104,7 +88,7 @@ def listcategorias(item):
     
 
 # OBTIENE LOS ENLACES SEGUN LOS PATRONES DEL VIDEO Y LOS UNE CON EL SERVIDOR
-def video(item):
+def play(item):
     logger.info("[submityourtapes.py] play")
     # <div id="movies" style="width: 100%; ">
     data = scrapertools.downloadpage(item.url)
@@ -123,3 +107,18 @@ def video(item):
 
     return itemlist
 
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    # mainlist
+    mainlist_items = mainlist(Item())
+    
+    # Da por bueno el canal si alguno de los vídeos de "Ultimos videos" devuelve mirrors
+    videos_items = videos(mainlist_items[0])
+    
+    bien = False
+    for video_item in videos_items:
+        play_items = play(video_item)
+        if len(play_items)>0:
+            return True
+    
+    return False

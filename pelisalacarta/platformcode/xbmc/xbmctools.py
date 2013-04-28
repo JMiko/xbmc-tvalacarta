@@ -548,7 +548,7 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         
     else:
         logger.info("b7")
-        if config.get_setting("player_mode")=="0":
+        if config.get_setting("player_mode")=="0" or (config.get_setting("player_mode")=="3" and mediaurl.startswith("rtmp")):
             logger.info("b8")
             # Añadimos el listitem a una lista de reproducción (playlist)
             playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )

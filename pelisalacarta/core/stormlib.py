@@ -1,7 +1,8 @@
 ﻿# -*- coding: utf-8 -*-                                                                                                                                                        
 #------------------------------------------------------------                                                                                                                     
 # pelisalacarta - XBMC Plugin                                                                                                                                                     
-# libreria para stormtv                                                                                                                                                         
+# libreria para stormtv
+# v0.5.1                                                                                                                                                      
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/                                                                                                                          
 #------------------------------------------------------------                                                                                                                     
 import urlparse,urllib2,urllib,re
@@ -202,4 +203,57 @@ def audio_seriesyonkis(title):
         n_title=n_title.replace(patron_vos2,"(VOS)")
         n_title=n_title.replace(patron_spa,"(Español)")
         return n_title
-    
+def verify(itemlist):
+	print "[stormlib.py] verify"		
+	strue=1                                                                                                                                                           
+	ltrue=1                                                                                                                                                           
+        excluded=[]                                                                                                                                                       
+        excluded.append("letitbit")
+	storm_itemlist=[]
+	verified=[]
+	from core import scrapertools                                                                                                                                     
+        from core.item import Item
+	for item in itemlist:
+		channel=item.fulltitle                                                                                                                                          
+                print "[verify]channel:"+channel
+		vserver=item.server                                                                                                                                       
+                print "Server="+vserver+" URL="+item.url
+		if (channel<>"seriesyonkis"):                                                                                                                  
+                   if ((vserver not in verified)&(vserver not in excluded)):                                                                                                 
+                	   try:                                                                                                                                                   
+                              exec "import servers."+vserver+" as tserver"                                                                                                        
+                           except:                                                                                                                                                
+                                print "[stormtv.py] Verified no existe el servidor"                                                                                               
+                           try:                                                                                                                                                   
+                              data =scrapertools.cache_page(item.url)                                                                                                             
+                           except:                                                                                                                                                
+                                print "[stormtv.py] Verified no se puede descargar la pagina"
+			   if (channel<>"shurweb"):                                                                                     
+                           	print "dentro del if<>shurweb"
+				try:                                                                                                                                                   
+                              		resultado = tserver.find_videos(data)                                                                                                               
+                           	except:                                                                                                                                                
+                                	print "[stormtv.py] Verified no find_videos"                                                                                                       
+                           	try:                                                                                                                                                   
+                              		res,test= tserver.test_video_exists(resultado[0][1])                                                                                                
+                           	except:                                                                                                                                                
+                              		print "[stormtv.py] Verified fallo test_video_exist "+vserver                                                                                       
+                              		res=False
+			   else:
+				print "dentro del else<>shurweb"
+				try:
+					res,test= tserver.test_video_exists(data)
+				except:
+					print "[stormtv.py] Verified fallo test_video_exist "+vserver                                                                             
+                                        res=False                                                                                                                                           
+                           if (res):                                                                                                                                              
+                              print("[stormtv.py] findvideos"+"True#"+test)                                                                                                       
+                              item.title="[Verificado]"+item.title                                                                                                                
+                              verified.append(vserver)                                                                                                                            
+                              strue=1                                                                                                                                             
+                           else:                                                                                                                                                  
+                              print("[stormtv.py] findvideos false")                                                                                                              
+                              strue=0                                                                                                                                             
+		if ((strue==1)&(ltrue==1)):                                                                                                                               
+                	storm_itemlist.append( Item(channel=item.channel, action="play" , title=item.title, fulltitle=item.fulltitle , url=item.url, thumbnail=item.thumbnail, plot= item.plot, folder=False,fanart= item.fanart,show = item.show,extra=item.extra, server=item.server))  
+	return storm_itemlist 

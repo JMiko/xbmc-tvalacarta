@@ -19,19 +19,31 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     video_urls = []
     
     data = scrapertools.cache_page(page_url)
-    logger.info("data="+data)
+    #logger.info("data="+data)
     sequence = re.compile('"sequence":"(.+?)"').findall(data)
+    logger.info("sequence="+str(sequence))
     newseqeunce = urllib.unquote(sequence[0]).decode('utf8').replace('\\/', '/')
+    logger.info("newseqeunce="+newseqeunce)
 
     dm_low = re.compile('"sdURL":"(.+?)"').findall(newseqeunce)
     dm_high = re.compile('"hqURL":"(.+?)"').findall(newseqeunce)
     videoUrl = ''
-    if(len(dm_high) == 0):
-        videoUrl = dm_low[0]
-    else:
-        videoUrl = dm_high[0]
-            
-    video_urls.append( [ "[dailymotion]",videoUrl ] )
+
+    if len(dm_low) > 0:
+        video_urls.append( [ "SD [dailymotion]",dm_low[0] ] )
+
+    if len(dm_high) > 0:
+        video_urls.append( [ "HD [dailymotion]",dm_high[0] ] )
+
+    try:
+        alternate_url = re.compile('"video_url":"(.+?)"').findall(newseqeunce)
+        alternate_url = urllib.unquote( alternate_url[0] ).decode('utf8').replace('\\/', '/')
+
+        location = scrapertools.get_header_from_response(alternate_url,header_to_get="location")
+
+        video_urls.append( [ "SD [dailymotion]" , location ] )
+    except:
+        pass
 
     for video_url in video_urls:
         logger.info("[dailymotion.py] %s - %s" % (video_url[0],video_url[1]))
@@ -93,5 +105,12 @@ def find_videos(data):
 
 def test():
     video_urls = get_video_url("http://www.dailymotion.com/video/xrva9o")
+    if len(video_urls)==0:
+        return false
 
-    return len(video_urls)>0
+    # FLV (No soportado)
+    #video_urls = get_video_url("http://www.dailymotion.com/video/xnu7n")
+    #if len(video_urls)==0:
+    #    return false;
+
+    return true

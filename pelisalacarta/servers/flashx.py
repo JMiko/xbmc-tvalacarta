@@ -13,7 +13,7 @@ from core import logger
 from core import config
 
 def test_video_exists( page_url ):
-    return True,""
+    return False,"Conector no soportado por pelisalacarta"
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[flashx.py] get_video_url(page_url='%s')" % page_url)
@@ -42,6 +42,7 @@ def find_videos(data):
     devuelve = []
 
     #http://flashx.tv/video/4KB84GO238XX/themakingofalady720phdtvx264-bia
+    #http://play.flashx.tv/player/embed.php?hash=NGHKGW2OA1Y9&width=620&height=400
     data = urllib.unquote(data)
     
     if "player/embed.php" in data:

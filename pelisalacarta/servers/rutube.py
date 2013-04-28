@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para rutube
@@ -11,6 +11,9 @@ import os
 from core import scrapertools
 from core import logger
 from core import config
+
+def test_video_exists( page_url ):
+    return False,"Rutube no es compatible con ningun media center"
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[rutube.py] url="+page_url)
@@ -102,5 +105,21 @@ def find_videos(text):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
+
+    # http://rutube.ru/video/embed/6302367?p=ATQKgmK0YweoP2JPwj07Ww
+    patronvideos  = '(rutube.ru/video/embed/[a-z0-9]+)'
+    logger.info("[rutube.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[rutube]"
+        url = "http://"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'rutube' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
 
     return devuelve

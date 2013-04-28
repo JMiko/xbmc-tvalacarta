@@ -28,7 +28,18 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
     data = scrapertools.cache_page( page_url , headers=headers )
-    logger.info("data="+data)
+    #logger.info("data="+data)
+
+    logger.info("[streamcloud.py] Esperando 10 segundos...")
+
+    try:
+        from platformcode.xbmc import xbmctools
+        xbmctools.handle_wait(12,"streamcloud",'')
+    except:
+        import time
+        time.sleep(12)
+
+    logger.info("[streamcloud.py] Espera concluida")
     
     try:
         media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
@@ -41,15 +52,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         hashstring = scrapertools.get_match(data,'<input type="hidden" name="hash" value="([^"]*)"')
         imhuman = scrapertools.get_match(data,'<input type="submit" name="imhuman".*?value="([^"]+)">').replace(" ","+")
         
-        import time
-        time.sleep(10)
-        
-        # Lo pide una segunda vez, como si hubieras hecho click en el banner
         post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&hash="+hashstring+"&imhuman="+imhuman
         headers.append(["Referer",page_url])
         data = scrapertools.cache_page( page_url , post=post, headers=headers )
-        logger.info("data="+data)
-    
+
+        if 'id="justanotice"' in data:
+            logger.info("[streamcloud.py] data="+data)
+            logger.info("[streamcloud.py] Ha saltado el detector de adblock")
+            return []
+
         # Extrae la URL
         media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
         

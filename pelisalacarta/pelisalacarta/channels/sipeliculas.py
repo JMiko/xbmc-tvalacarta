@@ -183,7 +183,7 @@ def test():
         mirrors_items = mirrors(pelicula_item)
         for mirror_item in mirrors_items:
             if mirror_item.action=="findvideos":
-                video_items = findvideos(item=mirror_item)
+                video_items = servertools.find_video_items(item=mirror_item)
                 if len(video_items)>0:
                     return True
             else:

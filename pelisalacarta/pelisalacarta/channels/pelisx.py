@@ -96,12 +96,30 @@ def listapelis(item):
     logger.info("[pelisx.py] listapelis")
 
     itemlist=[]
+    '''
+    GET /ver-todos/ HTTP/1.1
+    Host: www.pelisx.net
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+    Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
+    Accept-Encoding: gzip, deflate
+    Cookie: 720planBAK=R3744889740; 720plan=R1791155563; __utma=187995689.514298305.1366385595.1366385595.1366385595.1; __utmb=187995689.2.10.1366385595; __utmc=187995689; __utmz=187995689.1366385595.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+    Connection: keep-alive
+    If-Modified-Since: Fri, 19 Apr 2013 15:22:21 GMT
+    Cache-Control: max-age=0
+    '''
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    logger.info(data)
+    headers=[]
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"])
+    headers.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"])
+    headers.append(["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"])
+    headers.append(["Accept-Encoding","gzip, deflate"])
+    data = scrapertools.cachePage(item.url,headers=headers)
+    #logger.info(data)
 
     # Extrae las entradas 
-    patronvideos  = '<img src="http://www.pelisx.net/wp-content/themes/twenten/thumb.php.*?http://(.+?)&amp.*?<h2><a href="(.+?)">(.+?)</a></h2>'
+    #<img src="http://www.pelisx.net/wp-content/themes/twenten/thumb.php?src=http://www.pelisx.net/wp-content/uploads/2013/04/13.png&amp;h=200&amp;w=140&amp;zc=1&q=100" alt="Rump Raiders 2" />                <h2><a href="http://www.pelisx.net/pelicula-porno/rump-raiders-2/">Rump Raiders 2</a></h2>        <span><a href="http://www.pelisx.net/anal/">Anal</a></span>       </div>              <div class="contenedor_wallpaper_img  f_left">                      <img src="http://www.pelisx.net/wp-content/themes/twenten/thumb.php?src=http://www.pelisx.net/wp-content/uploads/2013/04/12.png&amp;h=200&amp;w=140&amp;zc=1&q=100" alt="Teens vs Mamas
+    patronvideos  = '<img src="http://www.pelisx.net/wp-content/themes/twenten/thumb.php\?src\=(http\://[^\&]+)[^<]+<h2[^<]+<a href="([^"]+)">([^<]+)</a></h2>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
     scrapertools.printMatches(matches)
@@ -109,7 +127,7 @@ def listapelis(item):
     for match in matches:
         scrapedurl = urlparse.urljoin(item.url,match[1])     
         scrapedtitle = match[2]
-        scrapedthumbnail = "http://" + match[0]
+        scrapedthumbnail = match[0]
         scrapedplot = ""
         
         # Añade al listado de XBMC
@@ -131,10 +149,35 @@ def listapelis(item):
         
     return itemlist
 
+def findvideos(item):
+    logger.info("[pelisx.py] findvideos")
+
+    itemlist=[]
+    # Descarga la página
+    headers=[]
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"])
+    headers.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"])
+    headers.append(["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"])
+    headers.append(["Accept-Encoding","gzip, deflate"])
+    data = scrapertools.cachePage(item.url,headers=headers)
+    logger.info(data)
+
+    from servers import servertools
+    itemlist.extend(servertools.find_video_items(data=data))
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.action="play"
+        videoitem.folder=False
+        videoitem.title = "["+videoitem.server+"]"
+
+    return itemlist
+
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     from servers import servertools
+
     # mainlist
     mainlist_items = mainlist(Item())
+    listapelis_items = listapelis(mainlist_items[0])
 
     return bien

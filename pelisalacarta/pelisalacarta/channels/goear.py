@@ -190,7 +190,7 @@ def play_cancion(item):
     for scrapedurl,scrapedtitle in matches:
         scrapedtitle = scrapertools.htmlclean(scrapedtitle)
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server="directo", folder=False))
     return itemlist
 #################################################################################################################################    
 
@@ -349,7 +349,7 @@ def playlist_play(item):
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
         scrapedtitle = scrapedtitle
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot))
+        itemlist.append( Item(channel=__channel__, action="play" , server="directo", title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, folder=False))
     return itemlist
     
         
