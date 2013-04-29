@@ -60,7 +60,6 @@ def mainlist(item):
     logger.info("[megaspain.py] mainlist")
     itemlist = []
     
-    
     if config.get_setting("megaspainaccount")!="true":
         itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="" , url="" , folder=False ) )
     else:
@@ -70,18 +69,17 @@ def mainlist(item):
             itemlist.append( Item( channel=__channel__ , title="Documentales" , action="foro" , url="http://www.mega-spain.com/index.php/board,24.0.html" , folder=True ) )
             itemlist.append( Item( channel=__channel__ , title="Series Manga/Anime" , action="foro" , url="http://www.mega-spain.com/index.php/board,63.0.html" , folder=True ) )
             itemlist.append( Item( channel=__channel__ , title="Peliculas Manga/Anime" , action="foro" , url="http://www.mega-spain.com/index.php/board,64.0.html" , folder=True ) )
-            #item.url = "http://www.mega-spain.com/index.php"
-            #return foro(item)
+
         else:
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
 
     return itemlist
 
+
 def foro(item):
     logger.info("[megaspain.py] foro")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
-    
     if '<h3 class="catbg">Subforos</h3>' in data:
         patron = '<a class="subject" href="([^"]+)" name="[^"]+">([^<]+)</a>' # HAY SUBFOROS
         action = "foro"
@@ -94,7 +92,6 @@ def foro(item):
             url = urlparse.urljoin(item.url,scrapedurl)
             scrapedtitle = scrapertools.htmlclean(scrapedtitle)
             scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-            
             title = scrapedtitle
             thumbnail = ""
             plot = ""
@@ -116,34 +113,70 @@ def foro(item):
             # Añade al listado
             itemlist.append( Item(channel=__channel__, action="foro", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
     return itemlist
-    
 
+    
+    
 def find_link_mega(item):
     logger.info("[megaspain.py] find_link_mega")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
-    patron = '<div class="inner" id="msg_.*?<img src="([^"]+)" alt="" class="bbc_img" /><br />(.*?)href="https://mega.co.nz(.*?)" class="bbc_link" '
-    matches = re.compile(patron,re.DOTALL).findall(data)
     
-    for scrapedthumbnail, scrapedplot, scrapedurl in matches:
-        url = urlparse.urljoin(item.url,scrapedurl)
-        scrapedurl = "https://mega.co.nz"+scrapedurl
-        scrapedurl =            scrapedurl.replace("https://mega.co.nz/#!","http://megastreamer.net/mega_stream.php?url=https%3A%2F%2Fmega.co.nz%2F%23%21")
-        scrapedurl = scrapedurl.replace("!","%21")
-        scrapedurl=scrapedurl+"&mime=vnd.divx"
-        thumbnail = scrapedthumbnail
-        title = "Si el archivo es compatible con el reproductor de XBMC comenzará la reproducción de " + "'" + item.title + "'"
-        scrapedplot = scrapedplot.replace("<br />","\n")
-        scrapedplot = scrapedplot.replace("&nbsp; &nbsp;","")
-        scrapedplot = scrapedplot.replace("&nbsp;"," ")
-        scrapedplot = scrapedplot.replace("Ver trailer externo","")
-        scrapedplot = scrapedplot.replace("Trailers/Vídeos","")
-        scrapedplot = scrapertools.htmlclean(scrapedplot)
-        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        plot = scrapedplot
-        # Añade al listado
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=scrapedurl , thumbnail=thumbnail , plot=plot , folder=True) )
+    patronimage = '<div class="inner" id="msg_\d{1,9}".*?<img src="([^"]+)"'
+    matches = re.compile(patronimage,re.DOTALL).findall(data)
+    if len(matches)>0:
+        thumbnail = matches[0]
+        thumbnail = scrapertools.htmlclean(thumbnail)
+        thumbnail = unicode( thumbnail, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        url = ""
+ 
+    patronplot = '<div class="inner" id="msg_\d{1,9}".*?<img src="[^"]+".*?Reportar al moderador'
+    matches = re.compile(patronplot,re.DOTALL).findall(data)
+    if len(matches)>0:
+        plot = matches[0]
         
+        if '.rar' in data:
+            item.title = "rar Es posible que no se reproduzca " + item.title + " ya que el archivo es un rar"
+        
+        elif '.zip' in data:
+            item.title = "zip Es posible que no se reproduzca " + item.title + " ya que el archivo es un zip"
+        else:
+            item.title = "'" + item.title + "' se reproducirá si el archivo es compatible con el reproductor de XBMC"
+                    
+        title = item.title
+            
+        plot = scrapertools.htmlclean(plot)
+        url = ""
+  
+    patronurl = '>htt[ps]://mega.co.nz/(.*?)[<"]'
+    
+    matches = re.compile(patronurl,re.DOTALL).findall(data)
+    for scrapedurl in matches:
+        url = scrapedurl
+        url = "https://mega.co.nz/" + url
+        url = url.replace("https://mega.co.nz/#!","http://megastreamer.net/mega_stream.php?url=https%3A%2F%2Fmega.co.nz%2F%23%21")
+        url = url.replace("!","%21")
+        url = url + "&mime=vnd.divx"
+        #plot = ""
+        # Añade al listado
+        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
     return itemlist
     
+    
+    
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    
+    # Navega hasta la lista de películas
+    mainlist_items = mainlist(Item())
+    menupeliculas_items = menupeliculas(mainlist_items[0])
+    peliculas_items = peliculas(menupeliculas_items[0])
+    
+    # Si encuentra algún enlace, lo da por bueno
+    for pelicula_item in peliculas_items:
+        itemlist = findbitly_link(pelicula_item)
+        if not itemlist is None and len(itemlist)>=0:
+            return True
+
+    return False
+
     
