@@ -147,7 +147,7 @@ def find_link_mega(item):
         plot = scrapertools.htmlclean(plot)
         url = ""
   
-    patronurl = '>htt[ps]://mega.co.nz/(.*?)[<"]'
+    patronurl = '>https://mega.co.nz/(.*?)[<"]'
     
     matches = re.compile(patronurl,re.DOTALL).findall(data)
     for scrapedurl in matches:
