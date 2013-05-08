@@ -47,10 +47,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Gent TVC", action="loadsection" , extra= "TGENTTVC|" ) )
     itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
     
-    
     return itemlist
-
-
 
 def loadsection(item):
     try:
@@ -85,11 +82,12 @@ def loadsection(item):
                     patron = '<span class="avant">([^<]+)</span>'                
                     matches = re.compile(patron,re.DOTALL).findall(chapter)
                     scrapedtitle = matches[0]
-                    
+
                     patron= '<a href="([^"]+)">([^<]+)</a>'                
                     matches = re.compile(patron,re.DOTALL).findall(chapter)
                     scrapedurl = "http://www.tv3.cat%s" % matches[0][0]
                     scrapedtitle = scrapedtitle + " - \"" + matches[0][1] + "\""
+                    scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
                     
                     patron= '<p>([^<]+)<'                
                     matches = re.compile(patron,re.DOTALL).findall(chapter)
@@ -112,7 +110,7 @@ def loadsection(item):
                         
             
         # Extrae el paginador
-        patron = '<li class="lastpag">.*?send\(\'frmSearcher\',.*?(\d+)\)".*?</li>'
+        patron = '<li class="lastpag">.*?sendLocalVid\(\'frmSearcher\',.*?(\d+)\)".*?</li>'
         numeros = re.compile(patron,re.DOTALL).findall(data)
         
         if len(numeros)>0 :
@@ -125,7 +123,7 @@ def loadsection(item):
             itemlist.append(
                 Item(channel=item.channel,
                      action = 'loadsection',
-                     title = 'Siguiente',
+                     title = '>> Siguiente',
                      url = urlsiguiente,
                      thumbnail = '',
                      plot = "",
@@ -155,7 +153,7 @@ def dosearch(item):
     post = post + '&hiSearchIn=0'
     post = post + '&maxRowsDisplay=50'
     post = post + '&hiStartValue=' + start
-    post = post + '&hiTarget=searching.jsp'
+    post = post + '&hiTarget=searchingVideos.jsp' #Mod
     post = post + '&hiCategory=VID'
     post = post + '&textBusca=' + texto
     
@@ -163,11 +161,11 @@ def dosearch(item):
     data = scrapertools.cachePage(url,post)
     
     #resultado busqueda
-    patron = '<div class="resultatcercador">.*?</body>'            
+    patron = '<div class="mod_searcher_borders">.*?</body>' #Mod
     matches = re.compile(patron,re.DOTALL).findall(data)
     data = matches[0]
     
-    patron = '<li>.*?<p class="topitem">.*?</ul>.*?</div>'
+    patron = '<li>.*?<div class="img_p_txt_mes_a">(.*?)</li>' #Mod
     matches = re.compile(patron,re.DOTALL).findall(data)
     if len(matches) > 0:
         for chapter in matches:

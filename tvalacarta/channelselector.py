@@ -175,6 +175,7 @@ def channels_list():
     itemlist.append( Item( title="Clan TVE"                   , channel="clantve"              , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="Conectate (Argentina)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina)", channel="cda"            , language="ES" , category="N"   , type="generic" )) # Juan Pablo 01/02/2013
+    itemlist.append( Item( title="Crackle"                    , channel="crackle"              , language="ES" , category="I"   , type="generic" ))  # rsantaella 05/04/2013
     itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
     itemlist.append( Item( title="CYLTV (Castilla y León)"    , channel="cyltv"                , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
