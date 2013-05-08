@@ -4,7 +4,7 @@
 # Canal para stormtv 
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Por JuRR
-# v0.5.1
+# v0.6
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -20,7 +20,7 @@ from core import stormlib
 
 
 __channel__ = "stormtv"
-__category__ = "S,A"
+__category__ = "F,S,A"
 __type__ = "generic"
 __title__ = "stormtv2"
 __language__ = "ES"
@@ -68,6 +68,7 @@ def search(item,texto, categoria="*"):
         fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                
         poster = serie.getElementsByTagName("poster")[0].childNodes[0].data
 	type=serie.getElementsByTagName("type")[0].childNodes[0].data
+	print "movies poster"+SERVER+fanart
 	try:                                                                                                                                                              
                         plot=serie.getElementsByTagName("plot")[0].childNodes[0].data                                                                                             
                         plot=plot.encode("utf-8")                                                                                                                                 
@@ -109,8 +110,9 @@ def mainlist(item):
     		name = serie.getElementsByTagName("name")[0].childNodes[0].data
     		name = name.encode("utf-8")
     		id = serie.getElementsByTagName("id")[0].childNodes[0].data                                                    
-        	fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data                                                
-        	poster = serie.getElementsByTagName("poster")[0].childNodes[0].data                                                
+        	fanart = serie.getElementsByTagName("fanart")[0].childNodes[0].data
+        	poster = serie.getElementsByTagName("poster")[0].childNodes[0].data
+		print "movies fanart"+SERVER+fanart                                                
     		try:
 			plot=serie.getElementsByTagName("plot")[0].childNodes[0].data
 			plot=plot.encode("utf-8")
@@ -239,7 +241,11 @@ def channel(item):
                 	itemlist.append( Item(channel=__channel__, action="channeltvs" , title=name, fulltitle=name , url=url, thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show, fanart=storm_fanart, extra=action))                                                      
 		else:
 			#Si es una pelicula u otra cosa
-			itemlist.append( Item(channel=__channel__, action="findvideos" , title=name, fulltitle="peliculasyonkis_generico" , url=url, thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show, fanart=storm_fanart, extra=action))	
+			if (name=="peliculasyonkis"):
+				fulltitle="peliculasyonkis_generico"
+			else:
+				fulltitle=name
+			itemlist.append( Item(channel=__channel__, action="findvideos" , title=name, fulltitle=fulltitle , url=url, thumbnail=storm_thumbnail, plot=storm_plot, viewmode="movie", show=storm_show, fanart=storm_fanart, extra=action))	
 	# Si no es una serie favorita añade el item para añadirla o para quitarla en caso de que este añadida como favorita	
 	if (stormlib.isfollow(item.show)=='0'):	
 		itemlist.append( Item(channel=__channel__, action="addfollow" , title="Add fav", show=item.show,fanart=item.fanart))
@@ -440,7 +446,7 @@ def findvideos(item):
 			logger.info("lang="+item.title)
 			if (storm_channel_name=="serieonline"):                                                                                                                           
 			   item.title=stormlib.audio_serieonline(item.title)	
-			elif (storm_channel_name=="seriesyonkis"):
+			elif ((storm_channel_name=="seriesyonkis")or (storm_channel_name=="peliculasyonkis_generico")):
 			   item.title=stormlib.audio_seriesyonkis(item.title)
 			patron_vos='VOS|Sub'                                                                                                                                              
 			matches_vos = re.compile(patron_vos,re.DOTALL).findall(item.title)	
@@ -475,7 +481,7 @@ def findvideos(item):
 			ltrue=1
 		if ((strue==1)&(ltrue==1)):                                                                                                                                           
                 #seriesyonkis es un poco distinto para comprobar, de momento hacemos bypass :)                                                                                    
-                 if (storm_channel_name<>"seriesyonkis"):                                                                                                                          
+                 if ((storm_channel_name<>"seriesyonkis")and(storm_channel_name<>"peliculasyonkis_generico")):                                                                                                                          
                    if ((vserver not in verified)&(vserver not in excluded)):                                                                                                      
                            try:                                                                                                                                                   
                               exec "import servers."+vserver+" as tserver"                                                                                                        
@@ -568,7 +574,7 @@ def free(item):
 	    if (LANG!="0"):                                                                                                                                                     
 	   	if (storm_channel_name=="serieonline"):                                                                                                                   
 	      		item.title=stormlib.audio_serieonline(item.title)                                                                                                      
-	   	elif (storm_channel_name=="seriesyonkis"):
+	   	elif ((storm_channel_name=="seriesyonkis")or(storm_channel_name=="peliculasyonkis_generico")):
 	   	        item.title=stormlib.audio_seriesyonkis(item.title)	
 	   	patron_vos='VOS|Sub'                                                                                                                                      
 	   	matches_vos = re.compile(patron_vos,re.DOTALL).findall(item.title)                                                                                        
@@ -602,7 +608,7 @@ def free(item):
 	
 	    if ((strue==1)&(ltrue==1)):
 		#seriesyonkis es un poco distinto para comprobar, de momento hacemos bypass :)
-	        if (storm_channel_name<>"seriesyonkis"):                                                        
+	        if ((storm_channel_name<>"seriesyonkis")and (storm_channel_name<>"peliculasyonkis_generico")):                                                        
                    if ((vserver not in verified)&(vserver not in excluded)):                         
                            try:                                                                      
                               exec "import servers."+vserver+" as tserver"                           

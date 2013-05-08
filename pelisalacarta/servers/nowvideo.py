@@ -12,6 +12,8 @@ from core import scrapertools
 from core import logger
 from core import config
 
+USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"
+
 def test_video_exists( page_url ):
     logger.info("[nowvideo.py] test_video_exists(page_url='%s')" % page_url)
 
@@ -26,31 +28,78 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[nowvideo.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
     
-    data = scrapertools.cache_page( page_url )
-    #logger.debug("data:" + data)
-    
-    # URL a invocar: http://www.nowvideo.eu/api/player.api.php?file=3695bce6e6288&user=undefined&codes=1&pass=undefined&key=83%2E44%2E253%2E73%2D64a25e17853b4b19586841e04b0d9382
-    # En la página:
-    '''
-    flashvars.domain="http://www.nowvideo.eu";
-    flashvars.file="3695bce6e6288";
-    flashvars.filekey="83.44.253.73-64a25e17853b4b19586841e04b0d9382";
-    flashvars.advURL="0";
-    flashvars.autoplay="false";
-    flashvars.cid="1";
-    '''
-    file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
-    key = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
-    #http://www.nowvideo.eu/api/player.api.php?key=88%2E19%2E203%2E156%2Dd140046f284485aedf05563b85f1e8e9&codes=undefined&user=undefined&pass=undefined&file=6f213c972dc5b
-    url = "http://www.nowvideo.eu/api/player.api.php?file="+file+"&user=undefined&codes=undefined&pass=undefined&key="+key.replace(".","%2E").replace("-","%2D")
-    data = scrapertools.cache_page( url )
-    logger.info("data="+data)
-    # url=http://f23.nowvideo.eu/dl/653d434d3cd95f1f7b9df894366652ba/4fc2af77/nnb7e7f45f276be5a75b10e8d6070f6f4c.flv&title=Title%26asdasdas&site_url=http://www.nowvideo.eu/video/3695bce6e6288&seekparm=&enablelimit=0
-    
-    location = scrapertools.get_match(data,'url=([^\&]+)&')
-    location = location + "?client=FLASH"
+    if premium:
+        # Lee la página de login
+        login_url = "http://www.nowvideo.eu/login.php"
+        data = scrapertools.cache_page( login_url )
 
-    video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [nowvideo]",location ] )
+        # Hace el login
+        login_url = "http://www.nowvideo.eu/login.php?return="
+        post = "user="+user+"&pass="+password+"&register=Login"
+        headers=[]
+        headers.append(["User-Agent",USER_AGENT])
+        headers.append(["Referer","http://www.nowvideo.eu/login.php"])
+        data = scrapertools.cache_page( login_url , post=post, headers=headers )
+
+        # Descarga la página del vídeo 
+        data = scrapertools.cache_page( page_url )
+        logger.debug("data:" + data)
+        
+        # URL a invocar: http://www.nowvideo.eu/api/player.api.php?user=aaa&file=rxnwy9ku2nwx7&pass=bbb&cid=1&cid2=undefined&key=83%2E46%2E246%2E226%2Dc7e707c6e20a730c563e349d2333e788&cid3=undefined
+        # En la página:
+        '''
+        flashvars.domain="http://www.nowvideo.eu";
+        flashvars.file="rxnwy9ku2nwx7";
+        flashvars.filekey="83.46.246.226-c7e707c6e20a730c563e349d2333e788";
+        flashvars.advURL="0";
+        flashvars.autoplay="false";
+        flashvars.cid="1";
+        flashvars.user="aaa";
+        flashvars.key="bbb";
+        flashvars.type="1";
+        '''
+        flashvar_file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
+        flashvar_filekey = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
+        flashvar_user = scrapertools.get_match(data,'flashvars.user="([^"]+)"')
+        flashvar_key = scrapertools.get_match(data,'flashvars.key="([^"]+)"')
+        flashvar_type = scrapertools.get_match(data,'flashvars.type="([^"]+)"')
+
+        #http://www.nowvideo.eu/api/player.api.php?user=aaa&file=rxnwy9ku2nwx7&pass=bbb&cid=1&cid2=undefined&key=83%2E46%2E246%2E226%2Dc7e707c6e20a730c563e349d2333e788&cid3=undefined
+        url = "http://www.nowvideo.eu/api/player.api.php?user="+flashvar_user+"&file="+flashvar_file+"&pass="+flashvar_key+"&cid=1&cid2=undefined&key="+flashvar_filekey.replace(".","%2E").replace("-","%2D")+"&cid3=undefined"
+        data = scrapertools.cache_page( url )
+        logger.info("data="+data)
+        
+        location = scrapertools.get_match(data,'url=([^\&]+)&')
+        location = location + "?client=FLASH"
+
+        video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [premium][nowvideo]",location ] )
+    else:
+
+        data = scrapertools.cache_page( page_url )
+        logger.debug("data:" + data)
+        
+        # URL a invocar: http://www.nowvideo.eu/api/player.api.php?file=3695bce6e6288&user=undefined&codes=1&pass=undefined&key=83%2E44%2E253%2E73%2D64a25e17853b4b19586841e04b0d9382
+        # En la página:
+        '''
+        flashvars.domain="http://www.nowvideo.eu";
+        flashvars.file="3695bce6e6288";
+        flashvars.filekey="83.44.253.73-64a25e17853b4b19586841e04b0d9382";
+        flashvars.advURL="0";
+        flashvars.autoplay="false";
+        flashvars.cid="1";
+        '''
+        file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
+        key = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
+        #http://www.nowvideo.eu/api/player.api.php?key=88%2E19%2E203%2E156%2Dd140046f284485aedf05563b85f1e8e9&codes=undefined&user=undefined&pass=undefined&file=6f213c972dc5b
+        url = "http://www.nowvideo.eu/api/player.api.php?file="+file+"&user=undefined&codes=undefined&pass=undefined&key="+key.replace(".","%2E").replace("-","%2D")
+        data = scrapertools.cache_page( url )
+        logger.info("data="+data)
+        # url=http://f23.nowvideo.eu/dl/653d434d3cd95f1f7b9df894366652ba/4fc2af77/nnb7e7f45f276be5a75b10e8d6070f6f4c.flv&title=Title%26asdasdas&site_url=http://www.nowvideo.eu/video/3695bce6e6288&seekparm=&enablelimit=0
+        
+        location = scrapertools.get_match(data,'url=([^\&]+)&')
+        location = location + "?client=FLASH"
+
+        video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [nowvideo]",location ] )
 
     for video_url in video_urls:
         logger.info("[nowvideo.py] %s - %s" % (video_url[0],video_url[1]))

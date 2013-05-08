@@ -25,7 +25,7 @@ FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel',
 # rutube
 
 # Lista de TODOS los servidores que funcionan con cuenta premium individual
-PREMIUM_SERVERS = ['uploadedto']
+PREMIUM_SERVERS = ['uploadedto','nowvideo']
 
 # Lista de TODOS los servidores soportados por Filenium
 FILENIUM_SERVERS = []
