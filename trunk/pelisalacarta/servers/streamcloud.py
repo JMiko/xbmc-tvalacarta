@@ -32,12 +32,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     logger.info("[streamcloud.py] Esperando 10 segundos...")
 
+    '''
+    Esto cuelga XBMC en algunos casos?
     try:
         from platformcode.xbmc import xbmctools
         xbmctools.handle_wait(12,"streamcloud",'')
     except:
-        import time
-        time.sleep(12)
+    '''
+    import time
+    time.sleep(12)
 
     logger.info("[streamcloud.py] Espera concluida")
     

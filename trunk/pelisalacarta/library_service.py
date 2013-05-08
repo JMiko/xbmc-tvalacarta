@@ -88,14 +88,14 @@ try:
             else:
                 logger.info("[library_service.py] No actualiza "+serie[0]+" (no existe el directorio)")
                 itemlist=[]
-                
-            i=0
+
             for item in itemlist:
-                i = i + 1
-                item.show=serie[0].strip()
-                if i<len(itemlist):
+                try:
+                    item.show=serie[0].strip()
                     library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
-        
+                except:
+                    logger.info("[library_service.py] Capitulo no valido")
+
         import xbmc
         xbmc.executebuiltin('UpdateLibrary(video)')
     else:
