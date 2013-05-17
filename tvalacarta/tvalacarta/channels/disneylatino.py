@@ -140,3 +140,31 @@ def play(item):
     itemlist.append( Item(channel=__channel__, action="play", server="directo", title=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail,  folder=False) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Saca las series para cada canal
+    items_canales = mainlist(Item())
+    for item_canal in items_canales:
+        items_series = characters(item_canal)
+    
+        serie_con_videos = False
+
+        # Busca hasta encontrar una serie con Episodios en ese canal
+        for item_serie in items_series:
+
+            items_menu_serie = categories(item_serie)
+
+            # El segundo menú es "Episodios"
+            items_videos = videos(items_menu_serie[1])
+
+            if len(items_videos)>0:
+                serie_con_videos = True
+                break
+
+        # Si el canal no tiene series con videos, algo falla
+        if not serie_con_videos:
+            return False
+
+    return True

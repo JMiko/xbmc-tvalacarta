@@ -176,14 +176,14 @@ def channels_list():
     itemlist.append( Item( title="Conectate (Argentina)"      , channel="conectate"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Contenidos Digitales Abiertos (Argentina)", channel="cda"            , language="ES" , category="N"   , type="generic" )) # Juan Pablo 01/02/2013
     itemlist.append( Item( title="Crackle"                    , channel="crackle"              , language="ES" , category="I"   , type="generic" ))  # rsantaella 05/04/2013
-    itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
+    #itemlist.append( Item( title="Cromokids"                  , channel="cromokids"            , language="ES" , category="I"   , type="generic" ))  # jesus 05/04/2012
     itemlist.append( Item( title="CYLTV (Castilla y León)"    , channel="cyltv"                , language="ES" , category="A"   , type="generic"  ))  # jesus 01/01/2013
     itemlist.append( Item( title="Disney Channel Replay"      , channel="disneychannel"        , language="ES" , category="I"   , type="generic" ))#  jesus 05/04/2012
     itemlist.append( Item( title="Disney Junior"              , channel="disneyjunior"         , language="ES" , category="I"   , type="generic"  ))  # jesus 15/01/2013
     itemlist.append( Item( title="Disney Latino"              , channel="disneylatino"         , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="DW Español (Alemania)"      , channel="dwspan"               , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="EITB (País Vasco)"          , channel="eitb"                 , language="ES" , category="A"   , type="generic", extra="rtmp" ))
-    itemlist.append( Item( title="El cine de las 3 mellizas"  , channel="tresmellizas"         , language="ES" , category="I"   , type="generic" ))
+    #itemlist.append( Item( title="El cine de las 3 mellizas"  , channel="tresmellizas"         , language="ES" , category="I"   , type="generic" ))
     itemlist.append( Item( title="El Trece TV (Argentina)"    , channel="eltrece"              , language="ES" , category="N"   , type="generic" ))
     itemlist.append( Item( title="elgourmet.com"              , channel="elgourmet"            , language="ES" , category="L"   , type="generic" ))
     itemlist.append( Item( title="Euronews"                   , channel="euronews"             , language="ES" , category="T"   , type="generic" ))
@@ -212,7 +212,7 @@ def channels_list():
     itemlist.append( Item( title="Telemundo"                  , channel="telemundo"            , language="ES" , category="N"   , type="generic" )) # rsantaella 30/03/2013
     itemlist.append( Item( title="TVE"                        , channel="rtve"                 , language="ES" , category="N"   , type="generic" ))
     itemlist.append( Item( title="Tvolucion.com"              , channel="tvolucion"            , language="ES" , category="N"   , type="generic" ))    
-    itemlist.append( Item( title="Turbonick"                  , channel="turbonick"            , language="ES" , category="I"   , type="generic", extra="rtmp" ))
+    #itemlist.append( Item( title="Turbonick"                  , channel="turbonick"            , language="ES" , category="I"   , type="generic", extra="rtmp" ))
     itemlist.append( Item( title="TV3 (Cataluña)"             , channel="tv3"                  , language="ES" , category="I,A" , type="generic" ))
     itemlist.append( Item( title="TVC (Canarias)"             , channel="rtvc"                 , language="ES" , category="A"   , type="generic" ))
     itemlist.append( Item( title="TVG (Galicia)"              , channel="tvg"                  , language="ES" , category="A"   , type="generic" ))

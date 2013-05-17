@@ -29,8 +29,7 @@ def mainlist(item):
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
-    bien = True
-    
+
     # Todas las opciones tienen que tener algo
     items = mainlist(Item())
     import antena3
@@ -41,10 +40,10 @@ def test():
             return False
 
     # La sección de programas devuelve enlaces
-    series = antena3.series(items[2])
-    episodios = antena3.episodios(series[0])
-    videos = antena3.detalle(episodios[0])
-    if len(videos)==0:
-        return False
+    series_items = antena3.series(items[0])
+    for serie_item in series_items:
+        episodios_items = antena3.episodios(serie_item)
+        if len(episodios_items)>0:
+            return True
 
-    return bien
+    return False

@@ -39,22 +39,28 @@ def disneyweb(item):
 
     # Fetch video list page
     data = scrapertools.cache_page( item.url )
+    logger.info("data="+data)
     data = scrapertools.find_single_match( data , '<div id="video_main_promos_inner">(.*?)<div id="content_index_navigation">')
     
     # Extract items
     '''
     <div class="promo" style="background-image: url(/cms_res/disney-junior/images/promo_support/promo_holders/video.png);">
-        <a href="/disney-junior/contenido/video/canta_con_dj_arcoiris.jsp " class="promoLinkTracking"><img src="/cms_res/disney-junior/images/video/canta_dj_arco_iris_164x104.jpg" class="promo_image" alt=""/></a>
-        <div class="promo_title_3row"><p>Canta con DJ: La canción del arco iris</p></div>
-        <a class="playlist_button_large"  href="" ref="canta_con_dj_arcoiris"><img src="/cms_res/disney-junior/images/promo_support/playlist_add_icon.png" alt="" /></a>
+    <a href="/disney-junior/contenido/video.jsp?v=01-manny-manitas-cuenta" class="refreshSelectedView unprocessed" data-itemName="01-manny-manitas-cuenta">
+    <img src="/cms_res/disney-junior/images/video/cuenta_con_mannyPV08604_164x104.jpg" class="promo_image" alt=""/>
+    </a>
+    <div class="promo_playing_mask"></div>
+    <div class="promo_playing_maskCopy"><p>Estás viendo</p></div>
+    <div class="promo_title_3row"><p>Cuenta con Manny: Contando tacos de pared</p></div>
+    <a class="playlist_button"  href="#" data-itemName="01-manny-manitas-cuenta"><img src="/cms_res/disney-junior/images/promo_support/playlist_add_icon.png" alt="" /></a>
     </div>
     '''
     pattern  = '<div class="promo"[^<]+'
     pattern += '<a href="([^"]+)"[^<]+'
     pattern += '<img src="([^"]+)"[^<]+'
     pattern += '</a[^<]+'
-    pattern += '<div[^<]+'
-    pattern += '<p>([^<]+)</p>'
+    pattern += '<div[^<]+</div[^<]+'
+    pattern += '<div[^<]+<p[^<]+</p[^<]+</div[^<]+'
+    pattern += '<div[^<]+<p>([^<]+)</p>'
     matches = re.compile(pattern,re.DOTALL).findall(data)
     
     for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
@@ -76,16 +82,14 @@ def play(item):
 
     if "disney.es" in item.url:
 
+        # Obtiene el id del video
+        page_id = scrapertools.get_match( item.url , "/disney-junior/contenido/video.jsp?v=([a-z0-9\-\_]+)" )
+
         # Fetch page
         data = scrapertools.cache_page( item.url )
 
-        url_start = scrapertools.find_single_match( data , "config.rtmpeServer \= '([^']+)'")
-        logger.info("disneyjunior.disneyweb_play url_start="+url_start)
-
-        url_end = scrapertools.find_single_match( data , "config.firstVideoSource \= '([^']+)'")
-        logger.info("disneyjunior.disneyweb_play url_end="+url_end)
-        
-        url = url_start + url_end
+        #"urlId":"02-canta_con_dj_senderismo","pageTitle":"Canta con_dj_senderismo |  Video | Disney Junior","description":"Canta con DJ: Senderismo","thumbnailImage":"","media":{"stream":{"program":"canta_dj_senderismo_mannyHV13750.mp4","server":"rtmpe://cp121902.edgefcs.net/ondemand/"},"progressive":"http://www.disney.es:80/cms_res/disney-junior/video/canta_dj_senderismo_mannyHV13750.mp4"}}
+        url = scrapertools.get_match( data , '"urlId"\:"'+page_id+'","pageTitle"\:"[^"]+","description":"[^"]+","thumbnailImage":"","media":{"stream":{"program":"[^"]+","server":"[^"]+"},"progressive":"([^"]+)"}}' )
         logger.info("disneyjunior.disneyweb_play url="+url)
 
         itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , url=url, folder=False) )

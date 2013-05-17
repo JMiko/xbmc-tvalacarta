@@ -145,3 +145,25 @@ def play(item):
     itemlist.append( Item(channel=CHANNELNAME, title=item.title , action="play" , server="directo" , url=url, thumbnail=item.thumbnail, plot=item.plot , show=item.show , folder=False) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    programas_items = mainlist(Item())
+
+    # Lista de series
+    if len(programas_items)==0:
+        print "No hay programas"
+        return False
+
+    videos_items = videos(programas_items[0])
+    if len(videos_items)==0:
+        print "La categoria "+categorias_items[0].title+" no tiene videos"
+        return False
+
+    mediaurl_items = play(videos_items[0])
+    if len(mediaurl_items)==0:
+        print "Error al averiguar la URL del primer episodio de "+series_items[0].title
+        return False
+
+    return True

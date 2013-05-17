@@ -38,7 +38,7 @@ def canal(item):
 
     itemlist = []
     # El segundo nivel de menú es un listado por categorías
-    itemlist.append( Item(channel=CHANNELNAME, title="Novedades" , action="novedades" , url=item.url , extra=item.extra))
+    itemlist.append( Item(channel=CHANNELNAME, title="Destacados" , action="destacados" , url=item.url , extra=item.extra))
     itemlist.append( Item(channel=CHANNELNAME, title="Todos los programas" , action="programas" , url="" , extra=item.extra+"/todos/1"))
 
     # Descarga la página que tiene el desplegable de categorias de programas
@@ -62,69 +62,46 @@ def canal(item):
     
     return itemlist
 
-def novedades(item):
-    logger.info("[rtve.py] novedades "+item.tostring())
-
-    # Descarga la página principal
+def destacados(item):
+    logger.info("[rtve.py] destacados")
     itemlist = []
+
     data = scrapertools.cachePage(item.url)
-    patron = '<!-- programs_series.jsp -->(.*?)<!-- end programs_series.jsp -->'
-    matches = re.findall(patron,data,re.DOTALL)
-    if len(matches)>0:
-        data = matches[0]
-    else:
-        return itemlist
+    '''
+    <div class="dest_title">Destacados versi&iquest;n libre</div>
+    <div class="dest_page oculto">        <div  bourne:iseditable="false" class="unit c100 last">            <div  class="unit c100 last"><div class="mark">
+    <div class="news  comp">
+    <span class="tipo video">v&iacute;deo</span><span class="imgT"><a href="/alacarta/videos/informe-semanal/informe-semanal-soberanismo-suspenso/1814688/" title="Informe Semanal - Soberanismo en suspenso"><img src="http://img.irtve.es/imagenes/jpg/1368305081366.jpg" alt="Imagen Informe Semanal - Soberanismo en suspenso" title="Informe Semanal - Soberanismo en suspenso"/></a></span>
+    </div>
+    </div>
+    </div>          </div>      </div>        <div class="dest_title">Destacados versi&iquest;n libre</div>    <div class="dest_page oculto">        <div  bourne:iseditable="false" class="unit c100 last">            <div  class="unit c100 last">              <div class="mark"><div class="news  comp"><span class="tipo video">v&iacute;deo</span><span class="imgT"><a href="/alacarta/videos/completos/cuentame-cap-251-150313/1768614/" title="Cu&eacute;ntame c&oacute;mo pas&oacute; - T14 - No hay cuento de Navidad - C
+    '''
+    logger.info("data="+data)
+    patron  = '<div class="dest_title[^<]+</div[^<]+'
+    patron += '<div class="dest_page oculto"[^<]+<div[^<]+<div[^<]+<div[^<]+'
+    patron += '<div class="news[^<]+'
+    patron += '<span class="tipo.*?</span><span class="imgT"><a href="([^"]+)" title="([^"]+)"><img src="([^"]+)"'
 
-    # Extrae los vídeos
-    patron  = '<div class="basicmod modVideo">[^<]+'
-    patron += '<span class="ico">[^<]+</span>[^<]+'
-    patron += '<span class="img">[^<]+'
-    patron += '<a id="PS." name="thumbID" href="([^"]+)"[^>]+>[^<]+'
-    patron += '<img title=\'[^\']+\' alt="[^"]+" src="([^"]+)"/>.*?'
-    patron += '</a>[^<]+'
-    patron += '</span>[^<]+'
-    patron += '<div class="txt">[^<]+'
-    patron += '<h4>[^<]+'
-    patron += '<span class="titu">[^<]+'
-    patron += '<a href="/alacarta/videos[^>]+>([^>]+)</a>[^<]+'
-    patron += '</span>[^<]+'
-    patron += '</h4>[^<]+'
-    patron += '<h5>[^<]+'
-    patron += '<span class="titu">[^<]+'
-    patron += '<em>[^<]+</em><strong><a title=\'[^\']+\' href="([^"]+)">([^<]+)</a></strong>[^<]+'
-    patron += '</span>[^<]+'
-    patron += '</h5>[^<]+'
-    patron += '<p>([^<]+)</p>'
-    matches = re.findall(patron,data,re.DOTALL)
-    if DEBUG: scrapertools.printMatches(matches)
-    
-    # Crea una lista con las entradas
-    for match in matches:
-        scrapedtitle = match[2]+" - "+match[4]+" (Duración "+match[5]+")"
-        scrapedurl = urlparse.urljoin(item.url,match[3])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
-        scrapedplot = ""
-        scrapedextra = urlparse.urljoin(item.url,match[0])
-        scrapedshow = match[2]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedshow, extra=scrapedextra, folder=False ) )
-
-    # Extrae el enlace a la página siguiente
-    #<a name="paginaIR" href="?pbq=2&amp;lang=es&amp;modl=LPG"><span>Siguiente</span></a>
-
-    patron = '<a name="paginaIR" href="([^"]+)"><span>Siguiente</span></a>'
     matches = re.findall(patron,data,re.DOTALL)
     if DEBUG: scrapertools.printMatches(matches)
 
-    # Crea una lista con las entradas
-    for match in matches:
-        scrapedtitle = "!Página siguiente"
-        scrapedurl = urlparse.urljoin(item.url,match).replace("&amp;","&")
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        scrapedextra = ""
+    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+        url=urlparse.urljoin(item.url,scrapedurl)
+        title=scrapertools.htmlclean(scrapedtitle)
+        thumbnail=scrapedthumbnail
+        plot=""
+
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="novedades" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, category = item.category) )
+        try:
+            logger.info("url="+url)
+
+            #http://www.rtve.es/alacarta/videos/cocina-con-sergio/cocina-sergio-quiche-cebolla-queso-curado/1814210/
+            episodio = scrapertools.get_match(url,'http\://www.rtve.es/alacarta/videos/[^\/]+/([^\/]+)/')
+            logger.info("es episodio")
+            itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="rtve" , url=url, thumbnail=thumbnail, plot=plot, fanart=thumbnail, folder=False) )
+        except:
+            logger.info("es serie")
+            itemlist.append( Item(channel=CHANNELNAME, title=title , action="episodios" , url=url, thumbnail=thumbnail, plot=plot, fanart=thumbnail, folder=True) )
 
     return itemlist
 
@@ -166,27 +143,6 @@ def addprogramas(item,data):
     itemlist = []
     
     # Extrae los programas
-    '''
-    <li class="odd">
-    <span class="col_tit" id="1589" name="progname">
-    <a href="/alacarta/videos/el-escarabajo-verde/" title="Ver programa seleccionado">El escarabajo verde</a>
-    </span>
-    <span class="col_fec">pasado viernes</span>
-    <span class="col_med">
-    <a href="/alacarta/tve/la2/" title="Ir a portada de 'La 2'" />
-    <img src="/css/alacarta20/i/iconos/mini-cadenas/la2.png"> 
-    </a>		
-    </span>
-    <span class="col_cat">Ciencia y Tecnología</span>
-    <!--EMPIEZA TOOL-TIP-->
-    <div id="popup1589" style="display: none" class="tultip"> 
-    <span id="progToolTip" class="tooltip curved">
-    <span class="pointer"></span>
-    <span class="cerrar" id="close1589"></span>    
-    <span class="titulo-tooltip"><a href="/alacarta/videos/el-escarabajo-verde/" title="Ver programa seleccionado">El escarabajo verde</a></span>
-    <span class="fecha">pasado viernes</span>
-    <span class="detalle">Magazine sobre ecología y medio ambiente, que se centra en las relaciones que el hombre establece con su entorno. Desde una perspectiva divulgativa, el programa analiza un tema de actualidad del medio ambiente y ...</span>
-    '''
     patron  = '<li class="[^"]+">.*?'
     patron += '<span class="col_tit" id="([^"]+)" name="progname">[^<]+'
     patron += '<a href="([^"]+)" title="Ver programa seleccionado">([^<]+)</a>[^<]+'
@@ -305,3 +261,29 @@ def episodios(item):
         itemlist.append( Item(channel=item.channel, title=">> Añadir toda la página a la lista de descargas", url=item.url, action="download_all_episodes##episodios", extra = item.extra , show=item.show) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+
+    # Lista de series
+    la1_items = canal(items[1])
+
+    la1_destacados = destacados(la1_items[0])
+    if len(la1_destacados)==0:
+        print "No hay destacados de La1"
+        return False
+
+    la1_programas = programas(la1_items[1])
+    if len(la1_programas)==0:
+        print "No programas en La1"
+        return False
+
+    la1_episodios = episodios(la1_programas[0])
+    if len(la1_episodios)==0:
+        print "La serie "+la1_programas[0].title+" no tiene episodios en La1"
+        return False
+
+    return True

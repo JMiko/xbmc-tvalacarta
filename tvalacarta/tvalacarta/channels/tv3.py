@@ -34,7 +34,6 @@ def mainlist(item):
     
     itemlist = []
     
-    itemlist.append( Item(channel=__channel__, title="Alta definicio", action="hdvideolist", url = "http://www.tv3.cat/pprogrames/hd/mhdSeccio.jsp") )
     itemlist.append( Item(channel=__channel__, title="Series", action="loadsection" , extra = "TSERIES|") )
     itemlist.append( Item(channel=__channel__, title="Actualitat", action="loadsection" , extra = "TACTUALITA|") )
     itemlist.append( Item(channel=__channel__, title="Esports", action="loadsection", extra = "TESPORTS|" ) )
@@ -45,6 +44,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Infantil", action="loadsection" , extra= "TINFANTIL|" ) )
     itemlist.append( Item(channel=__channel__, title="Musica", action="loadsection" , extra= "TMUSICA|" ) )
     itemlist.append( Item(channel=__channel__, title="Gent TVC", action="loadsection" , extra= "TGENTTVC|" ) )
+    itemlist.append( Item(channel=__channel__, title="Alta definicio", action="hdvideolist", url = "http://www.tv3.cat/pprogrames/hd/mhdSeccio.jsp") )
     itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
     
     return itemlist
@@ -96,11 +96,12 @@ def loadsection(item):
                     # Añade al listado de XBMC
                     itemlist.append(
                         Item(channel=item.channel,
-                             action = 'links',
+                             action = 'play',
                              title = str(scrapedtitle).replace("&quot;", "'"),
                              url = scrapedurl,
                              thumbnail = scrapedthumbnail,
-                             plot = scrapedplot
+                             plot = scrapedplot,
+                             folder = False
                         )
                     ) 
                 except:
@@ -286,8 +287,8 @@ def hdvideolist(item):
             logger.error( "%s" % line )
     return itemlist
 
-def links(item): 
-    logger.info("[tv3.py] links")   
+def play(item): 
+    logger.info("[tv3.py] play")   
      
     server = "Directo"   
     itemlist = []
@@ -388,3 +389,22 @@ def geturl4(codigo):
     	#url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
     return url
 
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    for item in items:
+        if item.action!="search":
+            exec "itemlist="+item.action+"(item)"
+        
+            if len(itemlist)==0:
+                return False
+
+    # Lista de series
+    novedades_series = loadsection(items[0])
+    if len(novedades_series)==0:
+        return False
+
+    return True

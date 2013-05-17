@@ -168,3 +168,19 @@ def episodios(item):
         itemlist.append( Item(channel=CHANNELNAME, title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,match), folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    programas_items = programas(items[0])
+    if len(programas_items)==0:
+        return False
+
+    episodios_items = episodios(programas_items[0])
+    if len(episodios_items)==0:
+        return False
+
+    return bien

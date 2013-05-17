@@ -26,20 +26,21 @@ def isGeneric():
 
 
 def mainlist(item):
-    logger.info("[cda.py] mainlist")
+    logger.info("[" + CHANNELNAME + ".py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Series-Unitarios", action="programas", url=MAIN_URL+"/series-unitarios", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales"    , action="programas", url=MAIN_URL+"/documentales"    , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Cortos"          , action="programas", url=MAIN_URL+"/cortos"          , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Micros"          , action="programas", url=MAIN_URL+"/micros"          , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Clip CDA"        , action="calidades", url=MAIN_URL+"/clip/512/cda"    , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Series-Unitarios" , action="programas", url=MAIN_URL+"/series-unitarios" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales"     , action="programas", url=MAIN_URL+"/documentales"     , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Cortos"           , action="programas", url=MAIN_URL+"/cortos"           , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Micros"           , action="programas", url=MAIN_URL+"/micros"           , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Igualdad Cultural", action="programas", url=MAIN_URL+"/igualdad-cultural", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Clip CDA"         , action="calidades", url=MAIN_URL+"/clip/512/cda"     , folder=True) )
 
     return itemlist
 
 
 def programas(item):
-    logger.info("[cda.py] programas")
+    logger.info("[" + CHANNELNAME + ".py] programas")
     
     # Descargo la página de la sección.
     data = scrapertools.cachePage(item.url)
@@ -81,7 +82,7 @@ def programas(item):
 
 
 def capitulos(item):
-    logger.info("[cda.py] capitulos")
+    logger.info("[" + CHANNELNAME + ".py] capitulos")
 
     try:
         # Extraigo el id del programa.    
@@ -112,7 +113,7 @@ def capitulos(item):
 
 
 def calidades(item):
-    logger.info("[cda.py] calidades")
+    logger.info("[" + CHANNELNAME + ".py] calidades")
 
     # Descargo la página del clip.
     data = scrapertools.cache_page(item.url)

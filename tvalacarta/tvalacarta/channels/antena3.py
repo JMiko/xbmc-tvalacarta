@@ -49,32 +49,28 @@ def videosportada(item,id):
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Extrae las entradas
-    patron = '<div id="'+id+'"(.*?)</div><!-- .visor -->'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    #if DEBUG: scrapertools.printMatches(matches)
-    data = matches[0]
+    data = scrapertools.get_match(data, '<div id="'+id+'"(.*?)</div><!-- .visor -->')
     
     '''
     <div>
-    <a title="Vídeos de El Internado - Capítulo 8 - Temporada 7" href="/videos/el-internado/temporada-7/capitulo-8.html">
-    <img title="Vídeos de El Internado - Capítulo 8 - Temporada 7" 
-    src="/clipping/2010/07/21/00048/10.jpg"
-    alt="El último deseo"
-    href="/videos/el-internado/temporada-7/capitulo-8.html"
+    <a title="Vídeos de El Secreto de Puente Viejo - Capítulo 559 - Temporada 1-ANTENA 3 TELEVISION" href="/videos/el-secreto-de-puente-viejo/temporada-1/capitulo-559.html">
+    <img title="Vídeos de El Secreto de Puente Viejo - Capítulo 559 - Temporada 1-ANTENA 3 TELEVISION" 
+    src="/clipping/2013/05/03/00323/10.jpg"
+    alt="Capítulo 559 (7-5-2013)"
+    href="/videos/el-secreto-de-puente-viejo/temporada-1/capitulo-559.html"
     />
-    <strong>El Internado</strong>
-    <p>El último deseo</p></a>  
+    <meta itemprop="thumbnail" content="/clipping/2013/05/03/00323/10.jpg" />
+    <strong itemprop="name">El Secreto de Puente Viejo</strong>
+    <h2 itemprop="name"><p>Capítulo 559 (7-5-2013)</p></h2></a>  
     </div>
     '''
 
-    patron  = '<div>[^<]+'
-    patron += '<a title="([^"]+)" href="([^"]+)">[^<]+'
+    patron  = '<div[^<]+'
+    patron += '<a title="([^"]+)" href="([^"]+)"[^<]+'
     patron += '<img.*?src="([^"]+)"[^<]+'
-    patron += '<strong>([^<]+)</strong>[^<]+'
-    patron += '<h2><p>([^<]+)</p></h2>'
+    patron += '<meta[^<]+'
+    patron += '<stron[^>]+>([^<]+)</strong>[^<]+'
+    patron += '<h2[^<]+<p>([^<]+)</p></h2>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
@@ -153,23 +149,20 @@ def series(item):
     # Extrae las entradas (series)
     '''
     <div>
-    <a title="Vídeos de Soy tu dueña - Capítulos Completos - SERIES ANTENA 3 TELEVISION" href="/videos/soytu-duena.html">
-    <img title="Vídeos de Soy tu dueña - Capítulos Completos" href="/videos/soytu-duena.html"
-    src="/clipping/2012/10/22/00583/10.jpg"
-    alt="SERIES ANTENA 3 TELEVISION - Videos de Soy tu dueña"
+    <a title="Vídeos de Corona de lágrimas - Capítulos Completos - SERIES ANTENA 3 TELEVISION" href="/videos/corona-de-lagrimas.html">
+    <img title="Vídeos de Corona de lágrimas - Capítulos Completos" href="/videos/corona-de-lagrimas.html"
+    src="/clipping/2013/04/04/00508/10.jpg"
+    alt="SERIES ANTENA 3 TELEVISION - Videos de Corona de lágrimas"
     />
-
-
-    <h2><p>Soy tu dueña</p></h2>
-
+    <h2 itemprop="name"><p>Corona de lágrimas</p></h2>
     </a>
     </div>
     '''
     
-    patron  = '<div>[^<]+'
-    patron += '<a\W+title="[^"]+" href="([^"]+)"[^<]+'
+    patron  = '<div[^<]+'
+    patron += '<a\s+title="[^"]+" href="([^"]+)"[^<]+'
     patron += '<img.*?src="([^"]+)"'
-    patron += '.*?<h2><p>([^<]+)</p>'
+    patron += '.*?<h2[^<]+<p>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     #if DEBUG: scrapertools.printMatches(matches)
 
