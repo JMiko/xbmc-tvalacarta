@@ -32,6 +32,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="novedades"  , title="Novedades"      , url="http://www.documaniatv.com/newvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
     itemlist.append( Item(channel=__channel__, action="categorias" , title="Por categorías" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    itemlist.append( Item(channel=__channel__, action="tags" , title="Por tags" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
     itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"         , thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
     return itemlist
 
@@ -82,6 +83,25 @@ def categorias(item):
         itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url=match[0]))
     
     return itemlist
+
+
+def tags(item):
+    logger.info("[documaniatv.py] categorias")
+    itemlist = []
+
+    # Saca el bloque con las categorias
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,'<h4>Tags de los documentales</h4>(.*?)</div>')
+
+    #
+    patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url=match[0]))
+    
+    return itemlist
+
+
 
 def search(item,texto):
     #http://www.documaniatv.com/search.php?keywords=luna&btn=Buscar
