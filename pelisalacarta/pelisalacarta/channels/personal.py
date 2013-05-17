@@ -30,19 +30,29 @@ def mainlist(item):
     return personal_channel(item)
 
 def personal_channel(item):
-    logger.info("[personal.py] personal_channel")
+    logger.info("[personal.py] personal_channel "+item.channel)
 
     itemlist = []
-    url = config.get_setting("personalchannelurl")
-    logger.info("url="+url)
+    if item.url=="":
+        if item.channel=="personal":
+            item.url = config.get_setting("personalchannelurl")
+        elif item.channel=="personal2":
+            item.url = config.get_setting("personalchannelurl2")
+        elif item.channel=="personal3":
+            item.url = config.get_setting("personalchannelurl3")
+        elif item.channel=="personal4":
+            item.url = config.get_setting("personalchannelurl4")
+        elif item.channel=="personal5":
+            item.url = config.get_setting("personalchannelurl5")
+    logger.info("url="+item.url)
     
     # Si es una URL la descarga
-    if url.startswith("http://") or url.startswith("https://"):
-        data = scrapertools.cache_page(url)
+    if item.url.startswith("http://") or item.url.startswith("https://"):
+        data = scrapertools.cache_page(item.url)
 
     # Si es un fichero local, lo abre
     else:
-        infile = open( url )
+        infile = open( item.url )
         data = infile.read()
         infile.close()
     
@@ -52,13 +62,13 @@ def personal_channel(item):
     else:
         pagina_a_mostrar = int(item.extra)
     
-    patron = '<item[^<]+<title>([^<]+)</title[^<]+<link>([^<]+)</link[^<]+<description>([^<]+)</description[^<]+<media.thumbnail url="([^"]+)"[^<]+<media.thumbnail url="([^"]+)"'
+    patron = '<item[^<]+<title>([^<]+)</title[^<]+<link([^>]*)>([^<]+)</link[^<]+<description>([^<]+)</description[^<]+<media.thumbnail url="([^"]+)"[^<]+<media.thumbnail url="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
     contador = 1
     pagina_actual = 1
     maximo = int(config.get_setting("personalchannelpage"))
-    for scrapedtitle,scrapedurl,scrapedplot,scrapedthumbnail,fanart in matches:
+    for scrapedtitle,scrapedurltype,scrapedurl,scrapedplot,scrapedthumbnail,fanart in matches:
 
         # Si está en la página que debe mostrar añade los items
         if pagina_actual == pagina_a_mostrar:
@@ -68,8 +78,11 @@ def personal_channel(item):
             thumbnail = scrapedthumbnail
             plot = scrapedplot
             if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-    
-            itemlist.append( Item(channel=__channel__, action="play" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
+
+            if scrapedurltype=="":
+                itemlist.append( Item(channel=__channel__, action="play" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=False))
+            else:
+                itemlist.append( Item(channel=__channel__, action="personal_channel" , title=title , fulltitle=title, url=url, thumbnail=thumbnail, fanart=fanart, plot=plot, viewmode="movie_with_plot", folder=True))
         
             contador = contador + 1
             if contador > maximo:

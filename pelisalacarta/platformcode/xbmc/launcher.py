@@ -90,6 +90,8 @@ def run():
 
             if channel_name=="buscador":
                 import pelisalacarta.buscador as channel
+            if channel_name=="personal" or channel_name=="personal2" or channel_name=="personal3" or channel_name=="personal4" or channel_name=="personal5":
+                import pelisalacarta.channels.personal as channel
             elif os.path.exists( regular_channel_path ):
                 exec "import pelisalacarta.channels."+channel_name+" as channel"
             elif os.path.exists( regular_channel_path ):

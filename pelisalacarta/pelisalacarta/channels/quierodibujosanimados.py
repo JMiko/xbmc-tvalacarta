@@ -57,32 +57,6 @@ def episodios(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    '''
-    <h2><a   target="_self"     title="Donald en: El amor es cosa de dos" href="/Donald-en-El-amor-es-cosa-de-dos/990" class="">Donald en: El amor es cosa de dos</a></h2>
-    <div class="titulo_inf">
-    <a title="El Pato Donald" href="/cat/el-pato-donald/8" class="">El Pato Donald</a>                  <div class="estrellas">         <style> 
-    #stars_990 {
-    background-image:url(/ico/estrellas16.png);
-    background-repeat: no-repeat;
-    background-position: -96px 0px;
-    height:16px;
-    width:80px;
-    display:block;
-    }
-    #stars_990 span { width:8px; height:16px; display:block; float:left; }
-    </style>        
-    <div id="stars_990"></div>
-    </div>
-    </div>
-    <div class="texto">
-
-    <div id="foto"><a target="_self" title="Donald en: El amor es cosa de dos" href="/Donald-en-El-amor-es-cosa-de-dos/990" class=""><img alt="Donald en: El amor es cosa de dos"  src="/i/thm-El-amor-es-cosa-de-dos.jpg" /></a></div>
-
-    <span class=""><p style="text-align: justify;">En esta ocasi&oacute;n el divertido Pato Donald, se viste con sus mejores galas para ir a visitar a una bella dama. Sus sobrinos pretenden acompa&ntilde;arle a la cita pero....Cap&iacute;tulo titulado <strong>&quot;El amor es cosa de dos&quot;</strong>.</p></span>                 <div class="leer_mas">
-    <a href="/Donald-en-El-amor-es-cosa-de-dos/990" class="">Ver dibujos animados</a>                   </div>
-    </div>
-
-    '''
     patron  = '<h2><a[^<]+</a></h2>[^<]+'
     patron += '<div class="titulo_inf">[^<]+'
     patron += '<a[^<]+</a[^<]+<div class="estrellas"[^<]+<style[^<]+</style[^<]+'
@@ -90,7 +64,7 @@ def episodios(item):
     patron += '</div>[^<]+'
     patron += '</div>[^<]+'
     patron += '<div class="texto"[^<]+'
-    patron += '<div id="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img\s+alt="[^"]+"\s+src="([^"]+)"[^<]+</a></div>[^<]+'
+    patron += '<div id="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img\s+alt="[^"]+"\s+src="([^"]+)"[^<]+</a></div>.*?'
     patron += '<span class="">(.*?)</span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []

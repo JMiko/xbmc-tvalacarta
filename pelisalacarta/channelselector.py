@@ -123,6 +123,14 @@ def listchannels(params,url,category):
         if channel.type=="xbmc" or channel.type=="generic":
             if channel.channel=="personal":
                 thumbnail=config.get_setting("personalchannellogo")
+            elif channel.channel=="personal2":
+                thumbnail=config.get_setting("personalchannellogo2")
+            elif channel.channel=="personal3":
+                thumbnail=config.get_setting("personalchannellogo3")
+            elif channel.channel=="personal4":
+                thumbnail=config.get_setting("personalchannellogo4")
+            elif channel.channel=="personal5":
+                thumbnail=config.get_setting("personalchannellogo5")
             else:
                 thumbnail=urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
             addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail = thumbnail)
@@ -228,6 +236,14 @@ def channels_list():
     itemlist.append( Item( viewmode="movie", title="Tengo una URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
     if config.get_setting("personalchannel")=="true":
         itemlist.append( Item( title=config.get_setting("personalchannelname") , channel="personal" , language="" , category="F,S,D,A" , type="generic"  ))
+    if config.get_setting("personalchannel2")=="true":
+        itemlist.append( Item( title=config.get_setting("personalchannelname2") , channel="personal2" , language="" , category="F,S,D,A" , type="generic"  ))
+    if config.get_setting("personalchannel3")=="true":
+        itemlist.append( Item( title=config.get_setting("personalchannelname3") , channel="personal3" , language="" , category="F,S,D,A" , type="generic"  ))
+    if config.get_setting("personalchannel4")=="true":
+        itemlist.append( Item( title=config.get_setting("personalchannelname4") , channel="personal4" , language="" , category="F,S,D,A" , type="generic"  ))
+    if config.get_setting("personalchannel5")=="true":
+        itemlist.append( Item( title=config.get_setting("personalchannelname5") , channel="personal5" , language="" , category="F,S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Animeflv"              , channel="animeflv"             , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Animeid"               , channel="animeid"              , language="ES"    , category="A"       , type="generic"  ))
     itemlist.append( Item( title="Bajui"       , channel="bajui"             , language="ES"      , category="F,S,D,VOS" , type="generic"    ))
@@ -290,7 +306,7 @@ def channels_list():
     itemlist.append( Item( title="Peliculas Online FLV"  , channel="peliculasonlineflv"   , language="ES"    , category="F,D"     , type="generic"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="Peliculas21"           , channel="peliculas21"          , language="ES"    , category="F"       , type="xbmc"  ))
     itemlist.append( Item( title="Peliculamos (IT)"      , channel="peliculamos"          , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
-    itemlist.append( Item( title="Peliculasaudiolatino"  , channel="peliculasaudiolatino" , language="ES"    , category="F"       , type="generic"  ))
+    #itemlist.append( Item( title="Peliculasaudiolatino"  , channel="peliculasaudiolatino" , language="ES"    , category="F"       , type="generic"  ))
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PeliculasEroticas"     , channel="peliculaseroticas"    , language="ES" , category="F" , type="xbmc"  ))
     #itemlist.append( Item( title="peliculashd.pro"       , channel="peliculashdpro"       , language="ES" , category="F" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Peliculasid"           , channel="peliculasid"          , language="ES"    , category="F,VOS"       , type="xbmc"  ))

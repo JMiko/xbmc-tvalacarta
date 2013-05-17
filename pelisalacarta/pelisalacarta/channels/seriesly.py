@@ -62,8 +62,6 @@ def mainlist(item):
            
             extra_params = '%s|%s' % ( auth_token, user_token )
 
-            
-       
             itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
             itemlist.append( Item(channel=__channel__, title="Mis series", action="categorias", extra=extra_params, url="series" ) )
             itemlist.append( Item(channel=__channel__, title="Mis pelis", action="categorias", extra=extra_params, url="movies" ) )
@@ -392,6 +390,8 @@ def links(item):
                 logger.info(item.url)
                 exit = True
             except:
+                import traceback
+                logger.info(traceback.format_exc())
                 count = count + 1
        
 
