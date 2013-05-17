@@ -150,3 +150,18 @@ def build_api_url(list_type,content_type,video_type='all',genres='all',sort='alp
         #channel or media type
         api_url = base+list_type+'/media/'+str(ID)+'/'+region+'?format='+format
     return api_url
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    
+    items_categorias = mainlist(Item())
+    items_menu_peliculas = categorias(items_categorias[0])
+    items_peliculas = lista_peliculas(items_menu_peliculas[0])
+    if len(items_peliculas)==0:
+        return False
+
+    items_videos = lista_videos(items_peliculas[0])
+    if len(items_videos)==0:
+        return False
+
+    return True

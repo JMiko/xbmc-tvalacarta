@@ -166,16 +166,16 @@ def subcategorias(pageurl):
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
-    bien = True
     
     # El canal tiene estructura programas -> episodios -> play
-    items = mainlist(Item())
-    items_programas = programas(items[0])
+    items_programas = mainlist(Item())
     if len(items_programas)==0:
+        print "No hay programas"
         return False
 
     items_episodios = episodios(items_programas[0])
     if len(items_episodios)==0:
+        print "No hay episodios"
         return False
 
-    return bien
+    return True

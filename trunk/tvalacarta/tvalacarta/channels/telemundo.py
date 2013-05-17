@@ -102,3 +102,26 @@ def play(item):
 
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Todas las opciones tienen que tener algo
+    series_items = mainlist(Item())
+
+    # Lista de series
+    if len(series_items)==0:
+        print "No hay series"
+        return False
+
+    videos_items = videos(series_items[0])
+    if len(videos_items)==0:
+        print "La serie "+series_items[0].title+" no tiene episodios"
+        return False
+
+    mediaurl_items = play(videos_items[0])
+    if len(mediaurl_items)==0:
+        print "Error al averiguar la URL del primer episodio de "+series_items[0].title
+        return False
+
+    return True

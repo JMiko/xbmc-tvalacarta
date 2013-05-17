@@ -83,21 +83,12 @@ def youtube_videos(item):
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
-    bien = True
     
-    items_mainlist = mainlist(Item())
-    
-    items_programas = disneyweb(items_mainlist[0])
-    if len(items_programas)==0:
-        return False
+    # Si hay algún video en alguna de las listas de reproducción lo da por bueno
+    items_programas = mainlist(Item())
+    for item_programa in items_programas:
+        items_videos = youtube_videos(item_programa)
+        if len(items_videos)>0:
+            return True
 
-    items_videos = play(items_programas[0])
-    if len(items_videos)==0:
-        return False
-
-    for youtube_item in items_mainlist[1:]:
-        items_videos = youtube_videos(youtube_item)
-        if len(items_videos)==0:
-            return False
-
-    return bien
+    return False

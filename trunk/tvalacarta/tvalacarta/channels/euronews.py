@@ -45,7 +45,8 @@ def categorias(item):
     data = scrapertools.cache_page(item.url)
     
     # Enlace a "Programas"
-    patron = '<li class="menu-element-programs"><a href="([^"]+)">([^<]+)</a>'
+    #<li class="menu-element-programs"><a title="Los Programas" href="/programas/">Los Programas</a></li>
+    patron = '<li class="menu-element-programs"><a title="[^"]+" href="([^"]+)">([^<]+)</a>'
     matches = re.findall(patron,data,re.DOTALL)
     for url,titulo in matches:
         itemlist.append( Item(channel=CHANNELNAME, title=titulo, action="programas", url=urlparse.urljoin(item.url,url)) )
@@ -95,22 +96,20 @@ def programas(item):
     '''
     <li>
     <a name="europe weekly"></a>
-    <a class="imgWrap" href="/programas/europe-weekly/">
-    <img src="http://static.euronews.com/articles/programs/160x90_europe-weekly.jpg" alt="" title="La tragedia en Bélgica marca la agenda europea" />
-    </a>
-    <div class="titleWrap">
-    <h2  class="programTitle"><a href="/programas/europe-weekly/">europe weekly</a></h2>
-    <h3  class="artTitle"><a href="/2012/03/16/la-tragedia-en-belgica-marca-la-agenda-europea/">La tragedia en Bélgica marca la agenda europea</a></h2>
-    <p>	Bélgica está de luto por los niños fallecidos en el accidente de?</p>
-    <span class="more-link" style="position:absolute;padding-right:0;padding-top:0;bottom:0;right:0px;">
-    <a href="/programas/europe-weekly/">Más europe weekly?</a>
-    </span>
+    <a class="imgWrap" href="/programas/europe-weekly/" title="europe weekly">
+    <img src="http://static.euronews.com/articles/programs/160x90_europe-weekly.jpg" alt="europe weekly"  title="europe weekly" />
+    <div>
+    <h2  class="programTitle">europe weekly</h2>
+    <p  class="artTitle">europe Weekly Euronews le ofrece la última hora de la actualidad económica, financiera y empresarial a nivel internacional, con los eventos de la semana.</p>
+    <!--<span >Más europe weekly…</span>-->
     </div>
+    <br style="clear:both;"/>
+    </a>
     </li>
     '''
-    patron  = '<li>[^<]+'
-    patron += '<a name="([^"]+)"></a>[^<]+'
-    patron += '<a class="imgWrap" href="([^"]+)">[^<]+'
+    patron  = '<li[^<]+'
+    patron += '<a name="([^"]+)"></a[^<]+'
+    patron += '<a class="imgWrap" href="([^"]+)"[^<]+'
     patron += '<img src="([^"]+)"'
     matches = re.findall(patron,data,re.DOTALL)
     
@@ -381,3 +380,28 @@ def play(item):
         itemlist.append( Item(channel=CHANNELNAME, title=item.title, action="play", url=mediaurl, thumbnail=item.thumbnail) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    idiomas_items = mainlist(Item())
+    categorias_items = categorias(idiomas_items[0])
+
+    # Comprueba que salgan programas
+    for categoria_item in categorias_items:
+        if categoria_item.action=="programas":
+            programas_items = programas(categoria_item)
+            if len(programas_items)==0:
+                print "No hay programas"
+                return False
+
+    # Busca una lista de videos no vacia
+    for categoria_item in categorias_items:
+        if categoria_item.action=="videos":
+            videos_items = videos(categoria_item)
+            if len(videos_items)>0:
+                return True
+
+    print "No hay videos en ninguna categoria"
+
+    return False

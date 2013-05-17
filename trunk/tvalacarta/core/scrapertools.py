@@ -18,14 +18,12 @@
 
 import urlparse,urllib2,urllib
 import time
-import md5
 import os
 import config
 import logger
 import re
 import downloadtools
 import socket
-import binascii
 
 logger.info("[scrapertools.py] init")
 
@@ -165,7 +163,8 @@ def getCacheFileNames(url):
     siteCachePath = getSiteCachePath(url)
         
     # Obtiene el ID de la cache (md5 de la URL)
-    cacheId = binascii.hexlify(md5.new(url).digest())
+    cacheId = get_md5(url)
+        
     logger.debug("[scrapertools.py] cacheId="+cacheId)
 
     # Timestamp actual
@@ -322,7 +321,7 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     # ---------------------------------
 
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
     logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
@@ -350,14 +349,14 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
             # imported ClientCookie
             urlopen = ClientCookie.urlopen
             Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            cj = ClientCookie.MozillaCookieJar()
 
     else:
         logger.info("[scrapertools.py] cookielib disponible")
         # importing cookielib worked
         urlopen = urllib2.urlopen
         Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
+        cj = cookielib.MozillaCookieJar()
         # This is a subclass of FileCookieJar
         # that has useful load and save methods
 
@@ -422,27 +421,44 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     logger.info("[scrapertools.py] ---------------------------")
 
     req = Request(url, post, txheaders)
-    if timeout is None:
-        handle=urlopen(req)
-    else:        
-        #Disponible en python 2.6 en adelante --> handle = urlopen(req, timeout=timeout)
-        #Para todas las versiones:
-        deftimeout = socket.getdefaulttimeout()
-        try:
+
+    try:
+
+        if timeout is None:
+            handle=urlopen(req)
+        else:        
+            #Para todas las versiones:
+            deftimeout = socket.getdefaulttimeout()
             socket.setdefaulttimeout(timeout)
             handle=urlopen(req)            
-        except:
-            import sys
-            for line in sys.exc_info():
-                logger.error( "%s" % line ) 
+            socket.setdefaulttimeout(deftimeout)
         
-        socket.setdefaulttimeout(deftimeout)
-    
-    # Actualiza el almacén de cookies
-    cj.save(ficherocookies)
+        # Actualiza el almacén de cookies
+        cj.save(ficherocookies)
 
-    # Lee los datos y cierra
-    data=handle.read()
+        # Lee los datos y cierra
+        if handle.info().get('Content-Encoding') == 'gzip':
+            logger.info("[scrapertools.py] gzipped")
+            fin = inicio
+            import StringIO
+            data=handle.read()
+            compressedstream = StringIO.StringIO(data)
+            import gzip
+            gzipper = gzip.GzipFile(fileobj=compressedstream)
+            data = gzipper.read()
+            gzipper.close()
+            fin = time.clock()
+        else:
+            logger.info("[scrapertools.py] normal")
+            data = handle.read()
+    except urllib2.HTTPError,e:
+        logger.info("error "+repr(e))
+        import traceback
+        traceback.print_exc()
+        data = e.read()
+        #logger.info("data="+repr(data))
+        return data
+
     info = handle.info()
     logger.info("[scrapertools.py] Respuesta")
     logger.info("[scrapertools.py] ---------------------------")
@@ -478,7 +494,7 @@ def downloadpagewithcookies(url):
     # ---------------------------------
 
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_data_path(), 'cookies.dat' )
     logger.info("[scrapertools.py] Cookiefile="+ficherocookies)
 
     cj = None
@@ -501,13 +517,13 @@ def downloadpagewithcookies(url):
             # imported ClientCookie
             urlopen = ClientCookie.urlopen
             Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            cj = ClientCookie.MozillaCookieJar()
 
     else:
         # importing cookielib worked
         urlopen = urllib2.urlopen
         Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
+        cj = cookielib.MozillaCookieJar()
         # This is a subclass of FileCookieJar
         # that has useful load and save methods
 
@@ -591,7 +607,7 @@ def downloadpageWithoutCookies(url):
 def downloadpageGzip(url):
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_data_path(), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_data_path(), 'cookies.dat' )
     logger.info("Cookiefile="+ficherocookies)
     inicio = time.clock()
     
@@ -615,13 +631,13 @@ def downloadpageGzip(url):
             # imported ClientCookie
             urlopen = ClientCookie.urlopen
             Request = ClientCookie.Request
-            cj = ClientCookie.LWPCookieJar()
+            cj = ClientCookie.MozillaCookieJar()
 
     else:
         # importing cookielib worked
         urlopen = urllib2.urlopen
         Request = urllib2.Request
-        cj = cookielib.LWPCookieJar()
+        cj = cookielib.MozillaCookieJar()
         # This is a subclass of FileCookieJar
         # that has useful load and save methods
 
@@ -823,8 +839,6 @@ def htmlclean(cadena):
     cadena = cadena.replace("</em>","")
     cadena = cadena.replace("<b>","")
     cadena = cadena.replace("</b>","")
-    cadena = cadena.replace("<i>","")
-    cadena = cadena.replace("</i>","")
     cadena = cadena.replace("<u>","")
     cadena = cadena.replace("</u>","")
     cadena = cadena.replace("<li>","")
@@ -838,11 +852,14 @@ def htmlclean(cadena):
     cadena = cadena.replace("<BR />","")
     cadena = cadena.replace("<Br>","")
 
+    cadena = re.compile("<script.*?</script>",re.DOTALL).sub("",cadena)
+
     cadena = re.compile("<option[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</option>","")
 
-    cadena = re.compile("<iframe[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = re.compile("<i[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</iframe>","")
+    cadena = cadena.replace("</i>","")
     
     cadena = re.compile("<table[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</table>","")
@@ -861,6 +878,9 @@ def htmlclean(cadena):
     
     cadena = re.compile("<strong[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</strong>","")
+
+    cadena = re.compile("<small[^>]*>",re.DOTALL).sub("",cadena)
+    cadena = cadena.replace("</small>","")
 
     cadena = re.compile("<span[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</span>","")
@@ -973,8 +993,8 @@ def remove_show_from_title(title,show):
     if slugify(title).startswith(slugify(show)):
 
         # Convierte a unicode primero, o el encoding se pierde
-        title = unicode(title,"utf-8")
-        show = unicode(show,"utf-8")
+        title = unicode(title,"utf-8","replace")
+        show = unicode(show,"utf-8","replace")
         title = title[ len(show) : ].strip()
 
         if title.startswith("-"):
@@ -990,7 +1010,7 @@ def remove_show_from_title(title,show):
     return title
 
 def getRandom(str):
-    return binascii.hexlify(md5.new(str).digest())
+    return get_md5(str)
 
 def getLocationHeaderFromResponse(url):
     return get_header_from_response(url,header_to_get="location")
@@ -1005,7 +1025,7 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
         logger.info("[scrapertools.py] post=None")
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
     logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
@@ -1016,7 +1036,7 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
     # importing cookielib worked
     urlopen = urllib2.urlopen
     Request = urllib2.Request
-    cj = cookielib.LWPCookieJar()
+    cj = cookielib.MozillaCookieJar()
     # This is a subclass of FileCookieJar
     # that has useful load and save methods
 
@@ -1031,9 +1051,10 @@ def get_header_from_response(url,header_to_get="",post=None,headers=[['User-Agen
             os.remove(ficherocookies)
 
     if header_to_get=="location":
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
+        opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=DEBUG_LEVEL),urllib2.HTTPCookieProcessor(cj),NoRedirectHandler())
     else:
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=DEBUG_LEVEL),urllib2.HTTPCookieProcessor(cj))
+
     urllib2.install_opener(opener)
 
     # Contador
@@ -1098,7 +1119,7 @@ def get_headers_from_response(url,post=None,headers=[['User-Agent', 'Mozilla/5.0
         logger.info("[scrapertools.py] post=None")
     
     #  Inicializa la librería de las cookies
-    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.lwp' )
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
     logger.info("[scrapertools.py] ficherocookies="+ficherocookies)
 
     cj = None
@@ -1109,7 +1130,7 @@ def get_headers_from_response(url,post=None,headers=[['User-Agent', 'Mozilla/5.0
     # importing cookielib worked
     urlopen = urllib2.urlopen
     Request = urllib2.Request
-    cj = cookielib.LWPCookieJar()
+    cj = cookielib.MozillaCookieJar()
     # This is a subclass of FileCookieJar
     # that has useful load and save methods
 
@@ -1199,3 +1220,53 @@ def get_filename_from_url(url):
             filename = ""
 
     return filename
+
+def get_domain_from_url(url):
+    
+    import urlparse
+    parsed_url = urlparse.urlparse(url)
+    try:
+        filename = parsed_url.netloc
+    except:
+        # Si falla es porque la implementación de parsed_url no reconoce los atributos como "path"
+        if len(parsed_url)>=4:
+            filename = parsed_url[1]
+        else:
+            filename = ""
+
+    return filename
+
+# Parses the title of a tv show episode and returns the season id + episode id in format "1x01"
+def get_season_and_episode(title):
+    logger.info("get_season_and_episode('"+title+"')")
+
+    patron ="(\d+)[x|X](\d+)"
+    matches = re.compile(patron).findall(title)
+    logger.info(str(matches))
+    filename=matches[0][0]+"x"+matches[0][1]
+
+    logger.info("get_season_and_episode('"+title+"') -> "+filename)
+    
+    return filename
+
+def get_sha1(cadena):
+    try:
+        import hashlib
+        devuelve = hashlib.sha1(cadena).hexdigest()
+    except:
+        import sha
+        import binascii
+        devuelve = binascii.hexlify(sha.new(url).digest())
+    
+    return devuelve
+
+def get_md5(cadena):
+    try:
+        import hashlib
+        devuelve = hashlib.md5(cadena).hexdigest()
+    except:
+        import md5
+        import binascii
+        devuelve = binascii.hexlify(md5.new(url).digest())
+    
+    return devuelve

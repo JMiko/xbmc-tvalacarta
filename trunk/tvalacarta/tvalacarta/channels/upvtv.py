@@ -98,7 +98,9 @@ def episodios(item):
         #scrapedurl = urlparse.urljoin(url,match[2])
                 
         URLqueMola = urllib.quote(match[2]) #urllib.quote("http://mediaserver01.upv.es/UPRTV/TV/ActoInstitucionalUPV/2010-04-08 Acto_Insti Toma de posesión decano ADE.wmv")[5:]
+        logger.info("url="+URLqueMola)
         URLconHTTPok = URLqueMola.replace("http%3A","http:").replace(" ","%20")
+        logger.info("url="+URLconHTTPok)
         scrapedurl = (URLconHTTPok)
         scrapedthumbnail = ""
         scrapedplot = "HAZ CLICK SOBRE EL NOMBRE PARA REPRODUCIR EL CAPÍTULO"
@@ -150,3 +152,18 @@ def episodios(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=True) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # Todas las opciones tienen que tener algo
+    programas_items = mainlist(Item())
+    if len(programas_items)==0:
+        return False
+
+    episodios_items = episodios(programas_items[0])
+    if len(episodios_items)==0:
+        return False
+
+    return bien

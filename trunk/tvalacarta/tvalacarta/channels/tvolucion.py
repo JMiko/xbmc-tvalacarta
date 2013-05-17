@@ -1277,33 +1277,17 @@ def search(item,texto):
             logger.error( "%s" % line )
         return []
 
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
 
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    series_items = novelasr(items[2])
+    for serie_item in series_items:
+
+        exec "itemlist="+item.action+"(serie_item)"
     
+        if len(itemlist)==0:
+            return False
 
-
-    
-    
-    '''url = "http://www.peliculasaudiolatino.com/series-anime"
-        data = scrapertools.cachePage(url)
-        
-        # Extrae las entradas de todas series
-        patronvideos  = '<li>[^<]+'
-        patronvideos += '<a.+?href="([\D]+)([\d]+)">[^<]+'
-        patronvideos += '.*?/>(.*?)</a>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-        
-        for match in matches:
-        scrapedtitle = match[2].strip()
-        
-        # Realiza la busqueda
-        if scrapedtitle.lower()==texto.lower() or texto.lower() in scrapedtitle.lower():
-        logger.info(scrapedtitle)
-        scrapedurl = urlparse.urljoin(url,(match[0]+match[1]))
-        scrapedthumbnail = urlparse.urljoin("http://www.peliculasaudiolatino.com/images/series/",(match[1]+".png"))
-        scrapedplot = ""
-        
-        # A–ade al listado
-        itemlist.append( Item(channel=__channel__, action="listacapitulos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-        
-        return itemlist'''
-
+    return True

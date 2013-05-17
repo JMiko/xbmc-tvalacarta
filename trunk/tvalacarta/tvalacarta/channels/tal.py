@@ -71,9 +71,22 @@ def videos(item):
     data = " ".join(data.split())
     #logger.info(data)
     '''
-    <li class="arte" > <a href="http://tal.tv/es/video/denise-milan-vida-e-obra" > <img width="134" height="77" src="http://tal.tv/wp-content/uploads/2012/11/DeniseMilan-VidaeObra-134x77.jpg" class="attachment-video-thumb wp-post-image" alt="Denise Milan - Vida e Obra" title="Denise Milan - Vida e Obra" /> </a> <h3><a href="http://tal.tv/es/video/denise-milan-vida-e-obra" >La artista brasileña traza un paralelo entre su vida y su trabajo y el arte en sí.</a></h3> <div class="dados"> <div class="wrap-dados"> <div class="dados-content"> <h4>Denise Milan - Vida e…</h4> <span class="duracao">00:12:30</span> <span class="pais brasil">Brasil</span> </div> </div> </div> </li>
+    <li class="culinaria" >
+    <a href="http://tal.tv/es/video/paella-valenciana-mousse-de-parchita" >
+    <img width="134" height="77" src="http://tal.tv/wp-content/uploads/2011/10/P000929-134x77.jpg" class="attachment-video-thumb wp-post-image" alt="P000929" />            </a>
+    <h3><a href="http://tal.tv/es/video/paella-valenciana-mousse-de-parchita" >Probá la mousse de parchita que es sencilla. Después atrévase con la paella.</a></h3>
+    <div class="dados">
+    <div class="wrap-dados">
+    <div class="dados-content">
+    <h4>PAELLA VALENCIANA / MOUSSE…</h4>
+    <span class="duracao">00:21:40</span>
+    <span class="pais venezuela">Venezuela</span>
+    </div>
+    </div>
+    </div>
+    </li>
     '''
-    patron  = '<li class="[^"]+" > <a href="([^"]+)" > <img width="134" height="77" src="([^"]+)" class="[^"]+" alt="[^"]+" title="[^"]+" />.*?<h4>(.*?)</h4>'
+    patron  = '<li class="[^"]+"[^<]+<a href="([^"]+)"[^<]+<img width="\d+" height="\d+" src="([^"]+)".*?<h4>(.*?)</h4>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     for scrapedurl, scrapedthumbnail,scrapedtitle in matches:
@@ -115,5 +128,27 @@ def play(item):
     scrapedurl = tcurl + " swfUrl=" + swfurl + " pageUrl=" + item.url + " playpath=" +  playpath + " swfVfy=true"      
     itemlist.append( Item(channel=__channel__, action="play",  server="directo",  title=item.title, url=scrapedurl, folder=False))
 
-
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Todas las opciones tienen que tener algo
+    categorias_items = mainlist(Item())
+
+    # Lista de series
+    if len(categorias_items)==0:
+        print "No hay categorias"
+        return False
+
+    videos_items = videos(categorias_items[0])
+    if len(videos_items)==0:
+        print "La categoria "+categorias_items[0].title+" no tiene videos"
+        return False
+
+    mediaurl_items = play(videos_items[0])
+    if len(mediaurl_items)==0:
+        print "Error al averiguar la URL del primer episodio de "+series_items[0].title
+        return False
+
+    return True

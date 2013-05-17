@@ -2,13 +2,13 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-    <property name="oldversion" value="3.3.12"/>
-    <property name="oldversionboxee" value="4.6"/>
-    <property name="oldversiondate" value="30/03/2012"/>
+    <property name="oldversion" value="3.3.13"/>
+    <property name="oldversionboxee" value="4.7"/>
+    <property name="oldversiondate" value="06/04/2012"/>
 
-    <property name="version" value="3.3.13"/>
-    <property name="versionboxee" value="4.7"/>
-    <property name="versiondate" value="06/04/2013"/>
+    <property name="version" value="3.3.14"/>
+    <property name="versionboxee" value="4.8"/>
+    <property name="versiondate" value="14/05/2013"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <property name="target" value="target"/>
