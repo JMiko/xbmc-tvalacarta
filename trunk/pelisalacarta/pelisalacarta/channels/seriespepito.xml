@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriespepito</name>
-	<tag>4</tag>
-	<date>08/05/2012</date>
-	<changes>Arreglado patron de busqueda de videos</changes>
+	<tag>5</tag>
+	<date>20/05/2013</date>
+	<changes>Vuelven a aparecer los enlaces</changes>
 </version>
