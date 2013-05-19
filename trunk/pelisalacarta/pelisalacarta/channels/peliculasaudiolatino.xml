@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>peliculasaudiolatino</name>
-	<tag>4</tag>
-	<date>12/06/2012</date>
-	<changes>Arreglados patrones para categorias por @Ignite</changes>
+	<tag>5</tag>
+	<date>19/05/2013</date>
+	<changes>Cambiado .com por .tv</changes>
 </version>
