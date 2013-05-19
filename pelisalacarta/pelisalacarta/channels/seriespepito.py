@@ -272,8 +272,7 @@ def findvideos(item):
     '''
     # Listas de enlaces
     patron  = '<tr[^<]+'
-    patron += '<td class="tdidioma"><span class="([^"]+)"></span></td[^<]+'
-    patron += '<td>[^<]+</td[^<]+'
+    patron += '<td class="tdidioma"><span class="([^"]+)".*?'
     patron += '<td class="tdservidor"><img src="([^"]+)"[^>]+>([^<]+)</td[^<]+'
     patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="[^"]+" href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
