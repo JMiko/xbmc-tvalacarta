@@ -77,20 +77,21 @@ def foro(item):
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     if '<h3 class="catbg">Subforos</h3>' in data: # HAY SUBFOROS
-        patron = '<a class="subject" href="([^"]+)" name="[^"]+">([^<]+)</a>&nbsp' 
+        patron = '<a class="subje(.*?)t" href="([^"]+)" name="[^"]+">([^<]+)</a>&nbsp' 
         action = "foro"
     else: # MANDA A SACAR EL LINK DEL VIDEO
-        patron = '<td class="subject windowbg2">.*?<div >.*?<span id="msg_.*?"> <a href="([^"]+)".*?>([^<]+)</a> </span>' 
+        patron = '<td class="subject windowbg2">.*?<div >.*?<span id="([^"]+)"> <a href="([^"]+)".*?>([^<]+)</a> </span>' 
         action = "find_link_mega"
         
     matches = re.compile(patron,re.DOTALL).findall(data)
-    for scrapedurl,scrapedtitle in matches:
+    for scrapedmsg, scrapedurl,scrapedtitle in matches:
+            scrapedmsg = scrapedmsg.replace("msg_","?action=thankyou;msg=")
             url = urlparse.urljoin(item.url,scrapedurl)
             title = scrapertools.htmlclean(scrapedtitle)
             title = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
             title = scrapedtitle 
             thumbnail = ""
-            plot = ""
+            plot = url+scrapedmsg
             # Añade al listado
             itemlist.append( Item(channel=__channel__, action=action, title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
             
@@ -109,10 +110,19 @@ def foro(item):
     return itemlist
 
     
+    
+    
 def find_link_mega(item):
     logger.info("[megahd.py] find_link_mega")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
+    
+    if 'http://megahd.se/foro/Themes/inverted/images/hidden.png' in data:
+        data = scrapertools.cache_page(item.plot)
+        
+    else:
+        no_thanks = "SI"
+    
     
     patronimage = '<div class="inner" id="msg_\d{1,9}".*?<img src="([^"]+)"'
     
@@ -135,12 +145,13 @@ def find_link_mega(item):
         else:
             item.title = '"' + item.title + '" se reproducirá si el archivo es compatible con el reproductor de XBMC'
             
-        title = item.title
+        title = item.title 
+        #title = "msgt es " + msgt + "---item.plot es: " + item.plot
         
         plot = scrapertools.htmlclean(plot)
         url = ""
   
-    patronurl = '>https://mega.co.nz/(.*?)[<"]'
+    patronurl = '>https://mega.co.nz/(.*?)<'
     matches = re.compile(patronurl,re.DOTALL).findall(data)
     for scrapedurl in matches:
         url = scrapedurl
@@ -149,7 +160,7 @@ def find_link_mega(item):
         url = url.replace("!","%21")
         url = url + "&mime=vnd.divx"
         # Añade al listado
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title= title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
     return itemlist
     
     
