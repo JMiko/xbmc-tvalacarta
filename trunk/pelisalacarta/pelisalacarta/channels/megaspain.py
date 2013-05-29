@@ -81,24 +81,32 @@ def foro(item):
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     if '<h3 class="catbg">Subforos</h3>' in data:
-        patron = '<a class="subject" href="([^"]+)" name="[^"]+">([^<]+)</a>' # HAY SUBFOROS
+        patron = '<a class="subj(.*?)ct" href="([^"]+)" name="[^"]+">([^<]+)</a>' # HAY SUBFOROS
         action = "foro"
     else:
-        patron = '<span id="msg_.*?"><a href="([^"]+)">([^<]+)</a> </span>' # MANDA A SACAR EL LINK DEL VIDEO
+        patron = '<span id="([^"]+)"><a href="([^"]+)">([^<]+)</a> </span>' # MANDA A SACAR EL LINK DEL VIDEO
         action = "find_link_mega"
     
     matches = re.compile(patron,re.DOTALL).findall(data)
-    for scrapedurl,scrapedtitle in matches:
+    
+    for scrapedmsg, scrapedurl,scrapedtitle in matches:
+            
+            #http://www.mega-spain.com/index.php?action=thankyou;topic=3467.0;msg=14589
+            #http://www.mega-spain.com/index.php/topic,3467.0.html
+            #<span id="msg_34261"><
+            scrapedmsg = scrapedmsg.replace("msg_",";msg=")
+            
             url = urlparse.urljoin(item.url,scrapedurl)
             scrapedtitle = scrapertools.htmlclean(scrapedtitle)
             scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
             title = scrapedtitle
             thumbnail = ""
-            plot = ""
+            plot = url.replace("php?topic=","php?action=thankyou;topic=")
+            plot = plot + scrapedmsg
             # Añade al listado
             if action=="foro":
                 url = scrapedurl
-            itemlist.append( Item(channel=__channel__, action=action, title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+            itemlist.append( Item(channel=__channel__, action=action, title= title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
     
     
     # EXTREA EL LINK DE LA SIGUIENTE PAGINA
@@ -121,7 +129,15 @@ def find_link_mega(item):
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     
+    
+    if 'http://www.mega-spain.com/Themes/Red_Shadow/images/comenta2.png' in data:
+        data = scrapertools.cache_page(item.plot)
+    else:
+        no_thanks = "SI"
+       
+    
     patronimage = '<div class="inner" id="msg_\d{1,9}".*?<img src="([^"]+)"'
+    
     matches = re.compile(patronimage,re.DOTALL).findall(data)
     if len(matches)>0:
         thumbnail = matches[0]
@@ -129,7 +145,11 @@ def find_link_mega(item):
         thumbnail = unicode( thumbnail, "iso-8859-1" , errors="replace" ).encode("utf-8")
         url = ""
  
-    patronplot = '<div class="inner" id="msg_\d{1,9}".*?<img src="[^"]+".*?Reportar al moderador'
+    patronplot = '<div class="inner" id="msg_\d{1,9}".*?<img src="[^"]+".*?reportar.png'
+    
+    
+    
+    
     matches = re.compile(patronplot,re.DOTALL).findall(data)
     if len(matches)>0:
         plot = matches[0]
