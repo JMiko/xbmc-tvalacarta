@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>bajui</name>
-	<tag>4</tag>
-	<date>24/07/2012</date>
-	<changes>Actualizado bajui por cambios en la web</changes>
+	<tag>5</tag>
+	<date>05/06/2013</date>
+	<changes>Arreglada obtención de enlaces</changes>
 </version>
