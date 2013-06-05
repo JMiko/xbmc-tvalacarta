@@ -30,41 +30,52 @@ def mainlist(item):
     logger.info("[animeflv.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="novedades" , title="Últimos episodios"            , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="series"    , title="Ultimas series"               , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="airlist"   , title="Series en emision"            , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="letras"    , title="Listado Alfabetico"           , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="genero"    , title="Listado por Genero"           , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="completo"  , title="Listado Completo de Animes"   , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="completo"  , title="Listado Completo de Ovas"     , url="http://animeflv.net/" ))
-    itemlist.append( Item(channel=__channel__, action="completo"  , title="Listado Completo de Peliculas", url="http://animeflv.net/" ))
-    #itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar"                       , url="http://animeflv.net/buscar/" ))
+    itemlist.append( Item(channel=__channel__, action="novedades"     , title="Últimos episodios"   , url="http://animeflv.net/" ))
+    itemlist.append( Item(channel=__channel__, action="menuseries"    , title="Series"              , url="http://animeflv.net/animes/?orden=nombre&mostrar=series" ))
+    itemlist.append( Item(channel=__channel__, action="menuovas"      , title="OVAS"                , url="http://animeflv.net/animes/?orden=nombre&mostrar=ovas" ))
+    itemlist.append( Item(channel=__channel__, action="menupeliculas" , title="Películas"           , url="http://animeflv.net/animes/?orden=nombre&mostrar=peliculas" ))
+    itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar"              , url="http://animeflv.net/animes/?buscar=" ))
   
     return itemlist
 
-def search(item,texto):
-    logger.info("[animeflv.py] search")
-    if item.url=="":
-        item.url="http://animeflv.net/buscar/"
-    texto = texto.replace(" ","+")
-    item.url = item.url+texto
-    try:
-        return series(item)
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        return []
-
-def genero(item):
-    logger.info("[animeflv.py] genero")
+def menuseries(item):
+    logger.info("[animeflv.py] menuseries")
 
     itemlist = []
-    data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<div class="caja_b3"><div id="genuno">(.*?)</div></div>')
+    itemlist.append( Item(channel=__channel__, action="letras"  , title="Por orden alfabético" , url="http://animeflv.net/animes/?orden=nombre&mostrar=series" ))
+    itemlist.append( Item(channel=__channel__, action="generos" , title="Por géneros"          , url="http://animeflv.net/animes/?orden=nombre&mostrar=series" ))
+    itemlist.append( Item(channel=__channel__, action="series"  , title="En emisión"           , url="http://animeflv.net/animes/en-emision/?orden=nombre&mostrar=series" ))
+  
+    return itemlist
 
-    patron = '<li><a href="([^"]+)"[^>]*>([^"]+)</a></li>'
+def menuovas(item):
+    logger.info("[animeflv.py] menuovas")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, action="letras"  , title="Por orden alfabético" , url="http://animeflv.net/animes/?orden=nombre&mostrar=ovas" ))
+    itemlist.append( Item(channel=__channel__, action="generos" , title="Por géneros"          , url="http://animeflv.net/animes/?orden=nombre&mostrar=ovas" ))
+    itemlist.append( Item(channel=__channel__, action="series"  , title="En emisión"           , url="http://animeflv.net/animes/en-emision/?orden=nombre&mostrar=ovas" ))
+  
+    return itemlist
+
+def menupeliculas(item):
+    logger.info("[animeflv.py] menupeliculas")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, action="letras"  , title="Por orden alfabético" , url="http://animeflv.net/animes/?orden=nombre&mostrar=peliculas" ))
+    itemlist.append( Item(channel=__channel__, action="generos" , title="Por géneros"          , url="http://animeflv.net/animes/?orden=nombre&mostrar=peliculas" ))
+    itemlist.append( Item(channel=__channel__, action="series"  , title="En emisión"           , url="http://animeflv.net/animes/en-emision/?orden=nombre&mostrar=peliculas" ))
+  
+    return itemlist
+
+def letras(item):
+    logger.info("[animeflv.py] letras")
+
+    itemlist = []
+
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,'<div class="alfabeto_box"(.*?)</div>')
+    patron = '<a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
     for scrapedurl,scrapedtitle in matches:
@@ -77,104 +88,40 @@ def genero(item):
         itemlist.append( Item(channel=__channel__, action="series" , title=title , url=url, thumbnail=thumbnail, plot=plot))
     return itemlist
 
-def completo(item):
-    logger.info("[animeflv.py] completo")
+def generos(item):
+    logger.info("[animeflv.py] generos")
+
     itemlist = []
-    
-    # Descarga la pagina
+
     data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,'<div class="generos_box"(.*?)</div>')
+    patron = '<a href="([^"]+)[^>]+>([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)    
 
-    if "Animes" in item.title:
-        patron  = '<ul id="flvanimes"(.*?)</ul>'
-    elif "Ovas" in item.title:
-        patron  = '<ul id="flvovas"(.*?)</ul>'
-    elif "Peliculas" in item.title:
-        patron  = '<ul id="flvpelis"(.*?)</ul>'
-        
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)>0:
-        data = matches[0]
-        patronvideos = '<li><a href="([^"]+)" title="([^"]+)">([^"]+)</a></li>'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)    
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapertools.entityunescape(scrapedtitle)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        fulltitle = scrapedtitle
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))        
+        itemlist.append( Item(channel=__channel__, action="series" , title=title , url=url, thumbnail=thumbnail, plot=plot))
     return itemlist
 
-def letras(item):
-    logger.info("[animeflv.py] letras")
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, action="series" , title="0-9", url="http://animeflv.net/letra/0-9.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="A"  , url="http://animeflv.net/letra/a.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="B"  , url="http://animeflv.net/letra/b.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="C"  , url="http://animeflv.net/letra/c.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="D"  , url="http://animeflv.net/letra/d.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="E"  , url="http://animeflv.net/letra/e.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="F"  , url="http://animeflv.net/letra/f.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="G"  , url="http://animeflv.net/letra/g.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="H"  , url="http://animeflv.net/letra/h.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="I"  , url="http://animeflv.net/letra/i.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="J"  , url="http://animeflv.net/letra/j.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="K"  , url="http://animeflv.net/letra/k.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="L"  , url="http://animeflv.net/letra/l.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="M"  , url="http://animeflv.net/letra/m.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="N"  , url="http://animeflv.net/letra/n.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="O"  , url="http://animeflv.net/letra/o.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="P"  , url="http://animeflv.net/letra/p.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="Q"  , url="http://animeflv.net/letra/q.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="R"  , url="http://animeflv.net/letra/r.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="S"  , url="http://animeflv.net/letra/s.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="T"  , url="http://animeflv.net/letra/t.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="U"  , url="http://animeflv.net/letra/u.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="V"  , url="http://animeflv.net/letra/v.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="W"  , url="http://animeflv.net/letra/w.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="X"  , url="http://animeflv.net/letra/x.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="Y"  , url="http://animeflv.net/letra/y.html"))
-    itemlist.append( Item(channel=__channel__, action="series" , title="Z"  , url="http://animeflv.net/letra/z.html"))
-
-    return itemlist
-
-
-def series(item):
-    logger.info("[animeflv.py] series")
-
-    # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
-
-    # Extrae las entradas 
-    patronvideos  = '<div class="anime_box"> <a href="([^"]+)" title="([^"]+)"><img src="([^"]+)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    itemlist = []
-    
-    for match in matches:
-        scrapedtitle = match[1]
-        fulltitle = scrapedtitle
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle, viewmode="movie"))
-
-    patron = '<a href="([^"]+)">Siguiente</a><a href="([^"]+)">Ultima</a> </span></div></center><div class="cont_anime">'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    for match in matches:
-        if len(matches) > 0:
-            scrapedurl = "http://animeflv.net"+match[0]
-            scrapedtitle = "!Pagina Siguiente"
-            scrapedthumbnail = ""
-            scrapedplot = ""
-
-            itemlist.append( Item(channel=__channel__, action="series", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-    return itemlist
+def search(item,texto):
+    logger.info("[animeflv.py] search")
+    if item.url=="":
+        item.url="http://animeflv.net/animes/?buscar="
+    texto = texto.replace(" ","+")
+    item.url = item.url+texto
+    try:
+        return series(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def novedades(item):
     logger.info("[animeflv.py] novedades")
@@ -183,7 +130,14 @@ def novedades(item):
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)  
-    patronvideos  = '<div class="abso">.*?<a href="([^"]+)" title="([^"]+)"><img src="([^"]+)".*?>([^<]+)</a></div>'
+    '''
+    <div class="not">
+    <a href="/ver/cyclops-shoujo-saipu-12.html" title="Cyclops Shoujo Saipu 12">
+    <img class="imglstsr lazy" src="http://cdn.animeflv.net/img/mini/957.jpg" border="0">
+    <span class="tit_ep"><span class="tit">Cyclops Shoujo Saipu 12</span></span>
+    </a>
+    '''
+    patronvideos  = '<div class="not"[^<]+<a href="([^"]+)" title="([^"]+)"[^<]+<img class="[^"]+" src="([^"]+)"[^<]+<span class="tit_ep"><span class="tit">([^<]+)<'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     itemlist = []
     
@@ -200,6 +154,54 @@ def novedades(item):
 
     return itemlist
 
+def series(item):
+    logger.info("[animeflv.py] series")
+
+    # Descarga la pagina
+    data = scrapertools.cache_page(item.url)
+
+    # Extrae las entradas 
+    '''
+    <div class="aboxy_lista">
+    <a href="/ova/nurarihyon-no-mago-ova.html" title="Nurarihyon no Mago OVA"><img class="lazy portada" src="/img/blank.gif" data-original="http://cdn.animeflv.net/img/portada/1026.jpg" alt="Nurarihyon no Mago OVA"/></a>
+    <span style="float: right; margin-top: 0px;" class="tipo_1"></span>
+    <a href="/ova/nurarihyon-no-mago-ova.html" title="Nurarihyon no Mago OVA" class="titulo">Nurarihyon no Mago OVA</a>
+    <div class="generos_links"><b>Generos:</b> <a href="/animes/genero/accion/">Acci&oacute;n</a>, <a href="/animes/genero/shonen/">Shonen</a>, <a href="/animes/genero/sobrenatural/">Sobrenatural</a></div>
+    <div class="sinopsis">La historia empieza en alrededor de 100 a&ntilde;os despu&eacute;s de la desaparici&oacute;n de Yamabuki Otome, la primera esposa Rihan Nura. Rihan por fin recobr&oacute; la compostura y la vida vuelve a la normalidad. A medida que la cabeza del Clan Nura, est&aacute; ocupado trabajando en la construcci&oacute;n de un mundo armonioso para los seres humanos y youkai. Un d&iacute;a, &eacute;l ve a Setsura molesta por lo que decide animarla tomando el clan para ir a disfrutar de las aguas termales &hellip;</div>
+    </div>
+    '''
+
+    patron  = '<div class="aboxy_lista"[^<]+'
+    patron += '<a href="([^"]+)"[^<]+<img class="[^"]+" src="[^"]+" data-original="([^"]+)"[^<]+</a[^<]+'
+    patron += '<span[^<]+</span[^<]+'
+    patron += '<a[^>]+>([^<]+)</a.*?'
+    patron += '<div class="sinopsis">(.*?)</div'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    itemlist = []
+    
+    for scrapedurl,scrapedthumbnail,scrapedtitle,scrapedplot in matches:
+        title = scrapedtitle
+        fulltitle = title
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        plot = scrapedplot
+        show = title
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail , plot=plot , show=show, fulltitle=fulltitle, fanart=thumbnail, viewmode="movies_with_plot", folder=True) )
+
+    patron = '<a href="([^"]+)">\&raquo\;</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        if len(matches) > 0:
+            scrapedurl = urlparse.urljoin(item.url,match)
+            scrapedtitle = ">> Pagina Siguiente"
+            scrapedthumbnail = ""
+            scrapedplot = ""
+
+            itemlist.append( Item(channel=__channel__, action="series", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    return itemlist
+
 def episodios(item):
     logger.info("[animeflv.py] episodios")
     itemlist = []
@@ -207,78 +209,35 @@ def episodios(item):
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
 
-    # Saca el argumento
-    try:
-        scrapedplot = scrapertools.get_match(data,'<div class="caja_cont">(.*?)</div></div>')
-        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedplot = scrapertools.htmlclean(scrapedplot)
-    except:
-        pass
-    
-    try:
-        scrapedthumbnail = scrapertools.get_match(data,'<div class="contenedor_principal".*?<img src="([^"]+)"')
-        scrapedthumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-    except:
-        pass
+    '''
+    <div class="tit">Listado de episodios <span class="fecha_pr">Fecha Pr&oacute;ximo: 2013-06-11</span></div>
+    <ul class="anime_episodios" id="listado_epis"><li><a href="/ver/aiura-9.html">Aiura 9</a></li><li><a href="/ver/aiura-8.html">Aiura 8</a></li><li><a href="/ver/aiura-7.html">Aiura 7</a></li><li><a href="/ver/aiura-6.html">Aiura 6</a></li><li><a href="/ver/aiura-5.html">Aiura 5</a></li><li><a href="/ver/aiura-4.html">Aiura 4</a></li><li><a href="/ver/aiura-3.html">Aiura 3</a></li><li><a href="/ver/aiura-2.html">Aiura 2</a></li><li><a href="/ver/aiura-1.html">Aiura 1</a></li></ul>
+    '''
 
     # Saca enlaces a los episodios
-    data = scrapertools.get_match(data,'Listado de capitulos(.*?)</ul>')
-    patron = '<li class="lcc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
+    data = scrapertools.get_match(data,'<div class="tit">Listado de episodios.*?</div>(.*?)</ul>')
+    patron = '<li><a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
-    for match in matches:
-        scrapedtitle = match[1]
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedtitle = scrapertools.entityunescape( scrapedtitle )
-
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle
         try:
-            episodio = scrapertools.get_match(scrapedtitle,"Capítulo (\d+)")
+            episodio = scrapertools.get_match(scrapedtitle,item.title+"\s+(\d+)")
             if len(episodio)==1:
-                scrapedtitle = "1x0"+episodio
+                title = "1x0"+episodio
             else:
-                scrapedtitle = "1x"+episodio
+                title = "1x"+episodio
         except:
             pass
         
-        
-        fulltitle = scrapedtitle
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        #scrapedthumbnail = item.thumbnail
-        #scrapedplot = match[2]
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = item.thumbnail
+        plot = item.plot
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , show=item.show, fulltitle=item.show+" "+title, fanart=thumbnail, viewmode="movies_with_plot", folder=True) )
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show, fulltitle=fulltitle, viewmode="movie_with_plot"))
-    
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
-
-    return itemlist
-
-def airlist(item):
-    logger.info("[animeid.py] airlist")
-
-    # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
-
-    # Extrae las entradas (carpetas)  
-    patronvideos  = 'Animes en Emision(.*?)</div>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if len(matches)>0:
-        data = matches[0]
-        patronvideos = '<li><a href="([^"]+)" title="([^"]+)"'
-        matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    
-    itemlist = []
-
-    for match in matches:
-        scrapedtitle = match[1]
-        fulltitle = scrapedtitle
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, fulltitle=fulltitle))
 
     return itemlist
 
@@ -286,16 +245,11 @@ def findvideos(item):
     logger.info("[animeflv.py] findvideos")
 
     data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,"var videos \= (.*?)$")
     logger.info("data="+data)
-    packed = scrapertools.get_match(data,"(<script>eval\(function\(p,a,c,k,e,d\).*?split\('\|'\),0,\{\}\)\))")+"</script>"
-    logger.info("packed="+packed)
-    from core import jsunpack
-    unpacked = jsunpack.unpack(packed)
-    logger.info("unpacked="+unpacked)
 
     itemlist=[]
     
-    data = unpacked
     data = data.replace("\\\\","")
     data = data.replace("\\/","/")
     logger.info("data="+data)
@@ -313,7 +267,7 @@ def findvideos(item):
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     bien = True
-    
+
     # mainlist
     mainlist_items = mainlist(Item())
     
@@ -323,15 +277,15 @@ def test():
             exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
             if len(itemlist)==0:
                 return false
-    
+
     # Comprueba si alguno de los vídeos de "Novedades" devuelve mirrors
     episodios_items = novedades(mainlist_items[0])
-    
+
     bien = False
     for episodio_item in episodios_items:
         mirrors = findvideos(episodio_item)
         if len(mirrors)>0:
             bien = True
             break
-    
+
     return bien
