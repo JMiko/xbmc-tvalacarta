@@ -185,16 +185,30 @@ def enlaces(item):
     except:
         pass
 
-    patron  = '<div class="box-enlace-cabecera">[^<]+'
+    '''
+    <div id="enlaces-34769"><img id="enlaces-cargando-34769" src="/images/cargando.gif" style="display:none;"/></div>
+    </li><li id="box-enlace-330690" class="box-enlace">
+    <div class="box-enlace-cabecera">
+    <div class="datos-usuario"><img class="avatar" src="images/avatars/116305_p.jpg" />Enlaces de: 
+    <a class="nombre-usuario" href="/usuario/jerobien">jerobien</a> </div>
+    <div class="datos-act">Actualizado: Hace 8 minutos</div>
+    <div class="datos-boton-mostrar"><a id="boton-mostrar-330690" class="boton" href="javascript:mostrar_enlaces(330690,'b01de63028139fdd348d');">Mostrar enlaces</a></div>
+    <div class="datos-servidores"><div class="datos-servidores-cell"><img src="/images/servidores/ul.to.png" title="uploaded.com" border="0" alt="uploaded.com" /><img src="/images/servidores/bitshare.png" title="bitshare.com" border="0" alt="bitshare.com" /><img src="/images/servidores/freakshare.net.jpg" title="freakshare.com" border="0" alt="freakshare.com" /><img src="/images/servidores/letitbit.png" title="letitbit.net" border="0" alt="letitbit.net" /><img src="/images/servidores/turbobit.png" title="turbobit.net" border="0" alt="turbobit.net" /><img src="/images/servidores/rapidgator.png" title="rapidgator.net" border="0" alt="rapidgator.net" /><img src="/images/servidores/cloudzer.png" title="clz.to" border="0" alt="clz.to" /></div></div>
+    </div>
+    '''
+
+    patron  = '<div class="box-enlace-cabecera"[^<]+'
     patron += '<div class="datos-usuario"><img class="avatar" src="([^"]+)" />Enlaces[^<]+'
-    patron += '<a class="nombre-usuario" href="[^"]+">([^<]+)</a> </div>[^<]+'
-    patron += '<div class="datos-act">Actualizado. ([^<]+)</div>.*?<div class="datos-boton-mostrar"><a id="boton-mostrar-\d+" class="boton" href="javascript.mostrar_enlaces\((\d+)\)\;">Mostrar enlaces</a></div>[^<]+'
+    patron += '<a class="nombre-usuario" href="[^"]+">([^<]+)</a[^<]+</div>[^<]+'
+    patron += '<div class="datos-act">Actualizado. ([^<]+)</div>.*?'
+    patron += '<div class="datos-boton-mostrar"><a id="boton-mostrar-\d+" class="boton" href="javascript.mostrar_enlaces\((\d+)\,\'([^\']+)\'[^>]+>Mostrar enlaces</a></div>[^<]+'
     patron += '<div class="datos-servidores"><div class="datos-servidores-cell">(.*?)</div></div>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
+    logger.info("matches="+repr(matches))
     
-    for thumbnail,usuario,fecha,id,servidores in matches:
+    for thumbnail,usuario,fecha,id,id2,servidores in matches:
         #<img src="/images/servidores/bitshare.png" title="bitshare.com" border="0" alt="bitshare.com" /><img src="/images/servidores/freakshare.net.jpg" title="freakshare.com" border="0" alt="freakshare.com" /><img src="/images/servidores/rapidgator.png" title="rapidgator.net" border="0" alt="rapidgator.net" /><img src="/images/servidores/turbobit.png" title="turbobit.net" border="0" alt="turbobit.net" /><img src="/images/servidores/muchshare.png" title="muchshare.net" border="0" alt="muchshare.net" /><img src="/images/servidores/letitbit.png" title="letitbit.net" border="0" alt="letitbit.net" /><img src="/images/servidores/shareflare.png" title="shareflare.net" border="0" alt="shareflare.net" /><img src="/images/servidores/otros.gif" title="Otros servidores" border="0" alt="Otros" />
         patronservidores = '<img src="[^"]+" title="([^"]+)"'
         matches2 = re.compile(patronservidores,re.DOTALL).findall(servidores)
@@ -204,7 +218,8 @@ def enlaces(item):
         lista_servidores = lista_servidores[:-2]
 
         scrapedthumbnail = item.thumbnail
-        scrapedurl = "http://www.bajui.com/ajax/mostrar-enlaces.php?id="+id
+        #http://www.bajui.com/ajax/mostrar-enlaces.php?id=330582&code=124767d31bfbf14c3861
+        scrapedurl = "http://www.bajui.com/ajax/mostrar-enlaces.php?id="+id+"&code="+id2
         scrapedplot = item.plot
         scrapedtitle="Enlaces de "+usuario+" ("+fecha+") ("+lista_servidores+")"
 
