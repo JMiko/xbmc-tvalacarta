@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
-	<name>tutvsite</name>
-	<tag>6</tag>
-	<date>17/03/2013</date>
-	<changes>Arreglado error en enlaces por partes</changes>
+	<name>tumejortv</name>
+	<tag>7</tag>
+	<date>05/06/2013</date>
+	<changes>Mejorado proceso de obtención de enlaces</changes>
 </version>
