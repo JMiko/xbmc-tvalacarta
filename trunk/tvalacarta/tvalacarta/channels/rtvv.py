@@ -151,19 +151,19 @@ def test():
 
     programas_items = mainlist(Item())
 
-    # Lista de series
+    # Lista de programas
     if len(programas_items)==0:
         print "No hay programas"
         return False
 
-    videos_items = videos(programas_items[0])
-    if len(videos_items)==0:
-        print "La categoria "+categorias_items[0].title+" no tiene videos"
+    episodios_items = episodios(programas_items[0])
+    if len(episodios_items)==0:
+        print "El programa "+programas_items[0].title+" no tiene videos"
         return False
 
-    mediaurl_items = play(videos_items[0])
+    mediaurl_items = play(episodios_items[0])
     if len(mediaurl_items)==0:
-        print "Error al averiguar la URL del primer episodio de "+series_items[0].title
+        print "Error al averiguar la URL del primer episodio de "+programas_items[0].title
         return False
 
     return True

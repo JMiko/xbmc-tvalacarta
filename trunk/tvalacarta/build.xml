@@ -2,13 +2,13 @@
 <project name="tvalacarta" default="package">
 	<description>tvalacarta</description>
 
-    <property name="oldversion" value="3.3.13"/>
-    <property name="oldversionboxee" value="4.7"/>
-    <property name="oldversiondate" value="06/04/2012"/>
+    <property name="oldversion" value="3.3.14"/>
+    <property name="oldversionboxee" value="4.8"/>
+    <property name="oldversiondate" value="14/05/2012"/>
 
-    <property name="version" value="3.3.14"/>
-    <property name="versionboxee" value="4.8"/>
-    <property name="versiondate" value="14/05/2013"/>
+    <property name="version" value="3.3.15"/>
+    <property name="versionboxee" value="4.9"/>
+    <property name="versiondate" value="06/06/2013"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <property name="target" value="target"/>
@@ -154,8 +154,8 @@
     </target>
 
     <!-- publish =============================================== -->
-	<target name="publish" depends="upload" description="Notify the repositories that a new version is available">
-        <echo message="Actualizando el repositorio de Boxee"/>
+	<target name="publish" description="Notify the repositories that a new version is available">
+        <!--echo message="Actualizando el repositorio de Boxee"/>
         <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}/download" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="${target}/boxee">
 				<include name="info.mimediacenter.tvalacarta-${versionboxee}.zip"/>
@@ -168,15 +168,14 @@
             <fileset dir="platformcode/boxee">
 				<include name="index.xml"/>
             </fileset>
-        </ftp>
+        </ftp-->
 
         <echo message="Actualizando tvalacarta-version.xml"/>
         <copy file="version.xml" tofile="tvalacarta-version.xml"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir=".">
-				<include name="tvalacarta-version.xml"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="tvalacarta-version.xml"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
         <delete file="tvalacarta-version.xml"/>
     </target>
 

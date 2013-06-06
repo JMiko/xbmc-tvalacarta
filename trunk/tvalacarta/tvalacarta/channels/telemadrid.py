@@ -111,3 +111,16 @@ def get_video_detail(item):
     item.plot = scrapertools.get_match(data,'"descs"\: \["([^"]+)"\]')
 
     return item
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Comprueba que la primera opción tenga algo
+    categorias_items = mainlist(Item())
+    programas_items = programas(categorias_items[0])
+    episodios_items = episodios(programas_items[0])
+
+    if len(episodios_items)>0:
+        return True
+
+    return False

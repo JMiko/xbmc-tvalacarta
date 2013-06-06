@@ -101,6 +101,7 @@ def loadsection(item):
                              url = scrapedurl,
                              thumbnail = scrapedthumbnail,
                              plot = scrapedplot,
+                             server = "tv3",
                              folder = False
                         )
                     ) 
@@ -287,124 +288,14 @@ def hdvideolist(item):
             logger.error( "%s" % line )
     return itemlist
 
-def play(item): 
-    logger.info("[tv3.py] play")   
-     
-    server = "Directo"   
-    itemlist = []
-    try:
-        # --------------------------------------------------------
-        # Saca el codigo de la URL y descarga
-        # --------------------------------------------------------
-        patron = "/videos/(\d+)/"
-        matches = re.compile(patron,re.DOTALL).findall(item.url)
-        scrapertools.printMatches(matches)
-        codigo = matches[0]
-    
-        # Prueba con el modo 1
-        url = geturl3(codigo)
-        if url=="" or url == None:
-            url = geturl1(codigo)
-        if url=="" or url == None:
-            url = geturl2(codigo)
-        if url=="" or url == None:
-            url = geturl4(codigo)
-        
-        if url=="" or url == None:
-            return []
-        
-        if url.startswith("http"):
-            itemlist.append( Item(channel=__channel__, action="play" , title="play", url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
-        else:
-            #url = "rtmp://mp4-500-str.tv3.cat/ondemand/mp4:g/tvcatalunya/3/1/1269579524113.mp4"
-            patron = "rtmp\:\/\/([^\/]+)\/ondemand\/mp4\:(g\/.*?mp4)"
-            matches = re.compile(patron,re.DOTALL).findall(url)
-            media = matches[0][1]
-            
-            videourl = "http://mp4-medium-dwn.media.tv3.cat/" + media
-            itemlist.append( Item(channel=__channel__, action="play" , title="play", url=videourl, thumbnail=item.thumbnail, plot=item.plot, server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
-    except:  
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line ) 
-                
-        
-    return itemlist
-
-def geturl1(codigo):
-    #http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID=1594629&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474
-    dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=FLV&rnd=481353"
-    logger.info("[tv3.py] geturl1 dataurl="+dataurl)
-        
-    data = scrapertools.cachePage(dataurl)
-    
-    patron = "(rtmp://[^\?]+)\?"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    url = ""
-    if len(matches)>0:
-    	url = matches[0]
-    	url = url.replace('rtmp://flv-500-str.tv3.cat/ondemand/g/','http://flv-500.tv3.cat/g/')
-    return url
-
-def geturl2(codigo):
-    #http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID=1594629&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474
-    dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=FLVGES&RP=www.tv3.cat&rnd=796474"
-    logger.info("[tv3.py] geturl2 dataurl="+dataurl)
-        
-    data = scrapertools.cachePage(dataurl)
-    
-    patron = "(rtmp://[^\?]+)\?"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    url = ""
-    if len(matches)>0:
-    	url = matches[0]
-    	url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
-	return url
-
-def geturl3(codigo):
-    dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=MP4"
-    logger.info("[tv3.py] geturl3 dataurl="+dataurl)
-        
-    data = scrapertools.cachePage(dataurl)
-    
-    patron = "(rtmp://[^\?]+)\?"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    url = ""
-    if len(matches)>0:
-    	url = matches[0]
-    	#url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
-    return url
-
-def geturl4(codigo):
-    dataurl = "http://www.tv3.cat/su/tvc/tvcConditionalAccess.jsp?ID="+codigo+"&QUALITY=H&FORMAT=MP4GES&RP=www.tv3.cat"
-    logger.info("[tv3.py] geturl4 dataurl="+dataurl)
-        
-    data = scrapertools.cachePage(dataurl)
-    
-    patron = "(rtmp://[^\?]+)\?"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    url = ""
-    if len(matches)>0:
-    	url = matches[0]
-    	#url = url.replace('rtmp://flv-es-500-str.tv3.cat/ondemand/g/','http://flv-500-es.tv3.cat/g/')
-    return url
-
-
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
 
-    # Todas las opciones tienen que tener algo
+    # Comprueba que la primera opción tenga algo
     items = mainlist(Item())
-    for item in items:
-        if item.action!="search":
-            exec "itemlist="+item.action+"(item)"
-        
-            if len(itemlist)==0:
-                return False
+    section = loadsection(items[0])
 
-    # Lista de series
-    novedades_series = loadsection(items[0])
-    if len(novedades_series)==0:
-        return False
+    if len(section)>0:
+        return True
 
-    return True
+    return False

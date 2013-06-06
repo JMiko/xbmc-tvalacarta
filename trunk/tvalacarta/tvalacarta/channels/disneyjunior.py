@@ -83,12 +83,14 @@ def play(item):
     if "disney.es" in item.url:
 
         # Obtiene el id del video
-        page_id = scrapertools.get_match( item.url , "/disney-junior/contenido/video.jsp?v=([a-z0-9\-\_]+)" )
+        page_id = scrapertools.get_match( item.url , "/disney-junior/contenido/video.jsp\?v=([a-z0-9\-\_]+)" )
 
         # Fetch page
         data = scrapertools.cache_page( item.url )
 
-        #"urlId":"02-canta_con_dj_senderismo","pageTitle":"Canta con_dj_senderismo |  Video | Disney Junior","description":"Canta con DJ: Senderismo","thumbnailImage":"","media":{"stream":{"program":"canta_dj_senderismo_mannyHV13750.mp4","server":"rtmpe://cp121902.edgefcs.net/ondemand/"},"progressive":"http://www.disney.es:80/cms_res/disney-junior/video/canta_dj_senderismo_mannyHV13750.mp4"}}
+        #"urlId":"01-manny-manitas-cuenta","pageTitle":"Disney Junior | Videos - Manny Manitas - Contando tacos de pared","description":"Cuenta con Manny: Contando tacos de pared",
+        #"thumbnailImage":"","media":{"stream":{"program":"cuenta_con_mannyPV08604.mp4","server":"rtmpe://cp121902.edgefcs.net/ondemand/"},
+        #"progressive":"http://www.disney.es:80/cms_res/disney-junior/video/cuenta_con_mannyPV08604.mp4"}},{"thumbnailAlt":"","title":"Canta con DJ: Senderismo","analyticsAssetName":"vid:djr:hdm:canta_dj_senderismo_mannyHV13750.mp4","urlId":"02-canta_con_dj_senderismo","pageTitle":"Canta con_dj_senderismo |  Video | Di
         url = scrapertools.get_match( data , '"urlId"\:"'+page_id+'","pageTitle"\:"[^"]+","description":"[^"]+","thumbnailImage":"","media":{"stream":{"program":"[^"]+","server":"[^"]+"},"progressive":"([^"]+)"}}' )
         logger.info("disneyjunior.disneyweb_play url="+url)
 
