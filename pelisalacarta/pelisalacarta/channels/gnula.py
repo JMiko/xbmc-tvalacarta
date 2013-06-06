@@ -27,12 +27,10 @@ def isGeneric():
 def mainlist(item):
     logger.info("[gnula.py] getmainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades" , action="peliculas" , url="http://gnula.biz/"))
     itemlist.append( Item(channel=__channel__, title="A-Z"       , action="letras"    , url="http://gnula.biz/"))
     itemlist.append( Item(channel=__channel__, title="Años"      , action="anyos"     , url="http://gnula.biz/"))
     itemlist.append( Item(channel=__channel__, title="Generos"   , action="generos"   , url="http://gnula.biz/"))
-    itemlist.append( Item(channel=__channel__, title="Paises"    , action="paises"    , url="http://gnula.biz/"))
-    itemlist.append( Item(channel=__channel__, title="Buscar"    , action="search"))
+    #itemlist.append( Item(channel=__channel__, title="Buscar"    , action="search"))
     return itemlist
 
 def generos(item):
@@ -40,14 +38,14 @@ def generos(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<select name="gen"(.*?)/select')
+    data = scrapertools.get_match(data,'<select onchange="[^"]+" id="gen_ini">(.*?)/select')
     patron = '<option value="([^"]+)">([^<]+)</option>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     for url,genero in matches:
-        scrapedtitle =  genero
+        scrapedtitle =  scrapertools.htmlclean(genero)
         scrapedplot = ""
-        scrapedurl = "http://gnula.biz/genero/"+genero
+        scrapedurl = "http://gnula.biz/"+url
         scrapedthumbnail = ""
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='peliculas', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
@@ -59,13 +57,14 @@ def letras(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-    patron = '<option value="([^"]+)">Letra [^<]+</option>'
+    data = scrapertools.get_match(data,'<select onchange="[^"]+" id="alf_ini">(.*?)/select')
+    patron = '<option value="([^"]+)">([^<]+)</option>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
-    for letra in matches:
-        scrapedtitle =  letra.upper()
+    for url,letra in matches:
+        scrapedtitle =  letra
         scrapedplot = ""
-        scrapedurl = "http://gnula.biz/letra/"+letra
+        scrapedurl = "http://gnula.biz/"+url
         scrapedthumbnail = ""
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='peliculas', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
@@ -77,19 +76,20 @@ def anyos(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<select name="anos"(.*?)/select')
-    patron = '<option value="(\d+)">\d+</option>'
+    data = scrapertools.get_match(data,'<select onchange="[^"]+" id="emi_ini">(.*?)/select')
+    patron = '<option value="([^"]+)">([^<]+)</option>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for anyo in matches:
-        scrapedtitle =  anyo
+    #if DEBUG: scrapertools.printMatches(matches)
+    for url,letra in matches:
+        scrapedtitle =  letra
         scrapedplot = ""
-        scrapedurl = "http://gnula.biz/ano/"+anyo
+        scrapedurl = "http://gnula.biz/"+url
         scrapedthumbnail = ""
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='peliculas', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle) )
     
     return itemlist
+
 
 def paises(item):
     logger.info("[gnula.py] letras")
@@ -113,22 +113,30 @@ def paises(item):
 def peliculas(item,paginacion=True):
     logger.info("[gnula.py] peliculas")
     url = item.url
+
+    '''
+    <div class="boxes" style="width: 123px;">
+    <a href="doc-mcstuffins-time-for-your-check-up.html">
+    <span>
+    <div style="height: 180px; overflow: hidden;">
+    <img class="reflect rheight18 ropacity25" title="Doc McStuffins Time For Your Check Up" src="http://t3.gstatic.com/images?q=tbn:ANd9GcQd7e36SLqanfSqYOIG2cp0hQlSmdB5mdkov3Qtvcri21x04RhJkg" style="display: block;">
+    '''
     # Descarga la página
     data = scrapertools.cachePage(url)
-    patron  = '<li class="video">[^<]+'
-    patron += '<a href="([^"]+)">[^<]+'
-    patron += '<b class="icon"></b>[^<]+'
-    patron += '<img alt="[^"]+" src="([^"]+)">[^<]+'
-    patron += '<span class="tit">([^<]+)</span>'
+    patron  = '<div class="boxes"[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += '<span[^<]+'
+    patron += '<div style="[^"]+"[^<]+'
+    patron += '<img class="[^"]+" title="([^"]+)" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
-    for url,thumbnail,title in matches:
+    for url,title,thumbnail in matches:
         scrapedtitle=unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
         fulltitle = scrapedtitle
         scrapedplot = ""
-        scrapedurl = urlparse.urljoin("http://gnula.biz/",url)
+        scrapedurl = urlparse.urljoin("http://gnula.biz",url)
         scrapedthumbnail = thumbnail
         if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", extra=scrapedtitle) )
