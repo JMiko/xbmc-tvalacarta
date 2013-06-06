@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.58"/>
-    <property name="oldversionboxee" value="9.3"/>
-    <property name="oldversiondate" value="04/05/2013"/>
+    <property name="oldversion" value="3.2.59"/>
+    <property name="oldversionboxee" value="9.4"/>
+    <property name="oldversiondate" value="14/05/2013"/>
 
-    <property name="version" value="3.2.59"/>
-    <property name="versionboxee" value="9.4"/>
-    <property name="versiondate" value="14/05/2013"/>
+    <property name="version" value="3.2.60"/>
+    <property name="versionboxee" value="9.5"/>
+    <property name="versiondate" value="06/06/2013"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <!-- Para betas usar: -->
@@ -137,8 +137,8 @@
     </target>
 
     <!-- publish =============================================== -->
-	<target name="publish" depends="upload" description="Notify the repositories that a new version is available">
-        <echo message="Actualizando el repositorio de Boxee"/>
+	<target name="publish" description="Notify the repositories that a new version is available">
+        <!--echo message="Actualizando el repositorio de Boxee"/>
         <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}/download" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="${target}/boxee">
 				<include name="info.mimediacenter.pelisalacarta-${versionboxee}.zip"/>
@@ -151,15 +151,14 @@
             <fileset dir="platformcode/boxee">
 				<include name="index.xml"/>
             </fileset>
-        </ftp>
+        </ftp-->
 
         <echo message="Actualizando pelisalacarta-version.xml"/>
         <copy file="version.xml" tofile="pelisalacarta-version.xml"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir=".">
-				<include name="pelisalacarta-version.xml"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="pelisalacarta-version.xml"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
         <delete file="pelisalacarta-version.xml"/>
     </target>
 
