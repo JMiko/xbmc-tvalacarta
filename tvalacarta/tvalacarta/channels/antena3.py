@@ -146,27 +146,50 @@ def series(item):
     data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
-    # Extrae las entradas (series)
     '''
+    <li>
     <div>
-    <a title="Vídeos de Corona de lágrimas - Capítulos Completos - SERIES ANTENA 3 TELEVISION" href="/videos/corona-de-lagrimas.html">
-    <img title="Vídeos de Corona de lágrimas - Capítulos Completos" href="/videos/corona-de-lagrimas.html"
-    src="/clipping/2013/04/04/00508/10.jpg"
-    alt="SERIES ANTENA 3 TELEVISION - Videos de Corona de lágrimas"
+    <a title="Vídeos de Amar es para siempre - Capítulos Completos - SERIES ANTENA 3 TELEVISION" href="/videos/amar.html">
+    <img title="Vídeos de Amar es para siempre - Capítulos Completos" href="/videos/amar.html"
+    src="/clipping/2012/11/14/00219/10.jpg"
+    alt="SERIES ANTENA 3 TELEVISION - Videos de Amar es para siempre"
     />
-    <h2 itemprop="name"><p>Corona de lágrimas</p></h2>
+    <h2 itemprop="name"><p>Amar es para siempre</p></h2>
     </a>
     </div>
+    </li>
     '''
-    
+
+    # Extrae las entradas (series)
     patron  = '<div[^<]+'
-    patron += '<a\s+title="[^"]+" href="([^"]+)"[^<]+'
-    patron += '<img.*?src="([^"]+)"'
-    patron += '.*?<h2[^<]+<p>([^<]+)</p>'
+    patron += '<a\s+title="[^"]+"\s+href="([^"]+)"[^<]+'
+    patron += '<img\s+title="[^"]+"\s+src="([^"]+)".*?'
+    patron += '<p>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #if DEBUG: scrapertools.printMatches(matches)
+    scrapertools.printMatches(matches)
 
     itemlist = []
+    for match in matches:
+        scrapedtitle = match[2].strip()
+        # Hace un quote porque algunas URL están con acentos
+        #/videos/Deberías saber de mi .html
+        #/videos/Deber%C3%ADas%20saber%20de%20mi%20.html
+        scrapedurl = urlparse.urljoin(item.url,urllib.quote(match[0]))
+        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        # Añade al listado
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
+
+    # Extrae las entradas (series)
+    patron  = '<div[^<]+'
+    patron += '<a\s+title="[^"]+"\s+href="([^"]+)"[^<]+'
+    patron += '<img\s+title="[^"]+"\s+href="[^"]+"\s+src="([^"]+)".*?'
+    patron += '<p>([^<]+)</p>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
     for match in matches:
         scrapedtitle = match[2].strip()
         # Hace un quote porque algunas URL están con acentos
@@ -196,6 +219,21 @@ def episodios(item):
     # episodios
     '''
     <div>
+    <a title="Vídeos de El Hormiguero 3.0 - 5 de Junio de 2013" 
+    href="/videos/el-hormiguero/2013-junio-5-2013060500029.html">
+    <img title="Vídeos de El Hormiguero 3.0 - 5 de -1 de 2.013" 
+    src="/clipping/2013/06/05/00609/10.jpg"
+    alt="El Hormiguero 3.0"
+    href="/videos/el-hormiguero/2013-junio-5-2013060500029.html"
+    />
+    <em class="play_video"><img title="ver video" src="/static/modosalon/images/button_play_s1.png" alt="ver video"/></em>
+    <strong>El Hormiguero 3.0</strong>               
+    <h2><p>Programa del 5 de junio</p></h2>      
+    </a>
+    </div>
+    '''
+    '''
+    <div>
     <a  title="Vídeos de El Internado - Capítulo 8 - Temporada 7"
     href="/videos/el-internado/temporada-7/capitulo-8.html">
     <img title="Vídeos de El Internado - Capítulo 8 - Temporada 7" 
@@ -212,10 +250,10 @@ def episodios(item):
     patron  = '<div>[^<]+'
     patron += '<a.*?href="([^"]+)"[^<]+'
     patron += '<img.*?src="([^"]+)".*?'
-    patron += '<strong>([^<]+)</strong>[^<]+'
-    patron += '<h2><p>([^<]+)</p></h2>'
+    patron += '<strong>([^<]+)</strong>.*?'
+    patron += '<p>([^<]+)</p>'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #if DEBUG: scrapertools.printMatches(matches)
+    if DEBUG: scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:

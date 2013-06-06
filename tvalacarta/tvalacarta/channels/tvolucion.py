@@ -1125,7 +1125,8 @@ def video(item):
         #"http://media.esmas.com/criticalmedia/files/"+match[3]+"/"+match[2]+".mp4"
         scrapedurl = scrapedurl.replace("-480.mp4","-600.mp4")
         scrapedurl = scrapedurl.replace("m4v.","apps.")
-        scrapedurl = scrapedurl[:scrapedurl.find("?")]
+        if "?" in scrapedurl:
+            scrapedurl = scrapedurl[:scrapedurl.find("?")]
         #scrapedurl = scrapedurl.replace("http://","rtmp://")
         #scrapedurlhd = scrapedurlhd.replace("-480.mp4","-,15,48,60,0.mp4.csmil/bitrate=2")
         scrapedtitle =  item.title
@@ -1284,10 +1285,9 @@ def test():
     items = mainlist(Item())
     series_items = novelasr(items[2])
     for serie_item in series_items:
-
-        exec "itemlist="+item.action+"(serie_item)"
+        exec "itemlist="+serie_item.action+"(serie_item)"
     
-        if len(itemlist)==0:
-            return False
+        if len(itemlist)>0:
+            return True
 
     return True
