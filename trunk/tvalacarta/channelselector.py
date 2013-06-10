@@ -207,9 +207,11 @@ def channels_list():
     itemlist.append( Item( title="La Sexta"                   , channel="lasexta"              , language="ES" , category="N"   , type="generic" ))  # juanfran 07/02/2011
     itemlist.append( Item( title="Skai folders"               , channel="skai_folders"         , language="GR" , category="N"   , type="xbmc"   , extra="rtmp" ))  # dusan 04/12/2011
     itemlist.append( Item( title="TAL (Televisión de América Latina)", channel="tal"           , language="ES" , category="N"   , type="generic" ))  # rsantaella 22/03/2013
+    itemlist.append( Item( title="TEC TV (Argentina)"         , channel="tectv"                , language="ES" , category="N"   , type="generic" ))  # rsantaella 07/06/2013
     itemlist.append( Item( title="Telefe (Argentina)"         , channel="telefe"               , language="ES" , category="N"   , type="generic", extra="rtmp" ))  # jesus 28/10/2011
     itemlist.append( Item( title="Telemadrid"                 , channel="telemadrid"           , language="ES" , category="A"   , type="generic", extra="rtmp" ))  # jesus 17/12/2012
     itemlist.append( Item( title="Telemundo"                  , channel="telemundo"            , language="ES" , category="N"   , type="generic" )) # rsantaella 30/03/2013
+    itemlist.append( Item( title="TV Pública (Argentina)"     , channel="tvpublica"            , language="ES" , category="N"   , type="generic" ))  # rsantaella 07/06/2013
     itemlist.append( Item( title="TVE"                        , channel="rtve"                 , language="ES" , category="N"   , type="generic" ))
     itemlist.append( Item( title="Tvolucion.com"              , channel="tvolucion"            , language="ES" , category="N"   , type="generic" ))    
     #itemlist.append( Item( title="Turbonick"                  , channel="turbonick"            , language="ES" , category="I"   , type="generic", extra="rtmp" ))
