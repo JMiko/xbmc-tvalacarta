@@ -43,23 +43,17 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     url = 'http://real-debrid.com/lib/ajax/generator.php?lang=es&sl=1&link=%s' % page_url
     data = scrapertools.cache_page(url)
-    return data
     
     
     #print data
-    #patron = 'http://(.*?)'
-    #matches = re.compile(patron).findall(data)
-    #if len(matches)>0:
-    #    return matches[0]
-    #else:
-    #    patron = '<span id="generation-error">(.+?)<'
-    #    matches = re.compile(patron).findall(data)
-    #    if len(matches)>0:
-    #        server_error = "REAL-DEBRID: "+matches[0]
-    #    else:
-    #        server_error = "REAL-DEBRID: Ha ocurrido un error con el servidor "
-    #    logger.info(data)
-    #    return server_error
+    patron = 'http://(.*?)'
+    matches = re.compile(patron).findall(data)
+    if len(matches)>0:
+        return data
+    else:
+        server_error = "REAL-DEBRID: " + data
+        logger.info(data)
+        return server_error
 
 def correct_url(url):
     if "userporn.com" in url:
