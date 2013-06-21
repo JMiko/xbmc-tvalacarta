@@ -24,8 +24,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def find_videos(data):
     encontrados = set()
     devuelve = []
-
-    patronvideos  = '(mega.co.nz.net/#![a-z0-9]+)'
+    data = "aaaaa https://mega.co.nz/#!TNBl0CbR!S0GFTCVr-tM_cPsgkw8Y-0HxIAFoR-TUCI_clqV1Yys sdad"
+    #https://mega.co.nz/#!TNBl0CbR!S0GFTCVr-tM_cPsgkw8Y-0HxIAFoR-TUCI_clqV1Yys
+    patronvideos  = '(mega.co.nz/\S+)'
     logger.info("[mega.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
