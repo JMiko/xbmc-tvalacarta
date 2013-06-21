@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para rapidgator
+# Conector para mega.co.nz
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -16,7 +16,7 @@ def test_video_exists( page_url ):
     return True,""
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[rapidgator.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[mega.py] get_video_url(page_url='%s')" % page_url)
     video_urls = []
     return video_urls
 
@@ -25,20 +25,19 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    #http://rapidgator.net/file/10126555/ElBatallon-byjerobien.avi.html
-    #http://rapidgator.net/file/15437757
-    patronvideos  = '(rapidgator.net/file/.*?\.html)'
-    logger.info("[rapidgator.py] find_videos #"+patronvideos+"#")
+    patronvideos  = '(mega.co.nz.net/#![a-z0-9]+)'
+    logger.info("[mega.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[rapidgator]"
-        url = "http://"+match
+        titulo = "[mega.py]"
+        url = "https://"+match
         if url not in encontrados:
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'rapidgator' ] )
+            devuelve.append( [ titulo , url , 'mega' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url)
+            logger.info("  url duplicada="+url)    
+            
 
     return devuelve
