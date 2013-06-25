@@ -9,15 +9,12 @@ import re
 import sys
 import os
 import urllib2
-import xbmcgui
-
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-from lib import simplejson as json
 
 __channel__ = "seriesly"
 __category__ = "S,A"
@@ -203,7 +200,7 @@ def serie_capitulos(item):
     # Extrae las entradas (carpetas)
     post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
     serieInfo = load_json(scrapertools.cache_page(item.url, post=post))
-    
+
     if "error" in serieInfo:
         if serieInfo["error"]!=0:
             error_message(serieInfo["error"])
@@ -211,23 +208,22 @@ def serie_capitulos(item):
     else:
         return []
 
-    if serieInfo == None : serieInfo = {}
-    if (not serieInfo.has_key('seasons_episodes')) or serieInfo['seasons_episodes'] == None : serieInfo['seasons_episodes'] = []
-   
-    logger.info(serieInfo)
+    if serieInfo == None:
+        serieInfo = {}
 
+    if (not serieInfo.has_key('seasons_episodes')) or serieInfo['seasons_episodes'] == None:
+        serieInfo['seasons_episodes'] = []
+   
     # Juntamos todos los episodios con enlaces en una sola lista
     episodeList=[]
     for i in serieInfo["seasons_episodes"]:
         for j in serieInfo["seasons_episodes"][i]:
             if j['haveLinks']: episodeList.append(j)
-           
 
     logger.info('[seriesly serie_capitulos]hay %d capitulos' % len(episodeList))
 
     itemlist = []
-    for episode in episodeList :
-
+    for episode in episodeList:
 
         if episode.has_key('watched'):
             viewed = episode['watched']
@@ -238,8 +234,13 @@ def serie_capitulos(item):
             episode['estado'] = ''
 
         # Añadimos un 0 al principo de la temporada y capitulo para su ordenacion
-        if len(episode["episode"])==1 : episode["episode"]="0"+episode["episode"]
-        if len(episode["season"])==1 : episode["season"]="0"+episode["season"]
+        episode["episode"] = str(episode["episode"])
+        if len(episode["episode"])==1:
+            episode["episode"]="0"+episode["episode"]
+
+        episode["season"] = str(episode["season"])
+        if len(episode["season"])==1:
+            episode["season"]="0"+episode["season"]
        
         itemlist.append(
             Item(channel=__channel__,
@@ -358,12 +359,18 @@ def multiple_links(item):
        
         if tipo in linkList:
             for link in linkList[tipo]:
-                if "quality" not in link: link["quality"]= " "
+                if "quality" not in link:
+                    link["quality"]= ""
+
+                if link['subtitles']!="":
+                    linktitle = '%(host)s - %(lang)s (sub %(subtitles)s) %(quality)s' % link
+                else:
+                    linktitle = '%(host)s - %(lang)s %(quality)s' % link
 
                 itemlist.append(
                     Item(channel=__channel__,
                         action = "links",
-                        title = '%(host)s - %(lang)s(sub %(subtitles)s) %(quality)s' % link,
+                        title = linktitle, 
                         url = link['video_url']+"?"+post,
                         thumbnail = item.thumbnail,
                         plot = "",
@@ -503,8 +510,16 @@ def load_json(data):
             else :
                 rdct[k] = v
         return rdct
-    try :       
+
+    try:
         import json
+    except:
+        try:
+            import simplejson as json
+        except:
+            from lib import simplejson as json
+
+    try :       
         json_data = json.loads(data, object_hook=to_utf8)
         return json_data
     except:
@@ -559,7 +574,7 @@ def generate_authtoken():
         logger.info(data)
         logger.info("****")
        
-        auth_data= json.loads(data)
+        auth_data= load_json(data)
 
         if "error" in auth_data:
             if auth_data["error"]!=0:
@@ -592,7 +607,7 @@ def generate_usertoken(auth_token):
         logger.info(data)
         logger.info("****")
        
-        user_data=json.loads(data)
+        user_data=load_json(data)
 
 
         if "error" in user_data:
@@ -627,8 +642,8 @@ def check_token():
         
         logger.info(data)
 
-        auth = json.loads(auth)
-        user = json.loads(user)
+        auth = load_json(auth)
+        user = load_json(user)
 
         import time
         t=time.time()
@@ -668,11 +683,11 @@ def get_constant(texto):
                                 "thriller":     "Thriller",
                                 "reallity":     "Reallity Show"}
 
-    constants["mediaType"]= {"1":"series",
-                            "2":"movies",
-                            "3":"documentaries",
-                            "4":"tvshows",
-                            "5":"episode",
+    constants["mediaType"]= {1:"series",
+                            2:"movies",
+                            3:"documentaries",
+                            4:"tvshows",
+                            5:"episode",
                             "series":"1",
                             "movies":"2",
                             "documentaries":"3",
@@ -713,8 +728,12 @@ def get_constant(texto):
 
 def error_message(error):
     
-    dialog=xbmcgui.Dialog()
+    try:
+        import xbmcgui
+        dialog=xbmcgui.Dialog()
     
-    text=get_constant("error")[str(error)]
+        text=get_constant("error")[str(error)]
 
-    dialog.ok("SERIES.LY", text)
+        dialog.ok("SERIES.LY", text)
+    except:
+        logger.info("se ha producido en un error "+str(error))

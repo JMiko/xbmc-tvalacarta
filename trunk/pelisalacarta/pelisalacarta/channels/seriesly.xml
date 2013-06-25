@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>21</tag>
-	<date>17/03/2013</date>
-	<changes>Vuelta a la versión anterior, la nueva no parece funcionar bien.</changes>
+	<tag>22</tag>
+	<date>25/06/2013</date>
+	<changes>Arregladas las categorias (gracias a prunk)</changes>
 </version>
