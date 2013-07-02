@@ -2,7 +2,7 @@
 
 ###############################################
 #              www.TVenLinux.com              #
-#           Actualizado: 20/04/2013           #
+#           Actualizado: 29/05/2013           #
 #   Autor: Busindre (busilezas[@]gmail.com)   #
 #  Programación TV: www.programacion-tdt.com  #
 ###############################################
@@ -44,7 +44,7 @@ REPRODUCTOR="mplayer"
 full="" 
 
 ID=`date '+%s'` 
-V_script="20/04/2013";
+V_script="29/05/2013";
 
 #touch /tmp/versiontv # Descomentar esta linea (Quitar la primera almohadilla) si se quiere que TVenLinux NO busque actualizaciones de forma automática.
 
@@ -311,6 +311,10 @@ if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "ES" ]]; then
 	canales[i]="Intereconomia";	tematica[i]=" Política/Religión";		prog[i++]=`cmd_prog "Intereconomia TV $"`;
 	canales[i]="Discovery_Channel"; tematica[i]=" Documentales";			prog[i++]=`cmd_prog2 "Discovery Channel $"`;
 	canales[i]="IberoamericaTV";	tematica[i]=" Mundo latino";			prog[i++]=" - ";
+	canales[i]="Calle13";	        tematica[i]=" Series/Cine";		        prog[i++]=`cmd_prog2 "Calle 13 $"`;
+	canales[i]="Historia";	        tematica[i]=" Documentales Historia";		prog[i++]=`cmd_prog2 "Canal de Historia $"`;
+	canales[i]="Eurosport";	        tematica[i]=" Deporte";				prog[i++]=`cmd_prog2 "Eurosport $"`;
+	canales[i]="Hollywood";	        tematica[i]=" Cine";		        	prog[i++]=`cmd_prog2 "Canal Hollywood $"`;
 	canales[i]="";			tematica[i]="";					prog[i++]="";
 fi
 
@@ -423,6 +427,7 @@ if [ "$SHOW_CANALES" = "ALL" ] || [[ "$SHOW_CANALES" =~ "MUS" ]]; then
 	canales[i]="ShansonTV";		tematica[i]=" Música 24/7 (RUS/Global)";	prog[i++]=" - ";
 	canales[i]="LaBelleTV";		tematica[i]=" Música 24/7 (FR)";		prog[i++]=" - ";
 	canales[i]="DeluxeMusic";	tematica[i]=" Música 24/7";			prog[i++]=" - ";
+	canales[i]="MTV";	        tematica[i]=" Música/Programas";		prog[i++]=`cmd_prog2 "MTV España $"`;
 	canales[i]="";			tematica[i]="";					prog[i++]="";
 fi
 	
@@ -643,7 +648,7 @@ case $CANAL in
 
 	rtve24) rtmpdump -r "rtmp://rtvefs.fplive.net:1935/rtve-live-live?ovpfv=2.1.2/RTVE_24H_LV3_WEB_NOG" -W "http://www.rtve.es/swf/4.1.18/RTVEPlayerVideo.swf" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	tdp) rtmpdump -m 200 -r "rtmp://cp48772.live.edgefcs.net:1935/live" -y "RTVE_TDP_LV3_WEB_GEO?aksessionid=1364156661735_65518" -W "http://www.rtve.es/swf/4.0.37/RTVEPlayerVideo.swf" -p "http://www.rtve.es/deportes/directo/teledeporte" -q -v > /tmp/$CANAL."$ID" & ;;
+	tdp) rtmpdump -m 200 -r "rtmp://rtvegeofs.fplive.net:1935/rtvegeo-live-live/RTVE_TDP_LV3_WEB_GEO" -y "RTVE_TDP_LV3_WEB_GEO" -W "http://www.rtve.es/swf/4.1.18/RTVEPlayerVideo.swf" -p "http://www.rtve.es/deportes/directo/teledeporte" -q -v > /tmp/$CANAL."$ID" & ;;
 
 	#tdp) rtmpdump -m 200 -r "rtmp://rtvegeofs.fplive.net:1935/rtvegeo-live-live" -y "RTVE_TDP_LV3_WEB_GEO?aksessionid=1364156661735_65518" -W "http://www.rtve.es/swf/4.1.20/RTVEPlayerVideo.swf" -p "http://www.rtve.es/deportes/directo/teledeporte" -q -v > /tmp/$CANAL."$ID" & ;;
 
@@ -654,15 +659,15 @@ case $CANAL in
 
 	La_Sexta) rtmpdump -m 200 -r "rtmp://antena3fms35livefs.fplive.net:1935/antena3fms35live-live/stream-lasexta" -W "http://www.antena3.com/static/swf/A3Player.swf" -p "http://www.lasexta.com/directo" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	Cuatro) rtmpdump -m 200 -r "rtmp://173.193.205.105/live" -y "cuatrojoder?id=38466" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/cuatrolacajatv/1/670/400" -C S:OK  -q -v > /tmp/$CANAL."$ID" & ;;
+	Cuatro) rtmpdump -m 200 -r "rtmp://109.123.126.28/live" -y "cuatrolacajatv?id=14756" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/cuatrolacajatv/1/670/400" -C S:OK  -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Tele5) rtmpdump -m 200 -a "live" -r "rtmp://50.7.28.234/live" -y "t5hdlacajatv2" -W "http://www.udemy.com/static/flash/player5.9.swf" -p "http://www.castamp.com/embed.php?c=t5hdlacajatv2&vwidth=670&vheight=400" -q > /tmp/$CANAL."$ID" & ;;
 
 	Xplora) rtmpdump -m 200 -a "live" -r "rtmp://antena3fms35geobloqueolivefs.fplive.net:1935/antena3fms35geobloqueolive-live/stream-xplora" -W "http://www.antena3.com/static/swf/A3Player.swf" -p "http://www.lasexta.com/xplora/directo" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	Nitro) rtmpdump -m 200 -a "live" -r "rtmp://208.43.81.145/live" -y "nitrolacajatv?id=126587" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/embedplayer/nitrolacajatv/1/670/400"  -q -v > /tmp/$CANAL."$ID" & ;;
+	Nitro) rtmpdump -m 200 -a "live" -r "rtmp://50.23.113.212/live" -y "nitrolacajatv?id=126587" -W "http://mips.tv/content/scripts/eplayer.swf" -p "http://mips.tv/embedplayer/nitrolacajatv/1/670/400"  -q -v > /tmp/$CANAL."$ID" & ;;
 
-	Neox)  rtmpdump -m 200 -r "rtmp://108.59.14.229/stream" -y "Neoxlacaja?id=89627" -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/Syfylacaja/1/670/400"  -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+	Neox)  rtmpdump -m 200 -r "rtmp://198.105.220.36/stream" -y "Neoxpon?id=93431" -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/Neoxpon/1/600/450" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
 
 	La_Sexta_3) rtmpdump -m 200 -r "rtmp://174.36.251.140/live/lasexta3lacaja?id=15912" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://schuster92.com" -C S:OK -q > /tmp/$CANAL."$ID" & ;;
 
@@ -676,7 +681,7 @@ case $CANAL in
 
 	Energy) rtmpdump -m 200 -r "rtmp://50.7.28.130/live" -y "lacajatvenergy" -W "http://www.udemy.com/static/flash/player5.9.swf" -p "http://www.castamp.com/embed.php?c=lacajatvenergy&vwidth=670&vheight=400" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	FDF) rtmpdump -m 200 -a "liveedge" -r "rtmp://s3.zcast.us/liveedge" -y "fdflacaja-65889" -W "http://player.zcast.us/player58.swf" -p "http://zcast.us/gen.php?ch=fdflacaja-65889&width=670&height=400" -q -v > /tmp/$CANAL."$ID" & ;;
+	FDF) rtmpdump -m 200 -r "rtmp://62.212.72.193/stream" -y "Factoriad?id=93429"  -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/Factoriad/1/640/390" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Aragon_TV) rtmpdump -m 200 -r "rtmp://aragontvlivefs.fplive.net/aragontvlive-live" -y "stream_normal_abt" -W "http://alacarta.aragontelevision.es/streaming/flowplayer.commercial-3.2.7.swf" -p "http://alacarta.aragontelevision.es/streaming/streaming.html" -q -v > /tmp/$CANAL."$ID" & ;;
 
@@ -758,16 +763,26 @@ case $CANAL in
 
 	Divinity) rtmpdump -m 200 -a "live" -r "rtmp://50.7.28.234/live" -y "discomaxlacajatv" -W "http://www.udemy.com/static/flash/player5.9.swf" -p "http://www.castamp.com/embed.php?c=discomaxlacajatv&tk=5mD8Tatf&vwidth=650&vheight=400" -q -v > /tmp/$CANAL."$ID" & ;;
 
-	Discovery_Channel) rtmpdump -m 200 -r "rtmp://46.23.67.66/live" -y "discoverylacajatv?id=14680" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/discoverylacajatv/1/650/400" -C S:OK -q > /tmp/$CANAL."$ID" & ;;
+	Discovery_Channel) rtmpdump -m 200 -r "rtmp://46.23.67.114/live" -y "discoverylacajatv?id=14680" -W "http://www.ucaster.eu/static/scripts/eplayer.swf" -p "http://www.ucaster.eu/embedded/discoverylacajatv/1/650/400" -C S:OK -q > /tmp/$CANAL."$ID" & ;;
 
-	TNT) rtmpdump -m 200 -r "rtmp://108.59.14.229/stream" -y "tnt5978?id=84586" -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/tnt5978/1/650/400"  -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+	TNT) rtmpdump -m 200 -r "rtmp://206.190.138.68/stream" -y "tntyughjf?id=93897" -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/tntyughjf/1/650/400"  -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Xtrm) rtmpdump -m 200 -r "rtmp://64.191.80.10/live" -y "xtrem?id=390" -W "http://www.ezcast.tv/static/scripts/eplayer.swf" -p "http://www.ezcast.tv/embedded/xtrem/1/670/400" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
 
-	SyFy) rtmpdump -m 200 -r "rtmp://108.59.14.229/stream" -y "Syfylacaja?id=89619" -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/Syfylacaja/1/670/400"  -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+	SyFy) rtmpdump -m 200 -r "rtmp://67.228.235.73/stream" -y "SYFY1234?id=93427" -W "http://www.liveflash.tv/resources/scripts/eplayer.swf" -p "http://www.liveflash.tv/embedplayer/SYFY1234/1/660/390"  -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
 
 	Cosmo) rtmpdump -m 200 -r "rtmp://64.191.80.10/live" -y "Cosmopolitan?id=389" -W "http://www.ezcast.tv/static/scripts/eplayer.swf" -p "http://www.ezcast.tv/embedded/xtrem/1/670/400" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
 
+	Calle13) rtmpdump -m 200 -r "rtmp://sprite.micast.tv/liveedge" -y "calle13L7R" -W "http://micast.tv/player.swf" -p "http://micast.tv/gen.php?ch=calle13L7R&width=600&height=450" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+	
+	Hollywood) rtmpdump -m 200 -r "rtmp://redbull.micast.tv/liveedge" -y "HOLLYWOODnL5"  -W "http://files.mica.st/player.swf" -p "http://micast.tv/gen.php?ch=HOLLYWOODnL5&width=640&height=390" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+
+	Historia) rtmpdump -m 200 -r "rtmp://edge.isearch.to/edge" -y "2oe52g4dzkf7h09"  -W "http://player.ilive.to/player_ilive_embed.swf" -p "http://www.ilive.to/embedplayer.php?width=650&height=400&channel=37668&autoplay=true" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+
+	MTV) rtmpdump -m 200 -r "rtmp://185.2.138.108/live" -y "mtvhd?id=1179" -W "http://www.ezcast.tv/static/scripts/eplayer.swf" -p "http://www.ezcast.tv/embedded/mtvhd/1/650/400" -C S:OK -q -v > /tmp/$CANAL."$ID" & ;;
+	
+	Eurosport) ffmpeg -loglevel panic -i "http://esioslive-i.akamaihd.net/hls/live/201630/AL_ESP1_SP_SPA/playlist_1800.m3u8" -f flv -acodec copy -vcodec copy /tmp/$CANAL."$ID"  > /dev/null 2>&1 & ;;
+	
 	Canal_Extremadura) rtmpdump -m 200 -r "rtmp://canalextremaduralive.cdn.canalextremadura.es/canalextremaduralive-live/" -y "stream001" -W "http://www.canalextremadura.es/sites/all/modules/custom/slx_reproductor/js/mediaplayer-5.7/player.swf" -p "http://www.canalextremadura.es/alacarta/tv/directo" -q -v > /tmp/$CANAL."$ID" & ;;
 
 	KissTV) rtmpdump -m 200 -r "rtmp://kisstelevision.es.flash3.glb.ipercast.net/kisstelevision.es-live" -y "live" -W "http://kisstelevision.en-directo.com/kisstelevision_avw.swf" -p "http://www.kisstelevision.es" -q -v > /tmp/$CANAL."$ID" & ;;

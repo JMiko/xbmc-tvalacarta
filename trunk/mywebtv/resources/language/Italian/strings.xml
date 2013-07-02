@@ -11,7 +11,6 @@
     <string id="30001">Controlla aggiornamenti:</string>
     <string id="30004">Aggiornamento automatico canali:</string>
     <string id="30201">Actualizar la biblioteca al abrir XBMC</string>
-    <string id="30002">Abilita modalità adult:</string>
     <string id="30003">Abilita logging di debug:</string>
     <string id="30043">Forza modalità di visualizzazione:</string>
 
@@ -19,8 +18,6 @@
     <string id="30005">Impostazioni predefinite di riproduzione:</string>
     <string id="30006">Chiedi</string>
     <string id="30007">Guarda in bassa qualità</string>
-    <string id="30008">Guarda in alta qualità</string>
-    <string id="30009">Invia a jDownloader</string>
 
     <!-- Visualizzazione logo dei canali -->
     <string id="30010">Visualizzazione icone dei canali:</string>
@@ -39,8 +36,6 @@
     <string id="30035">Password pagine private:</string>
 
     <!-- Altro -->
-    <string id="30017">Percorso download:</string>
-    <string id="30018">Percorso lista download:</string>
     <string id="30030">Percorso preferiti:</string>
     <string id="30020">Qualità migliore (Youtube)</string>
     <string id="30021">Abilita sottotitoli:</string>
@@ -55,7 +50,6 @@
     <string id="30028">Italiano</string>
     <string id="30029">Portuguese</string>
     <string id="30046">French</string>
-    <string id="30016">Catalán</string>
     <string id="30023">Euskera</string>
     <string id="30036">Gallego</string>
     <string id="30037">Valenciano</string>
@@ -68,10 +62,9 @@
 
     <string id="30044">Modalità riproduzione:</string>
 
-    <string id="30013">Enable personal channel</string>
     <string id="30048">Channel name</string>
     <string id="30049">Channel logo</string>
-    <string id="30045">Video list URL / file</string>
+    <string id="30045">URL / file</string>
     <string id="30047">Elements per page</string>
 
     <!-- =============================================================== -->
@@ -255,4 +248,13 @@
     <string id="30168">Modifiche applicate</string>
     <string id="30169">Cerca</string>
     <string id="30170">Aggiornamento canali:</string>
+
+    <!-- Exclusivos mywebtv -->
+    <string id="30002">File .m3u private (1)</string>
+    <string id="30008">File .m3u private (2)</string>
+    <string id="30009">File .m3u private (3)</string>
+    <string id="30013">File .xml private (1)</string>
+    <string id="30016">File .xml private (2)</string>
+    <string id="30017">File .xml private (3)</string>
+    <string id="30018">Max timeout for RTMP (secons)</string>
 </strings>

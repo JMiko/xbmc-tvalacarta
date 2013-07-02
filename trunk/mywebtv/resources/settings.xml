@@ -1,12 +1,57 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-<setting id="player_type" type="enum" values="Auto|MPlayer|DVDPlayer" label="30000" default="2"/>
-<setting id="updatecheck2" type="bool" label="30001" default="true"/>
-<setting id="updatechannels" type="bool" label="30004" default="true"/>
-<setting id="debug" type="bool" label="30003" default="false"/>
-<setting id="default_action" type="enum" lvalues="30006|30007|30008|30009" label="30005" default="0"/>
-<setting id="thumbnail_type" type="enum" lvalues="30011|30012|30200" label="30010" default="2"/>
-<setting id="forceview" type="bool" label ="30043" default="false"/>
-<setting id="player_mode" type="enum" values="Direct|SetResolvedUrl|Built-In" label="30044" default="0"/>
-<setting id="bookmarkpath" type="text" source="video" option="writeable" label="30030" default=""/>
+    <!-- General -->
+    <category label="General">
+        <setting id="player_type" type="enum" values="Auto|MPlayer|DVDPlayer" label="30000" default="2"/>
+        <setting id="updatecheck2" type="bool" label="30001" default="true"/>
+        <setting id="updatechannels" type="bool" label="30004" default="true"/>
+        <setting id="debug" type="bool" label="30003" default="false"/>
+        <setting id="default_action" type="enum" lvalues="30006|30007|30008|30009" label="30005" default="0"/>
+        <setting id="thumbnail_type" type="enum" lvalues="30011|30012|30200" label="30010" default="2"/>
+        <setting id="forceview" type="bool" label ="30043" default="false"/>
+        <setting id="player_mode" type="enum" values="Direct|SetResolvedUrl|Built-In" label="30044" default="0"/>
+        <setting id="bookmarkpath" type="text" source="video" option="writeable" label="30030" default=""/>
+        <setting id="timeout" type="text" option="writeable" label="30018" default="20"/>
+    </category>
+
+    <!-- Cuentas -->
+    <category label="30500">
+        <setting id="simpletvaccount" type="bool" label="Simple TV" default="false"/>
+        <setting id="simpletvuser" type="text" label="30014" enable="eq(-1,true)" default=""/>
+        <setting id="simpletvpassword" type="text" label="30015" option="hidden" enable="!eq(-1,)+eq(-2,true)" default=""/>
+    </category>
+
+    <!-- Archivos locales -->
+    <category label="Local">
+        <setting id="m3uchannel1" type="bool" option="writeable" label="30002" default=""/>
+        <setting id="m3ulocation1" type="text" option="writeable" label="30045" default="" enable="eq(-1,true)"/>
+        <setting id="m3utitle1" type="text" option="writeable" label="30048" default="" enable="eq(-2,true)"/>
+        <setting id="m3ulogo1" type="text" option="writeable" label="30049" default="" enable="eq(-3,true)"/>
+
+        <setting id="m3uchannel2" type="bool" option="writeable" label="30008" default=""/>
+        <setting id="m3ulocation2" type="text" option="writeable" label="30045" default="" enable="eq(-1,true)"/>
+        <setting id="m3utitle2" type="text" option="writeable" label="30048" default="" enable="eq(-2,true)"/>
+        <setting id="m3ulogo2" type="text" option="writeable" label="30049" default="" enable="eq(-3,true)"/>
+
+        <setting id="m3uchannel3" type="bool" option="writeable" label="30009" default=""/>
+        <setting id="m3ulocation3" type="text" option="writeable" label="30045" default="" enable="eq(-1,true)"/>
+        <setting id="m3utitle3" type="text" option="writeable" label="30048" default="" enable="eq(-2,true)"/>
+        <setting id="m3ulogo3" type="text" option="writeable" label="30049" default="" enable="eq(-3,true)"/>
+
+        <setting id="xmlchannel1" type="bool" option="writeable" label="30013" default=""/>
+        <setting id="xmllocation1" type="text" option="writeable" label="30045" default="" enable="eq(-1,true)"/>
+        <setting id="xmltitle1" type="text" option="writeable" label="30048" default="" enable="eq(-2,true)"/>
+        <setting id="xmllogo1" type="text" option="writeable" label="30049" default="" enable="eq(-3,true)"/>
+
+        <setting id="xmlchannel2" type="bool" option="writeable" label="30016" default=""/>
+        <setting id="xmllocation2" type="text" option="writeable" label="30045" default="" enable="eq(-1,true)"/>
+        <setting id="xmltitle2" type="text" option="writeable" label="30048" default="" enable="eq(-2,true)"/>
+        <setting id="xmllogo2" type="text" option="writeable" label="30049" default="" enable="eq(-3,true)"/>
+
+        <setting id="xmlchannel3" type="bool" option="writeable" label="30017" default=""/>
+        <setting id="xmllocation3" type="text" option="writeable" label="30045" default="" enable="eq(-1,true)"/>
+        <setting id="xmltitle3" type="text" option="writeable" label="30048" default="" enable="eq(-2,true)"/>
+        <setting id="xmllogo3" type="text" option="writeable" label="30049" default="" enable="eq(-3,true)"/>
+    </category>
+  
 </settings>
