@@ -1263,3 +1263,30 @@ def get_md5(cadena):
         devuelve = binascii.hexlify(md5.new(url).digest())
     
     return devuelve
+
+def load_json(data):
+    # callback to transform json string values to utf8
+    def to_utf8(dct):
+        rdct = {}
+        for k, v in dct.items() :
+            if isinstance(v, (str, unicode)) :
+                rdct[k] = v.encode('utf8', 'ignore')
+            else :
+                rdct[k] = v
+        return rdct
+
+    try:
+        import json
+    except:
+        try:
+            import simplejson as json
+        except:
+            from lib import simplejson as json
+
+    try :       
+        json_data = json.loads(data, object_hook=to_utf8)
+        return json_data
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )

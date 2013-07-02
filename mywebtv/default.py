@@ -9,8 +9,8 @@
 __plugin__  = "mywebtv"
 __author__  = "tvalacarta"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/mywebtv/"
-__date__ = "27/04/2013"
-__version__ = "2.0.0"
+__date__ = "27/06/2013"
+__version__ = "2.0.1"
 
 import os
 import sys

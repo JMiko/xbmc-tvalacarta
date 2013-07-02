@@ -2,14 +2,14 @@
 <project name="mywebtv" default="package">
 	<description>mywebtv</description>
 
-    <property name="oldversion" value="1.0.7"/>
-    <property name="oldversionboxee" value="1.7"/>
-    <property name="oldversiondate" value="02/03/2013"/>
+    <property name="oldversion" value="2.0.0"/>
+    <property name="oldversionboxee" value="2.0"/>
+    <property name="oldversiondate" value="27/04/2013"/>
 
-    <property name="version" value="2.0.0"/>
-    <property name="versionboxee" value="2.0"/>
-    <property name="versiondate" value="27/04/2013"/>
-    <property name="versionchanges" value="Weekly release"/>
+    <property name="version" value="2.0.1"/>
+    <property name="versionboxee" value="2.1"/>
+    <property name="versiondate" value="27/06/2013"/>
+    <property name="versionchanges" value="New release"/>
 
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
@@ -131,29 +131,28 @@
     </target>
 
     <!-- publish =============================================== -->
-	<target name="publish" depends="upload" description="Notify the repositories that a new version is available">
-        <echo message="Actualizando el repositorio de Boxee"/>
+    <target name="publish" description="Notify the repositories that a new version is available">
+        <!--echo message="Actualizando el repositorio de Boxee"/>
         <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}/download" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="${target}/boxee">
-				<include name="info.mimediacenter.mywebtv-${versionboxee}.zip"/>
+                <include name="info.mimediacenter.tvalacarta-${versionboxee}.zip"/>
             </fileset>
             <fileset dir="platformcode/boxee">
-				<include name="info.mimediacenter.mywebtv-${versionboxee}.zip.xml"/>
+                <include name="info.mimediacenter.tvalacarta-${versionboxee}.zip.xml"/>
             </fileset>
         </ftp>
         <ftp server="${tvalacarta.ftp}" remotedir="${boxee.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
             <fileset dir="platformcode/boxee">
-				<include name="index.xml"/>
+                <include name="index.xml"/>
             </fileset>
-        </ftp>
+        </ftp-->
 
         <echo message="Actualizando mywebtv-version.xml"/>
         <copy file="version.xml" tofile="mywebtv-version.xml"/>
-        <ftp server="${tvalacarta.ftp}" remotedir="${tvalacarta.path}" userid="${tvalacarta.login}" password="${tvalacarta.password}">
-            <fileset dir=".">
-				<include name="mywebtv-version.xml"/>
-            </fileset>
-        </ftp>
+        <exec executable="scp">
+            <arg value="mywebtv-version.xml"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
         <delete file="mywebtv-version.xml"/>
     </target>
 

@@ -87,9 +87,8 @@ def channels(item):
         logger.info("[justintv.py] next_page_url="+next_page_url)
 
     data = scrapertools.cachePage(item.url)
-    patron  = '<li id="channel[^<]+<div[^<]+'
-    patron += '<a class="thumb" href="([^"]+)"[^<]+'
-    patron += '<img.*?src="([^"]+)"[^<]+'
+    patron  = '<a class="directory-channel-thumbnail" href="([^"]+)"[^<]+<img class[^<]+'
+    patron += '<img src="([^"]+)"[^<]+'
     patron += '</a[^<]+'
     patron += '<a[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -105,6 +104,6 @@ def channels(item):
         # Añade al listado de XBMC
         itemlist.append( Item( channel=__channel__ , action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, server="justintv", folder=False))
 
-    itemlist.append( Item( channel=__channel__ , action="channels" , title=title , url=">> Página siguiente", thumbnail=thumbnail, plot=plot))
+    itemlist.append( Item( channel=__channel__ , action="channels" , title='>> Página siguiente' , url=next_page_url, thumbnail="", plot=plot))
 
     return itemlist

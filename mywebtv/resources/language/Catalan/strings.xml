@@ -38,8 +38,6 @@
     	<string id="30035">Contrasenya pàgines privades:</string>
     
     <!-- Altres -->
-    <string id="30017">Directori de descàrregues:</string>
-    <string id="30018">Directori de la llista descàrregues:</string>
     <string id="30030">Directori de preferits:</string>
     <string id="30020">Tria Qualitat més alta (Youtube)</string>
     <string id="30021">Activa els subtítols:</string>
@@ -54,7 +52,6 @@
     <string id="30027">Anglès</string>
     <string id="30028">Italià</string>
     <string id="30029">Portuguès</string>
-    <string id="30016">Català</string>
     <string id="30023">Eusquera</string>
     <string id="30036">Gallec</string>
     <string id="30037">Valencià</string>
@@ -68,10 +65,9 @@
     
     <string id="30044">Mode de reproducció:</string>
 
-    <string id="30013">Habilita un canal personal</string>
     <string id="30048">Nom del canal</string>
     <string id="30049">Logo del canal</string>
-    <string id="30045">URL/fitxer amb els vídeos</string>
+    <string id="30045">URL/fitxer</string>
     <string id="30047">Elements per pàgina</string>
 
     <!-- =============================================================== -->
@@ -251,5 +247,13 @@
     <string id="30168">Canvis aplicats</string>
     <string id="30169">Cerca</string>
     <string id="30170">Actualitza canals:</string>
-</strings>
 
+    <!-- Exclusivos mywebtv -->
+    <string id="30002">Canal .m3u privado (1)</string>
+    <string id="30008">Canal .m3u privado (2)</string>
+    <string id="30009">Canal .m3u privado (3)</string>
+    <string id="30013">Canal .xml privado (1)</string>
+    <string id="30016">Canal .xml privado (2)</string>
+    <string id="30017">Canal .xml privado (3)</string>
+    <string id="30018">Maximo tiempo de espera para RTMP (secons)</string>
+</strings>

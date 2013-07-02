@@ -37,7 +37,7 @@ def mainlist():
     for channel in lista:
         if channel.type=="xbmc" or channel.type=="generic":
             thumbnail=urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
-            addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail = thumbnail, folder=channel.folder )
+            addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail = thumbnail, url = channel.url , folder=channel.folder )
 
 
     # Label (top-right)...
@@ -56,11 +56,25 @@ def channels_list():
     itemlist.append( Item( title="Tivion"          , channel="tivion" , type="generic"  ))
     itemlist.append( Item( title="TVenLinux"       , channel="tvenlinux" , type="generic"  ))
     itemlist.append( Item( title="TVOnlineApp.com" , channel="tvonlineapp" , type="generic"  ))
+    itemlist.append( Item( title="Android One"     , channel="android1" , type="generic"  ))
+    if config.get_setting("xmlchannel1")=="true":
+        itemlist.append( Item( title=config.get_setting("xmltitle1"), channel="xmlchannel", url=config.get_setting("xmllocation1"), thumbnail=config.get_setting("xmllogo1"), type="generic"))
+    if config.get_setting("xmlchannel2")=="true":
+        itemlist.append( Item( title=config.get_setting("xmltitle2"), channel="xmlchannel", url=config.get_setting("xmllocation2"), thumbnail=config.get_setting("xmllogo2"), type="generic"))
+    if config.get_setting("xmlchannel3")=="true":
+        itemlist.append( Item( title=config.get_setting("xmltitle3"), channel="xmlchannel", url=config.get_setting("xmllocation3"), thumbnail=config.get_setting("xmllogo3"), type="generic"))
+    if config.get_setting("m3uchannel1")=="true":
+        itemlist.append( Item( title=config.get_setting("m3utitle1"), channel="m3uchannel", url=config.get_setting("m3ulocation1"), thumbnail=config.get_setting("m3ulogo1"), type="generic"))
+    if config.get_setting("m3uchannel2")=="true":
+        itemlist.append( Item( title=config.get_setting("m3utitle2"), channel="m3uchannel", url=config.get_setting("m3ulocation2"), thumbnail=config.get_setting("m3ulogo2"), type="generic"))
+    if config.get_setting("m3uchannel3")=="true":
+        itemlist.append( Item( title=config.get_setting("m3utitle3"), channel="m3uchannel", url=config.get_setting("m3ulocation3"), thumbnail=config.get_setting("m3ulogo3"), type="generic"))
+
     itemlist.append( Item( title="Favoritos"       , channel="favoritos" , type="generic"  ))
     itemlist.append( Item( title="Configuración"   , channel="configuracion" , type="generic", folder=False ))
     return itemlist
 
-def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="",folder=True):
+def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="",url="",folder=True):
     if category == "":
         try:
             category = unicode( nombre, "utf-8" ).encode("iso-8859-1")
@@ -71,7 +85,7 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="
     import xbmcgui
     import xbmcplugin
     listitem = xbmcgui.ListItem( nombre , iconImage="DefaultFolder.png", thumbnailImage=thumbnail)
-    itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
+    itemurl = '%s?channel=%s&action=%s&url=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , urllib.quote_plus( url ), category )
     xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=folder)
 
 def get_thumbnail_path():

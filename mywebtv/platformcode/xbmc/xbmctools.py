@@ -487,6 +487,11 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
 
     # Si no hay mediaurl es porque el vídeo no está :)
     logger.info("[xbmctools.py] mediaurl="+mediaurl)
+    if mediaurl.startswith("rtmp"):
+        import re
+        mediaurl = re.compile('timeout=\d+',re.DOTALL).sub("timeout="+config.get_setting("timeout"),mediaurl)
+        logger.info("[xbmctools.py] mediaurl="+mediaurl)
+
     if mediaurl=="":
         logger.info("b1")
         if server == "unknown":

@@ -29,7 +29,13 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         video_url = page_url
     else:
         headers=[ ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:14.0) Gecko/20100101 Firefox/14.0.1"] ]
-        data = scrapertools.cache_page(page_url,headers=headers)
+    	data = scrapertools.cache_page(page_url,headers=headers)
+        if (re.search("<strong>To view this stream, please verify you are 18 or older:</strong>", data)):
+         patron = "name='csrfmiddlewaretoken' value='([^']+)'"
+         matches = re.compile(patron,re.DOTALL).findall(data)
+         for token in matches:
+          post = "csrfmiddlewaretoken="+token+"&channel=&over_18=I+am+18+or+older"
+         data = scrapertools.cache_page(page_url+'/mature_content/',headers=headers,post=post)
         logger.info("data="+data)
         '''
         //<![CDATA[

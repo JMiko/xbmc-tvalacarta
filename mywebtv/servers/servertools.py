@@ -164,13 +164,16 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
     if server=="directo" or server=="local":
         logger.info("[servertools.py] server=directo, la url es la buena")
         
-        try:
-            import urlparse
-            parsed_url = urlparse.urlparse(url)
-            logger.info("parsed_url="+str(parsed_url))
-            extension = parsed_url.path[-4:]
-        except:
-            extension = url[-4:]
+        if url.startswith("rtmp"):
+            extension = "RTMP"
+        else:
+            try:
+                import urlparse
+                parsed_url = urlparse.urlparse(url)
+                logger.info("parsed_url="+str(parsed_url))
+                extension = parsed_url.path[-4:]
+            except:
+                extension = url[-4:]
 
         video_urls = [[ "%s [%s]" % (extension,server) , url ]]
         return video_urls,True,""
