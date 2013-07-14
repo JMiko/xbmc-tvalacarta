@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>22</tag>
-	<date>25/06/2013</date>
-	<changes>Arregladas las categorias (gracias a prunk)</changes>
+	<tag>23</tag>
+	<date>14/07/2013</date>
+	<changes>Arreglado fallo de las series sin temporada (gracias a prunk)</changes>
 </version>

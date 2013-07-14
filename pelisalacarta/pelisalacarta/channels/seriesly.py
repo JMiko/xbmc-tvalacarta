@@ -303,6 +303,9 @@ def generate_item(video , tipo, auth_token):
     if tipo=="series" or tipo == "tvshows":  
         logger.info(str(video))
         url = 'http://api.series.ly/v2/media/full_info?auth_token='+ auth_token+'&idm=%s&mediaType=%s' %(video["idm"],get_constant("mediaType")[tipo])
+        #Si la serie no tiene temporada, al abrirla tampoco tiene capitulos
+        if "seasons" not in video:
+            return Item()
         action = 'serie_capitulos'
         title = '%(name)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % video
 
