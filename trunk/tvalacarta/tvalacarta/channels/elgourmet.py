@@ -1,26 +1,18 @@
 ﻿# -*- coding: utf-8 -*-
-
 #------------------------------------------------------------
-
 # pelisalacarta - XBMC Plugin
-
 # creado por rsantaella
-
 #------------------------------------------------------------
-
-
 
 import urlparse,urllib2,urllib,re
 import os, sys
-
-
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-
+import youtube_channel
 
 __channel__ = "elgourmet"
 __category__ = "F"
@@ -30,14 +22,18 @@ __language__ = "ES"
 __creationdate__ = "20121216"
 __vfanart__ = "http://elgourmet.com/imagenes/background.jpg"
 
-
-
 DEBUG = config.get_setting("debug")
 
 def isGeneric():
-
     return True
 
+def mainlist(item):
+    return youtube_channel.playlists(item,"elgourmetcomLatam")
+
+def test():
+    return youtube_channel.test("elgourmetcomLatam")
+
+'''
 def mainlist(item):
 
     logger.info("[elgourmet.py] getplaylists")
@@ -57,7 +53,10 @@ def mainlist(item):
     for playlist in playlists['feed']['entry']:
         scrapedtitle = playlist['title']['$t'].encode("utf8","ignore")
         scrapedurl = playlist['content']['src'].encode("utf8","ignore") + '&alt=json'
-        scrapedthumbnail = playlist['media$group']['media$thumbnail'][1]['url']
+        try:
+            scrapedthumbnail = playlist['media$group']['media$thumbnail'][1]['url']
+        except:
+            scrapedthumbnail = ""
         itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="playlist" , url=scrapedurl, thumbnail=scrapedthumbnail, folder=True) )
 
     for link in playlists['feed']['link']:
@@ -90,3 +89,4 @@ def playlist(item):
             itemlist.append( Item(channel=__channel__, action="playlist", title="!Página siguiente" , url=scrapedurl, folder=True) ) 
 
     return itemlist
+'''
