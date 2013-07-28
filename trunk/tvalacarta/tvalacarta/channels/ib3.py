@@ -23,11 +23,11 @@ def mainlist(item):
     logger.info("[ib3.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Programes de producció pròpia"                    , action="categoria" , extra="Pr", url=MAIN_URL, folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Sèries de producció pròpia"                       , action="categoria" , extra="Sè", url=MAIN_URL, folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Notícies / Programes d'actualitat"                , action="categoria" , extra="In", url=MAIN_URL, folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Programes d'Esports / Retransmissions esportives" , action="categoria" , extra="Es", url=MAIN_URL, folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Retransmissions / Documentals / Especials"        , action="categoria" , extra="Re", url=MAIN_URL, folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Programes de producció pròpia"                    , action="categoria" , extra="Progra", url=MAIN_URL, folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Sèries de producció pròpia"                       , action="categoria" , extra="Sèries", url=MAIN_URL, folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Notícies / Programes d'actualitat"                , action="categoria" , extra="Infor", url=MAIN_URL, folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Programes d'Esports / Retransmissions esportives" , action="categoria" , extra="Esports", url=MAIN_URL, folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Retransmissions / Documentals / Especials"        , action="categoria" , extra="Retrans", url=MAIN_URL, folder=True) )
     itemlist.append( Item(channel=CHANNELNAME, title="Programes [A-Z] (thumbnail)"                      , action="programas" , url=MAIN_URL, folder=True) )
 
     return itemlist
