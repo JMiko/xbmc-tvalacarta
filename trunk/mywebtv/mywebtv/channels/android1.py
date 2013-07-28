@@ -39,12 +39,15 @@ def mainlist(item,data=""):
         data = scrapertools.cache_page("http://www.jaserdevelopments.com/tdtdirectotvics/canales/conexion2.php" , headers = request_headers, post=post)
         #logger.info("body="+body)
 
-    json_object = scrapertools.load_json(data)
+    try:
+        json_object = scrapertools.load_json(data)
 
-    for entry in json_object:
-        #logger.info("entry="+str(entry))
-        #{u'nombre': 'Tv Bilbao', u'icono': 'http://www.jaserdevelopments.com/images/channels/tvbilbaon.png', u'link': 'rtmp://149.11.34.6/live/telebilbao.stream'}
-        itemlist.append( Item( channel=__channel__ , action="play" , title=entry['nombre'] , url=entry['link'], thumbnail=entry['icono'], folder=False))
+        for entry in json_object:
+            #logger.info("entry="+str(entry))
+            #{u'nombre': 'Tv Bilbao', u'icono': 'http://www.jaserdevelopments.com/images/channels/tvbilbaon.png', u'link': 'rtmp://149.11.34.6/live/telebilbao.stream'}
+            itemlist.append( Item( channel=__channel__ , action="play" , title=entry['nombre'] , url=entry['link'], thumbnail=entry['icono'], folder=False))
+    except:
+        itemlist = []
 
     # Si ha encontrado canales, graba el fichero actualizado por si en el futuro falla
     if len(itemlist)>0:

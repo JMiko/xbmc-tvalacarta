@@ -32,23 +32,26 @@ def get_online_list():
     logger.info("simpletv.get_online_list")
 
     # Login
-    request_headers = []
-    request_headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"])
-    post = urllib.urlencode({'log':config.get_setting("simpletvuser"), 'pwd':config.get_setting("simpletvpassword"), 'rememberme':'forever', 'wp-submit':'Acceder', 'redirect_to':'http://web.iptvonline.com.es/wp-admin/', 'testcookie':'1' })
-    data = scrapertools.cache_page("http://web.iptvonline.com.es/wp-login.php", headers=request_headers, post=post)
+    try:
+        request_headers = []
+        request_headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"])
+        post = urllib.urlencode({'log':config.get_setting("simpletvuser"), 'pwd':config.get_setting("simpletvpassword"), 'rememberme':'forever', 'wp-submit':'Acceder', 'redirect_to':'http://web.iptvonline.com.es/wp-admin/', 'testcookie':'1' })
+        data = scrapertools.cache_page("http://web.iptvonline.com.es/wp-login.php", headers=request_headers, post=post)
 
-    # Página con la lista
-    request_headers = []
-    request_headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"])
-    request_headers.append(["Referer","http://web.iptvonline.com.es/playlist-simpletv"])
-    data = scrapertools.cache_page("http://temp.iptvonline.com.es", headers=request_headers)
-    logger.info("data="+data)
+        # Página con la lista
+        request_headers = []
+        request_headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"])
+        request_headers.append(["Referer","http://web.iptvonline.com.es/playlist-simpletv"])
+        data = scrapertools.cache_page("http://temp.iptvonline.com.es", headers=request_headers)
+        logger.info("data="+data)
 
-    # Averigua la URL de la lista
-    url = scrapertools.get_match(data,'URL PARA ACTUALIZAR\: (http.*?m3u)')
+        # Averigua la URL de la lista
+        url = scrapertools.get_match(data,'URL PARA ACTUALIZAR\: (http.*?m3u)')
 
-    # Descarga la lista
-    data = scrapertools.cache_page(url)
+        # Descarga la lista
+        data = scrapertools.cache_page(url)
+    except:
+        data = ""
 
     return data
 
