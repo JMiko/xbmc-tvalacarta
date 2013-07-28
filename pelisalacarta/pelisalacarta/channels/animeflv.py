@@ -23,6 +23,14 @@ __channel__ = "animeflv"
 __language__ = "ES"
 __creationdate__ = "20111014"
 
+ANIMEFLV_REQUEST_HEADERS = []
+ANIMEFLV_REQUEST_HEADERS.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:22.0) Gecko/20100101 Firefox/22.0"])
+ANIMEFLV_REQUEST_HEADERS.append(["Accept-Encoding","gzip, deflate"])
+ANIMEFLV_REQUEST_HEADERS.append(["Cache-Control","max-age=0"])
+ANIMEFLV_REQUEST_HEADERS.append(["Connection","keep-alive"])
+ANIMEFLV_REQUEST_HEADERS.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"])
+ANIMEFLV_REQUEST_HEADERS.append(["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"])
+
 def isGeneric():
     return True
 
@@ -72,8 +80,7 @@ def letras(item):
     logger.info("[animeflv.py] letras")
 
     itemlist = []
-
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
     data = scrapertools.get_match(data,'<div class="alfabeto_box"(.*?)</div>')
     patron = '<a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)    
@@ -93,7 +100,7 @@ def generos(item):
 
     itemlist = []
 
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
     data = scrapertools.get_match(data,'<div class="generos_box"(.*?)</div>')
     patron = '<a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)    
@@ -127,7 +134,7 @@ def novedades(item):
     logger.info("[animeflv.py] novedades")
 
     # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url , headers = ANIMEFLV_REQUEST_HEADERS)
 
     # Extrae las entradas (carpetas)  
     '''
@@ -158,7 +165,7 @@ def series(item):
     logger.info("[animeflv.py] series")
 
     # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
 
     # Extrae las entradas 
     '''
@@ -184,7 +191,7 @@ def series(item):
         fulltitle = title
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = scrapedplot
+        plot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
         show = title
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail , plot=plot , show=show, fulltitle=fulltitle, fanart=thumbnail, viewmode="movies_with_plot", folder=True) )
@@ -207,7 +214,7 @@ def episodios(item):
     itemlist = []
     
     # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
 
     '''
     <div class="tit">Listado de episodios <span class="fecha_pr">Fecha Pr&oacute;ximo: 2013-06-11</span></div>
@@ -222,7 +229,7 @@ def episodios(item):
     for scrapedurl,scrapedtitle in matches:
         title = scrapedtitle
         try:
-            episodio = scrapertools.get_match(scrapedtitle,item.title+"\s+(\d+)")
+            episodio = scrapertools.get_match(scrapedtitle,item.show+"\s+(\d+)")
             if len(episodio)==1:
                 title = "1x0"+episodio
             else:
@@ -237,14 +244,15 @@ def episodios(item):
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , show=item.show, fulltitle=item.show+" "+title, fanart=thumbnail, viewmode="movies_with_plot", folder=True) )
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=__channel__, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="episodios", show=item.show) )
 
     return itemlist
 
 def findvideos(item):
     logger.info("[animeflv.py] findvideos")
 
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
     data = scrapertools.get_match(data,"var videos \= (.*?)$")
     logger.info("data="+data)
 
