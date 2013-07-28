@@ -63,7 +63,7 @@ def mainlist(item):
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         url = urlparse.urljoin(item.url,scrapedurl)
         plot = scrapedplot.strip()
-        itemlist.append( Item(channel=__channel__, action="videos", title=title, url=url, thumbnail=thumbnail,  folder=True))
+        itemlist.append( Item(channel=__channel__, action="videos", title=title, url=url, thumbnail=thumbnail,  plot=plot, folder=True))
 
     return itemlist
 
@@ -97,7 +97,7 @@ def videos(item):
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail).replace(" ","%20")
         url = urlparse.urljoin(item.url,scrapedurl)
         plot = scrapedplot.strip()
-        itemlist.append( Item(channel=__channel__, action="play", title=title, url=url, thumbnail=thumbnail,  folder=False))
+        itemlist.append( Item(channel=__channel__, action="play", title=title, url=url, thumbnail=thumbnail, plot=plot, folder=False))
         
     return itemlist
 
@@ -112,8 +112,25 @@ def play(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     for match in matches:
-        scrapedurl = urlparse.urljoin(item.url,match)
-        itemlist.append( Item(channel=__channel__, action="play",  server="directo",  title=item.title, url=scrapedurl, folder=False))
-
+        # "rtmp://64.150.186.181/vod playpath=mp4:hispantv/20130627/Recorridos_urbanos_P74_(Asentamientos_ilegales_en_Uruguay)_new.mp4"
+        playpath = match.replace("/video/","mp4:hispantv/")
+        url = "rtmp://64.150.186.181/vod playpath="+playpath
+        itemlist.append( Item(channel=__channel__, action="play",  server="directo",  title=item.title, url=url, folder=False))
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    
+    # Mainlist es la lista de programas
+    programas_items = mainlist(Item())
+    if len(programas_items)==0:
+        print "No encuentra los programas"
+        return False
+
+    episodios_items = videos(programas_items[0])
+    if len(episodios_items)==0:
+        print "El programa '"+programas_items[0].title+"' no tiene episodios"
+        return False
+
+    return True
