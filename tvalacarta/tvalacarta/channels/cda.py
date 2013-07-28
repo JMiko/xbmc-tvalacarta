@@ -143,7 +143,6 @@ def calidades(item):
 
     return itemlist
 
-
 def to_utf8(dct):
     rdct = {}
     for k, v in dct.items() :
