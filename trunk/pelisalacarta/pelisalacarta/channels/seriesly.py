@@ -103,8 +103,7 @@ def categorias(item):
         itemlist.append( Item(channel=__channel__, title="Vistos", action="categoria", url='Vistas', extra=item.url) )
         itemlist.append( Item(channel=__channel__, title="Favoritas", action="categoria", url='Favoritas', extra=item.url) )
         itemlist.append( Item(channel=__channel__, title="Pendientes", action="categoria", url='Pendientes', extra=item.url) )
-        itemlist.append( Item(channel=__channel__, title="Documentales Mas Vistos", action="mas_vistas" , url=item.url ) )
-        #itemlist.append( Item(channel=__channel__, title="Documentales Por Categorias", action="menu_cat", url=item.url, extra="cat" ) )
+        itemlist.append( Item(channel=__channel__,title="Documentales mas vistos",action="mas_vistas",url=item.url))
 
     elif item.url=="tvshows":
         itemlist.append( Item(channel=__channel__, title="Viendo", action="categoria", url='Viendo', extra=item.url) )
