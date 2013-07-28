@@ -14,10 +14,10 @@ def getmainlist():
     logger.info("[channelselector.py] getmainlist")
     itemlist = []
 
-    itemlist.append( Item(title=config.get_localized_string(30118) , channel="channelselector" , action="channeltypes") )
-    itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist") )
-    itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist") )
-    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist") )
+    itemlist.append( Item(title=config.get_localized_string(30118) , channel="channelselector" , action="channeltypes", thumbnail="channels.png") )
+    itemlist.append( Item(title=config.get_localized_string(30102) , channel="favoritos" , action="mainlist", thumbnail="favorites.png") )
+    itemlist.append( Item(title=config.get_localized_string(30101) , channel="descargas" , action="mainlist", thumbnail="downloads.png") )
+    itemlist.append( Item(title=config.get_localized_string(30100) , channel="configuracion" , action="mainlist", thumbnail="settings.png") )
 
     return itemlist
 
@@ -40,7 +40,7 @@ def mainlist(params,url,category):
     itemlist = getmainlist()
     for elemento in itemlist:
         logger.info("[channelselector.py] item="+elemento.title)
-        addfolder(elemento.title,elemento.channel,elemento.action)
+        addfolder(elemento.title,elemento.channel,elemento.action,thumbnailname=elemento.thumbnail)
 
     # Label (top-right)...
     import xbmcplugin
@@ -267,17 +267,17 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname=""):
     if thumbnailname=="":
         thumbnailname = channelname
 
-    # Preferencia: primero JPG
-    thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, thumbnailname+".jpg")
+    thumbnail = os.path.join(IMAGES_PATH, "menu", thumbnailname)
+    logger.info("thumbnail="+thumbnail)
+    if not os.path.exists(thumbnail):
+        # Preferencia: primero JPG
+        thumbnail = os.path.join(IMAGES_PATH, thumbnailname+".jpg")
     # Preferencia: segundo PNG
     if not os.path.exists(thumbnail):
-        thumbnail = thumbnailImage=os.path.join(IMAGES_PATH, thumbnailname+".png")
+        thumbnail = os.path.join(IMAGES_PATH, thumbnailname+".png")
     # Preferencia: tercero WEB
     if not os.path.exists(thumbnail):
-        thumbnail = thumbnailImage=WEB_PATH+thumbnailname+".png"
-    #Si no existe se usa el logo del plugin
-    #if not os.path.exists(thumbnail):
-    #    thumbnail = thumbnailImage=WEB_PATH+"ayuda.png" #Check: ruta del logo
+        thumbnail = WEB_PATH+thumbnailname+".png"
 
     import xbmcgui
     import xbmcplugin
