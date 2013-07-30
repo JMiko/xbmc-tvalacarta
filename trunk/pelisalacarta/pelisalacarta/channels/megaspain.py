@@ -171,15 +171,37 @@ def find_link_mega(item):
     
     matches = re.compile(patronurl,re.DOTALL).findall(data)
     for scrapedurl in matches:
-        url = scrapedurl
-        url = "https://mega.co.nz/" + url
-        url = url.replace("https://mega.co.nz/#!","http://megastreamer.net/mega_stream.php?url=https%3A%2F%2Fmega.co.nz%2F%23%21")
-        url = url.replace("!","%21")
-        url = url + "&mime=vnd.divx"
-        #plot = ""
+        
+    ##!qYkXXI7b!LsGKF0S3PbaLLN1lmTX95wuEgPYoY0JSzm50EcLd6zc   convertir a 
+    #http://mega-stream.me/stream.php?ph=qYkXXI7b&key=LsGKF0S3PbaLLN1lmTX95wuEgPYoY0JSzm50EcLd6zc
+    
+        url_service2 = scrapedurl.replace("#!","")
+        url_service2 = url_service2.replace("!","&key=")
+        url_service2 = "http://mega-stream.me/stream.php?ph="+url_service2
+        
+        url_service1 = scrapedurl
+        url_service1 = "https://mega.co.nz/" + url_service1
+        url_service1 = url_service1.replace("https://mega.co.nz/#!","http://megastreamer.net/mega_stream.php?url=https%3A%2F%2Fmega.co.nz%2F%23%21")
+        url_service1 = url_service1.replace("!","%21")
+        url_service1 = url_service1 + "&mime=vnd.divx"
         # Añade al listado
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title= "Ver en MEGASTREAMER.NET " + title, url=url_service1 , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title= "Ver en MEGA-STREAM.ME " + title,url=url_service2 , thumbnail=thumbnail , plot=plot , folder=True) )
+    
     return itemlist
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
