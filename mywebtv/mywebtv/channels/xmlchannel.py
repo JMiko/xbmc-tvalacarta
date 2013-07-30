@@ -45,16 +45,16 @@ def lista(item):
         infile.close()
 
     # Extrae los paises
-    patron  = '<channel>[^<]+'
-    patron += '<name>([^<]+)</name>.*?'
-    patron += '<thumbnail>([^<]+)</thumbnail>'
+    #<channel><name>TV Channels</name><thumbnail>http://thestreamdb.googlecode.com/svn/languageicons/English.png</thumbnail>
+    patron  = '<channel[^<]+'
+    patron += '<name>([^<]+)</name'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for name,thumbnail in matches:
+    for name in matches:
         scrapedtitle = name
         scrapedurl = name+"|#|"+item.url
-        scrapedthumbnail = thumbnail
+        scrapedthumbnail = ""
         if scrapedthumbnail=="none":
             scrapedthumbnail=""
         scrapedplot = ""
@@ -85,16 +85,17 @@ def videos(item):
     #logger.info(data)
 
     # Extrae las cadenas
-    patron  = '<channel>[^<]+'
-    patron += '<name>'+channel_id.replace("\\","\\\\")+'</name>(.*?)</channel'
+    patron  = '<channel[^<]+'
+    patron += '<name>'+channel_id.replace("\\","\\\\").replace("(","\\(").replace(")","\\)")+'</name(.*?)</channel'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     if len(matches)>0:
         data = matches[0]
+        logger.info("mywebtv.channels.xmlchannels.videos data="+data)
 
-        patron  = '<title>([^<]+)</title>.*?'
-        patron += '<link>([^<]+)</link>.*?'
+        patron  = '<title>([^<]+)</title.*?'
+        patron += '<link>([^<]+)</link.*?'
         patron += '<thumbnail>([^<]+)</thumbnail>'
         matches = re.compile(patron,re.DOTALL).findall(data)
         if DEBUG: scrapertools.printMatches(matches)
