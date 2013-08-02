@@ -29,27 +29,24 @@ def isGeneric():
 def mainlist(item):
     logger.info("[goear.py] mainlist")
 
-############################################## GENERA EL MENU PRINCIPAL###########################################################
+	
+	
+########################################## GENERA EL MENU PRINCIPAL################################
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar Canciones"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mas Escuchadas"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
-
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por número de reproducciones'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mejor Calidad"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
-
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por calidad'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por "Mas Recientes"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
-
-    
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar y ordenar por fecha'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
+ 
     itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar PlayList"     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
-
+   
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por número de reproducciones'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
     
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por "Número de Canciones"'     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
-
-    
-    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por "Más Reciente"'     
+    itemlist.append( Item(channel=__channel__, action="search"     , title='Buscar PlayList y ordenar por fecha'     
     ,     thumbnail=os.path.join(IMAGES_PATH, 'user100x100.png'), fanart=os.path.join(IMAGES_PATH, 'poster.png')))
 
     
@@ -57,55 +54,67 @@ def mainlist(item):
 
     return itemlist
     
-#################################################################################################################################
+########################################################################################################################
 
 def search(item,texto):
     logger.info("[goear.py] search")
+   
     try:
         
-        if item.title=="Buscar Canciones":
-            item.url = "http://www.goear.com/search/%s" % texto
+    
+        if item.title=="Buscar Canciones": 
+            item.url = "http://www.goear.com/apps/android/search_songs_json.php?q=%s" % texto + "&p=0&order=default"
             
-        if item.title=='Buscar y ordenar por "Mas Escuchadas"':
-            item.url = "http://www.goear.com/search/%s" % texto + "/0/played/"
+        if item.title=='Buscar y ordenar por número de reproducciones':
+            item.url = "http://www.goear.com/apps/android/search_songs_json.php?q=%s" % texto + "&p=0&order=played"
             
-        if item.title=='Buscar y ordenar por "Mas Recientes"':
-            item.url = "http://www.goear.com/search/%s" % texto + "/0/recent/"    
+        if item.title=='Buscar y ordenar por calidad':
+            item.url = "http://www.goear.com/apps/android/search_songs_json.php?q=%s" % texto + "&p=0&order=quality"
                         
-        if item.title=='Buscar y ordenar por "Mejor Calidad"':
-            item.url = "http://www.goear.com/search/%s" % texto + "/0/quality/"
+        if item.title=='Buscar y ordenar por fecha':
+            item.url = "http://www.goear.com/apps/android/search_songs_json.php?q=%s" % texto + "&p=0&order=recent"
+        #---------------------------------------------------------------------------------------------#    
             
         if item.title=="Buscar PlayList":
-            item.url = "http://www.goear.com/playlist-search/%s" % texto
-        
-        if item.title=='Buscar PlayList y ordenar por "Número de Canciones"':
-            item.url = "http://www.goear.com/playlist-search/%s" % texto + "/0/size/"
+            item.url = "http://www.goear.com/apps/android/search_playlist_json.php?q=%s" % texto + "&p=0&order=default"
             
-        if item.title=='Buscar PlayList y ordenar por "Más Reciente"':
-            item.url = "http://www.goear.com/playlist-search/%s" % texto + "/0/recent/"
+        if item.title=='Buscar PlayList y ordenar por número de reproducciones':
+            item.url = "http://www.goear.com/apps/android/search_playlist_json.php?q=%s" % texto + "&p=0&order=played"
             
+        #if item.title=='Buscar PlayList y ordenar por número de canciones':
+        #    item.url = "http://www.goear.com/apps/android/search_playlist_json.php?q=%s" % texto + "&p=0&order=sounds"
+            
+        if item.title=='Buscar PlayList y ordenar por fecha':
+            item.url = "http://www.goear.com/apps/android/search_playlist_json.php?q=%s" % texto + "&p=0&order=recent"
+           
         if item.title=='Mostrar los PlayList de un Usuario':
-            item.url = "http://www.goear.com/%s" % texto + "/playlist/1"
+            item.url = "http://www.goear.com/%s" % texto + "/playlist/0"
+            
             
         if item.title=="Buscar Canciones":
             return search_results(item)
             
-        if item.title=='Buscar y ordenar por "Mas Escuchadas"':
+        if item.title=='Buscar y ordenar por número de reproducciones':
             return search_results(item)
             
-        if item.title=='Buscar y ordenar por "Mas Recientes"':
+        if item.title=='Buscar y ordenar por calidad':
             return search_results(item)
                         
-        if item.title=='Buscar y ordenar por "Mejor Calidad"':
-            return search_playlist_results(item)
+        if item.title=='Buscar y ordenar por fecha':
+            return search_results(item)
             
+   
+
         if item.title=="Buscar PlayList":
             return search_playlist_results(item)
         
-        if item.title=='Buscar PlayList y ordenar por "Número de Canciones"':
+        if item.title=='Buscar PlayList y ordenar por número de reproducciones':
             return search_playlist_results(item)
             
-        if item.title=='Buscar PlayList y ordenar por "Más Reciente"':
+        if item.title=='Buscar PlayList y ordenar por número de canciones':
+            return search_playlist_results(item)
+            
+        if item.title=='Buscar PlayList y ordenar por fecha':
             return search_playlist_results(item)
             
         if item.title=='Mostrar los PlayList de un Usuario':
@@ -118,163 +127,122 @@ def search(item,texto):
         for line in sys.exc_info():
             logger.error( "%s" % line )
         return []
-
-#################################################################################################################################
-#                                      BUSCA RESULTADOS PARA CANCIONES SUELTAS                                                  #
-#################################################################################################################################
+        
+        
+        
+################################################################################################################
+#                          BUSCA y REPRODUCE RESULTADOS PARA CANCIONES SUELTAS                                 #
+################################################################################################################
 
 def search_results(item):
+    
     logger.info("[goear.py] search_results")
     data = scrapertools.cachePage(item.url)
-    patron = '<a title="([^"]+)" href="([^/]+/[^/]+)/[^"]+"><span class="songtitleinfo">'
+    patron = '"id":"[^"]+","title":"(.*?),"mp3path":"([^"]+)","imgpath".*?songtime":"([^"]+)"'
+    
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
-    for scrapedtitle, scrapedurl in matches:
-        # fabrica el link tipo http://www.goear.com/tracker758.php?f=My_ID de http://www.goear.com/listen/My_ID/blablabla 
-        scrapedurl = scrapedurl.replace("listen/","http://www.goear.com/tracker758.php?f=")
-        scrapedplot = ""
-        scrapedtitle = scrapedtitle.replace("Escuchar","")
+    for scrapedtitle, scrapedurl, scrapedtime in matches:
+    
+        scrapedurl = scrapedurl.replace("\\","")
+        scrapedtitle = scrapedtitle.replace('","artist":"',' - ')
+        scrapedtitle = scrapedtitle.replace('"',' ')
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
+        scrapedtitle = scrapedtitle + " / Duración: " + scrapedtime
+        scrapedplot =  ""
+    
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
-        itemlist.append( Item(channel=__channel__, action="play_cancion" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
-   
-   # EXTRAE EL TOTAL DE PAGINAS DE RESULTADOS
-    patron = '<li><a class="radius_3" href="[^"]+">([^<]+)</a></li><!-- Última página'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = ""
-        scrapedtitle = ""
-        scrapedthumbnail = ""
-        scrapedlastplot = match
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-   
-   # EXTRAE EL NUMERO DE PAGINA ACTUAL
-    patron = '<li class="active"><a class="radius_3" href="[^"]+">([^<]+)</a></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = ""
-        scrapedtitle = ""
-        scrapedthumbnail = ""
-        scrapedactiveplot = match
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-   
-   # EXTRAE EL LINK DE LA SIGUIENTE PAGINA
-    patron = '<li><a class="next" href="([^"]+)"><img alt="Siguiente"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = match
-        scrapedurl = scrapedurl.replace("search","http://www.goear.com/search")
-        scrapedurl = scrapedurl.replace(" ","+")
-        scrapedtitle = ">> Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="search_results" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server="directo", folder=False))
+    
+    
+    if 'playlist_songs_json' in item.url:
+        url_pag_sig=""
+    else:    
+        #EXTRAE EL NUMERO DE PAGINA ACTUAL Y LO LIMPIA
+        pag_actual = item.url[-17:-13]
+        pag_actual = pag_actual.replace("p","")
+        pag_actual = pag_actual.replace("&","")
+        pag_actual = pag_actual.replace("=","")
+    
+        # INCREMENTA EN UNO EL NUMERO DE PAGINA
+        pag_sig = int(pag_actual)+1
+    
+        # FABRICA EL LINK DE LA SIGUIENTE PAGINA DE RESULTADOS    
+        url_pag_sig = item.url
+        url_pag_sig = url_pag_sig.replace(pag_actual,repr(pag_sig))
+        
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
+        itemlist.append( Item(channel=__channel__, action="search_results" , title=">> Pagina Siguiente", url=url_pag_sig, plot=item.plot))
+    
+    
     return itemlist
     
 
-###############################################################################################################################
-#                                   EXTRAE EL LINK FINAL DEL MP3 Y LO REPRODUCE                                               #
-###############################################################################################################################
-def play_cancion(item):
-    logger.info("[goear.py] play_cancion")
-    itemlist=[]
-    data = scrapertools.cachePage(item.url)
-    patronmp3  = '<song path="([^"]+)" bild="[^"]+" artist="[^"]+" title="([^"]+)"/>'
-    matches = re.compile(patronmp3,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedtitle in matches:
-        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server="directo", folder=False))
-    return itemlist
-#################################################################################################################################    
-
-
-
-#################################################################################################################################    
-#################################################################################################################################    
-#################################################################################################################################
-#                                                    BLOQUE PLAYLIST                                                            #
-#################################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+#                                        BLOQUEPLAYLIST                                                            #
+####################################################################################################################
 
 def search_playlist_results(item):
     logger.info("[goear.py] search_playlist_results")
     data = scrapertools.cachePage(item.url)
-    patron = '<a title="[^"]+" href="[^/]+/([^/]+)/[^"]+"><span class="song">(.*?)</p></li>'
+    
+    patron = '"id":"([^"]+)","title":"([^"]+)","plsongs":"([^"]+)","imgpath.*?songtime":"([^"]+)"'
     
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
-    for scrapedurl,scrapedtitle in matches:
-        # fabrica el link tipo http://www.goear.com/apps/android/playlist_songs_json.php?v=d4f07b7
-        scrapedurl =  "http://www.goear.com/apps/android/playlist_songs_json.php?v="+scrapedurl
+    for scrapedid, scrapedtitle, scrapednumberofsongs, scrapedtime in matches:
+    
+        # fabrica el link tipo http://www.goear.com/apps/android/playlist_songs_json.php?v=999c96d
+        scrapedurl =  "http://www.goear.com/apps/android/playlist_songs_json.php?v="+scrapedid
         scrapedplot = ""
-        scrapedtitle = scrapedtitle.replace("</span>","")
-        scrapedtitle = scrapedtitle.replace("</a>","")
-        scrapedtitle = scrapedtitle.replace('<p class="comment">'," - ")
-        scrapedtitle = scrapedtitle
+        #scrapedtitle = scrapedtitle.replace("</span>","")
+        #scrapedtitle = scrapedtitle.replace("</a>","")
+        #scrapedtitle = scrapedtitle.replace('<p class="comment">'," - ")
+        if scrapednumberofsongs == "1":
+                scrapedtitle = scrapedtitle+ " - " + scrapednumberofsongs+" cancion "+ "- duracion: " + scrapedtime
+        else:
+                scrapedtitle = scrapedtitle+ " - " + scrapednumberofsongs+" canciones "+ "- duracion: " + scrapedtime
+                
+        
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
-        itemlist.append( Item(channel=__channel__, action="playlist_play" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
+        itemlist.append( Item(channel=__channel__, action="search_results" , title=scrapedtitle, url=scrapedurl, plot=scrapedplot))
+    
+    
+    #EXTRAE EL NUMERO DE PAGINA ACTUAL Y LO LIMPIA
+    pag_actual = item.url[-17:-13]
+    pag_actual = pag_actual.replace("p","")
+    pag_actual = pag_actual.replace("&","")
+    pag_actual = pag_actual.replace("=","")
+    
+    # INCREMENTA EN UNO EL NUMERO DE PAGINA
+    pag_sig = int(pag_actual)+1
+    
+    # FABRICA EL LINK DE LA SIGUIENTE PAGINA DE RESULTADOS    
+    url_pag_sig = item.url
+    url_pag_sig = url_pag_sig.replace(pag_actual,repr(pag_sig))
+        
+    if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
+    itemlist.append( Item(channel=__channel__, action="search_playlist_results" , title=">> Pagina Siguiente", url=url_pag_sig, plot=item.plot))
         
    
-   # EXTRAE EL TOTAL DE PAGINAS DE RESULTADOS
-    patron = '<li><a class="radius_3" href="[^"]+">([^<]+)</a></li><!-- Última página'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = ""
-        scrapedtitle = ""
-        scrapedthumbnail = ""
-        scrapedlastplot = match
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-   
-   # EXTRAE EL NUMERO DE PAGINA ACTUAL
-    patron = '<li class="active"><a class="radius_3" href="[^"]+">([^<]+)</a></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = ""
-        scrapedtitle = ""
-        scrapedthumbnail = ""
-        scrapedactiveplot = match
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-   
-   # EXTRAE EL LINK DE LA SIGUIENTE PAGINA
-    patron = '<li><a class="next" href="([^"]+)"><img alt="Siguiente"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = match
-        scrapedurl = scrapedurl.replace("playlist-search","http://www.goear.com/playlist-search")
-        scrapedurl = scrapedurl.replace(" ","+")
-        scrapedtitle = ">> Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="search_playlist_results" , title=scrapedtitle, url=scrapedurl, plot=scrapedplot))
     return itemlist
 
 
 
-###############################################################################################################################
-#                                LISTA los PLAYLIST DE un USUARIO     (UTILIZA API)                                           #
-###############################################################################################################################
+##################################################################################################################
+#                           LISTA los PLAYLIST DE un USUARIO     (UTILIZA API)                                   #
+##################################################################################################################
 
 def list_my_playlist(item):
     logger.info("[goear.py] list_my_playlist")
     data = scrapertools.cachePage(item.url)
-    patron = '<a href="http://www.goear.com/playlist/([^/]+)/([^/]+)/">[^<]+</a>.*?<span class="track">([^"]+)</span>.*?</li>'
-    
-    # <a href="http://www.goear.com/playlist/([^/]+)/([^/]+)/">[^<]+</a>.*?<span class="track">([^"]+)</span>.*?</li>
-    #<li>
-    #              <a href="http://www.goear.com/playlist/0afa804/peliculas/">peliculas</a>
-    #              <span class="track">21 canciones</span>
-    #                              </li>
+    patron = '<a href="http://www.goear.com/playlist/([^/]+)/[^"]+"><span class="playlist">([^<]+)</span></a>.*?<li class="description">([^<]+)</li>'
                               
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -286,49 +254,33 @@ def list_my_playlist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
         itemlist.append( Item(channel=__channel__, action="playlist_play" , title=scrapedtitle , url=scrapedurl, plot=scrapedplot))
    
-   # EXTRAE EL TOTAL DE PAGINAS DE RESULTADOS
-    patron = '<li><a class="radius_3" href="[^"]+">([^<]+)</a></li><!-- Última página'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = ""
-        scrapedtitle = ""
-        scrapedthumbnail = ""
-        scrapedlastplot = match
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
    
-   # EXTRAE EL NUMERO DE PAGINA ACTUAL
-    patron = '<li class="active"><a class="radius_3" href="[^"]+">([^<]+)</a></li>'
-              
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = ""
-        scrapedtitle = ""
-        scrapedthumbnail = ""
-        scrapedactiveplot = match
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
    
-   # EXTRAE EL LINK DE LA SIGUIENTE PAGINA
-    #patron = '<li><a class="next" href="([^"]+)"><img alt="Siguiente"'
-    patron = '<li class="active"><a class="radius_3" href="[^"]+">[^<]+</a></li><li><a class="radius_3" href="([^"]+)">[^<]+</a></li'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedurl = match
-        scrapedtitle = ">> Pagina " +scrapedactiveplot+ " de " +scrapedlastplot
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="list_my_playlist" , title=scrapedtitle, url=scrapedurl, plot=scrapedplot))
+   #EXTRAE EL NUMERO DE PAGINA ACTUAL Y LO LIMPIA
+    pag_actual = item.url[-3:]
+    pag_actual = pag_actual.replace("t","")
+    pag_actual = pag_actual.replace("/","")
+    
+    
+    # INCREMENTA EN UNO EL NUMERO DE PAGINA
+    pag_sig = int(pag_actual)+1
+    
+    # FABRICA EL LINK DE LA SIGUIENTE PAGINA DE RESULTADOS    
+    url_pag_sig = item.url
+    url_pag_sig = url_pag_sig.replace(pag_actual,repr(pag_sig))
+    
+    
+        
+    if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+""+"]")
+    itemlist.append( Item(channel=__channel__, action="list_my_playlist" , title=">> Pagina Siguiente", url=url_pag_sig, plot=item.plot))
+   
     return itemlist
 
 
-###############################################################################################################################
-#                                   EXTRAE EL LINK DEL PLAYLIST Y LO REPRODUCE                                                #
-###############################################################################################################################
+#################################################################################################################
+#                                EXTRAE EL LINK DEL PLAYLIST Y LO REPRODUCE                                     #
+#################################################################################################################
 
-#################################################################################################################################    
 
 def playlist_play(item):
     logger.info("[goear.py] playlist_play")
