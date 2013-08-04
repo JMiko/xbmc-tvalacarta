@@ -409,41 +409,44 @@ def limpia_nombre_excepto_2(s):
 
 def getfilefromtitle(url,title):
     # Imprime en el log lo que va a descartar
+    logger.info("[downloadtools.py] getfilefromtitle: title="+title )
     logger.info("[downloadtools.py] getfilefromtitle: url="+url )
     #logger.info("[downloadtools.py] downloadtitle: title="+urllib.quote_plus( title ))
     plataforma = config.get_system_platform();
     logger.info("[downloadtools.py] getfilefromtitle: plataforma="+plataforma)
     
     #nombrefichero = xbmc.makeLegalFilename(title + url[-4:])
+    import scrapertools
     if plataforma=="xbox":
-        nombrefichero = title[:38] + url[-4:]
+        nombrefichero = title[:38] + scrapertools.get_filename_from_url(url)[-4:]
         nombrefichero = limpia_nombre_excepto_1(nombrefichero)
     else:
-        nombrefichero = title + url[-4:]
-        if "videobb" in url or "videozer" in url:
+        nombrefichero = title + scrapertools.get_filename_from_url(url)[-4:]
+        logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
+        if "videobb" in url or "videozer" in url or "putlocker" in url:
             nombrefichero = title + ".flv"
         if "videobam" in url:
             nombrefichero = title+"."+url.rsplit(".",1)[1][0:3]
+        if "dibujos.tv" in url:
+            nombrefichero = title + ".mp4"
         if "filenium" in url:
             # Content-Disposition	filename="filenium_El.Gato.con.Botas.TSScreener.Latino.avi"
             import scrapertools
             content_disposition_header = scrapertools.get_header_from_response(url,header_to_get="Content-Disposition")
             logger.info("content_disposition="+content_disposition_header)
             partes=content_disposition_header.split("=")
-            nombrefichero = title + partes[1][-5:-1]
+            if len(partes)<=1:
+                raise Exception('filenium', 'no existe')
+                
+            extension = partes[1][-5:-1]
+            nombrefichero = title + extension
+        logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 
         nombrefichero = limpia_nombre_caracteres_especiales(nombrefichero)
 
     logger.info("[downloadtools.py] getfilefromtitle: nombrefichero=%s" % nombrefichero)
 
-    try:
-        fullpath = config.get_temp_file( nombrefichero )
-        f = open(fullpath, 'wb')
-        f.close()
-        fullpath = os.path.join( config.get_setting("downloadpath") , nombrefichero )
-    except:
-        fullpath = os.path.join( config.get_setting("downloadpath") , limpia_nombre_excepto_1(nombrefichero) )
-        
+    fullpath = os.path.join( config.get_setting("downloadpath") , nombrefichero )
     logger.info("[downloadtools.py] getfilefromtitle: fullpath=%s" % fullpath)
     
     return fullpath
@@ -452,7 +455,53 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
-def downloadfile(url,nombrefichero,headers=[],silent=False):
+def downloadbest(video_urls,title,continuar=False):
+    
+    # Le da la vuelta, para poner el de más calidad primero ( list() es para que haga una copia )
+    invertida = list(video_urls)
+    invertida.reverse()
+    
+    for elemento in invertida:
+        videotitle = elemento[0]
+        url = elemento[1]
+        logger.info("[downloadtools] Descargando opción "+title+" "+url)
+        
+        # Calcula el fichero donde debe grabar
+        try:
+            fullpath = getfilefromtitle(url,title.strip())
+        # Si falla, es porque la URL no vale para nada
+        except:
+            continue
+        
+        # Descarga
+        try:
+            ret = downloadfile(url,fullpath,continuar=continuar)
+        # Llegados a este punto, normalmente es un timeout
+        except urllib2.URLError, e:
+            ret = -2
+        
+        # El usuario ha cancelado la descarga
+        if ret==-1:
+            return -1
+        else:
+            # El fichero ni siquiera existe
+            if not os.path.exists(fullpath):
+                logger.info("[downoadtools] -> No ha descargado nada, probando con la siguiente opción si existe")
+            # El fichero existe
+            else:
+                tamanyo = os.path.getsize(fullpath)
+                
+                # Tiene tamaño 0
+                if tamanyo==0:
+                    logger.info("[downoadtools] -> Descargado un fichero con tamaño 0, probando con la siguiente opción si existe")
+                    os.remove(fullpath)
+                else:
+                    logger.info("[downoadtools] -> Descargado un fichero con tamaño %d, lo da por bueno" % tamanyo)
+                    return 0
+    
+    return -2
+    
+def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
     logger.info("[downloadtools.py] downloadfile: url="+url)
     logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
 
@@ -461,7 +510,7 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
         try:
             import xbmcgui
         except:
-            silent=False
+            silent=True
         
         # antes
         #f=open(nombrefichero,"wb")
@@ -472,16 +521,34 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             pass
         logger.info("[downloadtools.py] downloadfile: nombrefichero="+nombrefichero)
     
-        # despues
-        if os.path.exists(nombrefichero):
+        # El fichero existe y se quiere continuar
+        if os.path.exists(nombrefichero) and continuar:
+            #try:
+            #    import xbmcvfs
+            #    f = xbmcvfs.File(nombrefichero)
+            #    existSize = f.size(nombrefichero)
+            #except:
             f = open(nombrefichero, 'r+b')
             existSize = os.path.getsize(nombrefichero)
+            
             logger.info("[downloadtools.py] downloadfile: el fichero existe, size=%d" % existSize)
             grabado = existSize
             f.seek(existSize)
+
+        # el fichero ya existe y no se quiere continuar, se aborta
+        elif os.path.exists(nombrefichero) and not continuar:
+            logger.info("[downloadtools.py] downloadfile: el fichero existe, no se descarga de nuevo")
+            return
+
+        # el fichero no existe
         else:
             existSize = 0
             logger.info("[downloadtools.py] downloadfile: el fichero no existe")
+            
+            #try:
+            #    import xbmcvfs
+            #    f = xbmcvfs.File(nombrefichero,"w")
+            #except:
             f = open(nombrefichero, 'wb')
             grabado = 0
     
@@ -510,14 +577,14 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             for additional_header in additional_headers:
                 logger.info("[downloadtools.py] additional_header: "+additional_header)
                 name = re.findall( "(.*?)=.*?" , additional_header )[0]
-                value = urllib.unquote(re.findall( ".*?=(.*?)$" , additional_header )[0])
+                value = urllib.unquote_plus(re.findall( ".*?=(.*?)$" , additional_header )[0])
                 headers.append( [ name,value ] )
     
             url = url.split("|")[0]
             logger.info("[downloadtools.py] downloadfile: url="+url)
     
         # Timeout del socket a 60 segundos
-        socket.setdefaulttimeout(10)
+        socket.setdefaulttimeout(60)
     
         h=urllib2.HTTPHandler(debuglevel=0)
         request = urllib2.Request(url)
@@ -567,6 +634,10 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
         while len(bloqueleido)>0:
             try:
                 # Escribe el bloque leido
+                #try:
+                #    import xbmcvfs
+                #    f.write( bloqueleido )
+                #except:
                 f.write(bloqueleido)
                 grabado = grabado + len(bloqueleido)
                 percent = int(float(grabado)*100/float(totalfichero))
@@ -618,9 +689,15 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
                     return -2
     
             except:
-                logger.info("ERROR en la descarga del fichero")
-                for line in sys.exc_info():
-                    logger.error( "%s" % line )
+                import traceback,sys
+                from pprint import pprint
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+                for line in lines:
+                    line_splits = line.split("\n")
+                    for line_split in line_splits:
+                        logger.error(line_split)
+
                 f.close()
                 if not silent:
                     progreso.close()
@@ -635,8 +712,20 @@ def downloadfile(url,nombrefichero,headers=[],silent=False):
             import xbmcgui
             advertencia = xbmcgui.Dialog()
             resultado = advertencia.ok( "No puedes descargar ese vídeo","Las descargas en RTMP aún no","están soportadas")
+        else:
+            import traceback,sys
+            from pprint import pprint
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            for line in lines:
+                line_splits = line.split("\n")
+                for line_split in line_splits:
+                    logger.error(line_split)
 
-    f.close()
+    try:
+        f.close()
+    except:
+        pass
     if not silent:
         progreso.close()
 
