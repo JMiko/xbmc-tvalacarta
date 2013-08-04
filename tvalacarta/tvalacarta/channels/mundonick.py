@@ -183,3 +183,21 @@ def get_video_url_internal( page_url):
     #logger.info("swap: " + swap[0])
 
     return swap
+
+def test():
+
+    # Al entrar sale una lista de programas
+    mainlist_items = mainlist(Item())
+    for mainlist_item in mainlist_items:
+        programas_items = programas(mainlist_item)
+
+        if len(programas_items)==0:
+            print "La categoria '"+mainlist_item.title+"' no devuelve programas"
+            return False
+
+    programas_items = programas(mainlist_items[-1])
+    episodios_items = episodios(programas_items[0])
+    if len(episodios_items)==0:
+        print "El programa '"+programas_items[0].title+"' no devuelve episodios"
+
+    return True

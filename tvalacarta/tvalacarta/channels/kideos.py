@@ -146,3 +146,18 @@ def play(item):
     itemlist.append(item)
     
     return itemlist
+
+def test():
+
+    # Al entrar sale una lista de programas
+    programas_items = mainlist(Item())
+    if len(programas_items)==0:
+        print "No devuelve programas"
+        return False
+
+    videos_items = episodios(programas_items[0])
+    if len(videos_items)==1:
+        print "No devuelve videos en "+programas_items[0].title
+        return False
+
+    return True
