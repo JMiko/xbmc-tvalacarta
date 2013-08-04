@@ -5,7 +5,6 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import string,re, datetime, time, math, sys, base64
-from core import decrypt21
 
 class AES:
     BIT_KEY_128 = 128
