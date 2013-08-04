@@ -79,10 +79,13 @@ def playlist(item):
 
     itemlist = []
     for video in videos['feed']['entry']:
-        scrapedtitle = video['title']['$t'].encode("utf8","ignore")
-        scrapedurl = video['media$group']['media$player']['url']
-        scrapedthumbnail = video['media$group']['media$thumbnail'][1]['url']
-        itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="play", server="youtube" , url=scrapedurl, thumbnail=scrapedthumbnail, folder=False) )
+        try:
+            scrapedtitle = video['title']['$t'].encode("utf8","ignore")
+            scrapedurl = video['media$group']['media$player']['url']
+            scrapedthumbnail = video['media$group']['media$thumbnail'][1]['url']
+            itemlist.append( Item(channel=__channel__, title=scrapedtitle , action="play", server="youtube" , url=scrapedurl, thumbnail=scrapedthumbnail, folder=False) )
+        except:
+            pass
 
     for link in videos['feed']['link']:
         if (link['rel'] == 'next'):
@@ -90,3 +93,18 @@ def playlist(item):
             itemlist.append( Item(channel=__channel__, action="playlist", title="!Página siguiente" , url=scrapedurl, folder=True) ) 
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    if len(items)==0:
+        print "No hay programas"
+        return False
+
+    if len(playlist(items[0]))==0:
+        print "No hay videos en el primer programa"
+        return False
+
+    return True

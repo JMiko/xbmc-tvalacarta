@@ -90,3 +90,18 @@ def reproducir(item):
     itemlist = [Item(channel=CHANNELNAME, title=item.title, action="play", url=iurl, thumbnail=item.thumbnail, folder=False)]
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    # Todas las opciones tienen que tener algo
+    items = mainlist(Item())
+    for item in items:
+        if item.title!="Videos más vistos":
+            exec "itemlist="+item.action+"(item)"
+        
+            if len(itemlist)==0:
+                print "La sección '"+item.title+"' no devuelve videos"
+                return False
+
+    return True

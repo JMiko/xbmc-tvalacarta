@@ -175,3 +175,23 @@ def play(item):
         itemlist.append( Item(channel=CHANNELNAME, title=item.title , server = "directo" , action="play" , url=url, thumbnail=item.thumbnail, folder=False) )
 
     return itemlist
+
+def test():
+
+    # Al entrar sale una lista de categorias
+    categorias_items = mainlist(Item())
+    if len(categorias_items)==0:
+        print "No devuelve categorias"
+        return False
+
+    programas_items = programas(categorias_items[-1])
+    if len(programas_items)==0:
+        print "No devuelve programas en "+categorias_items[0]
+        return False
+
+    episodios_items = episodios(programas_items[0])
+    if len(episodios_items)==1:
+        print "No devuelve videos en "+programas_items[0].title
+        return False
+
+    return True

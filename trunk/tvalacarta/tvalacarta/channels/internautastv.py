@@ -157,3 +157,14 @@ def detail(item):
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, folder=False) )
 
     return itemlist
+
+def test():
+
+    # Al entrar sale una lista de programas
+    mainlist_items = mainlist(Item())
+    videos_items = ultimosvideos(mainlist_items[0])
+    if len(videos_items)==0:
+        print "No devuelve últimos videos"
+        return False
+
+    return True

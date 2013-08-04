@@ -94,3 +94,19 @@ def videos(item):
             itemlist.append( Item(channel=__channel__, action="videos", title="!Página siguiente" , url=scrapedurl, folder=True) ) 
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+
+    mainlist_items = mainlist(Item())
+    playlists_items = playlists(mainlist_items[0])
+    if len(playlists_items)==0:
+        print "No hay playlists"
+        return False
+
+    items_videos = videos(playlists_items[0])
+    if len(items_videos)==0:
+        print "No hay videos en la primera playlist"
+        return False
+
+    return True

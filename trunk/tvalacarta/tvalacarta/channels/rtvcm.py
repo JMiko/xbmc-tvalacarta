@@ -20,7 +20,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[acbtv.py] mainlist")
+    logger.info("tvalacarta.rtvcm.mainlist")
 
     itemlist = []
 
@@ -42,7 +42,7 @@ def mainlist(item):
     return itemlist
 
 def programas(item):
-    logger.info("[acbtv.py] programas")
+    logger.info("tvalacarta.rtvcm.programas")
 
     itemlist = []
 
@@ -84,7 +84,7 @@ def programas(item):
     return itemlist
 
 def episodios(item):
-    logger.info("[acbtv.py] episodios")
+    logger.info("tvalacarta.rtvcm.episodios")
 
     itemlist = []
 
@@ -103,3 +103,23 @@ def episodios(item):
         itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="play" , server="directo", show = item.title , folder=False) )
 
     return itemlist
+
+def test():
+
+    # Al entrar sale una lista de categorias
+    categorias_items = mainlist(Item())
+    if len(categorias_items)==0:
+        print "No devuelve categorias"
+        return False
+
+    programas_items = programas(categorias_items[0])
+    if len(programas_items)==0:
+        print "No devuelve programas en "+categorias_items[0]
+        return False
+
+    episodios_items = episodios(programas_items[0])
+    if len(episodios_items)==0:
+        print "No devuelve videos en "+programas_items[0].title
+        return False
+
+    return True
