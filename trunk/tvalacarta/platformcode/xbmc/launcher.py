@@ -200,61 +200,6 @@ def run():
                     # Obtiene el listado desde el que se llamó
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
-                elif action.startswith("download_all_episodes"):
-                    logger.info("[launcher.py] download_all_episodes")
-                    import xbmcgui
-                
-                    # Obtiene el listado desde el que se llamó
-                    print action
-                    action = action.split("##")[1]
-                    exec "itemlist = channel."+action+"(item)"
-
-                    # Progreso
-                    pDialog = xbmcgui.DialogProgress()
-                    ret = pDialog.create('plugin', 'Añadiendo episodios...')
-                    pDialog.update(0, 'Añadiendo episodio...')
-                    totalepisodes = len(itemlist)
-                    logger.info ("[launcher.py] Total Episodios:"+str(totalepisodes))
-                    i = 0
-                    errores = 0
-                    nuevos = 0
-
-                    from core import descargas
-
-                    for item in itemlist:
-                        i = i + 1
-                        pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',item.title)
-                        if (pDialog.iscanceled()):
-                            return
-                
-                        try:
-                            #(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="strm",pedirnombre=True):
-                            # Añade solo los de action "play" -> los reproducibles
-                            if item.action=="play":
-                                descargas.savebookmark(titulo=item.show+" - "+item.title,url=item.url,thumbnail=item.thumbnail,server=item.server,plot=item.plot,fulltitle=item.show+" - "+item.title)
-                                nuevos = nuevos + 1
-                        except IOError:
-                            import sys
-                            for line in sys.exc_info():
-                                logger.error( "%s" % line )
-                            logger.info("[launcher.py]Error al grabar el archivo "+item.title)
-                            errores = errores + 1
-                        
-                    pDialog.close()
-                    
-                    # Actualizacion de la biblioteca
-                    itemlist=[]
-                    if errores > 0:
-                        itemlist.append(Item(title="ERROR, la serie NO se ha añadido a la lista de descargas o lo ha hecho incompleta"))
-                        logger.info ("[launcher.py] No se pudo añadir "+str(errores)+" episodios")
-                    else:
-                        itemlist.append(Item(title="La serie se ha añadido a la lista de descargas"))
-                        logger.info ("[launcher.py] Ningún error al añadir "+str(errores)+" episodios")
-                    
-                    # FIXME:jesus Comentado porque no funciona bien en todas las versiones de XBMC
-                    #library.update(totalepisodes,errores,nuevos)
-                    xbmctools.renderItems(itemlist, params, url, category)
-                    
                 elif action=="add_serie_to_library":
                     logger.info("[launcher.py] add_serie_to_library")
                     from platformcode.xbmc import library
@@ -319,6 +264,9 @@ def run():
                         f.write(contenido)
                     f.write(item.show+","+item.url+","+item.channel+"\n")
                     f.close();
+
+                elif action=="download_all_episodes":
+                    download_all_episodes(item,channel)
 
                 elif action=="search":
                     logger.info("[launcher.py] search")
@@ -505,3 +453,130 @@ def extract_parameters():
             show = ""
 
     return params, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password
+
+def download_all_episodes(item,channel,first_episode=""):
+    logger.info("[launcher.py] download_all_episodes, show="+item.show)
+    show_title = item.show
+
+    # Obtiene el listado desde el que se llamó
+    action = item.extra
+
+    # Esta marca es porque el item tiene algo más aparte en el atributo "extra"
+    if "###" in item.extra:
+        action = item.extra.split("###")[0]
+        item.extra = item.extra.split("###")[1]
+
+    exec "episode_itemlist = channel."+action+"(item)"
+    from servers import servertools
+    from core import downloadtools
+    from core import scrapertools
+
+    best_server = "streamcloud"
+    worst_server = "moevideos"
+
+    # Para cada episodio
+    if first_episode=="":
+        empezar = True
+    else:
+        empezar = False
+
+    for episode_item in episode_itemlist:
+        logger.info("[launcher.py] download_all_episodes, episode="+episode_item.title)
+        try:
+            episode_title = scrapertools.get_match(episode_item.title,"(\d+x\d+)")
+        except:
+            episode_title = episode_item.title
+        logger.info("[launcher.py] download_all_episodes, episode="+episode_title)
+
+        if first_episode!="" and episode_title==first_episode:
+            empezar = True
+
+        if not empezar:
+            continue
+
+        # Extrae los mirrors
+        mirrors_itemlist = [episode_item] #channel.findvideos(episode_item)
+
+        descargado = False
+
+        new_mirror_itemlist_1 = []
+        new_mirror_itemlist_2 = []
+        new_mirror_itemlist_3 = []
+        new_mirror_itemlist_4 = []
+        new_mirror_itemlist_5 = []
+        new_mirror_itemlist_6 = []
+
+        for mirror_item in mirrors_itemlist:
+            
+            # Si está en español va al principio, si no va al final
+            if "(Español)" in mirror_item.title:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_1.append(mirror_item)
+                else:
+                    new_mirror_itemlist_2.append(mirror_item)
+            elif "(VOS)" in mirror_item.title:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_3.append(mirror_item)
+                else:
+                    new_mirror_itemlist_4.append(mirror_item)
+            else:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_5.append(mirror_item)
+                else:
+                    new_mirror_itemlist_6.append(mirror_item)
+
+        mirrors_itemlist = new_mirror_itemlist_1 + new_mirror_itemlist_2 + new_mirror_itemlist_3 + new_mirror_itemlist_4 + new_mirror_itemlist_5 + new_mirror_itemlist_6
+
+        for mirror_item in mirrors_itemlist:
+            logger.info("[launcher.py] download_all_episodes, mirror="+mirror_item.title)
+
+            if "(Español)" in mirror_item.title:
+                idioma=" (Español)"
+            elif "(VOS)" in mirror_item.title:
+                idioma=" (VOS)"
+            elif "(VO)" in mirror_item.title:
+                idioma=" (VO)"
+            else:
+                idioma=""
+            logger.info("[launcher.py] download_all_episodes, downloading mirror")
+
+            if hasattr(channel, 'play'):
+                video_items = channel.play(mirror_item)
+            else:
+                video_items = [mirror_item]
+
+            if len(video_items)>0:
+                video_item = video_items[0]
+
+                # Comprueba que esté disponible
+                video_urls, puedes, motivo = servertools.resolve_video_urls_for_playing( video_item.server , video_item.url , video_password="" , muestra_dialogo=False)
+
+                # Lo añade a la lista de descargas
+                if puedes:
+                    logger.info("[launcher.py] download_all_episodes, downloading mirror started...")
+                    # El vídeo de más calidad es el último
+                    mediaurl = video_urls[len(video_urls)-1][1]
+                    devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+idioma+" ["+video_item.server+"]",continuar=False)
+
+                    if devuelve==0:
+                        logger.info("[launcher.py] download_all_episodes, download ok")
+                        descargado = True
+                        break
+                    elif devuelve==-1:
+                        try:
+                            import xbmcgui
+                            advertencia = xbmcgui.Dialog()
+                            resultado = advertencia.ok("plugin" , "Descarga abortada")
+                        except:
+                            pass
+                        return
+                    else:
+                        logger.info("[launcher.py] download_all_episodes, download error, try another mirror")
+                        break
+
+                else:
+                    logger.info("[launcher.py] download_all_episodes, downloading mirror not available... trying next")
+
+        if not descargado:
+            logger.info("[launcher.py] download_all_episodes, EPISODIO NO DESCARGADO "+episode_title)
+
