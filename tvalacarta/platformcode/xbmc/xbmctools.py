@@ -344,6 +344,12 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             wait_time = video_urls[seleccion][2]
         else:
             wait_time = 0
+
+        if len(video_urls[seleccion])>3:
+            use_download_and_play = (video_urls[seleccion][3]=="download_and_play")
+        else:
+            use_download_and_play = False
+
         view = True
 
     # Descargar
@@ -509,7 +515,18 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         #    setSubtitles()
     else:
         logger.info("b7")
-        if config.get_setting("player_mode")=="0":
+        if use_download_and_play or config.get_setting("player_mode")=="3":
+            logger.info("b11")
+            import download_and_play
+
+            # El canal exige usar download_and_play, pero el usuario no lo ha elegido -> le quitamos los diálogos
+            if use_download_and_play and config.get_setting("player_mode")!="3":
+                download_and_play.download_and_play( mediaurl , "download_and_play.tmp" , config.get_setting("downloadpath") , show_dialog=False )
+            else:
+                download_and_play.download_and_play( mediaurl , "download_and_play.tmp" , config.get_setting("downloadpath") )
+            return
+
+        elif config.get_setting("player_mode")=="0":
             logger.info("b8")
             # Añadimos el listitem a una lista de reproducción (playlist)
             playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
