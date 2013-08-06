@@ -97,7 +97,7 @@ def lista_peliculas(item):
         Genre = pelicula['Genre']
         plot = pelicula['Description'].encode("utf-8")
         Mpaa = pelicula['Rating']
-        itemlist.append( Item(channel=__channel__, action="lista_videos", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="lista_videos", title=title , url=url , thumbnail=thumbnail , plot=plot , show=title, extra=item.extra , folder=True) )
 
     return itemlist
 
@@ -114,21 +114,30 @@ def lista_videos(item):
     PlaylistList = folder['PlaylistList']
     PlaylistList = [playlist for playlist in PlaylistList]
     #playlist = PlaylistList[0]
+    count = 0
     for playlist in PlaylistList:
         MediaList = playlist['MediaList']
         MediaList = [media for media in MediaList]
-        count = 0
-        for item in MediaList:
-            title = item['Title'].encode("utf-8")
-            HackUrl = item['Thumbnail_Wide']
+        for item2 in MediaList:
+            title = item2['Title'].encode("utf-8")
+            if item.extra=="television":
+                count = count + 1
+                numero = str(count)
+                if count<=9:
+                    numero = "0"+numero
+                title = numero + " " + title
+            HackUrl = item2['Thumbnail_Wide']
             Path = re.compile('http:\\/\\/.+?\/(.+?)_[a-zA-Z0-9]+').findall(HackUrl)[0]
             url = 'http://media-es-am.crackle.com/%s_480p.mp4' % Path
-            thumbnail = item['Thumbnail_Large208x156']
-            Genre = item['Genre']
-            plot = item['Description'].encode("utf-8")
-            Mpaa = item['Rating']
-            Duration = item['Duration']
-            itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+            thumbnail = item2['Thumbnail_Large208x156']
+            Genre = item2['Genre']
+            plot = item2['Description'].encode("utf-8")
+            Mpaa = item2['Rating']
+            Duration = item2['Duration']
+            itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , show=item.show, folder=True) )
+
+    if item.extra=="television" and (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="lista_videos", show=item.show, folder=False))
 
     return itemlist
 
