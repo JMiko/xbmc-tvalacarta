@@ -142,7 +142,7 @@ def episodios(item):
         if (DEBUG): logger.info("scraped title=["+scrapedtitle+"], url=["+scrapedurl+"], page=["+scrapedpage+"] thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="Directo", page=scrapedpage, url=scrapedurl, thumbnail=scrapedthumbnail, fanart=item.thumbnail, show=item.show , plot=scrapedplot , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="directo", page=scrapedpage, url=scrapedurl, thumbnail=scrapedthumbnail, fanart=item.thumbnail, show=item.show , plot=scrapedplot , folder=False) )
 
     # Ahora extrae el argumento y la url del vídeo
     dataplaylist = scrapertools.cachePage(scrapedurl)
@@ -169,8 +169,10 @@ def episodios(item):
         itemlist.extend(episodios(item))
 
     from core import config
-    if config.get_platform().startswith("xbmc"):
-        itemlist.append( Item(channel=item.channel, title=">> Añadir la serie completa a la lista de descarga", url=item.url, action="download_all_episodes##episodios", show=item.show) )
+    #if config.get_platform().startswith("xbmc"):
+    #    itemlist.append( Item(channel=item.channel, title=">> Añadir la serie completa a la lista de descarga", url=item.url, action="download_all_episodes##episodios", show=item.show) )
+    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="episodios", show=item.show, folder=False))
 
     return itemlist
 

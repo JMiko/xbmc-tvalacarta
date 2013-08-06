@@ -556,7 +556,10 @@ def download_all_episodes(item,channel,first_episode=""):
                     logger.info("[launcher.py] download_all_episodes, downloading mirror started...")
                     # El vídeo de más calidad es el último
                     mediaurl = video_urls[len(video_urls)-1][1]
-                    devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+idioma+" ["+video_item.server+"]",continuar=False)
+                    if video_item.server!="directo":
+                        devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+idioma+" ["+video_item.server+"]",continuar=False)
+                    else:
+                        devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+idioma+" ["+item.channel+"]",continuar=False)
 
                     if devuelve==0:
                         logger.info("[launcher.py] download_all_episodes, download ok")
