@@ -274,11 +274,12 @@ def findvideos(item):
     patron  = '<tr[^<]+'
     patron += '<td class="tdidioma"><span class="([^"]+)".*?'
     patron += '<td class="tdservidor"><img src="([^"]+)"[^>]+>([^<]+)</td[^<]+'
-    patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" rel="nofollow" target="_blank" title="[^"]+" href="([^"]+)"'
+    # patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" data-servidor="([^"]+)" rel="nofollow" target="_blank" title="[^"]+" href="([^"]+)"'
+    patron += '<td class="tdenlace"><a class="btn btn-mini enlace_link" data-servidor="([^"]+)" rel="nofollow" target="_blank" title="[^"]+" href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for idiomas,scrapedthumbnail,servidor,scrapedurl in matches:
+    for idiomas,scrapedthumbnail,servidor,dataservidor,scrapedurl in matches:
         url = urlparse.urljoin(item.url,scrapedurl)
         title = "Ver en "+scrapertools.entityunescape(servidor).strip()
         plot = ""
