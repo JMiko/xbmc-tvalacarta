@@ -30,9 +30,9 @@ def mainlist(item):
     logger.info("[moviezet.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.moviezet.com/movies/"))
-    itemlist.append( Item(channel=__channel__, title="Series"     , action="series",    url="http://www.moviezet.com/shows/?page_id=2853"))
-    itemlist.append( Item(channel=__channel__, title="Buscar"   , action="search", url="http://www.moviezet.com/?s="))
+    itemlist.append( Item(channel=__channel__, title="Películas"  , action="peliculas", url="http://www.moviezet.tv/movies/"))
+    itemlist.append( Item(channel=__channel__, title="Series"     , action="series",    url="http://www.moviezet.tv/shows/?page_id=2853"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"   , action="search", url="http://www.moviezet.tv/?s="))
     
     return itemlist
 
@@ -40,12 +40,12 @@ def peliculas(item):
     logger.info("[moviezet.py] peliculas")
     itemlist = []
      
-    itemlist.append( Item(channel=__channel__, title="Últimas películas"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=date&order=desc"))
-    itemlist.append( Item(channel=__channel__, title="Más Populares"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=__channel__, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=__channel__, title="Generos"  , action="generos", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_genre"))
-    itemlist.append( Item(channel=__channel__, title="Por Año"  , action="novedades", url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
-    itemlist.append( Item(channel=__channel__, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.com/category/movies/?cat=1,-618&orderby=title&order=asc"))
+    itemlist.append( Item(channel=__channel__, title="Últimas películas"  , action="novedades", url="http://www.moviezet.tv/category/movies/?cat=1,-618&orderby=date&order=desc"))
+    itemlist.append( Item(channel=__channel__, title="Más Populares"     , action="novedades",    url="http://www.moviezet.tv/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Mejores Peliculas"     , action="novedades",    url="http://www.moviezet.tv/category/movies/?cat=1,-618&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Generos"  , action="generos", url="http://www.moviezet.tv/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_genre"))
+    itemlist.append( Item(channel=__channel__, title="Por Año"  , action="novedades", url="http://www.moviezet.tv/category/movies/?cat=1,-618&orderby=meta_value&order=asc&meta_key=movie_year"))
+    itemlist.append( Item(channel=__channel__, title="Lista Completa"     , action="novedades",    url="http://www.moviezet.tv/category/movies/?cat=1,-618&orderby=title&order=asc"))
 
     return itemlist
 
@@ -53,22 +53,22 @@ def generos(item):
     logger.info("[moviezet.py] generos")
     itemlist = []
      
-    itemlist.append( Item(channel=__channel__, title="Accion"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Acci%C3%B3n"))
-    itemlist.append( Item(channel=__channel__, title="Animacion"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
-    itemlist.append( Item(channel=__channel__, title="Aventura"  , action="novedades", url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Aventura"))
-    itemlist.append( Item(channel=__channel__, title="Belica"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=B%C3%A9lica"))
-    itemlist.append( Item(channel=__channel__, title="Ciencia Ficcion"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Ciencia%20Ficci%C3%B3n"))
-    itemlist.append( Item(channel=__channel__, title="Comedia"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Comedia"))
-    itemlist.append( Item(channel=__channel__, title="Comedia Romantica"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Comedia%20Rom%C3%A1ntica"))
-    itemlist.append( Item(channel=__channel__, title="Crimen"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Crimen"))
-    itemlist.append( Item(channel=__channel__, title="Documental"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Documental"))
-    itemlist.append( Item(channel=__channel__, title="Drama"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Drama"))
-    itemlist.append( Item(channel=__channel__, title="Fantasia"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Fantas%C3%ADa"))
-    itemlist.append( Item(channel=__channel__, title="Musical"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Musical"))
-    itemlist.append( Item(channel=__channel__, title="Romance"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Romance"))
-    itemlist.append( Item(channel=__channel__, title="Suspense"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Suspenso"))
-    itemlist.append( Item(channel=__channel__, title="Terror"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Terror"))
-    itemlist.append( Item(channel=__channel__, title="Western"     , action="novedades",    url="http://www.moviezet.com/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Western"))
+    itemlist.append( Item(channel=__channel__, title="Accion"  , action="novedades", url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Acci%C3%B3n"))
+    itemlist.append( Item(channel=__channel__, title="Animacion"  , action="novedades", url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value_num&order=asc&meta_key=views"))
+    itemlist.append( Item(channel=__channel__, title="Aventura"  , action="novedades", url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Aventura"))
+    itemlist.append( Item(channel=__channel__, title="Belica"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=B%C3%A9lica"))
+    itemlist.append( Item(channel=__channel__, title="Ciencia Ficcion"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Ciencia%20Ficci%C3%B3n"))
+    itemlist.append( Item(channel=__channel__, title="Comedia"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Comedia"))
+    itemlist.append( Item(channel=__channel__, title="Comedia Romantica"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Comedia%20Rom%C3%A1ntica"))
+    itemlist.append( Item(channel=__channel__, title="Crimen"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Crimen"))
+    itemlist.append( Item(channel=__channel__, title="Documental"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Documental"))
+    itemlist.append( Item(channel=__channel__, title="Drama"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Drama"))
+    itemlist.append( Item(channel=__channel__, title="Fantasia"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Fantas%C3%ADa"))
+    itemlist.append( Item(channel=__channel__, title="Musical"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Musical"))
+    itemlist.append( Item(channel=__channel__, title="Romance"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Romance"))
+    itemlist.append( Item(channel=__channel__, title="Suspense"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Suspenso"))
+    itemlist.append( Item(channel=__channel__, title="Terror"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=asc&meta_key=movie_genre&meta_value=Terror"))
+    itemlist.append( Item(channel=__channel__, title="Western"     , action="novedades",    url="http://www.moviezet.tv/movies/?cat=1&orderby=meta_value&order=desc&meta_key=movie_genre&meta_value=Western"))
     
     return itemlist
 
@@ -81,7 +81,7 @@ def novedades(item):
     '''
     <td valign="top">
 
-    <a href="http://www.moviezet.com/movies/attack-the-block/" title="Ver Attack The Block Online"><img src="http://www.moviezet.com/wp-content/uploads/attackblock.jpg" alt="Ver Attack The Block Online" /></a>
+    <a href="http://www.moviezet.tv/movies/attack-the-block/" title="Ver Attack The Block Online"><img src="http://www.moviezet.tv/wp-content/uploads/attackblock.jpg" alt="Ver Attack The Block Online" /></a>
     '''
     patronvideos  = '<td valign="top">[^<]+<a href="(.*?)" title="(.*?)"[^<]<img src="(.*?)".*?</a>'    
     #patronvideos += "<td valign='top'><a href='([^']+)'>"
@@ -103,7 +103,7 @@ def novedades(item):
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
-    #<div class="pagination"><a href="http://www.moviezet.com/movies/page/2/?cat=1&orderby=date&order=desc" class="next">
+    #<div class="pagination"><a href="http://www.moviezet.tv/movies/page/2/?cat=1&orderby=date&order=desc" class="next">
     patronvideos  = '<div class="pagination"><a href="(.*?)" class="next">'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -158,7 +158,7 @@ def temporadas(item):
         temporada = scrapedtitle.replace("Temporada ","")
         scrapedtitle = match
         scrapedplot = ""
-        scrapedurl = "http://www.moviezet.com/shows/?page_id=2853&show="+(item.title.replace(" ","%20"))+"&season="+temporada
+        scrapedurl = "http://www.moviezet.tv/shows/?page_id=2853&show="+(item.title.replace(" ","%20"))+"&season="+temporada
         scrapedthumbnail = item.thumbnail
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], temporada=["+temporada+"] show="+item.show)
 
@@ -195,7 +195,7 @@ def episodios(item):
                 episodio = "0" + episodio
             scrapedtitle = temporada_item.title + "x" + episodio + " "+match[2].strip()
             scrapedplot = ""
-            scrapedurl = "http://www.moviezet.com/category/shows/?page_id=2853&show="+(item.show.replace(" ","%20"))+"&season="+id_temporada+"&episode="+match[1]
+            scrapedurl = "http://www.moviezet.tv/category/shows/?page_id=2853&show="+(item.show.replace(" ","%20"))+"&season="+id_temporada+"&episode="+match[1]
             scrapedthumbnail = item.thumbnail
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"] show="+item.show)
     
@@ -212,9 +212,9 @@ def findvideos(item):
     # True es Serie, False es Pelicula
     serieOpelicula = True
     code =""
-    if (item.url.startswith("http://www.moviezet.com/shows/")):
+    if (item.url.startswith("http://www.moviezet.tv/shows/")):
         data = scrapertools.cachePage(item.url)
-        #<a class="watch-show" href="http://www.moviezet.com/shows/dexter-pilot/">
+        #<a class="watch-show" href="http://www.moviezet.tv/shows/dexter-pilot/">
         patron = '<a class="watch-show" href="(.*?)">'
         matches = re.compile(patron,re.DOTALL).findall(data)
         if len(matches)>0:
@@ -249,7 +249,7 @@ def findvideos(item):
 
     # Subtitulos
     #http://www.moviezet.tv/files/s/sub/18962_ES.srt
-    #suburl = "http://www.moviezet.com/files/s/sub/"+code
+    #suburl = "http://www.moviezet.tv/files/s/sub/"+code
     suburl = "http://www.moviezet.tv/files/s/sub/"+code+"_ES.srt"
     logger.info("suburl="+suburl)
     
@@ -283,7 +283,7 @@ def search(item,texto):
     try:
         # La URL puede venir vacÃ­a, por ejemplo desde el buscador global
         if item.url=="":
-            item.url="http://www.moviezet.com/?s=Search.."
+            item.url="http://www.moviezet.tv/?s=Search.."
     
         # Reemplaza el texto en la cadena de bÃºsqueda
         item.url = item.url + texto
@@ -305,7 +305,7 @@ def listar(item):
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
     logger.info(data)
-    #<a href="http://www.moviezet.com/movies/terminator-salvation/" title="Ver Terminator: La Salvación Online"><img src="http://moviezet.com/wp-content/uploads/30.jpg" alt="Ver Terminator: La Salvación Online" /></a>
+    #<a href="http://www.moviezet.tv/movies/terminator-salvation/" title="Ver Terminator: La Salvación Online"><img src="http://moviezet.tv/wp-content/uploads/30.jpg" alt="Ver Terminator: La Salvación Online" /></a>
     patronvideos  = '<div class="movie-thumb">.*?<a href="(.*?)" title="(.*?)"[^<]<img src="(.*?)".*?</a>'
 
 
