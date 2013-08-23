@@ -62,7 +62,8 @@ def parse_items_from_m3u_list(data,category=NO_CATEGORY):
                 logger.info("url1="+url)
                 #url1=rtmp://$OPT:rtmp-raw=rtmp://212.7.206.71/live playpath=showstreamintvtoros2222?id=40786 swfUrl=http://www.ucaster.eu/static/scripts/eplayer.swf live=1 pageUrl=http://www.ucaster.eu/embedded/showstreamintvtoros2222/1/650/400 conn=S:OK --live
 
-                if url.startswith(("rtmp://", "rtmpt://", "rtmpe://", "rtmpte://", "rtmps://")):
+                #if url.startswith(("rtmp://", "rtmpt://", "rtmpe://", "rtmpte://", "rtmps://")):
+                if url.startswith("rtmp"):
                     url = url.replace("rtmp://$OPT:rtmp-raw=","")
                     logger.info("url2="+url)
                     #url2=rtmp://212.7.206.71/live playpath=showstreamintvtoros2222?id=40786 swfUrl=http://www.ucaster.eu/static/scripts/eplayer.swf live=1 pageUrl=http://www.ucaster.eu/embedded/showstreamintvtoros2222/1/650/400 conn=S:OK --live
