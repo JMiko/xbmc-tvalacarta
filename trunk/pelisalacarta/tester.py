@@ -22,7 +22,7 @@ def test_add_documaniatv_to_download_list():
     from core import descargas
     from pelisalacarta.channels import documaniatv as channel
     mainlist_items = channel.mainlist(Item())
-    mainlist_items[0].url="http://www.documaniatv.com/newvideos.html?&page=60"
+    mainlist_items[0].url="http://www.documaniatv.com/newvideos.html"
     pendientes = channel.novedades(mainlist_items[0])
     i = 0
     while True:

@@ -100,7 +100,7 @@ def search(item,texto):
     
     data = scrapertools.cache_page(url,post=post)
     
-    from pelisalacarta.channels import seriesyonkis
+    import seriesyonkis
     itemlist = seriesyonkis.getsearchresults(item, data, "findvideos")
     for item in itemlist:
         item.channel=__channel__
@@ -242,7 +242,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    from pelisalacarta.channels import seriesyonkis
+    import seriesyonkis
     return seriesyonkis.play(item)
 
 def listalfabetico(item):

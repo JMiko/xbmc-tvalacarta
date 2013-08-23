@@ -259,7 +259,7 @@ def findvideos(item):
         
         # Procesa línea por línea
         matches = re.compile('<tr>.*?</tr>', re.S).findall(data)
-        scrapertools.printMatches(matches)
+        if DEBUG: scrapertools.printMatches(matches)
 
         for match in matches:
             logger.info(match)
@@ -283,7 +283,8 @@ def findvideos(item):
                 subs = "Subs:" + info[3]
                 url = urlparse.urljoin(item.url,info[0])
                 scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-                itemlist.append( Item(channel=__channel__, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+                # El plot va vacío porque necesita menos memoria, y en realidad es el de la serie y no el del episodio :)
+                itemlist.append( Item(channel=__channel__, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot="", folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
     except:
         import sys
         for line in sys.exc_info():

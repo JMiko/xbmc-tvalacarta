@@ -56,6 +56,7 @@ def episodios(item):
     logger.info("[quierodibujosanimados.py] episodios")
 
     # Descarga la pagina
+
     data = scrapertools.cache_page(item.url)
     patron  = '<h2><a[^<]+</a></h2>[^<]+'
     patron += '<div class="titulo_inf">[^<]+'
@@ -64,7 +65,7 @@ def episodios(item):
     patron += '</div>[^<]+'
     patron += '</div>[^<]+'
     patron += '<div class="texto"[^<]+'
-    patron += '<div id="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img\s+alt="[^"]+"\s+src="([^"]+)"[^<]+</a></div>.*?'
+    patron += '<div class="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img\s+alt="[^"]+"\s+src="([^"]+)"[^<]+</a></div>.*?'
     patron += '<span class="">(.*?)</span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []

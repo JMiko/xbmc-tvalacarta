@@ -459,7 +459,9 @@ def downloadbest(video_urls,title,continuar=False):
     invertida = list(video_urls)
     invertida.reverse()
     
-    for videotitle,url in invertida:
+    for elemento in invertida:
+        videotitle = elemento[0]
+        url = elemento[1]
         logger.info("[downloadtools] Descargando opción "+title+" "+url)
         
         # Calcula el fichero donde debe grabar

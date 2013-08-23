@@ -181,7 +181,7 @@ def series(item):
         scrapedplot = plot
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie_with_plot"))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle, viewmode="movie_with_plot"))
 
     itemlist = sorted(itemlist, key=lambda item: item.title)
 
@@ -216,12 +216,27 @@ def episodios(item):
     
     for url,title in matches:
         scrapedtitle = scrapertools.htmlclean(title)
+
+        try:
+            episodio = scrapertools.get_match(scrapedtitle,"Capítulo\s+(\d+)")
+            titulo_limpio = re.compile("Capítulo\s+(\d+)\s+",re.DOTALL).sub("",scrapedtitle)
+            if len(episodio)==1:
+                scrapedtitle = "1x0"+episodio+" - "+titulo_limpio
+            else:
+                scrapedtitle = "1x"+episodio+" - "+titulo_limpio
+        except:
+            pass
+
         scrapedurl = urlparse.urljoin(item.url,url)
         #scrapedthumbnail = ""
         #scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie_with_plot"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show, viewmode="movie_with_plot"))
+
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+        itemlist.append( Item(channel=__channel__, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
+        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="episodios", show=item.show) )
 
     return itemlist
 

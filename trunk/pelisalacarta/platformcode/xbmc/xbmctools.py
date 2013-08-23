@@ -128,7 +128,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
     listitem.setInfo( "video", { "Title" : title, "FileName" : title, "Plot" : plot, "Duration" : duration, "Studio" : canal, "Genre" : category } )
 
     if fanart!="":
-        logger.info("fanart :%s" %fanart)
+        #logger.info("fanart :%s" %fanart)
         listitem.setProperty('fanart_image',fanart)
         xbmcplugin.setPluginFanart(pluginhandle, fanart)
 
@@ -824,7 +824,7 @@ def renderItems(itemlist, params, url, category, isPlayable='false'):
     
     if itemlist <> None:
         for item in itemlist:
-            logger.info("viewmode="+item.viewmode)
+            #logger.info("viewmode="+item.viewmode)
             if item.category == "":
                 item.category = category
                 
