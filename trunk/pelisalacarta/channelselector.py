@@ -10,12 +10,12 @@ DEBUG = True
 CHANNELNAME = "channelselector"
 
 def getmainlist():
-    logger.info("[channelselector.py] getmainlist")
+    logger.info("channelselector.getmainlist")
     itemlist = []
 
     # Obtiene el idioma, y el literal
     idioma = config.get_setting("languagefilter")
-    logger.info("[channelselector.py] idioma=%s" % idioma)
+    logger.info("channelselector.getmainlist idioma=%s" % idioma)
     langlistv = [config.get_localized_string(30025),config.get_localized_string(30026),config.get_localized_string(30027),config.get_localized_string(30028),config.get_localized_string(30029)]
     try:
         idiomav = langlistv[int(idioma)]
@@ -45,31 +45,31 @@ def getmainlist():
 
 # TODO: (3.1) Pasar el código específico de XBMC al laucher
 def mainlist(params,url,category):
-    logger.info("[channelselector.py] mainlist")
+    logger.info("channelselector.mainlist")
 
     # Verifica actualizaciones solo en el primer nivel
     if config.get_platform()!="boxee":
         try:
             from core import updater
         except ImportError:
-            logger.info("[channelselector.py] No disponible modulo actualizaciones")
+            logger.info("channelselector.mainlist No disponible modulo actualizaciones")
         else:
             if config.get_setting("updatecheck2") == "true":
-                logger.info("[channelselector.py] Verificar actualizaciones activado")
+                logger.info("channelselector.mainlist Verificar actualizaciones activado")
                 try:
                     updater.checkforupdates()
                 except:
                     import xbmcgui
                     dialog = xbmcgui.Dialog()
                     dialog.ok("No se puede conectar","No ha sido posible comprobar","si hay actualizaciones")
-                    logger.info("[channelselector.py] Fallo al verificar la actualización")
+                    logger.info("channelselector.mainlist Fallo al verificar la actualización")
                     pass
             else:
-                logger.info("[channelselector.py] Verificar actualizaciones desactivado")
+                logger.info("channelselector.mainlist Verificar actualizaciones desactivado")
 
     itemlist = getmainlist()
     for elemento in itemlist:
-        logger.info("[channelselector.py] item="+elemento.title)
+        logger.info("channelselector.mainlist item="+elemento.title)
         addfolder(elemento.title , elemento.channel , elemento.action , thumbnail=elemento.thumbnail, folder=elemento.folder)
 
     # Label (top-right)...
@@ -84,7 +84,7 @@ def mainlist(params,url,category):
         xbmc.executebuiltin("Container.SetViewMode(500)")
 
 def getchanneltypes():
-    logger.info("[channelselector.py] getchanneltypes")
+    logger.info("channelselector getchanneltypes")
     itemlist = []
     itemlist.append( Item( title=config.get_localized_string(30121) , channel="channelselector" , action="listchannels" , category="*"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"channelselector")))
     itemlist.append( Item( title=config.get_localized_string(30122) , channel="channelselector" , action="listchannels" , category="F"   , thumbnail=urlparse.urljoin(get_thumbnail_path(),"peliculas")))
@@ -98,7 +98,7 @@ def getchanneltypes():
     return itemlist
     
 def channeltypes(params,url,category):
-    logger.info("[channelselector.py] channeltypes")
+    logger.info("channelselector.mainlist channeltypes")
 
     lista = getchanneltypes()
     for item in lista:
@@ -116,7 +116,7 @@ def channeltypes(params,url,category):
         xbmc.executebuiltin("Container.SetViewMode(500)")
 
 def listchannels(params,url,category):
-    logger.info("[channelselector.py] listchannels")
+    logger.info("channelselector.listchannels")
 
     lista = filterchannels(category)
     for channel in lista:
@@ -158,10 +158,10 @@ def filterchannels(category):
     else:
         try:
             idioma = config.get_setting("languagefilter")
-            logger.info("[channelselector.py] idioma=%s" % idioma)
+            logger.info("channelselector.filterchannels idioma=%s" % idioma)
             langlistv = ["","ES","EN","IT","PT"]
             idiomav = langlistv[int(idioma)]
-            logger.info("[channelselector.py] idiomav=%s" % idiomav)
+            logger.info("channelselector.filterchannels idiomav=%s" % idiomav)
         except:
             idiomav=""
 
@@ -188,14 +188,12 @@ def channels_history_list():
     itemlist.append( Item( title="Malvin.tv (12/02/2013)"            , channel="malvin"          , language="ES"    , category="F,D"       , type="generic"  )) 
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PelisX (01/02/2013)"               , channel="pelisx"          , language="ES"    , category="F"       , type="generic"  )) # ZeDinis 01/02/2013
     itemlist.append( Item( title="Nukety (25/12/2012)"               , channel="nukety"          , language="ES"    , category="F,S"       , type="generic"  )) 
-    #itemlist.append( Item( title="Instreaming (IT) (27/11/2012)"     , channel="instreaming"          , language="IT"    , category="F,S"       , type="generic"  )) 
     itemlist.append( Item( title="Film per tutti (IT) (27/11/2012)"  , channel="filmpertutti"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     itemlist.append( Item( title="Watch Cartoon Online (23/11/2012)" , channel="watchcartoononline"   , language="EN" , category="F,S", type="generic" )) # jesus 23/11/2012
     itemlist.append( Item( title="Series Online TV (12/11/2012)"     , channel="seriesonlinetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Novelas de TV (12/11/2012)"        , channel="novelasdetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Quiero Dibujos Animados (12/11/2012)", channel="quierodibujosanimados", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
-    #itemlist.append( Item( title="peliculashd.pro (12/11/2012)"       , channel="peliculashdpro"       , language="ES" , category="F" , type="generic"  )) # jesus 12/11/2012
-    itemlist.append( Item( title="Cinemastreaming (IT) (5/11/2012)"  , channel="cinemastreaming"      , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
+    #itemlist.append( Item( title="Cinemastreaming (IT) (5/11/2012)"  , channel="cinemastreaming"      , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
     itemlist.append( Item( title="Peliculamos (IT) (5/11/2012)"      , channel="peliculamos"          , language="IT" , category="F,S,A" , type="generic"  )) # jesus 5/11/2012
     itemlist.append( Item( title="JKanime (15/10/2012)"              , channel="jkanime"              , language="ES" , category="A" , type="generic"  )) # jesus 15/10/2012
     itemlist.append( Item( title="Ver Telenovelas (15/10/2012)"      , channel="vertelenovelas"       , language="ES" , category="S" , type="generic"  )) # jesus 15/10/2012
@@ -215,7 +213,6 @@ def channels_history_list():
     itemlist.append( Item( title="Series ID (15/12/2011)"            , channel="seriesid"             , language="ES" , category="S,VOS" , type="generic"  )) # vcalvo 15/12/2011
     itemlist.append( Item( title="Bajui (14/12/2011)"                , channel="bajui"                , language="ES" , category="F,S,D,VOS", type="generic")) # vcalvo 14/12/2011
     itemlist.append( Item( title="Shurweb (14/12/2011)"              , channel="shurweb"              , language="ES" , category="F,S,D,A", type="generic")) # vcalvo 14/12/2011
-    #itemlist.append( Item( title="ShurHD (14/12/2011)"               , channel="shurhd"               , language="ES" , category="F" , type="generic"  )) # vcalvo 14/12/2011
     itemlist.append( Item( title="Justin.tv (12/12/2011)"            , channel="justintv"             , language=""   , category="G"       , type="generic"  )) # bandavi 12/12/2011
     itemlist.append( Item( title="Series.ly (19/11/2011)"            , channel="seriesly"             , language="ES" , category="S,A,VOS" , type="generic" )) # jesus/mrfloffy 19/11/2011
     itemlist.append( Item( title="Teledocumentales (19/10/2011)"     , channel="teledocumentales"     , language="ES" , category="D" , type="generic" )) # mrfloffy 19/10/2011
@@ -310,6 +307,7 @@ def channels_list():
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="PeliculasEroticas"     , channel="peliculaseroticas"    , language="ES" , category="F" , type="xbmc"  ))
     #itemlist.append( Item( title="peliculashd.pro"       , channel="peliculashdpro"       , language="ES" , category="F" , type="generic"  )) # jesus 12/11/2012
     itemlist.append( Item( title="Peliculasid"           , channel="peliculasid"          , language="ES"    , category="F,VOS"       , type="xbmc"  ))
+    itemlist.append( Item( title="PeliculasMX"           , channel="peliculasmx"          , language="ES"    , category="F"       , type="generic"  ))
     itemlist.append( Item( title="Peliculasyonkis"       , channel="peliculasyonkis_generico" , language="ES"    , category="F,VOS"   , type="generic" ))
     itemlist.append( Item( title="Pelis24"               , channel="pelis24"              , language="ES" , category="F,S,VOS"        , type="generic"  ))
     itemlist.append( Item( title="PelisPekes"            , channel="pelispekes"              , language="ES" , category="F"        , type="generic"  ))
