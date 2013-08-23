@@ -240,3 +240,19 @@ def findvideos(item):
         videoitem.title = "["+videoitem.server+"]"
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    submenu_items = submenu(mainlist_items[0])
+    listado_items = listado(submenu_items[0])
+    for listado_item in listado_items:
+        play_items = findvideos(listado_item)
+        
+        if len(play_items)>0:
+            return True
+
+    return False

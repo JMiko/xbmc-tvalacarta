@@ -184,3 +184,17 @@ def play(item):
 
     
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+    
+    # mainlist
+    mainlist_items = mainlist(Item())
+    peliculas_items = peliculas(mainlist_items[0])
+    play_items = play(peliculas_items[0])
+    
+    if len(play_items)>0:
+        return True
+
+    return False

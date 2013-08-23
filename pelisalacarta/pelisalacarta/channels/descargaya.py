@@ -97,8 +97,32 @@ def findvideos(item):
         partes = fichero.split("/")
         titulo = partes[ len(partes)-1 ]
         videoitem.title = titulo + " - [" + videoitem.server+"]"
+
+    # Busca safelinking
+    data = scrapertools.cachePage(item.url)
+    patron  = 'https\://safelinking.net/d/[a-z0-9]+'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for scrapedurl in matches:
+        url = scrapedurl
+        title = "Enlace en safelinking"
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+""+"]")
+        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , folder=True) )
         
-    return itemlist    
+    return itemlist
+
+def play(item):
+
+    if "safelinking" in item.url:
+        from servers import safelinking
+        new_url = safelinking.get_long_url(item.url)
+        itemlist = servertools.find_video_items(data=new_url)
+        item = itemlist[0]
+
+    itemlist = [item]
+
+    return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
@@ -108,13 +132,12 @@ def test():
     mainlist_items = mainlist(Item())
     
     # Si encuentra algún vídeo en la sección de series lo da por bueno
-    subforo_series_items = subforos(mainlist_items[1])
-    series_items = subforos(subforo_series_items[0])
-    bien = False
-    for serie_item in series_items:
+    subforo_series_items = subforos(mainlist_items[0])
+    temporadas_completas_items = subforos(subforo_series_items[0])
+
+    for serie_item in temporadas_completas_items:
         mirrors = findvideos( serie_item )
         if len(mirrors)>0:
-            bien = True
-            break
+            return True
 
-    return bien
+    return False

@@ -48,6 +48,7 @@ try:
                 logger.info("[library_service.py] Actualizando "+serie[0])
                 item = Item(url=serie[1], show=serie[0])
                 try:
+                    itemlist = []
                     if serie[2].strip()=='veranime':
                         from pelisalacarta.channels import veranime
                         itemlist = veranime.episodios(item)
@@ -59,7 +60,7 @@ try:
                         itemlist = shurweb.episodios(item)
                     if serie[2].strip()=='seriespepito':
                         from pelisalacarta.channels import seriespepito
-                        itemlist = seriespepito.episodelist(item)
+                        itemlist = seriespepito.episodios(item)
                     if serie[2].strip()=='seriesyonkis':
                         from pelisalacarta.channels import seriesyonkis
                         itemlist = seriesyonkis.episodios(item)
@@ -71,7 +72,10 @@ try:
                         itemlist = cuevana.episodios(item)
                     if serie[2].strip()=='animeflv':
                         from pelisalacarta.channels import animeflv
-                        itemlist = animeflv.serie(item)
+                        itemlist = animeflv.episodios(item)
+                    if serie[2].strip()=='animeid':
+                        from pelisalacarta.channels import animeid
+                        itemlist = animeid.episodios(item)
                     if serie[2].strip()=='moviezet':
                         from pelisalacarta.channels import moviezet
                         itemlist = moviezet.serie(item)
@@ -90,6 +94,7 @@ try:
                 itemlist=[]
 
             for item in itemlist:
+                #logger.info("item="+item.tostring())
                 try:
                     item.show=serie[0].strip()
                     library.savelibrary( titulo=item.title , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Series" , Serie=item.show , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )

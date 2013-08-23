@@ -155,11 +155,11 @@ def savebookmark(canal=CHANNELNAME,titulo="",url="",thumbnail="",server="",plot=
 
     # Genera el contenido
     filecontent = ""
-    filecontent = filecontent + urllib.quote_plus(downloadtools.limpia_nombre_excepto_1(titulo))+'\n'
+    filecontent = filecontent + urllib.quote_plus(titulo)+'\n'
     filecontent = filecontent + urllib.quote_plus(url)+'\n'
     filecontent = filecontent + urllib.quote_plus(thumbnail)+'\n'
     filecontent = filecontent + urllib.quote_plus(server)+'\n'
-    filecontent = filecontent + urllib.quote_plus(downloadtools.limpia_nombre_excepto_1(plot))+'\n'
+    filecontent = filecontent + urllib.quote_plus(plot)+'\n'
     filecontent = filecontent + urllib.quote_plus(fulltitle)+'\n'
     filecontent = filecontent + urllib.quote_plus(canal)+'\n'
 

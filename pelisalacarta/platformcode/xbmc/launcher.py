@@ -234,6 +234,7 @@ def run():
                     for item in itemlist:
                         i = i + 1
                         pDialog.update(i*100/totalepisodes, 'Añadiendo episodio...',item.title)
+                        logger.info("[launcher.py] add_serie_to_library, title="+item.title)
                         if (pDialog.iscanceled()):
                             return
                 
@@ -506,17 +507,18 @@ def download_all_episodes(item,channel,first_episode=""):
     if first_episode=="":
         empezar = True
     else:
-	empezar = False
+        empezar = False
+
     for episode_item in episode_itemlist:
         logger.info("[launcher.py] download_all_episodes, episode="+episode_item.title)
         episode_title = scrapertools.get_match(episode_item.title,"(\d+x\d+)")
-	logger.info("[launcher.py] download_all_episodes, episode="+episode_title)
+        logger.info("[launcher.py] download_all_episodes, episode="+episode_title)
 
-	if first_episode!="" and episode_title==first_episode:
-	    empezar = True
+        if first_episode!="" and episode_title==first_episode:
+            empezar = True
 
-	if not empezar:
-	    continue
+        if not empezar:
+            continue
 
         # Extrae los mirrors
         mirrors_itemlist = channel.findvideos(episode_item)
@@ -587,8 +589,12 @@ def download_all_episodes(item,channel,first_episode=""):
                         descargado = True
                         break
                     elif devuelve==-1:
-                        advertencia = xbmcgui.Dialog()
-                        resultado = advertencia.ok("plugin" , "Descarga abortada")
+                        try:
+                            import xbmcgui
+                            advertencia = xbmcgui.Dialog()
+                            resultado = advertencia.ok("plugin" , "Descarga abortada")
+                        except:
+                            pass
                         return
                     else:
                         logger.info("[launcher.py] download_all_episodes, download error, try another mirror")

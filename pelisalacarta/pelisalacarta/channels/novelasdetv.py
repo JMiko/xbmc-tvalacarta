@@ -75,8 +75,9 @@ def episodios(item):
     logger.info("[novelasdetv.py] episodios")
 
     # Descarga la pagina
+
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<section[^<]+<section class="redes-sociales".*?</section>(.*?)</section')
+    data = scrapertools.get_match(data,'<section class="redes-sociales".*?</section>(.*?)<aside')
     logger.info("data="+data)
 
     #<a href="http://www.novelasdetv.com/2012/11/escobar-el-patron-del-mal-capitulo-109.html" target="_blank">Escobar Capitulo 109 Online</a><br />

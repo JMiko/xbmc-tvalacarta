@@ -58,10 +58,19 @@ def ultimos(item):
     
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<div id="main"(.*?)</div[^<]+</div[^<]+</div[^<]+</div')
+    data = scrapertools.get_match(data,'<div id="main"(.*?)</ul>')
     
     # Extrae las entradas
-    patron  = '<div class="thumbnail"[^<]+<a href="([^"]+)"><img src="([^"]+)" title="([^"]+)"'
+    '''
+    <div class="thumbnail">
+    <a href="http://www.seriesid.tv/vicious-1x06/"><img pagespeed_high_res_src="http://1-ps.googleusercontent.com/h/www.seriesid.tv/wp-content/uploads/xVicious_Serie_de_TV-621455088-large1-166x250.jpg.pagespeed.ic.HS26zzzapg.jpg" title="Vicious 1x06 - Episode 6" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAD6AKYDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAApEAEBAAIBBAEDBAIDAAAAAAAAAQIRMQMSIUFRIjJxE0JhkQSBM6HB/8QAFwEBAQEBAAAAAAAAAAAAAAAAAAECA//EABoRAQEBAQEBAQAAAAAAAAAAAAABEQIxEkH/2gAMAwEAAhEDEQA/APMukVHQFNIqGlAAAAABUAAATSgIKaBE0uxUQAFNml0igAAoKAAAAAAAAgKCUXSCCKaBABBSKKACgLJcrqcgg7/o4z7rbf4S9LH9t/sTY4jWXTyx5nj5ZFAAAAAAAAQUBkARVRRQAB6Ojj24915rhOXouXnUGempNn6cXu0uWUnrkZZyxk12uHVx15k18t552WbmmMsu7C0WesIN9LDvz1/Y2YdPLP7Z/tu/4+c4srvr6e3HxE7de6rH082fSyw82eGHs1vxfMrz9Xp9l/i8I1K5gCmk2oCACKAKAAPT0/PTleZ16Oevp+RK73HG+bIz1bjqW2Nyf7cupjL5vTGWerjjJ49uMusbG+rda/Dj3boN7dv8b7svw88dellrP8jXseqZJnnMbrmrrG+bNsd0vU1q8e4rCd/1z/xOtd9K/leprHHxHHO3XN0isBAbAAQUAABUDuDYrp0MZ3+fjw49123MrLLPS4xenpuX6fM8OefX6evHmu+NnUwl+Xl6vQs6nicmJrjnncr5ZXOdudx+EBY3LpmNI3HswtuO4lme+Z/Tj0urZ9OjPr5TxMbtWa11tfLz55buvSZZ5ZVudK3Df7jE1nas+2kdIqKgAADUZa4Vnqs5fJovBOFYTTSGgduh1Ljbjzvhjrd/dvObvyy31Or+phJefYjhle7LuvNEvi6X1sWVqRSR1wxk81HS3HL7eeWsupcvTHUy3ndfhO2z+Wsc7W+nj3XddUwx7cf5XkQ8Xnyx2y8eGrqTScC7jNx17ZXK6m6zjds2NTpQEbIqKrn0lMftS8JhfpVG0AFTjIMuAc8p9Sw35JyI307vL8O29Y15+nfrdcrrp5KOeM8N4TeTM4dMJqflr8RrZcpjjv259bLtx1PbjJde9Mq67lk1d7bvDjlda03Mt4gZTcc8dy10YvKLPVE2MujRSJtpzTK+KY8RMuFx4EaEBVTYCM8WpOYuXKewXDxm65/Zk54/8jpn5wv4UZnl2jlh5re1omWMzynxGM8Z68N7YyqDnZY3079DN8r07zEG2MmmclEggy1rdqaJUs3zVRMr5ajGtVoRrYAAAM58bZtaz8YsA3v6pXbmPPb4jtLqbUMfpxX1/KY7y81qgzaxWmQZpj4rVjNQbnn2XhnDVXLwozsBBfKm00CZc7anDOXnxpYC72bUAQPQM58Mrn6ZBr4dpw4/Dr6BrZUlSqHpD0gF4Zq00gY8Jol1S3YAzQGlt+EWf9iprX5TTUNCJ5i72nBNg0JtMqDNu6gArr6cvTpOAanJUi1RLwzFvCYg1U9FPSDOSbWsgAAoqcCrLpZds4/d5W/IjSaTabBbWbRAAUBufaw1+wG4VJSqJeDEpigtZWoAy1GbyAADSKiKk5XZORUTYqAIACgAv7ULwDeHCsY1oEpCkAqKArF5atZAFgKogAAAioIIAKioAsRYCluhKBurEX0AnlUBFEBqCAqgAACIFAQAFRUBQAUogEVFARUARUBQAf/Z" onload="var elem=this;setTimeout(function(){elem.onload = null;elem.src=elem.getAttribute('pagespeed_high_res_src');}, 0);"></a>
+    <div class="caption">
+    <h2><a title="Ver Episodio Vicious 1x06 - Episode 6" href="http://www.seriesid.tv/vicious-1x06/">Vicious 1x06 - Episode 6</a></h2>
+    <a href="http://www.seriesid.tv/vicious-1x06/" class="btn btn-primary btn-block">Ver Episodio</a>
+    </div>
+    </div>
+    '''
+    patron  = '<div class="thumbnail"[^<]+<a href="([^"]+)"><img pagespeed[^=]+="([^"]+)" title="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         title = scrapedtitle.strip()
@@ -70,8 +79,6 @@ def ultimos(item):
         plot=""
         if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg") )
-
-    itemlist = sorted(itemlist, key=lambda item: item.title)
 
     return itemlist
 
@@ -115,8 +122,8 @@ def episodios(item):
     <h3>Compartir</h3>
     '''
     # Extrae argumento y thumbnail
-    scrapedplot = scrapertools.get_match(data,'<div class="entry-content"[^<]+<img[^<]+<p>([^<]+)</p>')
-    scrapedthumbnail = scrapertools.get_match(data,'<div class="entry-content"[^<]+<img class="[^"]+" src="([^"]+)"')
+    scrapedplot = scrapertools.get_match(data,'<div class="entry-content"[^<]+<img.*?<p>(.*?)<h2>')
+    scrapedthumbnail = scrapertools.get_match(data,'<div class="entry-content"[^<]+<img class="[^"]+" pagespeed[^=]+="([^"]+)"')
     
     data = scrapertools.get_match(data,'<ul class="links_category">(.*?)</ul>')
     
@@ -131,6 +138,8 @@ def episodios(item):
         if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot , viewmode="movie_with_plot" , fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesid.jpg") )
 
+    itemlist = sorted(itemlist, key=lambda item: item.title)
+
     return itemlist
 
 def findvideos(item):
@@ -138,7 +147,7 @@ def findvideos(item):
     itemlist = []
 
     data = scrapertools.cache_page(item.url)
-    patron = '<iframe.*?src="(http\://seriesid.com/iframe-player.php[^"]+)"'
+    patron = '"(http://www.seriesid.tv/.*?player.php[^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl in matches:
         sitio = scrapertools.get_match(scrapedurl,"sitio\=([^\&]+)")
@@ -157,7 +166,7 @@ def play(item):
     
     #http://seriesid.com/iframe-player.php?sitio=videobam&id=KIuBs
     #http://seriesid.com/player.php?sitio=videobam&id=KIuBs
-    data = scrapertools.cache_page(item.url.replace("iframe-player.php","player.php"))
+    data = scrapertools.cache_page(item.url.replace("iframe-player","player"))
     logger.info("data="+data)
     
     itemlist = servertools.find_video_items(data=data)

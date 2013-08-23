@@ -439,6 +439,7 @@ def play(item):
         logger.info("ANDRES location="+location)
     else:
         logger.info("[wupload.py] no encontrado captcha")
+        location = data.replace("%3A",":").replace("%2F","/")
     
     itemlist = servertools.find_video_items(data=location)
     for returnitem in itemlist:
