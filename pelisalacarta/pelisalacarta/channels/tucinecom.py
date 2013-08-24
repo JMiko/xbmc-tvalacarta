@@ -54,6 +54,24 @@ def novedades(item):
     # Extrae las entradas (carpetas)
     '''
     <div class="review-box-stars">
+    <div style="display: none">VN:RO [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_2067" class="ratepost gdsr-oxygen gdsr-size-12"><div class="starsbar gdsr-size-12"><div class="gdouter gdheight"><div id="gdr_vote_a2067" style="width: 0px;" class="gdinner gdheight"></div></div></div></div></div><div class="ratingtext "><div id="gdr_text_a2067" class="inactive">Rating: 0.0/<strong>10</strong> (0 votes cast)</div></div></div>                                        
+    </div>                  
+    <a href="http://tucinecom.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">
+    <img src="http://tucinecom.com/wp-content/uploads/2013/08/cazadores-140x210.jpg" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />        
+    </a>    
+    <div id="mejor_calidad">
+    <a href="http://tucinecom.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://tucinecom.com/wp-content/themes/reviewit/images/CAM_calidad.png" class="idiomas" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />  
+    </a>
+    <span>CAM</span></div>      
+    </div>                  
+    <!--End Image-->
+    <div class="review-box-text">
+    <h2><a href="http://tucinecom.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">Cazadores de sombras: Ciudad d...</a></h2>  
+    <p>En la discoteca de moda de Nueva York, Clary Fray (Lily Collins) sigue a un atractivo chico de pelo ...</p>                                      
+    </div>
+    '''
+    '''
+    <div class="review-box-stars">
     <div style="display: none">VN:RO [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_9680" class="ratepost gdsr-oxygen gdsr-size-12"><div class="starsbar gdsr-size-12"><div class="gdouter gdheight"><div id="gdr_vote_a9680" style="width: 0px;" class="gdinner gdheight"></div></div></div></div></div><div class="ratingtext "><div id="gdr_text_a9680" class="inactive">Rating: 0.0/<strong>10</strong> (0 votes cast)</div></div></div>
     </div>
     <a href="http://tucinecom.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">
@@ -86,6 +104,7 @@ def novedades(item):
     patron += '</a[^<]+'
     patron += '<span>([^<]+)</span></div[^<]+'
     patron += '</div[^<]+'
+    patron += '<![^<]+'
     patron += '<div class="review-box-text"[^<]+'
     patron += '<h2[^<]+<a[^<]+</a></h2[^<]+'
     patron += '<p>([^<]+)</p[^<]+'
