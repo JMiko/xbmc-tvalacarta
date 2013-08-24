@@ -33,7 +33,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Film Dvdrip"    , action="novedades", url="http://www.filmsenzalimiti.net/genere/dvd-rip"))
     itemlist.append( Item(channel=__channel__, title="Film Sub Ita"   , action="novedades", url="http://www.filmsenzalimiti.net/genere/subita"))
     itemlist.append( Item(channel=__channel__, title="Serie TV"       , action="novedades", url="http://www.filmsenzalimiti.net/genere/serie-tv"))
-    itemlist.append( Item(channel=__channel__, title="Film per genere", action="categorias", url="http://www.filmsenzalimiti.net/genere/serie-tv"))
+    itemlist.append( Item(channel=__channel__, title="Film per genere", action="categorias", url="http://www.filmsenzalimiti.net/"))
     return itemlist
 
 def categorias(item):
@@ -42,7 +42,7 @@ def categorias(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<li><a href\="\#">Film per Genere</a>(.*?)</ul>')
+    data = scrapertools.get_match(data,'<li><a href\="\#">Dvdrip per Genere</a>(.*?)</ul>')
     patron = '<li><a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -63,12 +63,12 @@ def novedades(item):
     data = scrapertools.cachePage(item.url)
     '''
     <div class="post-item-side">
-    <a href="http://www.filmsenzalimiti.net/killer-in-viaggio.html"> <img style="display:none;visibility:hidden;" data-cfsrc="http://www.filmsenzalimiti.net/wp-content/uploads/2013/06/Killer.png" width="103px" height="160px" alt="img" title="Killer in viaggio" class="post-side-img"/><noscript><img src="http://www.filmsenzalimiti.net/wp-content/uploads/2013/06/Killer.png" width="103px" height="160px" alt="img" title="Killer in viaggio" class="post-side-img"/></noscript></a>
-    <h3><a href="http://www.filmsenzalimiti.net/video.html" rel="nofollow" target="_blank"><img class="playbtn" style="display:none;visibility:hidden;" data-cfsrc="http://www.filmsenzalimiti.net/wp-content/themes/FilmSenzaLimiti/images/playbtn.png" border="0"/><noscript><img class="playbtn" src="http://www.filmsenzalimiti.net/wp-content/themes/FilmSenzaLimiti/images/playbtn.png" border="0"/></noscript></a></h3>
+    <a href="http://www.filmsenzalimiti.net/lost-in-mancha.html"> <img src="http://www.filmsenzalimiti.net/wp-content/uploads/2013/08/Lost-in-Mancha.jpg" width="103px" height="160px" alt="img" title="Lost in Mancha" class="post-side-img"/></a>
+    <h3><a href="http://www.filmsenzalimiti.net/video.html" rel="nofollow" target="_blank"><img class="playbtn" src="http://www.filmsenzalimiti.net/wp-content/themes/FilmSenzaLimiti/images/playbtn.png" border="0"/></a></h3>
     </div>
     '''
     patronvideos  = '<div class="post-item-side"[^<]+'
-    patronvideos += '<a href="([^"]+)"[^<]+<img.*?data-cfsrc="([^"]+)"'
+    patronvideos += '<a href="([^"]+)"[^<]+<img.*?src="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
