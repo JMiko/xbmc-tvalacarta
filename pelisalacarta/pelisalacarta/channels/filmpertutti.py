@@ -25,20 +25,19 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[filmpertutti.py] mainlist")
+    logger.info("pelisalacarta.filmpertutti mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novità"     , action="peliculas", url="http://filmpertutti.tv"))
-    itemlist.append( Item(channel=__channel__, title="Film per genere" , action="categorias", url="http://filmpertutti.tv|film"))
-    itemlist.append( Item(channel=__channel__, title="Serie Tv" , action="categorias", url="http://filmpertutti.tv|serie"))
-    itemlist.append( Item(channel=__channel__, title="Anime" , action="categorias", url="http://filmpertutti.tv|anime"))
+    itemlist.append( Item(channel=__channel__, title="Film Del Cinema", action="peliculas", url="http://filmxtutti.net/news_film/"))
+    itemlist.append( Item(channel=__channel__, title="Aggiornamenti Serie TV", action="peliculas", url="http://filmxtutti.net/ultime_serie/"))
+    itemlist.append( Item(channel=__channel__, title="Film per genere" , action="categorias", url="http://filmxtutti.net/"))
     itemlist.append( Item(channel=__channel__, title="Cerca Film", action="search"))
     return itemlist
     
 def search(item,texto):
-    logger.info("[filmpertutti.py] search "+texto)
+    logger.info("pelisalacarta.filmpertutti search "+texto)
     itemlist = []
     texto = texto.replace(" ","%20")
-    item.url = "http://filmpertutti.tv/?s="+texto+"&x=0&y=0"
+    item.url = "http://filmxtutti.net/?s="+texto
     item.extra = ""
 
     try:
@@ -51,43 +50,12 @@ def search(item,texto):
         return []
 
 def categorias(item):
-    '''
-    <select name="linkIole2" size="1" onchange="location.href=this.value">
-    <option value="#">Categorie Film</option>
-	<option value="http://filmpertutti.tv/category/animazione/">Animazione</option>
-	<option value="http://filmpertutti.tv/category/avventura/">Avventura</option>
-	<option value="http://filmpertutti.tv/category/azione/">Azione</option>
-	<option value="http://filmpertutti.tv/category/biografico/">Biografico</option>
-	<option value="http://filmpertutti.tv/category/comico/">Comico</option>
-	</select>
-	<td><tr>
-	</td></tr>
-	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tr>
-	<select name="linkIole2" size="1" onchange="location.href=this.value">
-	<option value="#">Serie Tv</option>
-	<option value="http://filmpertutti.tv/category/serie-tv/0-9/">0-9</option>
-	<option value="http://filmpertutti.tv/category/serie-tv/a-f/">A-F</option>
-	<option value="http://filmpertutti.tv/category/serie-tv/g-l/">G-L</option>
-	<option value="http://filmpertutti.tv/category/serie-tv/m-r/">M-R</option>
-	<option value="http://filmpertutti.tv/category/serie-tv/s-z/">S-Z</option>
-	</select></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td><select name="linkIole2" size="1" onchange="location.href=this.value">
-	<option value="#">Anime Cartoon</option>
-	<option value="http://filmpertutti.tv/category/anime-cartoon-italiani/">Anime Cartoon ITA</option>
-	<option value="http://filmpertutti.tv/category/anime-cartoon-sub-ita/">Anime Cartoon Sub-ITA</option>
-	</select>
-    '''
-    url=item.url.split("|")[0]
-    cat=item.url.split("|")[1]
     itemlist = []
-    data = scrapertools.cache_page(url)
-    if cat=="film":
-    	data = scrapertools.get_match(data,'<option value="#">Categorie Film</option>(.*?)</select>' )
-    else:
-    	if cat=="serie":
-    		data = scrapertools.get_match(data,'<option value="#">Serie Tv</option>(.*?)</select>' )
-    	else:
-    		data = scrapertools.get_match(data,'<option value="#">Anime Cartoon</option>(.*?)</select>' )
-    patron  = '<option value="([^"]+)">([^<]+)</option>'
+    
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.get_match(data,'<h4><span[^>]+>Genere Film</span></h4>(.*?)</div[^<]+</div[^<]+</div')
+
+    patron  = '<a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -100,7 +68,7 @@ def categorias(item):
     return itemlist
 
 def peliculas(item):
-    logger.info("[filmpertutti.py] peliculas")
+    logger.info("pelisalacarta.filmpertutti peliculas")
     itemlist = []
 
     # Descarga la p�gina
