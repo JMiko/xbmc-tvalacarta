@@ -56,8 +56,24 @@ def submenu(item):
     itemlist=[]
     
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<a href="\#" class="dir" title="Descargar '+item.extra+' Gratis">'+item.extra+'(.*?)</ul>')
-    
+
+    '''
+    <li><a href="#" rel="nofollow" class="dir" title="Descargar Peliculas Gratis">Peliculas<img src="http://www.newpct.com/sections.inc/top.column.inc/topmenu.inc/images/arows.png" alt="Descargas Torrent"></a>
+    <ul>
+    <li><a href="http://www.newpct.com/peliculas-castellano/peliculas-rip/" title="Descargar Peliculas en Castellano DVDRIP" >Peliculas DVDRIP-BRRIP Castellano</a></li>
+    <li><a href="http://www.newpct.com/peliculas-latino/" title="Descargar Peliculas Latino Gratis">Peliculas Latino</a></li>
+    <li><a href="http://www.newpct.com/peliculas-castellano/estrenos-de-cine/" title="Descargar Estrenos de Cine Gratis">Estrenos de Cine Castellano</a></li>
+    <li><a href="http://www.newpct.com/cine-alta-definicion-hd/" title="Descargar Peliculas en HD, Alta Definicion Gratis">Peliculas Alta Definicion HD</a></li>
+    <li><a href="http://www.newpct.com/peliculas-en-3d-hd/" title="Descargar Peliculas en 3D HD" >Peliculas en 3D HD</a></li>
+    <li><a href="http://www.newpct.com/peliculas-castellano/peliculas-dvd/" title="Descargar Peliculas DVD FULL">Peliculas DVDFULL</a></li>
+    <li><a href="http://www.newpct.com/peliculas-vo/" title="Descargar Peliculas en V.O Subtituladas">Peliculas V.O.Subtituladas</a></li>
+    <li><a href="http://www.newpct.com/anime/" title="Descargar Series y Peliculas Anime Gratis">Anime</a></li>
+    <li><a href="http://www.newpct.com/documentales/" title="Descargar Documentales Gratis">Documentales</a></li>
+    </ul>
+    </li>
+    '''
+    data = scrapertools.get_match(data,'<a href="\#" rel="nofollow" class="dir" title="Descargar '+item.extra+' Gratis">'+item.extra+'(.*?)</ul>')
+
     patron = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
