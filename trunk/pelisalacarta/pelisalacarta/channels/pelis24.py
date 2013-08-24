@@ -45,11 +45,12 @@ def peliculas(item):
     data = scrapertools.cachePage(item.url)
     
     bloque = scrapertools.get_match(data,"<div id='dle-content'>(.*?<span class=\"thide pnext\">Siguiente</span></a>)")
-    #<a href="http://www.pelis24.com/peliculas/11010-fast-furious-5-a-todo-gas-5-espanol-online.html">
-    #<img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/l15963435d.jpg" width="145" height="211" alt="Rápidos y furiosos 5 / A todo gas 5 (2011)" title="Rápidos y furiosos 5 / A todo gas 5 (2011)"/>
-    #<noscript><img src="http://imgs24.com/images/l15963435d.jpg" width="145" height="211" alt="Rápidos y furiosos 5 / A todo gas 5 (2011)" title="Rápidos y furiosos 5 / A todo gas 5 (2011)"/></noscript></a>&nbsp;&nbsp;
 
-    patron = '<a href="([^"]+)"[^<]+<img[^<]+<noscript[^<]+<img src="([^"]+)" width="[^"]+" height="[^"]+" alt="[^"]+" title="([^"]+)"'
+    #<a href="http://pelis24.com/peliculasvose/15435-scenic-route-2013.html" >
+    #<img src="http://imgs24.com/images/fuprd.jpg" width="145" height="211" alt="Scenic Route (2013)" title="Scenic Route (2013)"/></a>&nbsp;&nbsp;
+
+    patron  = '<a href="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)" width="[^"]+" height="[^"]+" alt="[^"]+" title="([^"]+)"'
 
     matches = re.compile(patron,re.DOTALL).findall(bloque)
     scrapertools.printMatches(matches)
