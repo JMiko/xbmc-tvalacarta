@@ -15,6 +15,7 @@ from core import config
 def get_long_url( short_url ):
     logger.info("[adfly.py] get_long_url(short_url='%s')" % short_url)
     
+    '''
     data = scrapertools.cache_page( short_url )
     #var zzz = 'http://freakshare.com/files/ivkf5hm4/The.Following.S01E01.UNSOLOCLIC.INFO.avi.html'
     location = scrapertools.get_match(data,"var zzz \= '([^']+)'")
@@ -34,6 +35,19 @@ def get_long_url( short_url ):
         logger.info("data="+data)
 
         location = scrapertools.get_match(data,'<META HTTP-EQUIV\="Refresh".*?URL=([^"]+)"')
+    '''
+    # Accede para conseguir las cookies
+    headers = []
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20100101 Firefox/23.0"])
+    data = scrapertools.cache_page( "http://dead.altervista.org/" )
+
+    # Ahora envía el formulario
+    headers.append(["Referer","http://dead.altervista.org/"])
+    headers.append(["X-Requested-With","XMLHttpRequest"])
+    post = urllib.urlencode({'url':short_url})
+    data = scrapertools.cache_page( "http://dead.altervista.org/bypasser/process.php" , post=post , headers=headers )
+    logger.info("data="+data)
+    location = scrapertools.get_match(data,'<a href="([^"]+)"')
 
     logger.info("location="+location)
 
