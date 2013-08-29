@@ -25,31 +25,21 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[yaske.py] mainlist")
+    logger.info("pelisalacarta.yaske mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"          , action="menu_novedades", url="http://www.yaske.net/es/peliculas/"))
-    itemlist.append( Item(channel=__channel__, title="Por categorías"     , action="menu_categorias", url="http://www.yaske.net/es/peliculas/"))
-    itemlist.append( Item(channel=__channel__, title="Por calidades"      , action="menu_calidades", url="http://www.yaske.net/es/peliculas/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"          , action="peliculas",       url="http://www.yaske.net/"))
+    itemlist.append( Item(channel=__channel__, title="Por año"            , action="menu_anyos",       url="http://www.yaske.net/"))
+    itemlist.append( Item(channel=__channel__, title="Por género"         , action="menu_categorias", url="http://www.yaske.net/"))
+    itemlist.append( Item(channel=__channel__, title="Por calidad"        , action="menu_calidades",  url="http://www.yaske.net/"))
+    itemlist.append( Item(channel=__channel__, title="Por idioma"         , action="menu_idiomas",    url="http://www.yaske.net/"))
     itemlist.append( Item(channel=__channel__, title="Buscar"             , action="search") )
-
-    return itemlist
-
-def menu_novedades(item):
-    logger.info("[yaske.py] menu_novedades")
-
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Portada"            , action="peliculas", url="http://www.yaske.net/es/peliculas/"))
-    itemlist.append( Item(channel=__channel__, title="Más vistas hoy"     , action="peliculas", url="http://www.yaske.net/es/peliculas/custom/?show=today"))
-    itemlist.append( Item(channel=__channel__, title="Novedades latino"   , action="peliculas", url="http://www.yaske.net/es/peliculas/custom/?show=new&language=la"))
-    itemlist.append( Item(channel=__channel__, title="Novedades español"  , action="peliculas", url="http://www.yaske.net/es/peliculas/custom/?show=new&language=es"))
-    itemlist.append( Item(channel=__channel__, title="Novedades subtitulos", action="peliculas", url="http://www.yaske.net/es/peliculas/custom/?show=new&language=sub"))
 
     return itemlist
 
 def search(item,texto):
 
-    logger.info("[yaske.py] search")
+    logger.info("pelisalacarta.yaske search")
     itemlist = []
 
     try:
@@ -58,7 +48,7 @@ def search(item,texto):
         item.extra = ""
         itemlist.extend(peliculas(item))
         itemlist = sorted(itemlist, key=lambda Item: Item.title) 
-        
+
         return itemlist
 
     except:
@@ -68,25 +58,48 @@ def search(item,texto):
         return []
 
 def peliculas(item):
-    logger.info("[yaske.py] listado")
+    logger.info("pelisalacarta.yaske listado")
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
-    patron  = '<div class="itemdos c(\d+)" id="numitem\d+"><div class="img_box"><a href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)"[^<]+</a[^<]+'
-    patron += '<div class="quality">([^<]+)</div><div class="view"><span>[^<]+</span></div></div[^<]+'
-    patron += '<div class="bttm"><div class="br"></div><div class="ttl"><a href="[^"]+" title="[^"]+">([^<]+)</a></div><div class="tori">([^<]+)</div[^<]+'
-    patron += '<div class="idiom.s">(.*?)</div>'
+    '''
+    <li class="item-movies c5">
+    <a class="image-block" href="http://www.yaske.net/es/pelicula/0002014/ver-sometimes-in-april-online.html" title="Siempre en abril">
+    <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcSpMMsdPI9tKkvdHUA2qPknXygXuHaISe7FRgYM85zvPZhr1tbWDA" width="140" height="200" />
+    </a>
+    <ul class="bottombox">
+    <li title="Siempre en abril"><a href="http://www.yaske.net/es/pelicula/0002014/ver-sometimes-in-april-online.html" title="Siempre en abril">Siempre en abril</a></li>
+    <li>Drama, Guerra, Historica</li>
+    <li><img src='http://www.yaske.net/theme/01/data/images/flags/la_la.png' title='Latino ' width='25'/> <img src='http://www.yaske.net/theme/01/data/images/flags/en_es.png' title='English SUB Spanish' width='25'/> </li>
+    <li><a rel="lyteframe" rev="width: 600px; height: 380px; scrolling: no;" youtube="trailer" href="http://www.youtube.com/v/XiteY6o2UwI&amp;hl&amp;autoplay=1" target="_blank"><img src="http://4.bp.blogspot.com/-_t9RtdUMJlo/UgYO_qA49VI/AAAAAAAABj4/7O_ZrYtIMHw/s1600/vertrailer2.png" height="22" border="0"></a></li>
+    </ul>
+    <div class="quality">Dvd Rip</div>
+    <div class="view"><span>view: 10800</span></div>
+    </li>   
+    '''
+    patron  = '<li class="item-movies[^<]+'
+    patron += '<a class="image-block" href="([^"]+)" title="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)" width="\d+" height="\d+"[^<]+'
+    patron += '</a[^<]+'
+    patron += '<ul class="bottombox"[^<]+'
+    patron += '<li[^<]+<a[^<]+</a></li[^<]+'
+    patron += '<li[^<]+</li[^<]+'
+    patron += "<li>(.*?)</li[^<]+"
+    patron += '<li><a[^<]+<img[^<]+</a></li[^<]+'
+    patron += '</ul[^<]+'
+    patron += '<div class="quality">([^<]+)<'
+
+
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
 
-    for idcalidad, scrapedurl, scrapedthumbnail, calidad, scrapedtitle, categorias, idiomas in matches:
-        
-        patronidiomas = '<img src="[^"]+" title="([^"]+)"'
+    for scrapedurl, scrapedtitle, scrapedthumbnail, idiomas, calidad in matches:
+
+        patronidiomas = "<img src='[^']+' title='([^']+)'"
         matchesidiomas = re.compile(patronidiomas,re.DOTALL).findall(idiomas)
         idiomas_disponibles = ""
         for idioma in matchesidiomas:
@@ -114,22 +127,16 @@ def peliculas(item):
     return itemlist
 
 def menu_categorias(item):
-    logger.info("[yaske.py] menu_categorias")
+    logger.info("pelisalacarta.yaske menu_categorias")
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
-    data = scrapertools.get_match(data,'cc-type="generos">(.*?)</div>')
+    data = scrapertools.get_match(data,'div class="title">Categoria[^<]+</div>(.*?)</ul>')
     logger.info("data="+data)
 
-    '''
-    <div cc-type="generos">
-    <li><a href="http://www.yaske.net/es/peliculas/genero/drama" cc-value="drama">Drama</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/romance" cc-value="romance">Romance</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/comedy" cc-value="comedy">Comedias</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/crime" cc-value="crime">Crimen</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/action" cc-value="action">Accion</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/thriller" cc-value="thriller">Thrillers</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/war" cc-value="war">Guerra</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/adventure" cc-value="adventure">Aventura</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/mystery" cc-value="mystery">Misterio</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/family" cc-value="family">Familiar</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/history" cc-value="history">Historica</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/musical" cc-value="musical">Musicales</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/biography" cc-value="biography">Biografias</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/horror" cc-value="horror">Terror</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/fantasy" cc-value="fantasy">Fantasia</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/music" cc-value="music">Musica</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/western" cc-value="western">Westerns</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/sci_fi" cc-value="sci_fi">ciencia Ficcion</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/sport" cc-value="sport">Deporte</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/film_noir" cc-value="film_noir">Cine negro</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/animation" cc-value="animation">Animacion</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/adult" cc-value="adult">Adultos</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/news" cc-value="news">Noticia</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/reality_tv" cc-value="reality_tv">Reality-TV</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/talk_show" cc-value="talk_show">Espectaculos</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/animes" cc-value="animes">Animes</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/trailers" cc-value="trailers">Proximos</a></li><li><a href="http://www.yaske.net/es/peliculas/genero/premieres" cc-value="premieres">Estrenos</a></li></div>
-    </div>
-    '''
-
     # Extrae las entradas
-    patron  = '<li><a href="([^"]+)"[^>]+>([^<]+)</a>'
+    patron  = "<li><a href='([^']+)'><img[^>]+>([^<]+)</a>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
@@ -139,35 +146,80 @@ def menu_categorias(item):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    return itemlist
+
+def menu_idiomas(item):
+    logger.info("pelisalacarta.yaske menu_idiomas")
+
+    # Descarga la página
+    data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+
+    data = scrapertools.get_match(data,'<select name="language"(.*?)</select>')
+    logger.info("data="+data)
+
+    # Extrae las entradas
+    patron  = "<option value='([^']*)'>([^<]+)</option>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #scrapertools.printMatches(matches)
+    itemlist = []
+
+    for scrapedurl,scrapedtitle in matches:
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        url = "http://www.yaske.net/es/peliculas/custom/?year=&gender=&quality=&language="+scrapedurl
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+url+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    url = "http://www.yaske.net/es/peliculas/custom/?year=&gender=&quality=&language=sub"
+    itemlist.append( Item(channel=__channel__, action="peliculas", title="Subtitulado" , url=url , folder=True) )
+
+    return itemlist
+
+def menu_anyos(item):
+    logger.info("pelisalacarta.yaske menu_anyos")
+
+    # Descarga la página
+    data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+
+    data = scrapertools.get_match(data,'<select name="year"(.*?)</select>')
+    logger.info("data="+data)
+
+    # Extrae las entradas
+    patron  = "<option value='([^']+)'>([^<]+)</option>"
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    #scrapertools.printMatches(matches)
+    itemlist = []
+
+    for scrapedurl,scrapedtitle in matches:
+        scrapedthumbnail = ""
+        scrapedplot = ""
+        url = "http://www.yaske.net/es/peliculas/custom/?year="+scrapedurl+"&gender=&quality=&language="
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+url+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
 def menu_calidades(item):
-    logger.info("[yaske.py] menu_calidades")
+    logger.info("pelisalacarta.yaske menu_calidades")
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
-    data = scrapertools.get_match(data,'cc-type="calidades">(.*?)</div>')
+
+    '''
+    <select name="quality" id="qualities" class="jqlist">
+    <option value="" selected="selected">Selecciona...</option>
+    <option value='c8'>hd real 720</option><option value='c7'>hd rip 320</option><option value='c6'>br-screener</option><option value='c5'>dvd rip</option><option value='c4'>dvd screener</option><option value='c3'>ts screener hq</option><option value='c2'>ts screener</option><option value='c1'>cam</option> </select></td>
+    </tr>
+    '''
+    data = scrapertools.get_match(data,'<select name="quality"(.*?)</select>')
     logger.info("data="+data)
 
-
-    '''
-    <div class="ccbutton shadow right hd" style="right:540px;" cc-type="calidades">Calidades
-    <div class="menu">
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c8" cc-value="c8">HD REAL 720</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c7" cc-value="c7">HD-RIP 320</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c6" cc-value="c6">BR-SCREENER</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c5" cc-value="c5">DVD-RIP</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c4" cc-value="c4">DVD-SCREENER</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c3" cc-value="c3">TS-SCREENER HQ</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c2" cc-value="c2">TS-SCREENER</a>
-    <a href="http://www.yaske.net/es/peliculas/custom/?calidad=c1" cc-value="c1">CAM</a>
-    </div>
-    '''
-
     # Extrae las entradas
-    patron  = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
+    patron  = "<option value='([^']+)'>([^<]+)</option>"
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
@@ -175,35 +227,29 @@ def menu_calidades(item):
     for scrapedurl,scrapedtitle in matches:
         scrapedthumbnail = ""
         scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        url = "http://www.yaske.net/es/peliculas/custom/?year=&gender=&quality="+scrapedurl+"&language="
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+url+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
 
 def findvideos(item):
-    logger.info("[yaske.py] findvideos url="+item.url)
+    logger.info("pelisalacarta.yaske findvideos url="+item.url)
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas
     '''
-    <tr bgcolor="#e6e3e3"><td align="left" >
-    <a href="http://www.yaske.net/es/reproductor/pelicula/2148/15588/" title="El origen de los guardianes" target="_blank" style="text-decoration: none;"><img src="http://www.yaske.net/imagenes/servers/veronline.png" height="19" width="19"><font color="black">Opcion 1</font></a>
-    </td> <td align="left"><span style="margin-left:15px;"><img src="http://www.google.com/s2/favicons?domain=www.putlocker.com" />putlocker</span>
-    </td> <td align="left"><span style="margin-left:15px;"><img src="http://www.yaske.net/imagenes/flags/en_es.png" width="19"> Subtitulada</span></td> 
-    <td align="center" class="center">
-    <span title="HD REAL 720" style="text-transform:capitalize;">hd real 720</span></td> <td align="center" class="center">
-    <span title="HD REAL 720" style="text-transform:capitalize;">
-    <div class="star on"><a href="javascript:void(0)" onClick="foo()"  style="width: 100%;">1</a></div>
-    <div class="star on"><a href="javascript:void(0)" onClick="foo()"  style="width: 100%;">1</a></div>
-    <div class="star on"><a href="javascript:void(0)" onClick="foo()"  style="width: 100%;">1</a></div>
-    <div class="star on"><a href="javascript:void(0)" onClick="foo()"  style="width: 100%;">1</a></div>
-    <div class="star on"><a href="javascript:void(0)" onClick="foo()"  style="width: 100%;">1</a></div>
-    </span>
-    </td> <td align="center"> 
-    <a class="btn btn-mini enlace_link" style="text-decoration:none;color:#0088cd;" rel="nofollow" target="_blank" title="Ver..." href="http://www.yaske.net/es/reproductor/pelicula/2148/15588/"><i class="icon-play"></i>&nbsp;&nbsp;Reproducir</a>
-    </td> <td align="center" class="center">19395 visitas.</td> </tr>
+    <tr bgcolor="">
+    <td height="32" align="center"><a class="btn btn-mini enlace_link" style="text-decoration:none;" rel="nofollow" target="_blank" title="Ver..." href="http://www.yaske.net/es/reproductor/pelicula/2141/44446/"><i class="icon-play"></i><b>&nbsp; Opcion &nbsp; 04</b></a></td>
+    <td align="left"><img src="http://www.google.com/s2/favicons?domain=played.to"/>played</td>
+    <td align="center"><img src="http://www.yaske.net/theme/01/data/images/flags/la_la.png" width="21">Lat.</td>
+    <td align="center" class="center"><span title="" style="text-transform:capitalize;">hd real 720</span></td>
+    <td align="center"><div class="star_rating" title="HD REAL 720 ( 5 de 5 )">
+    <ul class="star"><li class="curr" style="width: 100%;"></li></ul>
+    </div>
+    </td> <td align="center" class="center">2553</td> </tr>
     '''
     patron  = '<tr bgcolor=(.*?)</tr>'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -213,16 +259,18 @@ def findvideos(item):
     for tr in matches:
         logger.info("tr="+tr)
         try:
-            title = scrapertools.get_match(tr,'<font color="black">([^<]+)</font>')
+            title = scrapertools.get_match(tr,'<b>([^<]+)</b>')
             server = scrapertools.get_match(tr,'"http\://www.google.com/s2/favicons\?domain\=([^"]+)"')
-            idioma = scrapertools.get_match(tr,'<img src="http://www.yaske.net/imagenes/flags/([a-z_]+).png"[^>]+>[^<]+</span>')
-            subtitulos = scrapertools.get_match(tr,'<img src="http://www.yaske.net/imagenes/flags/[^"]+"[^>]+>([^<]+)</span>')
-            calidad = scrapertools.get_match(tr,'<td align="center" class="center"[^<]+<span title="[^"]+" style="text-transform:capitalize;">([^<]+)</span></td>')
+            idioma = scrapertools.get_match(tr,'<img src="http://www.yaske.net/theme/01/data/images/flags/([a-z_]+).png"[^>]+>[^<]+</td>')
+            subtitulos = scrapertools.get_match(tr,'<img src="http://www.yaske.net/theme/01/data/images/flags/[^"]+"[^>]+>([^<]+)</td>')
+            calidad = scrapertools.get_match(tr,'<td align="center" class="center"[^<]+<span title="[^"]*" style="text-transform.capitalize.">([^<]+)</span></td>')
             
             #<a href="http://www.yaske.net/es/reproductor/pelicula/2244/15858/" title="Batman: El regreso del Caballero Oscuro, Parte 2"
-            url = scrapertools.get_match(tr,'<a href="([^"]+)" title="[^"]+"')
-            thumbnail = scrapertools.get_match(data,'<meta\s+property="og\:image"\s+content="([^"]+)"')
-            plot = scrapertools.get_match(data,'<meta\s+property="og:description"\s+content="([^"]+)"')
+            url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"')
+            thumbnail = ""
+            plot = ""
+
+            title = title.replace("&nbsp;","")
 
             if "es_es" in idioma:
                 scrapedtitle = title + " en "+server.strip()+" [Español]["+calidad+"]"
@@ -246,7 +294,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[yaske.py] play item.url="+item.url)
+    logger.info("pelisalacarta.yaske play item.url="+item.url)
     
     itemlist=[]
     
