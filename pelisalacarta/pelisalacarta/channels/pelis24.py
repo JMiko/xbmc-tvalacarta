@@ -49,8 +49,11 @@ def peliculas(item):
     #<a href="http://pelis24.com/peliculasvose/15435-scenic-route-2013.html" >
     #<img src="http://imgs24.com/images/fuprd.jpg" width="145" height="211" alt="Scenic Route (2013)" title="Scenic Route (2013)"/></a>&nbsp;&nbsp;
 
+    #<a href="http://pelis24.com/pelicula-latino/13070-the-hunter-2011-subtitulado.html">
+    #<img style="display:none;visibility:hidden;" data-cfsrc="http://imgs24.com/images/lE6np.jpg" width="145" height="211" alt="The Hunter (2011)" title="The Hunter (2011)"/><noscript><img src="http://imgs24.com/images/lE6np.jpg" width="145" height="211" alt="The Hunter (2011)" title="The Hunter (2011)"/></noscript></a>&nbsp;&nbsp;
+
     patron  = '<a href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)" width="[^"]+" height="[^"]+" alt="[^"]+" title="([^"]+)"'
+    patron += '<img.*?src="([^"]+)" width="[^"]+" height="[^"]+" alt="[^"]+" title="([^"]+)"'
 
     matches = re.compile(patron,re.DOTALL).findall(bloque)
     scrapertools.printMatches(matches)
