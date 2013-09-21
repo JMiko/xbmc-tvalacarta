@@ -177,11 +177,19 @@ def test():
     
     # Comprueba que todas las opciones tengan algo (excepto el buscador)
     for mainlist_item in mainlist_items:
+
         if mainlist_item.action!="search":
             exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
             if len(itemlist)==0:
-                mirrors = findvideos(item=itemlist[0])
-                if len(mirrors)>0:
-                    return True
+                print "La sección '"+mainlist_item.title+"' no tiene series"
+                return False
+
+    # Busca episodios en alguna de las 10 primeras series
+    series_itemlist = series(mainlist_items[0])
+
+    for i in range(0,10):
+        episodios_itemlist = episodios(series_itemlist[0])
+        if len(episodios_itemlist)>0:
+            return True
 
     return False

@@ -27,35 +27,21 @@ def isGeneric():
 def mainlist(item):
     logger.info("pelisalacarta.filmpertutti mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Film Del Cinema", action="peliculas", url="http://filmxtutti.net/news_film/"))
-    itemlist.append( Item(channel=__channel__, title="Aggiornamenti Serie TV", action="peliculas", url="http://filmxtutti.net/ultime_serie/"))
-    itemlist.append( Item(channel=__channel__, title="Film per genere" , action="categorias", url="http://filmxtutti.net/"))
-    itemlist.append( Item(channel=__channel__, title="Cerca Film", action="search"))
+    itemlist.append( Item(channel=__channel__, title="Ultimi film inseriti", action="peliculas", url="http://www.filmxtutti.org/"))
+    itemlist.append( Item(channel=__channel__, title="Categorie film", action="categorias", url="http://www.filmxtutti.org/", extra="Categorie Film"))
+    itemlist.append( Item(channel=__channel__, title="Serie TV" , action="categorias", url="http://www.filmxtutti.org/", extra="Serie Tv"))
+    itemlist.append( Item(channel=__channel__, title="Anime Cartoon", action="categorias", url="http://www.filmxtutti.org/", extra="Anime Cartoon"))
     return itemlist
-    
-def search(item,texto):
-    logger.info("pelisalacarta.filmpertutti search "+texto)
-    itemlist = []
-    texto = texto.replace(" ","%20")
-    item.url = "http://filmxtutti.net/?s="+texto
-    item.extra = ""
-
-    try:
-        return peliculas(item)
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        return []
 
 def categorias(item):
     itemlist = []
     
+    # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<h4><span[^>]+>Genere Film</span></h4>(.*?)</div[^<]+</div[^<]+</div')
-
-    patron  = '<a href="([^"]+)">([^<]+)</a>'
+    data = scrapertools.get_match(data,'<option value=".">'+item.extra+'</option>(.*?)</select>')
+    
+    # Extrae las entradas (carpetas)
+    patron  = '<option value="([^"]+)">([^<]+)</option>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -71,8 +57,8 @@ def peliculas(item):
     logger.info("pelisalacarta.filmpertutti peliculas")
     itemlist = []
 
-    # Descarga la p�gina
-    data = scrapertools.cachePage(item.url)
+    # Descarga la pagina
+    data = scrapertools.cache_page(item.url)
 
     # Extrae las entradas (carpetas)
     '''
@@ -103,13 +89,12 @@ def peliculas(item):
 
     return itemlist
 
-# Verificaci�n autom�tica de canales: Esta funci�n debe devolver "True" si est� ok el canal.
 def test():
     from servers import servertools
     
     # mainlist
     mainlist_items = mainlist(Item())
-    # Da por bueno el canal si alguno de los v�deos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los videos de "Novedades" devuelve mirrors
     novedades_items = peliculas(mainlist_items[0])
     bien = False
     for novedades_item in novedades_items:

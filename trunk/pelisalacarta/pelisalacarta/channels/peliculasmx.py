@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para VePelis
+# Canal para peliculasmx
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -14,10 +14,10 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-__channel__ = "vepelis"
+__channel__ = "peliculasmx"
 __category__ = "F"
 __type__ = "generic"
-__title__ = "VePelis"
+__title__ = "peliculasmx"
 __language__ = "ES"
 __creationdate__ = "20130528"
 
@@ -27,20 +27,17 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[vepelis.py] mainlist")
+    logger.info("[peliculasmx.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Ultimas Agregadas", action="listado2" , url="http://www.vepelis.com/pelicula/ultimas-peliculas" , extra="http://www.vepelis.com/pelicula/ultimas-peliculas"))
-    itemlist.append( Item(channel=__channel__, title="Estrenos en DVD" , action="listado2" , url="http://www.vepelis.com/pelicula/ultimas-peliculas/estrenos-dvd" , extra="http://www.vepelis.com/pelicula/ultimas-peliculas/estrenos-dvd"))
-    itemlist.append( Item(channel=__channel__, title="Peliculas en Cartelera", action="listado2" , url="http://www.vepelis.com/pelicula/ultimas-peliculas/cartelera" , extra="http://www.vepelis.com/pelicula/ultimas-peliculas/cartelera"))
-    itemlist.append( Item(channel=__channel__, title="Ultimas Actualizadas" , action="listado2" , url="http://www.vepelis.com/pelicula/ultimas-peliculas/ultimas/actualizadas" , extra="http://www.vepelis.com/pelicula/ultimas-peliculas/ultimas/actualizadas"))
-    itemlist.append( Item(channel=__channel__, title="Por Genero" , action="generos" , url="http://www.vepelis.com/"))
-    itemlist.append( Item(channel=__channel__, title="Por Orden Alfabetico" , action="alfabetico" , url="http://www.vepelis.com/"))
-    itemlist.append( Item(channel=__channel__, title="Buscar" , action="search" , url="http://www.vepelis.com/"))
+    itemlist.append( Item(channel=__channel__, title="Ultimas Agregadas", action="listado2" , url="http://www.peliculasmx.net/" , extra="http://www.peliculasmx.net/"))
+    itemlist.append( Item(channel=__channel__, title="Por Genero" , action="generos" , url="http://www.peliculasmx.net/"))
+    itemlist.append( Item(channel=__channel__, title="Por Orden Alfabetico" , action="alfabetico" , url="http://www.peliculasmx.net/"))
+    itemlist.append( Item(channel=__channel__, title="Buscar" , action="search" , url="http://www.peliculasmx.net/"))
     return itemlist
 
 def listarpeliculas(item):
-    logger.info("[vepelis.py] listarpeliculas")
+    logger.info("[peliculasmx.py] listarpeliculas")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -80,7 +77,7 @@ def listarpeliculas(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[vepelis.py] videos")
+    logger.info("[peliculasmx.py] videos")
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     title = item.title
@@ -99,7 +96,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[vepelis.py] play")
+    logger.info("[peliculasmx.py] play")
     itemlist=[]
 
 
@@ -146,7 +143,7 @@ def play(item):
  #   return itemlist
 
 def generos(item):
-    logger.info("[vepelis.py] generos")
+    logger.info("[peliculasmx.py] generos")
     itemlist = []
 
     # Descarga la página
@@ -182,39 +179,39 @@ def alfabetico(item):
 
     extra = item.url
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="0-9", url="http://www.vepelis.com/letra/09.html", extra="http://www.vepelis.com/letra/09.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="A"  , url="http://www.vepelis.com/letra/a.html", extra="http://www.vepelis.com/letra/a.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="B"  , url="http://www.vepelis.com/letra/b.html", extra="http://www.vepelis.com/letra/b.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="C"  , url="http://www.vepelis.com/letra/c.html", extra="http://www.vepelis.com/letra/c.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="E"  , url="http://www.vepelis.com/letra/d.html", extra="http://www.vepelis.com/letra/d.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="D"  , url="http://www.vepelis.com/letra/e.html", extra="http://www.vepelis.com/letra/e.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="F"  , url="http://www.vepelis.com/letra/f.html", extra="http://www.vepelis.com/letra/f.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="G"  , url="http://www.vepelis.com/letra/g.html", extra="http://www.vepelis.com/letra/g.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="H"  , url="http://www.vepelis.com/letra/h.html", extra="http://www.vepelis.com/letra/h.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="I"  , url="http://www.vepelis.com/letra/i.html", extra="http://www.vepelis.com/letra/i.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="J"  , url="http://www.vepelis.com/letra/j.html", extra="http://www.vepelis.com/letra/j.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="K"  , url="http://www.vepelis.com/letra/k.html", extra="http://www.vepelis.com/letra/k.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="L"  , url="http://www.vepelis.com/letra/l.html", extra="http://www.vepelis.com/letra/l.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="M"  , url="http://www.vepelis.com/letra/m.html", extra="http://www.vepelis.com/letra/m.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="N"  , url="http://www.vepelis.com/letra/n.html", extra="http://www.vepelis.com/letra/n.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="O"  , url="http://www.vepelis.com/letra/o.html", extra="http://www.vepelis.com/letra/o.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="P"  , url="http://www.vepelis.com/letra/p.html", extra="http://www.vepelis.com/letra/p.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="Q"  , url="http://www.vepelis.com/letra/q.html", extra="http://www.vepelis.com/letra/q.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="R"  , url="http://www.vepelis.com/letra/r.html", extra="http://www.vepelis.com/letra/r.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="S"  , url="http://www.vepelis.com/letra/s.html", extra="http://www.vepelis.com/letra/s.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="T"  , url="http://www.vepelis.com/letra/t.html", extra="http://www.vepelis.com/letra/t.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="U"  , url="http://www.vepelis.com/letra/u.html", extra="http://www.vepelis.com/letra/u.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="V"  , url="http://www.vepelis.com/letra/v.html", extra="http://www.vepelis.com/letra/v.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="W"  , url="http://www.vepelis.com/letra/w.html", extra="http://www.vepelis.com/letra/w.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="X"  , url="http://www.vepelis.com/letra/x.html", extra="http://www.vepelis.com/letra/x.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="Y"  , url="http://www.vepelis.com/letra/y.html", extra="http://www.vepelis.com/letra/y.html"))
-    itemlist.append( Item(channel=__channel__, action="listado2" , title="Z"  , url="http://www.vepelis.com/letra/z.html", extra="http://www.vepelis.com/letra/z.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="0-9", url="http://www.peliculasmx.net/letra/09.html", extra="http://www.peliculasmx.net/letra/09.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="A"  , url="http://www.peliculasmx.net/letra/a.html", extra="http://www.peliculasmx.net/letra/a.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="B"  , url="http://www.peliculasmx.net/letra/b.html", extra="http://www.peliculasmx.net/letra/b.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="C"  , url="http://www.peliculasmx.net/letra/c.html", extra="http://www.peliculasmx.net/letra/c.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="D"  , url="http://www.peliculasmx.net/letra/d.html", extra="http://www.peliculasmx.net/letra/d.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="E"  , url="http://www.peliculasmx.net/letra/e.html", extra="http://www.peliculasmx.net/letra/e.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="F"  , url="http://www.peliculasmx.net/letra/f.html", extra="http://www.peliculasmx.net/letra/f.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="G"  , url="http://www.peliculasmx.net/letra/g.html", extra="http://www.peliculasmx.net/letra/g.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="H"  , url="http://www.peliculasmx.net/letra/h.html", extra="http://www.peliculasmx.net/letra/h.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="I"  , url="http://www.peliculasmx.net/letra/i.html", extra="http://www.peliculasmx.net/letra/i.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="J"  , url="http://www.peliculasmx.net/letra/j.html", extra="http://www.peliculasmx.net/letra/j.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="K"  , url="http://www.peliculasmx.net/letra/k.html", extra="http://www.peliculasmx.net/letra/k.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="L"  , url="http://www.peliculasmx.net/letra/l.html", extra="http://www.peliculasmx.net/letra/l.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="M"  , url="http://www.peliculasmx.net/letra/m.html", extra="http://www.peliculasmx.net/letra/m.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="N"  , url="http://www.peliculasmx.net/letra/n.html", extra="http://www.peliculasmx.net/letra/n.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="O"  , url="http://www.peliculasmx.net/letra/o.html", extra="http://www.peliculasmx.net/letra/o.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="P"  , url="http://www.peliculasmx.net/letra/p.html", extra="http://www.peliculasmx.net/letra/p.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="Q"  , url="http://www.peliculasmx.net/letra/q.html", extra="http://www.peliculasmx.net/letra/q.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="R"  , url="http://www.peliculasmx.net/letra/r.html", extra="http://www.peliculasmx.net/letra/r.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="S"  , url="http://www.peliculasmx.net/letra/s.html", extra="http://www.peliculasmx.net/letra/s.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="T"  , url="http://www.peliculasmx.net/letra/t.html", extra="http://www.peliculasmx.net/letra/t.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="U"  , url="http://www.peliculasmx.net/letra/u.html", extra="http://www.peliculasmx.net/letra/u.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="V"  , url="http://www.peliculasmx.net/letra/v.html", extra="http://www.peliculasmx.net/letra/v.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="W"  , url="http://www.peliculasmx.net/letra/w.html", extra="http://www.peliculasmx.net/letra/w.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="X"  , url="http://www.peliculasmx.net/letra/x.html", extra="http://www.peliculasmx.net/letra/x.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="Y"  , url="http://www.peliculasmx.net/letra/y.html", extra="http://www.peliculasmx.net/letra/y.html"))
+    itemlist.append( Item(channel=__channel__, action="listado2" , title="Z"  , url="http://www.peliculasmx.net/letra/z.html", extra="http://www.peliculasmx.net/letra/z.html"))
 
     return itemlist
 
 
 def listado2(item):
-    logger.info("[vepelis.py] listado2")
+    logger.info("[peliculasmx.py] listado2")
     extra = item.extra
     itemlist = []
 	
@@ -253,13 +250,13 @@ def listado2(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("[vepelis.py] search")
+    logger.info("[peliculasmx.py] search")
     itemlist = []
 
     texto = texto.replace(" ","+")
     try:
         # Series
-        item.url="http://www.vepelis.com/buscar/?q=%s"
+        item.url="http://www.peliculasmx.net/buscar/?q=%s"
         item.url = item.url % texto
         item.extra = ""
         itemlist.extend(listado2(item))
@@ -303,16 +300,12 @@ def search(item,texto):
 def test():
     from servers import servertools
     
-    # mainlist
     mainlist_items = mainlist(Item())
-
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
     novedades_items = listado2(mainlist_items[0])
-    bien = False
-    for novedades_item in novedades_items:
-        mirrors = servertools.find_video_items( item=novedades_item )
-        if len(mirrors)>0:
-            bien = True
-            break
 
-    return bien
+    for novedades_item in novedades_items:
+        mirrors = findvideos( item=novedades_item )
+        if len(mirrors)>0:
+            return True
+
+    return False

@@ -235,14 +235,16 @@ def test():
             if len(itemlist)==0:
                 return false
     
-    # Comprueba si alguno de los vídeos de "Novedades" devuelve mirrors
-    episodios_items = novedades(mainlist_items[0])
+    # Comprueba si alguno de las series de "Novedades" devuelve mirrors
+    portada_items = completo(mainlist_items[0])
     
     bien = False
-    for episodio_item in episodios_items:
-        mirrors = servertools.find_video_items(item=episodio_item)
-        if len(mirrors)>0:
-            bien = True
-            break
+    for portada_item in portada_items:
+        episodios_items = serie(portada_item)
+        if len(episodios_items)>0:
+            video_item = play(episodios_items[0])
+            if len(video_item)>0:
+                bien = True
+                break
     
     return bien

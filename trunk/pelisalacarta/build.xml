@@ -2,14 +2,14 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.60"/>
-    <property name="oldversionboxee" value="9.5"/>
-    <property name="oldversiondate" value="06/06/2013"/>
+    <property name="oldversion" value="3.2.61"/>
+    <property name="oldversionboxee" value="9.6"/>
+    <property name="oldversiondate" value="08/06/2013"/>
 
-    <property name="version" value="3.2.61"/>
-    <property name="versionboxee" value="9.6"/>
-    <property name="versiondate" value="08/06/2013"/>
-    <property name="versionchanges" value="Weekly release"/>
+    <property name="version" value="3.2.62"/>
+    <property name="versionboxee" value="9.7"/>
+    <property name="versiondate" value="21/09/2013"/>
+    <property name="versionchanges" value="After the summer release"/>
 
     <!-- Para betas usar: -->
     <!--property name="version" value="3.2.5-beta-1"/-->
@@ -675,7 +675,7 @@
             <fileset dir="${target}/plexmediaserver/pelisalacarta.bundle"/>
         </copy>
     </target>
-    
+
     <target name="versionup"> <!-- depends="package"-->
         <replaceregexp file="version.xml" match="&lt;tag&gt;(.*?)&lt;/tag&gt;" replace="&lt;tag&gt;${version}&lt;/tag&gt;"/>
         <replaceregexp file="version.xml" match="&lt;date&gt;(.*?)&lt;/date&gt;" replace="&lt;date&gt;${versiondate}&lt;/date&gt;"/>

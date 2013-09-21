@@ -169,16 +169,18 @@ def play(item):
 def test():
     bien = True
     
-    # mainlist
+    # Busca algún episodio con vídeos en la primera opción de series (dubbed anime), letra "A"
     mainlist_items = mainlist(Item())
-    
+    letter_items = letras(mainlist_items[0])
+    series_items = series(letter_items[1])
+
     # Comprueba que todas las opciones tengan algo (excepto el buscador)
-    for mainlist_item in mainlist_items:
-        if mainlist_item.action!="search":
-            exec "itemlist = "+mainlist_item.action+"(mainlist_item)"
-            if len(itemlist)==0:
-                mirrors = findvideos(item=itemlist[0])
-                if len(mirrors)>0:
-                    return True
+    for serie_item in series_items:
+        episodios_items = episodios(serie_item)
+
+        for episodio_item in episodios_items:
+            mirrors = findvideos(item=episodio_item)
+            if len(mirrors)>0:
+                return True
 
     return False

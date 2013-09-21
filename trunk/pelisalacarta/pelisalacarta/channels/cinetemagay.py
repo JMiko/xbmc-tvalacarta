@@ -35,13 +35,14 @@ def mainlist(item):
     logger.info("[cinetemagay.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="Cine gay online" , url="http://www.cinegayonline.net/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-jX_4yJbTpYw/T5GQHb5TgzI/AAAAAAAAAOE/GM4IHqBygb4/s938/cg2.jpg"))
+    
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Cine gay online" , url="http://cinegayonline.blogspot.com.es//feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-jX_4yJbTpYw/T5GQHb5TgzI/AAAAAAAAAOE/GM4IHqBygb4/s938/cg2.jpg"))
     itemlist.append( Item(channel=__channel__, action="lista"  , title="Latin Queer Channel" , url="http://latinqueerchannel.blogspot.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://3.bp.blogspot.com/-r8c6teBc_3I/TbmJiNtv0UI/AAAAAAAAC-0/KrthDgHEebM/banner-latin1.jpg"))
     itemlist.append( Item(channel=__channel__, action="lista"  , title="Modo gay" , url="http://www.modogay.com/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/--oGFfDhcJg8/T4iGRMsNFOI/AAAAAAAABV4/oXKs9PMbrYU/s1600/mgbanner2.jpg"))         
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="Películas gay online (incluye cine adulto)" , url="http://cine4g.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://4.bp.blogspot.com/-w6UbvMoq5aI/TxofB_ZAluI/AAAAAAAAEUg/j7_yYF0HNmc/s320/zonalogo.jpg"))               
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="P.g.p.a" , url="http://pgpa.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://themes.googleusercontent.com/image?id=1PViTUnIUSKDy0JJydtqwXOzvZKG0IIJYN8IFx4v__-n881NSni7O3gGUXyMmHxVs8wah"))           
-    itemlist.append( Item(channel=__channel__, action="lista"  , title="Tu nueva esquina gay" , url="http://www.tuesquinagay5.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://2.bp.blogspot.com/_ErGLbQH-vrA/TM89_RA3I3I/AAAAAAAAANY/n7CKPO3oCoE/s0-R/4501630360_186f3cdc55_o.jpg"))           
-
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Cine gay online (México)" , url="http://cinegayonlinemexico.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmmqL6tS2Ced1VoxlGQT0q-ibPEz1DCV3E1waHFDI5KT0pg1lJ"))               
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="Myquerchannel" , url="http://myqueerchannel.blogspot.com.es//feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://1.bp.blogspot.com/-FKkBi7VyE-U/Tz7Le9vtQ5I/AAAAAAAAAd4/OXjxaycEPb8/s1600/myqueer.jpg"))               
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="La videotecagay" , url="http://lavideotecagay.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSqnVLvoiVXfrHAlvo6n9b-sokU35qDWQTn4IVVqS0lpTneSWIK"))               
+        
     return itemlist
 
 
@@ -80,9 +81,7 @@ def lista(item):
         scrapedtitle = scrapedtitle.replace("&quot;","'")
         scrapedtitle = scrapedtitle.replace("&lt;h1&gt;","")
         scrapedtitle = scrapedtitle.replace("&lt;/h1&gt;","")
-        scrapedtitle = scrapedtitle.replace("3","e")
-        scrapedtitle = scrapedtitle.replace("1","i")
-        scrapedtitle = scrapedtitle.replace("0","o")
+ 
         
         scrapedurl = match[2]
         scrapedthumbnail = match[0]
@@ -148,9 +147,7 @@ def lista_2(item):
         scrapedtitle = scrapedtitle.replace("&quot;","'")
         scrapedtitle = scrapedtitle.replace("&lt;h1&gt;","")
         scrapedtitle = scrapedtitle.replace("&lt;/h1&gt;","")
-        scrapedtitle = scrapedtitle.replace("3","e")
-        scrapedtitle = scrapedtitle.replace("1","i")
-        scrapedtitle = scrapedtitle.replace("0","o")
+    
         
         scrapedurl = match[1]
         scrapedthumbnail = match[0]

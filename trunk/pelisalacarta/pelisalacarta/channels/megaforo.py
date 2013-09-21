@@ -1,9 +1,10 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para megahd
+# Canal para megaforo
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
+
 import urlparse,urllib2,urllib,re
 import os
 import sys
@@ -14,10 +15,10 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-__channel__ = "megahd"
+__channel__ = "megaforo"
 __category__ = "F"
 __type__ = "generic"
-__title__ = "Megahd"
+__title__ = "Mega-foro"
 __language__ = "ES"
 __adult__ = "true"
 
@@ -28,72 +29,74 @@ MAIN_HEADERS.append( ["Accept","text/html,application/xhtml+xml,application/xml;
 MAIN_HEADERS.append( ["Accept-Encoding","gzip, deflate"] )
 MAIN_HEADERS.append( ["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"] )
 MAIN_HEADERS.append( ["Connection","keep-alive"] )
-MAIN_HEADERS.append( ["DNT","1"] )
-MAIN_HEADERS.append( ["Host","megahd.se"] )
-MAIN_HEADERS.append( ["Referer","http://megahd.se/foro/login/"] )
-MAIN_HEADERS.append( ["User-Agent","Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0"] )
-MAIN_HEADERS.append( ["Accept-Charset","ISO-8859-1"] )
+MAIN_HEADERS.append( ["Host","mega-foro.com"] )
+MAIN_HEADERS.append( ["Referer","http://mega-foro.com/"] )
+MAIN_HEADERS.append( ["User-Agent","Mozilla/5.0 (Windows NT 6.2; rv:23.0) Gecko/20100101 Firefox/23.0"] )
+
 
 def isGeneric():
     return True
 
 def login():
-    logger.info("[megahd.py] login")
+    logger.info("[megaforo.py] login")
     # Calcula el hash del password
-    LOGIN = config.get_setting("megahduser") 
-    PASSWORD = config.get_setting("megahdpassword")
+    LOGIN = config.get_setting("megaforouser") 
+    PASSWORD = config.get_setting("megaforopassword")
     logger.info("LOGIN="+LOGIN)
     logger.info("PASSWORD="+PASSWORD)
     # Hace el submit del login
     post = "user="+LOGIN+"&passwrd="+PASSWORD
     logger.info("post="+post)
-    data = scrapertools.cache_page("http://megahd.se/foro/login2/" , post=post, headers=MAIN_HEADERS)
+    data = scrapertools.cache_page("http://mega-foro.com/login2/" , post=post, headers=MAIN_HEADERS)
     return True
 
+	
 def mainlist(item):
-    logger.info("[megahd.py] mainlist")
+    logger.info("[megaforo.py] mainlist")
     itemlist = []
-    
-    if config.get_setting("megahdaccount")!="true":
-    
+    if config.get_setting("megaforoaccount")!="true":
         itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="" , url="" , folder=False ) )
     else:
         if login():
-            itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://megahd.se/foro/peliculas/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Anime" , action="foro" , url="http://megahd.se/foro/anime/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Series" , action="foro" , url="http://megahd.se/foro/series/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Documentales y Deportes" , action="foro" , url="http://megahd.se/foro/documentales/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Zona Infantil" , action="foro" , url="http://megahd.se/foro/zona-infantil/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Series" , action="foro" , url="http://mega-foro.com/series-de-tv/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://mega-foro.com/peliculas/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Infantil" , action="foro" , url="http://mega-foro.com/para-los-peques!/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Cortos y Documentales" , action="foro" , url="http://mega-foro.com/cortos-y-documentales/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Contenido Online" , action="foro" , url="http://mega-foro.com/online-222/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Anime & Manga" , action="foro" , url="http://mega-foro.com/anime/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Música" , action="foro" , url="http://mega-foro.com/musica/" , folder=True ) )
         else:
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
     return itemlist
 
 
 def foro(item):
-    logger.info("[megahd.py] foro")
+    logger.info("[megaforo.py] foro")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     
     if '<h3 class="catbg">Subforos</h3>' in data:
-        patron = '<a class="subje(.*?)t" href="([^"]+)" name="[^"]+">([^<]+)</a>&nbsp' # HAY SUBFOROS
+        patron = '<a class="subj(.*?)ct" href="([^"]+)" name="[^"]+">([^<]+)</a>' # HAY SUBFOROS
         action = "foro"
     else:
-        patron = '<td class="subject windowbg2">.*?<div >.*?<span id="([^"]+)"> <a href="([^"]+)".*?>([^<]+)</a> </span>'
+        patron = '<span id="([^"]+)"><a href="([^"]+)" title="([^"]+)".*?</span>'
         action = "findvideos"
        
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedmsg, scrapedurl,scrapedtitle in matches:
-            scrapedmsg = scrapedmsg.replace("msg_","msg=")
+            scrapedmsg = scrapedmsg.replace("msg_",";msg=")
             url = urlparse.urljoin(item.url,scrapedurl)
             scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+            scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
             title = scrapedtitle
             thumbnail = ""
             plot = scrapedmsg
             # Añade al listado
-            itemlist.append( Item(channel=__channel__, action=action, title= title, url=url , thumbnail=thumbnail , plot=plot , folder=True) )
-    
+            if not 'Listado' in title:
+               itemlist.append( Item(channel=__channel__, action=action, title=title, url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+			
     # EXTREA EL LINK DE LA SIGUIENTE PAGINA
-    patron = '<div class="pagelinks">Páginas:.*?\[<strong>[^<]+</strong>\].*?<a class="navPages" href="(?!\#bot)([^"]+)">[^<]+</a>.*?</div>'
+    patron = 'div class="pagelinks floatleft.*?<strong>[^<]+</strong>\] <a class="navPages" href="(?!\#bot)([^"]+)">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
         if len(matches) > 0:
@@ -106,21 +109,13 @@ def foro(item):
     return itemlist
 
 
-    
 def findvideos(item):
   show = item.title.replace("Añadir esta serie a la biblioteca de XBMC","")
-  logger.info("[megahd.py] findvideos show "+ show)
-  logger.info("[megahd.py] findvideos"+item.url)
-  data = scrapertools.cache_page(item.url)
+  logger.info("[megaforo.py] findvideos show "+ show)
   itemlist=[]
-	
-  if '?action=thankyou;'+item.plot in data:
-    item.plot = item.plot.replace("msg=","?action=thankyou;msg=")
-    item.url = item.url + item.plot
-    data = scrapertools.cache_page(item.url)
-
-		
-  if 'MegaHD' in data:
+  data = scrapertools.cache_page(item.url)
+ 
+  if 'mega-foro' in data:
     patronimage = '<div class="inner" id="msg_\d{1,9}".*?<img src="([^"]+)".*?mega.co.nz/\#\![A-Za-z0-9\-\_]+\![A-Za-z0-9\-\_]+'
     matches = re.compile(patronimage,re.DOTALL).findall(data)
     if len(matches)>0:
@@ -128,7 +123,17 @@ def findvideos(item):
       thumbnail = scrapertools.htmlclean(thumbnail)
       thumbnail = unicode( thumbnail, "iso-8859-1" , errors="replace" ).encode("utf-8")
       item.thumbnail = thumbnail
-   
+ 
+    patronplot = '<div class="inner" id="msg_\d{1,9}".*?<img src="[^"]+"[^/]+/>(.*?)lgf_facebook_share'
+    matches = re.compile(patronplot,re.DOTALL).findall(data)
+    if len(matches)>0:
+     plot = matches[0]
+     title = item.title
+     plot = re.sub('&nbsp;', '', plot)
+     plot = re.sub('\s\s', '', plot)
+     plot = scrapertools.htmlclean(plot)
+     item.plot = ""
+    
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))
     for videoitem in itemlist:
@@ -136,15 +141,16 @@ def findvideos(item):
      videoitem.action="play"
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
-     #videoitem.plot = item.plot
-     videoitem.title = "Video en ["+videoitem.server+ "]"#" ["+videoitem.title +"]   " + item.title
+     videoitem.plot = item.plot
+     videoitem.title = "["+videoitem.server+ "] ["+videoitem.title +"]   " + item.title
      videoitem.show = show
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findvideos") )
     return itemlist   
+  
   else:
     item.thumbnail = ""
-    item.plot = ""
+    item.plot = ""    
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))
     for videoitem in itemlist:
@@ -152,14 +158,11 @@ def findvideos(item):
      videoitem.action="play"
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
-     #videoitem.plot = item.plot
-     videoitem.title = "["+videoitem.server+ "] ["+videoitem.title +"]   " + item.title
+     videoitem.plot = item.plot
+     videoitem.title = "["+videoitem.server+ "]  ["+videoitem.title +"]   " + item.title
     return itemlist  
 
 
-
-
-    # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     # Navega hasta la lista de películas
     mainlist_items = mainlist(Item())
@@ -171,5 +174,4 @@ def test():
         if not itemlist is None and len(itemlist)>=0:
             return True
     return False
-
     

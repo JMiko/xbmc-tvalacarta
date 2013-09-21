@@ -63,6 +63,7 @@ def mainlist(item):
             itemlist.append( Item(channel=__channel__, title="Mis pelis", action="categorias", extra=extra_params, url="movies" ) )
             itemlist.append( Item(channel=__channel__, title="Mis documentales", action="categorias", extra=extra_params, url="documentaries" ) )
             itemlist.append( Item(channel=__channel__, title="Mis tvshows", action="categorias", extra=extra_params, url="tvshows" ) )
+            itemlist.append( Item(channel=__channel__, title="Mis listas", action="listasMenu", extra=extra_params, url="listas" ) )
             
 
         else:
@@ -111,7 +112,6 @@ def categorias(item):
         itemlist.append( Item(channel=__channel__, title="Pendientes", action="categoria", url='Pendiente', extra=item.url) )
         itemlist.append( Item(channel=__channel__, title="Tvshows Mas Vistos", action="mas_vistas" , url=item.url ) )
         itemlist.append( Item(channel=__channel__, title="Tvshows Por Categorias", action="menu_cat", url=item.url, extra="cat" ) )
-
         
 
     itemlist.append( Item(channel=__channel__, title="Buscar", action="search", url=item.url) )
@@ -294,6 +294,121 @@ def mas_vistas(item):
    
     return itemlist
 
+
+def listasMenu(item):
+    
+   
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = getCredentials()
+    post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
+   
+    # Extrae las entradas (carpetas)
+    url="http://api.series.ly/v2/user/media/lists"
+    listasInfo = load_json(scrapertools.cache_page(url, post=post))
+    
+    
+    ownList=[]
+    followList=[]
+
+    if  len(listasInfo["own"]) >=1 :
+        for lista in listasInfo["own"]:
+            logger.info(str(lista))
+            if "last_medias" in lista:
+                
+                ownList.append({"id_list":lista["id_list"],
+                                "title": lista["title"],
+                                "medias_num": lista["medias_num"] })
+
+                """title=lista["title"]
+                ownList[title]=[]
+                for element in lista["last_medias"]:
+                    video={ 'idm': element["idm"],
+                            'seasons': 0,
+                            'episodes':0,
+                            'poster':{"large":element["img"]},
+                            'name': element["name"],
+                            'mediaType':get_constant("mediaType")[int(element["mediaType"])],
+                            'auth_token':auth_token
+                    }
+                  
+                    ownList[title].append(video)
+                """
+
+
+    if  len(listasInfo["following"]) >=1 :
+        for lista in listasInfo["following"]:
+            logger.info(str(lista))
+            if "last_medias" in lista:
+                followList.append({"id_list":lista["id_list"],
+                                "title": lista["title"],
+                                "medias_num": lista["medias_num"] })
+
+    import json
+
+    itemlist=[]
+    itemlist.append( Item(channel=__channel__, title="Propias", action="listas", url='Viendo', extra=json.dumps(ownList)) )
+    itemlist.append( Item(channel=__channel__, title="Siguiendo", action="listas", url='Finalizada', extra=json.dumps(followList)) )
+
+    return itemlist
+
+def listas(item):
+    logger.info("[seriesly.py] listas_vistas")
+
+    import urllib
+    import json
+
+    d=urllib.unquote(item.extra)
+    listaDict=load_json(d)
+
+    itemlist=[]
+    for element in listaDict:
+        logger.info(element)
+        title=element["title"]
+        
+        itemlist.append( Item(channel=__channel__, title=title, action="lista", url='Viendo', extra=json.dumps(element)) )
+        
+    return itemlist
+
+def lista(item):
+
+    import urllib
+    import json
+
+    d=urllib.unquote(item.extra)
+    listaDict=load_json(str(d))
+    
+
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = getCredentials()
+    post = 'auth_token=%s&id_list=%s' % ( qstr(auth_token), qstr(listaDict["id_list"]) )
+   
+    # Extrae las entradas (carpetas)
+    url="http://api.series.ly/v2/media/list"
+    lista = load_json(scrapertools.cache_page(url, post=post))
+
+
+    logger.info(str(lista))
+
+    itemlist=[]
+        
+    for element in lista["list_info"]["medias"]:
+        logger.info(str(element))
+        video={ 'idm': element["idm"],
+                'seasons': 0,
+                'episodes':0,
+                'poster':{"large":element["img"]},
+                'name': element["name"],
+                'mediaType':get_constant("mediaType")[int(element["mediaType"])],
+                'auth_token':auth_token
+            }
+        itemlist.append(generate_item(video, video["mediaType"], auth_token))
+
+              
+
+
+    return itemlist
+
+
 def generate_item(video , tipo, auth_token):
    
    
@@ -304,8 +419,14 @@ def generate_item(video , tipo, auth_token):
         #Si la serie no tiene temporada, al abrirla tampoco tiene capitulos
         if "seasons" not in video:
             return Item()
-        action = 'serie_capitulos'
-        title = '%(name)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % video
+        if "seasons"==0:
+
+            action = 'serie_capitulos'
+            title = '%(name)s Serie' % video
+
+        else:
+            action = 'serie_capitulos'
+            title = '%(name)s (%(seasons)d Temporadas) (%(episodes)d Episodios)' % video
 
     elif tipo =="movies" or tipo == "documentaries":
                 url = 'http://api.series.ly/v2/media/episode/links?auth_token='+ auth_token+'&idm=%s&mediaType=%s' %(video["idm"],get_constant("mediaType")[tipo])
@@ -504,12 +625,16 @@ def search_videos(item, texto=None):
 def load_json(data):
     # callback to transform json string values to utf8
     def to_utf8(dct):
+        
         rdct = {}
         for k, v in dct.items() :
+            
+        
             if isinstance(v, (str, unicode)) :
                 rdct[k] = v.encode('utf8', 'ignore')
             else :
                 rdct[k] = v
+        
         return rdct
 
     try:
