@@ -61,6 +61,11 @@
     <setting id="megahduser" type="text" label="User"  enable="eq(-1,true)" default=""/>                                                                                        
     <setting id="megahdpassword" type="text" option="hidden" label="Password" enable="!eq(-1,)+eq(-2,true)" default=""/> 
 
+    <setting type="sep" />
+    <setting id="megaforoaccount" type="bool" label="megaforo" default="false"/>
+    <setting id="megaforouser" type="text" label="User"  enable="eq(-1,true)" default=""/>
+    <setting id="megaforopassword" type="text" option="hidden" label="Password" enable="!eq(-1,)+eq(-2,true)" default=""/>
+
     <setting id="jdownloader_enabled" type="bool" label="JDownloader" default="false"/>
     <setting id="jdownloader" type="text" label="URL" default="http://127.0.0.1:10025"/>
 

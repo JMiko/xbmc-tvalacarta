@@ -45,12 +45,8 @@ def novedades_episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<section class="lastcap">(.*?)</section>')
-    patron  = '<article[^<]+'
-    patron += '<a href="([^"]+)"[^<]+'
-    patron += '<header>([^<]+)</header[^<]+'
-    patron += '<figure[^<]+'
-    patron += '<img src="([^"]+)"'
+    patron  = '<div class="not"><div class="tova"></div><a href="([^"]+)" title="([^"]+)"[^<]+'
+    patron += '<img class="[^"]+" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -61,7 +57,7 @@ def novedades_episodios(item):
         thumbnail = scrapedthumbnail
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail, viewmode="movie", folder=True) )
-    
+
     return itemlist
 
 def series(item):
@@ -70,12 +66,8 @@ def series(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<section class="lasttele">(.*?)</section>')
-    patron  = '<article[^<]+'
-    patron += '<a href="([^"]+)"[^<]+'
-    patron += '<header>([^<]+)</header[^<]+'
-    patron += '<figure[^<]+'
-    patron += '<img src="([^"]+)"'
+    patron  = '<div class="not1"><a href="([^"]+)" title="([^"]+)"[^<]+'
+    patron += '<img class="[^"]+" src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -134,10 +126,10 @@ def episodios(item):
     itemlist = []
 
     # Descarga la página
-    
     data = scrapertools.cachePage(item.url)
-    #<li class="lcc"><a href="capitulo/herederos-de-una-venganza-121.html" class="lcc">Cap&iacute;tulo 121 de Herederos de una venganza</a></li>
-    patron  = '<li class="lcc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
+    data = scrapertools.get_match(data,'<ul class="anime_episodios"(.*?)</ul>')
+    #<li><a href="ver/rafaela-119.html">Capitulo 119</a></li>
+    patron  = '<li><a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 

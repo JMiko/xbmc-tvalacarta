@@ -10,6 +10,9 @@ import xml.dom.minidom as minidom
 import urllib                                                                                                                                                                     
 import os
 from core import config
+from core import scrapertools                                                                                                                                                     
+from core.item import Item                                                                                                                                                        
+from servers import servertools
 __server__ = "oc1.lopezepol.com"
 
 SERVER="https://"+__server__+"/stormtv/public/"
@@ -69,6 +72,7 @@ def removefollow(tvs_id):
     print "[stormlib.py] Remove follow"
 
 def iswatched(title,chap_dictionary):
+    watched=False
     patronchap="([0-9](x|X)[0-9]*)"                                                                                                                                                 
     matcheschap= re.compile(patronchap,re.DOTALL).findall(title)                                                                                                              
     if (len(matcheschap)>0):
@@ -77,11 +81,13 @@ def iswatched(title,chap_dictionary):
        		status=chap_dictionary[matcheschap[0][0].lower()].encode("utf-8")                                                                                                                    
        		#print status                                                                                                                                                      
        		title=title+" ["+status+"]"                                                                                                                                               
-       		#print chap_dictionary[matcheschap[0]]+"#"
+       		watched=True
+		#print chap_dictionary[matcheschap[0]]+"#"
 	matches=matcheschap[0][0].lower()
     else:
 	matches="false"
-    return title, matches
+	watched=False
+    return title, matches, watched
 
 def getwatched(tvs_id):
     print "[stormlib.py] getwatched"+tvs_id
@@ -145,9 +151,32 @@ def setwatched (tvs_id,chap_number):
     #server= "https://"+__server__+"/stormtv/public/"                                                                                                                               
     #path=config.get_data_path()+"stormtv/temp/"
     print"[stormlib.py] setwatched "+SERVER+"chapters/add/tvs/"+tvs_id+"/user/"+user_id+"/pass/"+user_pass+"/chap/"+chap_number
-    urllib.urlretrieve (SERVER+"chapters/add/tvs/"+tvs_id+"/user/"+user_id+"/pass/"+user_pass+"/chap/"+chap_number, PATH+"temp.xml")                                          
-    
-    
+    urllib.urlretrieve (SERVER+"chapters/add/tvs/"+tvs_id+"/user/"+user_id+"/pass/"+user_pass+"/chap/"+chap_number, PATH+"temp.xml")
+
+def gettvslist (tvsl_id):
+    print "[stormlib.py] gettvslist"+tvsl_id
+    user_id=config.get_setting("stormtvuser")                                                                                                                                     
+    user_pass=config.get_setting("stormtvpassword")                                                                                                                               
+    #server= "https://"+__server__+"/stormtv/public/"                                                                                                                             
+    #path=config.get_data_path()+"stormtv/temp/"                                                                                                                                  
+    print"[stormlib.py] setwatched "+SERVER+"tvseries/tvslist/user/"+user_id+"/pass/"+user_pass+"/id/"+tvsl_id                                                  
+    urllib.urlretrieve (SERVER+"tvseries/tvslist/user/"+user_id+"/pass/"+user_pass+"/id/"+tvsl_id, PATH+"temp.xml")
+def getalltvslist():
+    print "[stormlib.py] getalltvslist"                                                                                        
+    user_id=config.get_setting("stormtvuser")                                                                                       
+    user_pass=config.get_setting("stormtvpassword")                                                                                 
+    #server= "https://"+__server__+"/stormtv/public/"                                                                               
+    #path=config.get_data_path()+"stormtv/temp/"                                                                                    
+    print"[stormlib.py] getalltvslist "+SERVER+"tvseries/alltvslist/user/"+user_id+"/pass/"+user_pass                     
+    urllib.urlretrieve (SERVER+"tvseries/alltvslist/user/"+user_id+"/pass/"+user_pass, PATH+"temp.xml")    
+def getpopular():
+    print "[stormlib.py] getpopular"                                                                                             
+    user_id=config.get_setting("stormtvuser")                                                                                       
+    user_pass=config.get_setting("stormtvpassword")                                                                                 
+    #server= "https://"+__server__+"/stormtv/public/"                                                                               
+    #path=config.get_data_path()+"stormtv/temp/"                                                                                    
+    print"[stormlib.py] getpopular "+SERVER+"tvseries/alltvslist/user/"+user_id+"/pass/"+user_pass                               
+    urllib.urlretrieve (SERVER+"tvseries/popular/user/"+user_id+"/pass/"+user_pass, PATH+"temp.xml") 
 def isfollow (tvs_id):
     print "[stormlib.py] isfollow"+ tvs_id
     user_id=config.get_setting("stormtvuser")                                                                                                   
@@ -186,6 +215,15 @@ def audio_serieonline(title):
     n_title=n_title.replace(patron_vos2,"(VOS)")
     n_title=n_title.replace(patron_spa,"(Español)")
     return n_title
+def combined(seasonepisode):
+	print "[stormlib.py]combined "+seasonepisode
+	patron = "(.*)x(.*)"
+	matches = re.compile(patron,re.DOTALL).findall(seasonepisode)
+	for season,episode in matches:
+		sea=season
+		epi=episode
+	print "Season "+sea+" Episode "+epi
+	return season,episode
 
 def audio_seriesyonkis(title):
 	print "[stormlib.py]audio_seriesyonkis "+title
@@ -203,6 +241,13 @@ def audio_seriesyonkis(title):
         n_title=n_title.replace(patron_vos2,"(VOS)")
         n_title=n_title.replace(patron_spa,"(Español)")
         return n_title
+def servers_divxonline(title):
+	print "[stormlib.py]servers_divxonline"+title
+	patron_moe="moevideo"
+	matches_moe= re.compile(patron_moe, re.DOTALL).findall(title)
+	n_title= title.replace(patron_moe,"moevideos")
+	n_title= title.replace("played","played.to")
+	return n_title
 def verify(itemlist):
 	print "[stormlib.py] verify"		
 	strue=1                                                                                                                                                           
@@ -256,4 +301,187 @@ def verify(itemlist):
                               strue=0                                                                                                                                             
 		if ((strue==1)&(ltrue==1)):                                                                                                                               
                 	storm_itemlist.append( Item(channel=item.channel, action="play" , title=item.title, fulltitle=item.fulltitle , url=item.url, thumbnail=item.thumbnail, plot= item.plot, folder=False,fanart= item.fanart,show = item.show,extra=item.extra, server=item.server))  
-	return storm_itemlist 
+	return storm_itemlist
+
+def find_video_storm(item=None, data=None, channel=""):                                                                                                                           
+    #logger.info("[launcher.py] findvideos")                                                                                                                                       
+                                                                                                                                                                                  
+    # Descarga la página                                                                                                                                                         
+    if data is None:                                                                                                                                                              
+        from core import scrapertools                                                                                                                                             
+        data = scrapertools.cache_page(item.url)                                                                                                                                  
+        #logger.info(data)                                                                                                                                                        
+                                                                                                                                                                                  
+    # Busca los enlaces a los videos                                                                                                                                              
+    from core.item import Item                                                                                                                                                    
+    from servers import servertools                                                                                                                                               
+    listavideos = servertools.findvideosbyserver(data,item.server)                                                                                                                                    
+    print "[find_video_storm] Server"+item.server                                                                                                                                                                             
+    if item is None:                                                                                                                                                              
+        item = Item()                                                                                                                                                             
+                                                                                                                                                                                  
+    itemlist = []                                                                                                                                                                 
+    for video in listavideos:                                                                                                                                                     
+        scrapedtitle = item.title.strip() + " - " + video[0].strip()                                                                                                              
+        scrapedurl = video[1]                                                                                                                                                     
+        server = video[2]                                                                                                                                                         
+                                                                                                                                                                                  
+        itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=item.server, page=item.page, url=scrapedurl, thumbnail=item.thumbnail, show=item.show , plot=item.plot , folder=False) )
+                                                                                                                                                                                  
+    return itemlist 
+def play_yonkis(item):                                                                                                                                                                   
+    print "[seriesyonkis.py] play"                                                                                                                                         
+    itemlist = []                                                                                                                                                                 
+                                                                                                                                                                                  
+    # Descarga la página de reproducción de este episodio y server                                                                                                              
+    #<a href="/s/y/597157/0/s/1244" target="_blank">Reproducir ahora</a>                                                                                                          
+    #logger.info("[seriesyonkis.py] play url="+item.url)                                                                                                                           
+    data = scrapertools.cache_page(item.url)                                                                                                                                      
+    patron = '<a href="([^"]+)" target="_blank">\s*Reproducir ahora\s*</a>'                                                                                                       
+    matches = re.compile(patron,re.DOTALL).findall(data)                                                                                                                          
+    if len(matches)==0:                                                                                                                                                           
+        patron = '<a href="([^"]+)" target="_blank">\s*Descargar ahora\s*</a>'                                                                                                    
+        matches = re.compile(patron,re.DOTALL).findall(data)                                                                                                                      
+                                                                                                                                                                                  
+    if len(matches)==0:                                                                                                                                                           
+        #logger.info("[seriesyonkis.py] play ERROR, no encuentro el enlace 'Reproducir ahora' o 'Descargar ahora'")                                                                
+        return []                                                                                                                                                                 
+                                                                                                                                                                                  
+    playurl = urlparse.urljoin(item.url,matches[0])                                                                                                                               
+    #logger.info("[seriesyonkis.py] play url="+playurl)                                                                                                                            
+                                                                                                                                                                                  
+    try:                                                                                                                                                                          
+        location = scrapertools.getLocationHeaderFromResponse(playurl)                                                                                                            
+        #logger.info("[seriesyonkis.py] play location="+location)                                                                                                                  
+                                                                                                                                                                                  
+        if location<>"":                                                                                                                                                          
+            #logger.info("[seriesyonkis.py] Busca videos conocidos en la url")                                                                                                     
+            videos = servertools.findvideosbyserver(location,item.server)                                                                                                                             
+                                                                                                                                                                                  
+            if len(videos)==0:                                                                                                                                                    
+                location = scrapertools.getLocationHeaderFromResponse(location)                                                                                                   
+                #logger.info("[seriesyonkis.py] play location="+location)                                                                                                          
+                                                                                                                                                                                  
+                if location<>"":                                                                                                                                                  
+                    #logger.info("[seriesyonkis.py] Busca videos conocidos en la url")                                                                                             
+                    videos = servertools.findvideosbyserver(location,item.server)                                                                                                                     
+                                                                                                                                                                                  
+                    if len(videos)==0:
+                        #logger.info("[seriesyonkis.py] play downloading location")                                                                                                
+                        data = scrapertools.cache_page(location)                                                                                                                  
+                        #logger.info("------------------------------------------------------------")                                                                               
+                        #logger.info(data)                                                                                                                                        
+                        #logger.info("------------------------------------------------------------")                                                                               
+                        videos = servertools.findvideosbyserver(data,item.server)                                                                                                                     
+                        #logger.info(str(videos))                                                                                                                                  
+                        #logger.info("------------------------------------------------------------")                                                                               
+        else:                                                                                                                                                                     
+            #logger.info("[seriesyonkis.py] play location vacía")                                                                                                                 
+            videos=[]                                                                                                                                                             
+                                                                                                                                                                                  
+        if(len(videos)>0):                                                                                                                                                        
+            url = videos[0][1]                                                                                                                                                    
+            server=videos[0][2]                                                                                                                                                   
+            itemlist.append( Item(channel=item.channel, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=item.server, extra=item.extra, folder=False)) 
+        else:                                                                                                                                                                     
+            data = scrapertools.cache_page(playurl)                                                                                                                               
+            patron='<ul class="form-login">(.*?)</ul'                                                                                                                             
+            matches = re.compile(patron, re.S).findall(data)                                                                                                                      
+            if(len(matches)>0):                                                                                                                                                   
+                if "xbmc" in config.get_platform():                                                                                                                               
+                    data = matches[0]                                                                                                                                             
+                    #buscamos la public key                                                                                                                                       
+                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'                                                                                        
+                    pkeys = re.compile(patron, re.S).findall(data)                                                                                                                
+                    if(len(pkeys)>0):                                                                                                                                             
+                        pkey=pkeys[0]                                                                                                                                             
+                        #buscamos el id de challenge                                                                                                                              
+                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)                                                                   
+                        patron="challenge.*?'([^']+)'"                                                                                                                            
+                        challenges = re.compile(patron, re.S).findall(data)                                                                                                       
+                        if(len(challenges)>0):                                                                                                                                    
+                            challenge = challenges[0]                                                                                                                             
+                            image = "http://www.google.com/recaptcha/api/image?c="+challenge                                                                                      
+                                                                                                                                                                                  
+                            #CAPTCHA                                                                                                                                              
+                            exec "import pelisalacarta.captcha as plugin"                                                                                                         
+                            tbd = plugin.Keyboard("","",image)
+                            tbd.doModal()                                                                                                                                         
+                            confirmed = tbd.isConfirmed()                                                                                                                         
+                            if (confirmed):                                                                                                                                       
+                                tecleado = tbd.getText()                                                                                                                          
+                                #logger.info("tecleado="+tecleado)                                                                                                                 
+                                sendcaptcha(playurl,challenge,tecleado)                                                                                                           
+                            del tbd                                                                                                                                               
+                            #tbd ya no existe                                                                                                                                     
+                            if(confirmed and tecleado != ""):                                                                                                                     
+                                itemlist = play(item)                                                                                                                             
+                else:                                                                                                                                                             
+                    itemlist.append( Item(channel=item.channel, action="error", title="El sitio web te requiere un captcha") )                                                    
+                                                                                                                                                                                  
+    except: 
+	pass                                                                                                                                                                      
+        #import sys                                                                                                                                                                
+        #for line in sys.exc_info():                                                                                                                                               
+        #    logger.error( "%s" % line )                                                                                                                                           
+    #logger.info("len(itemlist)=%s" % len(itemlist))                                                                                                                               
+    return itemlist
+
+
+def get_filenium_status():                                                                                                                                                                 
+    from xml.dom.minidom import Document                                            
+    print "[Filenium.py] get_status"                                                                                                                                       
+    url = "http://www.filenium.com"                                                                                                                                               
+    # Descarga la página                                                                                                                                                         
+    data = scrapertools.cachePage(url)                                                                                                                                            
+    # Extrae las entradas                                                                                                                                                         
+    patronvideos = '<p class="([^"]+)">([^"]+)</p>'                                                                                                                               
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)                                                                                                                    
+    #if DEBUG: scrapertools.printMatches(matches)                                                                                                                                 
+    itemlist = []                                                                                                                                                                 
+    doc = Document()                                                                
+    base= doc.createElement('Filenium')                                             
+    doc.appendChild(base)
+
+    for match in matches:                                                                                                                                                         
+        #print match[0]+" "+match[1]
+	entry = doc.createElement('Server')
+	base.appendChild(entry)
+	name=doc.createElement('Name')
+	entry.appendChild(name)
+	name_content = doc.createTextNode(match[1])
+	name.appendChild(name_content)
+	status=doc.createElement('Status')
+	entry.appendChild(status)
+	status_content = doc.createTextNode(match[0])
+	status.appendChild(status_content)
+    f = open(PATH+"filenium.xml", 'w')
+    doc.writexml(f)
+    f.close() 
+#with codecs.open(PATH+"filenium.xml", "w", "utf-8") as out:
+#    doc.writexml(out)
+def filenium():
+    print "[stormlib.py] filenium dictionary"                                                                                                                                       
+    filenium_dictionary = {}                                                                                                                                                          
+    #server= "https://"+__server__+"/stormtv/public/"                                                                                                                             
+    #path=config.get_data_path()+"stormtv/temp/"                                                                                                                                  
+    xml=PATH+"filenium.xml"                                                                                                                                                       
+    doc = minidom.parse(xml)                                                                                                                                                      
+    node = doc.documentElement                                                                                                                                                    
+    servers = doc.getElementsByTagName("Server")                                                                                                                                
+    for server in servers:                                                                                                                                                      
+        name= server.getElementsByTagName("Name")[0].childNodes[0].data
+	if (name=="Uploaded"):
+		name="uploadedto"
+	if (name=="Nowvideo.eu"):
+		name="nowvideo"
+        status = server.getElementsByTagName("Status")[0].childNodes[0].data
+	if (status=="activehost"):
+            stat="[A]"
+	elif (status=="problemshost"):
+	    stat="[P]"
+	else:
+	    stat="[I]"                                                                                         
+        filenium_dictionary[name.upper()]=stat                                                                                                                                            
+        print name+filenium_dictionary[name.upper()]+"#"                                                                                                                                  
+    return  filenium_dictionary               

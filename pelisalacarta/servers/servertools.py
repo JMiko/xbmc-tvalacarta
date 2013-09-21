@@ -20,7 +20,8 @@ FREE_SERVERS.extend(['googlevideo','gigabyteupload','hdplay','filebox','mediafir
 FREE_SERVERS.extend(['rapidtube','royalvids','sockshare','stagevu','stagero','tutv','userporn','veoh','videobam'])
 FREE_SERVERS.extend(['vidbux','videoweed','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
-FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','rapidvideo','fileflyer','playedto'])
+FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','rapidvideo'])
+FREE_SERVERS.extend(['fileflyer','playedto','tunepk','powvideo','videomega','mega'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -44,7 +45,7 @@ REALDEBRID_SERVERS = ['one80upload','tenupload','onefichier','onehostclick','two
                    'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','letitbit','loadto','mediafire','mega','megashare','megashares','mixturevideo','muchshare','netload',
                    'novafile','nowdownload','purevid','putbit','putlocker','redtube','rapidgator','rapidshare','rutube','ryushare','scribd','sendspace','sharebees','shareflare','shragle','slingfile','sockshare',
                    'soundcloud','speedyshare','turbobit','unibytes','uploadc','uploadedto','uploading','uploadspace','uptobox',
-                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare','justintv','nowvideo']
+                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare','justintv','nowvideo','ultramegabit','filesmonster']
 #wupload,fileserve
 
 ALLDEBRID_SERVERS = ['one80upload','onefichier','twoshared','fourfastfile','fourshared','albafile','bayfiles','bitshare','cloudzer','cramit','crocko','cyberlocker','dailymotion','dengee',
@@ -52,7 +53,7 @@ ALLDEBRID_SERVERS = ['one80upload','onefichier','twoshared','fourfastfile','four
                    'filesend','filesmonster','filestay','freakshare','gigasize','hotfile','hulkshare','jumbofiles','letitbit','loadto','mediafire','megashares','mixturevideo','netload',
                    'nitrobits','oteupload','purevid','putlocker','rapidgator','rapidshare','redtube','scribd','secureupload','sharebees','shareflare','slingfile','sockshare',
                    'soundcloud','speedload','speedyshare','turbobit', 'uloadto', 'uploadc','uploadedto','uploading','uptobox',
-                   'userporn','vimeo','vipfile','youporn','youtube','yunfile','zippyshare','lumfile']               
+                   'userporn','vimeo','vipfile','youporn','youtube','yunfile','zippyshare','lumfile','ultramegabit','filesmonster']
                
 #Resultado de http://alldebrid.com/api.php?action=get_host
 #"10upload.com", "1fichier.com", "180upload.com", "2shared.com", "4fastfile.com", "4shared.com", "asfile.com", "badongo.com", "bayfiles.com", "bitshare.com", "buckshare.com", "bulletupload.com", "cloudnator.com", 

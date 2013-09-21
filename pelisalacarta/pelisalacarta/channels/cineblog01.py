@@ -226,32 +226,6 @@ def listserie(item):
     # Descarga la página
     data = scrapertools.cache_page(item.url)
     logger.info(data)
-    
-    '''
-    <div id="item">
-    <div id="covershot"><a href="http://www.cineblog01.info/anime/one-piece/" target="_self" rel="[ ]" class="thetip" Title="One P"><p><img class="alignnone" src="http://digilander.libero.it/Alex14183/main/recensioni/images/onepiece01.jpg" alt="" /></p>
-    </a>
-    <table width="461">
-    <tr>
-    <td><div><a class="<div class="fblike_button" style="margin: 10px 0;"><iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.cineblog01.info%2Fanime%2Fone-piece%2F&amp;layout=button_count&amp;show_faces=false&amp;width=150&amp;action=like&amp;colorscheme=dark" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:150px; height:20px"></iframe></div> </div> </td>
-    </tr>
-    </table>
-    </div>
-    <div id="post-title"><a href="http://www.cineblog01.info/anime/one-piece/"><h3>One Piece</h3></a></div>
-    <div id="description"><p>    003 - La liberazione di Zoro
-    004 ...</p></div>
-    <div id="meta">    
-    <div id="ratings"> <div class="pd-rating" id="pd_rating_holder_2105735_post_834"></div>
-    <script language="javascript" charset="utf-8">
-    PDRTJS_settings_2105735_post_834 = {
-    "id" : "2105735",
-    "popup" : "off",
-    "unique_id" : "wp-post-834",
-    "title" : "One Piece",
-    "permalink" : "http://www.cineblog01.info/anime/one-piece/",
-    "item_id" : "_post_834"
-    }; </script></div>
-    '''
 
     # Extrae las entradas (carpetas)
     patronvideos  = '<div id="covershot"><a[^<]+<p[^<]+<img.*?src="([^"]+)".*?'
@@ -270,20 +244,12 @@ def listserie(item):
         # Añade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
-    # Remove the next page mark
-    #<li><a href="http://www.cineblog01.info/serietv/page/2/">2</a>
-    patronvideos = '<a href="(http.//www.cineblog01.info/[^\/]+/page/[0-9]+)'
-    matches = re.compile (patronvideos, re.DOTALL).findall (data)
-    scrapertools.printMatches (matches)
-
-    if len(matches)>0:
-        scrapedtitle = "(Next Page ->)"
-        scrapedurl = matches[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        itemlist.append( Item(channel=__channel__, action="listserie" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
+    # Put the next page mark
+    try:
+        next_page = scrapertools.get_match(data,"<link rel='next' href='([^']+)'")
+        itemlist.append( Item(channel=__channel__, action="listserie" , title=">> Next page" , url=next_page, thumbnail=scrapedthumbnail, plot=scrapedplot))
+    except:
+        pass
 
     return itemlist
 
