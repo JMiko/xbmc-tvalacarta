@@ -80,18 +80,36 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         
         # URL a invocar: http://www.nowvideo.eu/api/player.api.php?file=3695bce6e6288&user=undefined&codes=1&pass=undefined&key=83%2E44%2E253%2E73%2D64a25e17853b4b19586841e04b0d9382
         # En la página:
+        file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
+        cid = scrapertools.get_match(data,'flashvars.cid="([^"]+)"')
+        try:
+            cid2 = scrapertools.get_match(data,'flashvars.cid2="([^"]+)"')
+        except:
+            cid2 = "undefined"
+
+        #88%2E11%2E91%2E148%2D108158b6f943155d388c317733719019
+        key = scrapertools.get_match(data,'var fkzd="([^"]+)"')
+        key = key.replace(".","%2E").replace("-","%2D")
+        #http://www.nowvideo.ch/api/player.api.php?cid=1&cid2=19491&pass=undefined&numOfErrors=0&file=kviaa9bn4v3vd&key=88%2E11%2E91%2E148%2D108158b6f943155d388c317733719019&cid3=undefined&user=undefined
+        #http://www.nowvideo.ch/api/player.api.php?user=undefined&cid=1&numOfErrors=0&cid2=undefined&file=oo6f8cu3lrx12&key=88%2E11%2E91%2E148%2D1bf5a05cfb57766dc3a4061876867ec7&pass=undefined&cid3=undefined
+
         '''
-        flashvars.domain="http://www.nowvideo.eu";
-        flashvars.file="3695bce6e6288";
-        flashvars.filekey="83.44.253.73-64a25e17853b4b19586841e04b0d9382";
+        var flashvars = {};
+        flashvars.width=960;
+        flashvars.height=500;
+        var fkzd="88.11.91.148-108158b6f943155d388c317733719019";
+        flashvars.domain="http://www.nowvideo.ch";
+        flashvars.file="kviaa9bn4v3vd";
+        flashvars.filekey=fkzd;
         flashvars.advURL="0";
         flashvars.autoplay="false";
         flashvars.cid="1";
+        flashvars.LoadAds="1";
+        flashvars.advVUrl="http://hiroservers.appspot.com/GenerateVastServlet/Matomy?external-publisher-id=NikiLive";
+        flashvars.advVType=2;
+        flashvars.cid2="19491";
         '''
-        file = scrapertools.get_match(data,'flashvars.file="([^"]+)"')
-        key = scrapertools.get_match(data,'flashvars.filekey="([^"]+)"')
-        #http://www.nowvideo.eu/api/player.api.php?key=88%2E19%2E203%2E156%2Dd140046f284485aedf05563b85f1e8e9&codes=undefined&user=undefined&pass=undefined&file=6f213c972dc5b
-        url = "http://www.nowvideo.eu/api/player.api.php?file="+file+"&user=undefined&codes=undefined&pass=undefined&key="+key.replace(".","%2E").replace("-","%2D")
+        url = "http://www.nowvideo.ch/api/player.api.php?cid="+cid+"&cid2="+cid2+"&pass=undefined&numOfErrors=0&file="+file+"&key="+key+"&cid3=undefined&user=undefined"
         data = scrapertools.cache_page( url )
         logger.info("data="+data)
         # url=http://f23.nowvideo.eu/dl/653d434d3cd95f1f7b9df894366652ba/4fc2af77/nnb7e7f45f276be5a75b10e8d6070f6f4c.flv&title=Title%26asdasdas&site_url=http://www.nowvideo.eu/video/3695bce6e6288&seekparm=&enablelimit=0
