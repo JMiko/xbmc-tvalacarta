@@ -543,8 +543,71 @@ def links(item):
        
     return itemlist
 
-def search_cat(item):
-    return search_videos(item)
+def search_cat(item,):
+    
+    # Obtiene de nuevo los tokens
+    auth_token, user_token = getCredentials()
+    post = 'auth_token=%s' % ( qstr(auth_token) )
+    logger.info(str(item.url))
+
+    
+    #busqueda general
+    url="http://api.series.ly/v2/media/browse"
+    post="auth_token="+auth_token+"&order=most_viewed"
+
+    
+
+    #busquda por tipo
+    if item.url != "" :
+        mediaType=get_constant("mediaType")[item.url]
+        post=post+"&mediaType=%s" % mediaType
+
+    #busqueda por genero
+    if item.extra != "":
+        post=post+"&genre="+item.extra
+
+
+
+    #paginacion
+    if item.plot != "":
+        post=post+"&page="+item.plot
+        plot=int(item.plot)+1
+        item.plot=str(plot)
+   
+    # Extrae las entradas (carpetas)
+    serieList = load_json(scrapertools.cache_page(url, post))
+    
+
+    if "error" in serieList:
+        if serieList["error"]!=0:
+            error_message(serieList["error"])
+            return []
+    else:
+        return []
+   
+
+    if serieList == None : serieList = []
+   
+    logger.info("hay %d series" % len(serieList))
+   
+    itemlist = []
+    for serieItem in serieList['results']["medias"]:
+        logger.info(str(serieItem))
+        
+        tipo=get_constant("mediaType")[serieItem["mediaType"]]
+       
+       
+        itemlist.append(generate_item(serieItem, tipo, auth_token))
+         
+    
+    #Añadimos Pagina Siguiente
+    if len(itemlist)>0:
+        itemlist.append( Item(channel=__channel__, title="Pagina Siguiente", action="search_cat", extra=item.extra, url=item.url, plot=item.plot ))
+
+    return itemlist
+
+
+  
 
 
 def search(item,texto="", categoria="*"):
@@ -796,7 +859,7 @@ def get_constant(texto):
                                 "family":       "Familiar",
                                 "history":      "Histórico",
                                 "mystery":      "Misterio",
-                                "sci":          "Ciencia Ficción",
+                                "sci-fi":          "Ciencia Ficción",
                                 "war":          "Guerra",
                                 "adventure":    "Aventura",
                                 "crime":        "Crimen",
