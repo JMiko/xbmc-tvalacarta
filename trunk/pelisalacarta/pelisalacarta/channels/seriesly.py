@@ -411,10 +411,14 @@ def lista(item):
 
 def generate_item(video , tipo, auth_token):
    
-   
+    logger.info('video')
+    logger.info(str(video))
+    
+    if tipo == "None": return Item()
+    if 'name' not in video: return Item()
    
     if tipo=="series" or tipo == "tvshows":  
-        logger.info(str(video))
+        
         url = 'http://api.series.ly/v2/media/full_info?auth_token='+ auth_token+'&idm=%s&mediaType=%s' %(video["idm"],get_constant("mediaType")[tipo])
         #Si la serie no tiene temporada, al abrirla tampoco tiene capitulos
         if "seasons" not in video:
@@ -567,7 +571,7 @@ def search_videos(item, texto=None):
         query=texto
 
     #busqueda general
-    url="http://api.series.ly/v2/media/search"
+    url="http://api.series.ly/v2/search"
     post="auth_token="+auth_token+"&order=votes_num&onlyTitle=true&q="+query
 
     
@@ -575,7 +579,7 @@ def search_videos(item, texto=None):
     #busquda por tipo
     if item.url != "" :
         mediaType=get_constant("mediaType")[item.url]
-        post=post+"&mediaType=%s" % mediaType
+        post=post+"&filter=%s" % mediaType
 
     #busqueda por genero
     if item.extra != "":
@@ -591,6 +595,7 @@ def search_videos(item, texto=None):
    
     # Extrae las entradas (carpetas)
     serieList = load_json(scrapertools.cache_page(url, post))
+    
 
     if "error" in serieList:
         if serieList["error"]!=0:
@@ -605,12 +610,13 @@ def search_videos(item, texto=None):
     logger.info("hay %d series" % len(serieList))
    
     itemlist = []
-    for serieItem in serieList['results']:
-
-        tipo=get_constant("mediaType")[serieItem["mediaType"]]
+    for serieItem in serieList['response']['results']:
+        logger.info(str(serieItem))
+        
+        tipo=get_constant("mediaType")[serieItem['object']["mediaType"]]
        
        
-        itemlist.append(generate_item(serieItem, tipo, auth_token))
+        itemlist.append(generate_item(serieItem['object'], tipo, auth_token))
          
     
     #Añadimos Pagina Siguiente
@@ -814,12 +820,13 @@ def get_constant(texto):
                             3:"documentaries",
                             4:"tvshows",
                             5:"episode",
-                            "series":"1",
-                            "movies":"2",
-                            "documentaries":"3",
-                            "tvshows":"4",
-                            "episode":"5",
-                            "":""}
+                            "series":1,
+                            "movies":2,
+                            "documentaries":3,
+                            "tvshows":4,
+                            "episode":5,
+                            "": "None",
+                            "None": "" }
 
     constants["error"]= {    "0":"Success response code",
                             "1":"INVALID_AUTH_TOKEN",

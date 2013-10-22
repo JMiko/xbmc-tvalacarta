@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>24</tag>
-	<date>28/07/2013</date>
-	<changes>Arreglado error encoding</changes>
+	<tag>25</tag>
+	<date>22/10/2013</date>
+	<changes>Arreglado error por cambio en el API</changes>
 </version>
