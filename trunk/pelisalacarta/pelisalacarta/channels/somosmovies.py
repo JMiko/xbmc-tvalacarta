@@ -46,40 +46,16 @@ def listado(item):
     '''
     <article CLASS='post crp'>
     <header><h3 CLASS='post-title entry-title item_name'>
-    <a href='http://www.somosmovies.com/2012/09/blancanieves-y-el-cazador-2012.html' title='Blancanieves y el Cazador (2012)'>Blancanieves y el Cazador (2012)</a>
+    <a href='http://www.somosmovies.com/2013/09/guerra-mundial-z-2013.html' title='Guerra Mundial Z (2013)'>Guerra Mundial Z (2013)</a>
     </h3>
     </header>
     <section CLASS='post-body entry-content clearfix'>
-    <a href='http://www.somosmovies.com/2012/09/blancanieves-y-el-cazador-2012.html' title='Blancanieves y el Cazador (2012)'><center><img border="0" src="http://4.bp.blogspot.com/-IGXqSKwmBnA/UEJzNarqbsI/AAAAAAAABfM/JZHRa09aJDo/s1600/poster.jpg" style="display: block; height: 400px; width: 316;"></center></a>
-    <div CLASS='latino'></div>
-    <div CLASS='pie-post'>
-    <div style='float:left'>
-    <div class='fb-like' data-href='http://www.somosmovies.com/2012/09/blancanieves-y-el-cazador-2012.html' data-layout='button_count' data-send='false' data-show-faces='false' data-width='120'></div>
-    </div>
-    </div>
-    <div STYLE='clear: both;'></div>
-    </section>
-    </article>
+    <a href='http://www.somosmovies.com/2013/09/guerra-mundial-z-2013.html' title='Guerra Mundial Z (2013)'><center>
+    <img border="0" src="http://2.bp.blogspot.com/-u89RQDpP3kk/UiYWrGIM9kI/AAAAAAAADQw/RVI_sadottc/s1600/poster.jpg" style="display: block; height: 400px; width: 312px;">
+    </center>
+    </a>
+    <div CLASS='es-LAT'></div>
     '''
-    '''
-    <article CLASS='post crp'>
-    <header><h3 CLASS='post-title entry-title item_name'>
-    <a href='http://www.somosmovies.com/2012/08/the-avengers-los-vengadores-2012.html' title='Los Vengadores (2012)'>Los Vengadores (2012)</a>
-    </h3>
-    </header>
-    <section CLASS='post-body entry-content clearfix'>
-    <a href='http://www.somosmovies.com/2012/08/the-avengers-los-vengadores-2012.html' title='Los Vengadores (2012)'><center><img border="0" src="http://4.bp.blogspot.com/-cF8QdycAgno/UDkWNys9iKI/AAAAAAAABd4/QPNK1tN9Qog/s1600/poster.jpg" style="display: block; height: 400px; width: 316;"></center></a>
-    <div CLASS='latino'></div>
-    <div CLASS='pie-post'>
-    <div style='float:left'>
-    <div class='fb-like' data-href='http://www.somosmovies.com/2012/08/the-avengers-los-vengadores-2012.html' data-layout='button_count' data-send='false' data-show-faces='false' data-width='120'></div>
-    </div>
-    </div>
-    <div STYLE='clear: both;'></div>
-    </section>
-    </article>
-    '''
-
     patron = "<article(.*?)</article>"
     matches = re.compile(patron,re.DOTALL).findall(data)
 
@@ -90,7 +66,7 @@ def listado(item):
         scrapedplot = ""
         scrapedthumbnail = urlparse.urljoin(item.url, scrapertools.get_match(match,'<img border="0" src="([^"]+)"') )
         try:
-            idioma = scrapertools.get_match(match,"</center></a[^<]+<div CLASS='([^']+)'></div>")
+            idioma = scrapertools.get_match(match,"</center[^<]+</a[^<]+<div CLASS='([^']+)'></div>")
             scrapedtitle = scrapedtitle + " ("+idioma.upper()+")"
         except:
             pass
@@ -120,19 +96,44 @@ def findvideos(item):
     data = scrapertools.cachePage(item.url)
     
     '''
-    <fieldset id="enlaces"><legend>Enlaces</legend><br />
-    <div class="clearfix uno"><div class="dos"><b>1 LINK</b></div><div class="tres"><a href="http://goo.gl/U5Vdj" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://goo.gl/cCndD" target="_blank">EDOC</a> <b class="sep">|</b> <a href="http://goo.gl/j1SXg" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://goo.gl/dT6ki" target="_blank">GlumboUploads</a> <b class="sep">|</b> <a href="http://goo.gl/UzNPb" target="_blank">RapidGator</a> <b class="sep">|</b> <a href="http://goo.gl/zawVY" target="_blank">TurboBit</a> <b class="sep">|</b> <a href="http://goo.gl/NLGjA" target="_blank">DepositFiles</a> <b class="sep">|</b> <a href="http://goo.gl/DQyv1" target="_blank">FreakShare</a> <br />
-    </div></div><div class="clearfix uno"><div class="dos"><b>EN PARTES</b></div><div class="tres"><a href="http://goo.gl/bvAUf" target="_blank">Zippyshare</a> <b class="sep">|</b> <a href="http://goo.gl/2cA1o" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://goo.gl/fCIyM" target="_blank">EDOC</a></div></div></fieldset>
+    <fieldset id="enlaces">
+    <legend>Enlaces</legend><br />
+    <div class="clearfix uno">
+    <div class="dos"><b>1 LINK</b></div>
+    <div class="tres">
+    <a href="http://goo.gl/5l89YA" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/17KEYve" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/1ebJqnZ" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://bit.ly/17CpCFv" target="_blank">DepositFiles</a> <b class="sep">|</b> <a href="http://bit.ly/1dDVI9U" target="_blank">180upload</a> <b class="sep">|</b> <a href="http://bit.ly/19fLsQi" target="_blank">TurboBit</a><br />
+    </div>
+    </div>
+    </fieldset>
+    '''
+    '''
+    <fieldset id="enlaces">
+    <legend>Enlaces</legend><br />
+    <div class="clearfix uno">
+    <div class="dos"><b> Capítulo 1</b>: Pilot</div><div class="tres"><a href="http://bit.ly/15w2hna" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/15xqoHo" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/16MaoML" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://bit.ly/16Mat2R" target="_blank">SockShare</a> <b class="sep">|</b> <a href="http://goo.gl/Amu9in" target="_blank">TurboBit</a> <b class="sep">|</b> <a href="http://bit.ly/19CBYxV" target="_blank">FreakShare</a></div>
+    </div>
+    </fieldset>
     '''
     # Se queda con la caja de enlaces
-    data = scrapertools.get_match(data,'<fieldset id="enlaces"><legend>Enlaces</legend>(.*?)</fieldset>')
+    data = scrapertools.get_match(data,'<fieldset id="enlaces"[^<]+<legend>Enlaces</legend>(.*?)</fieldset>')
     
-    # Se queda con los enlaces 1 LINK
-    data = scrapertools.get_match(data,'<div class="clearfix uno"><div class="dos"><b>1 LINK</b></div><div class="tres">(.*?)</div></div>')
-    patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    for url,title in matches:
-        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="", folder=False))
+    try:
+        # Se queda con los enlaces 1 LINK
+        data = scrapertools.get_match(data,'<div class="clearfix uno"[^<]+<div class="dos"><b>1 LINK</b></div[^<]+<div class="tres">(.*?)</div[^<]+</div>')
+        patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        for url,title in matches:
+            itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="", folder=False))
+    except:
+        import traceback
+        logger.info(traceback.format_exc())
+
+    if len(itemlist)==0:
+        data = scrapertools.get_match(data,'<div class="clearfix uno"[^<]+<div class="dos">(.*?)</div[^<]+</div>')
+        patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        for url,title in matches:
+            itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, server="", folder=False))
 
     return itemlist
 
@@ -162,3 +163,22 @@ def play(item):
             videoitem.folder=False
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+
+    # mainlist
+    mainlist_items = mainlist(Item())
+    peliculas_items = listado(mainlist_items[0])
+    if len(peliculas_items)==0:
+        print "No salen películas"
+        return False
+    
+    for pelicula_item in peliculas_items:
+        mirrors = findvideos(pelicula_item)
+        if len(mirrors)>0:
+            return True
+
+    print "No hay ningún vídeo en la sección de películas"
+    return False

@@ -58,24 +58,16 @@ def letras(item):
 
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'Abecedario\:(.*?)</div>')
-    '''
-    <select name="genero" id="genbox">
-    <option value="">Lista de Generos</option>
-    <option value="Action">Action</option><option value="Animation">Animation</option><option value="Adventure">Adventure</option><option value="Biography">Biography</option><option value="Comedy">Comedy</option><option value="Crime">Crime</option><option value="Documentary">Documentary</option><option value="Drama">Drama</option><option value="Family">Family</option><option value="Fantasy">Fantasy</option><option value="Film-Noir">Film-Noir</option><option value="Game-Show">Game-Show</option><option value="History">History</option><option value="Horror">Horror</option><option value="Music">Music</option><option value="Musical">Musical</option><option value="Mystery">Mystery</option><option value="N/A">N/A</option><option value="News">News</option><option value="Reality-TV">Reality-TV</option><option value="Romance">Romance</option><option value="Sci-Fi">Sci-Fi</option><option value="Short">Short</option><option value="Sport">Sport</option><option value="Thriller">Thriller</option><option value="War">War</option><option value="Western">Western</option> </select>
-    Abecedario: <a class="jq" href="http://www.peliculasonlineflv.net/letra/a/">A</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/b/">B</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/c/">C</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/d/">D</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/e/">E</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/f/">F</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/g/">G</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/h/">H</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/i/">I</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/j/">J</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/k/">K</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/l/">L</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/m/">M</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/n/">N</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/o/">O</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/p/">P</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/q/">Q</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/r/">R</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/s/">S</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/t/">T</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/u/">U</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/v/">V</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/w/">W</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/x/">X</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/y/">Y</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/z/">Z</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/num/">#</a>
-    </div></div>
-    '''
 
     # Patron de las entradas
-    patron  = '<a class="jq" href="([^"]+)">([^<]+)<'
+    patron  = '<li><a href="(/letra[^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     # Añade las entradas encontradas
     for scrapedurl,scrapedtitle in matches:
         title = scrapedtitle
-        url = scrapedurl
+        url = urlparse.urljoin(item.url,scrapedurl)
         scrapedplot = ""
         thumbnail = ""
         plot = ""
@@ -90,24 +82,16 @@ def generos(item):
 
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<option value="">Lista de Generos</option>(.*?)</select>')
-    '''
-    <select name="genero" id="genbox">
-    <option value="">Lista de Generos</option>
-    <option value="Action">Action</option><option value="Animation">Animation</option><option value="Adventure">Adventure</option><option value="Biography">Biography</option><option value="Comedy">Comedy</option><option value="Crime">Crime</option><option value="Documentary">Documentary</option><option value="Drama">Drama</option><option value="Family">Family</option><option value="Fantasy">Fantasy</option><option value="Film-Noir">Film-Noir</option><option value="Game-Show">Game-Show</option><option value="History">History</option><option value="Horror">Horror</option><option value="Music">Music</option><option value="Musical">Musical</option><option value="Mystery">Mystery</option><option value="N/A">N/A</option><option value="News">News</option><option value="Reality-TV">Reality-TV</option><option value="Romance">Romance</option><option value="Sci-Fi">Sci-Fi</option><option value="Short">Short</option><option value="Sport">Sport</option><option value="Thriller">Thriller</option><option value="War">War</option><option value="Western">Western</option> </select>
-    Abecedario: <a class="jq" href="http://www.peliculasonlineflv.net/letra/a/">A</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/b/">B</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/c/">C</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/d/">D</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/e/">E</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/f/">F</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/g/">G</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/h/">H</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/i/">I</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/j/">J</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/k/">K</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/l/">L</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/m/">M</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/n/">N</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/o/">O</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/p/">P</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/q/">Q</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/r/">R</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/s/">S</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/t/">T</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/u/">U</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/v/">V</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/w/">W</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/x/">X</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/y/">Y</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/z/">Z</a> <a class="jq" href="http://www.peliculasonlineflv.net/letra/num/">#</a>
-    </div></div>
-    '''
 
     # Patron de las entradas
-    patron  = '<option value="([^"]+)">([^<]+)</option>'
+    patron  = '<li><a href="(/genero[^"]+)" title="([^"]+)">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     # Añade las entradas encontradas
     for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle
-        url = "http://www.peliculasonlineflv.net/genero/"+scrapedurl+"/"
+        title = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        url = urlparse.urljoin(item.url,scrapedurl)
         scrapedplot = ""
         thumbnail = ""
         plot = ""
@@ -123,31 +107,37 @@ def peliculas(item):
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
     '''
-    <div class="pelibox">
-    <div class="pelicont">
-    <a href="http://www.peliculasonlineflv.net/pelicula/pequenos-invasores/" class="jq" title="Peque?os Invasores"><img class="port" src="http://2.bp.blogspot.com/_VgjDunqv6LE/TAPJWEn8V6I/AAAAAAAACXs/uEIkLhDYrnA/s320/1.jpg" alt="Peque?os Invasores" /></a>
-
-    <div class="pelibox">
-    <div class="pelicont">
-
-    <a href="http://www.peliculasonlineflv.net/pelicula/la-vida-de-flynn/" class="jq" title="La vida de Flynn"><img class="port" src="http://4.bp.blogspot.com/-lBMNTCg5X8I/UbUHQQC8K1I/AAAAAAAAAN0/9nKMv0MVsNg/s320/7.jpg" alt="La vida de Flynn" /></a>
+    <div class="pelis">
+    <a href="http://www.peliculasonlineflv.net/pelicula/io-e-te-tu-y-yo-2012-subtitulada/" title="Io e te (Tú y yo) (2012) - Subtitulada"><img class="port" src="http://www.peliculasonlineflv.net/img/1495.jpg" alt="Io e te (Tú y yo) (2012) - Subtitulada"></a>
+    <div class="pelis-desc">
+    <h3>Io e te (Tú y yo) (2012) - Subtitulada</h3>
+    <p class="desc-mid">
+    La pelicula trata sobre la historia de un adolescente de catorce años que engaña a sus padres con una coartada de una esquiada entre amigos para, en realidad, pasar esos días en un sótano con la intención de ayudar a su hermanastra mayor a superar su adicción a la heroína.
+    </p>
+    <p class="desc-low">
+    <span class="desc-item"><span class="bold">Reparto: </span> Tea Falco, Jacopo Olmo Antinori, Sonia Bergamasco, Veronica Lazar</span>
+    <span class="desc-item"><span class="bold">Director: </span> Bernardo Bertolucci</span>
+    <span class="desc-item"><span class="bold">G&eacute;nero: </span> Drama, Family</span>
+    </p>
+    </div>
     '''
 
     # Patron de las entradas
-    patron  = '<div class="pelibox"[^<]+'
-    patron += '<div class="pelicont"[^<]+'
-    patron += '<a href="([^"]+)" class="[^"]+" title="([^"]+)"><img class="[^"]+" src="([^"]+)"'
+    patron  = '<div class="pelis"[^<]+'
+    patron += '<a href="([^"]+)" title="([^"]+)"><img class="port" src="([^"]+)"[^<]+</a[^<]+'
+    patron += '<div class="pelis-desc"[^<]+'
+    patron += '<h3[^<]+</h3[^<]+'
+    patron += '<p class="desc-mid">([^<]+)</p>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     # Añade las entradas encontradas
-    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+    for scrapedurl,scrapedtitle,scrapedthumbnail,scrapedplot in matches:
         title = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         url = scrapedurl
-        scrapedplot = ""
+        plot = scrapedplot
         thumbnail = scrapedthumbnail
-        plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 

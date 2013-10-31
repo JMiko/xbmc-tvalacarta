@@ -79,7 +79,7 @@ def foro(item):
         patron = '<a class="subj(.*?)ct" href="([^"]+)" name="[^"]+">([^<]+)</a>' # HAY SUBFOROS
         action = "foro"
     else:
-        patron = '<span id="([^"]+)"><a href="([^"]+)" title="([^"]+)".*?</span>'
+        patron = '<span id="([^"]+)"><a href="([^"]+)">([^<]+)</a> </span>'
         action = "findvideos"
        
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -142,7 +142,9 @@ def findvideos(item):
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
      videoitem.plot = item.plot
-     videoitem.title = "["+videoitem.server+ "] ["+videoitem.title +"]   " + item.title
+     
+     videoitem.title = "["+videoitem.server+videoitem.title + " " + item.title
+	 
      videoitem.show = show
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findvideos") )
@@ -159,7 +161,7 @@ def findvideos(item):
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
      videoitem.plot = item.plot
-     videoitem.title = "["+videoitem.server+ "]  ["+videoitem.title +"]   " + item.title
+     videoitem.title = "["+videoitem.server+videoitem.title + " " + item.title
     return itemlist  
 
 

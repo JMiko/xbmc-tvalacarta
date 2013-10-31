@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para allmyvideos
+# Conector para vidspot
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -13,26 +13,8 @@ from core import logger
 from core import config
 from core import unpackerjs,unpackerjs3
 
-def test_video_exists( page_url ):
-    logger.info("[allmyvideos.py] test_video_exists(page_url='%s')" % page_url)
-
-    # No existe / borrado: http://allmyvideos.net/8jcgbrzhujri
-    data = scrapertools.cache_page(page_url)
-    #logger.info("data="+data)
-    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data or '<b class="err">Deleted' in data or '<b class="err">Removed' in data or '<font class="err">No such' in data:
-        return False,"No existe o ha sido borrado de allmyvideos"
-    else:
-        # Existe: http://allmyvideos.net/6ltw8v1zaa7o
-        patron  = '<META NAME="description" CONTENT="(Archivo para descargar[^"]+)">'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        
-        if len(matches)>0:
-            return True,""
-    
-    return True,""
-
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[allmyvideos.py] url="+page_url)
+    logger.info("[vidspot.py] url="+page_url)
 
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
@@ -48,6 +30,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         <input type="hidden" name="referer" value="">
         <input type="hidden" name="method_free" value="1">
         <input type="image"  id="submitButton" src="/images/continue-to-video.png" value="method_free" />
+        '''
+        '''
+        <Form name="F1" method="POST" action=''>
+        <input type="hidden" name="op" value="download1">
+        <input type="hidden" name="usr_login" value="">
+        <input type="hidden" name="id" value="lqwa0bh2aw0n">
+        <input type="hidden" name="fname" value="Cupu1x01.mp4">
+        <input type="hidden" name="referer" value="">
+        <input type="hidden" name="method_free" value="1">
+        <input type="image"  id="submitButton" src="/images/continue-to-video.png" value="method_free" />
+        <!-- <input name="confirm" type="submit" value="Continue as Free User" disabled="disabled" id="submitButton" class="confirm_button" style="width:190px;"> -->
+           
+        </form>
         '''
         op = scrapertools.get_match(data,'<input type="hidden" name="op" value="([^"]+)"')
         usr_login = ""
@@ -70,13 +65,13 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         pass
     
     # Extrae la URL
-    media_url = scrapertools.get_match( data , '"file"\s*\:\s*"([^"]+)"' ) #+"?start=0"
+    media_url = scrapertools.get_match( data , '"file"\s*\:\s*"([^"]+)"' )+"?start=0"
     
     video_urls = []
-    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [allmyvideos]",media_url])
+    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidspot]",media_url])
 
     for video_url in video_urls:
-        logger.info("[allmyvideos.py] %s - %s" % (video_url[0],video_url[1]))
+        logger.info("[vidspot.py] %s - %s" % (video_url[0],video_url[1]))
 
     return video_urls
 
@@ -85,47 +80,47 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    # http://allmyvideos.net/embed-d6fefkzvjc1z.html 
-    patronvideos  = 'allmyvideos.net/embed-([a-z0-9]+)'
-    logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
+    # http://vidspot.net/embed-d6fefkzvjc1z.html 
+    patronvideos  = 'vidspot.net/embed-([a-z0-9]+)'
+    logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/"+match
-        if url not in encontrados and url!="http://allmyvideos.net/embed":
+        titulo = "[vidspot]"
+        url = "http://vidspot.net/"+match
+        if url not in encontrados and url!="http://vidspot.net/embed":
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'allmyvideos' ] )
+            devuelve.append( [ titulo , url , 'vidspot' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
 
-    # http://allmyvideos.net/6lgjjav5cymi
-    patronvideos  = 'allmyvideos.net/([a-z0-9]+)'
-    logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
+    # http://vidspot.net/6lgjjav5cymi
+    patronvideos  = 'vidspot.net/([a-z0-9]+)'
+    logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/"+match
+        titulo = "[vidspot]"
+        url = "http://vidspot.net/"+match
         if url not in encontrados and not url.startswith("embed"):
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'allmyvideos' ] )
+            devuelve.append( [ titulo , url , 'vidspot' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
 
-    #http://www.cinetux.org/video/allmyvideos.php?id=gntpo9m3mifj
-    patronvideos  = 'allmyvideos.php\?id\=([a-z0-9]+)'
-    logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
+    #http://www.cinetux.org/video/vidspot.php?id=gntpo9m3mifj
+    patronvideos  = 'vidspot.php\?id\=([a-z0-9]+)'
+    logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/"+match
+        titulo = "[vidspot]"
+        url = "http://vidspot.net/"+match
         if url not in encontrados and not url.startswith("embed"):
             logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'allmyvideos' ] )
+            devuelve.append( [ titulo , url , 'vidspot' ] )
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
@@ -135,6 +130,6 @@ def find_videos(data):
 
 def test():
 
-    video_urls = get_video_url("http://allmyvideos.net/6lgjjav5cymi")
+    video_urls = get_video_url("http://vidspot.net/5349gu9u9pkn")
 
     return len(video_urls)>0

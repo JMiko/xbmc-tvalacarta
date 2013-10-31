@@ -664,8 +664,8 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
                     except:
                         reintentos = reintentos + 1
                         logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
-                        for line in sys.exc_info():
-                            logger.error( "%s" % line )
+                        import traceback
+                        logger.error( traceback.print_exc() )
                 
                 # El usuario cancelo la descarga
                 try:
@@ -687,14 +687,8 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
                     return -2
     
             except:
-                import traceback,sys
-                from pprint import pprint
-                exc_type, exc_value, exc_tb = sys.exc_info()
-                lines = traceback.format_exception(exc_type, exc_value, exc_tb)
-                for line in lines:
-                    line_splits = line.split("\n")
-                    for line_split in line_splits:
-                        logger.error(line_split)
+                import traceback
+                logger.error( traceback.print_exc() )
 
                 f.close()
                 if not silent:

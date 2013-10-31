@@ -22,7 +22,6 @@ def test_video_exists( page_url ):
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[mega.py] get_video_url(page_url='%s')" % page_url)
-    #data = scrapertools.cache_page(page_url)
     video_urls = []
 
     if "megacrypter.com" in page_url:
@@ -48,26 +47,24 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     url_service2 = ""
     url_service1 = ""
-    #patronurl = 'https://mega.co.nz/(.*?)[<"\']'
-    #matches = re.compile(patronurl,re.DOTALL).findall(data)
-
-    #for scrapedurl in matches:
+    
     url_service1 = page_url
     if not url_service1.startswith("https://"):
         url_service1 = "https://mega.co.nz/" + url_service1
 
     title_for_mega = "Pelisalacarta%20video"
-    #url = "plugin://plugin.video.mega/?&plot="+page_url+"&url="+title_for_mega+"&title="+title_for_mega+"&action=stream&thumbnail="
+    
     url = "plugin://plugin.video.mega/?url="+page_url+"&action=stream"
     video_urls.append(["[mega add-on]",url])
     
+	#GENERA LIK MEGASTREAMER
     url_service1 = url_service1.replace("https://mega.co.nz/#!","http://megastreamer.net/mega_stream.php?url=https%3A%2F%2Fmega.co.nz%2F%23%21")
     url_service1 = url_service1.replace("!","%21")
     url_service1 = url_service1 + "&mime=vnd.divx"
     logger.info("[mega.py] megastreamer.net url="+url_service1)
     video_urls.append(["[megastreamer.net]",url_service1])
 
-    #http://mega-stream.me/stream.php?ph=kwM3kJCC&key=RkIyTjpHYhw7kK3nS2aLghCSG5cil1sHVxPCPkm3gBo
+    #GENERA LINK MEGA-STREAM
     url_service2 = page_url.replace("https://mega.co.nz/#!","")
     url_service2 = url_service2.replace("!","&key=")
     url_service2 = "http://mega-stream.me/stream.php?ph="+url_service2
@@ -80,16 +77,30 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def find_videos(data):
     encontrados = set()
     devuelve = []
+    
     #https://mega.co.nz/#!TNBl0CbR!S0GFTCVr-tM_cPsgkw8Y-0HxIAR-TI_clqys
     patronvideos  = '(mega.co.nz/\#\![A-Za-z0-9\-\_]+\![A-Za-z0-9\-\_]+)'
     logger.info("[mega.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        titulo = "[Mega]"
+        
         url = "https://"+match
         if url not in encontrados:
-            logger.info("  url="+url)
+            logger.info(" url="+url)
+			#GENERA LINK DE MEGA-STREAM PARA SABER EL TIPO DE FICHERO
+            url_filetype = url.replace("!","%21")
+            url_filetype = url_filetype.replace("/","%2F")
+            url_filetype = url_filetype.replace(":","%3A")
+            url_filetype = url_filetype.replace("#","%23")
+            url_filetype = "http://mega-stream.me/?l="+url_filetype
+            data_type = scrapertools.cache_page(url_filetype)
+            patrontype  = '<title>MEGA-STREAM.ME -(.*?)</title>'
+            matches_type = re.compile(patrontype,re.DOTALL).findall(data_type)
+            if len(matches_type)>0:
+               titulo = matches_type[0]
+               titulo = titulo[-3:]+"]"+titulo
+            
             devuelve.append( [ titulo , url , 'mega' ] )
             encontrados.add(url)
         else:

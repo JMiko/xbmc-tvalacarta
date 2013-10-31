@@ -13,53 +13,48 @@ from core import logger
 from core import config
 
 def get_long_url( short_url ):
-    logger.info("[adfly.py] get_long_url(short_url='%s')" % short_url)
+    logger.info("servers.adfly get_long_url(short_url='%s')" % short_url)
+
+    request_headers = []
+    request_headers.append(["User-Agent","Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12"])
+    request_headers.append(["Referer","http://linkdecrypter.com"])
+    post=urllib.urlencode({"pro_links":short_url,"modo_links":"text","modo_recursivo":"on","link_cache":"on"})
+    url = "http://linkdecrypter.com/"
     
-    '''
-    data = scrapertools.cache_page( short_url )
-    #var zzz = 'http://freakshare.com/files/ivkf5hm4/The.Following.S01E01.UNSOLOCLIC.INFO.avi.html'
-    location = scrapertools.get_match(data,"var zzz \= '([^']+)'")
-    logger.info("location="+location)
+    # Parche porque python no parece reconocer bien la cabecera phpsessid
+    body,response_headers = scrapertools.read_body_and_headers(url,post=post,headers=request_headers)
 
-    # Espera los 5 segundos
-    try:
-        from platformcode.xbmc import xbmctools
-        xbmctools.handle_wait(5,"adf.ly",'')
-    except:
-        import time
-        time.sleep(5)
+    n = 1
+    while True:
+        for name,value in response_headers:
+            if name=="set-cookie":
+                logger.info("Set-Cookie: "+value)
+                cookie_name = scrapertools.get_match(value,'(.*?)\=.*?\;')
+                cookie_value = scrapertools.get_match(value,'.*?\=(.*?)\;')
+                request_headers.append(["Cookie",cookie_name+"="+cookie_value])
 
-    if "adf.ly" in location:
-        # Obtiene la url larga
-        data = scrapertools.cache_page(location)
-        logger.info("data="+data)
+        body,response_headers = scrapertools.read_body_and_headers(url,headers=request_headers)
+        logger.info("body="+body)
 
-        location = scrapertools.get_match(data,'<META HTTP-EQUIV\="Refresh".*?URL=([^"]+)"')
-    '''
-    # Accede para conseguir las cookies
-    headers = []
-    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20100101 Firefox/23.0"])
-    data = scrapertools.cache_page( "http://dead.altervista.org/" )
-
-    # Ahora envía el formulario
-    headers.append(["Referer","http://dead.altervista.org/"])
-    headers.append(["X-Requested-With","XMLHttpRequest"])
-    post = urllib.urlencode({'url':short_url})
-    data = scrapertools.cache_page( "http://dead.altervista.org/bypasser/process.php" , post=post , headers=headers )
-    logger.info("data="+data)
-    location = scrapertools.get_match(data,'<a href="([^"]+)"')
-
-    logger.info("location="+location)
+        try:
+            location = scrapertools.get_match(body,'<textarea.*?class="caja_des">([^<]+)</textarea>')
+            logger.info("location="+location)
+            break
+        except:
+            n = n + 1
+            if n>3:
+                break
 
     return location
 
 def test():
     
-    location = get_long_url("http://adf.ly/HnJnC")
+    location = get_long_url("http://85093635.linkbucks.com/")
     ok = ("freakshare.com" in location)
+    #if ok:
+    #    location = get_long_url("http://adf.ly/Fp6BF")
+    #    ok = "http://vk.com/" in location
 
-    if ok:
-        location = get_long_url("http://adf.ly/Fp6BF")
-        ok = "http://vk.com/" in location
+    print "Funciona:",ok
 
     return ok
