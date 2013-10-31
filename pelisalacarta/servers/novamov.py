@@ -40,10 +40,12 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     patron = 'url=(.*?)&title='
     matches = re.compile(patron).findall(data)
     scrapertools.printMatches(matches)
+    mediaurl = urllib.unquote(matches[0])
+
     
     video_urls = []
     logger.info(matches[0])
-    video_urls.append( [".flv [novamov]",matches[0]])
+    video_urls.append( [".flv [novamov]",mediaurl])
     
     return video_urls
 
@@ -51,13 +53,13 @@ def find_videos(data):
     encontrados = set()
     devuelve = []
 
-    patronvideos = '(http://www.novamov.com/video/[a-z0-9]{13})'
+    patronvideos = 'novamov.com/video/([a-z0-9]{13})'
     logger.info("[novamov.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos).findall(data)
 
     for match in matches:
         titulo = "[novamov]"
-        url = match
+        url = "http://www.novamov.com/video/"+match
 
         if url not in encontrados:
             logger.info("  url="+url)

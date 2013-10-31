@@ -45,12 +45,6 @@ def lista(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
-    '''
-    <div class="entry-content">
-    <p><strong>Nikita | Temporada 1 | Capitulos [06/22]</strong></p>
-    <p><img class="size-full wp-image-50 aligncenter" src="http://nukety.files.wordpress.com/2012/12/nikita.jpg?w=584" alt="Nikita Nukety" /></p>
-    <p> <a href="http://nukety.wordpress.com/2012/12/23/nikita-t1-sd/#more-1566" class="more-link">Sigue leyendo <span class="meta-nav">&rarr;</span></a></p>
-    '''
     patron  = '<div class="entry-content"[^<]+'
     patron += '<p><strong>([^<]+)</strong></p>[^<]+'
     patron += '<p><img class="[^"]+" src="([^"]+)" alt="[^"]+" /></p>[^<]+'
@@ -97,3 +91,6 @@ def findvideos(item):
 
     return itemlist
 
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    return False

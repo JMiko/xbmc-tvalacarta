@@ -256,7 +256,7 @@ def channels_list():
     if config.get_platform()=="boxee" or "xbmc" in config.get_platform(): itemlist.append( Item( title="Cuevana"               , channel="cuevana"              , language="ES"    , category="F,S,VOS"     , type="generic"  ))
     #itemlist.append( Item( title="CineVOS"               , channel="cinevos"             , language="ES"    , category="F,A,D,VOS" , type="generic"  ))
     #itemlist.append( Item( title="dibujosanimadosgratis" , channel="dibujosanimadosgratis", language="ES"    , category="A"       , type="generic"  ))
-    itemlist.append( Item( title="Descargaya"           , channel="descargaya"          , language="ES"    , category="F,S"       , type="generic"  ))
+    #itemlist.append( Item( title="Descargaya"           , channel="descargaya"          , language="ES"    , category="F,S"       , type="generic"  ))
     itemlist.append( Item( title="Discoverymx"           , channel="discoverymx"          , language="ES"    , category="D"       , type="generic"  ))
     itemlist.append( Item( title="Divx Online"           , channel="divxonline"           , language="ES"    , category="F"       , type="generic"  ))
     itemlist.append( Item( title="Divxatope (Torrent)"   , channel="divxatope"           , language="ES"    , category="F,S"       , type="generic"  ))
@@ -298,8 +298,9 @@ def channels_list():
     #itemlist.append( Item( title="Newdivxonline"         , channel="newdivxonline"              , language="ES"    , category="F"     , type="generic"  ))
     #itemlist.append( Item( title="NewHD"                 , channel="newhd"                , language="ES"    , category="F,VOS"       , type="generic" )) # xextil 05/05/2011
     itemlist.append( Item( title="Newpct"               , channel="newpct"          , language="ES"    , category="F,S,D,A"       , type="generic"  )) # jesus 08/03/2013
-    itemlist.append( Item( title="Novelas de TV"          , channel="novelasdetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012
-    itemlist.append( Item( title="Nukety"                 , channel="nukety"          , language="ES"    , category="F,S"       , type="generic"  )) 
+    itemlist.append( Item( title="Novelas de TV"          , channel="novelasdetv", language="ES" , category="S" , type="generic"  )) # jesus 12/11/2012   
+    #itemlist.append( Item( title="Nukety"                 , channel="nukety"          , language="ES"    , category="F,S"       , type="generic"  )) 
+    itemlist.append( Item( title="Oranline"               , channel="oranline"           , language="ES" , category="F"        , type="generic" ))# jesus 16/7/2012
     #itemlist.append( Item( title="NKI"                   , channel="nki"                  , language="ES"    , category="S"       , type="generic" ))
     #itemlist.append( Item( title="No Megavideo"          , channel="nomegavideo"          , language="ES"    , category="F"       , type="xbmc"  ))
     # DESACTIVADO - SIN CONTENIDOS itemlist.append( Item( title="NoloMires"             , channel="nolomires"            , language="ES"    , category="F"       , type="xbmc"  ))
@@ -348,7 +349,6 @@ def channels_list():
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="tubehentai"        , channel="tubehentai" , language="ES" , category="F" , type="xbmc"  ))
     #itemlist.append( Item( title="Tu butaka de cine"     , channel="tubutakadecine"       , language="ES" , category="F"        , type="generic" ))
     itemlist.append( Item( title="Tu Mejor TV"         , channel="tumejortv"            , language="ES" , category="F,S"        , type="generic" ))
-    itemlist.append( Item( title="Tucinecom"           , channel="tucinecom"           , language="ES" , category="F"        , type="generic" ))# jesus 16/7/2012
     itemlist.append( Item( title="Tus Novelas"           , channel="tusnovelas"           , language="ES" , category="S"        , type="generic" ))# jesus 3/7/2012
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="tuporno.tv"        , channel="tupornotv" , language="ES" , category="F" , type="generic"  ))
     #itemlist.append( Item( title="TVShack"               , channel="tvshack"              , language="EN" , category="F,S,A,D,M"  , type="xbmc"  ))

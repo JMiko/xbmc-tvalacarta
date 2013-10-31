@@ -41,35 +41,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     location = first_frame.replace("large/1.jpg",video_name)
     location = location+"?burst=5568k"
-    
-    '''
-    # Pide la primera
-    logger.info("----------------------------------------------------------------------------------------------------")
-    data = scrapertools.cache_page(page_url,headers=headers)
-    logger.info("cookies="+config.get_cookie_data())
-    logger.info("data="+data)
-    
-    # Pide la segunda con el v.php
-    #http://www.magnovideo.com/?v=QRATZ9UN
-    #http://www.magnovideo.com/v.php?dl=QRATZ9UN
-    headers.append(["Referer",page_url])
-    logger.info("----------------------------------------------------------------------------------------------------")
-    data = scrapertools.cache_page(page_url.replace("?v=","v.php?dl="),headers=headers)
-    logger.info("cookies="+config.get_cookie_data())
-    logger.info("data="+data)
 
-    # Vuelve a pedir la primera, esta vez con las cookies bien
-    headers[1][1]=page_url.replace("?v=","v.php?dl=")
-    logger.info("----------------------------------------------------------------------------------------------------")
-    data = scrapertools.cache_page(page_url,headers=headers)
-    logger.info("cookies="+config.get_cookie_data())
-    logger.info("data="+data)
-
-    # Busca el enlace
-    location = scrapertools.get_match(data,"http\://www.magnovideo.com/templates_mu/player/crilance_player.swf\?flv\=([^\&]+)\&")
-    location = location+"?burst=5568k"
-    '''
-    
     video_urls.append( [scrapertools.get_filename_from_url(location)[-4:]+" [magnovideo]" , location] )
 
     for video_url in video_urls:

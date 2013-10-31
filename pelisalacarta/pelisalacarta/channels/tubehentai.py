@@ -26,12 +26,8 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[veranime.py] mainlist")
-
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades" , action="novedades" , url="http://tubehentai.com/" ) )
-
-    return itemlist
+    logger.info("[tubehentai.py] mainlist")
+    return novedades(Item(channel=__channel__, title="Novedades" , action="novedades" , url="http://tubehentai.com/" ))
 
 def novedades(item):
     logger.info("[tubehentai.py] getnovedades")
@@ -66,8 +62,7 @@ def novedades(item):
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,"/" + matches[0])
         logger.info("[tubehentai.py] " + scrapedurl)
-        itemlist.append( Item(channel=__channel__, action="novedades", title="!Página siguiente" , url=scrapedurl) )
-
+        itemlist.append( Item(channel=__channel__, action="novedades", title=">> Página siguiente" , url=scrapedurl) )
 
     return itemlist
 
@@ -75,23 +70,30 @@ def play(item):
     logger.info("[tubehentai.py] detail")
     itemlist=[]
     
+    #s1.addParam("flashvars","overlay=http://tubehentai.com/media/thumbs/5/2/3/9/c/5239cf74632cbTHLaBlueGirlep3%20%20Segment2000855.000001355.000.mp4
+    #http://tubehentai.com/media/thumbs/5/2/3/9/c/5239cf74632cbTHLaBlueGirlep3%20%20Segment2000855.000001355.000.mp4
+    #http://tubehentai.com/media/videos/5/2/3/9/c/5239cf74632cbTHLaBlueGirlep3%20%20Segment2000855.000001355.000.mp4?start=0
     data = scrapertools.cachePage(item.url)
-    logger.info("data="+data)
-    #settings=http://tubehentai.com/playerConfig.php?725.flv
-    #725
-    #http://tubehentai.com/media/videos/7/2/5/f/725.flv?start=0
-    patron = 'settings\=http\://tubehentai.com/playerConfig.php\?(\d+).flv'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-
-    if len(matches)>0:
-        id=matches[0]
-        logger.info("id="+id)
-        url = "http://tubehentai.com/media/videos/"
-        for letra in id:
-            url = url + letra + "/"
-        url = url + "f/"+id+".flv?start=0"
-        logger.info("url="+url)
-        server="Directo"
-        itemlist.append( Item(channel=__channel__, title="" , url=url , server=server, folder=False) )
+    url = scrapertools.get_match(data,'s1.addParam\("flashvars","overlay=(.*?\.mp4)')
+    url = url.replace("/thumbs","/videos")
+    #url = url+"?start=0"
+    logger.info("url="+url)
+    server="Directo"
+    itemlist.append( Item(channel=__channel__, title="" , url=url , server=server, folder=False) )
 
     return itemlist
+
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+def test():
+    bien = True
+
+    # mainlist
+    videos_items = mainlist(Item())
+    
+    for video_item in videos_items:
+        mirrors = play(video_item)
+        if len(mirrors)>0:
+            return True
+
+    print "No hay ningún vídeo en la sección de novedades"
+    return False

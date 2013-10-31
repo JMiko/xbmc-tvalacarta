@@ -78,7 +78,7 @@ def novedades_series(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<header class="title">Agregado recientemente:</header> <ol>(.*?)</ol>')
+    data = scrapertools.get_match(data,'<section class="series">(.*?)</section>')
     patronvideos  = '<li><a href="([^"]+)"><span class="tipo\d+">([^<]+)</span><strong>([^<]+)</strong>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     itemlist = []

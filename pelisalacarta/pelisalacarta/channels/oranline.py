@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para tucinecom
+# Canal para oranline
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -13,10 +13,10 @@ from core import scrapertools
 from core.item import Item
 from servers import servertools
 
-__channel__ = "tucinecom"
+__channel__ = "oranline"
 __category__ = "F"
 __type__ = "generic"
-__title__ = "tucinecom"
+__title__ = "oranline"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
@@ -25,27 +25,27 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[tucinecom.py] mainlist")
+    logger.info("[oranline.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas"    , title="Peliculas"    , url="http://www.tucinecom.com/" ))
-    itemlist.append( Item(channel=__channel__ , action="novedades"    , title="Documentales" , url="http://tucinecom.com/Pel%C3%ADculas/documentales/" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas"    , title="Peliculas"    , url="http://www.oranline.com/" ))
+    itemlist.append( Item(channel=__channel__ , action="novedades"    , title="Documentales" , url="http://oranline.com/Pel%C3%ADculas/documentales/" ))
 
     return itemlist
 
 def peliculas(item):
-    logger.info("[tucinecom.py] peliculas")
+    logger.info("[oranline.py] peliculas")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="novedades"    , title="Novedades"    , url="http://tucinecom.com/Pel%C3%ADculas/peliculas/" ))
-    itemlist.append( Item(channel=__channel__ , action="letras"       , title="Alfabético"   , url="http://tucinecom.com/Pel%C3%ADculas/peliculas/" ))
-    itemlist.append( Item(channel=__channel__ , action="generos"      , title="Géneros"      , url="http://tucinecom.com/Pel%C3%ADculas/peliculas/" ))
-    itemlist.append( Item(channel=__channel__ , action="idiomas"      , title="Idiomas"      , url="http://tucinecom.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="novedades"    , title="Novedades"    , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="letras"       , title="Alfabético"   , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="generos"      , title="Géneros"      , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="idiomas"      , title="Idiomas"      , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
 
     return itemlist
 
 def novedades(item):
-    logger.info("[tucinecom.py] novedades")
+    logger.info("[oranline.py] novedades")
     itemlist = []
 
     # Descarga la página
@@ -56,17 +56,17 @@ def novedades(item):
     <div class="review-box-stars">
     <div style="display: none">VN:RO [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_2067" class="ratepost gdsr-oxygen gdsr-size-12"><div class="starsbar gdsr-size-12"><div class="gdouter gdheight"><div id="gdr_vote_a2067" style="width: 0px;" class="gdinner gdheight"></div></div></div></div></div><div class="ratingtext "><div id="gdr_text_a2067" class="inactive">Rating: 0.0/<strong>10</strong> (0 votes cast)</div></div></div>                                        
     </div>                  
-    <a href="http://tucinecom.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">
-    <img src="http://tucinecom.com/wp-content/uploads/2013/08/cazadores-140x210.jpg" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />        
+    <a href="http://oranline.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">
+    <img src="http://oranline.com/wp-content/uploads/2013/08/cazadores-140x210.jpg" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />        
     </a>    
     <div id="mejor_calidad">
-    <a href="http://tucinecom.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://tucinecom.com/wp-content/themes/reviewit/images/CAM_calidad.png" class="idiomas" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />  
+    <a href="http://oranline.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/CAM_calidad.png" class="idiomas" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />  
     </a>
     <span>CAM</span></div>      
     </div>                  
     <!--End Image-->
     <div class="review-box-text">
-    <h2><a href="http://tucinecom.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">Cazadores de sombras: Ciudad d...</a></h2>  
+    <h2><a href="http://oranline.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">Cazadores de sombras: Ciudad d...</a></h2>  
     <p>En la discoteca de moda de Nueva York, Clary Fray (Lily Collins) sigue a un atractivo chico de pelo ...</p>                                      
     </div>
     '''
@@ -74,24 +74,24 @@ def novedades(item):
     <div class="review-box-stars">
     <div style="display: none">VN:RO [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_9680" class="ratepost gdsr-oxygen gdsr-size-12"><div class="starsbar gdsr-size-12"><div class="gdouter gdheight"><div id="gdr_vote_a9680" style="width: 0px;" class="gdinner gdheight"></div></div></div></div></div><div class="ratingtext "><div id="gdr_text_a9680" class="inactive">Rating: 0.0/<strong>10</strong> (0 votes cast)</div></div></div>
     </div>
-    <a href="http://tucinecom.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">
-    <img src="http://tucinecom.com/wp-content/uploads/2013/02/Un-lugar-donde-refugiarse-Nicholas-Sparks-140x210.jpg" alt="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"/>
+    <a href="http://oranline.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">
+    <img src="http://oranline.com/wp-content/uploads/2013/02/Un-lugar-donde-refugiarse-Nicholas-Sparks-140x210.jpg" alt="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"/>
     </a>
     <div id="mejor_calidad">
-    <a href="http://tucinecom.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://tucinecom.com/wp-content/themes/reviewit/images/Blueray-S_calidad.png" class="idiomas" alt="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"/>
+    <a href="http://oranline.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/Blueray-S_calidad.png" class="idiomas" alt="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"/>
     </a>
     <span>Blueray-S</span></div>
     </div>
 
     <div class="review-box-text">
-    <h2><a href="http://tucinecom.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">Un lugar donde refugiarse (Saf...</a></h2>
+    <h2><a href="http://oranline.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">Un lugar donde refugiarse (Saf...</a></h2>
     <p>Katie (Julianne Hough) es una bella joven con un oscuro pasado que llega a la pequeña localidad cos...</p>
     </div>
     <div id="campos_idiomas">
-    <img id="espanol" src="http://tucinecom.com/wp-content/themes/reviewit/images/s.png" class="idiomas" alt=""/>
-    <img id="latino" src="http://tucinecom.com/wp-content/themes/reviewit/images/lx.png" class="idiomas" alt=""/>
-    <img id="ingles" src="http://tucinecom.com/wp-content/themes/reviewit/images/ix.png" class="idiomas" alt=""/>
-    <img id="vose" src="http://tucinecom.com/wp-content/themes/reviewit/images/v.png" class="idiomas" alt=""/>
+    <img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/s.png" class="idiomas" alt=""/>
+    <img id="latino" src="http://oranline.com/wp-content/themes/reviewit/images/lx.png" class="idiomas" alt=""/>
+    <img id="ingles" src="http://oranline.com/wp-content/themes/reviewit/images/ix.png" class="idiomas" alt=""/>
+    <img id="vose" src="http://oranline.com/wp-content/themes/reviewit/images/v.png" class="idiomas" alt=""/>
     </div>
     </div>
     '''
@@ -148,7 +148,7 @@ def novedades(item):
     return itemlist
 
 def letras(item):
-    logger.info("[tucinecom.py] letras")
+    logger.info("[oranline.py] letras")
     itemlist = []
 
     # Descarga la página
@@ -171,12 +171,13 @@ def letras(item):
     return itemlist
 
 def generos(item):
-    logger.info("[tucinecom.py] generos")
+    logger.info("[oranline.py] generos")
     itemlist = []
 
     # Descarga la página
     data = get_main_page(item.url)
-    data = scrapertools.get_match(data,'<li class="cat-item cat-item-\d+"><a href="http...tucinecom.com/Pel.*?s/generos/"[^<]+</a>(.*?)</ul>')
+    #<li class="cat-item cat-item-23831"><a href="http://www.oranline.com/Películas/3d-hou/" title="Ver todas las entradas archivadas en 3D-HOU">3D-HOU</a> (5)
+    data = scrapertools.get_match(data,'<li class="cat-item cat-item-\d+"><a href="http://www.oranline.com/Pel.*?s/generos/"[^<]+</a>(.*?)</ul>')
 
     # Extrae las entradas
     patron  = '<li class="cat-item cat-item-\d+"><a href="([^"]+)"[^>]+>([^<]+)</a>\s+\((\d+)\)'
@@ -194,12 +195,25 @@ def generos(item):
     return itemlist
 
 def idiomas(item):
-    logger.info("[tucinecom.py] idiomas")
+    logger.info("[oranline.py] idiomas")
     itemlist = []
 
+    '''
+    div class="widget"><h3>&Uacute;ltimos estrenos</h3>
+
+    <ul>
+    <li class="cat-item cat-item-84"><a href="http://www.oranline.com/Películas/castellano/" title="Ver todas las entradas archivadas en Castellano">Castellano</a> (585)
+    </li>
+    <li class="cat-item cat-item-85"><a href="http://www.oranline.com/Películas/latino/" title="Ver todas las entradas archivadas en Latino">Latino</a> (623)
+    </li>
+    <li class="cat-item cat-item-86"><a href="http://www.oranline.com/Películas/version-original/" title="Ver todas las entradas archivadas en Versión Original">Versión Original</a> (27)
+    </li>
+    <li class="cat-item cat-item-87"><a href="http://www.oranline.com/Películas/vos/" title="Ver todas las entradas archivadas en VOS">VOS</a> (1471)
+    </li>
+    '''
     # Descarga la página
     data = get_main_page(item.url)
-    data = scrapertools.get_match(data,'<div class="widget"><h3>Versiones</h3>(.*?)</ul>')
+    data = scrapertools.get_match(data,'<div class="widget"><h3>&Uacute;ltimos estrenos</h3>(.*?)</ul>')
 
     # Extrae las entradas
     patron  = '<li class="cat-item cat-item-\d+"><a href="([^"]+)"[^>]+>([^<]+)</a>\s+\((\d+)\)'
@@ -217,19 +231,19 @@ def idiomas(item):
     return itemlist
 
 def mirrors(item):
-    logger.info("[tucinecom.py] mirrors")
+    logger.info("[oranline.py] mirrors")
     data = get_main_page(item.url)
     itemlist = []
 
     '''
     <p>
-    <span><img id="espanol" src="http://tucinecom.com/wp-content/themes/reviewit/images/s.png" class="servidor" alt="" /></span>
+    <span><img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/s.png" class="servidor" alt="" /></span>
     <span><a href="#div_4_e" class='MO'>Opción 4</a></span>
     <span>TS HQ</span>
-    <span>      <img src="http://tucinecom.com/wp-content/themes/reviewit/images/calidad3.png" class="caracteristicas_idiomas_calidad" alt="" />
+    <span>      <img src="http://oranline.com/wp-content/themes/reviewit/images/calidad3.png" class="caracteristicas_idiomas_calidad" alt="" />
     </span>
     <span>Arkonada</span>
-    <span>      <img src="http://tucinecom.com/wp-content/themes/reviewit/images/imgres15.jpg" class="servidor" alt="" />
+    <span>      <img src="http://oranline.com/wp-content/themes/reviewit/images/imgres15.jpg" class="servidor" alt="" />
     </span>                </p>
     '''
 
@@ -268,13 +282,13 @@ def mirrors(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[tucinecom.py] findvideos")
+    logger.info("[oranline.py] findvideos")
 
     itemlist=[]
     data = get_main_page(item.url)
 
     if item.extra!="":
-        data = scrapertools.get_match(data,'<div id="'+item.extra+'"(.*?)</div>')
+        data = scrapertools.get_match(data,'<div id="'+item.extra+'"(.*?)<p>')
         logger.info("data="+data)
 
     itemlist = servertools.find_video_items(data=data)
@@ -294,7 +308,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[tucinecom.py] play")
+    logger.info("[oranline.py] play")
 
     itemlist=[]
     # Extrae la URL de saltar el anuncio en adf.ly
@@ -316,7 +330,7 @@ def play(item):
     return itemlist
 
 def get_main_page(url):
-    logger.info("[tucinecom.py] get_main_page")
+    logger.info("[oranline.py] get_main_page")
 
     headers=[]
     headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"])
@@ -326,17 +340,17 @@ def get_main_page(url):
 
     # Descarga la página
     data = scrapertools.cachePage(url,headers=headers)
-    #logger.info("[tucinecom.py] data="+data)
+    #logger.info("[oranline.py] data="+data)
 
     '''
-    <form id="ChallengeForm" action="http://tucinecom.com/Pel%C3%ADculas/peliculas/" method="POST">
+    <form id="ChallengeForm" action="http://oranline.com/Pel%C3%ADculas/peliculas/" method="POST">
     <input type="hidden" name="act" value="jschl"/>
     <input type="hidden" name="jschl_vc" value="4b00fc195c8b540eff250c29db58a1ca"/>
     <input type="hidden" id="jschl_answer" name="jschl_answer"/>
     </form>
     '''
     if '<form id="ChallengeForm"' in data:
-        logger.info("[tucinecom.py] versión protegida")
+        logger.info("[oranline.py] versión protegida")
 
         # Prepara las cabeceras
         headers.append(["Referer",url])
@@ -365,7 +379,7 @@ def get_main_page(url):
 
         try:
             import xmbctools
-            xmbctools.handle_wait(6,"Espera 5 segundos","Para acceder a Tucinecom tienes que esperar 5 segundos")
+            xmbctools.handle_wait(6,"Espera 5 segundos","Para acceder a oranline tienes que esperar 5 segundos")
         except:
             import time
             time.sleep(6)
@@ -374,7 +388,7 @@ def get_main_page(url):
         # Llama
         data = scrapertools.cache_page(url,post=post,headers=headers)
     else:
-        logger.info("[tucinecom.py] versión normal")
+        logger.info("[oranline.py] versión normal")
 
 
     return data

@@ -15,8 +15,35 @@ from core import config
 config.set_setting("debug","true")
 
 from core import scrapertools
+from core import downloadtools
 from core.item import Item
 from servers import servertools
+
+def test_download_url():
+
+    url = "https://mega.co.nz/#!AxRliabL!LZzZjm3f7Qi1t_pQ37MxZVh1TLsO215Y8Er6m9hOQ0I"
+    titulo = "escuela_de_bomberos(thor).rar"
+
+    print "Analizando enlace "+url
+
+    # Averigua el servidor
+    itemlist = servertools.find_video_items(data=url)
+    if len(url)==0:
+        print "No se puede identificar el enlace"
+        return
+
+    item = itemlist[0]
+    print "Es un enlace en "+item.server
+
+    # Obtiene las URL de descarga
+    video_urls, puedes, motivo = servertools.resolve_video_urls_for_playing(item.server,url)
+    if len(video_urls)==0:
+        print "No se ha encontrado nada para descargar"
+        return
+
+    # Descarga el de mejor calidad, como hace pelisalacarta
+    print video_urls
+    devuelve = downloadtools.downloadbest(video_urls,titulo,continuar=False)
 
 def test_add_documaniatv_to_download_list():
     from core import descargas
@@ -172,8 +199,9 @@ def test_encode():
     print urllib2.quote(urllib2.quote(url))
 
 if __name__ == "__main__":
+    test_download_url()
     #test_download_all_episodes()
-    test_add_documaniatv_to_download_list()
+    #test_add_documaniatv_to_download_list()
     #test_channels()
 
     #test_cineraculo()

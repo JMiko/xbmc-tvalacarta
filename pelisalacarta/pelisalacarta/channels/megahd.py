@@ -56,7 +56,7 @@ def mainlist(item):
     
     if config.get_setting("megahdaccount")!="true":
     
-        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="" , url="" , folder=False ) )
+        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="openconfig" , url="" , folder=False ) )
     else:
         if login():
             itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://megahd.se/foro/peliculas/" , folder=True ) )
@@ -68,6 +68,10 @@ def mainlist(item):
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
     return itemlist
 
+def openconfig(item):
+    if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
+        config.open_settings( )
+    return []
 
 def foro(item):
     logger.info("[megahd.py] foro")
@@ -137,7 +141,7 @@ def findvideos(item):
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
      #videoitem.plot = item.plot
-     videoitem.title = "Video en ["+videoitem.server+ "]"#" ["+videoitem.title +"]   " + item.title
+     videoitem.title = "["+videoitem.server+videoitem.title + " " + item.title
      videoitem.show = show
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findvideos") )
@@ -153,7 +157,7 @@ def findvideos(item):
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
      #videoitem.plot = item.plot
-     videoitem.title = "["+videoitem.server+ "] ["+videoitem.title +"]   " + item.title
+     videoitem.title = "["+videoitem.server+videoitem.title + " " + item.title
     return itemlist  
 
 

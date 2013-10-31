@@ -21,7 +21,7 @@ FREE_SERVERS.extend(['rapidtube','royalvids','sockshare','stagevu','stagero','tu
 FREE_SERVERS.extend(['vidbux','videoweed','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','allbox4','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
 FREE_SERVERS.extend(['vureel','nosvideo','videopremium','one80upload','movreel','flashx','magnovideo','upafile','rapidvideo'])
-FREE_SERVERS.extend(['fileflyer','playedto','tunepk','powvideo','videomega','mega'])
+FREE_SERVERS.extend(['fileflyer','playedto','tunepk','powvideo','videomega','mega','vidspot','netutv','rutube'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -35,7 +35,7 @@ FILENIUM_SERVERS.extend(['oron','downupload','allmyvideos','novamov','videoweed'
 FILENIUM_SERVERS.extend(['filebox','filefactory','netload','nowdownload','filevelocity','freakshare','userporn','divxstage','putlocker','extabit','vidxden'])
 FILENIUM_SERVERS.extend(['vimeo','dailymotion','jumbofiles','zippyshare','glumbouploads','bayfiles','twoshared', 'fourshared','crocko','fiberupload','filereactor'])
 FILENIUM_SERVERS.extend(['ifile','megashares','slingfile','uploading','vipfile','filenium','movreel','one80upload','flashx','uploaz','nowvideo','vk','moevideos'])
-FILENIUM_SERVERS.extend(['cloudzer','filecloudio','luckyshare','lumfile','magnovideo','playedto','ryushare','streamcloud','videozed','xenubox'])
+FILENIUM_SERVERS.extend(['cloudzer','filecloudio','luckyshare','lumfile','magnovideo','playedto','ryushare','streamcloud','videozed','xenubox','filesmonster'])
 #wupload,fileserve
 
 # Lista de TODOS los servidores soportados por Real-Debrid
