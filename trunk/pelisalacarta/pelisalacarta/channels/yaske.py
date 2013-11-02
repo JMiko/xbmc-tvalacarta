@@ -113,7 +113,7 @@ def peliculas(item):
         thumbnail = scrapedthumbnail
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , fulltitle=scrapertools.htmlclean(scrapedtitle.strip()), viewmode="movie", folder=True) )
 
     # Extrae el paginador
     patronvideos  = "<a href='([^']+)'>\&raquo\;</a>"
@@ -286,7 +286,7 @@ def findvideos(item):
             scrapedthumbnail = thumbnail
             scrapedplot = plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=False) )
+            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle, folder=False) )
         except:
             import traceback
             logger.info("Excepcion: "+traceback.format_exc())
@@ -301,6 +301,8 @@ def play(item):
     data = scrapertools.downloadpageGzip(item.url)
     #logger.info("data="+data)
     itemlist = servertools.find_video_items(data=data)
+    for newitem in itemlist:
+        newitem.fulltitle = item.fulltitle
     
     return itemlist
 

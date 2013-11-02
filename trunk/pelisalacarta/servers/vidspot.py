@@ -16,6 +16,15 @@ from core import unpackerjs,unpackerjs3
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[vidspot.py] url="+page_url)
 
+    # Normaliza la URL
+    try:
+        if not page_url.startswith("http://vidspot.net/embed-"):
+            videoid = scrapertools.get_match(page_url,"vidspot.net/([a-z0-9A-Z]+)")
+            page_url = "http://vidspot.net/embed-"+videoid+".html"
+    except:
+        import traceback
+        logger.info(traceback.format_exc())    
+
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
     data = scrapertools.cache_page( page_url , headers=headers )
@@ -81,14 +90,14 @@ def find_videos(data):
     devuelve = []
 
     # http://vidspot.net/embed-d6fefkzvjc1z.html 
-    patronvideos  = 'vidspot.net/embed-([a-z0-9]+)'
+    patronvideos  = 'vidspot.net/embed-([a-z0-9]+)\.html'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[vidspot]"
-        url = "http://vidspot.net/"+match
-        if url not in encontrados and url!="http://vidspot.net/embed":
+        url = "http://vidspot.net/embed-"+match+".html"
+        if url not in encontrados and match!="embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'vidspot' ] )
             encontrados.add(url)
@@ -102,8 +111,8 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[vidspot]"
-        url = "http://vidspot.net/"+match
-        if url not in encontrados and not url.startswith("embed"):
+        url = "http://vidspot.net/embed-"+match+".html"
+        if url not in encontrados and match!="embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'vidspot' ] )
             encontrados.add(url)
@@ -117,8 +126,8 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[vidspot]"
-        url = "http://vidspot.net/"+match
-        if url not in encontrados and not url.startswith("embed"):
+        url = "http://vidspot.net/embed-"+match+".html"
+        if url not in encontrados and match!="embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'vidspot' ] )
             encontrados.add(url)
@@ -130,6 +139,6 @@ def find_videos(data):
 
 def test():
 
-    video_urls = get_video_url("http://vidspot.net/5349gu9u9pkn")
+    video_urls = get_video_url("http://vidspot.net/embed-5349gu9u9pkn.html")
 
     return len(video_urls)>0

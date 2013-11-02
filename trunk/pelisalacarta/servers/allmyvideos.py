@@ -34,6 +34,15 @@ def test_video_exists( page_url ):
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[allmyvideos.py] url="+page_url)
 
+    # Normaliza la URL
+    try:
+        if not page_url.startswith("http://allmyvideos.net/embed-"):
+            videoid = scrapertools.get_match(page_url,"allmyvideos.net/([a-z0-9A-Z]+)")
+            page_url = "http://allmyvideos.net/embed-"+videoid+".html"
+    except:
+        import traceback
+        logger.info(traceback.format_exc())
+
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
     data = scrapertools.cache_page( page_url , headers=headers )
@@ -86,13 +95,13 @@ def find_videos(data):
     devuelve = []
 
     # http://allmyvideos.net/embed-d6fefkzvjc1z.html 
-    patronvideos  = 'allmyvideos.net/embed-([a-z0-9]+)'
+    patronvideos  = 'allmyvideos.net/embed-([a-z0-9]+)\.html'
     logger.info("[allmyvideos.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/"+match
+        url = "http://allmyvideos.net/embed-"+match+".html"
         if url not in encontrados and url!="http://allmyvideos.net/embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -107,7 +116,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/"+match
+        url = "http://allmyvideos.net/embed-"+match+".html"
         if url not in encontrados and not url.startswith("embed"):
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -122,7 +131,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/"+match
+        url = "http://allmyvideos.net/embed-"+match+".html"
         if url not in encontrados and not url.startswith("embed"):
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -135,6 +144,6 @@ def find_videos(data):
 
 def test():
 
-    video_urls = get_video_url("http://allmyvideos.net/6lgjjav5cymi")
+    video_urls = get_video_url("http://allmyvideos.net/embed-6lgjjav5cymi.html")
 
     return len(video_urls)>0

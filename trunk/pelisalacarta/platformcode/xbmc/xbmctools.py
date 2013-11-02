@@ -116,7 +116,7 @@ def addnewvideo( canal , accion , category , server , title , url , thumbnail, p
         context = context.split("|")
     if DEBUG:
         try:
-            logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
+            logger.info('[xbmctools.py] addnewvideo( "'+canal+'" , "'+accion+'" , "'+category+'" , "'+server+'" , "'+title+'" ("'+fulltitle+'") , "' + url + '" , "'+thumbnail+'" , "'+plot+'")" , "'+Serie+'")"')
         except:
             logger.info('[xbmctools.py] addnewvideo(<unicode>)')
             

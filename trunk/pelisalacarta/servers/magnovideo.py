@@ -54,7 +54,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 def find_videos(data):
     encontrados = set()
     devuelve = []
-    print "DATO a buscar" + data
+    
+    #print "DATO a buscar" + data
     # http://www.magnovideo.com/?v=QRATZ9UN
     patronvideos  = '(magnovideo.com/\?v\=[A-Z0-9]+)'
     logger.info("[magnovideo.py] find_videos #"+patronvideos+"#")

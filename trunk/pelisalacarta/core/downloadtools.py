@@ -718,8 +718,12 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
         f.close()
     except:
         pass
+
     if not silent:
-        progreso.close()
+        try:
+            progreso.close()
+        except:
+            pass
 
     logger.info("Fin descarga del fichero")
 
