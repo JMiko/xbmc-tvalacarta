@@ -773,7 +773,7 @@ def renderItems(itemlist, params, url, category,isPlayable='false'):
                     item.fanart = os.path.join(config.get_runtime_path(),"fanart.jpg")
 
             if item.folder :
-                if len(item.extra)>0:
+                if len( str(item.extra) )>0:
                     addnewfolderextra( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , extradata = item.extra , totalItems = len(itemlist), fanart=item.fanart , context=item.context, show=item.show, fulltitle=item.fulltitle )
                 else:
                     addnewfolder( item.channel , item.action , item.category , item.title , item.url , item.thumbnail , item.plot , totalItems = len(itemlist) , fanart = item.fanart, context = item.context, show=item.show, fulltitle=item.fulltitle )
