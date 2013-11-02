@@ -56,13 +56,13 @@ def search(item,texto):
         item.url = "http://www.divxonline.info/"
 
     # Lanza la búsqueda
-    data=scrapertools.cachePagePost("http://www.divxonline.info/buscador.html","buscar="+texto+"&categoria=0&tipo=1&boton=")
+    data=scrapertools.cache_page("http://www.divxonline.info/buscador.html",post="buscar="+texto+"&categoria=0&tipo=1&boton=")
 
     #logger.info(data)
-    data=scrapertools.get_match(data,'<div class="caja margen-inf1">[^<]+<h3>Resultados de la palabra(.*?)</div>')
+    data=scrapertools.get_match(data,'<h3>Resultados de la palabra(.*?)</div>')
     
-    #<li><a href="/pelicula/306/100-chicas-2000/">100 chicas (2000)</a></li>
-    patronvideos  = '<li><a href="(.+?)"><font[^<]+<b>([^<]+)<'
+    #<h2><li><a href ="/pelicula/12194/A-traves-del-Pacifico-1942/">A través del Pacífico (1942)</a></li></h2>
+    patronvideos  = '<li><a href ="(.+?)">([^<]+)<'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
     for url,title in matches:
@@ -84,9 +84,9 @@ def peliculas(item):
     #logger.info(data)
 
     # Extrae las entradas
-    patron  = '<div class="ficha margen-inf1">[^<]+'
-    patron += '<h2><a href="([^"]+)">([^<]+)</a></h2>[^<]+'
-    patron += '<div class="foto-link">[^<]+'
+    patron  = '<div class="ficha margen-inf1[^<]+'
+    patron += '<b><a href="([^"]+)"><font size="[^"]+">([^<]+)</font></a></b><br[^<]+<br[^<]+'
+    patron += '<div class="foto-link[^<]+'
     patron += '<a[^<]+<img src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -101,26 +101,6 @@ def peliculas(item):
 
         # Añade al listado de XBMC
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-
-    patron  = '<div class="ficha margen-inf1">[^<]+'
-    patron += '<h2>([^<]+)</h2>[^<]+'
-    patron += '<div class="foto-link">[^<]+'
-    patron += '<img src="([^"]+)"[^<]+'
-    patron += '<a href="([^"]+)".*?'
-    patron += '<li><span class="color_azul-ficha">Sinopsis:</span>(.*?)</li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for title,thumbnail,url,plot in matches:
-        # Titulo
-        scrapedtitle = title
-        scrapedurl = urlparse.urljoin(item.url,url.replace("/pelicula-divx/","/pelicula/").replace("/descarga-directa/","/pelicula/"))
-        scrapedthumbnail = thumbnail
-        scrapedplot = scrapertools.htmlclean(plot).strip()
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-
-        # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
 
     # Extrae el paginador
     #<a href='/peliculas-online-divx-2.html'>&gt;&gt;</a> 

@@ -123,3 +123,6 @@ def correct_url(url):
     if "putlocker" in url:
         url = url.replace("/embed/","/file/")
     return url
+
+def find_videos(data):
+    return []

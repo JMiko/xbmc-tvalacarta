@@ -24,6 +24,15 @@ def test_video_exists( page_url ):
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[playedto.py] url="+page_url)
+
+    # Normaliza la URL
+    try:
+        if not page_url.startswith("http://played.to/embed-"):
+            videoid = scrapertools.get_match(page_url,"played.to/([a-z0-9A-Z]+)")
+            page_url = "http://played.to/embed-"+videoid+".html"
+    except:
+        import traceback
+        logger.info(traceback.format_exc())
     
     # Lo pide una vez
     headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
@@ -52,7 +61,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         logger.info("data="+data)
     
         # Extrae la URL
-        media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
+        media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )
         
     video_urls = []
     video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [playedto]",media_url])
@@ -74,7 +83,22 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[playedto]"
-        url = "http://played.to/"+match
+        url = "http://played.to/embed-"+match+".html"
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'playedto' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    #http://played.to/embed-z3nnqbspjyne.html
+    patronvideos  = 'played.to/embed-([a-z0-9A-Z]+)\.html'
+    logger.info("[playedto.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[playedto]"
+        url = "http://played.to/embed-"+match+".html"
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'playedto' ] )

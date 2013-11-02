@@ -28,26 +28,37 @@ MAIN_HEADERS.append( ["Accept","text/html,application/xhtml+xml,application/xml;
 MAIN_HEADERS.append( ["Accept-Encoding","gzip, deflate"] )
 MAIN_HEADERS.append( ["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"] )
 MAIN_HEADERS.append( ["Connection","keep-alive"] )
-MAIN_HEADERS.append( ["DNT","1"] )
-MAIN_HEADERS.append( ["Host","megahd.se"] )
-MAIN_HEADERS.append( ["Referer","http://megahd.se/foro/login/"] )
-MAIN_HEADERS.append( ["User-Agent","Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0"] )
-MAIN_HEADERS.append( ["Accept-Charset","ISO-8859-1"] )
+MAIN_HEADERS.append( ["Host","megahd.me"] )
+MAIN_HEADERS.append( ["Referer","http://megahd.me/index.php"] )
+MAIN_HEADERS.append( ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"] )
 
 def isGeneric():
     return True
 
 def login():
-    logger.info("[megahd.py] login")
+
+    # Averigua el id de sesión
+    data = scrapertools.cache_page("http://megahd.me/login/", headers=MAIN_HEADERS)
+    #<form action="http://megahd.me/login2/" name="frmLogin" id="frmLogin" method="post" accept-charset="UTF-8"  onsubmit="hashLoginPassword(this, 'd3c3d7467c05a4058e9361996daeaed4');">
+    cur_session_id = scrapertools.get_match(data,'onsubmit\="hashLoginPassword\(this, \'([a-z0-9]+)\'')
+    logger.info("cur_session_id="+cur_session_id)
+
     # Calcula el hash del password
-    LOGIN = config.get_setting("megahduser") 
+    LOGIN = config.get_setting("megahduser")
     PASSWORD = config.get_setting("megahdpassword")
     logger.info("LOGIN="+LOGIN)
     logger.info("PASSWORD="+PASSWORD)
+    
+    #doForm.hash_passwrd.value = hex_sha1(hex_sha1(doForm.user.value.php_to8bit().php_strtolower() + doForm.passwrd.value.php_to8bit()) + cur_session_id);
+    hash_passwrd = scrapertools.get_sha1( scrapertools.get_sha1( LOGIN.lower() + PASSWORD.lower() ) + cur_session_id)
+    logger.info("hash_passwrd="+hash_passwrd)
+
     # Hace el submit del login
-    post = "user="+LOGIN+"&passwrd="+PASSWORD
+    post = "user="+LOGIN+"&passwrd=&cookieneverexp=on&hash_passwrd="+hash_passwrd
     logger.info("post="+post)
-    data = scrapertools.cache_page("http://megahd.se/foro/login2/" , post=post, headers=MAIN_HEADERS)
+
+    data = scrapertools.cache_page("http://megahd.me/login2/" , post=post, headers=MAIN_HEADERS)
+
     return True
 
 def mainlist(item):
@@ -59,11 +70,11 @@ def mainlist(item):
         itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="openconfig" , url="" , folder=False ) )
     else:
         if login():
-            itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://megahd.se/foro/peliculas/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Anime" , action="foro" , url="http://megahd.se/foro/anime/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Series" , action="foro" , url="http://megahd.se/foro/series/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Documentales y Deportes" , action="foro" , url="http://megahd.se/foro/documentales/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Zona Infantil" , action="foro" , url="http://megahd.se/foro/zona-infantil/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://megahd.me/peliculas/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Anime" , action="foro" , url="http://megahd.me/foro/anime/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Series" , action="foro" , url="http://megahd.me/foro/series/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Documentales y Deportes" , action="foro" , url="http://megahd.me/foro/documentales/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Zona Infantil" , action="foro" , url="http://megahd.me/foro/zona-infantil/" , folder=True ) )
         else:
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
     return itemlist
@@ -116,6 +127,7 @@ def findvideos(item):
   logger.info("[megahd.py] findvideos show "+ show)
   logger.info("[megahd.py] findvideos"+item.url)
   data = scrapertools.cache_page(item.url)
+
   itemlist=[]
 	
   if '?action=thankyou;'+item.plot in data:
@@ -123,6 +135,7 @@ def findvideos(item):
     item.url = item.url + item.plot
     data = scrapertools.cache_page(item.url)
 
+  logger.info("data="+data)
 		
   if 'MegaHD' in data:
     patronimage = '<div class="inner" id="msg_\d{1,9}".*?<img src="([^"]+)".*?mega.co.nz/\#\![A-Za-z0-9\-\_]+\![A-Za-z0-9\-\_]+'

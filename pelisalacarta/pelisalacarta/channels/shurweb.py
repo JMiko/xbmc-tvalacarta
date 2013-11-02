@@ -27,9 +27,8 @@ def isGeneric():
 def mainlist(item):
     logger.info("[shurweb.py] getmainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"                , action="peliculas"    , url="http://www.shurweb.es/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Peliculas"                , action="menupeliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Series"                   , action="series"       , url="http://www.shurweb.es/shurseries/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Series"                   , action="menuseries"   , url="http://www.shurweb.es/shurseries/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Animacion"                , action="series"       , url="http://www.shurweb.es/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Documentales"             , action="peliculas"    , url="http://www.shurweb.es/videoscategory/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     #itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
@@ -38,9 +37,17 @@ def mainlist(item):
 def menupeliculas(item):
     logger.info("[shurweb.py] menupeliculas")
     itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Novedades"                    , action="novedades_peliculas"    , url="http://www.shurweb.es/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="menupelisaz", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Películas - Decadas"          , action="menupelisanos", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Películas - Animación"        , action="peliculas"   , url="http://www.shurweb.es/videoscategory/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
+    return itemlist
+
+def menuseries(item):
+    logger.info("[shurweb.py] menuseries")
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Últimos episodios"        , action="novedades_series"    , url="http://www.shurweb.es/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Todas las series"         , action="series"   , url="http://www.shurweb.es/shurseries/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
     return itemlist
 
 def menupelisaz(item):
@@ -219,19 +226,39 @@ def detalle_programa(item,data=""):
 
     return item
 
-def peliculas(item,paginacion=True):
-    logger.info("[shurweb.py] peliculas")
+def novedades_peliculas(item):
+    logger.info("[shurweb.py] novedades_peliculas")
     url = item.url
     # Descarga la página
     data = scrapertools.cachePage(url)
+    data = scrapertools.get_match(data,'ulas </h3[^<]+<ul class="categories_list">(.*?)</ul>')
+
+    return peliculas(item,data=data)
+
+def novedades_series(item):
+    logger.info("[shurweb.py] novedades_series")
+    url = item.url
+    # Descarga la página
+    data = scrapertools.cachePage(url)
+    data = scrapertools.get_match(data,'Series </h3[^<]+<ul class="categories_list">(.*?)</ul>')
+
+    return peliculas(item,data=data)
+
+def peliculas(item,paginacion=True,data=None):
+    logger.info("[shurweb.py] peliculas")
+    url = item.url
+
+    # Descarga la página
+    if data is None:
+        data = scrapertools.cachePage(url)
 
     # Extrae las entradas
-    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">[^<]+<img width="123" height="100" src="([^"]+)"[^<]+<span class="time">([^<]+)</span>'
+    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">.*?<img.*?src="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:
-        scrapedtitle =  match[1] + " (" + match[3] +")"
+        scrapedtitle =  match[1]
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
         fulltitle = scrapedtitle
         scrapedplot = ""
@@ -261,9 +288,6 @@ def findvideos(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
-    item.plot = scrapertools.get_match(data,'<h3 class="wp-tab-title">Info</h3[^<]+<div class="wp-tab-content">.*?<p class="uploaded_date">[^<]+</p>(.*?)</div>')
-    item.plot = scrapertools.htmlclean(item.plot).strip()
-
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))
     for videoitem in itemlist:
@@ -283,7 +307,8 @@ def test():
     from servers import servertools
     # mainlist
     mainlist_items = mainlist(Item())
-    peliculas_items = peliculas(mainlist_items[0])
+    menupeliculas_items = menupeliculas(mainlist_items[0])
+    peliculas_items = peliculas(menupeliculas_items[0])
     bien = False
     for pelicula_item in peliculas_items:
         mirrors = servertools.find_video_items(item=pelicula_item)
