@@ -7,6 +7,7 @@
 
 import urlparse,urllib2,urllib,re
 import os
+import re
 
 from core import scrapertools
 from core import logger
@@ -36,9 +37,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     # Normaliza la URL
     try:
-        if not page_url.startswith("http://allmyvideos.net/embed-"):
-            videoid = scrapertools.get_match(page_url,"allmyvideos.net/([a-z0-9A-Z]+)")
-            page_url = "http://allmyvideos.net/embed-"+videoid+".html"
+        if page_url.startswith("http://allmyvideos.net/embed-"):
+            videoid = scrapertools.get_match(page_url,"allmyvideos.net/embed-([a-z0-9A-Z]+).html")
+            page_url = "http://allmyvideos.net/"+videoid
     except:
         import traceback
         logger.info(traceback.format_exc())
@@ -48,7 +49,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     data = scrapertools.cache_page( page_url , headers=headers )
     logger.info("data="+data)
     
-    try:
+    try:     
         '''
         <input type="hidden" name="op" value="download1">
         <input type="hidden" name="usr_login" value="">
@@ -79,8 +80,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         pass
     
     # Extrae la URL
-    media_url = scrapertools.get_match( data , '"file"\s*\:\s*"([^"]+)"' ) #+"?start=0"
-    
+    match = re.compile('"file" : "(.+?)",').findall(data)
+    if len(match) > 0:
+        media_url = match[0]
+                
     video_urls = []
     video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [allmyvideos]",media_url])
 
