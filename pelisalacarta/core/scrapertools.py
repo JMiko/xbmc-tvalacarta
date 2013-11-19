@@ -502,31 +502,30 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
 import cookielib
 class MyCookiePolicy(cookielib.DefaultCookiePolicy):
     def set_ok(self, cookie, request):
-        logger.info("set_ok Cookie "+repr(cookie)+" request "+repr(request))
+        #logger.info("set_ok Cookie "+repr(cookie)+" request "+repr(request))
         #cookie.discard = False
         #cookie.
         devuelve = cookielib.DefaultCookiePolicy.set_ok(self, cookie, request)
-        logger.info("set_ok "+repr(devuelve))
+        #logger.info("set_ok "+repr(devuelve))
         return devuelve
 
     def return_ok(self, cookie, request):
-        logger.info("return_ok Cookie "+repr(cookie)+" request "+repr(request))
         #logger.info("return_ok Cookie "+repr(cookie)+" request "+repr(request))
         #cookie.discard = False
         devuelve = cookielib.DefaultCookiePolicy.return_ok(self, cookie, request)
-        logger.info("return_ok "+repr(devuelve))
+        #logger.info("return_ok "+repr(devuelve))
         return devuelve
 
     def domain_return_ok(self, domain, request):
-        logger.info("domain_return_ok domain "+repr(domain)+" request "+repr(request))
+        #logger.info("domain_return_ok domain "+repr(domain)+" request "+repr(request))
         devuelve = cookielib.DefaultCookiePolicy.domain_return_ok(self, domain, request)
-        logger.info("domain_return_ok "+repr(devuelve))
+        #logger.info("domain_return_ok "+repr(devuelve))
         return devuelve
 
     def path_return_ok(self,path, request):
-        logger.info("path_return_ok path "+repr(path)+" request "+repr(request))
+        #logger.info("path_return_ok path "+repr(path)+" request "+repr(request))
         devuelve = cookielib.DefaultCookiePolicy.path_return_ok(self, path, request)
-        logger.info("path_return_ok "+repr(devuelve))
+        #logger.info("path_return_ok "+repr(devuelve))
         return devuelve
 
 def downloadpagewithcookies(url):

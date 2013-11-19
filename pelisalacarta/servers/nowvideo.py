@@ -82,14 +82,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     else:
         # http://www.nowvideo.sx/video/xuntu4pfq0qye
         data = scrapertools.cache_page( page_url )
-        logger.debug("data:" + data)
-        
+        logger.debug("data="+data)
+
         data = unwise.unwise_process(data)
+        logger.debug("data="+data)
+
         filekey = unwise.resolve_var(data, "flashvars.filekey")
+        logger.debug("filekey="+filekey)
         
         #get stream url from api
         url = 'http://www.nowvideo.sx/api/player.api.php?key=%s&file=%s' % (filekey, video_id)
         data = scrapertools.cache_page(url)
+        logger.debug("data="+data)
+
         location = scrapertools.get_match(data,'url=(.+?)&title')
 
         video_urls.append( [ scrapertools.get_filename_from_url(location)[-4:] + " [nowvideo]",location ] )
