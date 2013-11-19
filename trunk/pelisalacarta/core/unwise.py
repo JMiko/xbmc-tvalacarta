@@ -36,7 +36,22 @@ def unwise1(w):
         int1 += 2
     return result
 
+def logblock(s):
+    if len(s)>12:
+        return "("+str(len(s))+") "+s[0:5]+"..."+s[-5:]
+    else:
+        return "("+str(len(s))+") "+s
+
 def unwise(w, i, s, e, wi, ii, si, ei):
+    print "w="+logblock(w)
+    print "i="+logblock(i)
+    print "s="+logblock(s)
+    print "e="+logblock(e)
+    print "wi="+str(wi)
+    print "ii="+str(ii)
+    print "si="+str(si)
+    print "ei="+str(ei)
+
     int1 = 0
     int2 = 0
     int3 = 0
@@ -70,18 +85,26 @@ def unwise(w, i, s, e, wi, ii, si, ei):
             int4 = int4 + 1
         if len(w) + len(i) + len(s) + len(e) == len(string1) + len(string2):
             break
+    print "string1="+logblock(string1)
+    print "string2="+logblock(string2)
     int1 = 0
     int2 = 0
     result = ""
+    contador = 0
     while int1 < len(string1):
         flag = -1
         if ord(string2[int2:int2+1]) % 2:
             flag = 1
-        result = result + chr(int(string1[int1:int1+2], 36) - flag)
+        anadir = chr(int(string1[int1:int1+2], 36) - flag)
+        print "contador=",contador,"flag=",flag,"anadir=",anadir
+
+        result = result + anadir
         int2 += 1
         if int2 >= len(string2):
             int2 = 0
         int1 += 2
+        contador = contador + 1
+    print "Fin de bloque, result="+result
     return result
 
 def unwise_process(result):

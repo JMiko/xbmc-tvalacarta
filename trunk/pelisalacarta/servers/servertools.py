@@ -272,7 +272,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
                 video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("alldebridpremium")=="true") , user=config.get_setting("alldebriduser") , password=config.get_setting("alldebridpassword"), video_password=video_password )
                 logger.info("[xbmctools.py] alldebrid url="+video_gen)
                 if video_gen.startswith("http"):
-                    video_urls.append( [ "[alldebrid]", video_gen ] )
+                    video_urls.append( [ "."+video_gen.rsplit('.',1)[1]+" [alldebrid]", video_gen ] )
                 else:
                     # Si Alldebrid da error pero tienes un enlace válido, no te dice nada
                     if len(video_urls)==0:

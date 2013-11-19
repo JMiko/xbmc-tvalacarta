@@ -240,6 +240,7 @@ def temporadas(item, paginacion=True):
     logger.info("[cinetube.py] temporadas")
 
     url = item.url
+    logger.info(url)
     end=item.url.find('temporada')
     url=item.url[:end]
     logger.info(url)

@@ -77,7 +77,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         data = scrapertools.cache_page( page_url , post=post, headers=headers )
         logger.info("data="+data)
     except:
-        pass
+        import traceback
+        logger.info(traceback.format_exc())
     
     # Extrae la URL
     match = re.compile('"file" : "(.+?)",').findall(data)
