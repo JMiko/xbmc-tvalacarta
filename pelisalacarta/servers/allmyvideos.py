@@ -95,7 +95,21 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
+
+    # Añade manualmente algunos erróneos para evitarlos
     encontrados = set()
+    encontrados.add("http://allmyvideos.net/embed-theme.html")
+    encontrados.add("http://allmyvideos.net/embed-jquery.html")
+    encontrados.add("http://allmyvideos.net/embed-s.html")
+    encontrados.add("http://allmyvideos.net/embed-images.html")
+    encontrados.add("http://allmyvideos.net/embed-faq.html")
+    encontrados.add("http://allmyvideos.net/embed-embed.html")
+    encontrados.add("http://allmyvideos.net/embed-ri.html")
+    encontrados.add("http://allmyvideos.net/embed-d.html")
+    encontrados.add("http://allmyvideos.net/embed-css.html")
+    encontrados.add("http://allmyvideos.net/embed-js.html")
+    encontrados.add("http://allmyvideos.net/embed-player.html")
+    encontrados.add("http://allmyvideos.net/embed-cgi.html")
     devuelve = []
 
     # http://allmyvideos.net/embed-d6fefkzvjc1z.html 

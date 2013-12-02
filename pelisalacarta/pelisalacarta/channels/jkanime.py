@@ -273,6 +273,16 @@ def play(item):
     itemlist = []
 
     if item.server=="directo":
+        location = item.url
+        '''
+        body,headers = scrapertools.read_body_and_headers(item.url,follow_redirects=False)
+        logger.info("jkanime headers="+repr(headers))
+
+        location=""
+        for header in headers:
+            if header[0]=="location":
+                location=header[1]
+        '''
         '''
         GET /stream/jkmedia/717aa382aee2117d9762067125ac79e2/6ee0218e84b123c0c84e98310176fdfc/1/2364e7a4d358dfffeaca3410e73c5e76/?t=7 HTTP/1.1
         Host: jkanime.net
@@ -285,14 +295,14 @@ def play(item):
         Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
         Cookie: ci_session=a%3A4%3A%7Bs%3A10%3A%22session_id%22%3Bs%3A32%3A%2294ef36f56048bf6394353e714505e100%22%3Bs%3A10%3A%22ip_address%22%3Bs%3A13%3A%2288.12.106.177%22%3Bs%3A10%3A%22user_agent%22%3Bs%3A50%3A%22Mozilla%2F5.0+%28Macintosh%3B+Intel+Mac+OS+X+10_8_2%29+App%22%3Bs%3A13%3A%22last_activity%22%3Bi%3A1364589959%3B%7D4263c499ebf728838ce9d8cb838cc55e; __cfduid=d6b6b16c05385bc35df57a09daa5e57e81364593644; flowplayer=3.2.8; gao_session_expiry=Sat, 30 Mar 2013 05:47:32 GMT; gao_skin_views=1; __utma=218181122.1870996415.1364593654.1364593654.1364593654.1; __utmb=218181122.1.10.1364593654; __utmc=218181122; __utmz=218181122.1364593654.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
         ''' 
-        headers = []
-        headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:18.0) Gecko/20100101 Firefox/18.0"])
-        headers.append(["Referer",item.extra])
-        location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
-        logger.info("location="+location)
-        location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
-        logger.info("location="+location)
-        location = location + "|" + urllib.urlencode({'Referer':'http://jkanime.net/assets/images/players/jkplayer.swf'})
+        #headers = []
+        #headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:18.0) Gecko/20100101 Firefox/18.0"])
+        #headers.append(["Referer",item.extra])
+        #location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
+        #logger.info("location="+location)
+        #location = scrapertools.get_header_from_response( item.url , headers=headers , header_to_get="location" )
+        #logger.info("location="+location)
+        #location = location + "|" + urllib.urlencode({'Referer':'http://jkanime.net/assets/images/players/jkplayer.swf'})
         #http://jkanime.net/stream/jkget/00e47553476031a35fd158881ca9d49f/32021b728c40bb5779190e0a95b72d40/?t=6e
         itemlist.append( Item(channel=__channel__, action="play" , title=item.title , url=location, thumbnail=item.thumbnail, fanart=item.thumbnail, plot=item.plot, server=item.server, folder=False))
     else:

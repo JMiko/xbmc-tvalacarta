@@ -193,23 +193,23 @@ def series(item):
 
     return itemlist
 
-def episodios(item):
+def episodios(item,final=True):
     logger.info("[animeid.py] episodios")
 
     # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    body = scrapertools.cache_page(item.url)
 
     try:
-        scrapedplot = scrapertools.get_match(data,'<meta name="description" content="([^"]+)"')
+        scrapedplot = scrapertools.get_match(body,'<meta name="description" content="([^"]+)"')
     except:
         pass
 
     try:
-        scrapedthumbnail = scrapertools.get_match(data,'<link rel="image_src" href="([^"]+)"')
+        scrapedthumbnail = scrapertools.get_match(body,'<link rel="image_src" href="([^"]+)"')
     except:
         pass
 
-    data = scrapertools.get_match(data,'<ul id="listado">(.*?)</ul>')
+    data = scrapertools.get_match(body,'<ul id="listado">(.*?)</ul>')
     patron  = '<li><a href="([^"]+)">(.*?)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
@@ -234,7 +234,16 @@ def episodios(item):
 
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=item.show, viewmode="movie_with_plot"))
 
-    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+    try:
+        next_page = scrapertools.get_match(body,'<a href="([^"]+)">\&gt\;</a>')
+        next_page = urlparse.urljoin(item.url,next_page)
+        item2 = Item(channel=__channel__, action="episodios" , title=item.title , url=next_page, thumbnail=item.thumbnail, plot=item.plot, show=item.show, viewmode="movie_with_plot")
+        itemlist.extend( episodios(item2,final=False) )
+    except:
+        import traceback
+        logger.info(traceback.format_exc())
+
+    if final and config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=__channel__, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
         itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="episodios", show=item.show) )
 
@@ -247,6 +256,15 @@ def findvideos(item):
     itemlist=[]
     
     data = data.replace("\\/","/")
+
+    #http://www.animeid.tv/stream/oiW0uG7yqBrg5TVM5Cm34n/1385370686.mp4
+    patron  = '(http://www.animeid.tv/stream/[^/]+/\d+.[a-z0-9]+)'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    encontrados = set()
+    for url in matches:
+        if url not in encontrados:
+            itemlist.append( Item(channel=__channel__, action="play" , title="[directo]" , server="directo", url=url, thumbnail="", plot="", show=item.show, folder=False))
+            encontrados.add(url)
 
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))

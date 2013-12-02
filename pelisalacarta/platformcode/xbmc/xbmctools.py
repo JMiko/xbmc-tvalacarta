@@ -548,7 +548,15 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
         
     else:
         logger.info("b7")
-        if config.get_setting("player_mode")=="0" or (config.get_setting("player_mode")=="3" and mediaurl.startswith("rtmp")):
+        logger.info("player_mode="+config.get_setting("player_mode"))
+        logger.info("mediaurl="+mediaurl)
+        if config.get_setting("player_mode")=="3" or "megacrypter.com" in mediaurl:
+            logger.info("b11")
+            import download_and_play
+            download_and_play.download_and_play( mediaurl , "download_and_play.tmp" , config.get_setting("downloadpath") )
+            return
+
+        elif config.get_setting("player_mode")=="0" or (config.get_setting("player_mode")=="3" and mediaurl.startswith("rtmp")):
             logger.info("b8")
             # Añadimos el listitem a una lista de reproducción (playlist)
             playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
@@ -589,12 +597,6 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             logger.info("b10")
             xbmc.executebuiltin( "PlayMedia("+mediaurl+")" )
         
-        elif config.get_setting("player_mode")=="3":
-            logger.info("b11")
-            import download_and_play
-            download_and_play.download_and_play( mediaurl , "download_and_play.tmp" , config.get_setting("downloadpath") )
-            return
-
     # Descarga en segundo plano para vidxden, sólo en modo free
     '''
     elif server=="vidxden" and seleccion==0:

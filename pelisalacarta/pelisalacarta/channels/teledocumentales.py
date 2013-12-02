@@ -33,96 +33,35 @@ def mainlist(item):
     logger.info("[teledocumentales.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="ultimo"        , title="Últimos Documentales"    , url="http://www.teledocumentales.com/"))
-    itemlist.append( Item(channel=__channel__ , action="ListaCat"          , title="Listado por Genero"            , url="http://www.teledocumentales.com/"))
-    itemlist.append( Item(channel=__channel__, title="Buscar", action="search") )
+    itemlist.append( Item(channel=__channel__, action="ultimo"        , title="Últimos Documentales"    , url="http://www.teledocumentales.com/"))
+    itemlist.append( Item(channel=__channel__, action="ListaCat"      , title="Listado por Genero"      , url="http://www.teledocumentales.com/"))
     
     return itemlist
 
 def ultimo(item):
     logger.info("[telecodocumentales.py] Ultimos")
-
-    url = item.url
+    itemlist = []
                   
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(item.url)
 
-    # Extrae las entradas (carpetas)
-    
-    #<div class="slidethumb">
-    #<a href="http://www.cine-adicto.com/transformers-dark-of-the-moon.html"><img src="http://www.cine-adicto.com/wp-content/uploads/2011/09/Transformers-Dark-of-the-moon-wallpaper.jpg" width="638" alt="Transformers: Dark of the Moon 2011" /></a>
-    #</div>
-
-    patron = '<div class="imagen">(.*?)<div class="lista_videos_fecha">'
+    # Extrae las entradas    
+    patron = '<!--Video--><div class="lista_videos"(.*?)</div[^<]+</div[^<]+</div'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    logger.info("hay %d matches" % len(matches))
-    
 
-    itemlist = []
     for match in matches:
-        data2 = match
-        patron  = '<img src="(.*?)" alt=".*?'
-        patron  += '<a href="(.*?)">(.*?)</a>'
-        matches2 = re.compile(patron,re.DOTALL).findall(data2)
-        logger.info("hay %d matches2" % len(matches2))
+        scrapedtitle = scrapertools.get_match(match,'<img src="[^"]+" alt="([^"]+)"')
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+        scrapedurl = scrapertools.get_match(match,'<a href="([^"]+)"')
+        scrapedthumbnail = scrapertools.get_match(match,'<img src="([^"]+)" alt="[^"]+"')
+        scrapedplot = scrapertools.get_match(match,'<div class="excerpt">([^<]+)</div>')
+        itemlist.append( Item(channel=item.channel , action="findvideos"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail, viewmode="movie_with_plot" ))
 
-        for match2 in matches2:
-            scrapedtitle = match2[2].replace("&#8211;","-").strip()
-            scrapedurl = match2[1]
-            scrapedthumbnail = match2[0].replace(" ","%20")
-            scrapedplot = ""
-            
-            itemlist.append( Item(channel=item.channel , action="detail"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot , fanart=scrapedthumbnail ))
-
-    #Extrae la marca de siguiente p�gina
-    #<span class='current'>1</span><a href='http://delatv.com/page/2' class='page'>2</a>
-    patronvideos = '<div class="navigation">.*?<a href="([^"]+)" class="next">.*?'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    
-    if len(matches)>0:
-        scrapedtitle = "Página siguiente"
-        scrapedurl = matches[0]#matches[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        itemlist.append( Item(channel=item.channel , action="ultimo"  , title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail, plot=scrapedplot ))
-
-    return itemlist
-
-def search(item,texto):
-    logger.info("[teledocumentales.py] search")
-    item.url = "http://www.teledocumentales.com/?s="+texto
-    itemlist = []
-    itemlist.extend(ultimo(item))
-    return itemlist
-
-def detail(item):
-    logger.info("[cineadicto.py] detail")
-
-    title = item.title
-    thumbnail = item.thumbnail
-    plot = item.plot
-    scrapedurl = ""
-    url = item.url
-
-    itemlist = []
-
-    # Descarga la p�gina
-    data = scrapertools.cachePage(url)
-    
-    # Usa findvideos    
-    listavideos = servertools.findvideos(data)
-    
-    itemlist = []
-    
-    for video in listavideos:
-        server = video[2]
-        scrapedtitle = item.title + " [" + server + "]"
-        scrapedurl = video[1]
-        
-        itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle , url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, server=server, folder=False))
-
-
+    # Extrae la marca de siguiente pagina
+    try:
+        next_page = scrapertools.get_match(data,'<a class="next" href="([^"]+)">')
+        itemlist.append( Item(channel=item.channel , action="ultimo" , title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page)))
+    except:
+        pass
 
     return itemlist
 

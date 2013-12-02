@@ -152,7 +152,11 @@ class DownloadThread(threading.Thread):
 
     def run(self):
         logger.info("DownloadThread.run Download starts...")
-        self.download_file()
+
+        if "megacrypter.com" in self.url:
+            self.download_file_megacrypter()
+        else:
+            self.download_file()
         logger.info("DownloadThread.run Download ends")
 
     def force_stop(self):
@@ -179,7 +183,33 @@ class DownloadThread(threading.Thread):
     def get_total_size(self):
         return self.total_size
 
+    def download_file_megacrypter(self):
+        logger.info("DownloadThread.download_file Megacrypter downloader")
+
+        comando = "./megacrypter.sh"
+        logger.info("DownloadThread.download_file comando="+comando)
+
+        oldcwd = os.getcwd()
+        logger.info("DownloadThread.download_file oldcwd="+oldcwd)
+
+        cwd = os.path.join( config.get_runtime_path() , "tools")
+        logger.info("DownloadThread.download_file cwd="+cwd)
+        os.chdir(cwd)
+        logger.info("DownloadThread.download_file directory changed to="+os.getcwd())
+
+        logger.info("DownloadThread.download_file destino="+self.download_path)
+
+        import subprocess
+        os.system( comando+" '"+self.url+ "' \"" + self.download_path+"\"" )
+        #p = subprocess.Popen([comando , self.url , self.download_path], cwd=cwd, stdout=subprocess.PIPE , stderr=subprocess.PIPE )
+        #out, err = p.communicate()
+        #logger.info("DownloadThread.download_file out="+out)
+
+        os.chdir(oldcwd)
+
     def download_file(self):
+        logger.info("DownloadThread.download_file Direct download")
+
         headers=[]
 
         # Se asegura de que el fichero se podrá crear
