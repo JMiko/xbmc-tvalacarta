@@ -8,6 +8,7 @@ import re
 import sys
 import os
 import urllib2
+import xbmcgui
 
 from core import logger
 from core import config
@@ -64,6 +65,7 @@ def mainlist(item):
             itemlist.append( Item(channel=__channel__, title="Mis documentales", action="categorias", extra=extra_params, url="documentaries" ) )
             itemlist.append( Item(channel=__channel__, title="Mis tvshows", action="categorias", extra=extra_params, url="tvshows" ) )
             itemlist.append( Item(channel=__channel__, title="Mis listas", action="listasMenu", extra=extra_params, url="listas" ) )
+            itemlist.append( Item(channel=__channel__, title="Explora series.ly", action="exploraMenu", url="explora" ) )
             
 
         else:
@@ -125,7 +127,7 @@ def menu_cat(item):
     categorias=get_constant("categorias")
 
     for c in categorias:
-        itemlist.append( Item(channel=__channel__, title=categorias[c], action="search_cat", extra=c, url=item.url, plot="1") )
+        itemlist.append( Item(channel=__channel__, title=categorias[c], action="search_cat", category=c, url=item.url, plot="0") )
 
     itemlist = sorted( itemlist , key=lambda item: item.title)
 
@@ -257,10 +259,15 @@ def serie_capitulos(item):
     itemlist = sorted( itemlist , key=lambda item: item.title)
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
-        itemlist.append( Item(channel='seriesly', title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="serie_capitulos###", show=item.show) )
+        itemlist.append( Item(channel='seriesly', title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="serie_capitulos###", show=elimina_tildes(item.show)) )
 
     return itemlist
 
+def elimina_tildes(s):
+    import unicodedata
+    nkfd_form = unicodedata.normalize('NFD', s.decode('utf-8'))
+    only_ascii = nkfd_form.encode('ASCII', 'ignore')
+    return only_ascii
 
 def mas_vistas(item):
 
@@ -268,7 +275,7 @@ def mas_vistas(item):
    
     # Obtiene de nuevo los tokens
     auth_token, user_token = getCredentials()
-    post = 'auth_token=%s&user_token=%s&limit=100' % ( qstr(auth_token), qstr(user_token) )
+    post = 'auth_token=%s&user_token=%s&limit=10' % ( qstr(auth_token), qstr(user_token) )
    
     # Extrae las entradas (carpetas)
     tipo=item.url
@@ -310,6 +317,8 @@ def listasMenu(item):
     ownList=[]
     followList=[]
 
+    #generamos un dict para las listas propias y otro para las que seguimos
+
     if  len(listasInfo["own"]) >=1 :
         for lista in listasInfo["own"]:
             logger.info(str(lista))
@@ -319,21 +328,6 @@ def listasMenu(item):
                                 "title": lista["title"],
                                 "medias_num": lista["medias_num"] })
 
-                """title=lista["title"]
-                ownList[title]=[]
-                for element in lista["last_medias"]:
-                    video={ 'idm': element["idm"],
-                            'seasons': 0,
-                            'episodes':0,
-                            'poster':{"large":element["img"]},
-                            'name': element["name"],
-                            'mediaType':get_constant("mediaType")[int(element["mediaType"])],
-                            'auth_token':auth_token
-                    }
-                  
-                    ownList[title].append(video)
-                """
-
 
     if  len(listasInfo["following"]) >=1 :
         for lista in listasInfo["following"]:
@@ -342,6 +336,9 @@ def listasMenu(item):
                 followList.append({"id_list":lista["id_list"],
                                 "title": lista["title"],
                                 "medias_num": lista["medias_num"] })
+
+    #creamos el menu y pasamos las listas en el campo extra para no tener que utilizar más cuota
+    #Utilizo json.dump para pasar el dict para que me coja los acentos, si no desaparecían las listas
 
     import json
 
@@ -423,7 +420,8 @@ def generate_item(video , tipo, auth_token):
         #Si la serie no tiene temporada, al abrirla tampoco tiene capitulos
         if "seasons" not in video:
             return Item()
-        if "seasons"==0:
+
+        if "seasons"==0: #por lo general este caso es cuando trabajamos con listas
 
             action = 'serie_capitulos'
             title = '%(name)s Serie' % video
@@ -453,7 +451,7 @@ def generate_item(video , tipo, auth_token):
                  extra = ""
             )
 
-   
+    logger.info(item.title)
     return item
 
 def multiple_links(item):
@@ -543,7 +541,9 @@ def links(item):
        
     return itemlist
 
-def search_cat(item,):
+def search_cat(item):
+    
+    filters=None
     
     # Obtiene de nuevo los tokens
     auth_token, user_token = getCredentials()
@@ -553,19 +553,28 @@ def search_cat(item,):
     
     #busqueda general
     url="http://api.series.ly/v2/media/browse"
-    post="auth_token="+auth_token+"&order=most_viewed"
+    post="auth_token="+auth_token
 
     
+    if item.extra =="":
 
-    #busquda por tipo
-    if item.url != "" :
-        mediaType=get_constant("mediaType")[item.url]
-        post=post+"&mediaType=%s" % mediaType
+        post=post+"&order=most_viewed"
 
-    #busqueda por genero
-    if item.extra != "":
-        post=post+"&genre="+item.extra
+        #busquda por tipo
+        if item.url != "" :
+            mediaType=get_constant("mediaType")[item.url]
+            post=post+"&mediaType=%s" % mediaType
 
+        #busqueda por genero
+        if item.category != "":
+            post=post+"&genre="+item.category
+
+    else:
+        logger.info("item.extra")
+        logger.info(item.extra)
+
+        filters=load_json(item.extra)
+        post=post+"&mediaType=%(mediaType)s&genre=%(genre)s&min_year=%(min_year)s&max_year=%(max_year)s&order=%(order)s&limit=%(limit)s" % filters 
 
 
     #paginacion
@@ -598,17 +607,100 @@ def search_cat(item,):
        
        
         itemlist.append(generate_item(serieItem, tipo, auth_token))
+        
          
     
     #Añadimos Pagina Siguiente
     if len(itemlist)>0:
-        itemlist.append( Item(channel=__channel__, title="Pagina Siguiente", action="search_cat", extra=item.extra, url=item.url, plot=item.plot ))
 
+
+        item= Item(channel=__channel__, title="Pagina Siguiente", action="search_cat", category=item.category, url=item.url, plot=item.plot )
+
+        if filters is not None:
+
+            import json
+            item.extra=json.dumps(filters)
+
+        itemlist.append(item)
+        
+    logger.info(str(itemlist))
     return itemlist
 
 
-  
+def exploraMenu(item):
+    filters=get_default_filters()
 
+    itemlist=[]
+
+    itemlist.append( Item(channel=__channel__, title="Explorar" %filters  , action="browse"))
+
+    tipo=["Todos","Series","Peliculas",  "Documentales", "Tvshows" ]
+    itemlist.append( Item(channel=__channel__, title="Tipo: %s" %tipo[filters["mediaType"]]  , action="change_filter", extra="tipo" ))
+
+    itemlist.append( Item(channel=__channel__, title="Genero: %s" %get_constant("categorias")[filters["genre"]]  , action="change_filter", extra="genre" ))
+
+    orden=["Mas nuevo", "Mas viejo", "Puntuacion", "Mas visto", "Trending"]
+    order=[ 'newest', 'oldest', 'rating', 'most_viewed', 'trending']    
+    itemlist.append( Item(channel=__channel__, title="Orden: %s" %orden[order.index(filters["order"])]  , action="change_filter", extra="order" ))
+
+    itemlist.append( Item(channel=__channel__, title="Año mínimo: %(min_year)s" %filters  , action="change_filter", extra="min_year" ))
+    itemlist.append( Item(channel=__channel__, title="Año máximo: %(max_year)s" %filters  , action="change_filter", extra="max_year" ))
+    itemlist.append( Item(channel=__channel__, title="Nº de Resultados: %(limit)s" %filters  , action="change_filter", extra="limits" ))
+
+    return itemlist
+
+def change_filter(item):
+    filters=get_default_filters()
+    dialog=xbmcgui.Dialog()
+
+    if item.extra=="order":
+        orden=["Mas nuevo", "Mas viejo", "Puntuacion", "Mas visto", "Trending"]
+        order=[ 'newest', 'oldest', 'rating', 'most_viewed', 'trending']
+        filters["order"]=order[dialog.select("Selecciona el orden",orden)]
+
+    if item.extra == "min_year":
+        filters["min_year"]=dialog.numeric(0, "Selecciona el año de partida", str(filters["min_year"]))
+
+    if item.extra == "max_year":
+        filters["max_year"]=dialog.numeric(0, "Selecciona el año Final",str(filters["max_year"]))
+
+    if item.extra== "limits":
+        limites=["10", "24", "48"]
+        limits=[10,24,48]
+        filters["limit"]=limits[dialog.select("Resultados por Pagina",limites)]
+
+    if item.extra=="tipo":
+        tipo=["Todos","Series","Peliculas",  "Documentales", "Tvshows" ]
+        filters["mediaType"]=dialog.select("Selecciona el Tipo",tipo)
+
+    if item.extra=="genre":
+        cat=[]
+        genre=[]
+        categorias=get_constant("categorias")
+
+        for c in sorted(categorias,key=categorias.get):
+            cat.append(categorias[c])
+            genre.append(c)
+    
+        filters["genre"]=genre[dialog.select("Selecciona el Genero",cat)]
+
+
+    import json
+    path=config.get_data_path()
+    f =open(path+"seriesly.default.json", "w+")
+    json.dump(filters,f)
+    f.close()
+
+    return exploraMenu(Item(channel=__channel__, title="Explora series.ly", action="exploraMenu", url="explora" ))
+
+
+def browse(item):
+
+    filters=get_default_filters()
+    import json
+    return search_cat(Item(channel=__channel__, extra=json.dumps(filters), plot="0"))
+
+   
 
 def search(item,texto="", categoria="*"):
 
@@ -635,7 +727,7 @@ def search_videos(item, texto=None):
 
     #busqueda general
     url="http://api.series.ly/v2/search"
-    post="auth_token="+auth_token+"&order=votes_num&onlyTitle=true&q="+query
+    post="auth_token="+auth_token+"&q="+query
 
     
 
@@ -644,11 +736,7 @@ def search_videos(item, texto=None):
         mediaType=get_constant("mediaType")[item.url]
         post=post+"&filter=%s" % mediaType
 
-    #busqueda por genero
-    if item.extra != "":
-        post=post+"&genere="+item.extra
-
-
+   
 
     #paginacion
     if item.plot != "":
@@ -672,14 +760,19 @@ def search_videos(item, texto=None):
    
     logger.info("hay %d series" % len(serieList))
    
+    #return get_search_list(serieList)
+
+
     itemlist = []
     for serieItem in serieList['response']['results']:
         logger.info(str(serieItem))
+
+        if "mediaType" in serieItem["object"]:
         
-        tipo=get_constant("mediaType")[serieItem['object']["mediaType"]]
+            tipo=get_constant("mediaType")[serieItem['object']["mediaType"]]
        
        
-        itemlist.append(generate_item(serieItem['object'], tipo, auth_token))
+            itemlist.append(generate_item(serieItem['object'], tipo, auth_token))
          
     
     #Añadimos Pagina Siguiente
@@ -933,3 +1026,25 @@ def error_message(error):
         dialog.ok("SERIES.LY", text)
     except:
         logger.info("se ha producido en un error "+str(error))
+
+def get_default_filters():
+    filters={'mediaType': 1, 'min_year': '1900', 'limit': 10, 'genre': 'sci-fi', 'max_year': '2022', 'order': 'trending'}
+
+    path=config.get_data_path()
+
+    try:
+        j=open(path+"seriesly.default.json","r")
+        filters=load_json(j.read())
+        logger.info("filtros: %s"%str(filters))
+    except:
+        import json
+
+        f =open(path+"seriesly.default.json", "w+")
+        json.dump(filters,f)
+        f.close()
+    
+    return filters
+
+
+
+
