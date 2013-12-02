@@ -40,7 +40,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #logger.info("data="+data)
     
     try:
-        media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )+"?start=0"
+        media_url = scrapertools.get_match( data , 'file\: "([^"]+)"' )
     except:
         op = scrapertools.get_match(data,'<input type="hidden" name="op" value="([^"]+)"')
         usr_login = ""
@@ -73,7 +73,20 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
+    # Añade manualmente algunos erróneos para evitarlos
     encontrados = set()
+    encontrados.add("http://played.to/embed-theme.html")
+    encontrados.add("http://played.to/embed-jquery.html")
+    encontrados.add("http://played.to/embed-s.html")
+    encontrados.add("http://played.to/embed-images.html")
+    encontrados.add("http://played.to/embed-faq.html")
+    encontrados.add("http://played.to/embed-embed.html")
+    encontrados.add("http://played.to/embed-ri.html")
+    encontrados.add("http://played.to/embed-d.html")
+    encontrados.add("http://played.to/embed-css.html")
+    encontrados.add("http://played.to/embed-js.html")
+    encontrados.add("http://played.to/embed-player.html")
+    encontrados.add("http://played.to/embed-cgi.html")
     devuelve = []
 
     #http://played.to/z3nnqbspjyne

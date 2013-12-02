@@ -13,6 +13,15 @@ from core import logger
 from core import config
 from core import unpackerjs,unpackerjs3
 
+def test_video_exists( page_url ):
+    logger.info("[vidspot.py] test_video_exists(page_url='%s')" % page_url)
+
+    data = scrapertools.cache_page(page_url)
+    if "File was deleted" in data:
+        return False,"Ha sido borrado de vidspot"
+    
+    return True,""
+
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
     logger.info("[vidspot.py] url="+page_url)
 
@@ -31,28 +40,6 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
     
     try:
-        '''
-        <input type="hidden" name="op" value="download1">
-        <input type="hidden" name="usr_login" value="">
-        <input type="hidden" name="id" value="d6fefkzvjc1z">
-        <input type="hidden" name="fname" value="coriolanus.dvdr.mp4">
-        <input type="hidden" name="referer" value="">
-        <input type="hidden" name="method_free" value="1">
-        <input type="image"  id="submitButton" src="/images/continue-to-video.png" value="method_free" />
-        '''
-        '''
-        <Form name="F1" method="POST" action=''>
-        <input type="hidden" name="op" value="download1">
-        <input type="hidden" name="usr_login" value="">
-        <input type="hidden" name="id" value="lqwa0bh2aw0n">
-        <input type="hidden" name="fname" value="Cupu1x01.mp4">
-        <input type="hidden" name="referer" value="">
-        <input type="hidden" name="method_free" value="1">
-        <input type="image"  id="submitButton" src="/images/continue-to-video.png" value="method_free" />
-        <!-- <input name="confirm" type="submit" value="Continue as Free User" disabled="disabled" id="submitButton" class="confirm_button" style="width:190px;"> -->
-           
-        </form>
-        '''
         op = scrapertools.get_match(data,'<input type="hidden" name="op" value="([^"]+)"')
         usr_login = ""
         id = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)"')
@@ -74,7 +61,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         pass
     
     # Extrae la URL
-    media_url = scrapertools.get_match( data , '"file"\s*\:\s*"([^"]+)"' )+"?start=0"
+    match = re.compile('"file" : "(.+?)",').findall(data)
+    if len(match) > 0:
+        media_url = match[0]                
     
     video_urls = []
     video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidspot]",media_url])
@@ -86,7 +75,21 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
+
+    # Añade manualmente algunos erróneos para evitarlos
     encontrados = set()
+    encontrados.add("http://vidspot.net/embed-theme.html")
+    encontrados.add("http://vidspot.net/embed-jquery.html")
+    encontrados.add("http://vidspot.net/embed-s.html")
+    encontrados.add("http://vidspot.net/embed-images.html")
+    encontrados.add("http://vidspot.net/embed-faq.html")
+    encontrados.add("http://vidspot.net/embed-embed.html")
+    encontrados.add("http://vidspot.net/embed-ri.html")
+    encontrados.add("http://vidspot.net/embed-d.html")
+    encontrados.add("http://vidspot.net/embed-css.html")
+    encontrados.add("http://vidspot.net/embed-js.html")
+    encontrados.add("http://vidspot.net/embed-player.html")
+    encontrados.add("http://vidspot.net/embed-cgi.html")
     devuelve = []
 
     # http://vidspot.net/embed-d6fefkzvjc1z.html 
@@ -139,6 +142,6 @@ def find_videos(data):
 
 def test():
 
-    video_urls = get_video_url("http://vidspot.net/embed-5349gu9u9pkn.html")
+    video_urls = get_video_url("http://vidspot.net/embed-n75cvi4hogi4.html")
 
     return len(video_urls)>0

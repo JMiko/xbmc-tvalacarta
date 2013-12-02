@@ -13,8 +13,8 @@ from core import logger
 from core import config
 
 # Obtiene la URL que hay detrás de un enlace a linkbucks
-def get_long_url(url):
-    logger.info("servers.adfly get_long_url(short_url='%s')" % short_url)
+def get_long_url(short_url):
+    logger.info("servers.linkbucks get_long_url(short_url='%s')" % short_url)
 
     request_headers = []
     request_headers.append(["User-Agent","Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12"])
@@ -24,7 +24,7 @@ def get_long_url(url):
     
     # Parche porque python no parece reconocer bien la cabecera phpsessid
     body,response_headers = scrapertools.read_body_and_headers(url,post=post,headers=request_headers)
-
+    location = ""
     n = 1
     while True:
         for name,value in response_headers:

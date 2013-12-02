@@ -23,7 +23,7 @@ def find_videos(data):
     devuelve = []
 
     # http://uploaz.com/file/
-    patronvideos  = '"filemonster.com/download(.*?)"'
+    patronvideos  = '"filesmonster.com/download(.*?)"'
     logger.info("[filemonster.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

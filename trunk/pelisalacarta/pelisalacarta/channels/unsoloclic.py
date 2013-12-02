@@ -107,7 +107,8 @@ def findvideos(item):
     itemlist=[]
     
     #<a href="http://67cfb0db.linkbucks.com"><img title="billionuploads" src="http://unsoloclic.info/wp-content/uploads/2012/11/billonuploads2.png" alt="" width="380" height="50" /></a></p>
-    patron = '<a href="(http.//[a-z0-9]+.linkbucks.c[^"]+)[^>]+><img.*?title="([^"]+)" src="([^"]+)"'
+    #<a href="http://1bd02d49.linkbucks.com"><img class="colorbox-57103"  title="Freakeshare" alt="" src="http://unsoloclic.info/wp-content/uploads/2013/01/freakshare.png" width="390" height="55" /></a></p>
+    patron = '<a href="(http.//[a-z0-9]+.linkbucks.c[^"]+)[^>]+><img.*?title="([^"]+)".*?src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for url,servertag,serverthumb in matches:
