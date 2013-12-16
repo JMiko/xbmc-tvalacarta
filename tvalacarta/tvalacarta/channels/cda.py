@@ -8,12 +8,12 @@
 # Desarrollo basado sobre otros canales de tvalacarta
 #------------------------------------------------------------
 
-import re
+import re, json
 
 from core import logger
 from core import scrapertools
 from core.item import Item
-from lib import simplejson
+
 
 DEBUG = True
 PLOT = True
@@ -29,12 +29,12 @@ def mainlist(item):
     logger.info("[" + CHANNELNAME + ".py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=CHANNELNAME, title="Series-Unitarios" , action="programas", url=MAIN_URL+"/series-unitarios" , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Documentales"     , action="programas", url=MAIN_URL+"/documentales"     , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Cortos"           , action="programas", url=MAIN_URL+"/cortos"           , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Micros"           , action="programas", url=MAIN_URL+"/micros"           , folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Igualdad Cultural", action="programas", url=MAIN_URL+"/igualdad-cultural", folder=True) )
-    itemlist.append( Item(channel=CHANNELNAME, title="Clip CDA"         , action="calidades", url=MAIN_URL+"/clip/512/cda"     , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Series-Unitarios" , action="programas", url=MAIN_URL+"/series-unitarios/" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Documentales"     , action="programas", url=MAIN_URL+"/documentales/"     , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Cortos"           , action="programas", url=MAIN_URL+"/cortos/"           , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Micros"           , action="programas", url=MAIN_URL+"/micros/"           , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Igualdad Cultural", action="programas", url=MAIN_URL+"/igualdad-cultural/", folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Clip CDA"         , action="calidades", url=MAIN_URL+"/clip/512/cda"      , folder=True) )
 
     return itemlist
 
@@ -64,7 +64,7 @@ def programas(item):
                 if (DEBUG): logger.info(data)
 
                 # Extraigo la sinópsis del programa y luego borro todas las etiquetas HTML.
-                iplot = re.sub(r"<[^>]+?>", "", scrapertools.get_match(plot_data, '<h3>Sinopsis</h3><p.*?>(.*?)</p>'))
+                iplot = scrapertools.htmlclean(scrapertools.get_match(plot_data, '<h3>Sinopsis</h3><p.*?>(.*?)</p>'))
                 if (DEBUG): logger.info('plot:' + iplot)
             except:
                 iplot = "";
@@ -72,7 +72,7 @@ def programas(item):
             iplot = "";
 
         # Añado el item del programa al listado.
-        itemlist.append( Item(channel=CHANNELNAME, title=ititle , action="capitulos", url=iurl, thumbnail=ithumbnail, plot=iplot, folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapertools.htmlclean(ititle) , action="capitulos", url=iurl, thumbnail=ithumbnail, plot=iplot, folder=True) )
 
     # Si existe una página siguiente entonces agrego un item de paginación.
     if pagina_siguiente != "":
@@ -93,7 +93,7 @@ def capitulos(item):
         data = scrapertools.cachePage(MAIN_URL + '/chapters/ajax/' + programa_id)
         if (DEBUG): logger.info('Json:' + data)
     
-        objects = simplejson.loads(data, object_hook=to_utf8)
+        objects = json.loads(data, object_hook=to_utf8)
     
         itemlist = []
         for object in objects['chapters']:
@@ -104,7 +104,7 @@ def capitulos(item):
                 ititle = object['title']
     
             # Añado el item del capítulo al listado.
-            itemlist.append( Item(channel=CHANNELNAME, title=ititle, action="calidades", url=MAIN_URL+'/clip/'+object['id']+'/', thumbnail=item.thumbnail, folder=True ) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapertools.htmlclean(ititle), action="calidades", url=MAIN_URL+'/clip/'+object['id']+'/', thumbnail=item.thumbnail, folder=True ) )
     
         return itemlist
     except:
@@ -130,7 +130,7 @@ def calidades(item):
     data = scrapertools.cachePage(MAIN_URL + '/clip/ajax/' + clip_id)
     if (DEBUG): logger.info('Json:' + data)
 
-    objects = simplejson.loads(data)
+    objects = json.loads(data)
 
     itemlist = []
     for object in objects['versions']:
