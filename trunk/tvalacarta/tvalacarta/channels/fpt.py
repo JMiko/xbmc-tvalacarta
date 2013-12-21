@@ -57,7 +57,27 @@ def videos(item):
     if (DEBUG): logger.info("pagina_siguiente=" + pagina_siguiente)
 
     # Extraigo id, imagen, título y descripción del video.
-    patron  = '<li\s*class=".*?">\s*<div\s*style="position: relative;"><a\s*href="http://www.youtube.com/embed/(.{11})\?autoplay=1" class="lbpModal cboxElement" title=".*?"><img\s*.*?src="(.*?)".*?/><img\s*src=".*?/wp-content/uploads/transparent-play-player.png".*?></a></div><div\s*class="golitemdetalle">.*?</br>\s*<a\s*href=".*?" >(.*?)</a></br>\s*(.*?)</div></li>'
+    '''
+    <li class=golitem>
+    <div style="position: relative;">
+    <a href="http://www.youtube.com/embed/JL1RcXfV80g?autoplay=1" class="lbpModal cboxElement" title="Gol Carbonero. Quilmes 1 &#8211; River 1. Fecha 19. Torneo Inicial 2013.">
+    <img pagespeed_lazy_src="http://1-ps.googleusercontent.com/x/www.futbolparatodos.com.ar/img.youtube.com/vi/JL1RcXfV80g/210xNx0.jpg.pagespeed.ic.PTTKGhSOJ3.webp" width=210 alt="Gol Carbonero. Quilmes 1 &#8211; River 1. Fecha 19. Torneo Inicial 2013." src="//1-ps.googleusercontent.com/h/www.gstatic.com/psa/static/1.gif" onload="pagespeed.lazyLoadImages.loadIfVisible(this);"/>
+    <img src="/wp-content/uploads/transparent-play-player.png" width=210 style="position:absolute; z-index: 1; left: -1px;" alt=play>
+    </a>
+    </div>
+    <div class=golitemdetalle>8/12/2013</br>
+    <a href="http://www.futbolparatodos.com.ar/2013/12/08/gol-carbonero-quilmes-1-river-1-fecha-19-torneo-inicial-2013/">Gol Carbonero. Quilmes 1 &#8211; River 1. Fecha 19. Torneo Inicial 2013.</a></br>
+    </div></li>
+    '''
+    patron  = '<li\s*class[^<]+'
+    patron += '<div\s*style="position: relative[^<]+'
+    patron += '<a\s*href="http://www.youtube.com/embed/(.{11})\?autoplay=1"[^<]+'
+    patron += '<img\s*.*?src="([^"]+)"[^<]+'
+    patron += '<img[^<]+'
+    patron += '</a[^<]+'
+    patron += '</div[^<]+'
+    patron += '<div\s*class=golitemdetalle>[^<]+</br[^<]+'
+    patron += '<a[^>]+>(.*?)</a></br>(.*?)</div></li>'
     matches = re.compile(patron, re.DOTALL).findall(data)
 
     itemlist = []
