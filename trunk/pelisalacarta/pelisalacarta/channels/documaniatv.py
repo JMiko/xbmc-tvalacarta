@@ -91,7 +91,7 @@ def tags(item):
 
     # Saca el bloque con las categorias
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<h4>Tags de los documentales</h4>(.*?)</div>')
+    data = scrapertools.get_match(data,'<h4>Palabras Clave</h4>(.*?)</div>')
 
     #
     patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
