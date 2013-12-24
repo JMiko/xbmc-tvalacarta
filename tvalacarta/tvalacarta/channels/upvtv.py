@@ -104,6 +104,8 @@ def episodios(item):
         scrapedurl = (URLconHTTPok)
         scrapedthumbnail = ""
         scrapedplot = "HAZ CLICK SOBRE EL NOMBRE PARA REPRODUCIR EL CAPÍTULO"
+        if not scrapedurl.startswith("http"):
+            scrapedurl = "http://"+scrapedurl
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , category = item.category , folder=False) )
 
