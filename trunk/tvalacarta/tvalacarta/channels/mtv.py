@@ -71,23 +71,24 @@ def episodios(item):
     itemlist=[]
 
     '''
-    <div class="row row70 " >
-    <div class="thumbcontainer thumb70">
-    <a href="/programas/destacados/alaska-y-mario/videos/alaska-y-mario-ep-106-parte-1-de-3-660835/" title="Alaska y Mario episodio 6: 'Ibiza Mix'" class="thumblink" >
-    <img class="thumbnail " src="http://mtv-es.mtvnimages.com/img/imagenes/aym106a400x300.jpg?height=53&amp;quality=0.91" alt="Alaska y Mario episodio 6: 'Ibiza Mix'" />
+    <div  class="row row160" >
+    <div class="thumbcontainer thumb160">
+    <a href="/programas/geordie-shore-6-temporada/episodios/geordie-shore-6-extra/video/geordie-shore-material-extra-979143/" title="Geordie Shore promo temporada 6: ¡en Australia!" class="thumblink" >
+    <img class="thumbnail " src="http://mtv-es.mtvnimages.com/img/imagenes/promo-gs-new.jpg?height=120&amp;quality=0.91" alt="Geordie Shore promo temporada 6: ¡en Australia!" />
     <span class="video"> </span>
     </a>
     </div>
-    <div class="link-block">
-    <a href="/programas/destacados/alaska-y-mario/videos/alaska-y-mario-ep-106-parte-1-de-3-660835/" title="Alaska y Mario episodio 6: 'Ibiza Mix'" class="titlelink " >Alaska y Mario episodio 6: 'Ibiza Mix'</a></div>
-    <div class="watchButton" >
-    <a href="/programas/destacados/alaska-y-mario/videos/alaska-y-mario-ep-106-parte-1-de-3-660835/"><span>Ver</span></a> </div>
-    </div>  
+    <div class="link-block">     
+    <a href="/programas/geordie-shore-6-temporada/episodios/geordie-shore-6-extra/video/geordie-shore-material-extra-979143/" title="Geordie Shore promo temporada 6: ¡en Australia!" class="titlelink " >Geordie Shore promo temporada 6: ¡en Australia!</a></div>
+    <p  class="video-description" >Scott y Holly... en su vídeo más íntimo </p>
+    <p  class="morelink" ><a href="/programas/geordie-shore-6-temporada/episodios/geordie-shore-6-extra/">Descripción completa</a> </p>
+    </div>
     '''
     # Extrae los episodios
     data = scrapertools.cachePage( item.url )
-    patron  = '<div class="row row70[^<]+'
-    patron += '<div class="thumbcontainer thumb70[^<]+'
+    #logger.info("data="+data)
+    patron  = '<div\s+class="row row[^<]+'
+    patron += '<div\s+class="thumbcontainer thumb[^<]+'
     patron += '<a href="([^"]+)" title="([^"]+)" class="thumblink"[^<]+'
     patron += '<img class="thumbnail " src="(http://mtv-es.mtvnimages.com/.*?)\?'
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -118,35 +119,17 @@ def partes(item):
     '''
     <div class="row row70 " >
     <div class="thumbcontainer thumb70">
-    <a href="/programas/destacados/gandia-shore/videos/gandía-shore-ep-114-parte-3-de-4-872479/" title="Gandía Shore Ep. 114 |Parte 3 de 4|" class="thumblink" >
-    <img class="thumbnail " src="http://mtv-es.mtvnimages.com/img/imagenes/gsh114c.jpg?height=53&amp;quality=0.91" alt="Gandía Shore Ep. 114 |Parte 3 de 4|" />
+    <a href="/programas/geordie-shore-6-temporada/episodios/geordie-shore-606/video/geordie-shore-ep-606-parte-2-de-4-986977/" title="Geordie Shore Ep. 606 |Parte 2 de 4|" class="thumblink" >
+    <img class="thumbnail " src="http://mtv-es.mtvnimages.com/img/imagenes/gs606b.jpg?height=53&amp;quality=0.91" alt="Geordie Shore Ep. 606 |Parte 2 de 4|" />
     <span class="video"> </span>
     </a>
     </div>
-    <div class="link-block">
-    <a href="/programas/destacados/gandia-shore/videos/gandía-shore-ep-114-parte-3-de-4-872479/" title="Gandía Shore Ep. 114 |Parte 3 de 4|" class="titlelink " >Gandía Shore Ep. 114 |Parte 3 de 4|</a></div>
-    <p class="video-description" >Destrozando la casa </p>
-    <div class="flux-usage" >
-    <script type="text/javascript">
-    /* <![CDATA[ */
-    Flux.createWidget("ContentAction", {
-    "contentUri": "mgid:hcx:content:mtv.es:2edfa803-946e-46a3-9d4d-09a43d7c921c",
-    "layout": "horizontal",
-    "size": "small",
-    "items": [
-    { id: 'commentCount', title: 'Comentarios' },
-    { id: 'contentRating', title: { thumbsUpTitle: 'Me gusta', thumbsDownTitle: 'No me gusta' } }
-    ]
-    });
-    /* ]]> */
-    </script>
-    </div> </div>
     '''
     # Extrae los episodios
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<h3 class="header-title">Vídeos destacados</h3>(.*?)</div[^<]+</div[^<]+</div[^<]+</div>')
-    patron  = '<div class="row row70[^<]+'
-    patron += '<div class="thumbcontainer thumb70[^<]+'
+    data = scrapertools.get_match(data,'<\!-- SM4.0 -->(.*?)<\!-- SM4.0 -->')
+    patron  = '<div class="row row[^<]+'
+    patron += '<div class="thumbcontainer thumb[^<]+'
     patron += '<a href="([^"]+)" title="([^"]+)" class="thumblink"[^<]+'
     patron += '<img class="thumbnail " src="(http://mtv-es.mtvnimages.com/.*?)\?'
     matches = re.compile(patron,re.DOTALL).findall(data)

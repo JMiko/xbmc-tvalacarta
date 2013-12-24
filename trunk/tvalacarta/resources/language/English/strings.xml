@@ -16,7 +16,7 @@
     <!-- Default action when you select a video -->
     <string id="30005">Default play setting:</string>
     <string id="30006">Ask</string>
-    <string id="30007">Watch</string>
+    <string id="30007">Watch in low quality</string>
     <string id="30008">Watch in high quality</string>
     <string id="30009">Send to jDownloader</string>
 

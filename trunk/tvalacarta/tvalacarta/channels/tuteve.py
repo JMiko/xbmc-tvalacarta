@@ -6,6 +6,7 @@
 #------------------------------------------------------------
 import urlparse,re
 import urllib
+import traceback
 
 from core import logger
 from core import config
@@ -165,24 +166,21 @@ def partes(item):
     <li> 
     <script language="javascript">
     function setShare(indice){
-    sUrl = "http://play.tuteve.tv/videogaleria/programa/164976/2013-08-02-capitulo-77?b=" + indice;
+    sUrl = "http://play.tuteve.tv/videogaleria/programa/183915/2013-11-06-capitulo-120?b=" + indice;
     document.getElementById('fblike').setAttribute('href', sUrl);
     FB.XFBML.parse(document.getElementById('fbdiv'));
     $('.twitter-share-button').attr('data-url',location.href + '?b=3');
     twttr.widgets.load();
     }
     </script>
-    <div class="itmThumbFotos" onclick="setVideoFrame3('2a8e578f4cbe26a89701f7057592747f','oid=186741255&id=165693856&hash=3aad0b92ee9c0ba8&hd=1','vk','play*programa*fina-estampa',606,350,1,'Fina Estampa - Cap&iacute;tulo 77 (Parte 1)','true','nulo','');setShare(1)"> <img src="http://cs506507.vk.me/u186741255/video/l_860bb00e.jpg" width="150" height="113" class="imgThumb" />
+    <div class="itmThumbFotos" onclick="setVideoFrame3('2a8e578f4cbe26a89701f7057592747f','oid=202983677&id=166519732&hash=eb56bceea6a94365&hd=2','vk','play*programa*avenida-peru',606,350,1,'Avenida Per&uacute; - Cap&iacute;tulo 120 (Parte 1)','true','nulo','','');setShare(1)"> 
+    <img src="http://cs525510.vk.me/u202983677/video/l_d81fb11c.jpg" width="150" height="113" class="imgThumb" />
     <div class="layer" id="layer_1">
     <div class="numero" id="num_1">1</div>
     </div>
-    <div class="titulo" id="titulo_1">Fina Estampa - Capítulo 77 (Parte 1)</div>
+    <div class="titulo" id="titulo_1">Avenida Perú - Capítulo 120 (Parte 1)</div>
     </div>
     </li>
-    
-    ...
-
-    </ul>
     '''
     # Extrae los episodios
     data = scrapertools.cachePage(item.url)
@@ -203,7 +201,7 @@ def partes(item):
             plot = ""
             itemlist.append( get_item_video(item,title,thumbnail,id2,server) )
     except:
-        pass
+        logger.info(traceback.format_exc())
 
     if len(itemlist)==0:
         patron = "setVideoFrame\('([^']+)','([^']*)',\d+,'([^']+)'"
@@ -223,7 +221,7 @@ def partes(item):
         #/videos?prog=3798&#038;v=1&#038;pag=2
         itemlist.append( Item( channel=item.channel , title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,next_page) ) )
     except:
-        pass
+        logger.info(traceback.format_exc())
 
     return itemlist
 
@@ -236,7 +234,7 @@ def get_item_video(item,title,thumbnail,id,server):
         url = "http://vk.com/video_ext.php?"+id
 
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        new_item = Item( channel=item.channel , title=title , action="play" , server="vk" , url=url , thumbnail=thumbnail , plot=plot , show=title , fanart=thumbnail , folder=False )
+        new_item = Item( channel=item.channel , title=title , action="play" , server="vk" , url=url , thumbnail=thumbnail , show=title , fanart=thumbnail , folder=False )
 
     elif server=="yt":
         #setVideoFrame3('2a8e578f4cbe26a89701f7057592747f','01SjStN4wx8','yt','play*programa*economia-en-directo',606,350,1,'  Econom&iacute;a en Directo 02-08-2013 (Parte 1)','true','nulo','')

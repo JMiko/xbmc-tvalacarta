@@ -10,7 +10,7 @@ import urllib, urllib2
 from core import logger
 from core import scrapertools
 from core.item import Item
-
+from core import jsontools
 
 DEBUG = False
 CHANNELNAME = "a3media"
@@ -27,7 +27,7 @@ def mainlist(item):
     url="http://servicios.atresplayer.com/api/mainMenu"
     data = scrapertools.cachePage(url)
     logger.info(data)
-    lista = load_json(data)[0]
+    lista = jsontools.load_json(data)[0]
     if lista == None: lista =[]
   
     url2="http://servicios.atresplayer.com/api/categorySections/"
@@ -36,9 +36,9 @@ def mainlist(item):
     itemlist.append( Item(channel=CHANNELNAME, title="Destacados" , action="episodios" , url="http://servicios.atresplayer.com/api/highlights", folder=True) )
 
     for entry in lista['menuItems']:
-	eid = entry['idSection']
-	scrapedtitle = entry['menuTitle']
-	scrapedurl = url2 + str(eid)
+        eid = entry['idSection']
+        scrapedtitle = entry['menuTitle']
+        scrapedurl = url2 + str(eid)
     
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="secciones" , url=scrapedurl, folder=True) )
 
@@ -52,23 +52,23 @@ def secciones(item):
 
     data = scrapertools.cachePage(item.url)
     logger.info(data)
-    lista = load_json(data)
+    lista = jsontools.load_json(data)
     if lista == None: lista =[]
 
     itemlist = []
 
     for entrys in lista:
-	entry = entrys['section']
-	extra = entry['idSection']
-	scrapedtitle = entry['menuTitle']
-	scrapedurl = item.url
-	if entry.has_key('storyline'): scrapedplot = entry['storyline']
-	else: scrapedplot = ""
-	scrapedthumbnail = entry['urlImage'].replace('.jpg','03.jpg')
- 
-	if entry['drm'] == False: ##solo añade las secciones con visualizacion no protegida  
-        	# Añade al listado
-        	itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="temporadas" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=str(extra), folder=True) )
+        entry = entrys['section']
+        extra = entry['idSection']
+        scrapedtitle = entry['menuTitle']
+        scrapedurl = item.url
+        if entry.has_key('storyline'): scrapedplot = entry['storyline']
+        else: scrapedplot = ""
+        scrapedthumbnail = entry['urlImage'].replace('.jpg','03.jpg')
+     
+        if entry['drm'] == False: ##solo añade las secciones con visualizacion no protegida  
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="temporadas" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=str(extra), folder=True) )
 
     return itemlist
 
@@ -77,7 +77,7 @@ def temporadas(item):
 
     data = scrapertools.cachePage(item.url)
     logger.info(data)
-    lista = load_json(data)
+    lista = jsontools.load_json(data)
     if lista == None: lista =[]
 
     url2="http://servicios.atresplayer.com/api/episodes/"
@@ -87,29 +87,29 @@ def temporadas(item):
     n = 0
     ids = None
     for entrys in lista:
-	entry = entrys['section']
-	if entry['idSection'] == int(item.extra):
-	    ids = entry['idSection']
-	    if entry.has_key('subCategories'):
-		for temporada in entry['subCategories']:
-			n += 1
-			extra = temporada['idSection']
-			scrapedtitle = temporada['menuTitle']
-			scrapedurl = url2 + str(extra)
-			if temporada.has_key('storyline'): scrapedplot = temporada['storyline']
-			else: scrapedplot = item.plot
-			scrapedthumbnail = entry['urlImage'].replace('.jpg','03.jpg')
-    
-        		# Añade al listado
-        		itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=str(extra), folder=True) )
+        entry = entrys['section']
+        if entry['idSection'] == int(item.extra):
+            ids = entry['idSection']
+            if entry.has_key('subCategories'):
+                for temporada in entry['subCategories']:
+                    n += 1
+                    extra = temporada['idSection']
+                    scrapedtitle = temporada['menuTitle']
+                    scrapedurl = url2 + str(extra)
+                    if temporada.has_key('storyline'): scrapedplot = temporada['storyline']
+                    else: scrapedplot = item.plot
+                    scrapedthumbnail = entry['urlImage'].replace('.jpg','03.jpg')
+
+                    # Añade al listado
+                    itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=str(extra), folder=True) )
 
 
     if n == 1:  #si solo hay una temporada cargar los episodios
-	itemlist = episodios(itemlist[0])
+        itemlist = episodios(itemlist[0])
 
     if n == 0 and ids != None:  #si no hay temporadas pueden ser mas secciones
-	item.url = "http://servicios.atresplayer.com/api/categorySections/" + str(ids)
-	itemlist = secciones(item)
+        item.url = "http://servicios.atresplayer.com/api/categorySections/" + str(ids)
+        itemlist = secciones(item)
 
     return itemlist
 
@@ -118,39 +118,44 @@ def episodios(item):
 
     data = scrapertools.cachePage(item.url)
     logger.info(data)
-    lista = load_json(data)
+    lista = jsontools.load_json(data)
 
     if lista == None: lista =[]
 
     itemlist = []
 
     if lista.has_key('episodes'):
-    	episodes = lista['episodes']
+        episodes = lista['episodes']
     elif lista.has_key('items'):
-    	episodes = lista['items']
+        episodes = lista['items']
     else:
-	episodes = []
-	
-    for entrys in episodes:
-    	if entrys.has_key('episode'):
-		entry = entrys['episode']
-		tipo = entry['type']
-		episode = entry['contentPk']
-		scrapedtitle = entry['name']
-		if tipo == "REGISTER":
-			scrapedtitle = scrapedtitle + " (R)"
-		elif tipo == "PREMIUM":
-			scrapedtitle = scrapedtitle + " (P)"
-	
-		scrapedurl = "http://servicios.atresplayer.com/api/urlVideo/%s/%s/" % (episode, "android_tablet") 
-		extra = episode
-		if entry.has_key('storyline'): scrapedplot = entry['storyline']
-		else: scrapedplot = item.plot
-		scrapedthumbnail = entry['urlImage'].replace('.jpg','03.jpg')
+        episodes = []
     
-		if tipo == "FREE": #solo carga los videos que no necesitan registro ni premium
-			# Añade al listado
-			itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = str(extra), folder=False) )
+    for entrys in episodes:
+        if entrys.has_key('episode'):
+            entry = entrys['episode']
+
+        if entry.has_key('type'):
+            tipo = entry['type']
+        else:
+            tipo = "FREE"
+
+        episode = entry['contentPk']
+        scrapedtitle = entry['name']
+        if tipo == "REGISTER":
+            scrapedtitle = scrapedtitle + " (R)"
+        elif tipo == "PREMIUM":
+            scrapedtitle = scrapedtitle + " (P)"
+    
+        scrapedurl = "http://servicios.atresplayer.com/api/urlVideo/%s/%s/" % (episode, "android_tablet") 
+        extra = episode
+        if entry.has_key('storyline'): scrapedplot = entry['storyline']
+        else: scrapedplot = item.plot
+        scrapedthumbnail = entry['urlImage'].replace('.jpg','03.jpg')
+    
+        if tipo == "FREE": #solo carga los videos que no necesitan registro ni premium
+            # Añade al listado
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = str(extra), folder=False) )
 
     return itemlist
 
@@ -162,11 +167,11 @@ def play(item):
 
     data = scrapertools.cachePage(url)
     logger.info(data)
-    lista = load_json(data)
+    lista = jsontools.load_json(data)
     itemlist = []
     if lista != None: 
-	item.url = lista['resultObject']['es']
-    	itemlist.append(item)
+        item.url = lista['resultObject']['es']
+        itemlist.append(item)
 
 
     return itemlist
@@ -183,33 +188,3 @@ def d(s, s1):
 
 def e(s, s1):
     return hmac.new(s1, s).hexdigest()
-
-
-
-def load_json(data):
-    # callback to transform json string values to utf8
-    def to_utf8(dct):
-        rdct = {}
-        for k, v in dct.items() :
-            if isinstance(v, (str, unicode)) :
-                rdct[k] = v.encode('utf8', 'ignore')
-            else :
-                rdct[k] = v
-        return rdct
-    try :        
-        from lib import simplejson
-        json_data = simplejson.loads(data, object_hook=to_utf8)
-        return json_data
-    except:
-        try:
-            import json
-            json_data = json.loads(data, object_hook=to_utf8)
-            return json_data
-        except:
-            import sys
-            for line in sys.exc_info():
-                logger.error("%s" % line)
-
-
-
-
