@@ -8,7 +8,7 @@ import re
 import sys
 import os
 import urllib2
-import xbmcgui
+
 
 from core import logger
 from core import config
@@ -17,13 +17,20 @@ from core.item import Item
 from servers import servertools
 
 __channel__ = "seriesly"
-__category__ = "S,A"
+__category__ = "F,S,A,D"
 __type__ = "generic"
 __title__ = "Series.ly"
 __language__ = "ES"
 __creationdate__ = "20111119"
 
 DEBUG = config.get_setting("debug")
+
+
+try:
+    import xbmcgui
+    isxbmc=True
+except:
+    isxbmc=False
 
 
 def isGeneric():
@@ -65,7 +72,7 @@ def mainlist(item):
             itemlist.append( Item(channel=__channel__, title="Mis documentales", action="categorias", extra=extra_params, url="documentaries" ) )
             itemlist.append( Item(channel=__channel__, title="Mis tvshows", action="categorias", extra=extra_params, url="tvshows" ) )
             itemlist.append( Item(channel=__channel__, title="Mis listas", action="listasMenu", extra=extra_params, url="listas" ) )
-            itemlist.append( Item(channel=__channel__, title="Explora series.ly", action="exploraMenu", url="explora" ) )
+            if isxbmc: itemlist.append( Item(channel=__channel__, title="Explora series.ly", action="exploraMenu", url="explora" ) )
             
 
         else:
@@ -275,7 +282,7 @@ def mas_vistas(item):
    
     # Obtiene de nuevo los tokens
     auth_token, user_token = getCredentials()
-    post = 'auth_token=%s&user_token=%s&limit=10' % ( qstr(auth_token), qstr(user_token) )
+    post = 'auth_token=%s&user_token=%s&limit=100' % ( qstr(auth_token), qstr(user_token) )
    
     # Extrae las entradas (carpetas)
     tipo=item.url
@@ -650,6 +657,8 @@ def exploraMenu(item):
     return itemlist
 
 def change_filter(item):
+    
+
     filters=get_default_filters()
     dialog=xbmcgui.Dialog()
 
