@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>27</tag>
-	<date>02/12/2014</date>
-	<changes>Mejoras en el canal por prunk</changes>
+	<tag>28</tag>
+	<date>29/01/2014</date>
+	<changes>Eliminadas dependencias de librerías XBMC (gracias a prunk)</changes>
 </version>
