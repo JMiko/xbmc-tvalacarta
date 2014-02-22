@@ -1,12 +1,40 @@
 #!/bin/bash
 
-VERSION="0.9"
+VERSION="0.8"
 
 MEGA_API_URL="https://g.api.mega.co.nz"
 MEGA_API_KEY=""
 MC_API_URL="http://megacrypter.com/api"
 OPENSSL_AES_CTR_DEC="openssl enc -d -aes-128-ctr"
 OPENSSL_AES_CBC_DEC="openssl enc -a -A -d -aes-128-cbc"
+WATCH_DIR="."
+WATCHDOG_SLEEP_SECS=5
+DOWNLOAD_STOP_FILE="force_stop.tmp"
+DOWNLOAD_FINISHED_FILE="download_finished.tmp"
+
+# 1:download url
+function watchdog {
+	
+	echo -e "Watchdog loaded!\n"	
+	
+	WATCHDOG=true
+	
+	while [ $WATCHDOG ] && [ "$res" != "$DOWNLOAD_STOP_FILE" ]; do
+		sleep $WATCHDOG_SLEEP_SECS
+		res=$(ls "$DOWNLOAD_STOP_FILE" 2>&1)
+	done
+	
+	if [ $WATCHDOG ] 
+		then
+			WATCHDOG=false
+			pid=$(pgrep -f "$1")
+			kill -s 9 "$pid"
+		else
+			rm "${WATCH_DIR}/${DOWNLOAD_FINISHED_FILE}"
+	fi
+	
+	echo -e "Watchdog bye bye!\n"
+}
 
 # 1:json_string 2:index
 function json_param {
@@ -54,7 +82,7 @@ function hrk2hk {
 	printf "%016x" ${key[*]}
 } 
 
-echo -e "\nThis is MEGA-DOWN $VERSION"
+echo -e "\nThis is MEGA-DOWN (pelisalacarta MOD) $VERSION"
 
 if [ -z $1 ]
 then
@@ -77,7 +105,7 @@ else
 		mega_req_json="[{\"a\":\"g\", \"p\":\"$file_id\"}]"
 		
 		mega_res_json=$(curl -s -X POST --data-binary "$mega_req_json" "$mega_req_url")
-
+		
 		if [ $(echo -n "$mega_res_json" | grep -E -o '\[\-[0-9]\]') ]
 		then
 			error_code=$(echo -n "$mega_res_json" | perl -pe "s/^.*\[(.*?)\].*$/\1/s")
@@ -171,34 +199,28 @@ else
 			dl_temp_url=$(json_param "$dl_link" url)
 		fi
 	fi
+	
+	watchdog $dl_temp_url &
 
+	echo -e "Downloading...!\n"
+	
 	if [ "$2" != "-" ]
 		then
-			if [ -f "${file_name}.temp" ]
-			then
-				echo -e "\nResuming download...\n"
-			
-				temp_size=$(stat -c %s "${file_name}.temp")
-			
-				offset=$(($temp_size-$(($temp_size%16))))
-
-				iv_forward=$(printf "%016x" $(($offset/16)))
-
-				hex_iv="${hex_raw_key:32:16}$iv_forward"
-			
-				truncate -s $offset "${file_name}.temp"
-
-				curl -s "$dl_temp_url/$offset" | pv -s $(($file_size-$offset)) | $OPENSSL_AES_CTR_DEC -K $hex_key -iv $hex_iv >> "${file_name}.temp"
-			else
-				hex_iv="${hex_raw_key:32:16}0000000000000000"				
-				curl -s $dl_temp_url | pv -s $file_size | $OPENSSL_AES_CTR_DEC -K $hex_key -iv $hex_iv > "${file_name}.temp"
-			fi
-
-			mv "${file_name}.temp" "${file_name}"
-		
-			echo -e "\nFILE DOWNLOADED :)!\n"
+			hex_iv="${hex_raw_key:32:16}0000000000000000"				
+			curl -s $dl_temp_url | $OPENSSL_AES_CTR_DEC -K $hex_key -iv $hex_iv > "${file_name}"
 		else
 			hex_iv="${hex_raw_key:32:16}0000000000000000"
 			curl -s $dl_temp_url | $OPENSSL_AES_CTR_DEC -K $hex_key -iv $hex_iv
 		fi
+	
+	if [ $WATCHDOG ] 
+		then
+				WATCHDOG=false
+				echo -e "\nFILE DOWNLOADED :)!\n"
+				touch "${WATCH_DIR}/${DOWNLOAD_FINISHED_FILE}"
+		else
+				echo -e "\nFILE DOWNLOAD STOPPED!\n"
+				rm "${WATCH_DIR}/${DOWNLOAD_STOP_FILE}"
+		fi
+
 fi

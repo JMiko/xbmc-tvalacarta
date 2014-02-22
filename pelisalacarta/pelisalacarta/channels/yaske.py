@@ -299,8 +299,13 @@ def play(item):
     
     itemlist=[]
     
+    if item.url.startswith("http://adf.ly"):
+        from servers import adfly
+        item.url = adfly.get_long_url(item.url)
+
     data = scrapertools.downloadpageGzip(item.url)
     #logger.info("data="+data)
+
     itemlist = servertools.find_video_items(data=data)
     for newitem in itemlist:
         newitem.fulltitle = item.fulltitle

@@ -144,7 +144,8 @@ def findvideos(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    scrapedurl = scrapertools.get_match(data,'<iframe id="[^"]+" src="([^"]+)"')
+    data = scrapertools.get_match(data,"<span class='postTabs_titles(.*?)$")
+    scrapedurl = scrapertools.get_match(data,'<iframe src="([^"]+)"')
     
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="play", title=item.title, url=scrapedurl, thumbnail=item.thumbnail, plot=item.plot, folder=False, viewmode="tvshow"))

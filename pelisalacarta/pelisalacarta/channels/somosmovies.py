@@ -180,26 +180,6 @@ def enlaces(item):
     <fieldset id="enlaces">
     <legend>Enlaces</legend><br />
     <div class="clearfix uno">
-    <div class="dos"><b>1 LINK</b></div>
-    <div class="tres">
-    <a href="http://bit.ly/17SFloI" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/1aJXC6u" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/1c36STA" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://bit.ly/IbZz16" target="_blank">SockShare</a> <b class="sep">|</b> <a href="http://bit.ly/1cKgFw1" target="_blank">180upload</a> <b class="sep">|</b> <a href="http://goo.gl/bHvbI8" target="_blank">TurboBit</a> <b class="sep">|</b> <a href="http://bit.ly/1hbrdK8" target="_blank">FreakShare</a><br />
-    </div>
-    </div>
-    </fieldset>
-    <style type='text/css'>#ficha{height:280px!important;margin-bottom:380px!important;overflow:hidden;}</style>
-    <fieldset class='ad' id='ad2' style='position:absolute;top:760px;left:110px;width:540px;padding-top:10px;'>
-    <a href='http://pastein.me/download/Elysium (2013)' target='_blank'>
-    <img border='0' src='http://goo.gl/bPJ5Ov'/>
-    </a>
-    <a href='http://pastein.me/download/Elysium (2013)' target='_blank'>
-    <img border='0' src='http://goo.gl/llHQ4U'/>
-    </a>
-    </fieldset>
-    '''
-    '''
-    <fieldset id="enlaces">
-    <legend>Enlaces</legend><br />
-    <div class="clearfix uno">
     <div class="dos"><b> Episodio 1</b>: <small>30 Days Without an Accident</small></div><div class="tres"><a href="http://bit.ly/1aIiGdq" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/GY8PWg" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/15CGs8G" target="_blank">4Shared</a> <b class="sep">|</b> <a href="http://bit.ly/17RTYZl" target="_blank">180upload</a> <b class="sep">|</b> <a href="http://goo.gl/ognvK7" target="_blank">TurboBit</a></div>
     </div>
     <div class="clearfix uno">
@@ -241,9 +221,28 @@ def enlaces(item):
     <div class="dos"><b> Capítulo 1</b>: The Work Outing</div><div class="tres"><a href="http://bit.ly/XOrCcl" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/10wDjCe" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://bit.ly/12ibnDi" target="_blank">SockShare</a> <b class="sep">|</b> <a href="http://bit.ly/17dEXgU" target="_blank">FreakShare</a></div>
     <div class="dos"><b> Capítulo 2</b>: Return of the Golden Child</div><div class="tres"><a href="http://bit.ly/16p6Tvh" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/13SeTJq" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://bit.ly/10zwtuf" target="_blank">SockShare</a> <b class="sep">|</b> <a href="http://bit.ly/XqnsZ7" target="_blank">FreakShare</a></div>
     '''
+    '''
+    <fieldset id="enlaces">
+    <legend>Enlaces</legend><br />
+    <div class="clearfix uno">
+    <div class="dos">
+    <b>AVI</b> <small>480p</small></div>
+    <div class="tres">
+    <a href="http://bit.ly/1dQbvlS" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/Nd96Hh" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/1d3a534" target="_blank">4Shared</a> <b class="sep">|</b> <a href="http://goo.gl/TOipXB" target="_blank">TurboBit</a> <b class="sep">|</b> <a href="http://bit.ly/1oUWtPP" target="_blank">FreakShare</a>
+    </div>
+    </div>
+    <div class="clearfix uno">
+    <div class="dos">
+    <b>MP4</b> <small>1080p</small></div>
+    <div class="tres">
+    <a href="http://bit.ly/1c40BEG" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/OcZDki" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/1gjElZY" target="_blank">4Shared</a> <b class="sep">|</b> <a href="http://goo.gl/fc43B2" target="_blank">TurboBit</a> <b class="sep">|</b> <a href="http://bit.ly/1e9GxAq" target="_blank">FreakShare</a>
+    </div>
+    </div>
+    </fieldset>
+    '''
     # Se queda con la caja de enlaces
     data = scrapertools.get_match(data,'<fieldset id="enlaces"[^<]+<legend>Enlaces</legend>(.*?)</fieldset>')
-    patron = '<div class="dos"><b>([^<]+)</b>'
+    patron = '<div class="dos"[^<]+<b>([^<]+)</b>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for title in matches:
         itemlist.append( Item(channel=__channel__, action="findvideos" , title="Enlaces "+title.strip() , url=item.url, extra=title, thumbnail=item.thumbnail, plot=item.plot, folder=True))
@@ -261,7 +260,7 @@ def findvideos(item):
     '''
     <div class="dos"><b> Capítulo 10</b>: Mhysa <b style="color:red;font-style:italic">Nuevo!</b></div><div class="tres"><a href="http://bit.ly/19Zh0LG" target="_blank">MEGA</a> <b class="sep">|</b> <a href="http://bit.ly/11vxcOd" target="_blank">1Fichier</a> <b class="sep">|</b> <a href="http://bit.ly/14tpgBb" target="_blank">PutLocker</a> <b class="sep">|</b> <a href="http://bit.ly/17DxZUJ" target="_blank">SockShare</a> <b class="sep">|</b> <a href="http://bit.ly/16YykSk" target="_blank">FreakShare</a> <b class="sep">|</b> <a href="http://bit.ly/13vOcFA" target="_blank">Ver Online &#187;</a></div>
     '''
-    data = scrapertools.get_match(data,'<div class="dos"><b>'+item.extra+'</b>.*?<div(.*?)</div')
+    data = scrapertools.get_match(data,'<div class="dos"[^<]+<b>'+item.extra+'</b>.*?<div(.*?)</div')
     logger.info("[somosmovies.py] data="+data)
     patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)

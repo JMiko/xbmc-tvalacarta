@@ -20,7 +20,6 @@ __title__ = "Moviezet"
 __language__ = "ES"
 __creationdate__ = "20111001"
 
-
 DEBUG = config.get_setting("debug")
 
 def isGeneric():

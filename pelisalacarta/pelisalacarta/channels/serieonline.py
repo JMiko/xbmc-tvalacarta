@@ -55,6 +55,7 @@ def search(item,texto):
     
         itemlist = []
         for url,thumbnail,title in matches:
+            title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
             scrapedtitle = title.strip()
             scrapedplot = ""
             scrapedurl = urlparse.urljoin(item.url,url)
@@ -88,6 +89,7 @@ def destacados(item):
     itemlist = []
     for match in matches:
         scrapedtitle = match[1] + " " + match[3]
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
@@ -111,6 +113,7 @@ def novedades(item):
 
     itemlist = []
     for url,thumbnail,title in matches:
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = title
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,url)
@@ -207,6 +210,7 @@ def seriescompleto(item):
 
     itemlist = []
     for url,title in matches:
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = title
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,url)
@@ -231,6 +235,7 @@ def episodios(item):
 
     itemlist = []
     for url,title in matches:
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedtitle = title
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,url)

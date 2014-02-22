@@ -35,7 +35,6 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="emision"             , title="Lista de telenovelas en emisión", url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="todas"               , title="Lista completa"                 , url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="letras"              , title="Lista alfabética"               , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="canales"             , title="Lista por canal de televisión"  , url="http://vertelenovelas.net/"))
 
     return itemlist
 
@@ -78,7 +77,24 @@ def series(item):
         thumbnail = scrapedthumbnail
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
         itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail, viewmode="movie", folder=True) )
-    
+
+    if len(itemlist)==0:
+        patron  = '<article[^<]+'
+        patron += '<a href="([^"]+)"[^<]+'
+        patron += '<header>([^<]+)</header[^<]+'
+        patron += '<figure><img src="([^"]+)"'
+
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        if DEBUG: scrapertools.printMatches(matches)
+
+        for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+            title = scrapedtitle.strip()
+            title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+            url = urlparse.urljoin("http://vertelenovelas.net",scrapedurl)
+            thumbnail = scrapedthumbnail
+            if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+            itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail, viewmode="movie", folder=True) )
+
     return itemlist
 
 def canales(item):
@@ -108,8 +124,7 @@ def letras(item):
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
-    data = scrapertools.get_match(data,'<div class="ctit">TELENOVELAS POR ORDEN ALFABETICO(.*?)</ul>')
-    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
+    patron  = '<li class="menu-gen"><a href="(letra[^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -185,9 +200,9 @@ def todas(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<div class="dt">Lista Completa de Telenovelas</div>(.*?)</ul>')
+    data = scrapertools.get_match(data,'<h2 class="title">Lista de Telenovelas</h2>(.*?)</ul>')
     #<li><a href="abrazame-muy-fuerte.html" title="Abrazame muy fuerte" class="     El Canal de las es">Abrazame muy fuerte</a></li><li><a href="acorralada.html" title="Acorralada" class="Estados Unidos">Acorralada</a></li><li><a href="al-diablo-con-los-
-    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
+    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -205,7 +220,7 @@ def emision(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<div class="dt">Telenovelas en Emisi[^<]+</div>(.*?)</ul>')
+    data = scrapertools.get_match(data,'<h2 class="title">Telenovelas en Emision</h2>(.*?)</ul>')
     patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)

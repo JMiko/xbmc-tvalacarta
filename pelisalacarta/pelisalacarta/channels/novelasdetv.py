@@ -35,33 +35,18 @@ def series(item):
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-
-    data = scrapertools.get_match(data,'<div class="accordion" id="accordion2">(.*?)</aside>')
-    '''
-    <div class="accordion-group">
-    <div class="accordion-heading">
-    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-    Mas novelas
-    </a>
-    </div>
-    <div id="collapseTwo" class="accordion-body collapse">
-    <div class="accordion-inner">
-    <ul class="nav nav-list">
-    <li><a href=" http://www.novelasdetv.com/2012/01/capitulos-de-abismo-de-pasion-completos-online.html">Abismo de Pasion</a></li>
-    <li><a href="http://www.novelasdetv.com/2012/11/capitulos-de-te-presento-a-valentin-completos-online.html">Te presento a Valentin</a></li>
-    <li><a href='http://www.novelasdetv.com/2012/08/capitulos-de-quien-quiere-casarse-con.html'>&#191;Quién quiere casarse con mi hijo?</a></li>
-    </ul>
-    </div>
-    </div>
-    '''
-
-    patron = "<li><a href=([^>]+)>([^<]+)</a></li>"
+    patron  = '<li[^<]+'
+    patron += '<div class="lista-novelas-img[^<]+'
+    patron += '<img src="([^"]+)"[^<]+'
+    patron += '</div[^<]+'
+    patron += '<div class="lista-novelas-contenido"[^<]+'
+    patron += '<h4><a href="([^"]+)">([^<]+)</a></h4>'
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
-    for scrapedurl,scrapedtitle in matches:
+    for scrapedthumbnail,scrapedurl,scrapedtitle in matches:
         title = scrapedtitle
-        url = urlparse.urljoin(item.url,scrapedurl.strip()[1:-1].strip())
-        thumbnail = ""
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
@@ -77,10 +62,10 @@ def episodios(item):
     # Descarga la pagina
 
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<section class="redes-sociales".*?</section>(.*?)<aside')
+    data = scrapertools.get_match(data,'<div class="post-contenido">(.*?)<div class="post-video">')
     logger.info("data="+data)
 
-    #<a href="http://www.novelasdetv.com/2012/11/escobar-el-patron-del-mal-capitulo-109.html" target="_blank">Escobar Capitulo 109 Online</a><br />
+    #<a href="http://www.novelasdetv.com/2012/06/abismo-de-pasion-capitulo-7.html" target="_blank">Abismo de Pasión Capitulo 7 Online</a><br/>
     patron = '<a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
@@ -148,31 +133,6 @@ def findvideos(item):
         scrapedtitle = "Ver en "+server
         
         itemlist.append( Item(channel=item.channel, title=scrapedtitle , action="play" , server=server, url=scrapedurl, folder=False) )
-
-    return itemlist
-
-def play(item):
-
-    itemlist = []
-
-    if "cinechulo" in item.url:
-        headers = []
-        headers.append(['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14'])
-        headers.append(['Referer',item.extra])
-        data = scrapertools.cache_page( item.url , headers=headers )
-        logger.info("data="+data)
-        
-        # Sigue los pasos
-        form_action = scrapertools.get_match(data,'form action="([^"]+)"')
-        data = scrapertools.cache_page( form_action , headers=headers , post="url="+item.extra )
-        logger.info("data="+data)
-        
-        location = scrapertools.get_match(data,"file=(.*?)&")
-
-        itemlist.append( Item(channel=__channel__, action="play" , server="directo", title=item.title , url=location, folder=False))
-
-    else:
-        itemlist.append( Item(channel=__channel__, action="play" , server="directo", title=item.title , url=item.url, folder=False))
 
     return itemlist
 

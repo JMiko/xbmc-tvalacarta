@@ -199,7 +199,10 @@ def play(item):
     headers.append(["Referer",item.url])
     data = scrapertools.cache_page(item.url)
     #http://moviepremium.com/videoss/video.php?id=161661193_161903494
-    url = scrapertools.get_match(data,'src="(http\://moviepremium.com/videoss/video.php[^"]+)"')
+    url = scrapertools.find_single_match(data,'src="(http\://moviepremium.com/videoss/video.php[^"]+)"')
+    logger.info("url="+url)
+    if url=="":
+        url = scrapertools.get_match(data,'src="(http\://youanimehd.com/videoss/video.php[^"]+)"')
     logger.info("url="+url)
 
     headers = []

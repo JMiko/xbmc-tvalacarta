@@ -86,11 +86,8 @@ def list(item):
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
-        # Titulo
-        try:
-            scrapedtitle = unicode( match[2], "utf-8" ).encode("iso-8859-1")
-        except:
-            scrapedtitle = match[2]
+        scrapedtitle = match[2]
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedurl = urlparse.urljoin(item.url,match[0])
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
         scrapedplot = ""

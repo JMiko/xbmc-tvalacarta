@@ -30,6 +30,12 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novedades", action="peliculas", url="http://www.newdivx.net"))
     itemlist.append( Item(channel=__channel__, title="Categorías", action="categorias", url="http://www.newdivx.net"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos", action="peliculas", url="http://www.newdivx.net/estrenos/"))
+    itemlist.append( Item(channel=__channel__, title="Castellano", action="peliculas", url="http://www.newdivx.net/castellano/"))
+    itemlist.append( Item(channel=__channel__, title="Latino", action="peliculas", url="http://www.newdivx.net/latino/"))
+    itemlist.append( Item(channel=__channel__, title="VOS", action="peliculas", url="http://www.newdivx.net/peliculas-vos/"))
+    itemlist.append( Item(channel=__channel__, title="English", action="peliculas", url="http://www.newdivx.net/english/"))
+    itemlist.append( Item(channel=__channel__, title="720p HD", action="peliculas", url="http://www.newdivx.net/hd/"))
     itemlist.append( Item(channel=__channel__, title="Buscar...", action="search") )
     return itemlist
 
@@ -54,12 +60,28 @@ def peliculas(item):
         data = scrapertools.cachePage( item.url )
 
     # Patron de las entradas
-    patronvideos = '<a href="([^"]+)"[^<]+<img src="([^"]+)" alt="([^"]+)"'
+    '''
+    <div class="custom-post">
+    <div class="custom-poster">
+    <a href="http://www.newdivx.net/peliculas-online/drama/15496-la-ladrona-de-libros-2013.html">
+    <img src="/uploads/posts/covers/887f683d64e3764f5e79f0a4cbfd4ada.jpg" alt="Ver Pelicula La ladrona de libros (2013) en Espa&ntilde;ol    Online Gratis" />
+    <div class="custom-text2">La ladrona de libros (2013)</div></a>
+    <div class="custom-label">DVDRip</div>
+    <div class="custom-update">ESP 
+    '''
+    patronvideos  = '<a href="([^"]+)"[^<]+<img src="([^"]+)"[^<]+'
+    patronvideos += '<div class="custom-text2">([^<]+)</div></a[^<]+'
+    patronvideos += '<div class="custom-label">([^<]+)</div[^<]+'
+    patronvideos += '<div class="custom-update">([^<]+)<'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     # Añade las entradas encontradas
-    for url,thumbnail,title in matches:
+    for url,thumbnail,title,calidad,idioma in matches:
         scrapedtitle = title
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
+        scrapedtitle = scrapedtitle + " ["+calidad.strip()+"]["+idioma.strip().replace("\r","").replace("\n","")+"]"
+
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
         scrapedplot = ""
@@ -87,40 +109,15 @@ def categorias(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    '''
-    <div class="case genres">
-    <ul class="nav">
-    <li><a href="/accion/">Acci&oacute;n</a></li>
-    <li><a href="/adolescencia/">Adolescencia</a></li>
-    <li><a href="/animacion/">Animaci&oacute;n</a></li>
-    <li><a href="/aventuras/">Aventura</a></li>
-    <li><a href="/belico/">Belico</a></li>
-    <li><a href="/ciencia-ficcion/">C. Ficci&oacute;n</a></li>
-    <li><a href="/clasico/">Clasico</a></li>
-    <li><a href="/comedia/">Comedia</a></li>
-    <li><a href="/drama/">Drama</a></li>
-    <li><a href="/fantastico/">Fantastico</a></li>
-    <li><a href="/intriga/">Intriga</a></li>
-    <li><a href="/infantil/">Infantil</a></li>
-    <li><a href="/musical/">Musical</a></li>
-    <li><a href="/terror/">Terror</a></li>
-    <li><a href="/thriller/">Thriller</a></li>
-    <li><a href="/western/">Western</a> </li>
-    <li><a href="/documentales/">Documentales</a></li>
-    <li>   <a href="/sport/">Sport</a> </li>
-    <li> <a href="/series/">Series</a> </li>
-    <li> <a href="/estrenos/">Estrenos</a></li>
-    <li><a href="/peliculas-vos/"><b>En VOS</b></a></li>
-    <li><a href="/latino/"><b>En Latino</b></a></li>
-    <li> <a href="/hd/"><b>En HD</b></a></li>
-    '''
-    data = scrapertools.get_match(data,'<div class="case genres">[^<]+<ul class="nav">(.*?)</ul>')
+    data = scrapertools.get_match(data,'li[^<]+<a href=".">Category</a[^<]+<ul>(.*?)</ul>')
     patron = '<a href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     # Añade las entradas encontradas
     for url,title in matches:
         scrapedtitle = title
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
         scrapedurl = urlparse.urljoin(item.url,url)
         scrapedthumbnail = ""
         scrapedplot = ""

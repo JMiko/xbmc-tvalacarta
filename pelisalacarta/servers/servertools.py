@@ -16,12 +16,13 @@ from core import logger
 # Lista de los servidores que se pueden ver sin cuenta premium de ningún tipo
 FREE_SERVERS = []
 FREE_SERVERS.extend(['directo','allmyvideos','adnstream','bliptv','divxstage','facebook','fourshared', 'hulkshare', 'twitvid'])
-FREE_SERVERS.extend(['googlevideo','gigabyteupload','mediafire','moevideos','movshare','novamov','putlocker'])
+FREE_SERVERS.extend(['googlevideo','gigabyteupload','mediafire','moevideos','movshare','novamov']) #,'putlocker'
 FREE_SERVERS.extend(['royalvids','sockshare','stagevu','tutv','userporn','veoh','videobam'])
-FREE_SERVERS.extend(['vidbux','videoweed','vimeo','vk','watchfreeinhd','youtube','nowdownload'])#,'videobeer'
+FREE_SERVERS.extend(['vidbux','videoweed','vimeo','vk','watchfreeinhd','youtube'])#,'videobeer','nowdownload'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
 FREE_SERVERS.extend(['vureel','nosvideo','videopremium','movreel','flashx','magnovideo','upafile'])
-FREE_SERVERS.extend(['fileflyer','playedto','tunepk','powvideo','videomega','mega','vidspot','netutv','rutube','videozed','documentary','hugefiles'])
+FREE_SERVERS.extend(['fileflyer','playedto','tunepk','powvideo','videomega','mega','vidspot','netutv','rutube'])
+FREE_SERVERS.extend(['videozed','documentary','hugefiles', 'firedrive','videott','tumitv'])
 # YA NO FUNCIONAN
 # rutube
 

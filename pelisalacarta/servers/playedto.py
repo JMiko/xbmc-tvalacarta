@@ -105,7 +105,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     #http://played.to/embed-z3nnqbspjyne.html
-    patronvideos  = 'played.to/embed-([a-z0-9A-Z]+)\.html'
+    patronvideos  = 'played.to/embed-([a-z0-9A-Z]+)'
     logger.info("[playedto.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

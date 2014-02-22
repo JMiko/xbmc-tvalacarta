@@ -144,7 +144,7 @@ def series(item,extended=True):
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo))
+        itemlist.append( Item(channel=__channel__, action="findepisodios" , title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=titulo.strip()))
 
     # Ordena los listados alfabeticos
     if "filtro_letras" in item.url:

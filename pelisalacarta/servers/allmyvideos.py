@@ -82,11 +82,19 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     # Extrae la URL
     match = re.compile('"file" : "(.+?)",').findall(data)
+    media_url = ""
     if len(match) > 0:
-        media_url = match[0]
-                
+        for tempurl in match:
+            if not tempurl.endswith(".png") and not tempurl.endswith(".srt"):
+                media_url = tempurl
+
+        if media_url == "":
+            media_url = match[0]
+
     video_urls = []
-    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [allmyvideos]",media_url])
+
+    if media_url!="":
+        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [allmyvideos]",media_url])
 
     for video_url in video_urls:
         logger.info("[allmyvideos.py] %s - %s" % (video_url[0],video_url[1]))
@@ -119,7 +127,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/embed-"+match+".html"
+        url = "http://allmyvideos.net/"+match
         if url not in encontrados and url!="http://allmyvideos.net/embed":
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -134,7 +142,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/embed-"+match+".html"
+        url = "http://allmyvideos.net/"+match
         if url not in encontrados and not url.startswith("embed"):
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -149,7 +157,7 @@ def find_videos(data):
 
     for match in matches:
         titulo = "[allmyvideos]"
-        url = "http://allmyvideos.net/embed-"+match+".html"
+        url = "http://allmyvideos.net/"+match
         if url not in encontrados and not url.startswith("embed"):
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'allmyvideos' ] )
@@ -162,6 +170,6 @@ def find_videos(data):
 
 def test():
 
-    video_urls = get_video_url("http://allmyvideos.net/embed-6lgjjav5cymi.html")
+    video_urls = get_video_url("http://allmyvideos.net/uhah7dmq2ydp")
 
     return len(video_urls)>0

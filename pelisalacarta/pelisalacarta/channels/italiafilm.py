@@ -28,8 +28,8 @@ def isGeneric():
 def mainlist(item):
     logger.info("[gnula.py] mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novità" , action="peliculas", url="http://italiafilm.tv/"))
-    itemlist.append( Item(channel=__channel__, title="Categorie" , action="categorias", url="http://italiafilm.tv/"))
+    itemlist.append( Item(channel=__channel__, title="Novità" , action="peliculas", url="http://www.italiafilms.tv/"))
+    itemlist.append( Item(channel=__channel__, title="Categorie" , action="categorias", url="http://www.italiafilms.tv/"))
     itemlist.append( Item(channel=__channel__, title="Cerca Film", action="search"))
     return itemlist
 
@@ -39,8 +39,21 @@ def categorias(item):
     logger.error("io")
 
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<li class="level2"[^<]+<span>Categorie film</span>(.*?)</ul>')
+
+    '''
+    <a href="#">Categorie</a>
+    <ul class="sub-menu">
+    <li id="menu-item-22311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-22311"><a href="http://www.italiafilms.tv/archivio-alfabetico-film-e-serie-tv/">Archivio alfabetico</a></li>
+    <li id="menu-item-21089" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-21089"><a href="http://www.italiafilms.tv/category/now-on-cinema/">Adesso Nei Cinema</a></li>
+    <li id="menu-item-21090" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-21090"><a href="http://www.italiafilms.tv/category/anime-e-cartoon/">Anime e Cartoon</a></li>
+    <li id="menu-item-21091" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-21091"><a href="http://www.italiafilms.tv/category/archivio-film/">Archivio Film</a></li>
+    <li id="menu-item-21092" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-21092"><a href="http://www.italiafilms.tv/category/film-animazione/">Film Animazione</a></li>
+    '''
+
+    data = scrapertools.find_single_match(data,'<a href=".">Categorie</a>(.*?)</ul>')
     patron = '<li class="[^"]+"><a href="([^"]+)">([^<]+)</a></li>'
+
+    patron = '<li[^>]+><a href="([^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
@@ -76,69 +89,30 @@ def peliculas(item):
     logger.info("[italiafilm.py] peliculas")
     itemlist = []
 
-    # Descarga la página
-    if item.extra!="":
-        post = item.extra
-    else:
-        post=None
-    data = scrapertools.cachePage(item.url,post)
+    data = scrapertools.cachePage(item.url)
+    patron = '<article(.*?)</article>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
 
-    # Extrae las entradas (carpetas)
-    patronvideos  = '<a href="([^"]+)"><img class="news-item-image" title="([^"]+)" alt="[^"]+" src="([^"]+)">.*?'
-    patronvideos += '<div id="news[^>]+>([^<]+)</div>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    for url,title,thumbnail,plot in matches:
-        # Atributos
-        scrapedtitle = title
-        scrapedurl = urlparse.urljoin(item.url,url)
-        scrapedthumbnail = urlparse.urljoin(item.url,thumbnail)
-        scrapedplot = plot
-        
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for match in matches:
+
+        title = scrapertools.find_single_match(match,'<h3[^<]+<a href="[^"]+"[^<]+>([^<]+)</a>')
+        url = scrapertools.find_single_match(match,'<h3[^<]+<a href="([^"]+)"')
+        plot = scrapertools.find_single_match(match,'<p class="summary">(.*?)</p>')
+        thumbnail = scrapertools.find_single_match(match,'<img src="([^"]+)"')
+
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=title , url=url , thumbnail=thumbnail , fanart=thumbnail, plot=plot , viewmode="movie_with_plot", folder=True) )
 
     # Siguiente
     try:
-        pagina_siguiente = scrapertools.get_match(data,'<a href="([^"]+)">Avanti')
-        pagina_siguiente = urlparse.urljoin(item.url,pagina_siguiente)
+        pagina_siguiente = scrapertools.get_match(data,'<a class="next page-numbers" href="([^"]+)"')
         itemlist.append( Item(channel=__channel__, action="peliculas", title=">> Pagina seguente" , url=pagina_siguiente , folder=True) )
     except:
         pass
 
     return itemlist
-
-def findvideos(item):
-    logger.info("[italiafilm.py] findvideos")
-
-    data = scrapertools.cache_page(item.url)
-    itemlist=[]
-    
-    from servers import servertools
-    itemlist.extend(servertools.find_video_items(data=data))
-    for videoitem in itemlist:
-        videoitem.channel=__channel__
-        videoitem.action="play"
-        videoitem.folder=False
-        videoitem.title = "["+videoitem.server+"]"
-
-    patronvideos  = '<a href="(http://www.italiafilm.tv/engine/go.php[^"]+)"[^>]*>([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    for url,title in matches:
-        itemlist.append( Item(channel=__channel__, action='play', title=title , url=url , folder=False) )
-
-    return itemlist
-
-def play(item):
-    logger.info("[italiafilm.py] play")
-
-    if item.url.startswith("http://www.italiafilm.tv/engine/go.php"):
-        item.url = scrapertools.get_header_from_response(url=item.url, header_to_get="location")
-        item.server = servertools.get_server_from_url(item.url)
-    return [item]
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():

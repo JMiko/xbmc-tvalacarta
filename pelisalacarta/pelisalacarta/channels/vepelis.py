@@ -57,6 +57,7 @@ def listarpeliculas(item):
     for match in matches:
         scrapedurl = match[0]
         scrapedtitle = match[2]
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedthumbnail = match[1]
         scrapedplot = ""
         logger.info(scrapedtitle)

@@ -116,6 +116,8 @@ def play(item):
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/novamov.php?url=","http://www.novamov.com/video/")
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/movshare.php?url=","http://www.movshare.net/video/")
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/divxstage.php?url=","http://www.divxstage.net/video/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/tumi.php?url=","http://www.tumi.tv/")
+
     listavideos = servertools.findvideos(data2)
     for video in listavideos:
         invalid = video[1]
