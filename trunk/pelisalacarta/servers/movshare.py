@@ -35,34 +35,23 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     video_urls = []
 
     # Descarga la página
-    headers = [ ['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'],['Referer','http://www.movshare.net/'] ]
+    headers = []
+    headers.append( ['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'] )
     html = scrapertools.cache_page(page_url , headers = headers)
     
     # La vuelve a descargar, como si hubieras hecho click en el botón
-    html = scrapertools.cache_page(page_url , headers = headers)
-
-    """
-    movshare can do both flv and avi. There is no way I know before hand
-    if the url going to be a flv or avi. So the first regex tries to find 
-    the avi file, if nothing is present, it will check for the flv file.
-    "param name="src" is for avi
-    "flashvars.file=" is for flv
-    """
-    r = re.search('<param name="src" value="(.+?)"', html)
-
-    if not r:
-        html = unwise.unwise_process(html)
-        html = re.compile(r'eval\(function\(p,a,c,k,e,(?:d|r)\).+?\.split\(\'\|\'\).*?\)\)').search(html).group()
-        html = jsunpack.unpack(html)
-        filekey = unwise.resolve_var(html, "flashvars.filekey")
+    #html = scrapertools.cache_page(page_url , headers = headers)
+    filekey = scrapertools.find_single_match(html,'flashvars.filekey="([^"]+)"')
         
-        #get stream url from api
-        api = 'http://www.movshare.net/api/player.api.php?key=%s&file=%s' % (filekey, videoid)
-        html = scrapertools.cache_page(api)
-        logger.info("html="+html)
-        r = re.search('url=(.+?)&title', html)
-    if r:
-        stream_url = r.group(1)
+    #get stream url from api
+    api = 'http://www.movshare.net/api/player.api.php?key=%s&file=%s' % (filekey, videoid)
+    headers.append( ['Referer',page_url] )
+
+    html = scrapertools.cache_page(api,headers=headers)
+    logger.info("html="+html)
+    stream_url = scrapertools.find_single_match(html,'url=(.+?)&title')
+
+    if stream_url!="":
         video_urls.append( [ scrapertools.get_filename_from_url(stream_url)[-4:]+" [movshare]" , stream_url ] )
 
     for video_url in video_urls:
@@ -127,6 +116,6 @@ def find_videos(data):
 
 def test():
     #http://www.movshare.net/video/6090de0821098
-    video_urls = get_video_url("http://www.movshare.net/video/6090de0821098")
+    video_urls = get_video_url("http://www.movshare.net/video/isj5p3f0d58x6")
 
     return len(video_urls)>0

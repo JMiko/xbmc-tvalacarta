@@ -93,7 +93,7 @@ def find_videos(data):
     devuelve = []
 
     # http://vidspot.net/embed-d6fefkzvjc1z.html 
-    patronvideos  = 'vidspot.net/embed-([a-z0-9]+)\.html'
+    patronvideos  = 'vidspot.net/embed-([A-Za-z0-9]+)\.html'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -108,7 +108,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     # http://vidspot.net/6lgjjav5cymi
-    patronvideos  = 'vidspot.net/([a-z0-9]+)'
+    patronvideos  = 'vidspot.net/([A-Za-z0-9]+)'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -123,7 +123,7 @@ def find_videos(data):
             logger.info("  url duplicada="+url)
 
     #http://www.cinetux.org/video/vidspot.php?id=gntpo9m3mifj
-    patronvideos  = 'vidspot.php\?id\=([a-z0-9]+)'
+    patronvideos  = 'vidspot.php\?id\=([A-Za-z0-9]+)'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 

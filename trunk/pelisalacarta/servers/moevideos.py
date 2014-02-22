@@ -177,6 +177,20 @@ def find_videos(data):
         else:
             logger.info("  url duplicada="+url)
 
+    #http://moevideo.net/framevideo/95250.9c5a5f9faea7207a842d609e4913
+    patronvideos  = 'moevideo.net/video/([a-z0-9\.]+)'
+    logger.info("[moevideos.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for match in matches:
+        titulo = "[moevideos]"
+        url = "http://moevideo.net/?page=video&uid="+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'moevideos' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
 
     #http://moevideo.net/swf/letplayerflx3.swf?file=23885.2b0a98945f7aa37acd1d6a0e9713
     patronvideos  = 'moevideo.net/swf/letplayerflx3.swf\?file\=([a-z0-9\.]+)'

@@ -35,8 +35,8 @@ def mainlist(item):
     item.url = 'http://seriesdanko.com/'
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Noticias", action="novedades"   , url=item.url))
-    itemlist.append( Item(channel=__channel__, title="Lista alfanumerica", action="letras", url=item.url))
+    itemlist.append( Item(channel=__channel__, title="Novedades", action="novedades"   , url=item.url))
+    itemlist.append( Item(channel=__channel__, title="A-Z", action="letras", url=item.url))
     itemlist.append( Item(channel=__channel__, title="Listado completo", action="allserieslist", url=item.url))
     itemlist.append( Item(channel=__channel__, title="Buscar", action="search" , url=item.url, thumbnail="http://www.mimediacenter.info/xbmc/pelisalacarta/posters/buscador.png"))
 
@@ -406,10 +406,13 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[seriesdanko.py] play")
+    logger.info("[seriesdanko.py] play (url="+item.url+", server="+item.server+")" )
 
     # Descarga la página
-    data = scrapertools.downloadpageGzip(item.url)
+    if "seriesdanko" in item.url:
+        data = scrapertools.downloadpageGzip(item.url)
+    else:
+        data = item.url
     return servertools.find_video_items(data=data)
 
 def decodeHtmlentities(string):

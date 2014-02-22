@@ -74,6 +74,14 @@ def elimina_tildes(s):
     s = s.replace("Ñ","n")
     s = s.replace("ñ","n")
     return s
+
+def title_to_folder_name(title):
+    logger.info("Serie="+title)
+    Serie = elimina_tildes(title)
+    logger.info("Serie="+Serie)
+    Serie = string.translate(Serie,allchars,deletechars)
+    logger.info("Serie="+Serie)
+    return Serie
  
 def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",category="Cine",Serie="",verbose=True,accion="play_from_library",pedirnombre=True, subtitle="", extra=""):
     logger.info("[library.py] savelibrary titulo="+titulo+", url="+url+", server="+server+", canal="+canal+", category="+category+", serie="+Serie+", accion="+accion+", subtitle="+subtitle)
@@ -90,11 +98,7 @@ def savelibrary(titulo="",url="",thumbnail="",server="",plot="",canal="",categor
             pathserie = SERIES_PATH
         else:
             #Eliminamos caracteres indeseados para archivos en el nombre de la serie
-            logger.info("Serie="+Serie)
-            Serie = elimina_tildes(Serie)
-            logger.info("Serie="+Serie)
-            Serie = string.translate(Serie,allchars,deletechars)
-            logger.info("Serie="+Serie)
+            Serie = title_to_folder_name(Serie)
             pathserie = xbmc.translatePath( os.path.join( SERIES_PATH, Serie ) )
         if not os.path.exists(pathserie):
             logger.info("[library.py] savelibrary Creando directorio serie:"+pathserie)

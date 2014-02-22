@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para ver un vídeo conociendo su URL
+# Canal para ver un vÃ­deo conociendo su URL
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -29,11 +29,11 @@ def mainlist(item):
     logger.info("[tengourl.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="search", title="Entra aquí y teclea la URL"))
+    itemlist.append( Item(channel=__channel__, action="search", title="Entra aquÃ­ y teclea la URL"))
 
     return itemlist
 
-# Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
+# Al llamarse "search" la funciÃ³n, el launcher pide un texto a buscar y lo aÃ±ade como parÃ¡metro
 def search(item,texto):
     logger.info("[tengourl.py] search texto="+texto)
     
@@ -48,7 +48,7 @@ def search(item,texto):
         item.action="play"
 
     if len(itemlist)==0:
-        itemlist.append( Item(channel=__channel__, action="search", title="No hay ningún vídeo compatible en esa URL"))
+        itemlist.append( Item(channel=__channel__, action="search", title="No hay ningÃºn vÃ­deo compatible en esa URL"))
     
     return itemlist
 

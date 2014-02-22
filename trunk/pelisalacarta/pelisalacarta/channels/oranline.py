@@ -132,7 +132,7 @@ def novedades(item):
         thumbnail=urlparse.urljoin(item.url,scrapedthumbnail)
         plot=scrapedplot.strip()
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="mirrors", title=title , url=url , thumbnail=thumbnail , plot=plot , viewmode="movies_with_plot", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , viewmode="movies_with_plot", folder=True) )
 
     try:
         next_page = scrapertools.get_match(data,"<a href='([^']+)'>\&rsaquo\;</a>")
@@ -227,105 +227,6 @@ def idiomas(item):
         plot=""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
-
-    return itemlist
-
-def mirrors(item):
-    logger.info("[oranline.py] mirrors")
-    data = get_main_page(item.url)
-    itemlist = []
-
-    '''
-    <p>
-    <span><img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/s.png" class="servidor" alt="" /></span>
-    <span><a href="#div_4_e" class='MO'>Opción 4</a></span>
-    <span>TS HQ</span>
-    <span>      <img src="http://oranline.com/wp-content/themes/reviewit/images/calidad3.png" class="caracteristicas_idiomas_calidad" alt="" />
-    </span>
-    <span>Arkonada</span>
-    <span>      <img src="http://oranline.com/wp-content/themes/reviewit/images/imgres15.jpg" class="servidor" alt="" />
-    </span>                </p>
-    '''
-
-    bloque = scrapertools.get_match(data,"<h3>Descarga Directa</h3>(.*?)</div[^<]+</div[^<]+</div[^<]+</div")
-    patron  = '<p[^<]+'
-    patron += '<span><img id="([^"]+)"[^<]+</span[^<]+'
-    patron += '<span><a href="#([^"]+)"[^>]+>([^<]+)</a></span[^<]+'
-    patron += '<span>([^<]+)</span'
-    matches = re.compile(patron,re.DOTALL).findall(bloque)
-    scrapertools.printMatches(matches)
-
-    for idioma,bloque,scrapedtitle,calidad in matches:
-        title="Descarga directa "+scrapedtitle.strip()+" ["+idioma+"]["+calidad+"]"
-        url=item.url
-        thumbnail=""
-        plot=""
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , extra=bloque, folder=True) )
-
-    bloque = scrapertools.get_match(data,"<h3>Ver Online</h3>(.*?)</div[^<]+</div[^<]+</div[^<]+</div")
-    patron  = '<p[^<]+'
-    patron += '<span><img id="([^"]+)"[^<]+</span[^<]+'
-    patron += '<span><a href="#([^"]+)"[^>]+>([^<]+)</a></span[^<]+'
-    patron += '<span>([^<]+)</span'
-    matches = re.compile(patron,re.DOTALL).findall(bloque)
-    scrapertools.printMatches(matches)
-
-    for idioma,bloque,scrapedtitle,calidad in matches:
-        title="Ver online "+scrapedtitle.strip()+" ["+idioma+"]["+calidad+"]"
-        url=item.url
-        thumbnail=""
-        plot=""
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , plot=plot , extra=bloque, folder=True) )
-
-    return itemlist
-
-def findvideos(item):
-    logger.info("[oranline.py] findvideos")
-
-    itemlist=[]
-    data = get_main_page(item.url)
-
-    if item.extra!="":
-        data = scrapertools.get_match(data,'<div id="'+item.extra+'"(.*?)<p>')
-        logger.info("data="+data)
-
-    itemlist = servertools.find_video_items(data=data)
-
-    for videoitem in itemlist:
-        videoitem.channel = __channel__
-        videoitem.thumbnail = item.thumbnail
-        videoitem.fulltitle = item.title
-        videoitem.title = "Ver en ["+videoitem.server+"]"
-    
-    patron = "(http\://adf.ly/[A-Z0-9a-z]+)"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    for url in matches:
-        itemlist.append( Item(channel=__channel__, action="play", title="Enlace adf.ly" , url=url , folder=False) )
-
-    return itemlist
-
-def play(item):
-    logger.info("[oranline.py] play")
-
-    itemlist=[]
-    # Extrae la URL de saltar el anuncio en adf.ly
-    if item.url.startswith("http://adf"):
-        # Averigua el enlace
-        from servers import adfly
-        location = adfly.get_long_url(item.url)
-        logger.info("location="+location)
-
-        from servers import servertools
-        itemlist=servertools.find_video_items(data=location)
-        for videoitem in itemlist:
-            videoitem.channel=__channel__
-            videoitem.folder=False
-
-    else:
-        itemlist.append(Item(url=item.url, server=item.server))
 
     return itemlist
 

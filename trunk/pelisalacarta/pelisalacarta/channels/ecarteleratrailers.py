@@ -91,9 +91,7 @@ def play(item):
     logger.info(data)
 
     # Extrae las películas
-    #'file': 'http://www.ecartelera.com/video/3400/3446.mp4',
-    patron  = "'file'\: '([^']+)'"
-    #patron  = "s1\.addParam\('flashvars'\,'file\=([^\&]+)\&"
+    patron  = "file\: '([^']+)'"
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     if len(matches)>0:

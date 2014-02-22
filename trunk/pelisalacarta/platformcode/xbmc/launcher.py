@@ -208,7 +208,7 @@ def run():
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
                 elif action=="add_serie_to_library":
-                    logger.info("[launcher.py] add_serie_to_library, show="+item.show)
+                    logger.info("[launcher.py] add_serie_to_library, show=#"+item.show+"#")
                     from platformcode.xbmc import library
                     import xbmcgui
                 
@@ -276,7 +276,8 @@ def run():
                         f.close()
                         f = open( nombre_fichero_config_canal , "w" )
                         f.write(contenido)
-                    f.write(item.show+","+item.url+","+item.channel+"\n")
+                    from platformcode.xbmc import library
+                    f.write( library.title_to_folder_name(item.show)+","+item.url+","+item.channel+"\n")
                     f.close();
 
                 elif action=="download_all_episodes":
@@ -500,7 +501,7 @@ def download_all_episodes(item,channel,first_episode=""):
     from core import downloadtools
     from core import scrapertools
 
-    best_server = "streamcloud"
+    best_server = "allmyvideos"
     worst_server = "moevideos"
 
     # Para cada episodio

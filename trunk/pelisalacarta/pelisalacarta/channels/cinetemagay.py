@@ -42,7 +42,8 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="lista"  , title="Cine gay online (México)" , url="http://cinegayonlinemexico.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmmqL6tS2Ced1VoxlGQT0q-ibPEz1DCV3E1waHFDI5KT0pg1lJ"))               
     itemlist.append( Item(channel=__channel__, action="lista"  , title="Myquerchannel" , url="http://myqueerchannel.blogspot.com.es//feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://1.bp.blogspot.com/-FKkBi7VyE-U/Tz7Le9vtQ5I/AAAAAAAAAd4/OXjxaycEPb8/s1600/myqueer.jpg"))               
     itemlist.append( Item(channel=__channel__, action="lista"  , title="La videotecagay" , url="http://lavideotecagay.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSqnVLvoiVXfrHAlvo6n9b-sokU35qDWQTn4IVVqS0lpTneSWIK"))               
-        
+    itemlist.append( Item(channel=__channel__, action="lista"  , title="PGPA" , url="http://pgpa.blogspot.com.es/feeds/posts/default/?max-results=100&start-index=1",thumbnail="http://themes.googleusercontent.com/image?id=0BwVBOzw_-hbMNTRlZjk2YWMtYTVlMC00ZjZjLWI3OWEtMWEzZDEzYWVjZmQ4"))               
+         
     return itemlist
 
 
@@ -61,14 +62,17 @@ def lista(item):
   
          
     # Descarga la pagina
+    
     data = scrapertools.cache_page(item.url)
+    
     #logger.info(data)
 
 
 
     # Extrae las entradas (carpetas)
-   
-    patronvideos  ='<title.*?src="([^"]+)"'
+  
+ 
+    patronvideos  ='&lt;img .*?src=&quot;(.*?)&quot;'
     patronvideos += "(.*?)<link rel='alternate' type='text/html' href='([^']+)' title='([^']+)'.*?>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
@@ -76,20 +80,14 @@ def lista(item):
     for match in matches:
         scrapedtitle = match[3]
         scrapedtitle = scrapedtitle.replace("&apos;","'")
-        scrapedtitle = scrapedtitle.replace("@","a")
-		
         scrapedtitle = scrapedtitle.replace("&quot;","'")
-        scrapedtitle = scrapedtitle.replace("&lt;h1&gt;","")
-        scrapedtitle = scrapedtitle.replace("&lt;/h1&gt;","")
- 
-        
         scrapedurl = match[2]
         scrapedthumbnail = match[0]
         imagen = ""
         scrapedplot = match[1]  
         tipo = match[1]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        scrapedplot = "<"+scrapedplot     
+        scrapedplot = "<"+scrapedplot    
         scrapedplot = scrapedplot.replace("&gt;",">")
         scrapedplot = scrapedplot.replace("&lt;","<")
         scrapedplot = scrapedplot.replace("</div>","\n")
@@ -203,7 +201,7 @@ def detail(item):
         except:
             plot = descripcion
 
-    # Busca los enlaces a los videos de : "Megavideo"
+    # Busca los enlaces a los videos de  servidores
     video_itemlist = servertools.find_video_items(data=data)
     for video_item in video_itemlist:
         itemlist.append( Item(channel=__channel__ , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=item.thumbnail, plot=item.plot, folder=False))

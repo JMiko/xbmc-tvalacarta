@@ -2,20 +2,14 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.64"/>
-    <property name="oldversionboxee" value="9.9"/>
-    <property name="oldversiondate" value="02/11/2013"/>
+    <property name="oldversion" value="3.2.66"/>
+    <property name="oldversionboxee" value="10.1"/>
+    <property name="oldversiondate" value="17/01/2014"/>
 
-    <property name="version" value="3.2.65"/>
-    <property name="versionboxee" value="10.0"/>
-    <property name="versiondate" value="01/12/2013"/>
+    <property name="version" value="3.2.67"/>
+    <property name="versionboxee" value="10.2"/>
+    <property name="versiondate" value="22/02/2014"/>
     <property name="versionchanges" value="Weekly release"/>
-
-    <!-- Para betas usar: -->
-    <!--property name="version" value="3.2.5-beta-1"/-->
-    
-    <!-- Para versiones finales usar: -->
-    <!--property name="version" value="3.2.5"/-->
     
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
@@ -51,7 +45,11 @@
 
         <mkdir dir="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta"/>
         <antcall target="copy-xbmc-addon-frodo"/>
-		<zip destfile="${target}/xbmc-addon-frodo/pelisalacarta-xbmc-addon-frodo-${version}.zip" basedir="${target}/xbmc-addon-frodo"/>
+        <zip destfile="${target}/xbmc-addon-frodo/pelisalacarta-xbmc-addon-frodo-${version}.zip" basedir="${target}/xbmc-addon-frodo"/>
+
+        <mkdir dir="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta"/>
+        <antcall target="copy-xbmc-addon-gotham"/>
+        <zip destfile="${target}/xbmc-addon-gotham/pelisalacarta-xbmc-addon-gotham-${version}.zip" basedir="${target}/xbmc-addon-gotham"/>
 
         <mkdir dir="${target}/wiimc/pelisalacarta"/>
         <antcall target="copy-wiimc"/>
@@ -97,6 +95,12 @@
         <echo message="Subiendo pelisalacarta-xbmc-addon-frodo-${version}.zip"/>
         <exec executable="scp">
             <arg value="${target}/xbmc-addon-frodo/pelisalacarta-xbmc-addon-frodo-${version}.zip"/>
+            <arg value="${ruta_remota_descargas}"/>
+        </exec>
+
+        <echo message="Subiendo pelisalacarta-xbmc-addon-gotham-${version}.zip"/>
+        <exec executable="scp">
+            <arg value="${target}/xbmc-addon-gotham/pelisalacarta-xbmc-addon-gotham-${version}.zip"/>
             <arg value="${ruta_remota_descargas}"/>
         </exec>
 
@@ -174,7 +178,13 @@
                 <exclude name="logging.conf"/>
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="pelisalacarta.py"/>
 				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
@@ -202,6 +212,8 @@
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
 			</fileset>
         </copy>
         <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
@@ -221,7 +233,13 @@
                 <exclude name="logging.conf"/>
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
 				<exclude name="pelisalacarta.py"/>
 				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
@@ -249,33 +267,41 @@
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <!--exclude name="platformcode/xbmceden/**"/-->
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
 			</fileset>
         </copy>
         <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
         <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
-	<!-- copy-xbmc-addon-frodo ============================================================ -->
-	<target name="copy-xbmc-addon-frodo">
+    <!-- copy-xbmc-addon-frodo ============================================================ -->
+    <target name="copy-xbmc-addon-frodo">
         <copy todir="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta">
             <fileset dir=".">
-				<exclude name="target/**"/>
-				<exclude name="addon.xml"/>
-				<exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
+                <exclude name="target/**"/>
+                <exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+                <exclude name="upload.sh"/>
                 <exclude name="default.tbn"/>
                 <exclude name="core/platform_name.py"/>
                 <exclude name="logging.conf"/>
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
-				<exclude name="pelisalacarta.py"/>
-				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="channelselector-*.py"/>
-				<exclude name="**/.*"/>
-				<exclude name="**/.*/**"/>
-				<exclude name="**/*.pyo"/>
-				<exclude name="**/*.pyc"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
+                <exclude name="pelisalacarta.py"/>
+                <exclude name="pelisalacarta.komodoproject"/>
+                <exclude name="channelselector-*.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
 
                 <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/skins/default/nstc/**"/>
@@ -295,11 +321,68 @@
                 <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <exclude name="platformcode/xbmcdharma/**"/>
-                <!--exclude name="platformcode/xbmceden/**"/-->
-			</fileset>
+                <exclude name="platformcode/xbmceden/**"/>
+                <!--exclude name="platformcode/xbmcfrodo/**"/-->
+                <exclude name="platformcode/xbmcgotham/**"/>
+            </fileset>
         </copy>
-        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmcfrodo/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmcfrodo/platform_name.py" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/core/platform_name.py"/>
+    </target>
+
+    <!-- copy-xbmc-addon-gotham ============================================================ -->
+    <target name="copy-xbmc-addon-gotham">
+        <copy todir="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta">
+            <fileset dir=".">
+                <exclude name="target/**"/>
+                <exclude name="addon.xml"/>
+                <exclude name="build.xml"/>
+                <exclude name="upload.sh"/>
+                <exclude name="default.tbn"/>
+                <exclude name="core/platform_name.py"/>
+                <exclude name="logging.conf"/>
+                <exclude name="pelisalacarta.log"/>
+                <exclude name="pelisalacarta-version.xml"/>
+
+                <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
+                <exclude name="pelisalacarta.py"/>
+                <exclude name="pelisalacarta.komodoproject"/>
+                <exclude name="channelselector-*.py"/>
+                <exclude name="**/.*"/>
+                <exclude name="**/.*/**"/>
+                <exclude name="**/*.pyo"/>
+                <exclude name="**/*.pyc"/>
+
+                <exclude name="pelisalacarta/channels/rv_*"/>
+                <exclude name="resources/skins/default/nstc/**"/>
+                <exclude name="resources/skins/default/nstc16x9/**"/>
+                <exclude name="resources/dreambox/**"/>
+                <exclude name="resources/plexmediaserver/**"/>
+                <exclude name="resources/images/posters/**"/>
+                <exclude name="resources/images/banners/**"/>
+                <exclude name="resources/images/squares/**"/>
+                <exclude name="resources/images/fanart/**"/>
+
+                <exclude name="platformcode/boxee/**"/>
+                <exclude name="platformcode/developer/**"/>
+                <exclude name="platformcode/plex/**"/>
+                <exclude name="platformcode/rss/**"/>
+                <exclude name="platformcode/wiimc/**"/>
+                <exclude name="platformcode/mediaserver/**"/>
+                <!--exclude name="platformcode/xbmc/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <!--exclude name="platformcode/xbmcgotham/**"/-->
+            </fileset>
+        </copy>
+        <copy file="platformcode/xbmcgotham/addon.xml" tofile="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta/addon.xml"/>
+        <copy file="platformcode/xbmcgotham/platform_name.py" tofile="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta/core/platform_name.py"/>
     </target>
 
 	<!-- copy-xbmc-plugin ============================================================ -->
@@ -313,7 +396,13 @@
                 <exclude name="logging.conf"/>
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
 				<exclude name="pelisalacarta.py"/>
 				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
@@ -342,6 +431,8 @@
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <!--exclude name="platformcode/xbmceden/**"/-->
+                <!--exclude name="platformcode/xbmcfrodo/**"/-->
+                <!--exclude name="platformcode/xbmcgotham/**"/-->
                 <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
@@ -370,7 +461,13 @@
                 <exclude name="default.tbn"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="fanart-new.jpg"/>
                 <exclude name="icon-old.png"/>
                 <exclude name="TODO.txt"/>
@@ -387,6 +484,8 @@
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
 
                 <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/plexmediaserver/**"/>
@@ -413,7 +512,13 @@
 				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
 				<exclude name="pelisalacarta.komodoproject"/>
@@ -441,6 +546,8 @@
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
         <copy file="platformcode/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
@@ -456,7 +563,13 @@
 				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
 				<exclude name="pelisalacarta.komodoproject"/>
@@ -484,6 +597,8 @@
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
         <copy file="platformcode/mediaserver/platform_name.py" tofile="${target}/mediaserver/pelisalacarta/core/platform_name.py"/>
@@ -499,7 +614,13 @@
 				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta-version.xml"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
 				<exclude name="pelisalacarta.komodoproject"/>
@@ -527,6 +648,8 @@
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
         <copy file="platformcode/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py"/>
@@ -559,7 +682,13 @@
                 <exclude name="target/**"/>
                 <exclude name="**/*.xml"/>
                 <exclude name="**/*.txt"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="core/platform_name.py"/>
                 <exclude name="COPYING"/>
                 <exclude name="build.xml"/>
@@ -625,7 +754,13 @@
                 <exclude name="platformcode/xbmc/**"/>
                 <exclude name="platformcode/xbmcdharma/**"/>
                 <exclude name="platformcode/xbmceden/**"/>
+
                 <exclude name="tester.py"/>
+                <exclude name="download_url.py"/>
+                <exclude name="test_channels.py"/>
+                <exclude name="test_connectors.py"/>
+                <exclude name="script_descargar_lista.py"/>
+
                 <exclude name="changelog.txt"/>
                 <exclude name="default.py"/>
                 <exclude name="default.tbn"/>
@@ -687,6 +822,8 @@
         <replaceregexp file="addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
         <replaceregexp file="platformcode/xbmceden/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
         <replaceregexp file="platformcode/xbmcdharma/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmcfrodo/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
+        <replaceregexp file="platformcode/xbmcgotham/addon.xml" match="  version=&quot;([^&quot;]+)&quot;" replace="  version=&quot;${version}&quot;"/>
         <replaceregexp file="platformcode/wiimc/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
         <replaceregexp file="platformcode/mediaserver/launcher.py" match="VERSIONTAG = &quot;([^&quot;]+)&quot;" replace="VERSIONTAG = &quot;${version}&quot;"/>
 
@@ -701,13 +838,11 @@
         <!--antcall target="package"/-->
         
         <!-- Pasos que quedan por automatizar
-        
         Firmar boxee
         Subir el xml de boxee
         Subir version.xml como pelisalacarta-version.xml
         Subir index.xml de boxee y el zip de boxee al repo
         Redactar texto para actualizar página de descargas
-        
         -->
     </target>
 </project>

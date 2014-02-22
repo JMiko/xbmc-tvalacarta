@@ -36,33 +36,34 @@ def isGeneric():
     return True
 
 def login():
+    logger.info("channels.megahd login")
 
     # Averigua el id de sesión
     data = scrapertools.cache_page("http://megahd.me/login/", headers=MAIN_HEADERS)
     #<form action="http://megahd.me/login2/" name="frmLogin" id="frmLogin" method="post" accept-charset="UTF-8"  onsubmit="hashLoginPassword(this, 'd3c3d7467c05a4058e9361996daeaed4');">
     cur_session_id = scrapertools.get_match(data,'onsubmit\="hashLoginPassword\(this, \'([a-z0-9]+)\'')
-    logger.info("cur_session_id="+cur_session_id)
+    logger.info("channels.megahd cur_session_id="+cur_session_id)
 
     # Calcula el hash del password
     LOGIN = config.get_setting("megahduser")
     PASSWORD = config.get_setting("megahdpassword")
-    logger.info("LOGIN="+LOGIN)
-    logger.info("PASSWORD="+PASSWORD)
+    logger.info("channels.megahd LOGIN="+LOGIN)
+    logger.info("channels.megahd PASSWORD="+PASSWORD)
     
     #doForm.hash_passwrd.value = hex_sha1(hex_sha1(doForm.user.value.php_to8bit().php_strtolower() + doForm.passwrd.value.php_to8bit()) + cur_session_id);
     hash_passwrd = scrapertools.get_sha1( scrapertools.get_sha1( LOGIN.lower() + PASSWORD.lower() ) + cur_session_id)
-    logger.info("hash_passwrd="+hash_passwrd)
+    logger.info("channels.megahd hash_passwrd="+hash_passwrd)
 
     # Hace el submit del login
     post = "user="+LOGIN+"&passwrd=&cookieneverexp=on&hash_passwrd="+hash_passwrd
-    logger.info("post="+post)
+    logger.info("channels.megahd post="+post)
 
     data = scrapertools.cache_page("http://megahd.me/login2/" , post=post, headers=MAIN_HEADERS)
 
     return True
 
 def mainlist(item):
-    logger.info("[megahd.py] mainlist")
+    logger.info("channels.megahd mainlist")
     itemlist = []
     
     if config.get_setting("megahdaccount")!="true":
@@ -85,7 +86,7 @@ def openconfig(item):
     return []
 
 def foro(item):
-    logger.info("[megahd.py] foro")
+    logger.info("channels.megahd foro")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     
@@ -123,14 +124,15 @@ def foro(item):
 
     
 def findvideos(item):
+  logger.info("channels.megahd findvideos url="+item.url+", title="+item.title)
+
   show = item.title.replace("Añadir esta serie a la biblioteca de XBMC","")
-  logger.info("[megahd.py] findvideos show "+ show)
-  logger.info("[megahd.py] findvideos"+item.url)
   data = scrapertools.cache_page(item.url)
 
   itemlist=[]
 	
   if '?action=thankyou;'+item.plot in data:
+    logger.info("channels.megahd findvideos thankyou needed")
     item.plot = item.plot.replace("msg=","?action=thankyou;msg=")
     item.url = item.url + item.plot
     data = scrapertools.cache_page(item.url)
@@ -153,8 +155,6 @@ def findvideos(item):
      videoitem.action="play"
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
-     #videoitem.plot = item.plot
-     videoitem.title = "["+videoitem.server+videoitem.title + " " + item.title
      videoitem.show = show
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="findvideos") )
@@ -169,14 +169,9 @@ def findvideos(item):
      videoitem.action="play"
      videoitem.folder=False
      videoitem.thumbnail=item.thumbnail
-     #videoitem.plot = item.plot
-     videoitem.title = "["+videoitem.server+videoitem.title + " " + item.title
     return itemlist  
 
-
-
-
-    # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
+# Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():
     # Navega hasta la lista de películas
     mainlist_items = mainlist(Item())
