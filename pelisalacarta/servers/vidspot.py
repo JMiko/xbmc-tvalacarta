@@ -62,9 +62,15 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     
     # Extrae la URL
     match = re.compile('"file" : "(.+?)",').findall(data)
+    media_url = ""
     if len(match) > 0:
-        media_url = match[0]                
-    
+        for tempurl in match:
+            if not tempurl.endswith(".png") and not tempurl.endswith(".srt"):
+                media_url = tempurl
+
+        if media_url == "":
+            media_url = match[0]
+
     video_urls = []
     video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidspot]",media_url])
 

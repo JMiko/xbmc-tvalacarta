@@ -118,6 +118,7 @@ def find_videos(data):
     encontrados.add("http://allmyvideos.net/embed-js.html")
     encontrados.add("http://allmyvideos.net/embed-player.html")
     encontrados.add("http://allmyvideos.net/embed-cgi.html")
+    encontrados.add("http://allmyvideos.net/embed-i.html")
     devuelve = []
 
     # http://allmyvideos.net/embed-d6fefkzvjc1z.html 

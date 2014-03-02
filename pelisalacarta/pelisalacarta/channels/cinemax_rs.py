@@ -27,7 +27,7 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[cinemax_rs.py] mainlist")
-    item.url="http://cinemaxx.rs/newvideos.html";
+    item.url="http://cinemaxx.co/newvideos.html";
     return novedades(item)
 
 def novedades(item):
@@ -46,8 +46,8 @@ def novedades(item):
 	#Asta e pt situl Cinemaxx.rs
     #patron  = '<ul class="pm-ul-browse-videos thumbnails" id="pm-grid">[^<]+'
     patron = '<li>[^<]+'
-    patron += '<div class="pm-li-video">[^<]+'
-    patron += '.*?<a href="([^"]+)".*?[^<]+<img src="([^"]+)" alt="([^"]+)".*?</li>'
+    #patron += '<div class="pm-li-video">[^<]+'
+    patron += '<a href="([^"]+)".*?[^<]+<img src="([^"]+)" alt="([^"]+)".*?</li>'
 	
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)

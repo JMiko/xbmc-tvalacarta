@@ -36,6 +36,14 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         
         url = "plugin://plugin.video.mega/?url="+page_url+"&action=stream"
         video_urls.append(["[mega add-on]",url])
+
+        #GENERA LIK MEGASTREAMER
+        url_service1 = url_service1.replace("https://mega.co.nz/#!","http://megastreamer.es/mega_stream.php?url=https%3A%2F%2Fmega.co.nz%2F%23%21")
+        url_service1 = url_service1.replace("!","%21")
+        url_service1 = url_service1 + "&mime=vnd.divx"
+        logger.info("[mega.py] megastreamer.es url="+url_service1)
+        video_urls.append(["[megastreamer.es]",url_service1])
+
     else:
         video_urls.append(["[megacrypter]",page_url])
 

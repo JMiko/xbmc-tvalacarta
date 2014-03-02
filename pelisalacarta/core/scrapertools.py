@@ -29,7 +29,7 @@ logger.info("[scrapertools.py] init")
 
 # True - Muestra las cabeceras HTTP en el log
 # False - No las muestra
-DEBUG_LEVEL = True
+DEBUG_LEVEL = False
 
 CACHE_ACTIVA = "0"  # Automatica
 CACHE_SIEMPRE = "1" # Cachear todo
@@ -1297,7 +1297,7 @@ def get_sha1(cadena):
     except:
         import sha
         import binascii
-        devuelve = binascii.hexlify(sha.new(url).digest())
+        devuelve = binascii.hexlify(sha.new(cadena).digest())
     
     return devuelve
 
@@ -1308,7 +1308,7 @@ def get_md5(cadena):
     except:
         import md5
         import binascii
-        devuelve = binascii.hexlify(md5.new(url).digest())
+        devuelve = binascii.hexlify(md5.new(cadena).digest())
     
     return devuelve
 

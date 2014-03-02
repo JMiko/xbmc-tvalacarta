@@ -75,11 +75,13 @@ def peliculas(item):
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         scrapedplot = ""
         scrapedtitle=scrapertools.decodeHtmlentities(scrapedtitle.replace("Streaming",""))
+        if scrapedtitle.startswith("Link to "):
+            scrapedtitle = scrapedtitle[8:]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
-    patronvideos  = '<div class=\'Navi\'>.*?<a href="([^"]+)" ><strong>&raquo;</strong></a>'
+    patronvideos  = '<a href="([^"]+)" >Avanti</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
