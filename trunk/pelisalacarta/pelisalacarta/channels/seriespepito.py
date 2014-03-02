@@ -135,14 +135,14 @@ def listalfabetico(item):
     logger.info("[seriespepito.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title="0-9",url="http://www.seriespepito.com/lista-series-num/"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="0-9",url="http://www.seriespepito.com/lista-series-num/"))
     for letra in ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']:
-        itemlist.append( Item(channel=__channel__, action="alphaserieslist" , title=letra,url="http://www.seriespepito.com/lista-series-"+letra.lower()+"/",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+        itemlist.append( Item(channel=__channel__, action="series" , title=letra,url="http://www.seriespepito.com/lista-series-"+letra.lower()+"/",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
-def alphaserieslist(item):
-    logger.info("[seriespepito.py] alphaserieslist")
+def series(item):
+    logger.info("[seriespepito.py] series")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)

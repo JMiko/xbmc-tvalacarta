@@ -28,10 +28,10 @@ def mainlist(item):
     logger.info("[pelispekes.py] mainlist")
     itemlist=[]
 
-    itemlist.append( Item(channel=__channel__ , action="novedades"   , title="Novedades" , url="http://pelispekes.com/"))
-    itemlist.append( Item(channel=__channel__ , action="categorias" , title="Categorias", url="http://pelispekes.com/"))
-    itemlist.append( Item(channel=__channel__ , action="letras" , title="Abecedario", url="http://pelispekes.com/"))
-    
+    itemlist.append( Item(channel=__channel__ , action="novedades"  , title="Novedades"          , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="categorias" , title="Listado por género" , url="http://pelispekes.com/"))
+    itemlist.append( Item(channel=__channel__ , action="letras"     , title="Listado alfabético" , url="http://pelispekes.com/"))
+
     return itemlist
 
 def novedades(item):
@@ -40,7 +40,7 @@ def novedades(item):
 
     # Extrae las entradas (carpetas)
     data = scrapertools.cachePage(item.url)
-    patron = 'class="filmgal">(.*?)<strong>Duración: </strong>'
+    patron = 'class="filmgal">(.*?)<strong>Duraci[^<]+</strong>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     logger.info("hay %d matches" % len(matches))
 

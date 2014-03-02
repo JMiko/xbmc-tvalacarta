@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.66"/>
-    <property name="oldversionboxee" value="10.1"/>
-    <property name="oldversiondate" value="17/01/2014"/>
+    <property name="oldversion" value="3.2.67"/>
+    <property name="oldversionboxee" value="10.2"/>
+    <property name="oldversiondate" value="22/02/2014"/>
 
-    <property name="version" value="3.2.67"/>
-    <property name="versionboxee" value="10.2"/>
-    <property name="versiondate" value="22/02/2014"/>
+    <property name="version" value="3.2.68"/>
+    <property name="versionboxee" value="10.3"/>
+    <property name="versiondate" value="02/03/2014"/>
     <property name="versionchanges" value="Weekly release"/>
     
     <property name="target" value="target"/>
@@ -429,10 +429,10 @@
                 <exclude name="platformcode/wiimc/**"/>
                 <exclude name="platformcode/mediaserver/**"/>
                 <!--exclude name="platformcode/xbmc/**"/-->
-                <!--exclude name="platformcode/xbmcdharma/**"/-->
-                <!--exclude name="platformcode/xbmceden/**"/-->
-                <!--exclude name="platformcode/xbmcfrodo/**"/-->
-                <!--exclude name="platformcode/xbmcgotham/**"/-->
+                <exclude name="platformcode/xbmcdharma/**"/>
+                <exclude name="platformcode/xbmceden/**"/>
+                <exclude name="platformcode/xbmcfrodo/**"/>
+                <exclude name="platformcode/xbmcgotham/**"/>
                 <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>

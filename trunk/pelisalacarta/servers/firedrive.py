@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Conector para putlocker
+# Conector para firedrive
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 
@@ -49,7 +49,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
     
     # URL del descriptor
-    url = scrapertools.find_single_match(data,"\$\.post\('([^']+)'")
+    url = scrapertools.find_single_match(data,"file\: '([^']+)'")
+    logger.info("url="+url)
 
     # URL del vídeo
     media_url = scrapertools.get_header_from_response(url,header_to_get="location")
