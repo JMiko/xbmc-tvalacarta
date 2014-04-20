@@ -29,10 +29,10 @@ def mainlist(item):
     logger.info("[seriesyonkis.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lastepisodes"      , title="Ultimos capítulos" , url="http://www.seriesyonkis.com/ultimos-capitulos",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
-    itemlist.append( Item(channel=__channel__, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.com",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
-    itemlist.append( Item(channel=__channel__, action="mostviewed"    , title="Series más vistas", url="http://www.seriesyonkis.com/series-mas-vistas",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
-    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://www.seriesyonkis.com/buscar/serie",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+    #itemlist.append( Item(channel=__channel__, action="lastepisodes"      , title="Ultimos capítulos" , url="http://www.seriesyonkis.sx/ultimos-capitulos",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico"    , title="Listado alfabetico", url="http://www.seriesyonkis.sx",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+    itemlist.append( Item(channel=__channel__, action="mostviewed"    , title="Series más vistas", url="http://www.seriesyonkis.sx/series-mas-vistas",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+    itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar", url="http://www.seriesyonkis.sx/buscar/serie",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
 
     return itemlist
 
@@ -43,8 +43,8 @@ def search(item,texto, categoria="*"):
     if categoria not in ("*", "S"): return itemlist ## <--
     
     if item.url=="":
-        item.url = "http://www.seriesyonkis.com/buscar/serie"
-    url = "http://www.seriesyonkis.com/buscar/serie" # write ur URL here
+        item.url = "http://www.seriesyonkis.sx/buscar/serie"
+    url = "http://www.seriesyonkis.sx/buscar/serie" # write ur URL here
     post = 'keyword='+texto[0:18] + '&search_type=serie'
     
     data = scrapertools.cache_page(url,post=post)
@@ -53,7 +53,7 @@ def search(item,texto, categoria="*"):
 def getsearchresults(item, data, action):
     itemlist = []
 
-    patron='_results_wrapper">(.*?)<div id="tab-profesionales"'
+    patron='_results_wrapper">(.*?)<div id="fixed-footer">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:        
         #<li class="nth-child1n"> <figure> <a href="/pelicula/el-moderno-sherlock-holmes-1924" title="El moderno Sherlock Holmes (1924)"><img width="100" height="144" src="http://s.staticyonkis.com/img/peliculas/100x144/el-moderno-sherlock-holmes-1924.jpg" alt=""></a> <figcaption>8.0</figcaption> </figure> <aside> <h2><a href="/pelicula/el-moderno-sherlock-holmes-1924" title="El moderno Sherlock Holmes (1924)">El moderno Sherlock Holmes (1924)</a></h2> <p class="date">1924 | Estados Unidos | votos: 3</p> <div class="content">Película sobre el mundo del cine, Keaton es un proyeccionista que sueña con ser un detective cuando, milagrosamente, se encuentra dentro de la película que está proyectando. Allí intentará salvar a su amada de las garras del villano. Una de...</div> <p class="generos">  <a href="/genero/comedia">Comedia</a>  <a class="topic" href="/genero/cine-mudo">Cine mudo</a>  <a class="topic" href="/genero/mediometraje">Mediometraje</a>  <i>(1 más) <span class="aditional_links"> <span>  <a class="topic" href="/genero/sherlock-holmes">Sherlock Holmes</a>  </span> </span> </i>  </p> </aside> </li>
@@ -101,13 +101,23 @@ def mostviewed(item):
     logger.info("[seriesyonkis.py] mostviewed")
     data = scrapertools.cachePage(item.url)
 
+    #<div id="tabs-1"> <h1>Más vistas ayer</h1> 
+    #<ul class="covers-list">  
+    #     <li class="thumb-episode"><a title="Cómo conocí a vuestra madre (2005)" href="/serie/como-conoci-a-vuestra-madre"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/How_I_Met_Your_Mother-19641.JPEG" alt="Cómo conocí a vuestra madre"/></a><strong><a href="/serie/como-conoci-a-vuestra-madre" title"Cómo conocí a vuestra madre (2005)">Cómo conocí a vuestra madre (2005)</a></strong></li><li class="thumb-episode"><a title="The Big Bang Theory (2007)" href="/serie/the-big-bang-theory"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/2/The_Big_Bang_Theory-20285.PNG" alt="The Big Bang Theory"/></a><strong><a href="/serie/the-big-bang-theory" title"The Big Bang Theory (2007)">The Big Bang Theory (2007)</a></strong></li><li class="thumb-episode"><a title="Friends (1994)" href="/serie/friends"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/2/Friends-20013.PNG" alt="Friends"/></a><strong><a href="/serie/friends" title"Friends (1994)">Friends (1994)</a></strong></li><li class="thumb-episode"><a title="The vampire diaries (Crónicas Vampíricas) (2009)" href="/serie/the-vampire-diaries"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/The_Vampire_Diaries-18597.JPEG" alt="The vampire diaries (Crónicas Vampíricas)"/></a><strong><a href="/serie/the-vampire-diaries" title"The vampire diaries (Crónicas Vampíricas) (2009)">The vampire diaries (Crónicas Vampíricas) (2009)</a></strong></li><li class="clear"></li> <li class="thumb-episode"><a title="Breaking Bad (2008)" href="/serie/breaking-bad"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Breaking_Bad-18431.PNG" alt="Breaking Bad"/></a><strong><a href="/serie/breaking-bad" title"Breaking Bad (2008)">Breaking Bad (2008)</a></strong></li><li class="thumb-episode"><a title="Anatomía de Grey (2005)" href="/serie/anatomia-de-grey"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Grey_s_Anatomy-18325.JPEG" alt="Anatomía de Grey"/></a><strong><a href="/serie/anatomia-de-grey" title"Anatomía de Grey (2005)">Anatomía de Grey (2005)</a></strong></li><li class="thumb-episode"><a title="Keeping up with the Kardashians (2007)" href="/serie/keeping-up-with-the-kardashians"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Keeping_Up_with_the_Kardashians-19944.JPEG" alt="Keeping up with the Kardashians"/></a><strong><a href="/serie/keeping-up-with-the-kardashians" title"Keeping up with the Kardashians (2007)">Keeping up with the Kardashians (2007)</a></strong></li><li class="thumb-episode"><a title="The Walking Dead (2010)" href="/serie/the-walking-dead-yonkis1"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/The_Walking_Dead-19273.PNG" alt="The Walking Dead"/></a><strong><a href="/serie/the-walking-dead-yonkis1" title"The Walking Dead (2010)">The Walking Dead (2010)</a></strong></li><li class="clear"></li> <li class="thumb-episode"><a title="Pequeñas mentirosas (Pretty Little Liars) (2010)" href="/serie/pretty-little-liars"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Pretty_Little_Liars-18575.PNG" alt="Pequeñas mentirosas (Pretty Little Liars)"/></a><strong><a href="/serie/pretty-little-liars" title"Pequeñas mentirosas (Pretty Little Liars) (2010)">Pequeñas mentirosas (Pretty Little Liars) (2010)</a></strong></li><li class="thumb-episode"><a title="Sobrenatural (Supernatural) (2005)" href="/serie/sobrenatural"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Supernatural-19429.JPEG" alt="Sobrenatural (Supernatural)"/></a><strong><a href="/serie/sobrenatural" title"Sobrenatural (Supernatural) (2005)">Sobrenatural (Supernatural) (2005)</a></strong></li><li class="thumb-episode"><a title="Juego de tronos (2011)" href="/serie/juego-de-tronos-2011"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/2/Game_of_Thrones-22818.PNG" alt="Juego de tronos"/></a><strong><a href="/serie/juego-de-tronos-2011" title"Juego de tronos (2011)">Juego de tronos (2011)</a></strong></li><li class="thumb-episode"><a title="New girl (2011)" href="/serie/new-girl"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/3/New_Girl-40390.JPEG" alt="New girl"/></a><strong><a href="/serie/new-girl" title"New girl (2011)">New girl (2011)</a></strong></li><li class="clear"></li> <li class="thumb-episode"><a title="Modern Family (2009)" href="/serie/modern-family"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Modern_Family-19537.JPEG" alt="Modern Family"/></a><strong><a href="/serie/modern-family" title"Modern Family (2009)">Modern Family (2009)</a></strong></li><li class="thumb-episode"><a title="Padre de Familia (1999)" href="/serie/padre-de-familia"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/2/Family_Guy-21309.PNG" alt="Padre de Familia"/></a><strong><a href="/serie/padre-de-familia" title"Padre de Familia (1999)">Padre de Familia (1999)</a></strong></li><li class="thumb-episode"><a title="Suits (2011)" href="/serie/suits"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/2/Suits-35726.JPEG" alt="Suits"/></a><strong><a href="/serie/suits" title"Suits (2011)">Suits (2011)</a></strong></li><li class="thumb-episode"><a title="Gossip Girl (2007)" href="/serie/gossip-girl-yonkis1"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Gossip_Girl-19209.JPEG" alt="Gossip Girl"/></a><strong><a href="/serie/gossip-girl-yonkis1" title"Gossip Girl (2007)">Gossip Girl (2007)</a></strong></li><li class="clear"></li> <li class="thumb-episode"><a title="Los Simpsons (1989)" href="/serie/los-simpsons"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/The_Simpsons-19237.PNG" alt="Los Simpsons"/></a><strong><a href="/serie/los-simpsons" title"Los Simpsons (1989)">Los Simpsons (1989)</a></strong></li><li class="thumb-episode"><a title="Dos Hombres y Medio (Two and a Half Men) (2003)" href="/serie/dos-hombres-y-medio-two-and-a-half-men"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Two_and_a_Half_Men-19450.JPEG" alt="Dos Hombres y Medio (Two and a Half Men)"/></a><strong><a href="/serie/dos-hombres-y-medio-two-and-a-half-men" title"Dos Hombres y Medio (Two and a Half Men) (2003)">Dos Hombres y Medio (Two and a Half Men) (2003)</a></strong></li><li class="thumb-episode"><a title="Revenge (2011)" href="/serie/revenge"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/3/Revenge-40394.JPEG" alt="Revenge"/></a><strong><a href="/serie/revenge" title"Revenge (2011)">Revenge (2011)</a></strong></li><li class="thumb-episode"><a title="Glee (2009)" href="/serie/glee"><img width="100" height="144" class="img-shadow" src="http://static2.seriesyonkis.sx/90/1/Glee-19136.JPEG" alt="Glee"/></a><strong><a href="/serie/glee" title"Glee (2009)">Glee (2009)</a></strong></li><li class="clear"></li>  
+    #</ul>
+    #</div>
+    matches = re.compile('<div id="tabs-1">(.*?)</div>', re.S).findall(data)
+    if len(matches)<=0:
+        return []
+    data = matches[0]
+
     #<li class="thumb-episode"> <a href="/serie/como-conoci-a-vuestra-madre" title="Cómo conocí a vuestra madre"><img class="img-shadow" src="/img/series/170x243/como-conoci-a-vuestra-madre.jpg" height="166" width="115"></a> <strong><a href="/serie/como-conoci-a-vuestra-madre" title="Cómo conocí a vuestra madre">Cómo conocí a vuestra madre</a></strong> </li> 
-    matches = re.compile('<li class="thumb-episode"> <a href="([^"]+)" title="([^"]+)".*?src="([^"]+)".*?</li>', re.S).findall(data)
+    matches = re.compile('<a title="([^"]+)" href="([^"]+)".*?src="([^"]+)".*?</a>', re.S).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:               
-        scrapedtitle = match[1] 
-        scrapedurl = urlparse.urljoin(item.url,match[0])
+        scrapedtitle = match[0] 
+        scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
 
@@ -125,7 +135,7 @@ def series(item):
    
     #Paginador
     #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
-    matches = re.compile('<div class="paginator">.*?<a href="([^"]+)">&gt;</a>.*?</div>', re.S).findall(data)
+    matches = re.compile('<div class="paginator">.*?<a href="([^"]+)".*?</div>', re.S).findall(data)
     if len(matches)>0:
         paginador = Item(channel=__channel__, action="series" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg")
     else:
@@ -159,8 +169,8 @@ def series(item):
 
 def detalle_programa(item,data=""):
     
-    #http://www.seriesyonkis.com/serie/gungrave
-    #http://www.seriesyonkis.com/ficha/serie/gungrave
+    #http://www.seriesyonkis.sx/serie/gungrave
+    #http://www.seriesyonkis.sx/ficha/serie/gungrave
     url = item.url
     if "seriesyonkis.com/serie/" in url:
         url = url.replace("seriesyonkis.com/serie/","seriesyonkis.com/ficha/serie/")
@@ -255,7 +265,7 @@ def findvideos(item):
 
         # Acota la zona de búsqueda
         data = scrapertools.cache_page(item.url)    
-        data = scrapertools.get_match(data,'<div id="section-content"(.*?)<h2 class="header-subtitle p2p')
+        data = scrapertools.get_match(data,'<div id="section-content"(.*?)<div id="fixed-footer">')
         
         # Procesa línea por línea
         matches = re.compile('<tr>.*?</tr>', re.S).findall(data)
@@ -270,19 +280,17 @@ def findvideos(item):
             #<span class="flags spa" title="Español">spa</span></td> <td class="episode-subtitle subtitles center">
             #<span class="flags no_sub" title="Sin información">no_sub</span></td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3>
             #<div class="arrow-tip-right-dark sprite"></div> <ul> <li>hdtv</li>  </ul> </div> </td> <td class="episode-uploader"> <span title="repomen77">repomen77</span> </td> <td class="episode-error bug center"><a href="#" class="errorlink" data-id="5598737"><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="error" /></a></td> </tr>
-            patron  = '<a href="(/s/ngo/[^"]+)".*?'
-            patron += '<span class="server ([^"]+)".*?title="[^"]+">([^<]+)</span>.*?"flags ([^_]+)_sub".*?'
-            patron += '<div class="arrow-tip-right-dark sprite"></div> <ul> <li>([^<]+)<'
+            patron  = '<a href="([^"]+)".*?</td>.*?'
+            patron += 'alt="([^"]+)".*?'
+            patron += 'class="episode-lang">.*?title="([^"]+)"'
             datos = re.compile(patron, re.S).findall(match)
             for info in datos:  
                 id = info[0]
                 servidor = info[1]
-                Nro = Nro + 1
-                fmt = info[4]      
+                Nro = Nro + 1     
                 audio = "Audio:" + info[2]
-                subs = "Subs:" + info[3]
-                url = urlparse.urljoin(item.url,info[0])
-                scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
+                url = "http://www.seriesyonkis.sx" +info[0]
+                scraptedtitle = "%02d) [%s] - [%s] " % (Nro , audio,servidor)
                 # El plot va vacío porque necesita menos memoria, y en realidad es el de la serie y no el del episodio :)
                 itemlist.append( Item(channel=__channel__, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot="", folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
     except:
@@ -295,97 +303,48 @@ def findvideos(item):
 def play(item):
     logger.info("[seriesyonkis.py] play")
     itemlist = []
-    
-    # Descarga la página de reproducción de este episodio y server
-    #<a href="/s/y/597157/0/s/1244" target="_blank">Reproducir ahora</a>
-    logger.info("[seriesyonkis.py] play url="+item.url)
     data = scrapertools.cache_page(item.url)
-    patron = '<a href="([^"]+)" target="_blank">\s*Reproducir ahora\s*</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if len(matches)==0:
-        patron = '<a href="([^"]+)" target="_blank">\s*Descargar ahora\s*</a>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    if len(matches)==0:
-        logger.info("[seriesyonkis.py] play ERROR, no encuentro el enlace 'Reproducir ahora' o 'Descargar ahora'")
-        return []
-    
-    playurl = urlparse.urljoin(item.url,matches[0])
-    logger.info("[seriesyonkis.py] play url="+playurl)
+    videos = servertools.findvideos(data)  
 
-    try:
-        location = scrapertools.getLocationHeaderFromResponse(playurl)
-        logger.info("[seriesyonkis.py] play location="+location)
+    if(len(videos)>0): 
+        url = videos[0][1]
+        server=videos[0][2]                   
+        itemlist.append( Item(channel=item.channel, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
+    else:
+        patron='<ul class="form-login">(.*?)</ul'
+        matches = re.compile(patron, re.S).findall(data)
+        if(len(matches)>0):
+            if "xbmc" in config.get_platform():
+                data = matches[0]
+                #buscamos la public key
+                patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
+                pkeys = re.compile(patron, re.S).findall(data)
+                if(len(pkeys)>0):
+                    pkey=pkeys[0]
+                    #buscamos el id de challenge
+                    data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
+                    patron="challenge.*?'([^']+)'"
+                    challenges = re.compile(patron, re.S).findall(data)
+                    if(len(challenges)>0):
+                        challenge = challenges[0]
+                        image = "http://www.google.com/recaptcha/api/image?c="+challenge
+                        
+                        #CAPTCHA
+                        exec "import pelisalacarta.captcha as plugin"
+                        tbd = plugin.Keyboard("","",image)
+                        tbd.doModal()
+                        confirmed = tbd.isConfirmed()
+                        if (confirmed):
+                            tecleado = tbd.getText()
+                            logger.info("tecleado="+tecleado)
+                            sendcaptcha(playurl,challenge,tecleado)
+                        del tbd 
+                        #tbd ya no existe
+                        if(confirmed and tecleado != ""):
+                            itemlist = play(item)
+            else:
+                itemlist.append( Item(channel=item.channel, action="error", title="El sitio web te requiere un captcha") )
 
-        if location<>"":
-            logger.info("[seriesyonkis.py] Busca videos conocidos en la url")
-            videos = servertools.findvideos(location)
-            
-            if len(videos)==0:
-                location = scrapertools.getLocationHeaderFromResponse(location)
-                logger.info("[seriesyonkis.py] play location="+location)
-
-                if location<>"":
-                    logger.info("[seriesyonkis.py] Busca videos conocidos en la url")
-                    videos = servertools.findvideos(location)
-                    
-                    if len(videos)==0:
-                        logger.info("[seriesyonkis.py] play downloading location")
-                        data = scrapertools.cache_page(location)
-                        logger.info("------------------------------------------------------------")
-                        #logger.info(data)
-                        logger.info("------------------------------------------------------------")
-                        videos = servertools.findvideos(data) 
-                        logger.info(str(videos))
-                        logger.info("------------------------------------------------------------")
-        else:
-            logger.info("[seriesyonkis.py] play location vacía")
-            videos=[]
-
-        if(len(videos)>0): 
-            url = videos[0][1]
-            server=videos[0][2]                   
-            itemlist.append( Item(channel=item.channel, action="play" , title=item.title, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, server=server, extra=item.extra, folder=False))
-        else:
-            data = scrapertools.cache_page(playurl)
-            patron='<ul class="form-login">(.*?)</ul'
-            matches = re.compile(patron, re.S).findall(data)
-            if(len(matches)>0):
-                if "xbmc" in config.get_platform():
-                    data = matches[0]
-                    #buscamos la public key
-                    patron='src="http://www.google.com/recaptcha/api/noscript\?k=([^"]+)"'
-                    pkeys = re.compile(patron, re.S).findall(data)
-                    if(len(pkeys)>0):
-                        pkey=pkeys[0]
-                        #buscamos el id de challenge
-                        data = scrapertools.cache_page("http://www.google.com/recaptcha/api/challenge?k="+pkey)
-                        patron="challenge.*?'([^']+)'"
-                        challenges = re.compile(patron, re.S).findall(data)
-                        if(len(challenges)>0):
-                            challenge = challenges[0]
-                            image = "http://www.google.com/recaptcha/api/image?c="+challenge
-                            
-                            #CAPTCHA
-                            exec "import pelisalacarta.captcha as plugin"
-                            tbd = plugin.Keyboard("","",image)
-                            tbd.doModal()
-                            confirmed = tbd.isConfirmed()
-                            if (confirmed):
-                                tecleado = tbd.getText()
-                                logger.info("tecleado="+tecleado)
-                                sendcaptcha(playurl,challenge,tecleado)
-                            del tbd 
-                            #tbd ya no existe
-                            if(confirmed and tecleado != ""):
-                                itemlist = play(item)
-                else:
-                    itemlist.append( Item(channel=item.channel, action="error", title="El sitio web te requiere un captcha") )
-
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
     logger.info("len(itemlist)=%s" % len(itemlist))
     return itemlist
 
@@ -451,9 +410,9 @@ def listalfabetico(item):
     
     itemlist = []
     
-    itemlist.append( Item(channel=__channel__, action="series" , title="0-9", url="http://www.seriesyonkis.com/lista-de-series/0-9",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+    itemlist.append( Item(channel=__channel__, action="series" , title="0-9", url="http://www.seriesyonkis.sx/lista-de-series/0-9",fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
     for letra in ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']:
-        itemlist.append( Item(channel=__channel__, action="series" , title=letra , url="http://www.seriesyonkis.com/lista-de-series/"+letra,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
+        itemlist.append( Item(channel=__channel__, action="series" , title=letra , url="http://www.seriesyonkis.sx/lista-de-series/"+letra,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
 
     return itemlist
 
