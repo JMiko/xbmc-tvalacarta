@@ -262,8 +262,8 @@ def findvideos(item):
             title = scrapertools.get_match(tr,'<b>([^<]+)</b>')
             server = scrapertools.get_match(tr,'"http\://www.google.com/s2/favicons\?domain\=([^"]+)"')
             # <td align="center"><img src="http://www.yaske.to/theme/01/data/images/flags/la_la.png" width="19">Lat.</td> 
-            idioma = scrapertools.get_match(tr,'<img src="http://www.yaske.[a-z]+/theme/01/data/images/flags/([a-z_]+).png"[^>]+>[^<]+</td>')
-            subtitulos = scrapertools.get_match(tr,'<img src="http://www.yaske.[a-z]+/theme/01/data/images/flags/[^"]+"[^>]+>([^<]+)</td>')
+            idioma = scrapertools.get_match(tr,'<img src="http://www.yaske.[a-z]+/theme/01/data/images/flags/([a-z_]+).png"[^>]+>[^<]*<')
+            subtitulos = scrapertools.get_match(tr,'<img src="http://www.yaske.[a-z]+/theme/01/data/images/flags/[^"]+"[^>]+>([^<]*)<')
             calidad = scrapertools.get_match(tr,'<td align="center" class="center"[^<]+<span title="[^"]*" style="text-transform.capitalize.">([^<]+)</span></td>')
             
             #<a href="http://www.yaske.net/es/reproductor/pelicula/2244/15858/" title="Batman: El regreso del Caballero Oscuro, Parte 2"
@@ -305,6 +305,8 @@ def play(item):
 
     data = scrapertools.downloadpageGzip(item.url)
     #logger.info("data="+data)
+
+    data = data.replace("http://www.yaske.net/archivos/allmyvideos/play.php?v=","http://allmyvideos.net/")
 
     itemlist = servertools.find_video_items(data=data)
     for newitem in itemlist:
