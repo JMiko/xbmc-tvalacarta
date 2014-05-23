@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Utilidades para detectar vídeos de los diferentes conectores
@@ -22,7 +22,7 @@ FREE_SERVERS.extend(['vidbux','videoweed','vimeo','vk','watchfreeinhd','youtube'
 FREE_SERVERS.extend(['jumbofiles','nowvideo','streamcloud', 'zinwa', 'dailymotion','justintv', 'vidbull'])
 FREE_SERVERS.extend(['vureel','nosvideo','videopremium','movreel','flashx','magnovideo','upafile'])
 FREE_SERVERS.extend(['fileflyer','playedto','tunepk','powvideo','videomega','mega','vidspot','netutv','rutube'])
-FREE_SERVERS.extend(['videozed','documentary','hugefiles', 'firedrive','videott','tumitv'])
+FREE_SERVERS.extend(['videozed','documentary','hugefiles', 'firedrive','videott','tumitv','nubestream','gamovideo'])
 # YA NO FUNCIONAN
 # rutube
 
@@ -46,21 +46,8 @@ REALDEBRID_SERVERS = ['one80upload','tenupload','onefichier','onehostclick','two
                    'hotfile','hulkshare','hulu','ifile','jakfile','jumbofiles','justintv','letitbit','loadto','mediafire','mega','megashare','megashares','mixturevideo','muchshare','netload',
                    'novafile','nowdownload','purevid','putbit','putlocker','redtube','rapidgator','rapidshare','rutube','ryushare','scribd','sendspace','sharebees','shareflare','shragle','slingfile','sockshare',
                    'soundcloud','speedyshare','turbobit','unibytes','uploadc','uploadedto','uploading','uploadspace','uptobox',
-                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare','justintv','nowvideo','ultramegabit','filesmonster']
-
-#Consulta los hosts disponibles y los añade a la lista base
-#Así se automantiene la lista de servidores de realdebrid, 
-#Si el mecanismo falla, se mantienen como mínimo los servidores "base" definidos arriba
-try:
-    rbridservers = scrapertools.cache_page("http://real-debrid.com/api/hosters.php")
-    patron  = '"([^.]+)\.[^"]+"'
-    matches = re.compile(patron,re.DOTALL).findall(rbridservers)
-    scrapertools.printMatches(matches)
-    for rbserver in matches:
-        REALDEBRID_SERVERS.append(rbserver)
-        
-except:
-    pass
+                   'userporn','veevr','vidbux','vidhog','vidxden','vimeo','vipfile','wattv','xfileshare','youporn','youtube','yunfile','zippyshare','justintv','nowvideo','ultramegabit','filesmonster','oboom']
+#wupload,fileserve
 
 ALLDEBRID_SERVERS = ['one80upload','onefichier','twoshared','fourfastfile','fourshared','albafile','bayfiles','bitshare','cloudzer','cramit','crocko','cyberlocker','dailymotion','dengee',
                    'depfile','dlfree','extabit','extmatrix','filefactory','fileflyer','filegag','filehost','fileover','filepost','filerio','filesabc',
@@ -247,7 +234,7 @@ def resolve_video_urls_for_playing(server,url,video_password="",muestra_dialogo=
 
             # Obtiene enlaces realdebrid si tienes cuenta
             if server in REALDEBRID_SERVERS and config.get_setting("realdebridpremium")=="true":
-
+    
                 # Muestra un diálogo de progreso
                 if muestra_dialogo:
                     progreso.update( 60 , "Conectando con Real-Debrid")

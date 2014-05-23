@@ -12,7 +12,6 @@ import re
 from core import scrapertools
 from core import logger
 from core import config
-from core import unpackerjs,unpackerjs3
 
 def test_video_exists( page_url ):
     logger.info("[allmyvideos.py] test_video_exists(page_url='%s')" % page_url)
@@ -119,6 +118,24 @@ def find_videos(data):
     encontrados.add("http://allmyvideos.net/embed-player.html")
     encontrados.add("http://allmyvideos.net/embed-cgi.html")
     encontrados.add("http://allmyvideos.net/embed-i.html")
+    encontrados.add("http://allmyvideos.net/images")
+    encontrados.add("http://allmyvideos.net/theme")
+    encontrados.add("http://allmyvideos.net/xupload")
+    encontrados.add("http://allmyvideos.net/s")
+    encontrados.add("http://allmyvideos.net/js")
+    encontrados.add("http://allmyvideos.net/jquery")
+    encontrados.add("http://allmyvideos.net/login")
+    encontrados.add("http://allmyvideos.net/make")
+    encontrados.add("http://allmyvideos.net/i")
+    encontrados.add("http://allmyvideos.net/faq")
+    encontrados.add("http://allmyvideos.net/tos")
+    encontrados.add("http://allmyvideos.net/premium")
+    encontrados.add("http://allmyvideos.net/checkfiles")
+    encontrados.add("http://allmyvideos.net/privacy")
+    encontrados.add("http://allmyvideos.net/refund")
+    encontrados.add("http://allmyvideos.net/links")
+    encontrados.add("http://allmyvideos.net/contact")
+
     devuelve = []
 
     # http://allmyvideos.net/embed-d6fefkzvjc1z.html 
@@ -165,7 +182,6 @@ def find_videos(data):
             encontrados.add(url)
         else:
             logger.info("  url duplicada="+url)
-
 
     return devuelve
 

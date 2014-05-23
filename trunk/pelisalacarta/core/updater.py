@@ -46,6 +46,14 @@ try:
         import xbmc
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-eden-"
         DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
+    elif config.get_platform()=="xbmcfrodo":
+        import xbmc
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-frodo-"
+        DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
+    elif config.get_platform()=="xbmcgotham":
+        import xbmc
+        REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-addon-gotham-"
+        DESTINATION_FOLDER = xbmc.translatePath( "special://home/addons")
     elif config.get_platform()=="xbmc":
         import xbmc
         REMOTE_FILE = "http://blog.tvalacarta.info/descargas/"+PLUGIN_NAME+"-xbmc-plugin-"

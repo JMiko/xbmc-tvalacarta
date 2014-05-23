@@ -78,6 +78,7 @@
     <setting id="downloadpath" type="text" label="30017" default=""/>
     <setting id="downloadlistpath" type="text" label="30018" default=""/>
     <setting id="bookmarkpath" type="text" source="video" option="writeable" label="30030" default=""/>
+    <setting id="librarypath" type="text" label="30067" default=""/>
     <setting id="subtitulo" type="bool" label="30021" default="false"/>	
     <setting id="limite_busquedas" type="enum" values="10|20|30|40" label="30024" default="0"/>
     <setting id="modo_cache" type="enum" lvalues="30039|30040|30041" label="30038" default="0"/>

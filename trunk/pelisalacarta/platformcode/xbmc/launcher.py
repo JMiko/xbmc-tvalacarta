@@ -266,7 +266,10 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
                     
                     #Lista con series para actualizar
-                    nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
+                    nombre_fichero_config_canal = os.path.join( config.get_library_path() , "series.xml" )
+                    if not os.path.exists(nombre_fichero_config_canal):
+                        nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
+
                     logger.info("nombre_fichero_config_canal="+nombre_fichero_config_canal)
                     if not os.path.exists(nombre_fichero_config_canal):
                         f = open( nombre_fichero_config_canal , "w" )

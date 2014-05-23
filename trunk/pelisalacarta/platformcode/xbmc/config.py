@@ -58,7 +58,13 @@ def get_localized_string(code):
     return dev
     
 def get_library_path():
-    return os.path.join( get_data_path(), 'library' )
+    #return os.path.join( get_data_path(), 'library' )
+    default = os.path.join( get_data_path(), 'library' )
+
+    value = get_setting("librarypath")
+    if value=="":
+        value=default
+    return value
 
 def get_temp_file(filename):
     return xbmc.translatePath( os.path.join( "special://temp/", filename ))

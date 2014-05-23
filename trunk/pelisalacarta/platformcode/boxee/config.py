@@ -11,8 +11,8 @@
 # Historial de cambios:
 #------------------------------------------------------------
 
-TAG_VERSION = "10.3"
-TAG_VERSION_XBMC = "3.2.68"
+TAG_VERSION = "10.4"
+TAG_VERSION_XBMC = "3.2.69"
 
 print "[config.py] boxee config "+TAG_VERSION+" ("+TAG_VERSION_XBMC+")"
 
@@ -63,7 +63,13 @@ def get_localized_string(code):
         return "%d" % code
     
 def get_library_path():
-    return os.path.join(get_data_path(),"library")
+    #return os.path.join( get_data_path(), 'library' )
+    default = os.path.join( get_data_path(), 'library' )
+
+    value = get_setting("librarypath")
+    if value=="":
+        value=default
+    return value
 
 def get_temp_file(filename):
     return os.path.join( mc.GetTempDir(), filename )

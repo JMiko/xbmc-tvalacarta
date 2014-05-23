@@ -38,7 +38,7 @@ def mainlist(item):
     logger.info("[ayuda.py] mainlist")
     itemlist = []
     from core import platform_name
-    if platform_name.PLATFORM_NAME=="xbmceden":
+    if platform_name.PLATFORM_NAME=="xbmceden" or platform_name.PLATFORM_NAME=="xbmcfrodo" or platform_name.PLATFORM_NAME=="xbmcgotham":
         itemlist.append( Item(channel=CHANNELNAME, action="force_creation_advancedsettings" , title="Crear fichero advancedsettings.xml optimizado"))
         
     if platform_name.PLATFORM_NAME!="xbmceden":

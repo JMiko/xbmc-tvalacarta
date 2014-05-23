@@ -191,7 +191,7 @@ def series(item):
         fulltitle = title
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        plot = scrapertools.htmlclean(scrapedplot)
         show = title
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail , plot=plot , show=show, fulltitle=fulltitle, fanart=thumbnail, viewmode="movies_with_plot", folder=True) )

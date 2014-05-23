@@ -92,6 +92,7 @@ def find_videos(text):
     encontrados.add("http://streamcloud.eu/tos")
     encontrados.add("http://streamcloud.eu/checkfiles")
     encontrados.add("http://streamcloud.eu/contact")
+    encontrados.add("http://streamcloud.eu/serve")
 
     # http://streamcloud.eu/cwvhcluep67i
     patronvideos  = '(streamcloud.eu/[a-z0-9]+)'

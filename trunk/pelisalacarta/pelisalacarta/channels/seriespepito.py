@@ -20,6 +20,13 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
+SERIESPEPITO_REQUEST_HEADERS = []
+SERIESPEPITO_REQUEST_HEADERS.append(["User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:28.0) Gecko/20100101 Firefox/28.0"])
+SERIESPEPITO_REQUEST_HEADERS.append(["Accept-Encoding","gzip, deflate"])
+SERIESPEPITO_REQUEST_HEADERS.append(["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"])
+SERIESPEPITO_REQUEST_HEADERS.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"])
+SERIESPEPITO_REQUEST_HEADERS.append(["Connection","keep-alive"])
+
 def isGeneric():
     return True
 
@@ -77,16 +84,16 @@ def lomasvisto(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'s visto de esta semana en Pepito</div><ul class="nav">(.*?)</ul>')
-    #<a class="clearfix top" href="http://arrow.seriespepito.com/"><img class="thumb_mini" alt="Arrow" src="http://www.seriespepito.com/uploads/series/1545-arrow-thumb.jpg" />Arrow</a></li>
-    patron  = '<a.*?href="([^"]+)"[^<]+'
-    patron += '<img.*?src="([^"]+)"[^>]+>([^<]+)</a>'
+    data = scrapertools.get_match(data,'s visto de esta semana en Pepito</div><ul(.*?)</ul>')
+
+    patron  = '<a title="([^"]+)" href="([^"]+)"[^<]+'
+    patron += '<img.*?src="([^"]+)"'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
-    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+    for scrapedtitle,scrapedurl,scrapedthumbnail in matches:
         logger.info("title="+scrapedtitle)
         title = scrapertools.htmlclean(scrapedtitle).strip()
         title = title.replace("\r","").replace("\n","")
@@ -109,25 +116,26 @@ def allserieslist(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,"<ul class='nav' id='lista_completa_series_ul'>(.*?)</ul>")
-    patron = "<li><a href='([^']+)'>([^<]+)</a></li>"
+    data = scrapertools.get_match(data,'<ul id="lista_completa_series_ul" class="nav">(.*?)</ul>')
+    #<li><a title="112: Héroes en la calle" href="http://112-heroes-de-la-calle.seriespepito.com/">112: Héroes en la calle</a></li>
+    patron = '<li><a title="([^"]+)" href="([^"]+)"'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
+    #scrapertools.printMatches(matches)
 
     itemlist = []
     for match in matches:
-        scrapedtitle = unicode( match[1].strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedurl = match[0]
+        scrapedtitle = match[0].strip()
+        scrapedurl = match[1]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedtitle = scrapertools.htmlclean(scrapedtitle)
         scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=title,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=scrapedtitle,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
 
     return itemlist
 
@@ -301,9 +309,19 @@ def play(item):
     logger.info("[seriespepito.py] play")
     itemlist=[]
     
-    data = scrapertools.cache_page(item.url)
+    # Lee la página
+    data = scrapertools.cache_page(item.url, headers = SERIESPEPITO_REQUEST_HEADERS)
     
-    videoitemlist = servertools.find_video_items(data=data)
+    # La utiliza como referer del enlace real
+    SERIESPEPITO_REQUEST_HEADERS.append(["Referer",item.url])
+
+    # Descarga el enlace real
+    item.url = scrapertools.find_single_match(data,'href="(http.//www.enlacespepito.com/[^"]+)">')
+    mediaurl = scrapertools.get_header_from_response(item.url, header_to_get="location", headers = SERIESPEPITO_REQUEST_HEADERS)
+
+
+    # Busca el vídeo
+    videoitemlist = servertools.find_video_items(data=mediaurl)
     i=1
     for videoitem in videoitemlist:
         if not "favicon" in videoitem.url:

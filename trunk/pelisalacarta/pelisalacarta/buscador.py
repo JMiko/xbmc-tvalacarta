@@ -125,8 +125,8 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import serieonline
     itemlist.extend( serieonline.search( Item() , tecleado) )
 
-    #from pelisalacarta.channels import seriesid
-    #itemlist.extend( seriesid.search( Item() , tecleado) )
+    from pelisalacarta.channels import shurweb
+    itemlist.extend( shurweb.search( Item() , tecleado) )
 
     if config.get_setting("serieslyaccount")=="true":
         from pelisalacarta.channels import seriesly
