@@ -62,8 +62,8 @@ def mainlist(item):
             itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://mega-foro.com/peliculas/" , folder=True ) )
             itemlist.append( Item( channel=__channel__ , title="Infantil" , action="foro" , url="http://mega-foro.com/para-los-peques!/" , folder=True ) )
             itemlist.append( Item( channel=__channel__ , title="Cortos y Documentales" , action="foro" , url="http://mega-foro.com/cortos-y-documentales/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Contenido Online" , action="foro" , url="http://mega-foro.com/online-222/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Anime & Manga" , action="foro" , url="http://mega-foro.com/anime/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Contenido Online" , action="foro" , url="http://mega-foro.com/online/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Anime & Manga" , action="foro" , url="http://mega-foro.com/anime-manga/" , folder=True ) )
             itemlist.append( Item( channel=__channel__ , title="Música" , action="foro" , url="http://mega-foro.com/musica/" , folder=True ) )
         else:
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )

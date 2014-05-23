@@ -27,7 +27,7 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[cinemax_rs.py] mainlist")
-    item.url="http://cinemaxx.co/newvideos.html";
+    item.url="http://cinemaxx.ro/newvideos.html";
     return novedades(item)
 
 def novedades(item):

@@ -34,7 +34,8 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
         title_for_mega = "Pelisalacarta%20video"
         
-        url = "plugin://plugin.video.mega/?url="+page_url+"&action=stream"
+        url = "plugin://plugin.video.mega/?url="+page_url+"&action=stream_pelisalacarta"
+        
         video_urls.append(["[mega add-on]",url])
 
         #GENERA LIK MEGASTREAMER

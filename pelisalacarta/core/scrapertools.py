@@ -29,7 +29,7 @@ logger.info("[scrapertools.py] init")
 
 # True - Muestra las cabeceras HTTP en el log
 # False - No las muestra
-DEBUG_LEVEL = False
+DEBUG_LEVEL = True
 
 CACHE_ACTIVA = "0"  # Automatica
 CACHE_SIEMPRE = "1" # Cachear todo

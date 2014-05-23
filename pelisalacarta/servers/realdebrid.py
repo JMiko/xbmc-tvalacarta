@@ -54,7 +54,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         return listaDict['main_link'].encode('utf-8')
     else :
         if 'message' in listaDict :    
-            msg = listaDict['message']        
+            msg = listaDict['message'].encode('utf-8')        
             server_error = "REAL-DEBRID: " + msg
             logger.info(msg)
             return server_error

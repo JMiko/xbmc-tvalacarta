@@ -72,10 +72,10 @@ def mainlist(item):
     else:
         if login():
             itemlist.append( Item( channel=__channel__ , title="Películas" , action="foro" , url="http://megahd.me/peliculas/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Anime" , action="foro" , url="http://megahd.me/foro/anime/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Series" , action="foro" , url="http://megahd.me/foro/series/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Documentales y Deportes" , action="foro" , url="http://megahd.me/foro/documentales/" , folder=True ) )
-            itemlist.append( Item( channel=__channel__ , title="Zona Infantil" , action="foro" , url="http://megahd.me/foro/zona-infantil/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Anime" , action="foro" , url="http://megahd.me/anime/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Series" , action="foro" , url="http://megahd.me/series/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Documentales y Deportes" , action="foro" , url="http://megahd.me/documentales/" , folder=True ) )
+            itemlist.append( Item( channel=__channel__ , title="Zona Infantil" , action="foro" , url="http://megahd.me/zona-infantil/" , folder=True ) )
         else:
             itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
     return itemlist

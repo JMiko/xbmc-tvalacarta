@@ -27,7 +27,7 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("[xo.py] mainlist")
-    item.url="http://xo.ro/";
+    item.url="http://xo.ro/"; 
     return novedades(item)
 
 def novedades(item):
@@ -46,15 +46,20 @@ def novedades(item):
 	#Asta e pt situl xo.ro
     '''
     <div class="small-item">
-    <a href="/filme-online/Frances-Ha-1368">
-    <img src="http://xo.ro//uploads/Frances-Ha.jpg" width="120" height="140" alt="Frances Ha"> </a>
-    <a href="/filme-online/Frances-Ha-1368">Frances Ha (2013)</a>
-    </div>
+							<a title="Bad Country 2014" href="/filme-online/Bad-Country-2014-1794">
+					
+			<img src="http://xo.ro//uploads/bad-country-12564.jpg" width="120" height="140" alt="Bad Country 2014">			</a>
+		
+		#patron += '<a href="[^"]+">([^"]+)</a>'
+					<a title="Bad Country 2014" href="/filme-online/Bad-Country-2014-1794">Bad Country  (2013)</a>
+			.*?
+		</div>
     '''
     patron = '<div class="small-item".*?>[^<]+'
-    patron += '<a href="([^"]+)">[^<]+<img src="([^"]+)".*?>[^<]+'
-    patron += '<a href="[^"]+">([^"]+)</a>'
-   	
+    patron += '<a[^<]+href="([^"]+)">[^<]+<img src="([^"]+)".*?>[^<]+'
+    patron += '<a[^<]+href="[^"]+">([^"]+)</a>'    
+
+      	
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 	

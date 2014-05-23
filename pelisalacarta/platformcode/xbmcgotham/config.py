@@ -60,10 +60,17 @@ def get_localized_string(code):
     return dev
 
 def get_library_path():
+
     if get_system_platform() == "xbox":
-        return xbmc.translatePath(os.path.join(get_runtime_path(),"library"))
+        default = xbmc.translatePath(os.path.join(get_runtime_path(),"library"))
     else:
-        return xbmc.translatePath("special://profile/addon_data/plugin.video."+PLUGIN_NAME+"/library")
+        default = xbmc.translatePath("special://profile/addon_data/plugin.video."+PLUGIN_NAME+"/library")
+
+    value = get_setting("librarypath")
+    if value=="":
+        value=default
+
+    return value
 
 def get_temp_file(filename):
     return xbmc.translatePath( os.path.join( "special://temp/", filename ))

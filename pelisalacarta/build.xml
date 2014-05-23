@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.67"/>
-    <property name="oldversionboxee" value="10.2"/>
-    <property name="oldversiondate" value="22/02/2014"/>
+    <property name="oldversion" value="3.2.68"/>
+    <property name="oldversionboxee" value="10.3"/>
+    <property name="oldversiondate" value="02/03/2014"/>
 
-    <property name="version" value="3.2.68"/>
-    <property name="versionboxee" value="10.3"/>
-    <property name="versiondate" value="02/03/2014"/>
+    <property name="version" value="3.2.69"/>
+    <property name="versionboxee" value="10.4"/>
+    <property name="versiondate" value="02/05/2014"/>
     <property name="versionchanges" value="Weekly release"/>
     
     <property name="target" value="target"/>
@@ -171,11 +171,10 @@
         <copy todir="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
-				<exclude name="addon.xml"/>
 				<exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
 				<exclude name="default.tbn"/>
                 <exclude name="logging.conf"/>
+
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
 
@@ -184,18 +183,15 @@
                 <exclude name="test_channels.py"/>
                 <exclude name="test_connectors.py"/>
                 <exclude name="script_descargar_lista.py"/>
+                <exclude name="pelisalacarta/channels/rv_*"/>
 
                 <exclude name="pelisalacarta.py"/>
-				<exclude name="pelisalacarta.komodoproject"/>
-				<exclude name="channelselector-*.py"/>
+
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
 				<exclude name="**/*.pyo"/>
 				<exclude name="**/*.pyc"/>
-                <exclude name="default.tbn"/>
-                <exclude name="core/platform_name.py"/>
 
-                <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="resources/dreambox/**"/>
                 <exclude name="resources/plexmediaserver/**"/>
                 <exclude name="resources/images/posters/**"/>
@@ -209,6 +205,7 @@
                 <exclude name="platformcode/rss/**"/>
                 <exclude name="platformcode/wiimc/**"/>
                 <exclude name="platformcode/mediaserver/**"/>
+
                 <!--exclude name="platformcode/xbmc/**"/-->
                 <!--exclude name="platformcode/xbmcdharma/**"/-->
                 <exclude name="platformcode/xbmceden/**"/>
@@ -216,8 +213,8 @@
                 <exclude name="platformcode/xbmcgotham/**"/>
 			</fileset>
         </copy>
-        <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platformcode/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmcdharma/addon.xml" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/addon.xml" overwrite="true"/>
+        <copy file="platformcode/xbmcdharma/platform_name.py" tofile="${target}/xbmc-addon-dharma/plugin.video.pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
 	<!-- copy-xbmc-addon-eden ============================================================ -->
@@ -225,11 +222,8 @@
         <copy todir="${target}/xbmc-addon-eden/plugin.video.pelisalacarta">
             <fileset dir=".">
 				<exclude name="target/**"/>
-				<exclude name="addon.xml"/>
 				<exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
                 <exclude name="default.tbn"/>
-                <exclude name="core/platform_name.py"/>
                 <exclude name="logging.conf"/>
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
@@ -241,7 +235,6 @@
                 <exclude name="script_descargar_lista.py"/>
 
 				<exclude name="pelisalacarta.py"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
 				<exclude name="**/.*"/>
 				<exclude name="**/.*/**"/>
@@ -271,8 +264,8 @@
                 <exclude name="platformcode/xbmcgotham/**"/>
 			</fileset>
         </copy>
-        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmceden/addon.xml" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/addon.xml" overwrite="true"/>
+        <copy file="platformcode/xbmceden/platform_name.py" tofile="${target}/xbmc-addon-eden/plugin.video.pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
     <!-- copy-xbmc-addon-frodo ============================================================ -->
@@ -326,8 +319,8 @@
                 <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
-        <copy file="platformcode/xbmcfrodo/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platformcode/xbmcfrodo/platform_name.py" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmcfrodo/addon.xml" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/addon.xml" overwrite="true"/>
+        <copy file="platformcode/xbmcfrodo/platform_name.py" tofile="${target}/xbmc-addon-frodo/plugin.video.pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
     <!-- copy-xbmc-addon-gotham ============================================================ -->
@@ -381,8 +374,8 @@
                 <!--exclude name="platformcode/xbmcgotham/**"/-->
             </fileset>
         </copy>
-        <copy file="platformcode/xbmcgotham/addon.xml" tofile="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta/addon.xml"/>
-        <copy file="platformcode/xbmcgotham/platform_name.py" tofile="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/xbmcgotham/addon.xml" tofile="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta/addon.xml" overwrite="true"/>
+        <copy file="platformcode/xbmcgotham/platform_name.py" tofile="${target}/xbmc-addon-gotham/plugin.video.pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
 	<!-- copy-xbmc-plugin ============================================================ -->
@@ -392,7 +385,6 @@
 				<exclude name="target/**"/>
 				<exclude name="addon.xml"/>
 				<exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
                 <exclude name="logging.conf"/>
                 <exclude name="pelisalacarta.log"/>
                 <exclude name="pelisalacarta-version.xml"/>
@@ -404,7 +396,6 @@
                 <exclude name="script_descargar_lista.py"/>
 
 				<exclude name="pelisalacarta.py"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
@@ -436,8 +427,8 @@
                 <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
-        <copy file="platformcode/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py"/>
-        <copy file="platformcode/xbmc/settings.xml" tofile="${target}/xbmc-plugin/pelisalacarta/resources/settings.xml"/>
+        <copy file="platformcode/xbmc/platform_name.py" tofile="${target}/xbmc-plugin/pelisalacarta/core/platform_name.py" overwrite="true"/>
+        <copy file="platformcode/xbmc/settings.xml" tofile="${target}/xbmc-plugin/pelisalacarta/resources/settings.xml" overwrite="true"/>
     </target>
 
     <target name="copy-boxee" description="Copy Boxee files for packaging">
@@ -445,12 +436,10 @@
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
 				<exclude name="pelisalacarta-version.xml"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta.py"/>
-				<exclude name="upload.sh"/>
 				<exclude name="addon.xml"/>
 				<exclude name="logging.conf"/>
 				<exclude name="changelog.txt"/>
@@ -468,11 +457,7 @@
                 <exclude name="test_connectors.py"/>
                 <exclude name="script_descargar_lista.py"/>
 
-                <exclude name="fanart-new.jpg"/>
-                <exclude name="icon-old.png"/>
-                <exclude name="TODO.txt"/>
                 <exclude name="version-pelisalacarta.xml"/>
-                <exclude name="core/platform_name.py"/>
 
                 <!--exclude name="platformcode/boxee/**"/-->
                 <exclude name="platformcode/developer/**"/>
@@ -497,9 +482,9 @@
                 <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
-        <copy file="platformcode/boxee/platform_name.py" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/core/platform_name.py"/>
-        <copy file="platformcode/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/descriptor.xml"/>
-        <copy file="platformcode/boxee/settings.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/resources/settings.xml"/>
+        <copy file="platformcode/boxee/platform_name.py" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/core/platform_name.py" overwrite="true"/>
+        <copy file="platformcode/boxee/descriptor.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/descriptor.xml" overwrite="true"/>
+        <copy file="platformcode/boxee/settings.xml" tofile="${target}/boxee/info.mimediacenter.pelisalacarta/resources/settings.xml" overwrite="true"/>
     </target>
 
 	<!-- copy-wiimc ============================================================ -->
@@ -509,7 +494,6 @@
                 <exclude name="target/**"/>
 				<exclude name="addon.xml"/>
                 <exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta-version.xml"/>
 
@@ -521,7 +505,6 @@
 
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
                 <exclude name="core/platform_name.py"/>
                 <exclude name="**/.*"/>
@@ -550,7 +533,7 @@
                 <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
-        <copy file="platformcode/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/wiimc/platform_name.py" tofile="${target}/wiimc/pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
 	<!-- copy-mediaserver ============================================================ -->
@@ -560,7 +543,6 @@
                 <exclude name="target/**"/>
 				<exclude name="addon.xml"/>
                 <exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta-version.xml"/>
 
@@ -572,7 +554,6 @@
 
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
                 <exclude name="core/platform_name.py"/>
                 <exclude name="**/.*"/>
@@ -601,7 +582,7 @@
                 <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
-        <copy file="platformcode/mediaserver/platform_name.py" tofile="${target}/mediaserver/pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/mediaserver/platform_name.py" tofile="${target}/mediaserver/pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
 	<!-- copy-rss ============================================================ -->
@@ -611,7 +592,6 @@
                 <exclude name="target/**"/>
 				<exclude name="addon.xml"/>
                 <exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
 				<exclude name="pelisalacarta.log"/>
 				<exclude name="pelisalacarta-version.xml"/>
 
@@ -623,7 +603,6 @@
 
                 <exclude name="fanart.jpg"/>
                 <exclude name="icon.png"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
                 <exclude name="core/platform_name.py"/>
                 <exclude name="**/.*"/>
@@ -652,7 +631,7 @@
                 <exclude name="platformcode/xbmcgotham/**"/>
             </fileset>
         </copy>
-        <copy file="platformcode/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py"/>
+        <copy file="platformcode/rss/platform_name.py" tofile="${target}/rss/pelisalacarta/core/platform_name.py" overwrite="true"/>
     </target>
 
 	<!-- copy-plexmediaserver ============================================================ -->
@@ -711,10 +690,8 @@
                 <exclude name="__init__.py"/>
                 <exclude name="core/logger.py"/>
                 <exclude name="core/config.py"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
 				<exclude name="logging.conf"/>
-				<exclude name="upload.sh"/>
                 <exclude name="pelisalacarta/channels/rv_*"/>
             </fileset>
         </copy>
@@ -730,8 +707,6 @@
             <fileset dir=".">
 				<exclude name="target/**"/>
 				<exclude name="build.xml"/>
-				<exclude name="upload.sh"/>
-				<exclude name="pelisalacarta.komodoproject"/>
 				<exclude name="channelselector-*.py"/>
 				<exclude name="addon*.xml"/>
 				<exclude name="**/.*"/>

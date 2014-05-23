@@ -25,82 +25,37 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[shurweb.py] getmainlist")
+    logger.info("pelisalacarta.channels.shurweb getmainlist")
     itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Series"                   , action="letras"       , url="http://www.shurweb.org/series/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Peliculas"                , action="menupeliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Series"                   , action="menuseries"   , url="http://www.shurweb.org/shurseries/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    #itemlist.append( Item(channel=__channel__, title="Animacion"                , action="series"       , url="http://www.shurweb.org/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="peliculas"    , url="http://www.shurweb.org/videoscategory/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    #itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
+    itemlist.append( Item(channel=__channel__, title="Animacion"                , action="series"       , url="http://www.shurweb.org/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="peliculas"    , url="http://www.shurweb.org/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
     return itemlist
 
 def menupeliculas(item):
-    logger.info("[shurweb.py] menupeliculas")
+    logger.info("pelisalacarta.channels.shurweb menupeliculas")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"                    , action="novedades_peliculas"    , url="http://www.shurweb.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Películas - A-Z"              , action="menupelisaz", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Decadas"          , action="menupelisanos", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Películas - Animación"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
-    return itemlist
-
-def menuseries(item):
-    logger.info("[shurweb.py] menuseries")
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Últimos episodios"        , action="novedades_series"    , url="http://www.shurweb.org/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Todas las series"         , action="series"   , url="http://www.shurweb.org/shurseries/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
-    return itemlist
-
-def menupelisaz(item):
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="A"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/a/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="B"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/b/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="C"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/c/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="D"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/d/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="E"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/e/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="F"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/f/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="G"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/g/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="H"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/h/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="I"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/i/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="J"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/j/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="K"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/k/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="L"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/l/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="M"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/m/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="N"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/n/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="O"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/o/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="P"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/p/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Q"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/q/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="R"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/r/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="S"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="T"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/t/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="U"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/u/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="V"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/v/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="W"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/w/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="X"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/x/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Y"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/y/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Z"        , action="peliculas_ordenadas"   , url="http://www.shurweb.org/lista-de-peliculas/z/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    return itemlist
-
-def menupelisanos(item):
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="10's"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/10s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="00's"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/00s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="90's"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/90s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="80's"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/80s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="70's"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/70s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="60's"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/60s/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Antiguas"        , action="peliculas"   , url="http://www.shurweb.org/videoscategory/antiguas/",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Todas"     , action="peliculas", url="http://www.shurweb.org/peliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Acción"    , action="peliculas", url="http://www.shurweb.org/peliculas/accion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="00's"      , action="peliculas", url="http://www.shurweb.org/peliculas/00s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="90's"      , action="peliculas", url="http://www.shurweb.org/peliculas/90s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="80's"      , action="peliculas", url="http://www.shurweb.org/peliculas/80s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="70's"      , action="peliculas", url="http://www.shurweb.org/peliculas/70s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="60's"      , action="peliculas", url="http://www.shurweb.org/peliculas/60s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Animación" , action="peliculas", url="http://www.shurweb.org/peliculas/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
+    itemlist.append( Item(channel=__channel__, title="Antiguas"  , action="peliculas", url="http://www.shurweb.org/peliculas/antiguas/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto,categoria=""):
-    logger.info("[shurweb.py] "+item.url+" search "+texto)
+    logger.info("pelisalacarta.channels.shurweb "+item.url+" search "+texto)
     itemlist = []
-    url = item.url
+
     texto = texto.replace(" ","+")
-    logger.info("categoria: "+categoria+" url: "+url)
     try:
-        item.url = "http://www.shurweb.org/?s=%s"
-        item.url = item.url % texto
+        item.url = "http://www.shurweb.org/?s="+texto
         itemlist.extend(buscador(item))
         return itemlist
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
@@ -111,89 +66,94 @@ def search(item,texto,categoria=""):
         return []
 
 def buscador(item,paginacion=True):
-    logger.info("[shurweb.py] peliculas")
-    url = item.url
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    # Extrae las entradas
-    patronvideos = '<a href="([^"]+)" style="display:none;" rel="nofollow"><img src="([^"]+)" width="100" height="144" border="0" alt="" /><br/><br/>[^<]+<b>([^<]+)</b></a>[^<]+<a href="([^"]+)">([^#]+)#888"><b>([^<]+)</b>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
+    logger.info("pelisalacarta.channels.shurweb peliculas")
     itemlist = []
-    for match in matches:
-        if match[5] == 'Peliculas' or match[5] == 'Series':
-            scrapedtitle =  match[2]
-            scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-            fulltitle = scrapedtitle
-            scrapedplot = ""
-            scrapedurl = match[3]
-            scrapedthumbnail = match[1]
-            if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , context="4|5") )
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    
+    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)"[^<]+<img width="\d+" height="\d+" src="([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for scrapedurl, scrapedtitle, scrapedthumbnail in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        plot = ""
+        url = scrapedurl
+        thumbnail = scrapedthumbnail
+        if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        
+        if url.startswith("http://www.shurweb.org/pelicula/"):
+            itemlist.append( Item(channel=__channel__, action='findvideos', title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot) )
+        else:
+            itemlist.append( Item(channel=__channel__, action='episodios', title=title , show=title , url=url , thumbnail=thumbnail , plot=plot) )
 
     return itemlist
 
-def series(item,paginacion=True):
-    logger.info("[shurweb.py] series")
-    url = item.url
-
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    patron  = '<li class="clearfix"[^<]+'
-    patron += '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)"[^<]+'
-    patron += '<img width="[^"]+" height="[^"]+" src="([^"]+)"'
-
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
+def letras(item):
+    logger.info("pelisalacarta.channels.shurweb letras")
     itemlist = []
 
-    for url,title,thumbnail in matches:
-        scrapedtitle = title.replace("&amp;","&")
-        fulltitle = scrapedtitle
-        scrapedplot = ""
-        scrapedurl = url
-        scrapedthumbnail = thumbnail
-        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='episodios', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , viewmode="movie", show=scrapedtitle, context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
-    try:    
-#<a class="next page-numbers" href="http://www.shurweb.org/shurseries/page/2/">»</a>
-#<div class="pagination"><ul class='page-numbers'><li><a class="prev page-numbers" href="http://www.shurweb.org/shurseries/page/1/">«</a></li><li><a class='page-numbers' href='http://www.shurweb.org/shurseries/page/1/'>1</a></li><li><span class='page-numbers current'>2</span></li><li><a class='page-numbers' href='http://www.shurweb.org/shurseries/page/3/'>3</a></li><li><a class='page-numbers' href='http://www.shurweb.org/shurseries/page/4/'>4</a></li><li><span class="page-numbers dots">&hellip;</span></li><li><a class='page-numbers' href='http://www.shurweb.org/shurseries/page/16/'>16</a></li><li><a class="next page-numbers" href="http://www.shurweb.org/shurseries/page/3/">»</a>
-        next_page_url = scrapertools.get_match(data,'<a class="next page-numbers" href="([^<]+)">»</a>')
-        itemlist.append( Item(channel=__channel__, title=">> Página siguiente", action="series", url=urlparse.urljoin(item.url,next_page_url),fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    except:
-        pass
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.find_single_match(data,'<div id="alphaList" align="center"><ul(.*?)</ul>')
+    
+    patronvideos = '<li><a href="([^"]+)" rel="nofollow">([^<]+)</a></li>'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for scrapedurl, scrapedtitle in matches:
+        title = scrapedtitle
+        plot = ""
+        url = scrapedurl
+        thumbnail = ""
+        if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        
+        itemlist.append( Item(channel=__channel__, action='series', title=title , url=url , thumbnail=thumbnail , plot=plot) )
+
+    return itemlist
+
+def series(item):
+    logger.info("pelisalacarta.channels.shurweb series")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)"[^<]+<img src="([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    for scrapedurl, scrapedtitle, scrapedthumbnail in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        plot = ""
+        url = scrapedurl
+        thumbnail = scrapedthumbnail
+        if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        
+        itemlist.append( Item(channel=__channel__, action='episodios', title=title , show=title , url=url , thumbnail=thumbnail , plot=plot) )
+
+    next_page_url = scrapertools.find_single_match(data,'<li><a class="next page-numbers" href="([^"]+)">')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action='series', title=">> Página siguiente" , url=next_page_url , thumbnail="" , plot=plot) )
 
     return itemlist
 
 def episodios(item):
-    logger.info("[shurweb.py] episodios")
-    url = item.url
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    item = detalle_programa(item,data)
-    # Extrae las entradas
-    '''
-    <li>
-    <div class="video">
-    <a class="video_title" href="http://www.shurweb.org/videos/alcatraz-1x10/">Alcatraz 1x10</a>
-    </div>
-    </li>
-    '''
-    patron  = '<li[^<]+'
-    patron += '<div class="video"[^<]+'
-    patron += '<a class="video_title" href="([^"]+)">([^<]+)</a>'
+    logger.info("pelisalacarta.channels.shurweb episodios")
+    itemlist=[]
 
+    data = scrapertools.cachePage(item.url)
+    item.plot = scrapertools.find_single_match(data,'<div class="col-sm-10">(.*?)<script')
+    item.plot = scrapertools.htmlclean(item.plot)
+
+    patron  = '<div class="video"[^<]+<a class="video_title" href="([^"]+)">([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
-    itemlist = []
-    for url,title in matches:
-        scrapedtitle = title
-        fulltitle = scrapedtitle
-        scrapedplot = item.plot
-        scrapedurl = url
-        scrapedthumbnail = item.thumbnail
-        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , show=item.show, context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg", viewmode="movie_with_plot") )
+
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle
+        url = scrapedurl
+        plot = item.plot
+        thumbnail = ""
+        if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=title , show=item.show , url=url , thumbnail=thumbnail , plot=plot , extra=scrapedtitle ,fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg", viewmode="movie_with_plot") )
 
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios", show=item.show) )
@@ -201,162 +161,48 @@ def episodios(item):
 
     return itemlist
 
-def detalle_programa(item,data=""):
-    logger.info("[shurweb.py] detalle_programa")
-
-    # Descarga la página
-    url = item.url
-    if data=="":
-        data = scrapertools.cache_page(url)
-
-    # Obtiene el thumbnail
-    try:
-        item.thumbnail = scrapertools.get_match(data,'<div class="serie_thumb"><img src="([^"]+)"/>')
-    except:
-        pass
-
-    plot = scrapertools.get_match(data,'<div class="synopsis clearfix">(.*?)</div>')
-    plot = re.compile("<strong>Idiom[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
-    plot = re.compile("<strong>Calid[^<]+</strong>[^<]+<br />",re.DOTALL).sub("",plot)
-    plot = re.compile("Sinopsis\:",re.DOTALL).sub("",plot)
-    item.plot = scrapertools.htmlclean(plot).strip()
-
-    try:
-        item.title = scrapertools.get_match(data,'<h1 class="cat_head">([^<]+)</h1>').strip()
-    except:
-        pass
-
-    return item
-#<div id="pelis"><ul class="categories_list"><li class="clearfix"> <a class="video_thumb" href="http://www.shurweb.org/pelicula/malavita-vose/" rel="bookmark" title="Malavita (VOSE)"> <img width="123" height="100" src="http://www.shurweb.org/wp-content/uploads/2014/02/ytvgrt6fygh.png" class=" wp-post-image" alt="ytvgrt6fygh"/> <span class="time"> 111min </span> </a><p class="title"><a href="http://www.shurweb.org/pelicula/malavita-vose/" rel="bookmark" title="Malavita (VOSE)">Malavita (VOSE)</a></p></li><li class="clearfix"> <a class="video_thumb" href="http://www.shurweb.org/pelicula/miedo-azul/" rel="bookmark" title="Miedo azul"> <img width="123" height="100" src="http://www.shurweb.org/wp-content/uploads/2014/02/azul.png" class=" wp-post-image" alt="azul"/> <span class="time"> 95min </span> </a><p class="title"><a href="http://www.shurweb.org/pelicula/miedo-azul/" rel="bookmark" title="Miedo azul">Miedo azul</a></p></li><li class="clearfix"> <a class="video_thumb" href="http://www.s
-
-def novedades_peliculas(item):
-    logger.info("[shurweb.py] novedades_peliculas")
-    url = item.url
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    data = scrapertools.get_match(data,'<div id="pelis"><ul class="categories_list">(.*?)</ul>')
-
-    return peliculas(item,data=data)
-
-def novedades_series(item):
-    logger.info("[shurweb.py] novedades_series")
-    url = item.url
-    # Descarga la página
-    data = scrapertools.cachePage(url)
-    data = scrapertools.get_match(data,'<div id="series"><ul class="categories_list">(.*?)</ul')
-
-    return peliculas(item,data=data)
-
-def peliculas(item,paginacion=True,data=None):
-    logger.info("[shurweb.py] peliculas")
-    url = item.url
-
-    # Descarga la página
-    if data is None:
-        data = scrapertools.cachePage(url)
-
+def peliculas(item):
+    logger.info("pelisalacarta.channels.shurweb peliculas")
     itemlist = []
 
-    '''
-    <li class="clearfix">
-    <a class="video_thumb" href="http://www.shurweb.org/videos/elysium/" rel="bookmark" title="Elysium">
-    <img width="123" height="100" src="http://www.shurweb.org/wp-content/uploads/2013/11/elysium-movie-1920x1440.jpg" class=" wp-post-image" alt="elysium-movie-1920x1440"/>
-    <span class="time"> 109min </span>
-    </a>
-    <p class="title"><a href="http://www.shurweb.org/videos/elysium/" rel="bookmark" title="Elysium">Elysium</a></p>
-     
-    <p></p>
-    </li>
-    '''
-    # Extrae las entradas
-    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)">.*?<img.*?src="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedtitle =  match[1]
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        fulltitle = scrapedtitle
-        scrapedplot = ""
-        scrapedurl = match[0]
-        scrapedthumbnail = match[2]
-        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , viewmode="movie", context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
-
-    # Formato alternativo (pagina novedades)
-    patronvideos  = '<a class="video_thumb" href="([^"]+)"[^<]+'
-    patronvideos += '<img src="([^"]+)" alt="([^"]+)"'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for match in matches:
-        scrapedtitle =  match[2]
-        scrapedtitle = scrapertools.entityunescape(scrapedtitle)
-        fulltitle = scrapedtitle
-        scrapedplot = ""
-        scrapedurl = match[0]
-        scrapedthumbnail = match[1]
-        if DEBUG: logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action='findvideos', title=scrapedtitle , fulltitle=fulltitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , extra=scrapedtitle , viewmode="movie", context="4|5",fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
-
-#</span><a href='http://www.shurweb.org/peliculas/page/5/' class='nextpostslink'>»</a> 
-#<span class='extend'>...</span><a href='http://www.shurweb.org/peliculas/80s/page/11/' class='nextpostslink'>
-#<span class='extend'>...</span><a href='http://www.shurweb.org/peliculas/80s/page/2/' class='nextpostslink'>»</a>
-
-    try:    
-        next_page_url = scrapertools.get_match(data,'<span class=\'extend\'>\.\.\.</span><a href=\'([^<]+)\' class=\'nextpostslink\'')
-#<span class="i_next fr" ><a href="([^"]+)" >Ver M')
-        itemlist.append( Item(channel=__channel__, title=">> Página siguiente", action="peliculas", url=urlparse.urljoin(item.url,next_page_url),fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    except:
-        pass
-
-#<div class="pagination"><div class='wp-pagenavi'> <span class='current'>1</span><a href='http://www.shurweb.org/documentales/page/2/' class='page larger'>2</a><a href='http://www.shurweb.org/documentales/page/3/' class='page larger'>3</a><a href='http://www.shurweb.org/documentales/page/4/' class='page larger'>4</a><a href='http://www.shurweb.org/documentales/page/5/' class='page larger'>5</a><a href='http://www.shurweb.org/documentales/page/2/' class='nextpostslink'>»</a></div></div></div> <div id="sidebar"><div class="widget"><li class="cat-item cat-item-2620"><a 
-
-    try:    
-        next_page_url = scrapertools.get_match(data,'class=\'page larger\'>.</a><a href=\'([^<]+)\' class=\'nextpostslink\'')
-#<span class="i_next fr" ><a href="([^"]+)" >Ver M')
-        itemlist.append( Item(channel=__channel__, title=">> Página siguiente", action="peliculas", url=urlparse.urljoin(item.url,next_page_url),fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    except:
-        pass
-
-    return itemlist
-
-def peliculas_ordenadas(item):
-    itemlist = peliculas(item)
-    itemlist.sort(key=lambda item: item.title.lower().strip())
-    return itemlist
-
-def findvideos(item):
-    logger.info("[shurweb.py] findvideos")
-    itemlist=[]
-    
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    
+    patronvideos = '<a class="video_thumb" href="([^"]+)" rel="bookmark" title="([^"]+)"[^<]+<img width="\d+" height="\d+" src="([^"]+)"'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
-    from servers import servertools
-    itemlist.extend(servertools.find_video_items(data=data))
-    for videoitem in itemlist:
-        videoitem.channel=__channel__
-        videoitem.action="play"
-        videoitem.folder=False
-        videoitem.title = "Vídeo en "+videoitem.server
-        videoitem.fulltitle = item.fulltitle
-        videoitem.plot = item.plot
-        videoitem.thumbnail = item.thumbnail
-        videoitem.viewmode = "movie_with_plot"
+    for scrapedurl, scrapedtitle, scrapedthumbnail in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        plot = ""
+        url = scrapedurl
+        thumbnail = scrapedthumbnail
+        if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")        
+        itemlist.append( Item(channel=__channel__, action='findvideos', title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot) )
+
+    next_page_url = scrapertools.find_single_match(data,'<li><a class="nextpostslink" href="([^"]+)">')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action='peliculas', title=">> Página siguiente" , url=next_page_url , thumbnail="" , plot=plot) )
 
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     from servers import servertools
-    # mainlist
-    mainlist_items = mainlist(Item())
-    menupeliculas_items = menupeliculas(mainlist_items[0])
-    peliculas_items = peliculas(menupeliculas_items[0])
-    bien = False
+
+    item = Item(channel=__channel__, title="Peliculas", action="peliculas", url="http://www.shurweb.org/peliculas/")
+    peliculas_items = peliculas(item)
+    if len(peliculas_items)==0:
+        return False
+
+    item = Item(channel=__channel__, title="Series", action="series", url="http://www.shurweb.org/series/b/")
+    series_items = series(item)
+    if len(series_items)==0:
+        return False
+
     for pelicula_item in peliculas_items:
         mirrors = servertools.find_video_items(item=pelicula_item)
         if len(mirrors)>0:
             bien = True
             break
 
-    return bien
+    return False

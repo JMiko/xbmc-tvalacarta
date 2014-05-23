@@ -91,6 +91,7 @@ def foro(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle in matches:
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         title = ">> Foro "+scrapedtitle
         url = urlparse.urljoin(item.url,scrapedurl)
         #http://mocosoftx.com/foro/fotos-hentai/?PHPSESSID=nflddqf9nvbm2dd92
