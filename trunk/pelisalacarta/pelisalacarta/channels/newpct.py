@@ -30,8 +30,8 @@ def mainlist(item):
     logger.info("[newpct.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas", url="http://www.newpct.com/include.inc/load.ajax/load.topbar.php?userName=", extra="Peliculas" ))
-    itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"   , url="http://www.newpct.com/include.inc/load.ajax/load.topbar.php?userName=", extra="Series" ))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Películas", url="http://www.newpct1.com/include.inc/load.ajax/load.topbar.php?userName=", extra="Peliculas" ))
+    itemlist.append( Item(channel=__channel__, action="submenu" , title="Series"   , url="http://www.newpct1.com/include.inc/load.ajax/load.topbar.php?userName=", extra="Series" ))
     #itemlist.append( Item(channel=__channel__, action="search"    , title="Buscar" ))
   
     return itemlist
@@ -58,17 +58,17 @@ def submenu(item):
     data = scrapertools.cache_page(item.url)
 
     '''
-    <li><a href="#" rel="nofollow" class="dir" title="Descargar Peliculas Gratis">Peliculas<img src="http://www.newpct.com/sections.inc/top.column.inc/topmenu.inc/images/arows.png" alt="Descargas Torrent"></a>
+    <li><a href="#" rel="nofollow" class="dir" title="Descargar Peliculas Gratis">Peliculas<img src="http://www.newpct1.com/sections.inc/top.column.inc/topmenu.inc/images/arows.png" alt="Descargas Torrent"></a>
     <ul>
-    <li><a href="http://www.newpct.com/peliculas-castellano/peliculas-rip/" title="Descargar Peliculas en Castellano DVDRIP" >Peliculas DVDRIP-BRRIP Castellano</a></li>
-    <li><a href="http://www.newpct.com/peliculas-latino/" title="Descargar Peliculas Latino Gratis">Peliculas Latino</a></li>
-    <li><a href="http://www.newpct.com/peliculas-castellano/estrenos-de-cine/" title="Descargar Estrenos de Cine Gratis">Estrenos de Cine Castellano</a></li>
-    <li><a href="http://www.newpct.com/cine-alta-definicion-hd/" title="Descargar Peliculas en HD, Alta Definicion Gratis">Peliculas Alta Definicion HD</a></li>
-    <li><a href="http://www.newpct.com/peliculas-en-3d-hd/" title="Descargar Peliculas en 3D HD" >Peliculas en 3D HD</a></li>
-    <li><a href="http://www.newpct.com/peliculas-castellano/peliculas-dvd/" title="Descargar Peliculas DVD FULL">Peliculas DVDFULL</a></li>
-    <li><a href="http://www.newpct.com/peliculas-vo/" title="Descargar Peliculas en V.O Subtituladas">Peliculas V.O.Subtituladas</a></li>
-    <li><a href="http://www.newpct.com/anime/" title="Descargar Series y Peliculas Anime Gratis">Anime</a></li>
-    <li><a href="http://www.newpct.com/documentales/" title="Descargar Documentales Gratis">Documentales</a></li>
+    <li><a href="http://www.newpct1.com/peliculas-castellano/peliculas-rip/" title="Descargar Peliculas en Castellano DVDRIP" >Peliculas DVDRIP-BRRIP Castellano</a></li>
+    <li><a href="http://www.newpct1.com/peliculas-latino/" title="Descargar Peliculas Latino Gratis">Peliculas Latino</a></li>
+    <li><a href="http://www.newpct1.com/peliculas-castellano/estrenos-de-cine/" title="Descargar Estrenos de Cine Gratis">Estrenos de Cine Castellano</a></li>
+    <li><a href="http://www.newpct1.com/cine-alta-definicion-hd/" title="Descargar Peliculas en HD, Alta Definicion Gratis">Peliculas Alta Definicion HD</a></li>
+    <li><a href="http://www.newpct1.com/peliculas-en-3d-hd/" title="Descargar Peliculas en 3D HD" >Peliculas en 3D HD</a></li>
+    <li><a href="http://www.newpct1.com/peliculas-castellano/peliculas-dvd/" title="Descargar Peliculas DVD FULL">Peliculas DVDFULL</a></li>
+    <li><a href="http://www.newpct1.com/peliculas-vo/" title="Descargar Peliculas en V.O Subtituladas">Peliculas V.O.Subtituladas</a></li>
+    <li><a href="http://www.newpct1.com/anime/" title="Descargar Series y Peliculas Anime Gratis">Anime</a></li>
+    <li><a href="http://www.newpct1.com/documentales/" title="Descargar Documentales Gratis">Documentales</a></li>
     </ul>
     </li>
     '''
@@ -96,7 +96,7 @@ def listado(item):
     
     '''
     <li>
-    <a href='http://www.newpct.com/descargar-pelicula/la-pequena-venecia/'>
+    <a href='http://www.newpct1.com/descargar-pelicula/la-pequena-venecia/'>
     <div class='boxgrid captionb'>
     <img src='http://images.newpct.com/banco_de_imagenes/destacados/038707/la-pequeña-venecia--dvdrip--ac3-5-1-español-castellano--2012-.jpg'  alt='Descargar Peliculas Castellano &raquo; Películas RIP La Pequeña Venecia [DVDrip][AC3 5.1 Español Castellano][2012]' />
     <div class='cover boxcaption'>
@@ -112,9 +112,9 @@ def listado(item):
     <div id='bot-desc'>
     <div id='tinfo'>
     <a class='youtube' href='#' rel='gx9EKDC0UFQ' title='Ver Trailer' alt='Ver Trailer'>
-    <img style='width:25px;' src='http://www.newpct.com/images.inc/images/playm2.gif'></a>
+    <img style='width:25px;' src='http://www.newpct1.com/images.inc/images/playm2.gif'></a>
     </div>
-    <div id='tdescargar' ><a class='atdescargar' href='http://www.newpct.com/descargar-pelicula/la-pequena-venecia/'>DESCARGAR</a></div>
+    <div id='tdescargar' ><a class='atdescargar' href='http://www.newpct1.com/descargar-pelicula/la-pequena-venecia/'>DESCARGAR</a></div>
     </div>
     </li>
     '''
@@ -143,13 +143,13 @@ def listado(item):
     # Página siguiente
     '''
     GET /include.inc/ajax.php/orderCategory.php?type=todo&leter=&sql=SELECT+DISTINCT+++%09%09%09%09%09%09torrentID%2C+++%09%09%09%09%09%09torrentCategoryID%2C+++%09%09%09%09%09%09torrentCategoryIDR%2C+++%09%09%09%09%09%09torrentImageID%2C+++%09%09%09%09%09%09torrentName%2C+++%09%09%09%09%09%09guid%2C+++%09%09%09%09%09%09torrentShortName%2C++%09%09%09%09%09%09torrentLanguage%2C++%09%09%09%09%09%09torrentSize%2C++%09%09%09%09%09%09calidad+as+calidad_%2C++%09%09%09%09%09%09torrentDescription%2C++%09%09%09%09%09%09torrentViews%2C++%09%09%09%09%09%09rating%2C++%09%09%09%09%09%09n_votos%2C++%09%09%09%09%09%09vistas_hoy%2C++%09%09%09%09%09%09vistas_ayer%2C++%09%09%09%09%09%09vistas_semana%2C++%09%09%09%09%09%09vistas_mes++%09%09%09%09++FROM+torrentsFiles+as+t+WHERE++(torrentStatus+%3D+1+OR+torrentStatus+%3D+2)++AND+(torrentCategoryID+IN+(1537%2C+758%2C+1105%2C+760%2C+1225))++++ORDER+BY+torrentDateAdded++DESC++LIMIT+0%2C+50&pag=3&tot=&ban=3&cate=1225 HTTP/1.1
-    Host: www.newpct.com
+    Host: www.newpct1.com
     User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:19.0) Gecko/20100101 Firefox/19.0
     Accept: */*
     Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
     Accept-Encoding: gzip, deflate
     X-Requested-With: XMLHttpRequest
-    Referer: http://www.newpct.com/peliculas-castellano/peliculas-rip/
+    Referer: http://www.newpct1.com/peliculas-castellano/peliculas-rip/
     Cookie: adbooth_popunder=5%7CSat%2C%2009%20Mar%202013%2018%3A23%3A22%20GMT
     Connection: keep-alive
     '''
@@ -193,13 +193,13 @@ def listado(item):
             };
         //alert(type+leter);
         
-        $('#content-category').html('<div style="margin:100px auto;width:100px;height:100px;"><img src="http://www.newpct.com/images.inc/images/ajax-loader.gif"/></div>');
+        $('#content-category').html('<div style="margin:100px auto;width:100px;height:100px;"><img src="http://www.newpct1.com/images.inc/images/ajax-loader.gif"/></div>');
             var page = $(this).attr('data');        
             var dataString = 'page='+page;
             
          $.ajax({
               type: "GET",
-              url:   'http://www.newpct.com/include.inc/ajax.php/orderCategory.php',
+              url:   'http://www.newpct1.com/include.inc/ajax.php/orderCategory.php',
               data:  parametros,
               success: function(data) {
              
@@ -231,7 +231,7 @@ def listado(item):
     logger.info("param_cate="+param_cate)
     base_url = scrapertools.get_match(bloque,"url\s*\:\s*'([^']+)'")
     logger.info("base_url="+base_url)
-    #http://www.newpct.com/include.inc/ajax.php/orderCategory.php?type=todo&leter=&sql=SELECT+DISTINCT+++%09%09%09%09%09%09torrentID%2C+++%09%09%09%09%09%09torrentCategoryID%2C+++%09%09%09%09%09%09torrentCategoryIDR%2C+++%09%09%09%09%09%09torrentImageID%2C+++%09%09%09%09%09%09torrentName%2C+++%09%09%09%09%09%09guid%2C+++%09%09%09%09%09%09torrentShortName%2C++%09%09%09%09%09%09torrentLanguage%2C++%09%09%09%09%09%09torrentSize%2C++%09%09%09%09%09%09calidad+as+calidad_%2C++%09%09%09%09%09%09torrentDescription%2C++%09%09%09%09%09%09torrentViews%2C++%09%09%09%09%09%09rating%2C++%09%09%09%09%09%09n_votos%2C++%09%09%09%09%09%09vistas_hoy%2C++%09%09%09%09%09%09vistas_ayer%2C++%09%09%09%09%09%09vistas_semana%2C++%09%09%09%09%09%09vistas_mes++%09%09%09%09++FROM+torrentsFiles+as+t+WHERE++(torrentStatus+%3D+1+OR+torrentStatus+%3D+2)++AND+(torrentCategoryID+IN+(1537%2C+758%2C+1105%2C+760%2C+1225))++++ORDER+BY+torrentDateAdded++DESC++LIMIT+0%2C+50&pag=3&tot=&ban=3&cate=1225
+    #http://www.newpct1.com/include.inc/ajax.php/orderCategory.php?type=todo&leter=&sql=SELECT+DISTINCT+++%09%09%09%09%09%09torrentID%2C+++%09%09%09%09%09%09torrentCategoryID%2C+++%09%09%09%09%09%09torrentCategoryIDR%2C+++%09%09%09%09%09%09torrentImageID%2C+++%09%09%09%09%09%09torrentName%2C+++%09%09%09%09%09%09guid%2C+++%09%09%09%09%09%09torrentShortName%2C++%09%09%09%09%09%09torrentLanguage%2C++%09%09%09%09%09%09torrentSize%2C++%09%09%09%09%09%09calidad+as+calidad_%2C++%09%09%09%09%09%09torrentDescription%2C++%09%09%09%09%09%09torrentViews%2C++%09%09%09%09%09%09rating%2C++%09%09%09%09%09%09n_votos%2C++%09%09%09%09%09%09vistas_hoy%2C++%09%09%09%09%09%09vistas_ayer%2C++%09%09%09%09%09%09vistas_semana%2C++%09%09%09%09%09%09vistas_mes++%09%09%09%09++FROM+torrentsFiles+as+t+WHERE++(torrentStatus+%3D+1+OR+torrentStatus+%3D+2)++AND+(torrentCategoryID+IN+(1537%2C+758%2C+1105%2C+760%2C+1225))++++ORDER+BY+torrentDateAdded++DESC++LIMIT+0%2C+50&pag=3&tot=&ban=3&cate=1225
     url_next_page = base_url + "?" + urllib.urlencode( { "type":param_type, "leter":param_leter, "sql":param_sql, "pag":param_pag, "tot":param_tot, "ban":param_ban, "cate":param_cate } )
     logger.info("url_next_page="+url_next_page)
     itemlist.append( Item(channel=__channel__, action="listado" , title=">> Página siguiente" , url=url_next_page, extra=bloque))
@@ -245,7 +245,7 @@ def findvideos(item):
     data = scrapertools.cache_page(item.url)
     torrent_id = scrapertools.get_match(data,"'torrentID'\s*\:\s*'(\d+)'")
     
-    data = data + scrapertools.cache_page("http://www.newpct.com/include.inc/ajax.php/update.links.php?userID=&torrentID="+torrent_id)
+    data = data + scrapertools.cache_page("http://www.newpct1.com/include.inc/ajax.php/update.links.php?userID=&torrentID="+torrent_id)
 
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))
