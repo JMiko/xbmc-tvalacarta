@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>peliculaspepito</name>
-	<tag>8</tag>
-	<date>23/05/2014</date>
-	<changes>Arreglado el problema al elegir el vídeo</changes>
+	<tag>10</tag>
+	<date>29/05/2014</date>
+	<changes>Arreglado el problema al elegir el vídeo (gracias a chopchop)</changes>
 </version>

@@ -400,15 +400,9 @@ def play(item):
     logger.info("[seriespepito.py] play")
     itemlist=[]
 
-    # Lee la página
-    data = scrapertools.cache_page(item.url, headers = PELICULASPEPITO_REQUEST_HEADERS)
-    
-    # La utiliza como referer del enlace real
-    PELICULASPEPITO_REQUEST_HEADERS.append(["Referer",item.url])
+    import seriespepito
 
-    # Descarga el enlace real
-    item.url = scrapertools.find_single_match(data,'href="(http.//www.enlacespepito.com/[^"]+)">')
-    mediaurl = scrapertools.get_header_from_response(item.url, header_to_get="location", headers = PELICULASPEPITO_REQUEST_HEADERS)
+    mediaurl = seriespepito.get_server_link_peliculas(item.url)
 
     # Busca el vídeo
     videoitemlist = servertools.find_video_items(data=mediaurl)
