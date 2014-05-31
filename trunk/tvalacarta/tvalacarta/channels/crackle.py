@@ -134,10 +134,10 @@ def lista_videos(item):
             plot = item2['Description'].encode("utf-8")
             Mpaa = item2['Rating']
             Duration = item2['Duration']
-            itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , show=item.show, folder=True) )
+            itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , fanart=thumbnail, plot=plot , show=item.show, viewmode="movie_with_plot", folder=True) )
 
     if item.extra=="television" and (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
-        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="lista_videos", show=item.show, folder=False))
+        itemlist.append( Item(channel=item.channel, title=">> Opciones para esta serie", url=item.url, action="serie_options##lista_videos", thumbnail=item.thumbnail, extra = item.extra , show=item.show, folder=False))
 
     return itemlist
 

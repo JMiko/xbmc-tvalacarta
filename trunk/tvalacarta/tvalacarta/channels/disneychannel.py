@@ -8,6 +8,7 @@ import urlparse,re
 import urllib
 
 from core import logger
+from core import config
 from core import scrapertools
 from core.item import Item
 
@@ -92,6 +93,9 @@ def episodios(item):
 
         # Añade al listado
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="disneychannel", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=False) )
+
+    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+        itemlist.append( Item(channel=item.channel, title=">> Opciones para esta serie", url=item.url, action="serie_options##episodios", thumbnail=item.thumbnail, show=item.show, folder=False))
 
     return itemlist
 

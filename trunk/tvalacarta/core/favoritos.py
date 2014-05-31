@@ -54,7 +54,10 @@ def mainlist(item):
             # Crea la entrada
             # En extra va el nombre del fichero para poder borrarlo
             ## <-- Añado fulltitle con el titulo de la peli
-            itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), fulltitle=fulltitle, folder=False ))
+            if server=="":
+                itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), fulltitle=fulltitle, folder=False ))
+            else:
+                itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( BOOKMARK_PATH, fichero ), fulltitle=fulltitle, folder=False ))
         except:
             for line in sys.exc_info():
                 logger.error( "%s" % line )

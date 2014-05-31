@@ -96,7 +96,7 @@ def episodios(item):
     patron  = '<a href="\#None" onClick="showVideo\(\'([^\']+)\'\)"[^>]+>([^<]+)<br/><br/></a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle
+        title = unicode( scrapedtitle , "iso-8859-1" , errors="ignore").encode("utf-8")
         url = url = "rtmp://fl0.c80331.cdn.qbrick.com/80331/_definst_/mp4:"+scrapedurl
         thumbnail = item.thumbnail
         plot = item.plot

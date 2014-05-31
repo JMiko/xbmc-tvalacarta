@@ -192,11 +192,13 @@ def dosearch(item):
                 # Añade al listado de XBMC
                 itemlist.append(
                     Item(channel=item.channel,
-                         action = 'links',
+                         action = 'play',
                          title = str(scrapedtitle).replace("&quot;", "'"),
                          url = scrapedurl,
                          thumbnail = scrapedthumbnail,
-                         plot = scrapedplot
+                         plot = scrapedplot,
+                         server = "tv3",
+                         folder = False
                     )
                 ) 
             except:

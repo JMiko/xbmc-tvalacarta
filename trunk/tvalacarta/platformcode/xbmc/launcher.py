@@ -265,8 +265,54 @@ def run():
                     f.write(item.show+","+item.url+","+item.channel+"\n")
                     f.close();
 
-                elif action=="download_all_episodes":
-                    download_all_episodes(item,channel)
+                elif action.startswith("serie_options##"):
+                    from core import suscription
+                    import xbmcgui
+                    dia = xbmcgui.Dialog()
+                    opciones = []
+
+                    suscription_item = Item(channel=item.channel, title=item.show, url=item.url, action=action.split("##")[1], extra=item.extra, plot=item.plot, show=item.show, thumbnail=item.thumbnail)
+
+                    if not suscription.already_suscribed(suscription_item):
+                        opciones.append("Suscribirme a esta serie")
+                    else:
+                        opciones.append("Quitar suscripción a esta serie")
+
+                    #opciones.append("Añadir esta serie a favoritos")
+                    opciones.append("Descargar todos los episodios")
+                    seleccion = dia.select("Elige una opción", opciones) # "Elige una opción"
+
+                    if seleccion==0:
+                        if not suscription.already_suscribed(suscription_item):
+                            suscription.append_suscription(suscription_item)
+
+                            yes_pressed = xbmcgui.Dialog().yesno( "tvalacarta" , "Suscripción a \""+suscription_item.title+"\" creada" , "¿Quieres descargar los vídeos existentes ahora?" )
+
+                            if yes_pressed:
+                                download_all_episodes(item,channel)
+
+                        else:
+                            suscription.remove_suscription(suscription_item)
+                            xbmcgui.Dialog().ok( "tvalacarta" , "Suscripción a \""+suscription_item.title+"\" eliminada" , "Los vídeos que hayas descargado se mantienen" )
+
+                    elif seleccion==1:
+                        download_all_episodes(suscription_item,channel)
+
+                    '''
+                    elif seleccion==1:
+                        from core import favoritos
+                        from core import downloadtools
+                        import xbmc
+
+                        keyboard = xbmc.Keyboard(downloadtools.limpia_nombre_excepto_1(item.show)+" ["+item.channel+"]")
+                        keyboard.doModal()
+                        if keyboard.isConfirmed():
+                            title = keyboard.getText()
+                            favoritos.savebookmark(titulo=title,url=item.url,thumbnail=item.thumbnail,server="",plot=item.plot,fulltitle=title)
+                            advertencia = xbmcgui.Dialog()
+                            resultado = advertencia.ok(config.get_localized_string(30102) , title , config.get_localized_string(30108)) # 'se ha añadido a favoritos'
+                        return
+                    '''
 
                 elif action=="search":
                     logger.info("[launcher.py] search")
@@ -454,17 +500,12 @@ def extract_parameters():
 
     return params, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password
 
-def download_all_episodes(item,channel,first_episode=""):
-    logger.info("[launcher.py] download_all_episodes, show="+item.show)
+def download_all_episodes(item,channel,first_episode="", silent=False):
+    logger.info("[launcher.py] download_all_episodes, show="+item.show+" item="+item.tostring())
     show_title = item.show
 
     # Obtiene el listado desde el que se llamó
-    action = item.extra
-
-    # Esta marca es porque el item tiene algo más aparte en el atributo "extra"
-    if "###" in item.extra:
-        action = item.extra.split("###")[0]
-        item.extra = item.extra.split("###")[1]
+    action = item.action
 
     exec "episode_itemlist = channel."+action+"(item)"
     from servers import servertools
@@ -481,6 +522,18 @@ def download_all_episodes(item,channel,first_episode=""):
         empezar = False
 
     for episode_item in episode_itemlist:
+        # Si XBMC se está cerrando, cancela
+        try:
+            if xbmc.abortRequested:
+                logger.error( "[launcher.py] download_all_episodes XBMC Abort requested" )
+                return -1
+        except:
+            pass
+
+        # Si es la opción de descargar, la de "Opciones de la serie" o la de paginación, las ignora
+        if episode_item.action.startswith("download_all_episodes") or episode_item.action.startswith("serie_options") or episode_item.action.startswith(action):
+            continue
+
         logger.info("[launcher.py] download_all_episodes, episode="+episode_item.title)
         try:
             episode_title = scrapertools.get_match(episode_item.title,"(\d+x\d+)")
@@ -556,10 +609,61 @@ def download_all_episodes(item,channel,first_episode=""):
                     logger.info("[launcher.py] download_all_episodes, downloading mirror started...")
                     # El vídeo de más calidad es el último
                     mediaurl = video_urls[len(video_urls)-1][1]
+
                     if video_item.server!="directo":
-                        devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+idioma+" ["+video_item.server+"]",continuar=False)
+                        filetitle = show_title+" "+episode_title+idioma+" ["+video_item.server+"]"
                     else:
-                        devuelve = downloadtools.downloadbest(video_urls,show_title+" "+episode_title+idioma+" ["+item.channel+"]",continuar=False)
+                        filetitle = show_title+" "+episode_title+idioma+" ["+item.channel+"]"
+
+                    # Genera el NFO
+                    nfofilepath = downloadtools.getfilefromtitle("sample.nfo",filetitle)
+                    outfile = open(nfofilepath,"w")
+                    outfile.write("<movie>\n")
+                    outfile.write("<title>("+filetitle+")</title>\n")
+                    outfile.write("<originaltitle></originaltitle>\n")
+                    outfile.write("<rating>0.000000</rating>\n")
+                    outfile.write("<year>2009</year>\n")
+                    outfile.write("<top250>0</top250>\n")
+                    outfile.write("<votes>0</votes>\n")
+                    outfile.write("<outline></outline>\n")
+                    outfile.write("<plot>"+episode_item.plot+"</plot>\n")
+                    outfile.write("<tagline></tagline>\n")
+                    outfile.write("<runtime></runtime>\n")
+                    outfile.write("<thumb></thumb>\n")
+                    outfile.write("<mpaa>Not available</mpaa>\n")
+                    outfile.write("<playcount>0</playcount>\n")
+                    outfile.write("<watched>false</watched>\n")
+                    outfile.write("<id>tt0432337</id>\n")
+                    outfile.write("<filenameandpath></filenameandpath>\n")
+                    outfile.write("<trailer></trailer>\n")
+                    outfile.write("<genre></genre>\n")
+                    outfile.write("<credits></credits>\n")
+                    outfile.write("<director></director>\n")
+                    outfile.write("<actor>\n")
+                    outfile.write("<name></name>\n")
+                    outfile.write("<role></role>\n")
+                    outfile.write("</actor>\n")
+                    outfile.write("</movie>")
+                    outfile.flush()
+                    outfile.close()
+                    logger.info("core.descargas Creado fichero NFO")
+                    
+                    # Descarga el thumbnail
+                    if episode_item.thumbnail != "":
+                       logger.info("core.descargas thumbnail="+episode_item.thumbnail)
+                       thumbnailfile = downloadtools.getfilefromtitle(episode_item.thumbnail,filetitle)
+                       thumbnailfile = thumbnailfile[:-4] + ".tbn"
+                       logger.info("core.descargas thumbnailfile="+thumbnailfile)
+                       try:
+                           downloadtools.downloadfile(episode_item.thumbnail,thumbnailfile)
+                           logger.info("core.descargas Thumbnail descargado")
+                       except:
+                           logger.info("core.descargas error al descargar thumbnail")
+                           for line in sys.exc_info():
+                               logger.error( "%s" % line )
+
+                    # Descarga el vídeo
+                    devuelve = downloadtools.downloadbest(video_urls,filetitle,continuar=False,silent=silent)
 
                     if devuelve==0:
                         logger.info("[launcher.py] download_all_episodes, download ok")

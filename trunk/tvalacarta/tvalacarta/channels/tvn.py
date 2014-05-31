@@ -35,21 +35,10 @@ def programas(item):
     itemlist = []
 
     #http://www.tvn.cl/cultura/menuportadaplayer/?service=blank
-    '''
-    <ul class="nav_listado">
-    <li><a href="http://www.tvn.cl/player/play/?sn=cambioglobal">Cambio Global</a></li>
-    <li><a href="http://www.tvn.cl/player/play/?sn=cumbresdelmundo">Cumbres del Mundo</a></li>
-    <li><a href="http://www.tvn.cl/player/play/?sn=frutosdelpais">Frutos del País</a> </li>
-    <li><a href="http://www.tvn.cl/player/play/?sn=mujeresfuertes">Mujeres Fuertes</a> </li>
-    <li><a href="http://www.tvn.cl/player/play/?sn=proyectocero">Proyecto Cero</a> </li>
-    </ul>
-    '''
 
     # Extrae las series
     data = scrapertools.cachePage("http://www.tvn.cl/"+item.extra+"/menuportadaplayer/?service=blank")
     logger.info("data="+data.strip())
-
-    data = scrapertools.get_match(data,'<ul class="nav_listado">(.*?)</ul>')
 
     patron  = '<li><a href="([^"]+)">([^<]+)<'
     matches = re.compile(patron,re.DOTALL).findall(data)

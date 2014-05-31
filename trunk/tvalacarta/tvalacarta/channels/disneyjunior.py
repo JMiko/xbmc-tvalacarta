@@ -10,6 +10,7 @@ import urllib
 import datetime
 
 from core import logger
+from core import config
 from core import scrapertools
 from core.item import Item
 
@@ -152,6 +153,10 @@ def youtube_videos(item):
 
         # Appends a new item to the xbmc item list
         itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="youtube", url=url, thumbnail=thumbnail, plot=plot , folder=False) )
+
+    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+        itemlist.append( Item(channel=item.channel, title=">> Opciones para esta serie", url=item.url, action="serie_options##youtube_videos", thumbnail=item.thumbnail, show=item.title, folder=False))
+
     return itemlist
 
 
