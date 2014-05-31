@@ -196,7 +196,7 @@ def episodios(item):
 def play(item):
     logger.info("tvalacarta.channels.a3media play")
 
-    token = d(item.extra, "QWtMLXs414Yo+c#_+Q#K@NN")
+    token = d(item.extra, "QWtMLXs414Yo+c#_+Q#K@NN)")
     url = item.url + token
 
     data = scrapertools.cachePage(url,headers=ANDROID_HEADERS)
