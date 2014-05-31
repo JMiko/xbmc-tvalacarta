@@ -355,18 +355,29 @@ def get_cookie(html):
 #
 def convert_link(html, link_type):
     hash_seed = get_cookie(html);
+    logger.info("[seriespepito.py] hash_seed="+hash_seed)
 
-    hash = hashlib.sha256(hash_seed).hexdigest()
+    HASH_PAT = 'CryptoJS\.(\w+)\('
+    hash_func = scrapertools.find_single_match(html, HASH_PAT).lower()
+    if hash_func == "md5":
+        hash = hashlib.md5(hash_seed).hexdigest()
+    else:
+        hash = hashlib.sha256(hash_seed).hexdigest()
+
     if link_type == PELICULAS_PEPITO:
         hash += '0'
+    logger.info("[seriespepito.py] hash="+hash)
 
     HREF_SEARCH_PAT = '<a class=".' + hash + '" target="_blank" href="http://www.enlacespepito.com\/([^\.]*).html"><i class="icon-(?:play|download)">'
+    logger.info("[seriespepito.py] HREF_SEARCH_PAT="+HREF_SEARCH_PAT)
 
     href = list(scrapertools.find_single_match(html, HREF_SEARCH_PAT))
+    logger.info("[seriespepito.py] href="+repr(href))
 
     CHAR_REPLACE_PAT = '[a-z]\[(\d+)\]="(.)";'
 
     matches = re.findall(CHAR_REPLACE_PAT , html, flags=re.DOTALL|re.IGNORECASE)
+    logger.info("[seriespepito.py] matches="+repr(matches))
     for match in matches:
         href[int(match[0])] = match[1]
 
@@ -375,9 +386,13 @@ def convert_link(html, link_type):
     return 'http://www.enlacespepito.com/' + href + '.html'
 
 def get_server_link(first_link, link_type):
+    logger.info("[seriespepito.py] first_link="+str(first_link)+", link_type="+str(link_type))
 
     html = scrapertools.downloadpage(first_link, headers = ENLACESPEPITO_REQUEST_HEADERS)
+    logger.info("[seriespepito.py] html="+html)
+
     fixed_link = convert_link(html, link_type)
+    logger.info("[seriespepito.py] fixed_link="+fixed_link)
 
     # Sin el Referer da 404
     ENLACESPEPITO_REQUEST_HEADERS.append(['Referer', first_link])
