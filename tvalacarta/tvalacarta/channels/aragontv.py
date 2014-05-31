@@ -7,6 +7,7 @@
 import urlparse,re
 import urllib
 import datetime
+import time
 
 from core import logger
 from core import scrapertools
@@ -19,12 +20,36 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[aragontv.py] mainlist")
-    item.url="http://alacarta.aragontelevision.es/programas"
-    return programas(item)
+    logger.info("tvalacarta.channels.aragontv mainlist")
+
+    itemlist = []
+    itemlist.append( Item(channel=CHANNELNAME, title="Últimos vídeos añadidos" , url="http://alacarta.aragontelevision.es/por-fecha/" , action="episodios" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Informativos" , url="http://alacarta.aragontelevision.es/informativos" , action="episodios" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Todos los programas" , url="http://alacarta.aragontelevision.es/programas" , action="programas" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Buscador" , action="search" , folder=True) )
+
+    return itemlist
+
+def search(item,texto):
+    logger.info("tvalacarta.channels.aragontv search")
+    itemlist = []
+    
+    item.url = "http://alacarta.aragontelevision.es/buscador-avanzado/resultados-buscados_1/?palabra="+urllib.quote(texto)+"&buscar="
+    return episodios(item)
+
+def ultimos(item):
+    logger.info("tvalacarta.channels.aragontv programas [item="+item.tostring()+" show="+item.show+"]")
+
+    # Descarga la página
+    post = urllib2.urlencode({"fechaCabecera":time.strftime("%d-%m-%Y")})
+    data = scrapertools.cachePage(item.url,post=post)
+
+    itemlist=episodios(item,data)
+
+    return itemlist
 
 def programas(item):
-    logger.info("[aragontv.py] programas [item="+item.tostring()+" show="+item.show+"]")
+    logger.info("tvalacarta.channels.aragontv programas [item="+item.tostring()+" show="+item.show+"]")
     itemlist = []
 
     # Descarga la página
@@ -58,19 +83,20 @@ def programas(item):
 
         if not "programas/vaughan" in scrapedurl:
             # Añade al listado
-            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, folder=True) )
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle, viewmode="movie", folder=True) )
         else:
             itemlist.extend( subcategorias(scrapedurl) )
 
     return itemlist
 
-def episodios(item):
-    logger.info("[aragontv.py] episodios")
-    logger.info("[aragontv.py] programa [item="+item.tostring()+" show="+item.show+"]")
+def episodios(item,data=""):
+    logger.info("tvalacarta.channels.aragontv episodios")
+    logger.info("tvalacarta.channels.aragontv programa [item="+item.tostring()+" show="+item.show+"]")
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    if data=="":
+        data = scrapertools.cachePage(item.url)
     #logger.info(data)
 
     # Extrae las entradas
@@ -108,13 +134,13 @@ def episodios(item):
         # Interpreta la fecha
         patron_fecha = "\s*([^<]+)<br />\s*Duración\: ([^\s]+)"
         campos_fecha =re.compile(patron_fecha,re.DOTALL).findall(match[3])
-        fecha_string = campos_fecha[0][0]
+        fecha_string = campos_fecha[0][0].strip()
         #import time
         #fecha = time.strptime(fecha_string,"%d/%m/%y %H:%M")
-        duracion_string = campos_fecha[0][1]
+        duracion_string = campos_fecha[0][1].strip()
 
         #scrapedtitle = match[0]+" "+fecha.strftime("%d/%m/%y")+" (Duración "+duracion_string+")"
-        scrapedtitle = match[0]+" "+fecha_string+" (Duración "+duracion_string+")"
+        scrapedtitle = match[0].strip()+" "+fecha_string+" (Duración "+duracion_string+")"
         scrapedurl = urlparse.urljoin(item.url,match[2])
         scrapedthumbnail = urlparse.urljoin(item.url,match[1])
         scrapedplot = ""
@@ -128,12 +154,12 @@ def episodios(item):
     scrapertools.printMatches(matches)
     if len(matches)>0:
         pageitem = Item(channel=CHANNELNAME, title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot=item.plot , show=item.show, folder=True)
-        itemlist.extend( episodios(pageitem) )
+        itemlist.append( pageitem )
 
     return itemlist
 
 def subcategorias(pageurl):
-    logger.info("[aragontv.py] subcategorias [url]")
+    logger.info("tvalacarta.channels.aragontv subcategorias")
     itemlist = []
 
     # Descarga la página

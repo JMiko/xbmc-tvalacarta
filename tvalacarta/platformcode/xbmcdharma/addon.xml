@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.tvalacarta"
     name="tvalacarta"
-    version="3.3.18"
+    version="3.3.20"
     provider-name="tvalacarta">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
@@ -15,7 +15,7 @@
     <summary lang="es">Televisión a la carta</summary>
     <description lang="es">Para ver la televisión por Internet, a la carta y desde tu media center</description>
     <summary lang="en">TV on demand (Spanish)</summary>
-    <description lang="en">This plugin lets you watch inside XBMC full lenght episodes published on the TV channel websites.</description>
+    <description lang="en">Watch on demand spanish TV from your media center</description>
     <platform>all</platform>
   </extension>
 </addon>

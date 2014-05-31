@@ -1,7 +1,7 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Lista de vídeos descargados
+# Lista de vÃ­deos descargados
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
@@ -13,7 +13,9 @@ from core import logger
 from core import samba
 from core import favoritos
 from core.item import Item
+from core import scrapertools
 from core import downloadtools
+from core import suscription
 
 CHANNELNAME = "descargas"
 DEBUG = True
@@ -35,24 +37,58 @@ def mainlist(item):
 
     logger.info("core.descargas downloadpath=" + downloadpath)
 
-    itemlist.append( Item( channel="descargas", action="pendientes", title="Descargas pendientes"))
+    # SÃ³lo para eden, frodo, gotham
+    if config.get_platform().startswith("xbmc") and config.get_platform()!="xbmc" and config.get_platform()!="xbmcdharma":
+        itemlist.append( Item( channel="descargas", action="suscripciones", title="Suscripciones", viewmode="movie_with_plot"))
+    itemlist.append( Item( channel="descargas", action="pendientes", title="Descargas pendientes", viewmode="movie_with_plot"))
     itemlist.append( Item( channel="descargas", action="errores", title="Descargas con error"))
 
-    # Añade al listado de XBMC
+    # AÃ±ade al listado de XBMC
     try:
         ficheros = os.listdir(downloadpath)
         for fichero in ficheros:
             logger.info("core.descargas fichero=" + fichero)
             if fichero!="lista" and fichero!="error" and fichero!=".DS_Store" and not fichero.endswith(".nfo") and not fichero.endswith(".tbn") and os.path.join(downloadpath,fichero)!=config.get_setting("downloadlistpath"):
                 url = os.path.join( downloadpath , fichero )
+
+                try:
+                    nfo_file = open(url[:-4]+".nfo")
+                    nfo_data = nfo_file.read()
+                    nfo_file.close()
+
+                    plot = scrapertools.find_single_match(nfo_data,"<plot>(.*?)</plot>")
+                except:
+                    plot = ""
+
                 if not os.path.isdir(url):
-                    itemlist.append( Item( channel="descargas", action="play", title=fichero, fulltitle=fichero, url=url, server="local", folder=False))
+                    itemlist.append( Item( channel="descargas", action="play", title=fichero, thumbnail=url[:-4]+".tbn", fanart=url[:-4]+".tbn", fulltitle=fichero, url=url, plot=plot, server="local", folder=False))
 
     except:
-        logger.info("core.descargas exception on mainlist")
-        pass
+        import traceback
+        logger.info(traceback.format_exc())
 
     return itemlist
+
+def suscripciones(item):
+    logger.info("core.descargas suscripciones")
+    itemlist=[]
+
+    current_suscriptions = suscription.get_current_suscriptions()
+
+    for suscription_item in current_suscriptions:
+        itemlist.append( Item( channel="descargas" , action="borrar_suscripcion" , url=suscription_item.url , title=suscription_item.title, thumbnail=suscription_item.thumbnail, plot=suscription_item.plot, fanart=suscription_item.thumbnail, folder=False ))
+
+    return itemlist
+
+def borrar_suscripcion(item):
+
+    import xbmcgui
+    yes_pressed = xbmcgui.Dialog().yesno( "tvalacarta" , "Â¿Quieres eliminar tu suscripciÃ³n a" , "\""+item.title+"\"?" )
+
+    if yes_pressed:
+        suscription.remove_suscription(item)
+        import xbmc
+        xbmc.executebuiltin( "Container.Refresh" )
 
 def pendientes(item):
     logger.info("core.descargas pendientes")
@@ -64,7 +100,7 @@ def pendientes(item):
     else:
         ficheros = os.listdir(DOWNLOAD_LIST_PATH)
 
-    # Ordena el listado por orden de incorporación
+    # Ordena el listado por orden de incorporaciÃ³n
     ficheros.sort()
     
     # Crea un listado con las entradas de la lista de descargas
@@ -79,7 +115,7 @@ def pendientes(item):
             logger.info("canal="+canal+", titulo="+titulo+", thumbnail="+thumbnail+", server="+server+", url="+url+", fulltitle="+fulltitle+", plot="+plot)
 
             # Crea la entrada
-            # En la categoría va el nombre del fichero para poder borrarlo
+            # En la categorÃ­a va el nombre del fichero para poder borrarlo
             itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, extra=os.path.join( DOWNLOAD_LIST_PATH, fichero ), folder=False ))
 
         except:
@@ -102,7 +138,7 @@ def errores(item):
     else:
         ficheros = os.listdir(ERROR_PATH)
 
-    # Ordena el listado por orden de incorporación
+    # Ordena el listado por orden de incorporaciÃ³n
     ficheros.sort()
     
     # Crea un listado con las entradas de la lista de descargas
@@ -115,7 +151,7 @@ def errores(item):
                 canal="descargas"
 
             # Crea la entrada
-            # En la categoría va el nombre del fichero para poder borrarlo
+            # En la categorÃ­a va el nombre del fichero para poder borrarlo
             itemlist.append( Item( channel=canal , action="play" , url=url , server=server, title=titulo, fulltitle=fulltitle, thumbnail=thumbnail, plot=plot, fanart=thumbnail, category="errores", extra=os.path.join( ERROR_PATH, fichero ), folder=False ))
 
         except:
@@ -146,27 +182,27 @@ def downloadall(item):
         logger.info("core.descargas fichero="+fichero)
 
         if fichero!="error" and fichero!=".DS_Store":
-            # Descarga el vídeo
+            # Descarga el vÃ­deo
             try:
                 # Lee el bookmark
                 canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fichero,DOWNLOAD_LIST_PATH)
                 logger.info("core.descargas url="+url)
 
-                # Averigua la URL del vídeo
+                # Averigua la URL del vÃ­deo
                 exec "from servers import "+server+" as server_connector"
                 video_urls = server_connector.get_video_url( page_url=url , premium=(config.get_setting("megavideopremium")=="true") , user=config.get_setting("megavideouser") , password=config.get_setting("megavideopassword") )
 
                 if config.get_setting("fileniumpremium")=="true" and config.get_setting("filenium_for_download")=="true" and server not in ["vk","fourshared","directo","adnstream","facebook","megalive","tutv","stagevu"]:
                     exec "from servers import filenium as gen_conector"
                     
-                    # Parche para solucionar el problema habitual de que un vídeo http://www.megavideo.com/?d=XXX no está, pero http://www.megaupload.com/?d=XXX si
+                    # Parche para solucionar el problema habitual de que un vÃ­deo http://www.megavideo.com/?d=XXX no estÃ¡, pero http://www.megaupload.com/?d=XXX si
                     url = url.replace("http://www.megavideo.com/?d","http://www.megaupload.com/?d")
         
                     video_gen = gen_conector.get_video_url( page_url=url , premium=(config.get_setting("fileniumpremium")=="true") , user=config.get_setting("fileniumuser") , password=config.get_setting("fileniumpassword") )
                     logger.info("[xbmctools.py] filenium url="+video_gen)
                     video_urls.append( [ "[filenium]", video_gen ] )
 
-                # La última es la de mayor calidad, lo mejor para la descarga
+                # La Ãºltima es la de mayor calidad, lo mejor para la descarga
                 mediaurl = video_urls[ len(video_urls)-1 ][1]
                 logger.info("core.descargas mediaurl="+mediaurl)
 
@@ -267,9 +303,9 @@ def delete_error_bookmark(fullfilename,deletepath=ERROR_PATH):
     favoritos.deletebookmark(fullfilename,deletepath)
 
 def mover_descarga_error_a_pendiente(fullfilename):
-    # La categoría es el nombre del fichero en favoritos, así que lee el fichero
+    # La categorÃ­a es el nombre del fichero en favoritos, asÃ­ que lee el fichero
     canal,titulo,thumbnail,plot,server,url,fulltitle = favoritos.readbookmark(fullfilename,"")
-    # Lo añade a la lista de descargas
+    # Lo aÃ±ade a la lista de descargas
     savebookmark(canal,titulo,url,thumbnail,server,plot,fulltitle)
     # Y lo borra de la lista de errores
     os.remove(fullfilename)

@@ -38,7 +38,6 @@ def mainlist(item):
     return itemlist
 
 def secciones(item):
-
     logger.info("tvalacarta.disneylatino.secciones")
     itemlist = []
 
@@ -76,7 +75,7 @@ def colecciones(item):
     </a>
     </span>
     '''
-    patron  = '<span class="col"><a href="([^"]+)"[^<]+'
+    patron  = '<span class="col[^<]+<a href="([^"]+)"[^<]+'
     patron += '<span class="square-box"><span class="aspect">[^<]+'
     patron += '<img src="([^"]+)"[^<]+'
     patron += '</span></span>[^<]+'
@@ -94,7 +93,6 @@ def colecciones(item):
 
 
 def videos(item):
-
     logger.info("tvalacarta.disneylatino.videos")
     itemlist = []
 
@@ -126,26 +124,32 @@ def videos(item):
 def test():
 
     # Saca las series para cada canal
-    items_canales = mainlist(Item())
-    for item_canal in items_canales:
-        items_series = characters(item_canal)
-    
-        serie_con_videos = False
+    mainlist_items = mainlist(Item())
+    todas_las_colecciones_item = mainlist_items[-1]
+    print todas_las_colecciones_item.title
+    print "############################################"
+    todas_las_colecciones_items = colecciones(todas_las_colecciones_item)
 
-        # Busca hasta encontrar una serie con Episodios en ese canal
-        for item_serie in items_series:
-
-            items_menu_serie = categories(item_serie)
-
+    for coleccion_item in todas_las_colecciones_items:
+        if coleccion_item.title=="Disney Junior":
+            print coleccion_item.title
+            print "############################################"
             # El segundo menú es "Episodios"
-            items_videos = videos(items_menu_serie[1])
+            secciones_items = secciones(coleccion_item)
 
-            if len(items_videos)>0:
-                serie_con_videos = True
-                break
+            if len(secciones_items)==0:
+                print "No hay secciones en "+coleccion_item.tostring()
+                return False
 
-        # Si el canal no tiene series con videos, algo falla
-        if not serie_con_videos:
-            return False
+            print secciones_items[0].title
+            print "############################################"
 
-    return True
+            videos_items = videos(secciones_items[0])
+            if len(videos_items)==0:
+                print "No hay videos en "+secciones_items[0].tostring()
+                return False
+
+
+            return True
+
+    return False

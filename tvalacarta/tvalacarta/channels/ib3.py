@@ -105,7 +105,16 @@ def episodios(item):
     itemlist = []
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
+    headers = []
+    headers.append(["Accept","*/*"])
+    headers.append(["Accept-Encoding","gzip,deflate"])
+    headers.append(["Accept-Language","es-ES,es;q=0.8,en;q=0.6"])
+    headers.append(["Connection","keep-alive"])
+    headers.append(["Referer","http://ib3tv.com/carta"])
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36"])
+    headers.append(["X-Requested-With","XMLHttpRequest"])
+
+    data = scrapertools.cachePage(item.url,headers=headers)
     logger.info(data)
 
     # Extrae los capítulos

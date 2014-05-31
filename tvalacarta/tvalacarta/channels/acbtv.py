@@ -20,11 +20,11 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("acbtv.mainlist")
+    logger.info("tvalacarta.channels.acbtv.mainlist")
     return programas(item)
 
 def programas(item):
-    logger.info("acbtv.programas")
+    logger.info("tvalacarta.channels.acbtv.programas")
     itemlist = []
 
     # Descarga la página
@@ -36,28 +36,28 @@ def programas(item):
         url = urlparse.urljoin(MAIN_URL,scrapedurl)
         thumbnail = urlparse.urljoin(MAIN_URL,scrapedthumbnail)
         plot = ""
-        itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="episodios" , show = item.title , extra="1", folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=title , url=url,  thumbnail=thumbnail , action="episodios" , show = item.title , extra="0", folder=True) )
 
     return itemlist
 
 def episodios(item):
-    logger.info("acbtv.episodios")
+    logger.info("tvalacarta.channels.acbtv.episodios")
 
     itemlist = []
 
     # Descarga la página
     channel_id = scrapertools.get_match(item.url,"channel/(.+)$")
-    logger.info("acbtv.episodios channel_id="+channel_id)
+    logger.info("tvalacarta.channels.acbtv.episodios channel_id="+channel_id)
     
     channel_videos_url = "http://acbtv.acb.com/component/0/"+item.extra+"/first_block_second_part/"+channel_id
-    logger.info("acbtv.episodios channel_videos_url="+channel_videos_url)
+    logger.info("tvalacarta.channels.acbtv.episodios channel_videos_url="+channel_videos_url)
 
     data = scrapertools.cache_page(channel_videos_url)
     data = data.replace("\\u003E",">")
     data = data.replace("\\u003C","<")
     data = data.replace("\\n","")
     data = data.replace('\\"','"')
-    #logger.info("data="+data)
+    #logger.info("tvalacarta.channels.data="+data)
     
     # Extrae videos
     '''

@@ -12,7 +12,7 @@ from core import logger
 from core import scrapertools
 from core.item import Item
 
-logger.info("[sieterm.py] init")
+logger.info("tvalacarta.channels.sieterm init")
 
 DEBUG = False
 CHANNELNAME = "sieterm"
@@ -21,49 +21,21 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[sieterm.py] mainlist")
+    logger.info("tvalacarta.channels.sieterm mainlist")
 
-    if item.url=="":
-        item.url="http://www.7rm.es/servlet/rtrm.servlets.ServletLink2?METHOD=LSTBLOGALACARTA&sit=c,6&serv=BlogPortal2&orden=2"
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    #logger.info(data)
-
-    # Lee los primeros programas
-    itemlist = getprogramas(item,data)
-
-    # Busca la página siguiente
-    salir = False
-    while not salir:
-        patron = '<a class="list-siguientes" href="([^"]+)" title="Ver siguientes a la cartas">Siguiente</a>'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        
-        if len(matches)==0:
-            salir = True
-        else:
-            item.url = urlparse.urljoin(item.url,matches[0])
-            data = scrapertools.cachePage(item.url)
-            itemlist.extend( getprogramas(item,data) )
+    itemlist = []
+    #itemlist.append( Item(channel=CHANNELNAME, title="Últimos vídeos añadidos" , url="" , action="novedades" , folder=True) )
+    itemlist.append( Item(channel=CHANNELNAME, title="Todos los programas" , url="http://www.7rm.es/servlet/rtrm.servlets.ServletLink2?METHOD=LSTBLOGALACARTA&sit=c,6&serv=BlogPortal2&orden=2" , action="programas" , folder=True) )
 
     return itemlist
 
-def getprogramas(item,data):
-    logger.info("[sieterm.py] getprogramas")
+def programas(item):
+    logger.info("tvalacarta.channels.sieterm programas")
+
+    itemlist = []
+    data = scrapertools.cachePage(item.url)
     
     # Extrae las entradas (carpetas)
-    '''
-    <dt class="alacarta-video">
-    <a href="/servlet/rtrm.servlets.ServletLink2?METHOD=DETALLEALACARTA&amp;sit=c,6,ofs,0&amp;serv=BlogPortal2&amp;orden=2&amp;idCarta=57">Azufre Rojo</a> · (archivo m&aacute;s visto 1971 veces)
-    </dt>
-    <dd style="height:100%;overflow:hidden;">
-    <a href="/servlet/rtrm.servlets.ServletLink2?METHOD=DETALLEALACARTA&amp;sit=c,6,ofs,0&amp;serv=BlogPortal2&amp;orden=2&amp;idCarta=57"
-    title="Ver los archivos del a la carta">
-        <img src="/servlet/rtrm.servlets.Imagenes?METHOD=VERIMAGEN_2496&amp;nombre=azufre_res_150.jpg" alt="Azufre rojo" style="float:left;display:inline;" />
-    </a>
-        Los grandes temas tratados de manera tan amena como profunda en esta tertulia de 7 Región de Murcia: la felicidad, el cambio climático, las teorías sobre la evolución, la libertad...
-    </dd>
-    '''
     patron  = '<dt class="alacarta-video">[^<]+'
     patron += '<a href="([^"]+)">([^<]+)</a>[^<]+'
     patron += '</dt>[^<]+'
@@ -83,12 +55,18 @@ def getprogramas(item,data):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, fanart=scrapedthumbnail, plot=scrapedplot , show=scrapedtitle , viewmode="movie_with_plot", folder=True ) )
+
+    # Busca la página siguiente
+    pagina_siguiente = scrapertools.find_single_match(data,'<a class="list-siguientes" href="([^"]+)" title="Ver siguientes a la cartas">Siguiente</a>')
+    if pagina_siguiente!="":
+        pagina_siguiente = urlparse.urljoin(item.url,pagina_siguiente)
+        itemlist.append( Item(channel=CHANNELNAME, title=">> Página siguiente" , action="programas" , url=pagina_siguiente , folder=True) )
 
     return itemlist
 
-def videolist(item):
-    logger.info("[sieterm.py] videolist")
+def episodios(item):
+    logger.info("tvalacarta.channels.sieterm episodios")
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
@@ -138,20 +116,20 @@ def videolist(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="directo" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = item.show , page=scrapedpage, folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="directo" , url=scrapedurl, thumbnail=scrapedthumbnail, fanart=scrapedthumbnail, plot=scrapedplot , show = item.show , page=scrapedpage, viewmode="movie_with_plot", folder=False) )
 
     patron = '<a class="list-siguientes" href="([^"]+)" title="Ver siguientes archivos">'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
         # Atributos del vídeo
-        scrapedtitle = "Página siguiente"
+        scrapedtitle = ">> Página siguiente"
         scrapedurl = urlparse.urljoin(item.url,match)
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="videolist" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = item.show , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show = item.show , folder=True) )
 
     return itemlist
 
@@ -159,13 +137,15 @@ def videolist(item):
 def test():
     bien = True
     
+    menuitem = mainlist(Item())[0]
     # El canal tiene estructura programas -> episodios -> play
-    programas = mainlist(Item())
-    if len(programas)==0:
+    programas_itemlist = programas(menuitem)
+    if len(programas_itemlist)==0:
         return False
 
-    episodios = videolist(programas[1])
-    if len(episodios)==0:
+    print "Episodios de "+programas_itemlist[1].tostring()
+    episodios_itemlist = episodios(programas_itemlist[1])
+    if len(episodios_itemlist)==0:
         return False
 
     return bien

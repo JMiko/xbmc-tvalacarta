@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
-# Canal para http://conectate.gov.ar
+# Canal para TAL
 # creado por rsantaella
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------

@@ -17,16 +17,17 @@ CHANNELNAME = "a3media"
 
 import hmac
 
+ANDROID_HEADERS = [ ["User-Agent","Dalvik/1.6.0 (Linux; U; Android 4.3; GT-I9300 Build/JSS15J"] ]
 
 def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[a3media.py] mainlist")
+    logger.info("tvalacarta.channels.a3media mainlist")
 
     url="http://servicios.atresplayer.com/api/mainMenu"
     data = scrapertools.cachePage(url)
-    logger.info(data)
+    #logger.info(data)
     lista = jsontools.load_json(data)[0]
     if lista == None: lista =[]
   
@@ -48,17 +49,22 @@ def mainlist(item):
     return itemlist
 
 def secciones(item):
-    logger.info("[a3media.py] secciones")
+    logger.info("tvalacarta.channels.a3media secciones")
 
     data = scrapertools.cachePage(item.url)
-    logger.info(data)
+    #logger.info(data)
     lista = jsontools.load_json(data)
     if lista == None: lista =[]
 
     itemlist = []
 
     for entrys in lista:
-        entry = entrys['section']
+        try:
+            entry = entrys['section']
+        except:
+            logger.info("tvalacarta.channels.a3media -----------------------")
+            logger.info("tvalacarta.channels.a3media error en "+repr(entrys))
+            continue
         extra = entry['idSection']
         scrapedtitle = entry['menuTitle']
         scrapedurl = item.url
@@ -73,10 +79,10 @@ def secciones(item):
     return itemlist
 
 def temporadas(item):
-    logger.info("[a3media.py] temporadas")
+    logger.info("tvalacarta.channels.a3media temporadas")
 
     data = scrapertools.cachePage(item.url)
-    logger.info(data)
+    #logger.info(data)
     lista = jsontools.load_json(data)
     if lista == None: lista =[]
 
@@ -87,7 +93,12 @@ def temporadas(item):
     n = 0
     ids = None
     for entrys in lista:
-        entry = entrys['section']
+        try:
+            entry = entrys['section']
+        except:
+            logger.info("tvalacarta.channels.a3media -----------------------")
+            logger.info("tvalacarta.channels.a3media error en "+repr(entrys))
+            continue
         if entry['idSection'] == int(item.extra):
             ids = entry['idSection']
             if entry.has_key('subCategories'):
@@ -103,6 +114,19 @@ def temporadas(item):
                     # Añade al listado
                     itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=str(extra), folder=True) )
 
+                    ######## Añadido ##########################################
+                    if temporada.has_key('subCategories'):
+                        for prueba in temporada['subCategories']:
+                            n += 1
+                            extra2 = prueba['idSection']
+                            scrapedtitle = prueba['menuTitle']
+                            scrapedurl = url2 + str(extra2)
+                            if prueba.has_key('storyline'): scrapedplot = prueba['storyline']
+                            scrapedthumbnail = temporada['urlImage'].replace('.jpg','03.jpg')
+
+                            # Añade al listado
+                            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra=str(extra2), folder=True) )
+                    ######## Fin Añadido ######################################
 
     if n == 1:  #si solo hay una temporada cargar los episodios
         itemlist = episodios(itemlist[0])
@@ -114,10 +138,10 @@ def temporadas(item):
     return itemlist
 
 def episodios(item):
-    logger.info("[a3media.py] episodios")
+    logger.info("tvalacarta.channels.a3media episodios")
 
-    data = scrapertools.cachePage(item.url)
-    logger.info(data)
+    data = scrapertools.cachePage(item.url,headers=ANDROID_HEADERS)
+    #logger.info(data)
     lista = jsontools.load_json(data)
 
     if lista == None: lista =[]
@@ -132,16 +156,26 @@ def episodios(item):
         episodes = []
     
     for entrys in episodes:
+        logger.info("entrys="+repr(entrys))
         if entrys.has_key('episode'):
             entry = entrys['episode']
+        elif entrys.has_key('section'):
+            continue
 
         if entry.has_key('type'):
             tipo = entry['type']
         else:
             tipo = "FREE"
 
-        episode = entry['contentPk']
-        scrapedtitle = entry['name']
+        try:
+            episode = entry['contentPk']
+        except:
+            episode = 0
+
+        try :
+            scrapedtitle = entry['titleSection']+" "+entry['titleDetail']
+        except:
+            scrapedtitle = entry['name']
         if tipo == "REGISTER":
             scrapedtitle = scrapedtitle + " (R)"
         elif tipo == "PREMIUM":
@@ -160,29 +194,29 @@ def episodios(item):
     return itemlist
 
 def play(item):
-    logger.info("[a3media.py] play")
+    logger.info("tvalacarta.channels.a3media play")
 
-    token = d(item.extra, "puessepavuestramerced")
+    token = d(item.extra, "QWtMLXs414Yo+c#_+Q#K@NN")
     url = item.url + token
 
-    data = scrapertools.cachePage(url)
+    data = scrapertools.cachePage(url,headers=ANDROID_HEADERS)
     logger.info(data)
     lista = jsontools.load_json(data)
     itemlist = []
     if lista != None: 
         item.url = lista['resultObject']['es']
+        logger.info("tvalacarta.channels.a3media item.url="+item.url)
         itemlist.append(item)
-
 
     return itemlist
 
 
 def getApiTime():
-    stime = scrapertools.cachePage("http://servicios.atresplayer.com/api/admin/time")
+    stime = scrapertools.cachePage("http://servicios.atresplayer.com/api/admin/time",headers=ANDROID_HEADERS)
     return long(stime) / 1000L
 
 def d(s, s1):
-    l = 3000L + getApiTime()
+    l = 30000L + getApiTime()
     s2 = e(s+str(l), s1)
     return "%s|%s|%s" % (s, str(l), s2)
 

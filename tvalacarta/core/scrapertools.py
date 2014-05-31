@@ -735,6 +735,10 @@ def get_match(data,patron,index=0):
     matches = re.findall( patron , data , flags=re.DOTALL )
     return matches[index]
 
+# Parse string and extracts multiple matches using regular expressions
+def find_multiple_matches(text,pattern):
+    return re.findall(pattern,text,re.DOTALL)
+
 def find_single_match(data,patron,index=0):
     try:
         matches = re.findall( patron , data , flags=re.DOTALL )

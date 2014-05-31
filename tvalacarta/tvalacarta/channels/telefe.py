@@ -43,7 +43,14 @@ def programas(item):
     <option id="6598" value="6598">Casados con hijos</option>
     '''
 
-    data = scrapertools.cache_page(MAIN_URL)
+    headers = []
+    headers.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"])
+    headers.append(["Accept-Encoding","gzip,deflate"])
+    headers.append(["Accept-Language","es-ES,es;q=0.8,en;q=0.6"])
+    headers.append(["Connection","keep-alive"])
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36"])
+
+    data = scrapertools.cache_page(MAIN_URL,headers=headers)
     data = scrapertools.find_single_match(data,'<select id="programSearchCombo"[^<]+<optio[^>]+>Todos los programas</option>(.*?)</select>')
 
     patron  = '<option id="\d+" value="(\d+)">([^<]+)</option>'
@@ -66,33 +73,70 @@ def videos(item):
     logger.info("tvalacarta.telefe videos")
 
     '''
-    {"IdPost":0,
-        "ImageURL":"/media/64285/taxxi.jpg",
-        "Title":"Capítulo 40: Sorpresa e impacto",
-        "Link":"http://telefe.com/taxxi/capitulo-40-sorpresa-e-impacto/",
-        "Content":null,
-        "VideoUrl":null,
-        "VideoId":0,
-        "VideoTags":null,
-        "ColorMicrositio":"FF9E4A",
-        "NombreMicrositio":"Taxxi","Copete":"Reviví un nuevo capítulo de Taxxi. Intrigas, celos y misterio. ","FechaDeEmision":"Emitido el 20 de diciembre de 2013"}
+    <div id='123862' class='large-4 small-12 column'>
+    <div class='row'>
+    <div class='b_search__result_item'>
+    <a href='http://telefe.com/avenida-brasil/avenida-brasil-capitulo-75-(28-03-2014)/'>
+    <div class='small-12 columns'>
+    <div class='img-overlay-back'>
+    <div class='badge-over-photo'>
+    <img src='http://d1gk8v3tl0wzmi.cloudfront.net/media/9111735/avenida-28-3-9-_main.jpg' style='border-color: AB9527'/>
+    <div class='badge-ribbon'>
+    <div class='badge' style='background-color:AB9527; color: white'>
+    <p>Avenida Brasil</p>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class='small-12 columns'>
+    <h5>Avenida Brasil - Cap&#237;tulo 75 (28-03-2014)</h5>
+    <p><b class='strong color-red'>Emitido el 28 de marzo de 2014</b></p>
+    <p>A pedido de Carmina, Max secuestra a Nina y la lleva a alta mar en su yate.</p>
+    </div>
+    </a>
+    </div>
+    </div>
+    </div>
     '''
     
     itemlist=[]
-    data = scrapertools.cache_page(item.url)
-    bloque = scrapertools.find_single_match(data,'viewBagBusquedaVideos \= (.*?)\s+refreshMenuVideos')
-    #logger.info("tvalacarta.telefe data="+data)
+    headers = []
+    headers.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"])
+    headers.append(["Accept-Encoding","gzip,deflate"])
+    headers.append(["Accept-Language","es-ES,es;q=0.8,en;q=0.6"])
+    headers.append(["Connection","keep-alive"])
+    headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36"])
+    data = scrapertools.cache_page(item.url,headers=headers)
+    patron  = "<div id='\d+' class='large-4 small-12 column'[^<]+"
+    patron += "<div class='row'[^<]+"
+    patron += "<div class='b_search__result_item'[^<]+"
+    patron += "<a href='([^']+)'[^<]+"
+    patron += "<div class='small-12 columns'[^<]+"
+    patron += "<div class='img-overlay-back'[^<]+"
+    patron += "<div class='badge-over-photo'[^<]+"
+    patron += "<img src='([^']+)'[^<]+"
+    patron += "<div class='badge-ribbon'[^<]+"
+    patron += "<div[^<]+"
+    patron += "<p>([^<]+)</p[^<]+"
+    patron += "</div[^<]+"
+    patron += "</div[^<]+"
+    patron += "</div[^<]+"
+    patron += "</div[^<]+"
+    patron += "</div[^<]+"
+    patron += "<div class='small-12 columns'[^<]+"
+    patron += "<h5>([^<]+)</h5[^<]+"
+    patron += "<p><b[^<]+</b></p[^<]+"
+    patron += "<p>([^<]+)</p>"
 
-    patron  = '\{([^\}]+)\}'
-    matches = re.compile(patron,re.DOTALL).findall(bloque)
+    matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for entry in matches:
-        show = scrapertools.find_single_match(entry,'"NombreMicrositio"\:"([^"]+)"')
-        title = show + ": " + scrapertools.find_single_match(entry,'"Title"\:"([^"]+)"')
-        url = scrapertools.find_single_match(entry,'"Link"\:"([^"]+)"')
-        thumbnail = urlparse.urljoin( item.url , scrapertools.find_single_match(entry,'"ImageURL":"([^"]+)"') )
-        plot = scrapertools.find_single_match(entry,'"Copete"\:"([^"]+)"')
+    for scrapedurl,scrapedthumbnail,show,scrapedtitle,scrapedplot in matches:
+        title = scrapertools.htmlclean(show + ": " + scrapedtitle)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        plot = scrapertools.htmlclean(scrapedplot).strip()
 
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="telefe", url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot , show=show, folder=False) )

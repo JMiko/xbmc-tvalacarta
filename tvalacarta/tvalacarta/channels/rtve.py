@@ -239,28 +239,58 @@ def episodios(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="rtve" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show, category = item.category, extra=scrapedextra, folder=False) )
 
-    # Extrae la paginación
-    patron = '<a name="paginaIR" href="([^"]+)"><span>Siguiente</span></a>'
-    matches = re.findall(patron,data,re.DOTALL)
-    if DEBUG: scrapertools.printMatches(matches)
+    if len(itemlist)>0:
+        # Extrae la paginación
+        patron = '<a name="paginaIR" href="([^"]+)"><span>Siguiente</span></a>'
+        matches = re.findall(patron,data,re.DOTALL)
+        if DEBUG: scrapertools.printMatches(matches)
 
-    # Crea una lista con las entradas
-    for match in matches:
-        scrapedtitle = "!Página siguiente"
-        scrapedurl = urlparse.urljoin(item.url,match).replace("&amp;","&")
-        #http://www.rtve.es/alacarta/interno/contenttable.shtml?pbq=2&modl=TOC&locale=es&pageSize=15&ctx=36850&advSearchOpen=false
-        if not scrapedurl.endswith("&advSearchOpen=false"):
-            scrapedurl = scrapedurl + "&advSearchOpen=false"
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        scrapedextra = item.extra
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, category = item.category, show=item.show) )
+        # Crea una lista con las entradas
+        for match in matches:
+            scrapedtitle = "!Página siguiente"
+            scrapedurl = urlparse.urljoin(item.url,match).replace("&amp;","&")
+            #http://www.rtve.es/alacarta/interno/contenttable.shtml?pbq=2&modl=TOC&locale=es&pageSize=15&ctx=36850&advSearchOpen=false
+            if not scrapedurl.endswith("&advSearchOpen=false"):
+                scrapedurl = scrapedurl + "&advSearchOpen=false"
+            scrapedthumbnail = ""
+            scrapedplot = ""
+            scrapedextra = item.extra
+            if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+            itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , extra = scrapedextra, category = item.category, show=item.show) )
 
-    if config.get_platform().startswith("xbmc"):
-        itemlist.append( Item(channel=item.channel, title=">> Añadir toda la página a la lista de descargas", url=item.url, action="download_all_episodes##episodios", extra = item.extra , show=item.show) )
+        if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+            itemlist.append( Item(channel=item.channel, title=">> Opciones para esta serie", url=item.url, action="serie_options##episodios", thumbnail=item.thumbnail, extra = item.extra , show=item.show, folder=False))
+
+    else:
+
+        # Extrae los vídeos
+        patron  = '<div class="mark"[^<]+'
+        patron += '<a href="([^"]+)" title="([^"]+)"[^<]+'
+        patron += '<span class="[^<]+'
+        patron += '<img src="([^"]+)".*?'
+        patron += '<div class="apiCall summary"[^<]+'
+        patron += '<p[^<]+'
+        patron += '<span class="time">([^<]+)</span[^<]+'
+        patron += '<span class="date">([^<]+)</span>([^<]+)<'
+        
+        matches = re.findall(patron,data,re.DOTALL)
+        if DEBUG: scrapertools.printMatches(matches)
+
+        # Crea una lista con las entradas
+        for scrapedurl,scrapedtitle,scrapedthumbnail,duracion,fecha,plot in matches:
+            title = scrapedtitle+" ("+duracion+")("+fecha+")"
+            url = urlparse.urljoin(item.url,scrapedurl)
+            plot = plot
+            thumbnail = scrapedthumbnail
+            
+            if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+            itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="rtve" , url=url, thumbnail=thumbnail, plot=plot , show=item.show, category = item.category, fanart=thumbnail, viewmode="movie_with_plot", folder=False) )
+
+        if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+            itemlist.append( Item(channel=item.channel, title=">> Opciones para esta serie", url=item.url, action="serie_options##episodios", thumbnail=item.thumbnail, extra = item.extra , show=item.show, folder=False))
 
     return itemlist
+
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():

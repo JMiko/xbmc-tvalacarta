@@ -22,8 +22,9 @@ class Item(object):
     overlay = None
     password = ""
     fulltitle = ""
+    viewmode = "list"
 
-    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = "",totalItems = 0, overlay = None, type="", password="", fulltitle="" ):
+    def __init__(self, channel="", title="", url="", page="", thumbnail="", plot="", duration="", fanart="", action="", server="directo", extra="", show="", category = "" , language = "" , subtitle="" , folder=True, context = "",totalItems = 0, overlay = None, type="", password="", fulltitle="", viewmode="list" ):
         self.channel = channel
         self.title = title
         self.url = url
@@ -50,12 +51,10 @@ class Item(object):
         self.overlay = overlay
         self.password = password
         self.fulltitle = fulltitle
+        self.viewmode = viewmode
 
     def tostring(self):
         return "title=["+self.title+"], url=["+self.url+"], thumbnail=["+self.thumbnail+"], action=["+self.action+"], show=["+self.show+"], category=["+self.category+"]"
-    
-    def gettitle(self):
-        return self.title
     
     def serialize(self):
         separator = "|>|<|"
@@ -66,8 +65,9 @@ class Item(object):
         devuelve = devuelve + self.action + separator
         devuelve = devuelve + self.server + separator
         devuelve = devuelve + self.extra + separator
-        devuelve = devuelve + self.show + separator
         devuelve = devuelve + self.category + separator
+        devuelve = devuelve + self.fulltitle + separator
+        devuelve = devuelve + self.viewmode + separator
         return devuelve
     
     def deserialize(self,cadena):
@@ -78,8 +78,9 @@ class Item(object):
         self.action = trozos[3]
         self.server = trozos[4]
         self.extra = trozos[5]
-        self.show = trozos[6]
-        self.category = trozos[7]
+        self.category = trozos[6]
+        self.fulltitle = trozos[7]
+        self.viewmode = trozos[8]
 
 if __name__ == "__main__":
     item = Item(title="bla b", url="http://bla")

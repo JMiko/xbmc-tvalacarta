@@ -18,14 +18,44 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[xiptv.py] mainlist")
+    logger.info("tvalacarta.channels.xiptv mainlist")
     itemlist=[]
+    itemlist.append( Item( channel=CHANNELNAME , title="Últimos vídeos añadidos"  , action="episodios" , url="http://www.xiptv.cat/capitols" , folder=True) )
+    itemlist.append( Item( channel=CHANNELNAME , title="Televisiones locales"     , action="cadenas" , url="http://www.xiptv.cat" ))
     itemlist.append( Item( channel=CHANNELNAME , title="Todos los programas"      , action="programas" , url="http://www.xiptv.cat/programes" ))
     itemlist.append( Item( channel=CHANNELNAME , title="Programas por categorías" , action="categorias" , url="http://www.xiptv.cat/programes" ))
     return itemlist
 
+def cadenas(item):
+    logger.info("tvalacarta.channels.xiptv cadenas")
+    itemlist=[]
+
+    # Descarga la página
+    data = scrapertools.cache_page(item.url)
+    data = scrapertools.find_single_match(data,'<a href="#">Televisions locals</a>(.*?)</div>')
+
+    # Extrae las categorias (carpetas)
+    patron = '<a href="([^"]+)">([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        url = scrapedurl
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="cadena" , url=url, folder=True) )
+
+    return itemlist
+
+def cadena(item):
+    logger.info("tvalacarta.channels.xiptv cadena")
+    itemlist=[]
+    itemlist.append( Item( channel=CHANNELNAME , title="Últimos vídeos añadidos a "+item.title  , action="episodios" , url=urlparse.urljoin(item.url,"/capitols") , folder=True) )
+    itemlist.append( Item( channel=CHANNELNAME , title="Todos los programas de "+item.title      , action="programas" , url=urlparse.urljoin(item.url,"/programes") ))
+    return itemlist
+
 def categorias(item):
-    logger.info("[xiptv.py] categorias")
+    logger.info("tvalacarta.channels.xiptv categorias")
     itemlist=[]
 
     # Descarga la página
@@ -47,7 +77,7 @@ def categorias(item):
     return itemlist
 
 def programas(item):
-    logger.info("[xiptv.py] programas")
+    logger.info("tvalacarta.channels.xiptv programas")
     itemlist=[]
     
     # Extrae los programas
@@ -93,12 +123,12 @@ def programas(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     for scrapedurl,scrapedthumbnail,scrapedtitle,scrapedcategory,scrapedplot in matches:
-        title = scrapedtitle+" ("+scrapedcategory+")"
+        title = scrapertools.htmlclean(scrapedtitle)
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = scrapertools.htmlclean(scrapedplot).strip()
+        plot = scrapertools.htmlclean(scrapedcategory+"\n"+scrapedplot).strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="episodios" , url=url, page=url , thumbnail=thumbnail, fanart=thumbnail, plot=plot , show=title , category = "programas" , folder=True) )
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="episodios" , url=url, page=url , thumbnail=thumbnail, fanart=thumbnail, plot=plot , show=title , category = "programas" , viewmode="movie_with_plot", folder=True) )
 
     # Página siguiente
     patron = '<a href="([^"]+)">next</a>'
@@ -111,7 +141,7 @@ def programas(item):
 
 def episodios(item):
     import urllib
-    logger.info("[xiptv.py] episodios")
+    logger.info("tvalacarta.channels.xiptv episodios")
     itemlist = []
 
     # Descarga la página
@@ -120,45 +150,42 @@ def episodios(item):
     <li>
     <div class="item">
     <div class="image drop-shadow curved curved-hz-1 ">
-    <a href="/ba-ba/capitol/passeig-amb-barca"><img alt="Hidden_7_27611_imagen_23_infantils" src="/media/asset_publics/resources/000/042/488/video/HIDDEN_7_27611_IMAGEN_23_infantils.jpg?1321639096" /></a>
+    <a href="/la-setmana-catalunya-central/capitol/capitol-30"><img alt="Imatge_pgm30" src="/media/asset_publics/resources/000/180/341/video/imatge_pgm30.jpg?1396620287" /></a>
     </div>
-    <div class="archived"><em>històric</em></div>
     <div class="content">
     <span class="date">
-    19/08/2010    
+    04/04/2014
     </span>
     <h4>
-    <a href="/ba-ba/capitol/passeig-amb-barca">Passeig amb barca</a>
+    <a href="/la-setmana-catalunya-central/capitol/capitol-30">Capítol 30</a>
     </h4>
-    <h5><a href="/ba-ba">Ba-ba</a></h5>
-    <span class="duration">05:12</span>
-    <span class="views">119 reproduccions</span>
-    <p>Un passeig amb barca pel mar pot ser tota una aventura!</p>
+    <p><h5><a href="/la-setmana-catalunya-central" target="_blank">La setmana Catalunya central</a> </h5>
+    </p>
+    <span class="duration">25:02</span>
+    <span class="views">0 reproduccions</span>
+    <p>Al llarg dels segle XIX el Seminari de Vic va anar forjant una col·lecció de Ciències Naturals que representa, a dia d’avui, un valuós testimoni històric. Al programa d’avui coneixerem el nou destí de les peces que integren aquesta col·lecció i quin és el seu nou destí: integrar-se al fons del Museu del Ter de Manlleu. En aquesta edició de ‘La S...</p>
+    <div class="related">
     '''
-    patron  = '<li>[^<]+'
-    patron += '<div class="item">[^<]+'
-    patron += '<div class="[^<]+'
-    patron += '<a href="([^"]+)"><img alt="[^"]+" src="([^"]+)".*?'
-    patron += '<div class="content">[^<]+'
-    patron += '<span class="date">([^<]+)</span>[^<]+'
-    patron += '<h4>[^<]+'
-    patron += '<a href="[^"]+">([^>]+)</a>[^<]+'
-    patron += '</h4>.*?'
-    patron += '<span class="duration">([^<]+)</span>[^<]+'
-    patron += '<span class="views">[^<]+</span>[^<]+'
-    patron += '<p>([^>]+)</p>'
+    patron = '<li[^<]+<div class="item">(.*?)<div class="related">'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedthumbnail,fecha,scrapedtitle,duracion,scrapedplot in matches:
-        title = scrapedtitle + " ("+fecha.strip()+") ("+duracion.strip()+")"
-        url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = scrapedplot
+    for match in matches:
+        fecha = scrapertools.find_single_match(match,'<span class="date">([^<]+)</span>').strip()
+        duracion = scrapertools.find_single_match(match,'<span class="duration">([^<]+)</span>').strip()
+        titulo_programa = scrapertools.find_single_match(match,'<p><h5><a[^>]+>([^<]+)</a>').strip()
+        titulo_episodio = scrapertools.find_single_match(match,'<h4[^<]+<a[^>]+>([^<]+)</a>').strip()
+        scrapedurl = scrapertools.find_single_match(match,'<h4[^<]+<a href="([^"]+)"')
+        scrapedthumbnail = scrapertools.find_single_match(match,'<img alt="[^"]+" src="([^"]+)"')
+        scrapedplot = scrapertools.find_single_match(match,'<p>([^<]+)</p>').strip()
+
+        title = scrapertools.htmlclean(titulo_programa + " - " + titulo_episodio + " (" + fecha + ") (" + duracion + ")")
+        url = urlparse.urljoin( item.url , scrapedurl )
+        thumbnail = urlparse.urljoin( item.url , scrapedthumbnail )
+        plot = scrapertools.htmlclean(scrapedplot)
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="xiptv", url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot , show=item.show , category = item.category , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=title , action="play" , server="xiptv", url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot , show=item.show , category = item.category , viewmode="movie_with_plot", folder=False) )
 
     # Página siguiente
     patron = '<a href="([^"]+)">next</a>'

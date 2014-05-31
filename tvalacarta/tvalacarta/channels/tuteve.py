@@ -110,44 +110,50 @@ def episodios(item):
     itemlist=[]
 
     '''
-    <a href="/videogaleria/programa/164741/2013-08-01-capitulo-74" id="itmVideo1" class="itmVideo">
-    <div class="imgCont"><img src="http://cdn.tuteve.tv/files/2013/08/01/FN.jpg" width="300" height="225" class="imgVideo" border="0" title="Capítulo 74" alt=""/></div>
+    <div class="itmVideo" style="margin-right:0px; margin-left:20px;">
+    <div class="imgCont">
+    <a href="/videogaleria/programa/178856/2013-10-11-capitulo-102" id="itmVideo1">
+    <img src="http://cdn.tuteve.tv/files/2013/10/11/316x202_Avenida.jpg" width="300" height="225" class="imgVideo" border="0" title="Avenida Perú - Capítulo 102" alt="Avenida Perú - Capítulo 102"/>
+    </a></div>
     <div class="itmDesc">
-    <div class="infoItem"> <span class="fechaItem">1.08.2013</span>
+    <div class="infoItem"> <span class="fechaItem">11.10.2013</span>
     <div class="vistasItem">
     <div class="icoVistas" style="float:left"></div>
-    <span style="float:left"><b style="font-size:13px">1727</b> visitas</span> </div>
+    <span style="float:left"><b style="font-size:13px">10307</b> visitas</span> </div>
     </div>
-    <div class="tituloItem">Fina Estampa<br />
-    <span style="font-size:13px">Capítulo 74</span></div>
-    <div class="introItem">René besará a Griselda generando la sorpresa de todos. Además, Antenor se cruzará a Patricia en un restaurante y la verá con nuevo novio....</div>
-    <div class="botonItem">
+    <div class="tituloItem">
+    Avenida Perú                    <br />
+    </div>
+    <div class="titulocapitulo">Capítulo 102</div>
+    <div class="introItem">María Fe revelará su mayor secreto frente a todos....</div>
+    <div class="botonItem"><a href="/videogaleria/programa/178856/2013-10-11-capitulo-102">
     <div class="icoBullet"></div>
-    <span class="botonTexto">VER VIDEO</span></div>
+    <span class="botonTexto">VER VIDEO</span></a></div>
     </div>
-    </a>
+    </div>
     '''
     # Extrae los episodios
     logger.info("item.url="+item.url)
     data = scrapertools.cachePage( item.url )
     logger.info("data=#"+data+"#")
-    patron  = '<a href="([^"]+)"[^<]+'
-    patron += '<div class="imgCont"><img src="([^"]+)"[^<]+</div[^<]+'
+    patron = '<div class="imgCont"[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)"[^<]+</a[^<]+</div[^<]+'
     patron += '<div class="itmDesc".*?'
-    patron += '<div class="tituloItem"[^<]+<br[^<]+'
-    patron += '<span[^>]+>([^<]+)</span></div[^<]+'
+    patron += '<div class="tituloItem">([^<]+)<br[^<]+</div[^<]+'
+    patron += '<div class="titulocapitulo">([^<]+)</div[^<]+'
     patron += '<div class="introItem">([^<]+)<'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedthumbnail,scrapedtitle,scrapedplot in matches:
-        title = scrapedtitle.strip()
+    for scrapedurl,scrapedthumbnail,scrapedtitle,episodio,scrapedplot in matches:
+        title = scrapedtitle.strip()+" "+episodio
         title = scrapertools.htmlclean(title)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = ""
+        plot = scrapedplot
         url = urlparse.urljoin(item.url,scrapedurl)
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item( channel=item.channel , title=title , action="partes" , url=url , thumbnail=thumbnail , plot=plot , show=item.title , fanart=thumbnail , folder=True ) )
+        itemlist.append( Item( channel=item.channel , title=title , action="partes" , url=url , thumbnail=thumbnail , plot=plot , show=item.title , fanart=thumbnail , viewmode="movie_with_plot", folder=True ) )
 
     try:
         next_page=scrapertools.get_match(data,'<a class="botonNav" href="([^"]+)"[^<]+<div class="title">SIGUIENTE</div>')
@@ -161,90 +167,29 @@ def partes(item):
     logger.info("tvalacarta.channels.tuteve partes")
     itemlist=[]
 
-    '''
-    <ul id="mycarousel" class="jcarousel-skin-tango">
-    <li> 
-    <script language="javascript">
-    function setShare(indice){
-    sUrl = "http://play.tuteve.tv/videogaleria/programa/183915/2013-11-06-capitulo-120?b=" + indice;
-    document.getElementById('fblike').setAttribute('href', sUrl);
-    FB.XFBML.parse(document.getElementById('fbdiv'));
-    $('.twitter-share-button').attr('data-url',location.href + '?b=3');
-    twttr.widgets.load();
-    }
-    </script>
-    <div class="itmThumbFotos" onclick="setVideoFrame3('2a8e578f4cbe26a89701f7057592747f','oid=202983677&id=166519732&hash=eb56bceea6a94365&hd=2','vk','play*programa*avenida-peru',606,350,1,'Avenida Per&uacute; - Cap&iacute;tulo 120 (Parte 1)','true','nulo','','');setShare(1)"> 
-    <img src="http://cs525510.vk.me/u202983677/video/l_d81fb11c.jpg" width="150" height="113" class="imgThumb" />
-    <div class="layer" id="layer_1">
-    <div class="numero" id="num_1">1</div>
-    </div>
-    <div class="titulo" id="titulo_1">Avenida Perú - Capítulo 120 (Parte 1)</div>
-    </div>
-    </li>
-    '''
     # Extrae los episodios
     data = scrapertools.cachePage(item.url)
     try:
         data = scrapertools.get_match(data,'<ul id="mycarousel" class="jcarousel-skin-tango">(.*?)</ul>')
-        patron  = '<li[^<]+'
-        patron += '<script language="javascript"[^<]+'
-        patron += '</script[^<]+'
-        patron += "<div class=\"itmThumbFotos\" onclick=\"setVideoFrame3\('([^']+)','([^']+)','([^']+)','([^']+)',\d+,\d+,\d+,'([^']+)'[^<]+"
-        patron += '<img src="([^"]+)"'
+        patron = "<li>(.*?)</li>"
         matches = re.compile(patron,re.DOTALL).findall(data)
-        if DEBUG: scrapertools.printMatches(matches)
+        scrapertools.printMatches(matches)
 
-        for id1,id2,server,id3,scrapedtitle,scrapedthumbnail in matches:
-            title = scrapedtitle.strip()
-            title = scrapertools.htmlclean(title)
-            thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-            plot = ""
-            itemlist.append( get_item_video(item,title,thumbnail,id2,server) )
-    except:
-        logger.info(traceback.format_exc())
+        for bloque in matches:
+            title = scrapertools.find_single_match(bloque,'<div class="titulo"[^>]+>([^<]+)</div>').strip()
+            thumbnail = scrapertools.find_single_match(bloque,'<img src="([^"]+)"')
+            plot = scrapertools.find_single_match(bloque,"onclick=\"cargarVideoplayer\('([^']+)'")
+            url = scrapertools.find_single_match(bloque,"onclick=\"cargarVideoplayer\('([^']+)'")
+            if url.startswith("http://vk"):
+                server = "vk"
+            else:
+                server = "youtube"
 
-    if len(itemlist)==0:
-        patron = "setVideoFrame\('([^']+)','([^']*)',\d+,'([^']+)'"
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        if DEBUG: scrapertools.printMatches(matches)
-
-        for id1,id2,server in matches:
-            title = item.title
-            title = scrapertools.htmlclean(title)
-            thumbnail = ""
-            plot = ""
-            itemlist.append( get_item_video(item,title,thumbnail,id2,server) )
-
-    try:
-        #<a href="/programas/destacados/alaska-y-mario/episodios?start_20=20"><span class="link">Próximo</span>
-        next_page=scrapertools.get_match(data,'<a href="([^"]+)"><span class="link">Pr')
-        #/videos?prog=3798&#038;v=1&#038;pag=2
-        itemlist.append( Item( channel=item.channel , title=">> Página siguiente" , action="episodios" , url=urlparse.urljoin(item.url,next_page) ) )
+            itemlist.append( Item( channel=item.channel , title=title , action="play" , server=server , url=url , thumbnail=thumbnail , show=title , fanart=thumbnail , folder=False ) )
     except:
         logger.info(traceback.format_exc())
 
     return itemlist
-
-def get_item_video(item,title,thumbnail,id,server):
-    new_item = Item()
-
-    if server=="vk":
-        #setVideoFrame3('2a8e578f4cbe26a89701f7057592747f','oid=186741255&id=165693856&hash=3aad0b92ee9c0ba8&hd=1','vk','play*programa*fina-estampa',606,350,1,'Fina Estampa - Cap&iacute;tulo 77 (Parte 1)','true','nulo','')
-        #http://vk.com/video_ext.php?oid=146263567&id=163818182&hash=2dafe3b87a4da653
-        url = "http://vk.com/video_ext.php?"+id
-
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        new_item = Item( channel=item.channel , title=title , action="play" , server="vk" , url=url , thumbnail=thumbnail , show=title , fanart=thumbnail , folder=False )
-
-    elif server=="yt":
-        #setVideoFrame3('2a8e578f4cbe26a89701f7057592747f','01SjStN4wx8','yt','play*programa*economia-en-directo',606,350,1,'  Econom&iacute;a en Directo 02-08-2013 (Parte 1)','true','nulo','')
-        #http://www.youtube.com/watch?v=01SjStN4wx8
-        url = "http://www.youtube.com/watch?v="+id
-
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        new_item = Item( channel=item.channel , title=title , action="play" , server="youtube" , url=url , thumbnail=thumbnail , show=title , fanart=thumbnail , folder=False )
-
-    return new_item
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
 def test():

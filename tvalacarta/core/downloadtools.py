@@ -455,7 +455,7 @@ def downloadtitle(url,title):
     fullpath = getfilefromtitle(url,title)
     return downloadfile(url,fullpath)
 
-def downloadbest(video_urls,title,continuar=False):
+def downloadbest(video_urls,title,continuar=False,silent=False):
     
     # Le da la vuelta, para poner el de más calidad primero ( list() es para que haga una copia )
     invertida = list(video_urls)
@@ -478,7 +478,7 @@ def downloadbest(video_urls,title,continuar=False):
         
         # Descarga
         try:
-            ret = downloadfile(url,fullpath,continuar=continuar)
+            ret = downloadfile(url,fullpath,continuar=continuar,silent=silent)
         # Llegados a este punto, normalmente es un timeout
         except urllib2.URLError, e:
             ret = -2
@@ -556,13 +556,23 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
             grabado = 0
     
         # Crea el diálogo de progreso
-        if not silent:
-            progreso = xbmcgui.DialogProgress()
-            progreso.create( "plugin" , "Descargando..." , url , nombrefichero )
+        if not silent:            
             #progreso.create( "plugin" , "Descargando..." , os.path.basename(nombrefichero)+" desde "+urlparse.urlparse(url).hostname )
+
+            try:
+                progreso = xbmcgui.DialogProgressBG()
+                progreso.create("Descargas tvalacarta", "Descargando "+os.path.basename(nombrefichero))
+            except:
+                progreso = xbmcgui.DialogProgress()
+                progreso.create( "plugin" , "Descargando..." , url , os.path.basename(nombrefichero) )
+
         else:
             progreso = ""
-    
+            try:
+                xbmc.executebuiltin((u'XBMC.Notification("Descargas tvalacarta", "'+os.path.basename(nombrefichero)+'", 2000)'))
+            except:
+                pass
+
         # Login y password Filenium
         # http://abcd%40gmail.com:mipass@filenium.com/get/Oi8vd3d3/LmZpbGVz/ZXJ2ZS5j/b20vZmls/ZS9kTnBL/dm11/b0/?.zip
         if "filenium" in url:
@@ -666,11 +676,26 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
                                 #progreso.update( percent , "Descargando %.2fMB de %.2fMB (%d%%)" % ( descargadosmb , totalmb , percent),"Falta %s - Velocidad %.2f Kb/s" % ( sec_to_hms(tiempofalta) , velocidad/1024 ), os.path.basename(nombrefichero) )
                                 progreso.update( percent , "%.2fMB/%.2fMB (%d%%) %.2f Kb/s %s falta " % ( descargadosmb , totalmb , percent , velocidad/1024 , sec_to_hms(tiempofalta)))
                         break
+
+                        try:
+                            if xbmc.abortRequested:
+                                logger.error( "XBMC Abort requested 1" )
+                                return -1
+                        except:
+                            pass
+
                     except:
+                        try:
+                            if xbmc.abortRequested:
+                                logger.error( "XBMC Abort requested 2" )
+                                return -1
+                        except:
+                            pass
+
                         reintentos = reintentos + 1
                         logger.info("ERROR en la descarga del bloque, reintento %d" % reintentos)
-                        for line in sys.exc_info():
-                            logger.error( "%s" % line )
+                        import traceback
+                        logger.error( traceback.format_exc() )
                 
                 # El usuario cancelo la descarga
                 try:
@@ -692,14 +717,8 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
                     return -2
     
             except:
-                import traceback,sys
-                from pprint import pprint
-                exc_type, exc_value, exc_tb = sys.exc_info()
-                lines = traceback.format_exception(exc_type, exc_value, exc_tb)
-                for line in lines:
-                    line_splits = line.split("\n")
-                    for line_split in line_splits:
-                        logger.error(line_split)
+                import traceback
+                logger.error( traceback.format_exc() )
 
                 f.close()
                 if not silent:
@@ -730,7 +749,10 @@ def downloadfile(url,nombrefichero,headers=[],silent=False,continuar=False):
     except:
         pass
     if not silent:
-        progreso.close()
+        try:
+            progreso.close()
+        except:
+            pass
 
     logger.info("Fin descarga del fichero")
 

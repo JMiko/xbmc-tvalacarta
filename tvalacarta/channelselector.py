@@ -52,6 +52,11 @@ def mainlist(params,url,category):
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
+    if config.get_setting("forceview")=="true":
+        # Confluence - Thumbnail
+        import xbmc
+        xbmc.executebuiltin("Container.SetViewMode(500)")
+
 def getchanneltypes():
     logger.info("channelselector.getchanneltypes")
     itemlist = []
@@ -76,6 +81,11 @@ def channeltypes(params,url,category):
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
 
+    if config.get_setting("forceview")=="true":
+        # Confluence - Thumbnail
+        import xbmc
+        xbmc.executebuiltin("Container.SetViewMode(500)")
+
 def listchannels(params,url,category):
     logger.info("channelselector.listchannels")
 
@@ -92,6 +102,11 @@ def listchannels(params,url,category):
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
     xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=True )
+
+    if config.get_setting("forceview")=="true":
+        # Confluence - Thumbnail
+        import xbmc
+        xbmc.executebuiltin("Container.SetViewMode(500)")
 
 def filterchannels(category):
     returnlist = []
