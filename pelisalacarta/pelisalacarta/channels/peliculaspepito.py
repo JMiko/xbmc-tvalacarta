@@ -5,6 +5,8 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
+import os, sys
+import hashlib
 import xbmc, xbmcgui
 
 from core import logger
@@ -22,12 +24,19 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-PELICULASPEPITO_REQUEST_HEADERS = []
-PELICULASPEPITO_REQUEST_HEADERS.append(["User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:28.0) Gecko/20100101 Firefox/28.0"])
-PELICULASPEPITO_REQUEST_HEADERS.append(["Accept-Encoding","gzip, deflate"])
-PELICULASPEPITO_REQUEST_HEADERS.append(["Accept-Language","es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"])
-PELICULASPEPITO_REQUEST_HEADERS.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"])
-PELICULASPEPITO_REQUEST_HEADERS.append(["Connection","keep-alive"])
+ENLACESPEPITO_REQUEST_HEADERS = [
+    ["User-Agent" , "Mozilla/5.0 (Windows NT 6.1; rv:28.0) Gecko/20100101 Firefox/28.0"],
+    ["Accept-Encoding","gzip, deflate"],
+    ["Accept-Language" , "es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3"],
+    ["Accept" , "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"],
+    ["Cookie" , "__test"],
+    ["Cookie" , "_ga=GA1.2.2034841797.1402481351"],
+    ["Referer" , "http://the-invisible-woman.peliculaspepito.com/"],
+    ["Connection" , "keep-alive"]
+]
+
+SERIES_PEPITO    = 0
+PELICULAS_PEPITO = 1
 
 def isGeneric():
     return True
@@ -41,6 +50,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="nuevas"        , title="Últimas añadidas", url="http://www.peliculaspepito.com/"))
     itemlist.append( Item(channel=__channel__, action="listalfabetico"   , title="Listado alfabético"))
     itemlist.append( Item(channel=__channel__, action="lomasvisto"    , title="Lo mas visto",    url="http://www.peliculaspepito.com/"))
+    itemlist.append( Item(channel=__channel__, action="allserieslist"    , title="Listado completo"))
     itemlist.append( Item(channel=__channel__, action="buscar"        , title="Buscador", url="http://www.peliculaspepito.com/"))
     
     return itemlist
@@ -50,9 +60,9 @@ def buscar(item):
     keyboard.doModal()
     busqueda=keyboard.getText()
     data = scrapertools.cachePage("http://www.peliculaspepito.com/buscador/" + busqueda + "/")
-    data = scrapertools.get_match(data,'<ul class="lista_peliculas">(.*?)</ul>')
+    data = scrapertools.get_match(data,'<ul class="lp">(.*?)</ul>')
     patron  = '<li>'
-    patron += '<a.*?href="([^"]+)"[^<]+'
+    patron += '<a.*?href="([^"]+)">'
     patron += '<img.*?alt="([^"]+)" src="([^"]+)"[^>]+>'
     
     matches = re.compile(patron,re.DOTALL).findall(data)
@@ -83,22 +93,18 @@ def novedades(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<ul class="lista_peliculas">(.*?)</ul>')
+    #data = scrapertools.get_match(data,'<ul class="lista_peliculas">(.*?)</ul>')
+    data = scrapertools.get_match(data,'<ul class="lp">(.*?)</ul>')
     
     '''
-    <ul class="lista_peliculas">
-    <li>
-    <a class="tilcelpel" href="http://capitan-america-el-soldado-de-invierno.peliculaspepito.com/" title="Capitán América: El soldado de invierno">
-    <img id="img_11011" src="http://s.peliculaspepito.com/peliculas/11011-capitan-america-2-el-retorno-del-primer-vengador-thumb.jpg" alt="Capitán América: El soldado de invierno" data-id="11011"></img>
-	
-	<ul class="lista_peliculas">
-	<li>
-	<a class="tilcelpel" title="Capitán América: El soldado de invierno" href="http://capitan-america-el-soldado-de-invierno.peliculaspepito.com/">
-	<img id="img_11011" data-id="11011" alt="Capitán América: El soldado de invierno" src="http://s.peliculaspepito.com/peliculas/11011-capitan-america-2-el-retorno-del-primer-vengador-thumb.jpg" />
-	</a>
-	'''
+    [06-06-2014]
+    <ul class="lp"><li><a class="tilcelpel" title="X-Men: Dias del futuro pasado" href="http://x-men-dias-del-futuro-pasado.peliculaspepito.com/"><img id="img_11020" data-id="11020" alt="X-Men: Dias del futuro pasado" src="http://s.peliculaspepito.com/peliculas/11020-x-men-dias-del-futuro-pasado-124853-thumb.jpg" /></a><div class="pfestrenoportada"><span class="text-warning">06-06-2014</span></div><div id="imgtilinforat11020" class="til_info_rat "><p><i class="icon-star icon-white"></i>8.6</p></div><div id="imgtilinfo11020" class="til_info"><p><a title="X-Men: Dias del futuro pasado" href="http://x-men-dias-del-futuro-pasado.peliculaspepito.com/">X-Men: Dias del futuro pasado</a></p><p class="pcalidi"><span class="flag flag_0"></span></p><p class="pidilis">TS&nbsp;Screener</p></div><a title="X-Men: Dias del futuro pasado" href="http://x-men-dias-del-futuro-pasado.peliculaspepito.com/"><div data-id="11020" id="til_info_sensor11020" data-on="0" data-an="0" class="til_info_sensor"></div></a></li>
+    [.....]
+    </ul>
+    '''
     patron  = '<li>'
-    patron += '<a.*?href="([^"]+)"[^<]+'
+    #patron += '<a.*?href="([^"]+)"[^<]+'
+    patron += '<a.*?href="([^"]+)">'
     patron += '<img.*?alt="([^"]+)" src="([^"]+)"[^>]+>.*?<p class="pidilis">(.*?)</p>'
 
 
@@ -213,29 +219,18 @@ def lomasvisto(item):
     return itemlist
 
 def allserieslist(item):
-    logger.info("[peliculaspepito.py] allserieslist")
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,"<ul class='nav' id='lista_completa_series_ul'>(.*?)</ul>")
-    patron = "<li><a href='([^']+)'>([^<]+)</a></li>"
-
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
+    logger.info("[peliculaspepito.py] completo()")
     itemlist = []
-    for match in matches:
-        scrapedtitle = unicode( match[1].strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedurl = match[0]
-        scrapedthumbnail = ""
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
-        # Ajusta el encoding a UTF-8
-        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        scrapedplot = unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")
-
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, show=title))
+    # Carga el menú "Alfabético" de peliculas
+    item = Item(channel=__channel__, action="listalfabetico")
+    items_letras = listalfabetico(item)
+    
+    # Para cada letra
+    for item_letra in items_letras:
+        # Lee las series
+        items_programas = peliculas(item_letra)
+        itemlist.extend( items_programas )
 
     return itemlist
 
@@ -394,15 +389,41 @@ def findvideos(item):
 
         itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, show=item.show, folder=False))
 
+    # STRM para todos los enlaces de servidores disponibles
+    # Si no existe el archivo STRM de la peícula muestra el item ">> Añadir a la biblioteca..."
+    try: itemlist.extend( file_cine_library(item) )
+    except: pass
+
     return itemlist
+
+def file_cine_library(item):
+    import os
+    from platformcode.xbmc import library
+    librarypath = os.path.join(config.get_library_path(),"CINE")
+    archivo = library.title_to_folder_name(item.title.strip())
+    strmfile = archivo+".strm"
+    strmfilepath = os.path.join(librarypath,strmfile)
+
+    if not os.path.exists(strmfilepath):
+        itemlist.append( Item(channel=item.channel, title=">> Añadir a la biblioteca...", url=item.url, action="add_file_cine_library", extra="episodios", show=archivo) )
+
+    return itemlist
+
+def add_file_cine_library(item):
+    from platformcode.xbmc import library, xbmctools
+    library.savelibrary( titulo=item.show , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie="" , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
+
+    itemlist = []
+    itemlist.append(Item(title='El vídeo '+item.show+' se ha añadido a la biblioteca'))
+    xbmctools.renderItems(itemlist, "", "", "")
+
+    return
 
 def play(item):
     logger.info("[seriespepito.py] play")
     itemlist=[]
 
-    import seriespepito
-
-    mediaurl = seriespepito.get_server_link_peliculas(item.url)
+    mediaurl = get_server_link_peliculas(item.url)
 
     # Busca el vídeo
     videoitemlist = servertools.find_video_items(data=mediaurl)
@@ -417,6 +438,89 @@ def play(item):
             i=i+1
 
     return itemlist
+
+def get_cookie(html):
+    import cookielib
+
+    ficherocookies = os.path.join( config.get_setting("cookies.dir"), 'cookies.dat' )
+    cj = cookielib.MozillaCookieJar()
+    cj.load(ficherocookies,ignore_discard=True)
+
+    cookie_pat = "cookie\('([a-zA-Z0-9]+)'\);"
+    cookie_name = scrapertools.find_single_match(html, cookie_pat)
+
+    cookie_value = ""
+
+    for cookie in cj:
+        if cookie.name == cookie_name:
+            cookie_value = cookie.value
+            break
+
+    return cookie_value
+
+# Busca el enlace correcto y lo procesa capturando los caracteres
+# y posiciones del Javascript
+#
+def convert_link(html, link_type):
+
+    hash_seed = get_cookie(html);
+    logger.info("[seriespepito.py] hash_seed="+hash_seed)
+
+    HASH_PAT = 'CryptoJS\.(\w+)\('
+    hash_func = scrapertools.find_single_match(html, HASH_PAT).lower()
+
+    if hash_func == "md5":
+        hash = hashlib.md5(hash_seed).hexdigest()
+    else:
+        hash = hashlib.sha256(hash_seed).hexdigest()
+
+    if link_type == PELICULAS_PEPITO:
+        hash += '0'
+    logger.info("[seriespepito.py] hash="+hash)
+
+    HREF_SEARCH_PAT = '<a class=".' + hash + '".*?href="http://www.enlacespepito.com\/([^\.]*).html"><i class="icon-(?:play|download)">'
+    logger.info("[seriespepito.py] HREF_SEARCH_PAT="+HREF_SEARCH_PAT)
+
+    href = list(scrapertools.find_single_match(html, HREF_SEARCH_PAT))
+    logger.info("[seriespepito.py] href="+repr(href))
+    CHAR_REPLACE_PAT = '[a-z]\[(\d+)\]="(.)";'
+
+    matches = re.findall(CHAR_REPLACE_PAT , html, flags=re.DOTALL|re.IGNORECASE)
+    logger.info("[seriespepito.py] matches="+repr(matches))
+
+    for match in matches:
+        href[int(match[0])] = match[1]
+
+    href = ''.join(href)
+
+    return 'http://www.enlacespepito.com/' + href + '.html'
+
+def get_server_link(first_link, link_type):
+    logger.info("[seriespepito.py] first_link="+str(first_link)+", link_type="+str(link_type))
+
+    html = scrapertools.downloadpage(first_link, headers = ENLACESPEPITO_REQUEST_HEADERS)
+    logger.info("[seriespepito.py] html="+html)
+
+    fixed_link = convert_link(html, link_type)
+    logger.info("[seriespepito.py] fixed_link="+fixed_link)
+
+    # Sin el Referer da 404
+    #ENLACESPEPITO_REQUEST_HEADERS.append(['Referer', first_link])
+
+    return scrapertools.get_header_from_response(fixed_link, header_to_get="location", headers = ENLACESPEPITO_REQUEST_HEADERS)
+
+# Estas funciones son las únicas que deberían llamarse desde fuera
+#
+def get_server_link_series(first_link):
+    return get_server_link(first_link, SERIES_PEPITO)
+
+def get_server_link_peliculas(first_link):
+
+    return get_server_link(first_link, PELICULAS_PEPITO)
+
+
+
+
 
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
