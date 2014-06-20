@@ -27,68 +27,90 @@ def isGeneric():
 def mainlist(item):
     logger.info("[mejortorrent.py] mainlist")
 
-    itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Películas"    , action="peliculas"   , url="http://www.mejortorrent.com/torrents-de-peliculas.html"))
-    itemlist.append( Item(channel=__channel__, title="Series"       , action="series"      , url="http://www.mejortorrent.com/torrents-de-series.html"))
-    itemlist.append( Item(channel=__channel__, title="Documentales" , action="documentales", url="http://www.mejortorrent.com/torrents-de-documentales.html"))
+    itemlist = [
+        Item(channel=__channel__, title="Películas"    , action="getlist"   , url="http://www.mejortorrent.com/torrents-de-peliculas.html"),
+        Item(channel=__channel__, title="Películas HD"    , action="getlist"   , url="http://www.mejortorrent.com/torrents-de-peliculas-hd-alta-definicion.html"),
+        Item(channel=__channel__, title="Series"       , action="getlist"      , url="http://www.mejortorrent.com/torrents-de-series.html"),
+        Item(channel=__channel__, title="Series listado alfabético"       , action="listalfabetico"      , url="http://www.mejortorrent.com/torrents-de-series.html"),
+        Item(channel=__channel__, title="Series HD"       , action="getlist"      , url="http://www.mejortorrent.com/torrents-de-series-hd-alta-definicion.html"),
+        Item(channel=__channel__, title="Documentales" , action="getlist", url="http://www.mejortorrent.com/torrents-de-documentales.html")
+    ]
 
     return itemlist
 
-def peliculas(item):
-    logger.info("[mejortorrent.py] peliculas")
+def listalfabetico(item):
+    logger.info("[mejortorrent.py] listalfabetico")
+
     itemlist = []
 
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    patron  = '<a href="(/peli-descargar-torrent[^"]+)">[^<]+'
-    patron += '<img src="([^"]+)"[^<]+</a>'
+    for letra in ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']:
+        itemlist.append( Item(channel=__channel__, action="getlist" , title=letra, url="http://www.mejortorrent.com/series-letra-" + letra.lower() + ".html"))
 
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for scrapedurl,scrapedthumbnail in matches:
-        title = scrapertools.get_match(scrapedurl,"/peli-descargar-torrent-\d+-(.*?)\.html")
-        title = title.replace("-"," ")
-        url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = ""
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False) )
-
-
-    # Extrae el paginador
-    patronvideos  = "<a href='([^']+)' class='paginar'> Siguiente >>"
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="getlist" , title="Todas",url="http://www.mejortorrent.com/series-letra..html"))
 
     return itemlist
 
-def series(item):
-    logger.info("[mejortorrent.py] series")
+
+def getlist(item):
+    logger.info("[mejortorrent.py] seriesydocs")
     itemlist = []
 
-    # Descarga la página
     data = scrapertools.cachePage(item.url)
+
+    # pelis
+    # <a href="/peli-descargar-torrent-9578-Presentimientos.html">
+    # <img src="/uploads/imagenes/peliculas/Presentimientos.jpg" border="1"></a
+    #
+    # series
+    #
     #<a href="/serie-descargar-torrents-11589-11590-Ahora-o-nunca-4-Temporada.html">
     #<img src="/uploads/imagenes/series/Ahora o nunca4.jpg" border="1"></a>  
-    patron  = '<a href="(/serie-descargar-torrent[^"]+)">[^<]+'
-    patron += '<img src="([^"]+)"[^<]+</a>'
+    #
+    # docs
+    #
+    #<a href="/doc-descargar-torrent-1406-1407-El-sueno-de-todos.html">
+    #<img border="1" src="/uploads/imagenes/documentales/El sueno de todos.jpg"></a>
+
+    if item.url.find("peliculas") > -1:
+        patron  = '<a href="(/peli-descargar-torrent[^"]+)">[^<]+'
+        patron += '<img src="([^"]+)"[^<]+</a>'
+        patron_enlace = "/peli-descargar-torrent-\d+(.*?)\.html"
+        action = "play"
+        folder = False
+        extra = ""
+    elif item.url.find("series-letra") > -1:
+        patron  = "<a href='(/serie-descargar-torrent[^']+)'>()"
+        patron_enlace = "/serie-descargar-torrents-\d+-\d+-(.*?)\.html"
+        action = "episodios"
+        folder = True
+        extra = "series"
+    elif item.url.find("series") > -1:
+        patron  = '<a href="(/serie-descargar-torrent[^"]+)">[^<]+'
+        patron += '<img src="([^"]+)"[^<]+</a>'
+        patron_enlace = "/serie-descargar-torrents-\d+-\d+-(.*?)\.html"
+        action = "episodios"
+        folder = True
+        extra = "series"
+    else:
+        patron  = '<a href="(/doc-descargar-torrent[^"]+)">[^<]+'
+        patron += '<img src="([^"]+)"[^<]+</a>'
+        patron_enlace = "/doc-descargar-torrent-\d+-\d+-(.*?)\.html"
+        action = "episodios"
+        folder = True
+        extra = "docus"
+
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     for scrapedurl,scrapedthumbnail in matches:
-        title = scrapertools.get_match(scrapedurl,"/serie-descargar-torrents-\d+-\d+-(.*?)\.html")
+        title = scrapertools.get_match(scrapedurl, patron_enlace)
         title = title.replace("-"," ")
         url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        thumbnail = urlparse.urljoin(item.url, urllib.quote(scrapedthumbnail))
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action=action, title=title , url=url , thumbnail=thumbnail , plot=plot , folder=folder, extra=extra) )
 
 
     # Extrae el paginador
@@ -98,7 +120,7 @@ def series(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="series", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="getlist", title="Página siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -108,22 +130,30 @@ def episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    
+
     total_capis = scrapertools.get_match(data,"<input type='hidden' name='total_capis' value='(\d+)'>")
     tabla = scrapertools.get_match(data,"<input type='hidden' name='tabla' value='([^']+)'>")
     titulo = scrapertools.get_match(data,"<input type='hidden' name='titulo' value='([^']+)'>")
-    
+
+    item.thumbnail = scrapertools.find_single_match(data, "src='http://www\.mejortorrent\.com(/uploads/imagenes/" + tabla + "/[a-zA-Z0-9_ ]+.jpg)'")
+    item.thumbnail = 'http://www.mejortorrent.com' + urllib.quote(item.thumbnail)
+
     #<form name='episodios' action='secciones.php?sec=descargas&ap=contar_varios' method='post'>
     data = scrapertools.get_match(data,"<form name='episodios' action='secciones.php\?sec=descargas\&ap=contar_varios' method='post'>(.*?)</form>")
     '''
-    <td bgcolor='#C8DAC8' style='border-bottom:1px solid black;'>2x05 -</td>
-    <td width='120' bgcolor='#C8DAC8' align='right' style='border-right:1px solid black; border-bottom:1px solid black;'><div style='color:#666666; font-size:9px; margin-right:5px;'>Fecha: 2012-08-26</div></td>
+    <td bgcolor='#C8DAC8' style='border-bottom:1px solid black;'><a href='/serie-episodio-descargar-torrent-18741-Juego-de-tronos-4x01.html'>4x01 - Episodio en V.O. Sub Esp.</a></td>
+    <td width='120' bgcolor='#C8DAC8' align='right' style='border-right:1px solid black; border-bottom:1px solid black;'><div style='color:#666666; font-size:9px; margin-right:5px;'>Fecha: 2014-04-07</div></td>
     <td width='60' bgcolor='#F1F1F1' align='center' style='border-bottom:1px solid black;'>
-    <input type='checkbox' name='episodios[4]' value='11815'>
+    <input type='checkbox' name='episodios[1]' value='18741'>
     '''
-                   
-    patron  = "<td bgcolor[^>]+>([^<]+)</td>[^<]+"
-    patron += "<td[^<]+<div[^>]+>Fecha. ([^<]+)</div></td>[^<]+"
+
+    if item.extra == "series":
+        patron  = "<td bgcolor[^>]+><a[^>]+>([^>]+)</a></td>[^<]+"
+    else:
+        patron  = "<td bgcolor[^>]+>([^>]+)</td>[^<]+"
+
+
+    patron += "<td[^<]+<div[^>]+>Fecha: ([^<]+)</div></td>[^<]+"
     patron += "<td[^<]+"
     patron += "<input type='checkbox' name='([^']+)' value='([^']+)'"
 
@@ -134,9 +164,9 @@ def episodios(item):
         title = scrapedtitle.strip()+" ("+fecha+")"
         url = "http://www.mejortorrent.com/secciones.php?sec=descargas&ap=contar_varios"
         #"episodios%5B1%5D=11744&total_capis=5&tabla=series&titulo=Sea+Patrol+-+2%AA+Temporada"
+        thumbnail=item.thumbnail
         post = urllib.urlencode( { name:value , "total_capis":total_capis , "tabla":tabla , "titulo":titulo } )
         logger.info("post="+post)
-        thumbnail = item.thumbnail
         plot = item.plot
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , extra=post, folder=False) )
@@ -174,9 +204,21 @@ def play(item):
     else:
         data = scrapertools.cache_page(item.url, post=item.extra)
         logger.info("data="+data)
+
+        # series
+        #
         #<a href="http://www.mejortorrent.com/uploads/torrents/series/falling-skies-2-01_02.torrent"
         #<a href="http://www.mejortorrent.com/uploads/torrents/series/falling-skies-2-03.torrent"
-        link = scrapertools.get_match(data,'<a href="(http.//www.mejortorrent.com/uploads/torrents/series/.*?\.torrent)"')
+        #
+        # docus
+        #
+        #<a href="http://www.mejortorrent.com/uploads/torrents/documentales/En_Suenyos_De_Todos_DVDrip.torrent">El sueño de todos. </a>
+
+        params = dict(urlparse.parse_qsl(item.extra))
+
+        patron = '<a href="(http://www.mejortorrent.com/uploads/torrents/' + params["tabla"] +'/.*?\.torrent)"'
+
+        link = scrapertools.get_match(data, patron)
 
         logger.info("link="+link)
         
@@ -191,8 +233,8 @@ def test():
     
     # mainlist
     mainlist_items = mainlist(Item())
-    peliculas_items = peliculas(mainlist_items[0])
-    play_items = play(peliculas_items[0])
+    items = getlist(mainlist_items[0])
+    play_items = play(items[0])
     
     if len(play_items)>0:
         return True

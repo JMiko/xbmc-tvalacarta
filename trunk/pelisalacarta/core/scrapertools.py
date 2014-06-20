@@ -307,7 +307,7 @@ class NoRedirectHandler(urllib2.HTTPRedirectHandler):
     http_error_303 = http_error_302
     http_error_307 = http_error_302
 
-def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],follow_redirects=True, timeout=socket.getdefaulttimeout()):
+def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12']],follow_redirects=True, timeout=socket.getdefaulttimeout(), header_to_get=None):
     logger.info("[scrapertools.py] downloadpage")
     logger.info("[scrapertools.py] url="+url)
     
@@ -475,6 +475,12 @@ def downloadpage(url,post=None,headers=[['User-Agent', 'Mozilla/5.0 (Macintosh; 
     logger.info("[scrapertools.py] ---------------------------")
     for header in info:
         logger.info("[scrapertools.py] "+header+"="+info[header])
+
+        # Truco para devolver el valor de un header en lugar del cuerpo entero
+        if header_to_get is not None:
+            if header==header_to_get:
+                data=info[header]
+
     handle.close()
     logger.info("[scrapertools.py] ---------------------------")
 

@@ -7,14 +7,12 @@
 import urlparse,urllib2,urllib,re
 import os, sys
 import hashlib
-import xbmc, xbmcgui
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
-from pelisalacarta import buscador
 
 __channel__ = "peliculaspepito"
 __category__ = "F"

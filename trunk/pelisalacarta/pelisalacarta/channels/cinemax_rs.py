@@ -26,42 +26,31 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[cinemax_rs.py] mainlist")
+    logger.info("pelisalacarta.channels.cinemax_rs mainlist")
     item.url="http://cinemaxx.ro/newvideos.html";
     return novedades(item)
 
 def novedades(item):
-    logger.info("[cinemax_rs.py] novedades")
+    logger.info("pelisalacarta.channels.cinemax_rs novedades")
     itemlist = []
 	
-    # Descarga la página
+    # Download page
     data = scrapertools.cachePage(item.url)
+
+    patron  = '<li.*?'
+    patron += '<a href="([^"]+)" class="pm-thumb-fix.*?'
+    patron += '<img src="([^"]+)" alt="([^"]+)".*?'
+    patron += '<p class="pm-video-attr-desc">(.*?)</p>'
 	
-    #patron  = '<div class="home_posts">[^<]+'
-    #patron += '<h2 class="title"><a href="([^"]+)" rel="bookmark" title="[^"]+">([^<]+)</a></h2>[^<]+'
-    #patron += '<div class="home_posts_shadow"></div>[^<]+'
-    #patron += '<div class="home_posts_thumbnail">[^<]+'
-    #patron += '<a[^<].*?+<img.*?src="([^"]+).*?"'
-	
-	#Asta e pt situl Cinemaxx.rs
-    #patron  = '<ul class="pm-ul-browse-videos thumbnails" id="pm-grid">[^<]+'
-    patron = '<li>[^<]+'
-    #patron += '<div class="pm-li-video">[^<]+'
-    patron += '<a href="([^"]+)".*?[^<]+<img src="([^"]+)" alt="([^"]+)".*?</li>'
-	
+    # Extract elements
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 	
-    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
-        scrapedplot = ""
-        #if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+    for scrapedurl,scrapedthumbnail,scrapedtitle,scrapedplot in matches:
         if (DEBUG): logger.info("url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], title=["+scrapedtitle+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-    
-    '''
-    <a href="http://unsoloclic.info/page/2/" >&laquo; Peliculas anteriores</a>
-	<a href="http://www.filme-net.com/page/2" class="inactive">2</a>
-    '''
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
+
+    # Next page    
     patron  = '<li[^<]+<a href="([^"]+)">\&raquo\;</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
@@ -76,57 +65,35 @@ def novedades(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[cinemax_rs.py] findvideos")
+    logger.info("pelisalacarta.channels.cinemax_rs findvideos")
+
     data = scrapertools.cache_page(item.url)
+    #logger.info("data="+data)
     itemlist=[]
     
-    #<a href="http://67cfb0db.linkbucks.com"><img title="billionuploads" src="http://unsoloclic.info/wp-content/uploads/2012/11/billonuploads2.png" alt="" width="380" height="50" /></a></p>
-    #<a href="http://1bd02d49.linkbucks.com"><img class="colorbox-57103"  title="Freakeshare" alt="" src="http://unsoloclic.info/wp-content/uploads/2013/01/freakshare.png" width="390" height="55" /></a></p>
-    #patron = '<a href="(http.//[a-z0-9]+.linkbucks.c[^"]+)[^>]+><img.*?title="([^"]+)".*?src="([^"]+)"'
-    patron = '<a href="(#index_panel_detailed)[^>]+.title=(http://cinemaxx.rs/ajax.php?[^"]+)>'
+    #<a href="#index_panel_detailed" onClick='$("#Playerholder").load("http://www.cinemaxx.ro/ajax.php?p=custom&do=requestmirror&vid=3a20f4b86&mirror=1"
+    patron = '<a href=".index_panel_detailed" onClick=\'\$\("\#Playerholder"\)\.load\("([^"]+)"[^<]+<img src="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    for url,servertag,serverthumb in matches:
-        itemlist.append( Item(channel=__channel__, action="play", server="index_panel_detailed", title=servertag+" [index_panel_detailed]" , url=url , thumbnail=serverthumb , plot=item.plot , folder=False) )
-
-    from servers import servertools
-    itemlist.extend(servertools.find_video_items(data=data))
-    for videoitem in itemlist:
-        if videoitem.server!="index_panel_detailed":
-            videoitem.channel=__channel__
-            videoitem.action="play"
-            videoitem.folder=False
-            videoitem.title = "["+videoitem.server+"]"
+    #scrapertools.printMatches(matches)
+    i=1
+    for url,serverthumb in matches:
+        itemlist.append( Item(channel=__channel__, action="play", title="Option "+str(i) , url=url , thumbnail=serverthumb , plot=item.plot , folder=False) )
+        i=i+1
 
     return itemlist
 
 def play(item):
-    logger.info("[cinemax_rs.py] play")
+    logger.info("pelisalacarta.channels.cinemax_rs play")
+
+    data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
     itemlist=[]
 
-    if item.server=="linkbucks":
-        logger.info("Es linkbucks")
-        
-        # Averigua el enlace
-        from servers import linkbucks
-        location = linkbucks.get_long_url(item.url)
-        logger.info("location="+location)
-        
-        # Extrae la URL de saltar el anuncio en adf.ly
-        if location.startswith("http://adf"):
-            # Averigua el enlace
-            from servers import adfly
-            location = adfly.get_long_url(location)
-            logger.info("location="+location)
-
-        from servers import servertools
-        itemlist=servertools.find_video_items(data=location)
-        for videoitem in itemlist:
-            videoitem.channel=__channel__
-            videoitem.folder=False
-
-    else:
-        itemlist.append(item)
+    from servers import servertools
+    itemlist=servertools.find_video_items(data=data)
+    for videoitem in itemlist:
+        videoitem.channel=__channel__
+        videoitem.folder=False
 
     return itemlist
  

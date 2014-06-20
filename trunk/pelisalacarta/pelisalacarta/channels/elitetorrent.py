@@ -20,6 +20,7 @@ __title__ = "Elite Torrent"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
+BASE_URL = 'http://www.elitetorrent.net'
 
 def isGeneric():
     return True
@@ -28,13 +29,14 @@ def mainlist(item):
     logger.info("[elitetorrent.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Docus y TV"     , action="peliculas", url="http://www.elitetorrent.net/categoria/6/docus-y-tv"))
-    itemlist.append( Item(channel=__channel__, title="Estrenos"       , action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos"))
-    itemlist.append( Item(channel=__channel__, title="PelÌculas"      , action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas"))
-    itemlist.append( Item(channel=__channel__, title="Peliculas HDRip", action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip"))
-    itemlist.append( Item(channel=__channel__, title="Peliculas VOSE" , action="peliculas", url="http://www.elitetorrent.net/categoria/14/peliculas-vose"))
-    itemlist.append( Item(channel=__channel__, title="Series"         , action="peliculas", url="http://www.elitetorrent.net/categoria/4/series"))
-    itemlist.append( Item(channel=__channel__, title="Series VOSE"    , action="peliculas", url="http://www.elitetorrent.net/categoria/16/series-vose"))
+    itemlist.append( Item(channel=__channel__, title="Docus y TV"     , action="peliculas", url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Estrenos"       , action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Pel√≠culas"      , action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas HDRip", action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas MicroHD", action="peliculas", url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Peliculas VOSE" , action="peliculas", url="http://www.elitetorrent.net/categoria/14/peliculas-vose/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Series"         , action="peliculas", url="http://www.elitetorrent.net/categoria/4/series/modo:mini"))
+    itemlist.append( Item(channel=__channel__, title="Series VOSE"    , action="peliculas", url="http://www.elitetorrent.net/categoria/16/series-vose/modo:mini"))
 
     return itemlist
 
@@ -42,32 +44,31 @@ def peliculas(item):
     logger.info("[elitetorrent.py] peliculas")
     itemlist = []
 
-    # Descarga la p·gina
+    # Descarga la p√°gina
     data = scrapertools.cachePage(item.url)
     '''
-    <div class="ficha ficha2">
-    <a href="/torrent/17907/las-voces-del-11s-docu"><img src="thumb_fichas/17907.jpg" width="120px" border="0" alt="Imagen "/></a>
-    <br/><br/>
-    <a href="/torrent/17907/las-voces-del-11s-docu">Las voces del 11S (Docu)</a><hr/>
-    <span class="categoria">Docus y TV</span><br/>
-    <span class="popularidad">Popularidad: 0 ptos</span><br/>
-    <span class="fecha">13-09-2012</span></div>
+    <li>
+    <a href="/torrent/23471/mandela-microhd-720p"><img src="thumb_fichas/23471.jpg" border="0" title="Mandela (microHD - 720p)" alt="IMG: Mandela (microHD - 720p)"/></a>
+    <div class="meta">
+    <a class="nombre" href="/torrent/23471/mandela-microhd-720p" title="Mandela (microHD - 720p)">Mandela (microHD - 720p)</a>
+    <span class="categoria">Peliculas microHD</span>
+    <span class="fecha">Hace 2 sem</span>
+    <span class="descrip">T√≠tulo: Mandela: Del mito al hombre<br />
     '''
-    patron = '<div class="ficha ficha2">[^<]+'
-    patron += '<a[^<]+<img src="([^"]+)"[^<]+</a>[^<]+'
-    patron += '<br/><br/>[^<]+'
-    patron += '<a href="([^"]+)">([^<]+)</a>'
+    patron =  '<a href="(/torrent/[^"]+)">'
+    patron += '<img src="(thumb_fichas/[^"]+)" border="0" title="([^"]+)"[^>]+></a>'
+    patron += '.*?<span class="descrip">(.*?)</span>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedthumbnail,scrapedurl,scrapedtitle in matches:
+    for scrapedurl, scrapedthumbnail, scrapedtitle, scrapedplot in matches:
         title = scrapedtitle.strip()
-        url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = ""
+        url = urlparse.urljoin(BASE_URL, scrapedurl)
+        thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
+        plot = re.sub('<[^<]+?>', '', scrapedplot)
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=False, viewmode="movie_with_plot") )
 
     # Extrae el paginador
     patronvideos  = '<a href="([^"]+)" class="pagina pag_sig">Siguiente \&raquo\;</a>'
@@ -76,7 +77,7 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="P·gina siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="P√°gina siguiente >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
