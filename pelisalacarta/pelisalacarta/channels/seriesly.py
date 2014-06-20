@@ -492,11 +492,14 @@ def multiple_links(item):
             for link in linkList[tipo]:
                 if "quality" not in link:
                     link["quality"]= ""
+		
+		if "features" not in link:
+		    link["features"]= ""
 
                 if link['subtitles']!="":
-                    linktitle = '%(host)s - %(lang)s (sub %(subtitles)s) %(quality)s' % link
+                    linktitle = '%(host)s - %(lang)s (sub %(subtitles)s) %(quality)s %(features)s' % link
                 else:
-                    linktitle = '%(host)s - %(lang)s %(quality)s' % link
+                    linktitle = '%(host)s - %(lang)s %(quality)s %(features)s' % link
 
                 itemlist.append(
                     Item(channel=__channel__,

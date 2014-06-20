@@ -300,22 +300,22 @@ def play_video(channel="",server="",url="",category="",title="", thumbnail="",pl
             return
 
     # Si la accion por defecto es "Preguntar", pregunta
-    # FIXME: Excepto si el vídeo es un torrent
-    if default_action=="0" and server!="torrent":
+    if default_action=="0": # and server!="torrent":
         import xbmcgui
         dia = xbmcgui.Dialog()
         seleccion = dia.select(config.get_localized_string(30163), opciones) # "Elige una opción"
         #dia.close()
-    elif default_action=="0" and server=="torrent":
-        advertencia = xbmcgui.Dialog()
-        logger.info("video_urls[0]="+str(video_urls[0][1]))
-        if puedes and ('"status":"COMPLETED"' in video_urls[0][1] or '"percent_done":100' in video_urls[0][1]):
-            listo  = "y está listo para ver"
-        else:
-            listo = "y se está descargando"
-        resultado = advertencia.ok( "Torrent" , "El torrent ha sido añadido a la lista" , listo )
-        seleccion=-1
-
+        '''
+        elif default_action=="0" and server=="torrent":
+            advertencia = xbmcgui.Dialog()
+            logger.info("video_urls[0]="+str(video_urls[0][1]))
+            if puedes and ('"status":"COMPLETED"' in video_urls[0][1] or '"percent_done":100' in video_urls[0][1]):
+                listo  = "y está listo para ver"
+            else:
+                listo = "y se está descargando"
+            resultado = advertencia.ok( "Torrent" , "El torrent ha sido añadido a la lista" , listo )
+            seleccion=-1
+        '''
     elif default_action=="1":
         seleccion = 0
     elif default_action=="2":

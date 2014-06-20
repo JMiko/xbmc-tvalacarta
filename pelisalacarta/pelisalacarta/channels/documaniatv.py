@@ -32,7 +32,12 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="novedades"  , title="Novedades"      , url="http://www.documaniatv.com/newvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
     itemlist.append( Item(channel=__channel__, action="categorias" , title="Por categorías" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
-    itemlist.append( Item(channel=__channel__, action="tags" , title="Por tags" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    #itemlist.append( Item(channel=__channel__, action="tags" , title="Por tags" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    itemlist.append( Item(channel=__channel__, action="novedades"  , title="Top"      , url="http://www.documaniatv.com/topvideos.html",thumbnail=os.path.join(IMAGES_PATH, 'nuevos.png')))
+    itemlist.append( Item(channel=__channel__, action="canales" , title="Por canales" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+    itemlist.append( Item(channel=__channel__, action="viendo" , title="Viendo ahora" , url="http://www.documaniatv.com",thumbnail=os.path.join(IMAGES_PATH, 'tipo.png')))
+
+
     itemlist.append( Item(channel=__channel__, action="search"     , title="Buscar"         , thumbnail=os.path.join(IMAGES_PATH, 'search_icon.png')))
     return itemlist
 
@@ -42,21 +47,35 @@ def novedades(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
-    matches = re.compile('<li[^<]+<div class="pm-li-video"(.*?)</li>',re.DOTALL).findall(data)
-
+    matches = re.compile('<li[^<]+<div class="pm-li-video">(.*?)</li>',re.DOTALL).findall(data)
+    
     for match in matches:
+       
+
+        
+
         try:
-            scrapedtitle = scrapertools.get_match(match,'<h3 dir="ltr"><a[^>]+>([^<]+)</a></h3>')
-            scrapedurl = scrapertools.get_match(match,'<a href="([^"]+)" class="pm-title-link')
-            scrapedthumbnail = scrapertools.get_match(match,'<img src="([^"]+)"')
-            scrapedplot = scrapertools.get_match(match,'<p class="pm-video-attr-desc">([^<]+)</p>')
+
+            #logger.info(match)
+            scrapedtitle = scrapertools.get_match(match,'title="(.*?)"')
+            #logger.info("scrapedtitle")
+            #logger.info(scrapedtitle)
+            scrapedurl = scrapertools.get_match(match,'<a href="(.*?)"')
+            #logger.info(scrapedurl)
+            scrapedthumbnail = scrapertools.get_match(match,'<img src="(.*?)"')
+            #logger.info(scrapedthumbnail)
+            scrapedplot = scrapertools.get_match(match,'<p class="pm-video-attr-desc">(.*?)</p>')
             #scrapedplot = scrapertools.htmlclean(scrapedplot)
             scrapedplot = scrapertools.entityunescape(scrapedplot)
+            #logger.info(scrapedplot)
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
             itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fanart=scrapedthumbnail, folder=False) )
+
         except:
             logger.info("documaniatv.novedades Error al añadir entrada "+match)
+            pass
+
 
     # Busca enlaces de paginas siguientes...
     try:
@@ -74,13 +93,17 @@ def categorias(item):
 
     # Saca el bloque con las categorias
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,"<ul id='ul_categories'>(.*?)</ul>")
+    logger.info(data)
+    data = scrapertools.get_match(data,"""<li><a href="http://www.documaniatv.com/" class="wide-nav-link">Inicio</a></li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle wide-nav-link" data-toggle="dropdown">Categorias de los documentales <b class="caret"></b></a>
+(.*?)</ul>""")
 
     #
     patron = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url=match[0]))
+        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
     
     return itemlist
 
@@ -97,11 +120,50 @@ def tags(item):
     patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url=match[0]))
+        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
+    
+    return itemlist
+
+def canales(item):
+    logger.info("[documaniatv.py] canales")
+    itemlist = []
+
+    # Saca el bloque con las categorias
+    data = scrapertools.cache_page(item.url)
+    #logger.info(data)
+    data = scrapertools.get_match(data,"""Canal documental(.*?)</ul></li>""")
+    #logger.error(data)
+
+    #
+    patron = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    for match in matches:
+        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
     
     return itemlist
 
 
+def viendo(item):
+    logger.info("[documaniatv.py] viendo")
+    itemlist = []
+
+    # Saca el bloque con las categorias
+    data = scrapertools.cache_page(item.url)
+    logger.info(data)
+    data = scrapertools.get_match(data,"""<ul class="pm-ul-wn-videos clearfix" id="pm-ul-wn-videos">(.*?)</ul>""")
+    
+
+    #
+    patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    imgs= '<img src="([^"]+)"[^>]+>'
+    matc = re.compile(imgs,re.DOTALL).findall(data)
+    
+    for match,m in zip(matches,matc):
+        logger.error(str(match))
+        itemlist.append( Item(channel=__channel__ , action="play" , title=match[1],url=match[0],thumbnail=m))
+    
+    return itemlist
 
 def search(item,texto):
     #http://www.documaniatv.com/search.php?keywords=luna&btn=Buscar

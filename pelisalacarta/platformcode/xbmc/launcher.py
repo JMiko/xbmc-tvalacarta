@@ -487,7 +487,7 @@ def extract_parameters():
 
     return params, fanart, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password
 
-def download_all_episodes(item,channel,first_episode=""):
+def download_all_episodes(item,channel,first_episode="",preferred_server="vidspot"):
     logger.info("[launcher.py] download_all_episodes, show="+item.show)
     show_title = item.show
 
@@ -500,11 +500,15 @@ def download_all_episodes(item,channel,first_episode=""):
         item.extra = item.extra.split("###")[1]
 
     exec "episode_itemlist = channel."+action+"(item)"
+
+    # Ordena los episodios para que funcione el filtro de first_episode
+    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title) 
+
     from servers import servertools
     from core import downloadtools
     from core import scrapertools
 
-    best_server = "allmyvideos"
+    best_server = preferred_server
     worst_server = "moevideos"
 
     # Para cada episodio
@@ -526,6 +530,7 @@ def download_all_episodes(item,channel,first_episode=""):
 
         # Extrae los mirrors
         mirrors_itemlist = channel.findvideos(episode_item)
+        print mirrors_itemlist
 
         descargado = False
 
@@ -544,6 +549,11 @@ def download_all_episodes(item,channel,first_episode=""):
                     new_mirror_itemlist_1.append(mirror_item)
                 else:
                     new_mirror_itemlist_2.append(mirror_item)
+            elif "(Latino)" in mirror_item.title:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_3.append(mirror_item)
+                else:
+                    new_mirror_itemlist_4.append(mirror_item)
             elif "(VOS)" in mirror_item.title:
                 if best_server in mirror_item.title.lower():
                     new_mirror_itemlist_3.append(mirror_item)
@@ -602,7 +612,7 @@ def download_all_episodes(item,channel,first_episode=""):
                         return
                     else:
                         logger.info("[launcher.py] download_all_episodes, download error, try another mirror")
-                        break
+                        continue
 
                 else:
                     logger.info("[launcher.py] download_all_episodes, downloading mirror not available... trying next")

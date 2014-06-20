@@ -36,7 +36,7 @@ def search(item,texto):
     logger.info("[piratestreaming.py] search "+texto)
     itemlist = []
     texto = texto.replace(" ","%20")
-    item.url = "http://www.piratestreaming.com/cerca.php?all="+texto+"&SearchSubmit="
+    item.url = "http://www.piratestreaming.com/cerca.php?all="+texto
     item.extra = ""
 
     try:
@@ -128,6 +128,27 @@ def peliculas(item):
     scrapertools.printMatches(matches)
 
     for scrapedthumbnail,scrapedurl,scrapedtitle in matches:
+        scrapedplot = ""
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+    '''
+    <div class="featuredItem"> <a href=http://www.piratestreaming.co/film/supercondriaco-ridere-fa-bene-alla-salute.html class="featuredImg img" rel="featured"><img src=http://imagerip.net/images/2014/06/19/Supercondriaco.jpg alt="featured item" style="width: 80.8px; height: 109.6px;" /></a>
+    <div class="featuredText">
+    <b><a href=http://www.piratestreaming.co/film/supercondriaco-ridere-fa-bene-alla-salute.html>Supercondriaco - Ridere fa bene alla salute </b><br /><g:plusone size="medium" href=http://www.piratestreaming.co/film/supercondriaco-ridere-fa-bene-alla-salute.html rel="nofollow"></g:plusone>
+    <div id="fb-root"></div><fb:like href="http://www.piratestreaming.co/film/supercondriaco-ridere-fa-bene-alla-salute.html" send="false" layout="button_count" show_faces="false" action="like" colorscheme="dark" font=""></fb:like> 
+    </div>
+    </div>
+    '''
+    patron  = '<div class="featuredItem"[^<]+'
+    patron += '<a href=(.*?) [^<]+'
+    patron += '<img src=(.*?) [^<]+</a[^<]+'
+    patron += '<div class="featuredText"[^<]+'
+    patron += '<b><a[^>]+>([^<]+)'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
