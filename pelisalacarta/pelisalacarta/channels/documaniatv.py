@@ -186,7 +186,12 @@ def play(item):
     itemlist = []
 
     # Descarga la pagina
-    data = scrapertools.cachePage(item.url)
+    data1 = scrapertools.cachePage(item.url)
+    patron= '"vid":"(.*?)"'
+    matc = re.compile(patron,re.DOTALL).findall(data1)
+ 
+    data = scrapertools.cachePage("http://www.documaniatv.com/ajax.php?p=video&do=getplayer&vid="+matc[0]+"&aid=3&player=detail")
+    logger.info(data)
 
     # Busca los enlaces a los videos
     video_itemlist = servertools.find_video_items(data=data)
