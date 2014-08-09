@@ -27,7 +27,7 @@ def isGeneric():
 
 def mainlist(item):
     logger.info("pelisalacarta.channels.cinemax_rs mainlist")
-    item.url="http://cinemaxx.ro/newvideos.html";
+    item.url="http://www.cinemaxx.ro/newvideos.html";
     return novedades(item)
 
 def novedades(item):
@@ -37,31 +37,42 @@ def novedades(item):
     # Download page
     data = scrapertools.cachePage(item.url)
 
-    patron  = '<li.*?'
-    patron += '<a href="([^"]+)" class="pm-thumb-fix.*?'
-    patron += '<img src="([^"]+)" alt="([^"]+)".*?'
-    patron += '<p class="pm-video-attr-desc">(.*?)</p>'
+    '''
+    <li>
+    <div class="pm-li-video">
+    <span class="pm-video-thumb pm-thumb-145 pm-thumb border-radius2">
+    <span class="pm-video-li-thumb-info">
+    </span>
+    <a href="http://www.cinemaxx.ro/presentimientos-2013_c1aaf42f4.html" class="pm-thumb-fix pm-thumb-145"><span class="pm-thumb-fix-clip"><img src="http://www.cinemaxx.ro/uploads/thumbs/c1aaf42f4-1.jpg" alt="Presentimientos (2013)" width="145"><span class="vertical-align"></span></span></a>
+    </span>
+    <h3 dir="ltr"><a href="http://www.cinemaxx.ro/presentimientos-2013_c1aaf42f4.html" class="pm-title-link" title="Presentimientos (2013)">Presentimientos (2013)</a></h3>
+    <div class="pm-video-attr">
+    <span class="pm-video-attr-author">by <a href="http://www.cinemaxx.ro/profile.html?u=filmeonline">cristina</a></span>
+    <span class="pm-video-attr-since"><small>Adaugat <time datetime="2014-08-02T13:02:02-0400" title="Saturday, August 2, 2014 1:02 PM">6 zile in urma</time></small></span>
+    <span class="pm-video-attr-numbers"><small>3,666 Vizionari / 10 Likes</small></span>
+    </div>
+    <p class="pm-video-attr-desc"></p>
+    </div>
+    </li>
+    '''
+    patron  = '<a href="([^"]+)" class="pm-thumb-fix pm-thumb-145">'
+    patron += '<span class="pm-thumb-fix-clip">'
+    patron += '<img src="([^"]+)" alt="([^"]+)"'
 	
     # Extract elements
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 	
-    for scrapedurl,scrapedthumbnail,scrapedtitle,scrapedplot in matches:
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        scrapedplot=""
         if (DEBUG): logger.info("url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], title=["+scrapedtitle+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie_with_plot", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", folder=True) )
 
-    # Next page    
-    patron  = '<li[^<]+<a href="([^"]+)">\&raquo\;</a>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-	
-    for match in matches:
-       scrapedtitle = ">> Página siguiente"
-       scrapedplot = ""
-       scrapedurl = urlparse.urljoin(item.url,match)
-       scrapedthumbnail = ""
-       if (DEBUG): logger.info("url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"], title=["+scrapedtitle+"]")
-       itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+    # Next page
+    next_page_url = scrapertools.find_single_match(data,'<li[^<]+<a href="([^"]+)">\&raquo\;</a>')
+    if next_page_url!="":
+       itemlist.append( Item(channel=__channel__, action="novedades", title=">> Next page" , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
     return itemlist
 
 def findvideos(item):
