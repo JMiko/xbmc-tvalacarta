@@ -27,7 +27,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[divxatope.py] mainlist")
+    logger.info("pelisalacarta.channels.divxatope mainlist")
     itemlist=[]
 
     item.url="http://www.divxatope.com"
@@ -51,7 +51,7 @@ def mainlist(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("[divxatope.py] search")
+    logger.info("pelisalacarta.channels.divxatope search")
     if item.url=="":
         item.url="http://www.divxatope.com/main.php?q="
     texto = texto.replace(" ","+")
@@ -66,7 +66,7 @@ def search(item,texto):
         return []
 
 def lista(item):
-    logger.info("[divxatope.py] lista")
+    logger.info("pelisalacarta.channels.divxatope lista")
     itemlist = []
 
     # Descarga la página
@@ -113,7 +113,7 @@ def lista(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[divxatope.py] findvideos")
+    logger.info("pelisalacarta.channels.divxatope findvideos")
     itemlist=[]
 
     # Averigua el PHPSESSID
@@ -132,9 +132,14 @@ def findvideos(item):
     data = scrapertools.cache_page(item.url,headers=request_headers)
 
     #logger.info("data="+data)
-    #href ="redirect.php?file=31351&url=http://www.divxatope.com/uploads/torrents/attachments/5730_iceberg-
-    link = scrapertools.get_match(data,'redirect.php\?file=\d+\&url=(.*?\.torrent)')
-    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle = item.title, url=link , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
+    #<a id="downloadTorrent" class="btn-download-file_" style="padding:10px 0px 0px 30px;margin:0px 0px 0px 105px;font-size:21px;font-weight:bold;color:#fff;width:355px;height:38px;display:block;background:url('http://www.divxatope.com/images/btn-descarga-torrent.gif');" 
+    #href ="http://tumejorserie.com/redirectlink/index.php?domain=www-divx-com&link=uploads/torrents/attachments/7537_elementary_--_temporada_2_[hdtv][cap.223][espanol_castellano].torrent" title="7537_elementary_--_temporada_2_[hdtv][cap.223][espanol_castellano].torrent" target="_blank">Descargar Torrent</a>
+    # http://www.divxatope.com/uploads/torrents/attachments/7537_elementary_--_temporada_2_[hdtv][cap.223][espanol_castellano].torrent
+    link = scrapertools.find_single_match(data,'redirectlink/index.php\?domain=www-divx-com&link=(.*?\.torrent)')
+    if link!="":
+        link = "http://www.divxatope.com/"+link
+        logger.info("pelisalacarta.channels.divxatope torrent="+link)
+        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle = item.title, url=link , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
 
     # Ahora busca los vídeos
     itemlist.extend(servertools.find_video_items(data=data))
