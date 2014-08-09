@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
     <name>documaniatv</name>
-    <tag>3</tag>
-    <date>23/12/2013</date>
-    <changes>Arreglada consulta por tags (Gracias a prunk)</changes>
+    <tag>4</tag>
+    <date>09/08/2014</date>
+    <changes>Arreglado por cambios en la web (Gracias a prunk)</changes>
 </version>
