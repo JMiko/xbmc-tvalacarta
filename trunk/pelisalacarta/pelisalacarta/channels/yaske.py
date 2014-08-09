@@ -16,7 +16,7 @@ from servers import servertools
 __channel__ = "yaske"
 __category__ = "F"
 __type__ = "generic"
-__title__ = "Yaske.net"
+__title__ = "yaske.net"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
@@ -256,18 +256,24 @@ def findvideos(item):
     #scrapertools.printMatches(matches)
     itemlist = []
 
+    n = 1
     for tr in matches:
         logger.info("tr="+tr)
         try:
             title = scrapertools.get_match(tr,'<b>([^<]+)</b>')
             server = scrapertools.get_match(tr,'"http\://www.google.com/s2/favicons\?domain\=([^"]+)"')
-            # <td align="center"><img src="http://www.yaske.to/theme/01/data/images/flags/la_la.png" width="19">Lat.</td> 
+            # <td align="center"><img src="http://www.yaske.net/theme/01/data/images/flags/la_la.png" width="19">Lat.</td> 
             idioma = scrapertools.get_match(tr,'<img src="http://www.yaske.[a-z]+/theme/01/data/images/flags/([a-z_]+).png"[^>]+>[^<]*<')
             subtitulos = scrapertools.get_match(tr,'<img src="http://www.yaske.[a-z]+/theme/01/data/images/flags/[^"]+"[^>]+>([^<]*)<')
             calidad = scrapertools.get_match(tr,'<td align="center" class="center"[^<]+<span title="[^"]*" style="text-transform.capitalize.">([^<]+)</span></td>')
             
             #<a href="http://www.yaske.net/es/reproductor/pelicula/2244/15858/" title="Batman: El regreso del Caballero Oscuro, Parte 2"
-            url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"')
+            # 01-08-2014 - Comentado
+            #url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"')
+            # 01-08-2014 - Añadido
+            #<a [....] href="http://www.yaske.net/goto/" data-key="WZmWd6z1zkcEmlesZzItESWI+720osvEeKsY+NXtLxI=">
+            data_key = scrapertools.get_match(tr,'<a.*?data-key="([^"]+)"')
+            url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"')+"|"+data_key
             thumbnail = ""
             plot = ""
 
@@ -287,7 +293,12 @@ def findvideos(item):
             scrapedthumbnail = thumbnail
             scrapedplot = plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle, folder=False) )
+            if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+                itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle , folder=False) )
+            else:
+                
+                itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl.split("|")[0] , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle , extra=scrapedurl.split("|")[1] , folder=False) )
+            n += 1
         except:
             import traceback
             logger.info("Excepcion: "+traceback.format_exc())
@@ -298,15 +309,32 @@ def play(item):
     logger.info("pelisalacarta.yaske play item.url="+item.url)
     
     itemlist=[]
-    
+
+    # 01-08-2014 - Añadido
+    if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
+        url = item.url.split("|")[0]
+        values = {'url': item.url.split("|")[1]}
+    else:
+        url = item.url
+        values = {'url': item.extra}
+    post = urllib.urlencode(values)
+    request = urllib2.Request(url,post)
+    request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
+    response = urllib2.urlopen(request)
+    data = response.read()
+    response.close()
+
+    # 01-08-2014 - Comentado
+    '''
     if item.url.startswith("http://adf.ly"):
         from servers import adfly
         item.url = adfly.get_long_url(item.url)
 
-    data = scrapertools.downloadpageGzip(item.url)
+    #data = scrapertools.downloadpageGzip(item.url)
     #logger.info("data="+data)
 
     data = data.replace("http://www.yaske.net/archivos/allmyvideos/play.php?v=","http://allmyvideos.net/")
+    '''
 
     itemlist = servertools.find_video_items(data=data)
     for newitem in itemlist:
