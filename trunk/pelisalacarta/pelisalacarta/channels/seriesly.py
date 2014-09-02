@@ -8,6 +8,7 @@ import re
 import sys 
 import os
 import json
+import urllib2
 
 from core import logger
 from core import config
@@ -540,36 +541,51 @@ def multiple_links(item):
 				item=Item(channel=__channel__,
 							action = "play",
 							title = linktitle, 
-							url = link['op_data']["original_url"],
+							 url = link['video_url']+"?"+post,
 							thumbnail = item.thumbnail,
 							plot = "",
-							extra=link["date_created"])
+							extra=link['op_data']["original_url"])
 				logger.info(str(item))
 				itemlist.append(item)
 
 
 	return itemlist
 
-def links(item):      
-	itemlist = [] 
-	try:
-		urlvideo=item.url
-	   
+def links(item):   
+       
+    itemlist = []
+    try:
+        count = 0
+        exit = False
+        urlvideo=""
+        while(not exit and count < 5 and urlvideo==""):
+            #A veces da error al intentar acceder
+            try:
+                page = urllib2.urlopen(item.url)
+                urlvideo = "\"" + page.geturl() + "\""
+                exit = True
+            except:
+                import traceback
+                logger.info(traceback.format_exc())
+                count = count + 1
+                urlvideo=item.extra
+       
 
-		logger.info("urlvideo="+urlvideo)
-		for video in servertools.findvideos(urlvideo) :
-			#scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
-			scrapedtitle = scrapertools.htmlclean(video[0])
-			scrapedurl = video[1]
-			server = video[2]
-			itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle, url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
-	except: 
-		import sys
-		for line in sys.exc_info():
-			logger.error( "%s" % line )
-			   
-	   
-	return itemlist
+        logger.info("urlvideo="+urlvideo)
+        for video in servertools.findvideos(urlvideo) :
+            #scrapedtitle = title.strip() + " " + match[1] + " " + match[2] + " " + video[0]
+            scrapedtitle = scrapertools.htmlclean(video[0])
+            scrapedurl = video[1]
+            server = video[2]
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapedtitle, url=scrapedurl, thumbnail=item.thumbnail, plot="", server=server, extra="", category=item.category, fanart=item.thumbnail, folder=False))
+    except: 
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+               
+       
+    return itemlist
+
 
 def search_cat(item):
 	
