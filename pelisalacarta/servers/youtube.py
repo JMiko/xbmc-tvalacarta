@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# s-*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para Youtube
@@ -100,7 +100,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
         logger.info(str(video_url))
     
     return video_urls
-
+'''
 def extractFlashVars(data):
     flashvars = {}
     #found = False
@@ -110,23 +110,51 @@ def extractFlashVars(data):
     if matches:
         data = json.loads(matches[0])
         flashvars = data["args"]
-    '''
-    for line in data.split("\n"):
-        #if line.strip().startswith("yt.playerConfig = "):
-        if "ytplayer.config = " in line.strip():
-            found = True
-            p1 = line.find("ytplayer.config = ")
-            p2 = line.rfind(";")
-            if p1 <= 0 or p2 <= 0:
-                continue
-            data = line[p1 + 1:p2]
-            break
-    if found:
-        data = json.loads(data)
-        flashvars = data["args"]
-    '''
     #logger.info("flashvars: " + repr(flashvars))
     return flashvars
+'''
+def removeAdditionalEndingDelimiter(data):                            
+        pos = data.find("};")                                          
+        if pos != -1:                                                  
+             logger.info(u"found extra delimiter, removing")         
+             data = data[:pos + 1]                                       
+        return data                                                  
+                                                               
+def normalizeUrl(self, url):                               
+        if url[0:2] == "//":                                       
+            url = "http:" + url                                   
+        return url 
+def extractFlashVars(data):
+	assets=0
+        flashvars = {}                                                  
+        found = False                                                   
+                                                                     
+        for line in data.split("\n"):                                                 
+            if line.strip().find(";ytplayer.config = ") > 0:                          
+                found = True                                                          
+                p1 = line.find(";ytplayer.config = ") + len(";ytplayer.config = ") - 1
+                p2 = line.rfind(";")                                                  
+                if p1 <= 0 or p2 <= 0:                                                
+                    continue                                                          
+                data = line[p1 + 1:p2]                                                
+                break                                                                 
+        data = removeAdditionalEndingDelimiter(data)                             
+                                                                                      
+        if found:                                                                     
+            data = json.loads(data)                                                   
+            if assets:                                                                
+                flashvars = data["assets"]                                            
+            else:                                                                     
+                flashvars = data["args"]                                              
+                                                                                      
+        for k in ["html", "css", "js"]:                                               
+            if k in flashvars:                                                        
+                flashvars[k] = normalizeUrl(flashvars[k])
+                                                              
+        logger.info("Step2: " + repr(data))            
+                                                              
+        logger.info(u"flashvars: " + repr(flashvars))  
+        return flashvars
 
 def scrapeWebPageForVideoLinks(data):
     logger.info("")

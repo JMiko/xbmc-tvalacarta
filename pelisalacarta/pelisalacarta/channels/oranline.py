@@ -53,47 +53,30 @@ def novedades(item):
 
     # Extrae las entradas (carpetas)
     '''
-    <div class="review-box-stars">
-    <div style="display: none">VN:RO [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_2067" class="ratepost gdsr-oxygen gdsr-size-12"><div class="starsbar gdsr-size-12"><div class="gdouter gdheight"><div id="gdr_vote_a2067" style="width: 0px;" class="gdinner gdheight"></div></div></div></div></div><div class="ratingtext "><div id="gdr_text_a2067" class="inactive">Rating: 0.0/<strong>10</strong> (0 votes cast)</div></div></div>                                        
-    </div>                  
-    <a href="http://oranline.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">
-    <img src="http://oranline.com/wp-content/uploads/2013/08/cazadores-140x210.jpg" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />        
+    <div class="review-box review-box-compact" style="width: 140px;">
+    <!--Begin Image1-->
+    <div class="post-thumbnail">
+    <a href="http://www.oranline.com/pelicula/metro-manila-2013-ver-online-y-descargar-gratis/" title="Metro Manila (2013) Ver Online Y Descargar Gratis">
+    <img src="http://www.oranline.com/wp-content/uploads/2013/10/metro-manila-140x210.jpg" alt="Metro Manila (2013) Ver Online Y Descargar Gratis" />       
     </a>    
     <div id="mejor_calidad">
-    <a href="http://oranline.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/CAM_calidad.png" class="idiomas" alt="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis" />  
+    <a href="http://www.oranline.com/pelicula/metro-manila-2013-ver-online-y-descargar-gratis/" title="Metro Manila (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://www.oranline.com/wp-content/themes/reviewit/images/HD-R_calidad.png" class="idiomas" alt="Metro Manila (2013) Ver Online Y Descargar Gratis" /> 
     </a>
-    <span>CAM</span></div>      
+    <span>HD-R</span></div>     
     </div>                  
     <!--End Image-->
     <div class="review-box-text">
-    <h2><a href="http://oranline.com/pelicula/cazadores-de-sombras-ciudad-de-hueso-2013-ver-online-y-descargar-gratis/" title="Cazadores de sombras: Ciudad de Hueso (2013) Ver Online Y Descargar Gratis">Cazadores de sombras: Ciudad d...</a></h2>  
-    <p>En la discoteca de moda de Nueva York, Clary Fray (Lily Collins) sigue a un atractivo chico de pelo ...</p>                                      
+    <h2><a href="http://www.oranline.com/pelicula/metro-manila-2013-ver-online-y-descargar-gratis/" title="Metro Manila (2013) Ver Online Y Descargar Gratis">Metro Manila (2013) Ver Online...</a></h2>    
+    <p>Sinopsis Buscando un futuro mejor, Óscar Ramírez y su familia dejan los campos de arroz del norte ...</p>                                        
     </div>
-    '''
-    '''
-    <div class="review-box-stars">
-    <div style="display: none">VN:RO [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_9680" class="ratepost gdsr-oxygen gdsr-size-12"><div class="starsbar gdsr-size-12"><div class="gdouter gdheight"><div id="gdr_vote_a9680" style="width: 0px;" class="gdinner gdheight"></div></div></div></div></div><div class="ratingtext "><div id="gdr_text_a9680" class="inactive">Rating: 0.0/<strong>10</strong> (0 votes cast)</div></div></div>
-    </div>
-    <a href="http://oranline.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">
-    <img src="http://oranline.com/wp-content/uploads/2013/02/Un-lugar-donde-refugiarse-Nicholas-Sparks-140x210.jpg" alt="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"/>
-    </a>
-    <div id="mejor_calidad">
-    <a href="http://oranline.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"><img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/Blueray-S_calidad.png" class="idiomas" alt="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis"/>
-    </a>
-    <span>Blueray-S</span></div>
-    </div>
-
-    <div class="review-box-text">
-    <h2><a href="http://oranline.com/pelicula/un-lugar-donde-refugiarse-safe-haven-2013-ver-online-y-descargar-gratis/" title="Un lugar donde refugiarse (Safe Haven) (2013) Ver Online Y Descargar Gratis">Un lugar donde refugiarse (Saf...</a></h2>
-    <p>Katie (Julianne Hough) es una bella joven con un oscuro pasado que llega a la pequeña localidad cos...</p>
-    </div>
-    <div id="campos_idiomas">
-    <img id="espanol" src="http://oranline.com/wp-content/themes/reviewit/images/s.png" class="idiomas" alt=""/>
-    <img id="latino" src="http://oranline.com/wp-content/themes/reviewit/images/lx.png" class="idiomas" alt=""/>
-    <img id="ingles" src="http://oranline.com/wp-content/themes/reviewit/images/ix.png" class="idiomas" alt=""/>
-    <img id="vose" src="http://oranline.com/wp-content/themes/reviewit/images/v.png" class="idiomas" alt=""/>
+    <div id="campos_idiomas">               
+    <img id="espanol" src="http://www.oranline.com/wp-content/themes/reviewit/images/s.png" class="idiomas" alt="" />
+    <img id="latino" src="http://www.oranline.com/wp-content/themes/reviewit/images/lx.png" class="idiomas" alt="" />
+    <img id="ingles" src="http://www.oranline.com/wp-content/themes/reviewit/images/ix.png" class="idiomas" alt="" />
+    <img id="vose" src="http://www.oranline.com/wp-content/themes/reviewit/images/vx.png" class="idiomas" alt="" />
     </div>
     </div>
+    <div class="clear"></div>
     '''
     patron  = '<div class="review-box.*?'
     patron += '<a href="([^"]+)" title="([^"]+)"[^<]+'

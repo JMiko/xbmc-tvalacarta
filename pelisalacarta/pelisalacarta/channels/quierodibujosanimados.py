@@ -27,68 +27,98 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[quierodibujosanimados.py] mainlist")
-    item.url="http://www.quierodibujosanimados.com/"
-    return series(item)
+    logger.info("pelisalacarta.channels.quierodibujosanimados mainlist")
+
+    #itemlist.append( Item(channel=__channel__ , action="novedades"  , title="Novedades" , url="http://www.quierodibujosanimados.com/"))
+    return series( Item(channel=__channel__ , action="series"     , title="Series"    , url="http://www.quierodibujosanimados.com/"))
 
 def series(item):
-    logger.info("[quierodibujosanimados.py] series")
+    logger.info("pelisalacarta.channels.quierodibujosanimados series")
     itemlist = []
     
     data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<h4 style="[^"]+">Dibujos</h4>(.*?)<h4')
+    data = scrapertools.get_match(data,'<ul class="categorias">(.*?)</ul')
     
-    patron = '<a target="_top" title="([^"]+)" href="(/cat[^"]+)"'
+    #<a href="http://www.quierodibujosanimados.com/cat/popeye-el-marino/38" title="Popeye el marino">Popeye el marino</a>
+    patron = '<a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)    
 
-    for scrapedtitle,scrapedurl in matches:
-        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = ""
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, plot=plot, fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg", viewmode="movie_with_plot"))        
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, plot=plot, fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg"))        
+
+    next_page_url = scrapertools.find_single_match(data,'</span[^<]+<a href="([^"]+)">')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action="episodios", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page_url) , folder=True, fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg") )
 
     return itemlist
 
 def episodios(item):
-    logger.info("[quierodibujosanimados.py] episodios")
+    logger.info("pelisalacarta.channels.quierodibujosanimados episodios")
+
+    '''
+    <li>
+    <div class="info">
+    <h2><a href="http://www.quierodibujosanimados.com/Caillou-raton-de-biblioteca/954" title="Caillou ratón de biblioteca">Caillou ratón de biblioteca</a></h2>
+    <p>Caillou volvía con su hermanita Rosi y su mamá de la biblioteca y traían un montón de libros que Caillou quería leer, especialmente uno de piratas. Capítulo titulado "Caillou ratón de biblioteca".</p>
+    <div class="pie">
+    <div class="categoria">
+    <span>Categor&iacute;a:</span>
+    <a href="http://www.quierodibujosanimados.com/cat/caillou/14" title="Caillou" class="categoria">Caillou</a>
+    </div>
+    <div class="puntuacion">
+    <div class="rating_16 punt_0" data-noticia="954">
+    <span>0.5</span>
+    <span>1</span>
+    <span>1.5</span>
+    <span>2</span>
+    <span>2.5</span>
+    <span>3</span>
+    <span>3.5</span>
+    <span>4</span>
+    <span>4.5</span>
+    <span>5</span>
+    </div>
+    </div>
+    </div>
+    <span class="pico"></span>
+    </div>
+    <div class="dibujo">
+    <a href="http://www.quierodibujosanimados.com/Caillou-raton-de-biblioteca/954" title="Caillou ratón de biblioteca" class="thumb">
+    <img src="http://www.quierodibujosanimados.com/i/thm-Caillou-raton-de-biblioteca.jpg" alt="Caillou ratón de biblioteca" width="137" height="174" />
+    </a>
+    <h4><a href="http://www.quierodibujosanimados.com/Caillou-raton-de-biblioteca/954" title="Caillou ratón de biblioteca">Caillou ratón de biblioteca</a></h4>
+    </div>
+    </li>
+    '''
 
     # Descarga la pagina
-
     data = scrapertools.cache_page(item.url)
-    patron  = '<h2><a[^<]+</a></h2>[^<]+'
-    patron += '<div class="titulo_inf">[^<]+'
-    patron += '<a[^<]+</a[^<]+<div class="estrellas"[^<]+<style[^<]+</style[^<]+'
-    patron += '<div id="stars[^<]+</div>[^<]+'
-    patron += '</div>[^<]+'
-    patron += '</div>[^<]+'
-    patron += '<div class="texto"[^<]+'
-    patron += '<div class="foto"><a target="_self" title="([^"]+)" href="([^"]+)"[^<]+<img\s+alt="[^"]+"\s+src="([^"]+)"[^<]+</a></div>.*?'
-    patron += '<span class="">(.*?)</span>'
+    patron  = '<div class="dibujo"[^<]+'
+    patron += '<a href="([^"]+)" title="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)"'
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
     
-    for scrapedtitle,scrapedurl,scrapedthumbnail,scrapedplot in matches:
-        title = unicode( scrapedtitle.strip(), "iso-8859-1" , errors="replace" ).encode("utf-8")
+    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+        title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-        plot = scrapertools.htmlclean(scrapedplot)
+        plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, viewmode="movie_with_plot", fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg"))
 
-    try:
-        siguiente = scrapertools.get_match(data,"<a href='([^']+)'>Siguientes >")
-        scrapedurl = urlparse.urljoin(item.url,siguiente)
-        scrapedtitle = ">> Pagina Siguiente"
-        scrapedthumbnail = ""
-        scrapedplot = ""
+    next_page_url = scrapertools.find_single_match(data,'</span[^<]+<a href="([^"]+)">')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action="episodios", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page_url) , folder=True, fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg") )
 
-        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True, fanart="http://pelisalacarta.mimediacenter.info/fanart/quierodibujosanimados.jpg") )
-    except:
-        pass
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.

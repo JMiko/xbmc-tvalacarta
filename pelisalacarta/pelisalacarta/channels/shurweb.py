@@ -143,12 +143,12 @@ def episodios(item):
     item.plot = scrapertools.find_single_match(data,'<div class="col-sm-10">(.*?)<script')
     item.plot = scrapertools.htmlclean(item.plot)
 
-    patron  = '<div class="video"[^<]+<a class="video_title" href="([^"]+)">([^<]+)</a>'
+    patron  = '<div class="video"[^<]+<a class="video_title" href="([^"]+)">(.*?)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle
+        title = scrapertools.htmlclean(scrapedtitle).strip()
         url = scrapedurl
         plot = item.plot
         thumbnail = ""

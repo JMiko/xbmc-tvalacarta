@@ -313,27 +313,37 @@ def findvideos(item):
     </td>
     </tr>
     '''
+    '''
+    <tr>
+    <td width="45"><img width="20" src="http://www.seriesflv.net/images/lang/sub.png"></td>
+    <td width="86">2014-08-10</td>
+    <td width="134" style="text-align:left;"><img width="16" src="http://www.google.com/s2/favicons?domain=tumi.tv"> tumi</td>
+    <td width="84"><a href="http://www.seriesflv.net/goto/" data-key="qXFa+2QrDcOkQxTBiRWMDvjw9twofrTPwY6R3IV1tEU=" rel="nofollow" target="_blank" title="Reproducir..." class="btn btn-primary btn-xs bg2 enlace_link"><i class="glyphicon glyphicon-play"></i> Reproducir</a></td>
+    <td width="96" class="usuario"><a href="http://www.seriesflv.net/usuario/natzuflv/" rel="nofollow" class="color1">Natzuflv</a></td>
+    <td width="200">Hace 3 horas | </td>
+    '''
 
     patron  = '<tr[^<]+'
     patron += '<td[^<]+<img width="\d+" src="([^"]+)"></td[^<]+'
     patron += '<td[^<]+</td[^<]+'
     patron += '<td[^<]+<img[^>]+>([^<]+)</td[^<]+'
-    patron += '<td[^<]+<a href="[^"]+" data-uri="([^"]+)"[^<]+<i[^<]+</i[^<]+</a></td[^<]+'
+    patron += '<td[^<]+<a href="([^"]+)" data-key="([^"]+)"[^<]+<i[^<]+</i[^<]+</a></td[^<]+'
     patron += '<td[^<]+<a[^<]+</a></td[^<]+'
     patron += '<td[^>]+>([^<]+)</td>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
     
-    for url_idioma,nombre_servidor,media_url,comentario in matches:
+    for url_idioma,nombre_servidor,target_url,key_url,comentario in matches:
         codigo_idioma = scrapertools.find_single_match(url_idioma,'lang/([a-z]+).png')
         idioma = get_nombre_idioma(codigo_idioma)
 
         title = "Ver en "+nombre_servidor.strip()+" ("+idioma+") ("+comentario.strip()+")"
-        url = media_url
+        url = target_url
+        extra = key_url
         thumbnail = ""
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=thumbnail, plot=plot, folder=False))
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, extra=extra, thumbnail=thumbnail, plot=plot, folder=False))
 
     return itemlist
 
@@ -342,7 +352,51 @@ def play(item):
     logger.info("pelisalacarta.channels.seriesflv play url="+item.url)
 
     # Hace la llamada
-    itemlist = servertools.find_video_items(data=item.url)
+    if item.extra!="":
+        '''
+        Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+        Accept-Encoding:gzip,deflate,sdch
+        Accept-Language:es-ES,es;q=0.8,en;q=0.6
+        Cache-Control:max-age=0
+        Connection:keep-alive
+        Content-Length:178
+        Content-Type:multipart/form-data; boundary=----WebKitFormBoundaryzyvJgsMftSHwzZNf
+        Cookie:perseguidor-limit=COOKIE1407744675853; __utma=253162379.911083080.1407744679.1407744679.1407744679.1; __utmb=253162379.1.10.1407744679; __utmc=253162379; __utmz=253162379.1407744679.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+        Host:www.seriesflv.net
+        Origin:http://www.seriesflv.net
+        Referer:http://www.seriesflv.net/ver/satisfaction--1x03.html
+        User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36
+        Request Payload
+        ------WebKitFormBoundaryzyvJgsMftSHwzZNf
+        Content-Disposition: form-data; name="url"
+
+        qXFa+2QrDcOkQxTBiRWMDvjw9twofrTPwY6R3IV1tEU=
+        ------WebKitFormBoundaryzyvJgsMftSHwzZNf--
+        Response Headersview source
+        '''
+        body  = '------WebKitFormBoundaryzyvJgsMftSHwzZNf\n'
+        body += 'Content-Disposition: form-data; name="url"\n'
+        body += '\n'
+        body += item.extra+'\n'
+        body += '------WebKitFormBoundaryzyvJgsMftSHwzZNf--\n'
+
+        headers = []
+        headers.append(["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"])
+        headers.append(["Accept-Encoding","gzip,deflate,sdch"])
+        headers.append(["Accept-Language","es-ES,es;q=0.8,en;q=0.6"])
+        headers.append(["Cache-Control","max-age=0"])
+        headers.append(["Connection","keep-alive"])
+        headers.append(["Content-Length",str(len(body))])
+        headers.append(["Content-Type","multipart/form-data; boundary=----WebKitFormBoundaryzyvJgsMftSHwzZNf"])
+        headers.append(["Origin","http://www.seriesflv.net"])
+        headers.append(["Referer","http://www.seriesflv.net/ver/satisfaction--1x03.html"])
+        headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"])
+        data = scrapertools.cache_page(item.url,headers=headers,post=body)
+        logger.info("data="+data)
+    else:
+        data = item.url
+    
+    itemlist = servertools.find_video_items(data=data)
 
     for videoitem in itemlist:
         videoitem.title = item.title

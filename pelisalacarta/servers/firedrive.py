@@ -49,7 +49,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("data="+data)
     
     # URL del descriptor
-    url = scrapertools.find_single_match(data,"file\: '([^']+)'")
+    url = scrapertools.find_single_match(data,"file\: loadURL\('([^']+)'")
     logger.info("url="+url)
 
     # URL del vídeo
@@ -175,6 +175,6 @@ def find_videos(text):
 
 def test():
 
-    video_urls = get_video_url("http://www.firedrive.com/embed/E89565C3A0C6183E")
+    video_urls = get_video_url("http://www.firedrive.com/embed/C31F4FD09113E884")
 
     return len(video_urls)>0

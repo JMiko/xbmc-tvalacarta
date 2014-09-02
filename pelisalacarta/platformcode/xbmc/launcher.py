@@ -91,7 +91,11 @@ def run():
             if channel_name=="buscador":
                 import pelisalacarta.buscador as channel
             if channel_name=="personal" or channel_name=="personal2" or channel_name=="personal3" or channel_name=="personal4" or channel_name=="personal5":
-                import pelisalacarta.channels.personal as channel
+               Chann = config.get_setting("personalchannelurl"+channel_name[8:])
+               if Chann[-3:]=='.py' and os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , Chann):
+                  exec "import pelisalacarta.channels."+Chann[:-3]+" as channel"
+               else: 
+                  import pelisalacarta.channels.personal as channel
             elif os.path.exists( regular_channel_path ):
                 exec "import pelisalacarta.channels."+channel_name+" as channel"
             elif os.path.exists( regular_channel_path ):

@@ -4,7 +4,7 @@
 # Canal para stormtv 
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # Por JuRR
-# v0.7
+# v0.8
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 
@@ -185,17 +185,11 @@ def mainlist(item):
 
     	itemlist = []
 	itemlist.append( Item(channel=__channel__,action="searchtype",thumbnail=STATIC_SERVER+"buscar.jpg",title="Buscar", url="",fanart=STATIC_SERVER+"logo.jpg"))
-	view=item.title
-	#############################
-	#if (item.title=="Tvseries"):
-	#   extra="Movies"
-	#elif (item.title=="Movies"):
-	#   extra="Mixed"
-	#else:
-	#   extra="Tvseries"
-	#itemlist.append( Item(channel=__channel__,action="vista",thumbnail=STATIC_SERVER+"vista.jpg",title="Vista "+extra,url="",fanart=STATIC_SERVER+"logo.jpg",extra=extra))
-	#print "tvseries/following/user/"+user_id+"/pass/"+user_pass+"/view/"+view
-	###############################
+	try:
+		view=item.extra
+	except:
+		view="Mixed"
+	itemlist.append( Item(channel=__channel__,action="change_view",thumbnail=STATIC_SERVER+"vista.jpg",title="Cambiar vista",url="",fanart=STATIC_SERVER+"logo.jpg"))
     	urllib.urlretrieve (SERVER+"tvseries/following/user/"+user_id+"/pass/"+user_pass+"/view/"+view, path+"temp.xml")                             
     	xml=path+"/"+"temp.xml"                                                                                                    
     	doc = minidom.parse(xml)                                                                                                   
@@ -224,10 +218,16 @@ def mainlist(item):
     	itemlist=[]
     	itemlist.append( Item(channel=__channel__, action="channel" , title="Usuario o contraseña incorrectas", fulltitle="" , url="", thumbnail="", plot="", viewmode="movie", show="" ,fanart=""))
     return itemlist
-def vista(item):
-	import xbmc,sys	
-	print "vista "+item.extra
-	xbmc.executebuiltin("XBMC.Container.Refresh(%s?channel=%s&action=%s&extra=%s&title=%s)" % ( sys.argv[ 0 ] , "stormtv" , "mainlist" , urllib.quote_plus( item.extra ),urllib.quote_plus( item.extra )))
+def change_view(item):
+    import xbmcgui                                                                                                                                 
+    #filters=get_default_filters()
+    filters=[]                                                                                                                          
+    dialog=xbmcgui.Dialog()                                                                                                                                
+    orden=["Peliculas","Series","Todas"]
+    order=["Movies","Tvseries","Mixed"]                                                                         
+    view=order[dialog.select("Selecciona la vista preferida",orden)]
+    print view
+    return mainlist(Item(channel=__channel__, title="stormtv", action="mainlist", extra=view ))
 def genresearch(item):
 	user_id = config.get_setting("stormtvuser")                                                                                                                               
         user_pass = config.get_setting("stormtvpassword")                                                                                                                         
@@ -437,6 +437,7 @@ def channel(item):
 		itemlist.append( Item(channel=__channel__, action="addfollow" , title="<AÃ±adir a Favoritas>", show=item.show,fanart=item.fanart,folder=False))
 	else:
 		itemlist.append( Item(channel=__channel__, action="removefollow" , title="<Quitar de Favoritas>", show=item.show,fanart=item.fanart,folder=False))
+	itemlist.append( Item(channel=__channel__,action="nocatalogsearch",title="<Buscar en items sin catalogar>",fulltitle="",extra=storm_name))
 	return itemlist
 def trailer(item):
     from core import trailertools
@@ -728,7 +729,7 @@ def findvideos(item):
 			ltrue=1
 		if ((strue==1)&(ltrue==1)):                                                                                                                                           
                 #seriesyonkis es un poco distinto para comprobar, de momento hacemos bypass :)                                                                                    
-                 if ((storm_channel_name<>"seriesyonkis")and(storm_channel_name<>"peliculasyonkis_generico")and(storm_channel_name<>"divxonline")):                                                                                                                          
+                 if ((storm_channel_name<>"seriespepito")and(storm_channel_name<>"peliculaspepito")and(storm_channel_name<>"seriesflv") and (storm_channel_name<>"cinehanwer")): 
                    if ((vserver not in verified)&(vserver not in excluded)):                                                                                                      
                            try:                                                                                                                                                   
                               exec "import servers."+vserver+" as tserver"                                                                                                        
@@ -745,8 +746,12 @@ def findvideos(item):
                                         resultado = tserver.find_videos(data)                                                                                                     
                                 except:                                                                                                                                           
                                         print "[stormtv.py] Free Verify no find_videos"                                                                                           
-                                try:                                                                                                                                              
-                                        res,test= tserver.test_video_exists(resultado[0][1])                                                                                      
+                                try:
+					if (vserver=="torrent"):
+						res=True
+						test=""
+					else:                                                                                                                                              
+                                        	res,test= tserver.test_video_exists(resultado[0][1])                                                                                      
                                 except:                                                                                                                                           
                                         print "[stormtv.py] Free Verified fallo test_video_exist "+vserver                                                                        
                                         res=False                                                                                                                                 
@@ -917,7 +922,7 @@ def free(item):
 	#return storm_itemlist
 	return sorted(storm_itemlist, key=lambda item: item.title,  reverse=True)    	   
 def play(item):
-	serverlist=["animeflv","shurweb"]	
+	serverlist=["animeflv","shurweb","divxatope"]	
 	logger.info("[stormtv.py] Play")
 	storm_fanart=item.fanart
 	storm_plot=item.plot
@@ -934,7 +939,7 @@ def play(item):
 	   if ((storm_channel_name =='peliculasyonkis_generico') or (storm_channel_name=='seriesyonkis')):
 		item_storm=Item(channel=__channel__,url=item.url,server=item.server,title=item.title, thumbnail=item.thumbnail, plot=item.plot)
 		itemlist=stormlib.play_yonkis(item_storm)
-	   elif (storm_channel_name=="divxonline"):
+	   elif ((storm_channel_name=="seriesflv")or (storm_channel_name=="seriespepito") or (storm_channel_name=="peliculaspepito") or (storm_channel_name=="cinehanwer")):
 		itemlist=[]
 		exec "import pelisalacarta.channels."+storm_channel_name+" as channel"
 		try:
