@@ -38,13 +38,14 @@ def find_videos(data):
     devuelve = []
 
     # http://api.video.mail.ru/videos/embed/mail/cinemaxxmaxx/_myvideo/416.html
-    patronvideos  = '(video.mail.ru/videos/embed/mail/[^/]+/[^/]+/\d+.html)'
+    # //videoapi.my.mail.ru/videos/embed/mail/morenoglo/_myvideo/72.html
+    patronvideos  = '(mail.ru/videos/embed/mail/[^/]+/[^/]+/\d+.html)'
     logger.info("[mail.ru.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[mail.ru]"
-        url = "http://api."+match
+        url = "http://api.video."+match
         if url not in encontrados:
             logger.info("  url="+url)
             devuelve.append( [ titulo , url , 'mailru' ] )

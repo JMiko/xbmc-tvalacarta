@@ -45,7 +45,7 @@ def ultimo(item):
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas    
-    patron = '<!--Video--><div class="lista_videos"(.*?)</div[^<]+</div[^<]+</div'
+    patron = '<div class="imagen"(.*?)<div style="clear.both">'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     for match in matches:

@@ -26,114 +26,145 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[tusnovelas.py] mainlist")
+    logger.info("pelisalacarta.channels.tusnovelas mainlist")
     
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="novedades"           , title="Últimas telenovelas"           , url="http://www.tusnovelas.com/"))
-    itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="Últimos episodios"             , url="http://www.tusnovelas.com/"))
-    itemlist.append( Item(channel=__channel__, action="todas"               , title="Lista completa de telenovelas" , url="http://www.tusnovelas.com/"))
+    itemlist.append( Item(channel=__channel__, action="series"              , title="Últimas telenovelas añadidas" , url="http://tusnovelas.com/lista-novelas/"))
+    itemlist.append( Item(channel=__channel__, action="series_top"          , title="Telenovelas TOP"              , url="http://tusnovelas.com/"))
+    itemlist.append( Item(channel=__channel__, action="series_emision"      , title="Telenovelas en Emisión"       , url="http://tusnovelas.com/"))
+    itemlist.append( Item(channel=__channel__, action="letras"              , title="Todas por orden alfabético"   , url="http://tusnovelas.com/"))
 
     return itemlist
 
-def novedades_episodios(item):
-    logger.info("[tusnovelas.py] novedades_episodios")
+def series_top(item):
+    logger.info("pelisalacarta.channels.tusnovelas series_top")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.find_single_match(data,'<ul class="eltop">(.*?)</ul>')
+    patron  = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedtitle in matches:
+        url = urlparse.urljoin("http://tusnovelas.com/",scrapedurl)
+        thumbnail = ""
+        title = scrapedtitle
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , folder=True) )
+
+    return itemlist
+
+def series_emision(item):
+    logger.info("pelisalacarta.channels.tusnovelas series_emision")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.find_single_match(data,'<ul class="enemi">(.*?)</ul>')
+    patron  = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedtitle in matches:
+        url = urlparse.urljoin("http://tusnovelas.com/",scrapedurl)
+        thumbnail = ""
+        title = scrapedtitle
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , folder=True) )
+
+    return itemlist
+
+def letras(item):
+    logger.info("pelisalacarta.channels.tusnovelas letras")
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    data = scrapertools.find_single_match(data,'<div id="abc">(.*?)</ul>')
+    patron  = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedtitle in matches:
+        url = urlparse.urljoin("http://tusnovelas.com/",scrapedurl)
+        thumbnail = ""
+        title = scrapedtitle
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="series", title=title , url=url , folder=True) )
+
+    return itemlist
+
+def series(item):
+    logger.info("pelisalacarta.channels.tusnovelas series")
     itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
     '''
-    <div class="dia">
-    <img src="http://img.tusnovelas.com/por-ella-soy-eva.jpg" width="70px" height="105px" align="right"/>
-    <div class="dia-titulo"><a href="http://www.tusnovelas.com/capitulo/por-ella-soy-eva-95.html" class="tts">Por ella soy eva 95</a></div>
-    <div class="dia-lista"><a href="por-ella-soy-eva.html">Lista de capítulos</a></div>
-    30/06/2012<br /><br />
+    <div class="pelis">
+    <a href="novela/lo-que-la-vida-me-robo.html"><img class="port" src="img/photos/portadas_160x240/72.jpg" alt="Lo que la vida me robó"  width="160" height="240px"  /></a>
+    <!-- Descripción -->
+    <div class="pelis-desc">
+    <h3>Lo que la vida me robó</h3>
+    <p class="desc-mid">
+    La vida le jugo a Monserrat una mala pasada, su madre la obligo a casarse con un hombre a quién ella no ama, todo por salvar a su familia de la miseria ya que este hombre es rico.
+    <br /><br />
+    Por este matrimonio debe renunciar al amor real, el cual será encarcelado injustamente producto de una trampa por parte de la madre de Monserrat. Pero la vida muchas veces es bastante complicada y ella podría encontrar el amor en donde menos lo espera.                </p>
+    <p class="desc-low">
+    <span class="desc-item"><span class="bold">Actores y Actrices: </span> Daniela Castro, Angelique Boyer, Sebastián Rulli, Luis Roberto Guzmán, Sergio Sendel, Rogelio Guerra, Eric del Castillo, Gabriela Rivero, Grettell Valdez, Lisset Gutiérrez Salazar, Alberto Estrella, Ana Bertha Espín, Juan Carlos Barreto, Luis Uribe, Osvaldo Benavides, Verónica Jaspeado, Margarita Magaña.</span>
+    <span class="desc-item"><span class="bold">Canal: </span> El Canal de las Estrellas</span>
+    <span class="desc-item"><span class="bold">País </span> México </span>
+    </p>
+    </div>
+    <!-- Fin Descripción -->
+    </div><!--end .pelis-->
     '''
-    patron  = '<div class="dia">[^<]+'
-    patron += '<img src="([^"]+)"[^<]+'
-    patron += '<div class="dia-titulo"><a href="([^"]+)"[^>]+>([^<]+)</a></div>'    
+    patron  = '<div class="pelis"[^<]+'
+    patron += '<a href="([^"]+)"><img class="port" src="([^"]+)"[^<]+</a[^<]+'
+    patron += '<!-- Des[^<]+'
+    patron += '<div class="pelis-desc"[^<]+'
+    patron += '<h3>([^<]+)</h3>(.*?)</div>'
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for scrapedthumbnail,url,scrapedtitle in matches:
-        scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,url)
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+    for scrapedurl,scrapedthumbnail,scrapedtitle,scrapedplot in matches:
+        url = urlparse.urljoin("http://tusnovelas.com/",scrapedurl)
+        thumbnail = urlparse.urljoin("http://tusnovelas.com/",scrapedthumbnail)
+        title = scrapedtitle
+        plot = scrapertools.htmlclean(scrapedplot)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail ,fanart=thumbnail , plot=plot , viewmode="movie_with_plot" , folder=True) )
     
-    return itemlist
-
-def novedades(item):
-    logger.info("[tusnovelas.py] novedades")
-    itemlist = []
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    '''
-    <div class="imagelist">
-    <div align="center">
-    <div class="gallery">
-    <div class="picture">
-    <a href="primera-dama-chile.html" title="Primera dama Chile" >
-    <img src="http://img.tusnovelas.com/primera-dama-chile.jpg" width="160px" height="240px" alt="Primera dama Chile" /></a>
-    </div>
-    <div class="ttt">
-    <a href="primera-dama-chile.html" rel="bookmark" title="Primera dama Chile">Primera dama Chile</a>
-    </div>
-    <div class="clear">
-    </div>
-    </div>
-    </div>
-    </div>
-    </div><div>
-    '''
-    patron  = '<div class="imagelist">[^<]+'
-    patron += '<div align="center">[^<]+'
-    patron += '<div class="gallery">[^<]+'
-    patron += '<div class="picture">[^<]+'
-    patron += '<a href="([^"]+)" title="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)"'
-    
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for url,scrapedtitle,scrapedthumbnail in matches:
-        scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,url)
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-    
-    '''
-    <li ><a href="ultimas/p/14" title="&Uacute;ltima">&raquo;&raquo;</a></li>
-    '''
-    patron  = '<a href="([^"]+)" title="\&Uacute\;ltima">\&raquo\;\&raquo\;</a></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for match in matches:
-        scrapedtitle = ">> Página siguiente"
-        scrapedplot = ""
-        scrapedurl = urlparse.urljoin(item.url,match)
-        scrapedthumbnail = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+    next_page_url = scrapertools.find_single_match(data,'<a href="([^"]+)">Siguiente</a>')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action="series", title=">> Página siguiente" , url=next_page_url , folder=True) )
 
     return itemlist
 
 def episodios(item):
-    logger.info("[tusnovelas.py] episodios")
+    logger.info("pelisalacarta.channels.tusnovelas episodios")
     itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    patron  = '<li class="lc"><a href="([^"]+)" class="lcc">([^<]+)</a></li>'
+    patron  = '<li><a href="(capitulo/[^"]+)">([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for url,scrapedtitle in matches:
         scrapedplot = ""
         scrapedthumbnail = ""
-        scrapedurl = urlparse.urljoin(item.url,url)
+        scrapedurl = urlparse.urljoin("http://tusnovelas.com/",url)
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
@@ -141,7 +172,7 @@ def episodios(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[tusnovelas.py] findvideos")
+    logger.info("pelisalacarta.channels.tusnovelas findvideos")
     data = scrapertools.cache_page(item.url)
     itemlist=[]
 
@@ -164,22 +195,6 @@ def findvideos(item):
         videoitem.action="play"
         videoitem.folder=False
         videoitem.title = "["+videoitem.server+"]"
-
-    return itemlist
-
-def todas(item):
-    logger.info("[tusnovelas.py] todas")
-    itemlist=[]
-
-    data = scrapertools.cache_page(item.url)
-    data = scrapertools.get_match(data,'<div id="noti-titulo">Lista de Telenovelas</div>[^<]+<div class="dm">(.*?)</div>')
-    
-    patron = '<li><a href="([^"]+)"[^>]+>([^<]+)</a></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    
-    for url,title in matches:
-        scrapedurl = urlparse.urljoin(item.url,url)
-        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=scrapedurl , folder=True) )
 
     return itemlist
 

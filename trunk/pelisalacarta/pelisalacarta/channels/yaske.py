@@ -28,11 +28,11 @@ def mainlist(item):
     logger.info("pelisalacarta.yaske mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Novedades"          , action="peliculas",       url="http://www.yaske.net/"))
-    itemlist.append( Item(channel=__channel__, title="Por año"            , action="menu_anyos",       url="http://www.yaske.net/"))
-    itemlist.append( Item(channel=__channel__, title="Por género"         , action="menu_categorias", url="http://www.yaske.net/"))
-    itemlist.append( Item(channel=__channel__, title="Por calidad"        , action="menu_calidades",  url="http://www.yaske.net/"))
-    itemlist.append( Item(channel=__channel__, title="Por idioma"         , action="menu_idiomas",    url="http://www.yaske.net/"))
+    itemlist.append( Item(channel=__channel__, title="Novedades"          , action="peliculas",       url="http://www.yaske.to/"))
+    itemlist.append( Item(channel=__channel__, title="Por año"            , action="menu_anyos",      url="http://www.yaske.to/"))
+    itemlist.append( Item(channel=__channel__, title="Por género"         , action="menu_categorias", url="http://www.yaske.to/"))
+    itemlist.append( Item(channel=__channel__, title="Por calidad"        , action="menu_calidades",  url="http://www.yaske.to/"))
+    itemlist.append( Item(channel=__channel__, title="Por idioma"         , action="menu_idiomas",    url="http://www.yaske.to/"))
     itemlist.append( Item(channel=__channel__, title="Buscar"             , action="search") )
 
     return itemlist
@@ -318,11 +318,14 @@ def play(item):
         url = item.url
         values = {'url': item.extra}
     post = urllib.urlencode(values)
+    logger.info("pelisalacarta.yaske play url="+url+", post="+post)
+
     request = urllib2.Request(url,post)
     request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
     response = urllib2.urlopen(request)
     data = response.read()
     response.close()
+    logger.info("pelisalacarta.yaske play data="+data)
 
     # 01-08-2014 - Comentado
     '''

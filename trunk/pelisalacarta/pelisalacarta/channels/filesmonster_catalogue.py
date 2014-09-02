@@ -162,7 +162,6 @@ def lista_categoria(item):
     data=data1+data2+data3+data4+data5
     
     #logger.info(data)
-
     
     # Extrae las entradas (carpetas)
     
@@ -187,8 +186,8 @@ def lista_categoria(item):
         tipo = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         scrapedplot=strip_tags(scrapedplot)     
-        if (scrapedtitle!="All") : itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail ,  plot=scrapedplot , folder=True) )  
-        if (scrapedtitle!="All") :cuantos_videos=cuantos_videos+1
+        if (scrapedtitle!="All" and scrapedthumbnail!="http://filesmonster.filesdl.net/img/pornbutton.gif") : itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail ,  plot=scrapedplot , folder=True) )  
+        if (scrapedtitle!="All" and scrapedthumbnail!="http://filesmonster.filesdl.net/img/pornbutton.gif") :cuantos_videos=cuantos_videos+1
  
  
 #creamos los enlaces a las páginas consecutivas
@@ -252,9 +251,7 @@ def lista(item):
     
     data=data1+data2+data3+data4+data5
     
-    
-    
-    # Extrae las entradas (carpetas)
+  # Extrae las entradas (carpetas)
     
     
     #patronvideos ='<h1 class="product_title"><a href="([^"]+)">([^<]+).*?</a>.*?<img src="([^"]+)"'
@@ -275,8 +272,8 @@ def lista(item):
         tipo = match[2]
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         scrapedplot=strip_tags(scrapedplot)     
-        if (scrapedtitle!="All") : itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-        if (scrapedtitle!="All") :cuantos_videos=cuantos_videos+1
+        if (scrapedtitle!="All" and scrapedthumbnail!="http://filesmonster.filesdl.net/img/pornbutton.gif") : itemlist.append( Item(channel=__channel__, action="detail", title=scrapedthumbanil , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        if (scrapedtitle!="All" and scrapedthumbnail!="http://filesmonster.filesdl.net/img/pornbutton.gif") :cuantos_videos=cuantos_videos+1
  
  #creamos los enlaces a las páginas consecutivas
 
@@ -362,8 +359,8 @@ def search(item,texto):
         tipo = match[2]     
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         scrapedplot=strip_tags(scrapedplot)
-        if (scrapedtitle!="All") : itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-        if (scrapedtitle!="All") :cuantos_videos=cuantos_videos+1 
+        if (scrapedtitle!="All" and scrapedthumbnail!="http://filesmonster.filesdl.net/img/pornbutton.gif") : itemlist.append( Item(channel=__channel__, action="detail", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        if (scrapedtitle!="All" and scrapedthumbnail!="http://filesmonster.filesdl.net/img/pornbutton.gif") :cuantos_videos=cuantos_videos+1 
 
  
  #creamos los enlaces a las páginas consecutivas
@@ -374,7 +371,7 @@ def search(item,texto):
     pagina=plot+5
     pagina_despues=str(pagina+4)
     pagina=str(pagina)
-    if (cuantos_videos==25) : itemlist.append( Item(channel=__channel__, action="lista", title=">> siguientes (páginas "+pagina +" a "+pagina_despues+")", url=texto , thumbnail="", plot=pagina , folder=True) )
+    if (cuantos_videos==25 ) : itemlist.append( Item(channel=__channel__, action="lista", title=">> siguientes (páginas "+pagina +" a "+pagina_despues+")", url=texto , thumbnail="", plot=pagina , folder=True) )
     itemlist.append( Item(channel=__channel__, action="mainlist", title="<< volver al inicio",  folder=True) )
   
   

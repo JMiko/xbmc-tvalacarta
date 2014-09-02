@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.69"/>
-    <property name="oldversionboxee" value="10.4"/>
-    <property name="oldversiondate" value="02/05/2014"/>
+    <property name="oldversion" value="3.2.70"/>
+    <property name="oldversionboxee" value="10.5"/>
+    <property name="oldversiondate" value="19/06/2014"/>
 
-    <property name="version" value="3.2.70"/>
-    <property name="versionboxee" value="10.5"/>
-    <property name="versiondate" value="19/06/2014"/>
+    <property name="version" value="3.2.71"/>
+    <property name="versionboxee" value="10.6"/>
+    <property name="versiondate" value="30/08/2014"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <property name="target" value="target"/>
@@ -636,69 +636,61 @@
 
 	<!-- copy-plexmediaserver ============================================================ -->
     <target name="copy-plexmediaserver">
+
+        <!-- build folder structure -->
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/channels"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/servers"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/core"/>
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources"/>
-        <!--mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images"/-->
         <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/URL Services"/>
+        <mkdir dir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/URL Services/UniversalResolver"/>
 
-        <copy file="resources/plexmediaserver/Info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
-        <copy file="resources/plexmediaserver/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings"/>
-        <copy file="resources/plexmediaserver/DefaultPrefs.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents"/>
-        <copy file="fanart.jpg" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/art-default.jpg"/>
-        <copy file="icon.png" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/icon-default.png"/>
-        <!--copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/images">
-            <fileset dir="resources/images"/>
-        </copy-->
-        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries">
-            <fileset dir="lib">
-                <exclude name="cerealizer/**"/>
+        <!-- copy common files -->
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/channels">
+            <fileset dir="pelisalacarta/channels">
+                <include name="*.py"/>
+                <exclude name="rv_*"/>
             </fileset>
         </copy>
-        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code">
-            <fileset dir=".">
-                <exclude name="target/**"/>
-                <exclude name="**/*.xml"/>
-                <exclude name="**/*.txt"/>
 
-                <exclude name="tester.py"/>
-                <exclude name="download_url.py"/>
-                <exclude name="test_channels.py"/>
-                <exclude name="test_connectors.py"/>
-                <exclude name="script_descargar_lista.py"/>
-
-                <exclude name="core/platform_name.py"/>
-                <exclude name="COPYING"/>
-                <exclude name="build.xml"/>
-                <exclude name="**/.*"/>
-                <exclude name="**/.*/**"/>
-                <exclude name="**/bookmarks/**"/>
-                <exclude name="**/library/**"/>
-                <exclude name="**/*.pyo"/>
-                <exclude name="**/*.pyc"/>
-                <exclude name="**/parametrizacion*.*"/>
-                <exclude name="descriptor.xml"/>
-                <exclude name="resources/**"/>
-                <exclude name="default.tbn"/>
-                <exclude name="fanart-new.jpg"/>
-                <exclude name="fanart.jpg"/>
-                <exclude name="icon-old.png"/>
-                <exclude name="icon.png"/>
-                <exclude name="lib/**"/>
-                <exclude name="platformcode/**"/>
-                <exclude name="__init__.py"/>
-                <exclude name="core/logger.py"/>
-                <exclude name="core/config.py"/>
-				<exclude name="channelselector-*.py"/>
-				<exclude name="logging.conf"/>
-                <exclude name="pelisalacarta/channels/rv_*"/>
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/servers">
+            <fileset dir="servers">
+                <include name="*.py"/>
             </fileset>
         </copy>
-        <copy file="resources/plexmediaserver/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code"/>
-        <copy file="platformcode/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
-        <copy file="platformcode/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
-        <copy file="platformcode/plex/platform_name.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code/core"/>
+
+        <copy todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/core">
+            <fileset dir="core">
+                <include name="*.py"/>
+                <exclude name="ClientCookie/**"/>
+            </fileset>
+        </copy>
+
+        <!-- copy plex specific files -->
+        <copy file="platformcode/plex/Info.plist" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents" overwrite="true"/>
+        <copy file="platformcode/plex/DefaultPrefs.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents" overwrite="true"/>
+
+        <copy file="platformcode/plex/__init__.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Code" overwrite="true"/>
+
+        <copy file="platformcode/plex/bridge.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared" overwrite="true"/>
+        <copy file="channelselector.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared" overwrite="true"/>
+        <copy file="pelisalacarta/buscador.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared" overwrite="true"/>
+
+        <copy file="platformcode/plex/config.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/core" overwrite="true"/>
+        <copy file="platformcode/plex/logger.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/core" overwrite="true"/>
+        <copy file="platformcode/plex/platform_name.py" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Libraries/Shared/core" overwrite="true"/>
+
+        <copy file="platformcode/plex/en.json" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Strings" overwrite="true"/>
+
+        <copy file="fanart.jpg" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/art-default.jpg" overwrite="true"/>
+        <copy file="icon.png" tofile="${target}/plexmediaserver/pelisalacarta.bundle/Contents/Resources/icon-default.png" overwrite="true"/>
+
+        <copy file="platformcode/plex/ServiceCode.pys" todir="${target}/plexmediaserver/pelisalacarta.bundle/Contents/URL Services/UniversalResolver" overwrite="true"/>
 	</target>
 
 	<!-- copy-dreambox ============================================================ -->
@@ -809,15 +801,5 @@
         
         <replaceregexp file="platformcode/boxee/descriptor.xml" match="&lt;version&gt;(.*?)&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
         <replaceregexp file="platformcode/boxee/index.xml" match="&lt;version&gt;${oldversionboxee}&lt;/version&gt;" replace="&lt;version&gt;${versionboxee}&lt;/version&gt;"/>
-
-        <!--antcall target="package"/-->
-        
-        <!-- Pasos que quedan por automatizar
-        Firmar boxee
-        Subir el xml de boxee
-        Subir version.xml como pelisalacarta-version.xml
-        Subir index.xml de boxee y el zip de boxee al repo
-        Redactar texto para actualizar página de descargas
-        -->
     </target>
 </project>

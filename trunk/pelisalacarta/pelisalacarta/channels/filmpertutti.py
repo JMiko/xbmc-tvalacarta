@@ -27,10 +27,10 @@ def isGeneric():
 def mainlist(item):
     logger.info("pelisalacarta.filmpertutti mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Ultimi film inseriti", action="peliculas", url="http://www.filmxtutti.org/"))
-    itemlist.append( Item(channel=__channel__, title="Categorie film", action="categorias", url="http://www.filmxtutti.org/", extra="Categorie Film"))
-    itemlist.append( Item(channel=__channel__, title="Serie TV" , action="categorias", url="http://www.filmxtutti.org/", extra="Serie Tv"))
-    itemlist.append( Item(channel=__channel__, title="Anime Cartoon", action="categorias", url="http://www.filmxtutti.org/", extra="Anime Cartoon"))
+    itemlist.append( Item(channel=__channel__, title="Ultimi film inseriti", action="peliculas", url="http://www.filmpertutti.eu"))
+    itemlist.append( Item(channel=__channel__, title="Categorie film", action="categorias", url="http://www.filmpertutti.eu", extra="Categorie Film"))
+    itemlist.append( Item(channel=__channel__, title="Serie TV" , action="categorias", url="http://www.filmpertutti.eu", extra="Serie Tv"))
+    itemlist.append( Item(channel=__channel__, title="Anime Cartoon", action="categorias", url="http://www.filmpertutti.eu", extra="Anime Cartoon"))
     return itemlist
 
 def categorias(item):

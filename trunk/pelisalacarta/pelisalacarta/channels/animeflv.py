@@ -278,7 +278,7 @@ def test():
 
     # mainlist
     mainlist_items = mainlist(Item())
-    
+
     # Comprueba que todas las opciones tengan algo (excepto el buscador)
     for mainlist_item in mainlist_items:
         if mainlist_item.action!="search":

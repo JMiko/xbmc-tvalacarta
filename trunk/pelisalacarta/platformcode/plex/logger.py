@@ -4,37 +4,22 @@
 # Logger
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
-from PMS import Log
+import bridge
 
 def info(texto):
     try:
-        texto = unicode(texto,"utf-8")
+        bridge.log_info( texto )
     except:
-        try:
-            texto = unicode(texto,"iso-8859-1")
-        except:
-            pass
-
-    Log(texto)
-
+        pass
+    
 def debug(texto):
     try:
-        texto = unicode(texto,"utf-8")
+        bridge.log_info( texto )
     except:
-        try:
-            texto = unicode(texto,"iso-8859-1")
-        except:
-            pass
-
-    Log(texto)
+        pass
 
 def error(texto):
     try:
-        texto = unicode(texto,"utf-8")
+        bridge.log_info( texto )
     except:
-        try:
-            texto = unicode(texto,"iso-8859-1")
-        except:
-            pass
-
-    Log(texto)
+        pass

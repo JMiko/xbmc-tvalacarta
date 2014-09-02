@@ -25,7 +25,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[cineonlineeu.py] mainlist")
+    logger.info("pelisalacarta.channels.cineonlineeu mainlist")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas" , title="Novedades"      , url="http://www.cine-online.eu/" ))
@@ -35,7 +35,7 @@ def mainlist(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("[cineonlineeu.py] search")
+    logger.info("pelisalacarta.channels.cineonlineeu search")
     if item.url=="":
         item.url="http://www.cine-online.eu/search?q="
     texto = texto.replace(" ","+")
@@ -50,7 +50,7 @@ def search(item,texto):
         return []
 
 def generos(item):
-    logger.info("[cineonlineeu.py] mainlist")
+    logger.info("pelisalacarta.channels.cineonlineeu mainlist")
     itemlist = []
     
     '''
@@ -91,40 +91,33 @@ def generos(item):
 
 
 def peliculas(item):
-    logger.info("[cineonlineeu.py] peliculas")
+    logger.info("pelisalacarta.channels.cineonlineeu peliculas")
     itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
 
     # Extrae las entradas (carpetas)
-    patron  = "<div class='post bar hentry'>[^<]+"
-    patron += "<a name='[^']+'></a>[^<]+"
-    patron += "<h3 class='post-title entry-title'>[^<]+"
-    patron += "<a href='([^']+)'>([^<]+)</a>[^<]+"
-    patron += '</h3>.*?<img.*?src="([^"]+)"'
+    patron  = "<div class='post bar hentry[^<]+"
+    patron += "<a[^<]+</a>[^<]+"
+    patron += "<h3 class='post-title entry-title[^<]+"
+    patron += "<a href='([^']+)'>([^<]+)</a[^<]+"
+    patron += "</h3[^<]+"
+    patron += "<div[^<]+</div[^<]+"
+    patron += "<div[^<]+"
+    patron += "<div id='summary[^<]+"
+    patron += '<a[^<]+<img.*?src="([^"]+)"[^<]+</a>(.*?)</div>'
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        plot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , viewmode="movie", folder=True) )
-
-    patron  = "<div class='item-content'>[^<]+"
-    patron += "<div class='item-thumbnail'>[^<]+"
-    patron += "<a href='([^']+)'[^<]+"
-    patron += "<img.*?src='([^']+)'[^<]+"
-    patron += "</a>[^<]+"
-    patron += "</div>[^<]+"
-    patron += "<div class='item-title'><a[^>]+>([^<]+)</a></div>"
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
-        plot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , fanart = scrapedthumbnail , plot=plot , folder=True) )
+    for scrapedurl,scrapedtitle,scrapedthumbnail,scrapedplot in matches:
+        title = scrapedtitle.strip()
+        thumbnail = scrapedthumbnail
+        url = scrapedurl
+        plot = scrapertools.htmlclean(scrapedplot)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail , fanart = scrapedthumbnail , plot=plot , viewmode="movie_with_plot", folder=True) )
 
     # Extrae el paginador
     patronvideos  = "<a class='blog-pager-older-link' href='([^']+)'"
@@ -133,12 +126,12 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=">> Página siguiente" , url=scrapedurl , folder=True) )
 
     return itemlist
 
 def findvideos(item):
-    logger.info("[cineonlineeu.py] findvideos")
+    logger.info("pelisalacarta.channels.cineonlineeu findvideos")
     data = scrapertools.cache_page(item.url)
     itemlist=[]
 
@@ -168,7 +161,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[cineonlineeu.py] play")
+    logger.info("pelisalacarta.channels.cineonlineeu play")
     itemlist=[]
 
     if item.server=="linkbucks":

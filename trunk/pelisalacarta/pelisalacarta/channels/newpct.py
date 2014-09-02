@@ -243,9 +243,11 @@ def findvideos(item):
     itemlist=[]
 
     data = scrapertools.cache_page(item.url)
-    torrent_id = scrapertools.get_match(data,"'torrentID'\s*\:\s*'(\d+)'")
-    
-    data = data + scrapertools.cache_page("http://www.newpct1.com/include.inc/ajax.php/update.links.php?userID=&torrentID="+torrent_id)
+
+    #<span id='content-torrent'>                    <a href='http://tumejorjuego.com/descargar/index.php?link=descargar/torrent/58591/el-tour-de-los-muppets-bluray-screener-espanol-castellano-line-2014.html' rel='nofollow' id='58591' title='el-tour-de-los-muppets-bluray-screener-espanol-castellano-line-2014' class='external-url' target='_blank'>
+    torrent_url = scrapertools.find_single_match(data,"<span id='content-torrent'[^<]+<a href='([^']+)'")
+    if torrent_url!="":
+        itemlist.append( Item(channel=__channel__, action="play" , title="Torrent" , url=torrent_url, server="torrent"))
 
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))
