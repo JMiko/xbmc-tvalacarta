@@ -256,7 +256,7 @@ def findvideos(item):
     #scrapertools.printMatches(matches)
     itemlist = []
 
-    n = 1
+    #n = 1
     for tr in matches:
         logger.info("tr="+tr)
         try:
@@ -270,10 +270,33 @@ def findvideos(item):
             #<a href="http://www.yaske.net/es/reproductor/pelicula/2244/15858/" title="Batman: El regreso del Caballero Oscuro, Parte 2"
             # 01-08-2014 - Comentado
             #url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"')
+
+            ## 04-09-2014 - Comentado
+            #############################
+            '''
             # 01-08-2014 - Añadido
             #<a [....] href="http://www.yaske.net/goto/" data-key="WZmWd6z1zkcEmlesZzItESWI+720osvEeKsY+NXtLxI=">
             data_key = scrapertools.get_match(tr,'<a.*?data-key="([^"]+)"')
             url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"')+"|"+data_key
+            '''
+
+            ## 04-09-2014 - Añadido
+            #############################
+            #<a [....] href="http://api.ysk.pe/noref/?u=< URL Vídeo >">
+            url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"').split("=")[1]
+            if "/netu/tv/" in url:
+                import base64
+                data = scrapertools.cache_page(url)
+                match_b64_1 = 'base64,([^"]+)"'
+                b64_1 = scrapertools.get_match(data, match_b64_1)
+                utf8_1 = base64.decodestring(b64_1)
+                match_b64_inv = "='([^']+)';"
+                b64_inv = scrapertools.get_match(utf8_1, match_b64_inv)
+                b64_2 = b64_inv[::-1]
+                utf8_2 = base64.decodestring(b64_2).replace("%","\\").decode('unicode-escape')
+                id_video = scrapertools.get_match(utf8_2,'<input name="vid" id="text" value="([^"]+)">')
+                url = "http://netu.tv/watch_video.php?v="+id_video
+
             thumbnail = ""
             plot = ""
 
@@ -293,12 +316,20 @@ def findvideos(item):
             scrapedthumbnail = thumbnail
             scrapedplot = plot
             if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+            ## 04-09-2014 - Comentado
+            #############################
+            '''
             if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
                 itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle , folder=False) )
             else:
                 
                 itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl.split("|")[0] , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle , extra=scrapedurl.split("|")[1] , folder=False) )
-            n += 1
+            '''
+            ## 04-09-2014 - Añadido
+            #############################
+            itemlist.append( Item(channel=__channel__, action="play", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle=item.fulltitle , folder=False) )
+
+            #n += 1
         except:
             import traceback
             logger.info("Excepcion: "+traceback.format_exc())
@@ -310,6 +341,13 @@ def play(item):
     
     itemlist=[]
 
+    ## 04-09-2014 - Añadido
+    #############################
+    data = item.url
+
+    ## 04-09-2014 - Comentado
+    #############################
+    '''
     # 01-08-2014 - Añadido
     if config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee"):
         url = item.url.split("|")[0]
@@ -328,7 +366,6 @@ def play(item):
     logger.info("pelisalacarta.yaske play data="+data)
 
     # 01-08-2014 - Comentado
-    '''
     if item.url.startswith("http://adf.ly"):
         from servers import adfly
         item.url = adfly.get_long_url(item.url)
