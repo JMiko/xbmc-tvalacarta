@@ -191,12 +191,13 @@ def videos(item,data2):
     for episodeitem in itemlist:
         partes = episodeitem.page.split("/")
         code = partes[len(partes)-2]
+        episodeitem.server="rtve"
+        episodeitem.url = "http://fake/"+code #urlparse.urljoin(item.url,matches[0][0])
         patron  = '<video id="'+code+'".*?url="([^"]+)".*?'
         patron += '<sinopsis>(.*?)</sinopsis>'
         matches = re.compile(patron,re.DOTALL).findall(dataplaylist)
 
         if len(matches)>0:
-            episodeitem.url = urlparse.urljoin(item.url,matches[0][0])
             episodeitem.plot = matches[0][1]
 
     return itemlist
