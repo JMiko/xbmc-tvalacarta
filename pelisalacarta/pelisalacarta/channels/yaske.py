@@ -35,24 +35,27 @@ HEADER_CGI = [
     ["Cookie","__cfduid=dcf14adcea14f105833e0c38de7999a861410939223081"]
 ]
 
-url_response="http://www.yaske.to/cdn-cgi/l/chk_jschl?jschl_vc=571edafe0bd94fc64d0c1aeac435a6b9&jschl_answer=7468669"
-response = scrapertools.get_headers_from_response(url_response,headers=HEADER_CGI)
-for h in response:
-    if "set-cookie" in h:
-        response = h[1].split(";")[0]
-        break
-
-HEADER = [
-    ["Host","www.yaske.to"],
-    ["User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36"],
-    ["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"],
-    ["Accept-Language","es-ES,es;q=0.8"],
-    ["Accept-Encoding","gzip,deflate,sdch"],
-    ["Referer","http://www.yaske.to/"],
-    ["Cookie","__cfduid=dfca1a387548025d623536b7c921d12731406316888471"],
-    ["Cookie",response],
-    ["Connection","keep-alive"]
-]
+def getSetCookie(url_to_header):
+    data = scrapertools.cache_page(url_to_header,headers=[["User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36"]])
+    jschl_vc = scrapertools.get_match(data,'<input type="hidden" name="jschl_vc" value="([^"]+)"/>')
+    url_response="http://www.yaske.to/cdn-cgi/l/chk_jschl?jschl_vc="+jschl_vc+"&jschl_answer=30"
+    response = scrapertools.get_headers_from_response(url_response,headers=HEADER_CGI)
+    for h in response:
+        if "set-cookie" in h:
+            response = h[1].split(";")[0]
+            break
+    HEADER = [
+        ["Host","www.yaske.to"],
+        ["User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36"],
+        ["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"],
+        ["Accept-Language","es-ES,es;q=0.8"],
+        ["Accept-Encoding","gzip,deflate,sdch"],
+        ["Referer","http://www.yaske.to/"],
+        ["Cookie","__cfduid=dfca1a387548025d623536b7c921d12731406316888471"],
+        ["Cookie",response],
+        ["Connection","keep-alive"]
+    ]
+    return HEADER
 ###################################################
 
 def isGeneric():
@@ -98,7 +101,8 @@ def peliculas(item):
     # Modificado 17-09-14
     ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url,headers=HEADER)
+    try: data = scrapertools.cache_page(item.url,headers=getSetCookie(item.url))
+    except: data = scrapertools.cache_page(item.url)
     data = "".join(data.split("\n"))
     data = "".join(data.split("\t"))
     data = "".join(data.split("  "))
@@ -154,7 +158,8 @@ def menu_categorias(item):
     # Añadido 17-09-14
     ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url,headers=HEADER)
+    try: data = scrapertools.cache_page(item.url,headers=getSetCookie(item.url))
+    except: data = scrapertools.cache_page(item.url)
     ###################################################
     logger.info("data="+data)
     data = scrapertools.get_match(data,'div class="title">Categoria[^<]+</div>(.*?)</ul>')
@@ -181,7 +186,8 @@ def menu_idiomas(item):
     # Añadido 17-09-14
     ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url,headers=HEADER)
+    try: data = scrapertools.cache_page(item.url,headers=getSetCookie(item.url))
+    except: data = scrapertools.cache_page(item.url)
     ###################################################
     logger.info("data="+data)
 
@@ -213,7 +219,8 @@ def menu_anyos(item):
     # Añadido 17-09-14
     ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url,headers=HEADER)
+    try: data = scrapertools.cache_page(item.url,headers=getSetCookie(item.url))
+    except: data = scrapertools.cache_page(item.url)
     ###################################################
     logger.info("data="+data)
 
@@ -242,7 +249,8 @@ def menu_calidades(item):
     # Añadido 17-09-14
     ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url,headers=HEADER)
+    try: data = scrapertools.cache_page(item.url,headers=getSetCookie(item.url))
+    except: data = scrapertools.cache_page(item.url)
     ###################################################
     logger.info("data="+data)
 
@@ -277,9 +285,9 @@ def findvideos(item):
     # Añadido 17-09-14
     ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url,headers=HEADER)
+    try: data = scrapertools.cache_page(item.url,headers=getSetCookie(item.url))
+    except: data = scrapertools.cache_page(item.url)
     ###################################################
-
     # Extrae las entradas
     '''
     <tr bgcolor="">
@@ -325,9 +333,17 @@ def findvideos(item):
             #############################
             #<a [....] href="http://api.ysk.pe/noref/?u=< URL Vídeo >">
             url = scrapertools.get_match(tr,'<a.*?href="([^"]+)"').split("=")[1]
+            # Para extraer netutv se necesita en la actualidad pasar por varias páginas con lo que relentiza mucho la carga.
+            # De momento mostrará "No hay nada que reproducir"
+            '''
             if "/netu/tv/" in url:
                 import base64
-                data = scrapertools.cache_page(url)
+                ###################################################
+                # Añadido 17-09-14
+                ###################################################
+                try: data = scrapertools.cache_page(url,headers=getSetCookie(url1))
+                except: data = scrapertools.cache_page(url)
+                ###################################################
                 match_b64_1 = 'base64,([^"]+)"'
                 b64_1 = scrapertools.get_match(data, match_b64_1)
                 utf8_1 = base64.decodestring(b64_1)
@@ -337,6 +353,7 @@ def findvideos(item):
                 utf8_2 = base64.decodestring(b64_2).replace("%","\\").decode('unicode-escape')
                 id_video = scrapertools.get_match(utf8_2,'<input name="vid" id="text" value="([^"]+)">')
                 url = "http://netu.tv/watch_video.php?v="+id_video
+            '''
 
             thumbnail = ""
             plot = ""
