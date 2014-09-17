@@ -21,6 +21,40 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
+###################################################
+# Añadido 17-09-14
+###################################################
+HEADER_CGI = [
+    ["Host","www.yaske.to"],
+    ["Connection","keep-alive"],
+    ["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"],
+    ["User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36"],
+    ["Referer","http://www.yaske.to/"],
+    ["Accept-Encoding","gzip,deflate,sdch"],
+    ["Accept-Language","es-ES,es;q=0.8"],
+    ["Cookie","__cfduid=dcf14adcea14f105833e0c38de7999a861410939223081"]
+]
+
+url_response="http://www.yaske.to/cdn-cgi/l/chk_jschl?jschl_vc=571edafe0bd94fc64d0c1aeac435a6b9&jschl_answer=7468669"
+response = scrapertools.get_headers_from_response(url_response,headers=HEADER_CGI)
+for h in response:
+    if "set-cookie" in h:
+        response = h[1].split(";")[0]
+        break
+
+HEADER = [
+    ["Host","www.yaske.to"],
+    ["User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36"],
+    ["Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"],
+    ["Accept-Language","es-ES,es;q=0.8"],
+    ["Accept-Encoding","gzip,deflate,sdch"],
+    ["Referer","http://www.yaske.to/"],
+    ["Cookie","__cfduid=dfca1a387548025d623536b7c921d12731406316888471"],
+    ["Cookie",response],
+    ["Connection","keep-alive"]
+]
+###################################################
+
 def isGeneric():
     return True
 
@@ -60,38 +94,25 @@ def search(item,texto):
 def peliculas(item):
     logger.info("pelisalacarta.yaske listado")
 
+    ###################################################
+    # Modificado 17-09-14
+    ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url,headers=HEADER)
+    data = "".join(data.split("\n"))
+    data = "".join(data.split("\t"))
+    data = "".join(data.split("  "))
 
     # Extrae las entradas
     '''
-    <li class="item-movies c5">
-    <a class="image-block" href="http://www.yaske.net/es/pelicula/0002014/ver-sometimes-in-april-online.html" title="Siempre en abril">
-    <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcSpMMsdPI9tKkvdHUA2qPknXygXuHaISe7FRgYM85zvPZhr1tbWDA" width="140" height="200" />
-    </a>
-    <ul class="bottombox">
-    <li title="Siempre en abril"><a href="http://www.yaske.net/es/pelicula/0002014/ver-sometimes-in-april-online.html" title="Siempre en abril">Siempre en abril</a></li>
-    <li>Drama, Guerra, Historica</li>
-    <li><img src='http://www.yaske.net/theme/01/data/images/flags/la_la.png' title='Latino ' width='25'/> <img src='http://www.yaske.net/theme/01/data/images/flags/en_es.png' title='English SUB Spanish' width='25'/> </li>
-    <li><a rel="lyteframe" rev="width: 600px; height: 380px; scrolling: no;" youtube="trailer" href="http://www.youtube.com/v/XiteY6o2UwI&amp;hl&amp;autoplay=1" target="_blank"><img src="http://4.bp.blogspot.com/-_t9RtdUMJlo/UgYO_qA49VI/AAAAAAAABj4/7O_ZrYtIMHw/s1600/vertrailer2.png" height="22" border="0"></a></li>
-    </ul>
-    <div class="quality">Dvd Rip</div>
-    <div class="view"><span>view: 10800</span></div>
-    </li>   
+    <li class="item-movies c8"><a class="image-block" href="http://www.yaske.to/es/pelicula/0005346/ver-transformers-4-online.html" title="Transformers 4: La era de la extinci&oacute;n"><img src="http://www.yaske.to/upload/images/59481937cedbdd789cec00aab9f7ed8b.jpg" width="140" height="200" /></a><ul class="bottombox"><li title="Transformers 4: La era de la extinci&oacute;n"><a href="http://www.yaske.to/es/pelicula/0005346/ver-transformers-4-online.html" title="Transformers 4: La era de la extinci&oacute;n">Transformers 4: La&hellip;</a></li><li>Accion, ciencia Ficcion</li><li><img src='http://www.yaske.to/theme/01/data/images/flags/es_es.png' title='Spanish ' width='25'/> <img src='http://www.yaske.to/theme/01/data/images/flags/en_es.png' title='English SUB Spanish' width='25'/> <img src='http://www.yaske.to/theme/01/data/images/flags/la_la.png' title='Latino ' width='25'/> </li><li><a rel="lyteframe" rev="width: 600px; height: 380px; scrolling: no;" youtube="trailer" href="http://www.youtube.com/v/&amp;hl&amp;autoplay=1" target="_blank"><img src="http://2.bp.blogspot.com/-hj7moVFACQU/UBoi0HAFeyI/AAAAAAAAA9o/2I2KPisYtsk/s1600/vertrailer.png" height="22" border="0"></a></li></ul><div class="quality">Hd Real 720</div><div class="view"><span>view: 335482</span></div></li>
     '''
-    patron  = '<li class="item-movies[^<]+'
-    patron += '<a class="image-block" href="([^"]+)" title="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)" width="\d+" height="\d+"[^<]+'
-    patron += '</a[^<]+'
-    patron += '<ul class="bottombox"[^<]+'
-    patron += '<li[^<]+<a[^<]+</a></li[^<]+'
-    patron += '<li[^<]+</li[^<]+'
-    patron += "<li>(.*?)</li[^<]+"
-    patron += '<li><a[^<]+<img[^<]+</a></li[^<]+'
-    patron += '</ul[^<]+'
-    patron += '<div class="quality">([^<]+)<'
-
-
+    patron  = '<li class="item-movies[^"]+">'
+    patron += '<a class="image-block" href="([^"]+)" title="([^"]+)">'
+    patron += '<img src="([^"]+)"[^/]+/></a>'
+    patron += '<ul class="bottombox">.*?<li>(<img.*?)</li>.*?</ul>'
+    patron += '<div class="quality">([^<]+)</div>'
+    ###################################################
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     #scrapertools.printMatches(matches)
@@ -129,8 +150,12 @@ def peliculas(item):
 def menu_categorias(item):
     logger.info("pelisalacarta.yaske menu_categorias")
 
+    ###################################################
+    # Añadido 17-09-14
+    ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url,headers=HEADER)
+    ###################################################
     logger.info("data="+data)
     data = scrapertools.get_match(data,'div class="title">Categoria[^<]+</div>(.*?)</ul>')
     logger.info("data="+data)
@@ -152,8 +177,12 @@ def menu_categorias(item):
 def menu_idiomas(item):
     logger.info("pelisalacarta.yaske menu_idiomas")
 
+    ###################################################
+    # Añadido 17-09-14
+    ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url,headers=HEADER)
+    ###################################################
     logger.info("data="+data)
 
     data = scrapertools.get_match(data,'<select name="language"(.*?)</select>')
@@ -180,8 +209,12 @@ def menu_idiomas(item):
 def menu_anyos(item):
     logger.info("pelisalacarta.yaske menu_anyos")
 
+    ###################################################
+    # Añadido 17-09-14
+    ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url,headers=HEADER)
+    ###################################################
     logger.info("data="+data)
 
     data = scrapertools.get_match(data,'<select name="year"(.*?)</select>')
@@ -205,8 +238,12 @@ def menu_anyos(item):
 def menu_calidades(item):
     logger.info("pelisalacarta.yaske menu_calidades")
 
+    ###################################################
+    # Añadido 17-09-14
+    ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url,headers=HEADER)
+    ###################################################
     logger.info("data="+data)
 
     '''
@@ -236,8 +273,12 @@ def menu_calidades(item):
 def findvideos(item):
     logger.info("pelisalacarta.yaske findvideos url="+item.url)
 
+    ###################################################
+    # Añadido 17-09-14
+    ###################################################
     # Descarga la página
-    data = scrapertools.cache_page(item.url)
+    data = scrapertools.cache_page(item.url,headers=HEADER)
+    ###################################################
 
     # Extrae las entradas
     '''
