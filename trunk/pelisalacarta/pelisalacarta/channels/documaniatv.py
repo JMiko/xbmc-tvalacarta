@@ -47,13 +47,11 @@ def novedades(item):
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
+    logger.info(data)
     matches = re.compile('<li[^<]+<div class="pm-li-video">(.*?)</li>',re.DOTALL).findall(data)
     
     for match in matches:
-       
-
-        
-
+        logger.info(str(match))
         try:
 
             #logger.info(match)
@@ -90,21 +88,19 @@ def novedades(item):
 def categorias(item):
     logger.info("[documaniatv.py] categorias")
     itemlist = []
+    
+    data = scrapertools.cache_page(item.url)
 
     # Saca el bloque con las categorias
-    data = scrapertools.cache_page(item.url)
-    logger.info(data)
-    data = scrapertools.get_match(data,"""<li><a href="http://www.documaniatv.com/" class="wide-nav-link">Inicio</a></li>
-<li class="dropdown">
-<a href="#" class="dropdown-toggle wide-nav-link" data-toggle="dropdown">Categorias de los documentales <b class="caret"></b></a>
-(.*?)</ul>""")
+    data = scrapertools.get_match(data,"""Categorias (.*?)</ul></li>""")
 
     #
     patron = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
-    
+        #itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
+        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url=match[0]))
+        
     return itemlist
 
 
@@ -131,14 +127,15 @@ def canales(item):
     # Saca el bloque con las categorias
     data = scrapertools.cache_page(item.url)
     #logger.info(data)
-    data = scrapertools.get_match(data,"""Canal documental(.*?)</ul></li>""")
+    data = scrapertools.get_match(data,"""Canales(.*?)</ul></li>""")
     #logger.error(data)
 
     #
     patron = '<li[^<]+<a href="([^"]+)"[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for match in matches:
-        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
+        #itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url="http://www.documaniatv.com"+match[0]))
+        itemlist.append( Item(channel=__channel__ , action="novedades" , title=match[1],url=match[0]))
     
     return itemlist
 
