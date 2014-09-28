@@ -7,7 +7,6 @@
 import re
 import sys 
 import os
-import json
 import urllib2
 
 from core import logger
@@ -15,6 +14,21 @@ from core import config
 from core import scrapertools
 from core.item import Item
 from servers import servertools
+
+try:
+	import json
+except:
+	logger.info("SERIESLY.py: No se ha podido cargar JSON")
+	try:
+		import simplejson as json
+	except:
+		try:
+			logger.info("SERIESLY.py: No se ha podido cargar simpleJSON")
+			from lib import simplejson as json
+		except:
+			logger.error("No se ha podido cargar ninguna librería JSON")
+
+
 
 
 __channel__ = "seriesly"
@@ -60,6 +74,8 @@ def mainlist(item):
 	
 	if config.get_setting("serieslyaccount")!="true":
 		itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="openconfig" , url="" , folder=False ) )
+		itemlist.append( Item(channel=__channel__, title="Utilidades", action="utilsMenu",  url="utils" ) )
+
 	else:
 		auth_token, user_token = getCredentials()
 	   
@@ -72,12 +88,15 @@ def mainlist(item):
 			itemlist.append( Item(channel=__channel__, title="Mis pelis", action="categorias", extra=extra_params, url="movies" ) )
 			itemlist.append( Item(channel=__channel__, title="Mis documentales", action="categorias", extra=extra_params, url="documentaries" ) )
 			itemlist.append( Item(channel=__channel__, title="Mis tvshows", action="categorias", extra=extra_params, url="tvshows" ) )
-			itemlist.append( Item(channel=__channel__, title="Mis listas", action="listasMenu", extra=extra_params, url="listas" ) )
-			if isxbmc: itemlist.append( Item(channel=__channel__, title="Explora series.ly", action="exploraMenu", url="explora" ) )
+			if not config.get_platform().startswith("boxee"): 
+				itemlist.append( Item(channel=__channel__, title="Mis listas", action="listasMenu", extra=extra_params, url="listas" ) )
+				if isxbmc: itemlist.append( Item(channel=__channel__, title="Explora series.ly", action="exploraMenu", url="explora" ) )
+			itemlist.append( Item(channel=__channel__, title="Utilidades", action="utilsMenu", extra=extra_params, url="utils" ) )
 			
 
 		else:
 			itemlist.append( Item( channel=__channel__ , title="Cuenta incorrecta, revisa la configuración..." , action="" , url="" , folder=False ) )
+			itemlist.append( Item(channel=__channel__, title="Utilidades", action="utilsMenu",  url="utils" ) )
 
 	return itemlist
 
@@ -136,7 +155,8 @@ def menu_cat(item):
 	categorias=get_constant("categorias")
 
 	for c in categorias:
-		itemlist.append( Item(channel=__channel__, title=categorias[c], action="search_cat", category=c, url=item.url, plot="0") )
+		if not config.get_platform().startswith("boxee"):
+			itemlist.append( Item(channel=__channel__, title=categorias[c], action="search_cat", category=c, url=item.url, plot="0") )
 
 	itemlist = sorted( itemlist , key=lambda item: item.title)
 
@@ -251,7 +271,9 @@ def serie_capitulos(item):
 		if len(episode["season"])==1:
 			episode["season"]="0"+episode["season"]
 
+		if "plot" not in serieInfo : serieInfo["plot"]= " "
 
+		logger.info(str(episode))
 		itemlist.append(
 			Item(channel=__channel__,
 				action = 'multiple_links',
@@ -259,7 +281,7 @@ def serie_capitulos(item):
 			   
 				url = 'http://api.series.ly/v2/media/episode/links?&idm=%(idm)s&mediaType=5' % episode,
 				thumbnail = item.thumbnail,
-				plot = "",
+				plot = serieInfo["plot"],
 				show = item.show,
 				extra = item.extra,
 			   
@@ -352,7 +374,6 @@ def listasMenu(item):
 	#creamos el menu y pasamos las listas en el campo extra para no tener que utilizar más cuota
 	#Utilizo json.dump para pasar el dict para que me coja los acentos, si no desaparecían las listas
 
-	import json
 
 	itemlist=[]
 	itemlist.append( Item(channel=__channel__, title="Propias", action="listas", url='Viendo', extra=json.dumps(ownList)) )
@@ -368,7 +389,6 @@ def listas(item):
 	logger.info("[seriesly.py] listas_vistas")
 
 	import urllib
-	import json
 
 	d=urllib.unquote(item.extra)
 	listaDict=load_json(d)
@@ -410,7 +430,7 @@ def listas_all(item):
 def lista(item):
 
 	import urllib
-	import json
+	
 
 	d=urllib.unquote(item.extra)
 	listaDict=load_json(str(d))
@@ -449,7 +469,7 @@ def lista(item):
 
 def generate_item(video , tipo, auth_token):
    
-	logger.info('video')
+	logger.info('generate_item video')
 	logger.info(str(video))
 	
 	if tipo == "None": return Item()
@@ -473,13 +493,19 @@ def generate_item(video , tipo, auth_token):
 
 	elif tipo =="movies" or tipo == "documentaries":
 				url = 'http://api.series.ly/v2/media/episode/links?auth_token='+ auth_token+'&idm=%s&mediaType=%s' %(video["idm"],get_constant("mediaType")[tipo])
-				if "year" not in video: video["year"]= ""
-				title = '%(name)s (%(year)s)' % video
+				
+				title = '%(name)s ' % video
+				if 'year' in video:
+					title=title+'(%(year)s)' % video
+				if 'rating' in video:
+					video["rating"]=round(video["rating"],2)
+					title=title+' (rating: %(rating)s)' % video
+				logger.info(title)
 				action= 'multiple_links'
 
    
 
-	if "plot_es" not in video : video["plot_es"]= " "
+	if "plot" not in video : video["plot"]= " "
 
 	logger.info(action)
 	item=Item(channel=__channel__,
@@ -487,7 +513,7 @@ def generate_item(video , tipo, auth_token):
 				 title = title,
 				 url = url,
 				 thumbnail = video['poster']["large"],
-				 plot = video["plot_es"],
+				 plot = video["plot"],
 				 show = video['name'],
 				 extra = "%s;idm=%s|mediaType=%s|status="%(tipo,video["idm"],get_constant("mediaType")[tipo]),
 				 context="seriesly"
@@ -501,10 +527,11 @@ def multiple_links(item):
    
 	# Obtiene de nuevo los tokens
 	auth_token, user_token = getCredentials()
+	item_library=item
    
 	# Extrae las entradas (carpetas)
 	post = 'auth_token=%s&user_token=%s' % ( qstr(auth_token), qstr(user_token) )
-	data = scrapertools.cache_page(item.url+"&"+post)
+	data = scrapertools.cache_page(item.url,post=post)
 	linkList = load_json(data)
 
 
@@ -538,18 +565,51 @@ def multiple_links(item):
 				else:
 					linktitle = '%(host)s - %(lang)s %(quality)s %(features)s' % link
 
+				if "plot" not in link : link["plot"]= " "
+
 				item=Item(channel=__channel__,
 							action = "play",
 							title = linktitle, 
-							 url = link['video_url']+"?"+post,
+							 url = "",
 							thumbnail = item.thumbnail,
-							plot = "",
-							extra=link['op_data']["original_url"])
+							plot = link["plot"],
+							extra=link['video_url']+"?"+post,
+							folder=False)
 				logger.info(str(item))
 				itemlist.append(item)
 
+	if "movies" in item_library.extra:
+		# STRM para todos los enlaces de servidores disponibles
+		# Si no existe el archivo STRM de la peícula muestra el item ">> Añadir a la biblioteca..."
+		try: itemlist.extend( file_cine_library(item_library) )
+		except: pass
 
 	return itemlist
+
+def file_cine_library(item):
+    import os
+    from platformcode.xbmc import library
+    librarypath = os.path.join(config.get_library_path(),"CINE")
+    archivo = library.title_to_folder_name(item.title.strip())
+    strmfile = archivo+".strm"
+    strmfilepath = os.path.join(librarypath,strmfile)
+
+    if not os.path.exists(strmfilepath):
+        itemlist = []
+        itemlist.append( Item(channel=item.channel, title=">> Añadir a la biblioteca...", url=item.url, action="add_file_cine_library", extra="episodios", show=archivo) )
+
+    return itemlist
+
+def add_file_cine_library(item):
+    from platformcode.xbmc import library, xbmctools
+    library.savelibrary( titulo=item.show , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie="" , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
+
+    itemlist = []
+    itemlist.append(Item(title='El vídeo '+item.show+' se ha añadido a la biblioteca'))
+    xbmctools.renderItems(itemlist, "", "", "")
+
+    return
+
 
 def links(item):   
        
@@ -561,14 +621,14 @@ def links(item):
         while(not exit and count < 5 and urlvideo==""):
             #A veces da error al intentar acceder
             try:
-                page = urllib2.urlopen(item.url)
+                page = urllib2.urlopen(item.extra)
                 urlvideo = "\"" + page.geturl() + "\""
                 exit = True
             except:
                 import traceback
                 logger.info(traceback.format_exc())
                 count = count + 1
-                urlvideo=item.extra
+                urlvideo=item.url
        
 
         logger.info("urlvideo="+urlvideo)
@@ -604,7 +664,7 @@ def search_cat(item):
 	
 	if item.extra =="":
 
-		post=post+"&order=most_viewed"
+		post=post+"&order=trending"
 
 		#busquda por tipo
 		if item.url != "" :
@@ -664,7 +724,6 @@ def search_cat(item):
 
 		if filters is not None:
 
-			import json
 			item.extra=json.dumps(filters)
 
 		itemlist.append(item)
@@ -733,7 +792,6 @@ def change_filter(item):
 		filters["genre"]=genre[dialog.select("Selecciona el Genero",cat)]
 
 
-	import json
 	path=config.get_data_path()
 	f =open(path+"seriesly.default.json", "w+")
 	json.dump(filters,f)
@@ -745,7 +803,6 @@ def change_filter(item):
 def browse(item):
 
 	filters=get_default_filters()
-	import json
 	return search_cat(Item(channel=__channel__, extra=json.dumps(filters), plot="0"))
 
    
@@ -839,29 +896,26 @@ def load_json(data):
 		rdct = {}
 		for k, v in dct.items() :
 			
-		
+
 			if isinstance(v, (str, unicode)) :
 				rdct[k] = v.encode('utf8', 'ignore')
 			else :
 				rdct[k] = v
-		
+
 		return rdct
 
 	try:
-		import json
+		json_data = json.loads(data, object_hook=to_utf8)
+		
 	except:
 		try:
-			import simplejson as json
+			logger.info("core.jsontools.load_json Probando JSON de Plex")
+			json_data = JSON.ObjectFromString(data, encoding="utf-8")
+			logger.info("core.jsontools.load_json -> "+repr(json_data))
+			
 		except:
-			from lib import simplejson as json
-
-	try :       
-		json_data = json.loads(data, object_hook=to_utf8)
-		return json_data
-	except:
-		import sys
-		for line in sys.exc_info():
-			logger.error( "%s" % line )
+			logger.info("Problemas cargando JSON")
+	return json_data
 
 ''' URLEncode a string '''
 def qstr(string):
@@ -894,8 +948,6 @@ def perform_login():
 		logger.info(user_token)
 		logger.info("****")
 
-		url="http://api.series.ly/v2/app/show_quota"
-		post="auth_token=%s&user_token=%s"%(user_token,auth_token)
 				   
 		return [auth_token,user_token]
 
@@ -937,7 +989,7 @@ def generate_usertoken(auth_token):
 		PASSWORD = config.get_setting("serieslypassword")
 
 		url = "http://api.series.ly/v2/user/user_token"
-		post = "auth_token=%s&username=%s&password=%s&remember=1&user_agent=''" % ( auth_token, qstr(LOGIN), qstr(PASSWORD) )
+		post = "auth_token=%s&username=%s&password=%s" % ( auth_token, qstr(LOGIN), qstr(PASSWORD) )
 		data = scrapertools.cache_page(url,post=post)
 		logger.info("****")
 		logger.info(data)
@@ -1087,7 +1139,6 @@ def get_default_filters():
 		filters=load_json(j.read())
 		logger.info("filtros: %s"%str(filters))
 	except:
-		import json
 
 		f =open(path+"seriesly.default.json", "w+")
 		json.dump(filters,f)
@@ -1101,7 +1152,8 @@ def update_status(item):
 
 	logger.info(str(item))
 
-	
+	logger.info(item.extra)
+	logger.info("hola")
 	updates=item.extra.replace('|','&')
 	
 	auth_token, user_token = getCredentials()
@@ -1115,3 +1167,147 @@ def update_status(item):
 	
 
 
+def utilsMenu(item):
+	itemlist=[]
+	itemlist.append( Item(channel=__channel__, title="Borrar Temporales", action="deleteTemp", url="deleteTemp" ) )
+	try:
+		import xmbc
+		itemlist.append( Item(channel=__channel__, title="Marca como vistos (EXPERIMENTAL)", action="syncBibliteca", url="syncBibliteca" ) )
+	except:
+		pass
+	return itemlist
+
+def deleteTemp(item):
+	path=config.get_data_path()
+
+	itemlist=[]
+
+	try:
+		os.remove(path+"seriesly_auth")
+		os.remove(path+"seriesly.default.json")
+		itemlist.append( Item(channel=__channel__, title="Temporales borrados", action="mainlist", url="deleteTemp" ) )
+
+	except:
+
+		itemlist.append( Item(channel=__channel__, title="No ha sido posible borrar los Temporales", action="mainlist",  url="deleteTemp" ) )
+
+	return itemlist
+
+def syncBibliteca(item):
+
+	path=config.get_data_path()
+
+
+	idmList=[]
+	
+	f=open(path+"series.xml","r")
+	for line in f.readlines():
+		name,url,channel=line.split(',')
+		if 'seriesly' in channel:	
+			for data in url.split('&'):
+				if "idm" in data:
+					idm=data.split("=")[1]	
+					idmList.append(idm)
+					
+	f.close()
+
+	auth_token, user_token = getCredentials()
+
+	xbmctvshows=getTVShows()
+
+	for idm in idmList:
+		url = 'http://api.series.ly/v2/media/full_info?auth_token='+ auth_token+'&user_token='+user_token+'&idm=%s&mediaType=1' %(idm)
+	
+
+		serieInfo = load_json(scrapertools.cache_page(url, modo_cache=1))
+		logger.info("Syncronizando: %s"%(serieInfo["name"]))
+		if "imdb" in serieInfo:
+			serieInfo["tvdb"] = gettvdbname(serieInfo["imdb"])
+		sync(serieInfo, xbmctvshows)
+		#logger.info(serieInfo)
+	
+	return []
+
+
+def sync(serieInfo, xbmctvshows):
+	logger.info(serieInfo["name"])
+	xbmcepisodes=None
+	for tvshow in xbmctvshows:
+		if tvshow["label"] == serieInfo["name"] or int(serieInfo["tvdb"]) == int(tvshow["imdbnumber"]):
+			tvshowid=tvshow["tvshowid"]
+			xbmcepisodes=getEpisodes(tvshowid)
+			break
+
+	if xbmcepisodes is None:
+		return
+	
+	episodes=[]
+	for seasons in serieInfo['seasons_episodes']:
+		for episode in serieInfo['seasons_episodes'][seasons]:
+				data={}
+				data['episode']=episode["episode"]
+				data["season"]=episode["season"]
+				if episode["watched"]:
+					data["playcount"]=1
+				else:
+					data["playcount"]=0
+				episodes.append(data)
+
+	for x in xbmcepisodes:
+		for e in episodes:
+			if x["season"] == e["season"] and x["episode"]==e["episode"]:
+				if x["playcount"]<=0 and e["playcount"]>0:
+					markaswatched(x["episodeid"])
+
+
+def gettvdbname(imdbid):
+	logger.info(imdbid)
+	url="http://thetvdb.com/api/GetSeriesByRemoteID.php?imdbid="+imdbid
+	data=scrapertools.cache_page(url)
+	from xml.dom import minidom
+	xmldoc = minidom.parseString(data)
+	itemlist = xmldoc.getElementsByTagName('seriesid') 
+	if len(itemlist)>0:
+
+		return itemlist[0].childNodes[0].nodeValue
+	else:
+		return 0
+
+def getTVShows():
+	import xbmc
+	rpccmd = {"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.GetTVShows","params":{'properties':["imdbnumber"]},  "id":1}
+	rpccmd = json.dumps(rpccmd)
+	result = xbmc.executeJSONRPC(rpccmd)
+	result = json.loads(result)
+	logger.info("GetTVShows")
+	logger.info(result)
+	return result["result"]["tvshows"]
+
+
+def getEpisodes(tvshowid):
+	
+	import xbmc
+	rpccmd = {"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.GetEpisodes", 'params': {'tvshowid':tvshowid,'properties': ['season', 'episode', 'playcount']}, 'id': 1}
+	rpccmd = json.dumps(rpccmd)
+	result = xbmc.executeJSONRPC(rpccmd)
+	result = json.loads(result)
+	logger.info(result)
+	return result["result"]["episodes"]
+
+def markaswatched(episodeid):
+	import xbmc
+
+	
+	rpccmd = {'jsonrpc': '2.0', 'method': 'VideoLibrary.GetEpisodeDetails', 'params': {"episodeid": episodeid, 'properties': ['playcount','tvshowid','season', 'episode',]}, 'id': 1}
+	rpccmd = json.dumps(rpccmd)
+	result = xbmc.executeJSONRPC(rpccmd)
+	result = json.loads(result)
+	logger.info(result)
+
+	if result["result"]["episodedetails"]["playcount"]<=0:
+
+		rpccmd = {"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params":{"episodeid":episodeid,"playcount":1},"sender":"xbmc", "id":1}
+		rpccmd = json.dumps(rpccmd)
+		result = xbmc.executeJSONRPC(rpccmd)
+		result = json.loads(result)
+		logger.info(result)
