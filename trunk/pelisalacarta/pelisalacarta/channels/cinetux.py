@@ -105,13 +105,19 @@ def peliculas(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg",  folder=True) )
 
-    patron  = '<div id="post-\d+">[^<]+'
-    patron += '<div class="index_item index_item_ie"><a href="([^"]+)" rel="[^"]+" title="[^"]+"><img style="[^"]+" width="\d+" height="\d+" src=([^>]+)>[^<]+'
-    patron += '<center><b>([^<]+)</b></center></a></div>'
+    '''
+    <div id="post-57573">
+    <div class="itemarchive itemarchive_ie"><a href="http://www.cinetux.org/2014/08/ver-pelicula-tron-legacy-online-gratis-2010.html" rel="bookmark" title="Ver Película TRON: Legacy Online Gratis (2010)"><img style="border: 1px solid #FFFF00; padding: 2px;" width="150" height="205" src=http://4.bp.blogspot.com/_HeR0kdSfWC4/TSPIYcDNW4I/AAAAAAAALDY/WhA3qs_-jvo/s320/tron_legacy9.jpg /></a></div>
+    </div><!-- POST META 57573 END -->
+    '''
+    patron  = '<div id="post-\d+"[^<]+'
+    patron += '<div class="i[^<]+'
+    patron += '<a href="([^"]+)" rel="[^"]+" title="([^"]+)"[^<]+'
+    patron += '<img style="[^"]+" width="\d+" height="\d+" src=([^>]+)>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedurl,thumbnail,title in matches:
+    for scrapedurl,title,thumbnail in matches:
         scrapedplot = ""
         scrapedthumbnail = thumbnail[:-2]
         scrapedtitle = title[14:]
@@ -119,13 +125,9 @@ def peliculas(item):
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
 
     # Extrae el paginador
-    patronvideos  = '<a href="([^"]+)"\s*><strong>\&raquo\;</strong></a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-
-    if len(matches)>0:
-        scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=scrapedurl , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
+    next_page_link = scrapertools.find_single_match(data,'<a href="([^"]+)"[^<]+<strong>Siguiente</strong>')
+    if next_page_link!="":
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="Página siguiente >>" , url=next_page_link , fanart="http://pelisalacarta.mimediacenter.info/fanart/cinetux.jpg", folder=True) )
 
     return itemlist
 

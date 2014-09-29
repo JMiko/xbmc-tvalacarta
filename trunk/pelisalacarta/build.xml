@@ -2,13 +2,13 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.70"/>
-    <property name="oldversionboxee" value="10.5"/>
-    <property name="oldversiondate" value="19/06/2014"/>
+    <property name="oldversion" value="3.2.71"/>
+    <property name="oldversionboxee" value="10.6"/>
+    <property name="oldversiondate" value="30/08/2014"/>
 
-    <property name="version" value="3.2.71"/>
-    <property name="versionboxee" value="10.6"/>
-    <property name="versiondate" value="30/08/2014"/>
+    <property name="version" value="3.2.72"/>
+    <property name="versionboxee" value="10.7"/>
+    <property name="versiondate" value="29/09/2014"/>
     <property name="versionchanges" value="Weekly release"/>
 
     <property name="target" value="target"/>
@@ -198,6 +198,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
@@ -250,6 +252,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
@@ -305,6 +309,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
@@ -360,6 +366,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
@@ -412,6 +420,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
@@ -479,6 +489,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
                 <exclude name="resources/settings.xml"/>
 			</fileset>
         </copy>
@@ -518,6 +530,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="platformcode/boxee/**"/>
@@ -568,6 +582,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="platformcode/boxee/**"/>
                 <exclude name="platformcode/developer/**"/>
@@ -616,6 +632,8 @@
                 <exclude name="resources/images/banners/**"/>
                 <exclude name="resources/images/squares/**"/>
                 <exclude name="resources/images/fanart/**"/>
+                <exclude name="resources/images/servers/**"/>
+                <exclude name="resources/images/goear/**"/>
 
                 <exclude name="pelisalacarta/channels/rv_*"/>
                 <exclude name="platformcode/boxee/**"/>

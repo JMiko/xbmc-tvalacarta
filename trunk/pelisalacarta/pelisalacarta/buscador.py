@@ -135,8 +135,12 @@ def do_search_results(tecleado):
     #from pelisalacarta.channels import seriesdanko
     #itemlist.extend( seriesdanko.search( Item() , tecleado) )
 
-    from pelisalacarta.channels import veranime
-    itemlist.extend( veranime.search( Item() , tecleado) )
+    if config.get_setting("zampaseriesaccount")=="true":
+        from pelisalacarta.channels import zampaseries
+        itemlist.extend( zampaseries.search( Item() , tecleado) )
+
+    from pelisalacarta.channels import zpeliculas
+    itemlist.extend( zpeliculas.search( Item() , tecleado) )
 
     itemlist.sort(key=lambda item: item.title.lower().strip())
     return itemlist

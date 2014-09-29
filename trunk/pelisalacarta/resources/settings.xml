@@ -88,6 +88,11 @@
     <setting id="quebajamospassword" type="text" option="hidden" label="Password" enable="!eq(-1,)+eq(-2,true)" default=""/>
 
     <setting type="sep" />
+    <setting id="zampaseriesaccount" type="bool" label="zampaseries" default="false"/>
+    <setting id="zampaseriesuser" type="text" label="User"  enable="eq(-1,true)" default=""/>
+    <setting id="zampaseriespassword" type="text" option="hidden" label="Password" enable="!eq(-1,)+eq(-2,true)" default=""/>
+
+    <setting type="sep" />
     <setting id="jdownloader_enabled" type="bool" label="JDownloader" default="false"/>
     <setting id="jdownloader" type="text" label="30022" enable="eq(-1,true)" default="http://127.0.0.1:10025"/>
 

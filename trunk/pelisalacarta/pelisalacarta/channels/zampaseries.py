@@ -30,14 +30,28 @@ DEFAULT_HEADERS.append( ["User-Agent","Mozilla/5.0 (Macintosh; U; Intel Mac OS X
 def isGeneric():
     return True
 
+def login():
+    url = "http://zampaseries.li/login"
+    post = {"username":config.get_setting("zampaseriesuser"),"password":config.get_setting("zampaseriespassword"),"recordar":"recordar"}
+    data = scrapertools.cache_page(url,post=urllib.urlencode(post))
+
+def openconfig(item):
+    if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
+        config.open_settings( )
+    return []
+
 def mainlist(item):
     logger.info("pelisalacarta.channels.zampaseries mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="menuseries"    , title="Series"            , url="" ))
-    itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas"         , url="http://zampaseries.li/peliculas" ))
-    itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar..."         , url="http://zampaseries.li/search" ))
-  
+    if config.get_setting("zampaseriesaccount")!="true":
+        itemlist.append( Item( channel=__channel__ , title="Habilita tu cuenta en la configuración..." , action="openconfig" , url="" , folder=False ) )
+    else:
+        login()
+        itemlist.append( Item(channel=__channel__, action="menuseries"    , title="Series"            , url="" ))
+        itemlist.append( Item(channel=__channel__, action="peliculas"     , title="Películas"         , url="http://zampaseries.li/peliculas" ))
+        itemlist.append( Item(channel=__channel__, action="search"        , title="Buscar..."         , url="http://zampaseries.li/search" ))
+      
     return itemlist
 
 def menuseries(item):
@@ -52,20 +66,45 @@ def menuseries(item):
 def search(item,texto):
     logger.info("pelisalacarta.channels.zampaseries search")
 
-    if item.url=="":
-        item.url="http://zampaseries.li/search"
-
-    texto = texto.replace(" ","+")
-
-    # Mete el referer en item.extra
-    post="s="+texto
-    data = scrapertools.cache_page(item.url , post=post)
-
     try:
-        itemlist = series(item,data)
-        if len(itemlist)==1:
-            itemlist = peliculas(item,data)
-        return itemlist[:-1]
+        if config.get_setting("zampaseriesaccount")=="true":
+            login()
+
+        if item.url=="":
+            item.url="http://zampaseries.li/search"
+
+        texto = texto.replace(" ","+")
+
+        # Mete el referer en item.extra
+        post="s="+texto
+        data = scrapertools.cache_page(item.url , post=post)
+        data = scrapertools.find_single_match(data,'<div id="resultados">(.*?)<div id="cargando">')
+        '''
+        <div id="resultados">
+        <h1>Resultados de la Busqueda para skyfall (1)</h1>
+        <div id="lista">              <ul>                <li title="007 Skyfall" id="id-1"><a href="http://zampaseries.li/pelicula/2-007-skyfall"><img src="http://zampaseries.li/images/p_p2_s.png" alt=""></a></li>              </ul>            </div>
+        <div id="cargando"><i class="icon-spinner icon-spin"></i>Cargando más resultados</div>
+        </div>
+        '''
+        patron = '<li title="([^"]+)"[^<]+<a href="([^"]+)"><img src="([^"]+)"'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        itemlist = []
+        for scrapedtitle,scrapedurl,scrapedthumbnail in matches:
+            if "/pelicula/" in scrapedurl:
+                title = scrapedtitle
+                url = scrapedurl
+                thumbnail = scrapedthumbnail
+                plot = ""
+                itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title))
+            else:
+                title = scrapedtitle
+                url = scrapedurl
+                thumbnail = scrapedthumbnail
+                plot = ""
+                itemlist.append( Item(channel=__channel__, action="episodios" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title))
+
+        return itemlist
+
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys
@@ -75,6 +114,9 @@ def search(item,texto):
 
 def novedades(item):
     logger.info("pelisalacarta.channels.zampaseries novedades")
+
+    if config.get_setting("zampaseriesaccount")=="true":
+        login()
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
@@ -98,6 +140,10 @@ def novedades(item):
 
 def series(item,data=""):
     logger.info("pelisalacarta.channels.zampaseries series")
+
+
+    if config.get_setting("zampaseriesaccount")=="true":
+        login()
 
     # Descarga la pagina
     if data=="":
@@ -141,6 +187,10 @@ def series(item,data=""):
 
 def peliculas(item,data=""):
     logger.info("pelisalacarta.channels.zampaseries peliculas")
+
+
+    if config.get_setting("zampaseriesaccount")=="true":
+        login()
 
     # Descarga la pagina
     if data=="":
@@ -186,6 +236,10 @@ def peliculas(item,data=""):
 def episodios(item):
     logger.info("pelisalacarta.channels.zampaseries episodios")
 
+
+    if config.get_setting("zampaseriesaccount")=="true":
+        login()
+
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
     data = scrapertools.find_single_match(data,'<div id="listado">(.*?)</ul>');
@@ -208,6 +262,10 @@ def episodios(item):
 
 def findvideos(item):
     logger.info("pelisalacarta.channels.zampaseries findvideos")
+
+
+    if config.get_setting("zampaseriesaccount")=="true":
+        login()
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url)
@@ -241,6 +299,9 @@ def findvideos(item):
 
 def play(item):
     logger.info("pelisalacarta.channels.zampaseries play url="+item.url)
+
+    if config.get_setting("zampaseriesaccount")=="true":
+        login()
 
     headers=DEFAULT_HEADERS[:]
     headers.append(["Referer",item.extra])

@@ -374,7 +374,7 @@ def channels_list():
     itemlist.append( Item( title="Ver Telenovelas", channel="vertelenovelas" , language="ES" , category="S" , type="generic"  ))
     itemlist.append( Item( title="Vox filme online (RO)", channel="voxfilme" , language="RU" , category="S" , type="generic"  ))
     #itemlist.append( Item( title="Watchanimeon"          , channel="watchanimeon"         , language="EN" , category="A" , type="xbmc"  ))
-    itemlist.append( Item( title="Watch Cartoon Online"  , channel="watchcartoononline"   , language="EN" , category="F,S", type="generic" )) # jesus 23/11/2012
+    #itemlist.append( Item( title="Watch Cartoon Online"  , channel="watchcartoononline"   , language="EN" , category="F,S", type="generic" )) # jesus 23/11/2012
     itemlist.append( Item( title="XO (RO)"  , channel="xo"   , language="RU" , category="F,S", type="generic" )) # jesus 23/11/2012
     if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="xhamster"          , channel="xhamster"             , language="ES" , category="F" , type="generic"  ))
     itemlist.append( Item( title="Yaske.net"          , channel="yaske"         , language="ES"    , category="F"       , type="generic"  ))

@@ -13,44 +13,52 @@ from core import logger
 from core import config
 
 def get_video_url( page_url , premium = False , user="" , password="", video_password="" ):
-    logger.info("[mail.ru.py] get_video_url(page_url='%s')" % page_url)
+    logger.info("[mail.ru.py] get_video_url(page_url='%s')" % (page_url))
 
     video_urls = []
 
     # Descarga
     data = scrapertools.cache_page( page_url )
-    logger.info("data="+data)
-    url = scrapertools.get_match( data , 'videoSrc\s*\=\s*"([^"]+)"' )
-    media_url = scrapertools.get_header_from_response(url,header_to_get="location")
-    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:] + " [mail.ru]",media_url ] )
+    logger.info("data=%s" % (data))
+
+    video_key = scrapertools.get_match( data , 'video_key=([^&]+)&')
+    try:
+        media_url_hd = scrapertools.get_match( data , '"videos":{[^,]+,"hd":"([^"]+)"' )
+        media_url_hd += "|Cookie=video_key="+video_key
+    except: pass
+    try:
+        media_url_sd = scrapertools.get_match( data , '"videos":{"sd":"([^"]+)"' )
+        media_url_sd += "|Cookie=video_key="+video_key
+    except: pass
+
+
+
+    video_urls.append( [ scrapertools.get_filename_from_url(media_url_hd)[-4:] + " [mail.ru] HD",media_url_hd ] )
+    video_urls.append( [ scrapertools.get_filename_from_url(media_url_sd)[-4:] + " [mail.ru] SD",media_url_sd ] )
 
     for video_url in video_urls:
         logger.info("[mail.ru] %s - %s" % (video_url[0],video_url[1]))
 
     return video_urls
 
-
-    return video_urls
-
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
+    logger.info("[mail.ru.py] find_videos(data='%s')" % (data))
+
     encontrados = set()
+
     devuelve = []
 
-    # http://api.video.mail.ru/videos/embed/mail/cinemaxxmaxx/_myvideo/416.html
-    # //videoapi.my.mail.ru/videos/embed/mail/morenoglo/_myvideo/72.html
-    patronvideos  = '(mail.ru/videos/embed/mail/[^/]+/[^/]+/\d+.html)'
-    logger.info("[mail.ru.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    titulo = "[mail.ru]"
+    id_page_url = scrapertools.get_match(data,'/_myvideo/(\d+).html')
+    author_name = scrapertools.get_match(data,'/video/mail([^/]+)/')
+    url = "http://api.video.mail.ru/videos/mail/%s/_myvideo/%s.json" % (author_name,id_page_url)
 
-    for match in matches:
-        titulo = "[mail.ru]"
-        url = "http://api.video."+match
-        if url not in encontrados:
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'mailru' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
+    if url not in encontrados:
+        logger.info("  url=%s" % (url))
+        devuelve.append( [ titulo , url , 'mailru' ] )
+        encontrados.add(url)
+    else:
+        logger.info("  url duplicada=%s" % (url))
 
     return devuelve

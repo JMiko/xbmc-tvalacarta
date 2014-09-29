@@ -506,7 +506,7 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
     exec "episode_itemlist = channel."+action+"(item)"
 
     # Ordena los episodios para que funcione el filtro de first_episode
-    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title) 
+    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title)
 
     from servers import servertools
     from core import downloadtools
@@ -529,6 +529,9 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         if first_episode!="" and episode_title==first_episode:
             empezar = True
 
+        if episodio_ya_descargado(show_title,episode_title):
+            continue
+
         if not empezar:
             continue
 
@@ -546,7 +549,7 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         new_mirror_itemlist_6 = []
 
         for mirror_item in mirrors_itemlist:
-            
+
             # Si está en español va al principio, si no va al final
             if "(Español)" in mirror_item.title:
                 if best_server in mirror_item.title.lower():
@@ -623,4 +626,3 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
 
         if not descargado:
             logger.info("[launcher.py] download_all_episodes, EPISODIO NO DESCARGADO "+episode_title)
-

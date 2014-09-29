@@ -105,40 +105,29 @@ def generos(item):
 
 
 def search(item,texto):
-    story = "story:" +texto
-    data = urllib.urlencode({"story": busqueda, "do": "search", "subaction": "search", "search_start": "1", "full_search": "0", "result_from": "1"})
-    u = urllib.urlopen("http://www.zpeliculas.com", data)
-    data=u.read()
-    data2=data
-    data = scrapertools.get_match(data,'<div class="shortmovies">(.*?)<div class="main-wrapper-b1">')
 
-    patron  = '<div class="leftpane">.*?<a href="(.*?)".*?<img src="(.*?)".*?alt="(.*?)".*?<div class="shortname">.*?</div>.*?<div.*?>(.*?)</div>.*?<div class="rightpane">.*?<div class="year" title="A&ntilde;o">(.*?)<.*?"Idioma">(.*?)</div>'
+    post = urllib.urlencode({"story": texto, "do": "search", "subaction": "search", "x": "0", "y": "0"})
+    data = scrapertools.cache_page("http://www.zpeliculas.com",post=post)
 
+    patron  = '<div class="leftpane">(.*?)<div class="clear"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     itemlist = []
 
-    for scrapedurl, scrapedthumbnail, scrapedtitle, scrapedcalidad, scrapedyear, scrapedidioma in matches:
-        
-        logger.info("title="+scrapedtitle)
+    for match in matches:
+        scrapedtitle = scrapertools.find_single_match(match,'<div class="shortname">([^<]+)</div>')
+        scrapedurl = scrapertools.find_single_match(match,'<a href="([^"]+)"')
+        scrapedthumbnail = scrapertools.find_single_match(match,'<img src="([^"]+)"')
+        scrapedyear = scrapertools.find_single_match(match,'<div class="year"[^>]+>([^<]+)</div>')
+        scrapedidioma = scrapertools.find_single_match(match,'title="Idioma">([^<]+)</div>')
+        scrapedcalidad = scrapertools.find_single_match(match,'<div class="shortname"[^<]+</div[^<]+<div[^>]+>([^<]+)</div>')
+
         title = scrapedtitle + ' ('+scrapedyear+') ['+scrapedidioma+'] ['+scrapedcalidad+']'
         url = scrapedurl
         thumbnail = scrapedthumbnail
         plot = ""
-        plot = unicode( plot, "iso-8859-1" , errors="replace" ).encode("utf-8")
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title, viewmode="movie", fanart=thumbnail))
-    if len(matches) > 10:
-        data = scrapertools.get_match(data2,'<div class="navigation ignore-select" align="center">.*?<div class="clear"></div>(.*?)<div class="clear"></div>')
-        #<span>1</span> <a href="http://www.zpeliculas.com/peliculas/p-accion/page/2/">2</a>
 
-        patron='<span>.*?</span>.*?href="(.*?)"'
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        scrapertools.printMatches(matches)
-        for scrapedurl2 in matches:
-            pagina=scrapedurl2
-            if "Anterior" not in pagina:
-                itemlist.append( Item(channel=__channel__, action="porgeneros" , title="Página siguiente >>" , url=pagina, thumbnail="", plot=plot, show=title, viewmode="movie", fanart="http://pelisalacarta.mimediacenter.info/fanart/seriespepito.jpg"))
-    
     return itemlist
 
 def porgeneros(item):
@@ -183,10 +172,10 @@ def porgeneros(item):
         url = scrapedurl
         thumbnail = scrapedthumbnail
         plot = ""
-        plot = unicode( plot, "iso-8859-1" , errors="replace" ).encode("utf-8")
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title, viewmode="movie", fanart=thumbnail))
+
     data = data = scrapertools.cachePage(item.url)
     data = scrapertools.get_match(data,'<div class="navigation ignore-select" align="center">.*?<div class="clear"></div>(.*?)<div class="clear"></div>')
     #<span>1</span> <a href="http://www.zpeliculas.com/peliculas/p-accion/page/2/">2</a>
