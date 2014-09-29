@@ -115,7 +115,7 @@ def peliculas(item,paginacion=True):
     if DEBUG: scrapertools.printMatches(matches)
     itemlist = []
     for url,thumbnail,title in matches:
-        scrapedtitle=unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+        scrapedtitle=title
         fulltitle = scrapedtitle
         scrapedplot = ""
         scrapedurl = "http://gnula.biz/"+url

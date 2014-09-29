@@ -199,7 +199,7 @@ def temporadas(item):
         id = scrapertools.get_match(data, '<div id="item-([^"]+)" class="item  ">')
         path = "/ajax/mostrar_capitulo.php?id="+id
         item.url = SITE+path
-        itemlist.extend( videos(item))
+        itemlist.extend( findvideos(item))
 
     elif '<span class="temporadas">Temporadas:</span>' not in data:
         ### paso 1: mostrar_temporada.php ###
@@ -208,7 +208,7 @@ def temporadas(item):
         path = "/ajax/mostrar_temporada.php?id="+id
         item.title = "Temporada: "+temporada
         item.url = SITE+path
-        itemlist.extend( capitulos(item))
+        itemlist.extend( episodios(item))
     else:
         ### paso 1: mostrar_temporada.php ###
         patron = '<a id="temp-([^"]+)" class="temp" href="[^"]+">([^<]+)</a>'
@@ -218,12 +218,12 @@ def temporadas(item):
             if temporada == "Extra": temporada = "Temporada: 0"
             item.title = "Temporada: "+temporada
             item.url = SITE+path
-            itemlist.extend( capitulos(item))
+            itemlist.extend( episodios(item))
 
     return itemlist
 
-def capitulos(item):
-    logger.info("[enlacia.py] capitulos")
+def episodios(item):
+    logger.info("[enlacia.py] episodios")
     itemlist = []
 
     ### paso 2: mostrar_capitulo.php ###
@@ -233,12 +233,19 @@ def capitulos(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     for id,capitulo in matches:
         path = "/ajax/mostrar_capitulo.php?id="+id
-        itemlist.append( Item(channel=__channel__, title=item.title+" - "+capitulo , action="videos", url=SITE+path, thumbnail=item.thumbnail, fanart="http://pelisalacarta.mimediacenter.info/fanart/enlacia.jpg", show=item.show) )
+        #logger.info("title="+item.title+", capitulo="+capitulo)
+        #title=Temporada: Temporada 1, capitulo=Capítulo: 1
+
+        nombre_temporada = item.title.replace("Temporada: Temporada ","")
+        nombre_episodio = capitulo.replace("Capítulo: ","")
+        if len(nombre_episodio)==1:
+            nombre_episodio="0"+nombre_episodio
+        itemlist.append( Item(channel=__channel__, title=nombre_temporada+"x"+nombre_episodio , action="findvideos", url=SITE+path, thumbnail=item.thumbnail, fanart="http://pelisalacarta.mimediacenter.info/fanart/enlacia.jpg", show=item.show) )
 
     return itemlist
 
-def videos(item):
-    logger.info("[enlacia.py] videos")
+def findvideos(item):
+    logger.info("[enlacia.py] findvideos")
     itemlist = []
 
     ### paso 3: ver_video.php ###

@@ -37,13 +37,13 @@ def mainlist(params,url,category):
     logger.info("[peliculasyonkis.py] mainlist")
 
     # Av±ade al listado de XBMC    
-    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Estrenos de cartelera" ,"http://www.peliculasyonkis.com/ultimas-peliculas/cartelera/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Estrenos de DVD" ,"http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-dvd/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Ultimas Peliculas Actualizadas","http://www.peliculasyonkis.com/ultimas-peliculas/actualizadas/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Ultimas peliculas añadidas a la web","http://www.peliculasyonkis.com/ultimas-peliculas/estrenos-web/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Listado por categorias","http://www.peliculasyonkis.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "listalfabetico" , category , "Listado alfabético","http://www.peliculasyonkis.com/","","")
-    xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.com/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Estrenos de cartelera" ,"http://www.peliculasyonkis.sx/ultimas-peliculas/cartelera/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Estrenos de DVD" ,"http://www.peliculasyonkis.sx/ultimas-peliculas/estrenos-dvd/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Ultimas Peliculas Actualizadas","http://www.peliculasyonkis.sx/ultimas-peliculas/actualizadas/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listnovedades"  , category , "Ultimas peliculas añadidas a la web","http://www.peliculasyonkis.sx/ultimas-peliculas/estrenos-web/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listcategorias" , category , "Listado por categorias","http://www.peliculasyonkis.sx/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "listalfabetico" , category , "Listado alfabético","http://www.peliculasyonkis.sx/","","")
+    xbmctools.addnewfolder( CHANNELNAME , "buscaporanyo"   , category , "Busqueda por Año","http://www.peliculasyonkis.sx/","","")
     xbmctools.addnewfolder( CHANNELNAME , "search"         , category , "Buscar","","","")
 
     # Label (top-right)...
@@ -57,7 +57,7 @@ def search(params,url,category):
 
 def performsearch(texto):
     logger.info("[peliculasyonkis.py] performsearch")
-    url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+texto
+    url = "http://www.peliculasyonkis.sx/buscarPelicula.php?s="+texto
     
     # Descarga la pv°gina
     data = scrapertools.cachePage(url)
@@ -87,14 +87,14 @@ def searchresults(params,Url,category):
     
     buscador.salvar_busquedas(params,Url,category)
     
-    url = "http://www.peliculasyonkis.com/buscarPelicula.php?s="+Url.replace(" ", "+")
+    url = "http://www.peliculasyonkis.sx/buscarPelicula.php?s="+Url.replace(" ", "+")
     
     # Descarga la pv°gina
     data = scrapertools.cachePage(url)
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
-    #<li> <a href="http://www.peliculasyonkis.com/pelicula/las-edades-de-lulu-1990/" title="Las edades de Lulv? (1990)"><img width="77" height="110" src="http://images.peliculasyonkis.com/thumbs/las-edades-de-lulu-1990.jpg" alt="Las edades de Lulv? (1990)" align="right" />
+    #<li> <a href="http://www.peliculasyonkis.sx/pelicula/las-edades-de-lulu-1990/" title="Las edades de Lulv? (1990)"><img width="77" height="110" src="http://images.peliculasyonkis.sx/thumbs/las-edades-de-lulu-1990.jpg" alt="Las edades de Lulv? (1990)" align="right" />
     
     patronvideos  = '<li> <a href="([^"]+)" title="([^"]+)"><img.*?src="([^"]+)"'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -119,33 +119,33 @@ def searchresults(params,Url,category):
 
 def listalfabetico(params, url, category):
 
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "0-9","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasNumeric.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "A","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasA.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "B","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasB.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "C","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasC.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "D","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasD.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "E","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasE.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "F","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasF.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "G","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasG.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "H","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasH.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "I","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasI.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "J","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasJ.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "K","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasK.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "L","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasL.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "M","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasM.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "N","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasN.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "O","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasO.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "P","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasP.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Q","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasQ.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "R","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasR.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "S","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasS.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "T","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasT.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "U","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasU.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "V","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasV.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "W","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasW.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "X","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasX.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Y","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasY.php","","")
-    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Z","http://www.peliculasyonkis.com/lista-peliculas/listaPeliculasZ.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "0-9","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasNumeric.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "A","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasA.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "B","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasB.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "C","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasC.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "D","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasD.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "E","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasE.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "F","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasF.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "G","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasG.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "H","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasH.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "I","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasI.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "J","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasJ.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "K","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasK.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "L","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasL.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "M","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasM.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "N","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasN.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "O","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasO.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "P","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasP.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Q","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasQ.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "R","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasR.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "S","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasS.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "T","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasT.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "U","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasU.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "V","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasV.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "W","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasW.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "X","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasX.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Y","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasY.php","","")
+    xbmctools.addnewfolder( CHANNELNAME ,"listvideos", category , "Z","http://www.peliculasyonkis.sx/lista-peliculas/listaPeliculasZ.php","","")
 
     # Label (top-right)...
     xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=category )
@@ -162,7 +162,7 @@ def listnovedades(params,url,category):
     # Extrae las entradas (carpetas)
     '''
     <td align='center'><center><span style='font-size: 0.7em'>
-    <a href="http://www.peliculasyonkis.com/pelicula/encontraras-dragones-2011/" title="Encontrarás dragones (2011)">
+    <a href="http://www.peliculasyonkis.sx/pelicula/encontraras-dragones-2011/" title="Encontrarás dragones (2011)">
     <img width='100' height='144' src='http://p.staticyonkis.com/thumbs/encontraras-dragones-2011.jpg' alt='Encontrarás dragones (2011)'/><br />Encontrarás dragones (2011)</a>
     </span><br /><img height="30" src="http://s.staticyonkis.com/images/f/spanish.png" alt="Audio Español" style="vertical-align: middle;" /></center></td>
     '''
@@ -213,7 +213,7 @@ def listcategorias(params,url,category):
     #logger.info(data)
 
     # Extrae las entradas (carpetas)
-    patronvideos  = '<li class="page_item"><a href="(http\://www.peliculasyonkis.com/genero/[^"]+)"[^>]+>([^<]+)</a></li>'
+    patronvideos  = '<li class="page_item"><a href="(http\://www.peliculasyonkis.sx/genero/[^"]+)"[^>]+>([^<]+)</a></li>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
@@ -261,7 +261,7 @@ def buscaporanyo(params,url,category):
     logger.info("seleccion=%d" % seleccion)
     if seleccion == -1 :return
     if seleccion == 0:
-        url = "http://www.peliculasyonkis.com/estreno/"+opciones[seleccion]+"/"+opciones[seleccion]+"/0/"
+        url = "http://www.peliculasyonkis.sx/estreno/"+opciones[seleccion]+"/"+opciones[seleccion]+"/0/"
         listvideos(params,url,category)
         return
     if seleccion>30:
@@ -279,10 +279,10 @@ def buscaporanyo(params,url,category):
     dia2 = xbmcgui.Dialog()
     seleccion2 = dia2.select("Listar hasta el av±o:",opciones2)
     if seleccion == -1 :
-        url = "http://www.peliculasyonkis.com/estreno/"+desde+"/"+desde+"/0/"
+        url = "http://www.peliculasyonkis.sx/estreno/"+desde+"/"+desde+"/0/"
         listvideos(params,url,category)
         return
-    url = "http://www.peliculasyonkis.com/estreno/"+desde+"/"+opciones2[seleccion2]+"/0/"
+    url = "http://www.peliculasyonkis.sx/estreno/"+desde+"/"+opciones2[seleccion2]+"/0/"
     listvideos(params,url,category)
     return
 
@@ -408,13 +408,13 @@ def detail(params,url,category):
     # ------------------------------------------------------------------------------------
     # Busca los enlaces a los videos
     # ------------------------------------------------------------------------------------
-    patronvideos  = 'href="http://www.peliculasyonkis.com/player/visor_([^\.]+).php.*?'
+    patronvideos  = 'href="http://www.peliculasyonkis.sx/player/visor_([^\.]+).php.*?'
     patronvideos += 'id=([^"]+)".*?'
     patronvideos += 'alt="([^"]+)"'
     patronvideos += '(.*?)</tr>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     
-    patronvideos1  = 'http://www.peliculasyonkis.com/go/(d)/(.+?)".*?alt="([^"]+)"'
+    patronvideos1  = 'http://www.peliculasyonkis.sx/go/(d)/(.+?)".*?alt="([^"]+)"'
     patronvideos1 += "(.+?)<br /></span></div></td>"
     matches1 = re.compile(patronvideos1,re.DOTALL).findall(data)
     if (len(matches1) > 0):
@@ -472,13 +472,13 @@ def ChoiceOneVideo(matches,title):
             else:
                 if server == "d":
                     player = "megaupload"
-                    id = "http://www.peliculasyonkis.com/go/%s/%s" % (server,codigo)
+                    id = "http://www.peliculasyonkis.sx/go/%s/%s" % (server,codigo)
                     
                     servidor = "Megaupload"
                     Server = "megaupload"
                 elif server == "mv":
                     player = "pymeno2"
-                    id = "http://www.peliculasyonkis.com/go/%s/%s" % (server,codigo)
+                    id = "http://www.peliculasyonkis.sx/go/%s/%s" % (server,codigo)
                     
                     servidor = "Megavideo"
                     Server = "megavideo"

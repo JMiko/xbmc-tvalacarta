@@ -132,22 +132,6 @@ def novedades(item):
 
     return itemlist
 
-def strip_ml_tags(in_text):
-    #source http://code.activestate.com/recipes/440481-strips-xmlhtml-tags-from-string/
-    s_list = list(in_text)
-    i = 0
-
-    while i < len(s_list):
-        if s_list[i] == '<':
-            while s_list[i] != '>':
-                s_list.pop(i)
-            s_list.pop(i)
-        else:
-            i=i+1
-
-    join_char=''
-    return join_char.join(s_list)
-
 # Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
 def test():
     from servers import servertools

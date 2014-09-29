@@ -280,19 +280,32 @@ def findvideos(item):
             #<br>vidxden</a></td>
             #<td style="background-color:#F4FFF5;" >1</td>
             #<td style="background-color:#F4FFF5;" >HDTV 720p AC3 5.1</td><td style="background-color:#F4FFF5;" >
-            calidad = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^>]+>([^<]+)</td>')
+            ### Modificado 03-07-2014
+            #calidad = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^>]+>([^<]+)</td>')
+            calidad = scrapertools.get_match(match,'</abbr></td><td[^>]+>([^<]+)</td>')
         except:
             logger.info("No encuentro la calidad en #"+match+"#")
             calidad=""
+        ### Añadido 03-07-2014
         try:
-            idioma = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^<]+</td><td[^<]+<img src="[^"]+" alt="([^"]+)"')
+            servidor = scrapertools.get_match(match,'<br>([^<]+)</a>').strip()
+        except:
+            logger.info("No encuentro el servidor en #"+match+"#")
+            servidor=""
+        try:
+            ### Modificado 03-07-2014
+            #idioma = scrapertools.get_match(match,'<br>[^<]+</a></td[^<]+<td[^<]+</td[^<]+<td[^<]+</td><td[^<]+<img src="[^"]+" alt="([^"]+)"')
+            idioma = scrapertools.get_match(match,'<td[^>]+><img.*?images/idioma.*?title="([^"]+)"/></td>')
+
         except:
             logger.info("No encuentro el idioma en #"+match+"#")
             idioma=""
 
         if url!="":
             #http://www.tumejortv.com/peliculas/A-Roma-con-amor--2012--2/url/364905
-            itemlist.append( Item(channel=__channel__, action="play" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
+            ### Modificado 03-07-2014
+            #itemlist.append( Item(channel=__channel__, action="play" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
+            itemlist.append( Item(channel=__channel__, action="play" , title=scrapertools.get_domain_from_url(url).strip()+" ("+idioma+") ("+calidad+") ("+servidor+")" , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False, fulltitle=item.title))
 
     return itemlist
 

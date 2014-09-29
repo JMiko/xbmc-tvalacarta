@@ -29,11 +29,9 @@ def mainlist(item):
     logger.info("[peliculasyonkis_generico.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="lastepisodes"   , title="Utimas Peliculas" , url="http://www.peliculasyonkis.com/ultimas-peliculas"))
-    itemlist.append( Item(channel=__channel__, action="listalfabetico" , title="Listado alfabetico", url="http://www.peliculasyonkis.com/lista-de-peliculas"))
-    itemlist.append( Item(channel=__channel__, action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.com/") )
-    itemlist.append( Item(channel=__channel__, action="mostviewed"     , title="Peliculas mas vistas", url="http://www.peliculasyonkis.com/peliculas-mas-vistas"))
-    itemlist.append( Item(channel=__channel__, action="search"         , title="Buscar...", url="http://www.peliculasyonkis.com/buscar/pelicula"))
+    itemlist.append( Item(channel=__channel__, action="lastepisodes"   , title="Utimas Peliculas" , url="http://www.peliculasyonkis.sx"))
+    itemlist.append( Item(channel=__channel__, action="listalfabetico" , title="Listado alfabetico", url="http://www.peliculasyonkis.sx/lista-de-peliculas"))
+    itemlist.append( Item(channel=__channel__, action="listcategorias" , title="Listado por Categorias",url="http://www.peliculasyonkis.sx/") )
 
     return itemlist
 
@@ -42,19 +40,18 @@ def listcategorias(item):
     itemlist=[]
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
-    #logger.info(data)
+    data = scrapertools.find_single_match(data,"<h2>Géneros</h2>(.*?)</ul>")
+    logger.info("data="+data)
     
     # Extrae las entradas (carpetas)
-    patronvideos  = '<li><a href="(/genero/[^"]+)" title="([^"]+)".*?</li>'
+    #<li><a href="http://www.peliculasyonkis.sx/genero/fantastico/" title="Listado del género Fantástico"><span>Fantástico</span>
+    patronvideos  = '<li><a href="([^"]+)"[^>]+><span>([^<]+)</span>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     
     for match in matches:
-        try:
-           scrapedtitle = unicode( match[1], "utf-8" ).encode("iso-8859-1")
-        except:
-           scrapedtitle = match[1]
-        scrapedurl = "http://www.peliculasyonkis.com"+match[0]
+        scrapedtitle = match[1]
+        scrapedurl = match[0]
         scrapedthumbnail = ""
         scrapedplot = ""
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -94,8 +91,8 @@ def search(item,texto):
     itemlist = []
 
     if item.url=="":
-        item.url = "http://www.peliculasyonkis.com/buscar/pelicula"
-    url = "http://www.peliculasyonkis.com/buscar/pelicula" # write ur URL here
+        item.url = "http://www.peliculasyonkis.sx/buscar/pelicula"
+    url = "http://www.peliculasyonkis.sx/buscar/pelicula" # write ur URL here
     post = 'keyword='+texto[0:18]+'&search_type=pelicula'
     
     data = scrapertools.cache_page(url,post=post)
@@ -111,14 +108,17 @@ def lastepisodes(item):
     logger.info("[peliculasyonkis_generico.py] lastepisodes")
 
     data = scrapertools.cache_page(item.url)
-  
-    matches = re.compile('<li class="thumb-episode"> <a href="([^"]+)".*?src="([^"]+)".*?title="([^"]+)".*?</li>', re.S).findall(data)
+
+    patron  = '<li class="thumb-episode"[^<]+'
+    patron += '<a title="([^"]+)" href="([^"]+)"[^<]+'
+    patron += '<img width="\d+" height="\d+" src="([^"]+)"'
+    matches = re.compile(patron, re.S).findall(data)
     #scrapertools.printMatches(matches)
     itemlist = []
     for match in matches:               
-        scrapedtitle = match[2] 
-        scrapedurl = urlparse.urljoin(item.url,match[0])
-        scrapedthumbnail = urlparse.urljoin(item.url,match[1])
+        scrapedtitle = match[0] 
+        scrapedurl = urlparse.urljoin(item.url,match[1])
+        scrapedthumbnail = urlparse.urljoin(item.url,match[2])
         scrapedplot = ""
 
         # Depuracion
@@ -182,100 +182,36 @@ def peliculas(item):
 
     return itemlist
 
-def findvideos(item):
-    logger.info("[seriesyonkis.py] findvideos")
-    itemlist = []
-
-    Nro = 0
-    fmt=id=""
-
-    # Acota la zona de búsqueda
-    data = scrapertools.cache_page(item.url)    
-    data = scrapertools.get_match(data,'<div id="section-content"(.*?)<h2 class="header-subtitle magnet"')
-    logger.info("data="+data)
-    
-    # Procesa línea por línea
-    matches = re.compile('<tr.*?</tr>', re.S).findall(data)
-    scrapertools.printMatches(matches)
-
-    for match in matches:
-        logger.info(match)
-        #<tr data-server="streamcloud" data-lang="lat" data-sub="no_sub">
-        #<td class="episode-title episode-server" data-value="0">
-        #<a href="/s/ngo/5/5/5/8/986" title="Reproducir El hobbit: Un viaje inesperado (2012) en streamcloud" target="_blank"><img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22" alt="ver online" />Reproducir</a>  <span class="public_sprite like_green vote_link_positive user_not_logged" data-id="5558986" data-type="+" title="Voto positivo">[positivo]</span> <span class="public_sprite dislike_red vote_link_negative user_not_logged" data-id="5558986" data-type="-" title="Voto negativo">[negativo]</span> </td> <td class="episode-server-img"><a href="/s/ngo/5/5/5/8/986" title="Reproducir El hobbit: Un viaje inesperado (2012) " target="_blank">
-        #<span class="server streamcloud" data-visible="true"></span></a></td> <td class="episode-lang">
-        #<span class="flags lat" title="Español Latino" data-visible="true">lat</span></td> <td class="episode-subtitle subtitles center">
-        #<span class="flags no_sub" title="Sin información" data-visible="true">no_sub</span></td> <td class="episode-quality">
-        #<span class="episode-quality-icon" title="Calidad alta"> <i class="public_sprite meter04 quality4"></i> </span> </td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>  1.3 Gb  </li>  </ul> </div> </td> <td class="episode-source center"><span title="Blu-Ray, DVD... - Calidad alta">BR/DVD</span></td> <td class="episode-uploader"><span title="88TodoPelis88">88Todo...</span></td> <td class="episode-error bug center"><a href="#" class="errorlink" data-id="5558986" ><img src="http://s.staticyonkis.com/img/icons/bug.png" alt="error" /></a></td> </tr>  <tr data-server="nowvideo" data-la
-
-        '''
-        <tr data-server="vk" data-lang="spa" data-sub="no_sub"> 
-        <td class="episode-server" data-value="1"> 
-        <a href="/s/ngo/2/6/4/8/694" title="Reproducir Los colegas del barrio (1996) en vk" target="_blank">
-        <img src="http://s.staticyonkis.com/img/veronline.png" height="22" width="22" alt="ver online" />Reproducir</a>  
-        <span class="public_sprite like_green vote_link_positive user_not_logged" data-id="2648694" data-type="+" title="Voto positivo">[positivo]</span> 
-        <span class="public_sprite dislike_red vote_link_negative user_not_logged" data-id="2648694" data-type="-" title="Voto negativo">[negativo]</span> </td> 
-        <td class="episode-server-img"><a href="/s/ngo/2/6/4/8/694" title="Reproducir Los colegas del barrio (1996) " target="_blank">
-        <span class="server vk"></span></a></td> 
-        <td class="episode-lang"><span class="flags spa" title="Español">spa</span></td> 
-        <td class="episode-subtitle subtitles center"><span class="flags no_sub" title="Sin información">no_sub</span></td> <td class="quality"> 
-        <span class="episode-quality-icon" title="Calidad alta"> <i class="public_sprite meter04 quality4"></i> </span> </td> <td class="episode-notes"> <span class="icon-info"></span> <div class="tip hidden"> <h3>Información vídeo</h3> <div class="arrow-tip-right-dark sprite"></div> <ul> <li>    </li>  </ul> </div> </td> <td class="source center"><span title="Blu-Ray, DVD... - Calidad alta">BR/DVD</span></td> <td class="episode-uploader"><span title="--3286--">--3286--</span></td
-        '''
-        
-        patron  = '<a href="(/s/ngo/[^"]+)".*?'
-        patron += '<span class="server ([^"]+)".*?'
-        patron += 'title="[^"]+"[^>]*>([^<]+)</span>.*?'
-        patron += '"flags ([^_]+)_sub".*?'
-        patron += 'class="public_sprite meter\d+ quality([^"]+)"'
-        datos = re.compile(patron, re.S).findall(match)
-        for info in datos:  
-            id = info[0]
-            servidor = info[1]
-            Nro = Nro + 1
-            fmt = info[4]      
-            audio = "Audio:" + info[2]
-            subs = "Subs:" + info[3]
-            url = urlparse.urljoin(item.url,info[0])
-            scraptedtitle = "%02d) [%s %s] - (Q:%s) [%s] " % (Nro , audio,subs,fmt,servidor)
-            itemlist.append( Item(channel=__channel__, action="play" , title=scraptedtitle, fulltitle=item.fulltitle , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg"))
-
-    return itemlist
-
-def play(item):
-    import seriesyonkis
-    return seriesyonkis.play(item)
-
 def listalfabetico(item):
     logger.info("[peliculasyonkis_generico.py] listalfabetico")
        
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="0-9", url="http://www.peliculasyonkis.com/lista-de-peliculas/0-9"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="A"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/A"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="B"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/B"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="C"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/C"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="D"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/D"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="E"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/E"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="F"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/F"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="G"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/G"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="H"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/H"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="I"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/I"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="J"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/J"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="K"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/K"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="L"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/L"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="M"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/M"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="N"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/N"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="O"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/O"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="P"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/P"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Q"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Q"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="R"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/R"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="S"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/S"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="T"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/T"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="U"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/U"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="V"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/V"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="W"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/W"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="X"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/X"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Y"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Y"))
-    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Z"  , url="http://www.peliculasyonkis.com/lista-de-peliculas/Z"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="A"  , url="http://www.peliculasyonkis.sx/search/listado-A"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="B"  , url="http://www.peliculasyonkis.sx/search/listado-B"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="C"  , url="http://www.peliculasyonkis.sx/search/listado-C"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="D"  , url="http://www.peliculasyonkis.sx/search/listado-D"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="E"  , url="http://www.peliculasyonkis.sx/search/listado-E"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="F"  , url="http://www.peliculasyonkis.sx/search/listado-F"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="G"  , url="http://www.peliculasyonkis.sx/search/listado-G"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="H"  , url="http://www.peliculasyonkis.sx/search/listado-H"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="I"  , url="http://www.peliculasyonkis.sx/search/listado-I"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="J"  , url="http://www.peliculasyonkis.sx/search/listado-J"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="K"  , url="http://www.peliculasyonkis.sx/search/listado-K"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="L"  , url="http://www.peliculasyonkis.sx/search/listado-L"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="M"  , url="http://www.peliculasyonkis.sx/search/listado-M"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="N"  , url="http://www.peliculasyonkis.sx/search/listado-N"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="O"  , url="http://www.peliculasyonkis.sx/search/listado-O"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="P"  , url="http://www.peliculasyonkis.sx/search/listado-P"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Q"  , url="http://www.peliculasyonkis.sx/search/listado-Q"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="R"  , url="http://www.peliculasyonkis.sx/search/listado-R"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="S"  , url="http://www.peliculasyonkis.sx/search/listado-S"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="T"  , url="http://www.peliculasyonkis.sx/search/listado-T"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="U"  , url="http://www.peliculasyonkis.sx/search/listado-U"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="V"  , url="http://www.peliculasyonkis.sx/search/listado-V"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="W"  , url="http://www.peliculasyonkis.sx/search/listado-W"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="X"  , url="http://www.peliculasyonkis.sx/search/listado-X"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Y"  , url="http://www.peliculasyonkis.sx/search/listado-Y"))
+    itemlist.append( Item(channel=__channel__, action="peliculas" , title="Z"  , url="http://www.peliculasyonkis.sx/search/listado-Z"))
 
     return itemlist
 

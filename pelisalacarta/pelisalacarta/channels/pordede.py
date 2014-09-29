@@ -47,6 +47,8 @@ def mainlist(item):
         login()
         itemlist.append( Item(channel=__channel__, action="menuseries"    , title="Series"              , url="" ))
         itemlist.append( Item(channel=__channel__, action="menupeliculas" , title="Películas"           , url="" ))
+        itemlist.append( Item(channel=__channel__, action="listas_sigues" , title="Listas que sigues"   , url="http://www.pordede.com/lists/following" ))
+        itemlist.append( Item(channel=__channel__, action="tus_listas"    , title="Tus listas"          , url="http://www.pordede.com/lists/yours" ))
        
     return itemlist
 
@@ -140,6 +142,9 @@ def buscar(item):
     logger.info("html="+json_object["html"])
     data = json_object["html"]
 
+    return parse_mixed_results(item,data)
+
+def parse_mixed_results(item,data):
     '''
     <a class="defaultLink extended" href="/serie/huntik-secrets-&-seekers">
     <div class="coverMini shadow tiptip" title="Huntik: Secrets &amp; Seekers">
@@ -274,6 +279,108 @@ def episodios(item):
             if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
     return itemlist
+
+def listas_sigues(item):
+    logger.info("pelisalacarta.channels.pordede listas_sigues")
+
+    # Descarga la pagina
+    headers = DEFAULT_HEADERS[:]
+    headers.append(["Referer",item.extra])
+    headers.append(["X-Requested-With","XMLHttpRequest"])
+    data = scrapertools.cache_page(item.url,headers=headers)
+    logger.info("data="+data)
+
+    # Extrae las entradas (carpetas)  
+    '''
+    {"html":"<div id=\"screen-1574110493\" class=\"clearfix screen\" style=\"display: none\"><div id=\"layout2\" class=\"lists\">\n\t<div class=\"main\">\n\t\t<div class=\"box boxtabsContainer\">\n\n\t\t\t<div class=\"boxtabs three-tabs\">\n\t\t\t\t<a class=\"defaultLink\" href=\"\/lists\">Top listas<\/a>\n                <a class=\"defaultLink\" href=\"\/lists\/following\">Listas que sigues<\/a>\n\t\t\t\t<a class=\"defaultLink onlyLogin\" href=\"\/lists\/yours\">Tus listas<\/a>\n\t\t\t<\/div>\n\n\n\n\t\t\t<div class=\"toplists\">\n\t\t\t\t<h1>Listas que sigues<\/h1>\n\t\t\t\t\t<div class=\"clearfix modelContainer\" data-model=\"lista\" data-id=\"172\">\n        <span class=\"title\"><span class=\"name\"><a class=\"defaultLink\" href=\"\/list\/mis-subidas\">Aportes MicroHD en m-720p y m-1080p<\/a><\/span> por <a class=\"defaultLink\" href=\"\/user\/lagartish\">lagartish<\/a><\/span>\n    <div style=\"position: relative\">\n        <div class=\"number\">1<\/div>\n\n        <div class=\"info\">\n            <p>88 fichas<\/p>\n            <p>1407 seguidores<\/p>\n\n                        <button class=\"action activable active\" data-action=\"follow\">Siguiendo<\/button>\n        <\/div>\n\n        <div class=\"previews listMini listContainer inline clearfix\" style=\"max-height: 64px;margin-top: 0px;\">\n            <!--<div class=\"bgcolor\" style=\"right: %\"><\/div>-->\n\n            <a class=\"defaultLink\" href=\"\/peli\/gravity-1\">\n        <div class=\"friendMini shadow tiptip\" title=\"Gravity\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-24800-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/carrie-2\">\n        <div class=\"friendMini shadow tiptip\" title=\"Carrie\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-47972-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/captain-phillips\">\n        <div class=\"friendMini shadow tiptip\" title=\"Capit\u00e1n Phillips\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-44620-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/too-big-to-fail\">\n        <div class=\"friendMini shadow tiptip\" title=\"Malas noticias\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-31919-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/getaway\">\n        <div class=\"friendMini shadow tiptip\" title=\"Getaway\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-49679-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/wall-street\">\n        <div class=\"friendMini shadow tiptip\" title=\"Wall Street\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-4483-4.png\"\/>\n\t<\/div>\n<\/a>        <\/div>\n    <\/div>\n<\/div>\n    <div class=\"clearfix modelContainer\" data-model=\"lista\" data-id=\"261\">\n        <span class=\"title\"><span class=\"name\"><a class=\"defaultLink\" href=\"\/list\/novedades-hd-\">Novedades HD  <\/a><\/span> por <a class=\"defaultLink\" href=\"\/user\/santorun-1\">Santorun 1<\/a><\/span>\n    <div style=\"position: relative\">\n        <div class=\"number\">2<\/div>\n\n        <div class=\"info\">\n            <p>41 fichas<\/p>\n            <p>3289 seguidores<\/p>\n\n                        <button class=\"action activable active\" data-action=\"follow\">Siguiendo<\/button>\n        <\/div>\n\n        <div class=\"previews listMini listContainer inline clearfix\" style=\"max-height: 64px;margin-top: 0px;\">\n            <!--<div class=\"bgcolor\" style=\"right: %\"><\/div>-->\n\n            <a class=\"defaultLink\" href=\"\/peli\/the-last-exorcism-part-ii\">\n        <div class=\"friendMini shadow tiptip\" title=\"The Last Exorcism Part II\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-49671-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/lore\">\n        <div class=\"friendMini shadow tiptip\" title=\"Lore\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-46332-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/elysium-1\">\n        <div class=\"friendMini shadow tiptip\" title=\"Elysium\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-33511-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/the-smurfs-2\">\n        <div class=\"friendMini shadow tiptip\" title=\"Los pitufos 2\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-37445-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/planes\">\n        <div class=\"friendMini shadow tiptip\" title=\"Aviones\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-50426-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/the-colony\">\n        <div class=\"friendMini shadow tiptip\" title=\"The Colony\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-53133-4.png\"\/>\n\t<\/div>\n<\/a>        <\/div>\n    <\/div>\n<\/div>\n    \t\t\t<\/div>\n\n\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"sidebar\">\n\t\t<div class=\"box\">\n            <div class=\"centered\" style=\"margin-bottom:20px;margin-top:10px\">\n\t\t\t\t<button class=\"defaultPopup onlyLogin\" href=\"\/ajax\/create\/model\/lista\">Crear nueva lista<\/button>\n\t\t\t<\/div>\n\t\t\t<h2>Listas recomendadas<\/h2>\n\t\t\t<div class=\"flash-notice\">\n                Secci\u00f3n a\u00fan no disponible\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n\n<style>\n    .main {\n        min-height: 300px;\n    }\n\n    .sidebar {\n        min-height: 500px;\n    }\n<\/style><\/div>","ready":"","error":"","title":"pordede.com - Following Lists - pordede.com","data":[],"session":"c4alubn30hr2qtu0mn19orqle3","screenId":"screen-1574110493"}
+    '''
+    json_object = jsontools.load_json(data)
+    logger.info("html="+json_object["html"])
+    data = json_object["html"]
+
+    '''
+    <div class="clearfix modelContainer" data-model="lista" data-id="172">
+    <span class="title"><span class="name"><a class="defaultLink" href="\/list\/mis-subidas">Aportes MicroHD en m-720p y m-1080p<\/a><\/span> por <a class="defaultLink" href="\/user\/lagartish">lagartish<\/a><\/span>
+    '''
+    patron  = '<div class="clearfix modelContainer" data-model="lista"[^<]+'
+    patron += '<span class="title"><span class="name"><a class="defaultLink" href="([^"]+)">([^<]+)</a>'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    itemlist = []
+    
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        plot = ""
+        itemlist.append( Item(channel=__channel__, action="lista" , title=title , url=url))
+
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+    return itemlist
+
+def tus_listas(item):
+    logger.info("pelisalacarta.channels.pordede tus_listas")
+
+    # Descarga la pagina
+    headers = DEFAULT_HEADERS[:]
+    headers.append(["Referer",item.extra])
+    headers.append(["X-Requested-With","XMLHttpRequest"])
+    data = scrapertools.cache_page(item.url,headers=headers)
+    logger.info("data="+data)
+
+    # Extrae las entradas (carpetas)  
+    '''
+    {"html":"<div id=\"screen-149689438\" class=\"clearfix screen\" style=\"display: none\"><div id=\"layout2\" class=\"lists\">\n\t<div class=\"main\">\n\t\t<div class=\"box boxtabsContainer\">\n\n\t\t\t<div class=\"boxtabs three-tabs\">\n\t\t\t\t<a class=\"defaultLink\" href=\"\/lists\">Top listas<\/a>\n                <a class=\"defaultLink\" href=\"\/lists\/following\">Listas que sigues<\/a>\n\t\t\t\t<a class=\"defaultLink onlyLogin\" href=\"\/lists\/yours\">Tus listas<\/a>\n\t\t\t<\/div>\n\n\n\n\t\t\t<div class=\"toplists\">\n\t\t\t\t<h1>Tus listas<\/h1>\n\t\t\t\t\t<div class=\"clearfix modelContainer\" data-model=\"lista\" data-id=\"8781\">\n    <div class=\"right\">\n                <button class=\"white defaultPopup\" href=\"\/ajax\/create\/model\/lista\/id\/8781\">Editar<\/button>\n                <button class=\"white defaultPopup\" data-confirm=\"\u00bfSeguro que quieres borrar esta lista?\" href=\"\/ajax\/delete\/model\/lista\/id\/8781\">Borrar<\/button>\n            <\/div>    <span class=\"title\"><span class=\"name\"><a class=\"defaultLink\" href=\"\/list\/lista-2\">Lista 2<\/a><\/span> por <a class=\"defaultLink\" href=\"\/user\/tvalacarta\">tvalacarta<\/a><\/span>\n    <div style=\"position: relative\">\n        <div class=\"number\">1<\/div>\n\n        <div class=\"info\">\n            <p>2 fichas<\/p>\n            <p>0 seguidores<\/p>\n\n                        <button class=\"action activable\" data-action=\"follow\">Seguir<\/button>\n        <\/div>\n\n        <div class=\"previews listMini listContainer inline clearfix\" style=\"max-height: 64px;margin-top: 0px;\">\n            <!--<div class=\"bgcolor\" style=\"right: %\"><\/div>-->\n\n            <a class=\"defaultLink\" href=\"\/peli\/divergent\">\n        <div class=\"friendMini shadow tiptip\" title=\"Divergente\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-51148-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/edge-of-tomorrow\">\n        <div class=\"friendMini shadow tiptip\" title=\"Edge of Tomorrow\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-48429-4.png\"\/>\n\t<\/div>\n<\/a>        <\/div>\n    <\/div>\n<\/div>\n    <div class=\"clearfix modelContainer\" data-model=\"lista\" data-id=\"8780\">\n    <div class=\"right\">\n                <button class=\"white defaultPopup\" href=\"\/ajax\/create\/model\/lista\/id\/8780\">Editar<\/button>\n                <button class=\"white defaultPopup\" data-confirm=\"\u00bfSeguro que quieres borrar esta lista?\" href=\"\/ajax\/delete\/model\/lista\/id\/8780\">Borrar<\/button>\n            <\/div>    <span class=\"title\"><span class=\"name\"><a class=\"defaultLink\" href=\"\/list\/lista-1_14\">Lista 1<\/a><\/span> por <a class=\"defaultLink\" href=\"\/user\/tvalacarta\">tvalacarta<\/a><\/span>\n    <div style=\"position: relative\">\n        <div class=\"number\">2<\/div>\n\n        <div class=\"info\">\n            <p>2 fichas<\/p>\n            <p>0 seguidores<\/p>\n\n                        <button class=\"action activable\" data-action=\"follow\">Seguir<\/button>\n        <\/div>\n\n        <div class=\"previews listMini listContainer inline clearfix\" style=\"max-height: 64px;margin-top: 0px;\">\n            <!--<div class=\"bgcolor\" style=\"right: %\"><\/div>-->\n\n            <a class=\"defaultLink\" href=\"\/peli\/the-day-the-earth-stood-still-1\">\n        <div class=\"friendMini shadow tiptip\" title=\"Ultim\u00e1tum a la Tierra\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-4091-4.png\"\/>\n\t<\/div>\n<\/a><a class=\"defaultLink\" href=\"\/peli\/gravity-1\">\n        <div class=\"friendMini shadow tiptip\" title=\"Gravity\">\n\t\t<img  onerror=\"this.src='\/images\/defaultavatar.png';\"  src=\"\/content\/covers\/mediaminithumb-24800-4.png\"\/>\n\t<\/div>\n<\/a>        <\/div>\n    <\/div>\n<\/div>\n    \t\t\t<\/div>\n\n\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"sidebar\">\n\t\t<div class=\"box\">\n            <div class=\"centered\" style=\"margin-bottom:20px;margin-top:10px\">\n\t\t\t\t<button class=\"defaultPopup onlyLogin\" href=\"\/ajax\/create\/model\/lista\">Crear nueva lista<\/button>\n\t\t\t<\/div>\n\t\t\t<h2>Listas recomendadas<\/h2>\n\t\t\t<div class=\"flash-notice\">\n                Secci\u00f3n a\u00fan no disponible\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n\n<style>\n    .main {\n        min-height: 300px;\n    }\n\n    .sidebar {\n        min-height: 500px;\n    }\n<\/style><\/div>","ready":"","error":"","title":"pordede.com - Yours Lists - pordede.com","data":[],"session":"c4alubn30hr2qtu0mn19orqle3","screenId":"screen-149689438"}
+    '''
+    json_object = jsontools.load_json(data)
+    logger.info("html="+json_object["html"])
+    data = json_object["html"]
+
+    '''
+    <div class="clearfix modelContainer" data-model="lista" data-id="8781">
+    <div class="right">
+    <button class="white defaultPopup" href="/ajax/create/model/lista/id/8781">Editar</button>
+    <button class="white defaultPopup" data-confirm="\u00bfSeguro que quieres borrar esta lista?" href="/ajax/delete/model/lista/id/8781">Borrar</button>
+    </div>    <span class="title"><span class="name"><a class="defaultLink" href="/list/lista-2">Lista 2</a></span> por <a class="defaultLink" href="/user/tvalacarta">tvalacarta</a></span>
+    '''
+    patron  = '<div class="clearfix modelContainer" data-model="lista"[^<]+'
+    patron += '<div class="right"[^<]+'
+    patron += '<button[^<]+</button[^<]+'
+    patron += '<button[^<]+</button[^<]+'
+    patron += '</div[^<]+'
+    patron += '<span class="title"><span class="name"><a class="defaultLink" href="([^"]+)">([^<]+)</a>'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    itemlist = []
+    
+    for scrapedurl,scrapedtitle in matches:
+        title = scrapertools.htmlclean(scrapedtitle)
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        plot = ""
+        itemlist.append( Item(channel=__channel__, action="lista" , title=title , url=url))
+
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+    return itemlist
+
+def lista(item):
+    logger.info("pelisalacarta.channels.pordede lista")
+
+    # Descarga la pagina
+    headers = DEFAULT_HEADERS[:]
+    headers.append(["Referer",item.extra])
+    headers.append(["X-Requested-With","XMLHttpRequest"])
+    data = scrapertools.cache_page(item.url,headers=headers)
+    logger.info("data="+data)
+
+    # Extrae las entradas (carpetas)  
+    json_object = jsontools.load_json(data)
+    logger.info("html="+json_object["html"])
+    data = json_object["html"]
+
+    return parse_mixed_results(item,data)
 
 def findvideos(item):
     logger.info("pelisalacarta.channels.pordede findvideos")

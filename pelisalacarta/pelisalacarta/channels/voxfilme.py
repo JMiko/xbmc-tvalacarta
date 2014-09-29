@@ -48,15 +48,13 @@ def novedades(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
     
-    '''
-    <a href="http://unsoloclic.info/page/2/" >&laquo; Peliculas anteriores</a>
-    '''
-    patron  = '<div id="older"[^<]+<a href="([^"]+)" >Inaninte</a>'
+    #<div id="older" class="alignleft"><a href="http://voxfilmeonline.com/page/3" >Inainte</a>
+    patron  = '<div id="older"[^<]+<a href="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
     for match in matches:
-        scrapedtitle = "Inainte"
+        scrapedtitle = ">> Next page"
         scrapedplot = ""
         scrapedurl = urlparse.urljoin(item.url,match)
         scrapedthumbnail = ""
