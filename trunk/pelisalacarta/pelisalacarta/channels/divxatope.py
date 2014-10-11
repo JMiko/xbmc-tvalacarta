@@ -130,6 +130,12 @@ def findvideos(item):
     # Descarga la pagina
     data = scrapertools.cachePage(item.url)
 
+    link = scrapertools.find_single_match(data,'href="http://tumejorserie.*?url=([^"]+)"')
+    if link!="":
+        #link = "http://www.divxatope.com/"+link
+        logger.info("pelisalacarta.channels.divxatope torrent="+link)
+        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title="Vídeo en torrent" , fulltitle = item.title, url=link , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
+
     patron  = "<div class=\"box1\"[^<]+<img[^<]+</div[^<]+"
     patron += '<div class="box2">([^<]+)</div[^<]+'
     patron += '<div class="box3">([^<]+)</div[^<]+'
