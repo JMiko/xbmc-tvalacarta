@@ -43,11 +43,6 @@ def mainlist(item):
        
     return itemlist
 
-def openconfig(item):
-    if "xbmc" in config.get_platform() or "boxee" in config.get_platform():
-        config.open_settings( )
-    return []
-
 def menuepisodios(item):
     logger.info("pelisalacarta.channels.seriesflv menuepisodios")
 
@@ -293,7 +288,7 @@ def findvideos(item):
     # Descarga la pagina
     headers = DEFAULT_HEADERS[:]
     data = scrapertools.cache_page(item.url,headers=headers)
-    data = scrapertools.find_single_match(data,'<div id="enlaces">(.*?)<!-- END -->')
+    data = scrapertools.find_single_match(data,'<div id="enlaces">(.*?)<div id="comentarios">')
     #logger.info("data="+data)
 
     # Extrae las entradas (carpetas)  
@@ -346,7 +341,6 @@ def findvideos(item):
         itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, extra=extra, thumbnail=thumbnail, plot=plot, folder=False))
 
     return itemlist
-
 
 def play(item):
     logger.info("pelisalacarta.channels.seriesflv play url="+item.url)
