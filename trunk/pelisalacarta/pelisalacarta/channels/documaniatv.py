@@ -183,11 +183,13 @@ def play(item):
     itemlist = []
 
     # Descarga la pagina
-    data1 = scrapertools.cachePage(item.url)
-    patron= '"vid":"(.*?)"'
+    data1 = scrapertools.cachePage(item.url) 
+    logger.info(data1)
+    patron= 'itemprop="embedURL" content="(.*?)"'
     matc = re.compile(patron,re.DOTALL).findall(data1)
+    logger.info(matc[0])
  
-    data = scrapertools.cachePage("http://www.documaniatv.com/ajax.php?p=video&do=getplayer&vid="+matc[0]+"&aid=3&player=detail")
+    data = scrapertools.cachePage(matc[0])
     logger.info(data)
 
     # Busca los enlaces a los videos
@@ -196,7 +198,7 @@ def play(item):
         itemlist.append( Item(channel=__channel__ , action="play" , server=video_item.server, title=item.title+video_item.title,url=video_item.url, thumbnail=video_item.thumbnail, plot=video_item.plot, folder=False))
 
     # Extrae los enlaces a los videos (Directo)
-    patronvideos = "file: '([^']+)'"
+    patronvideos = "src= '([^']+)'"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     if len(matches)>0:
         if not "www.youtube" in matches[0]:
