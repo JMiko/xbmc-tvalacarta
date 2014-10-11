@@ -20,21 +20,30 @@ __title__ = "Mejor Torrent"
 __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
-LOGIN = "popeye20"
-PASSWORD = "popeye20"
 
 def isGeneric():
     return True
 
 def mainlist(item):
     logger.info("pelisalacarta.channels.divxatope mainlist")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, action="menu" , title="Pel√≠culas" , url="http://www.divxatope.com/",extra="Peliculas",folder=True))
+    itemlist.append( Item(channel=__channel__, action="menu" , title="Series" , url="http://www.divxatope.com",extra="Series",folder=True))
+    itemlist.append( Item(channel=__channel__, action="search" , title="Buscar..."))
+    return itemlist
+
+def menu(item):
+    logger.info("pelisalacarta.channels.divxatope menu")
     itemlist=[]
 
-    item.url="http://www.divxatope.com"
     data = scrapertools.cache_page(item.url)
-    logger.info("data="+data)
-    data = scrapertools.get_match(data,'<h2 id="title-categorias">Categorias</h2>[^<]+<ul>(.*?)</ul>')
-    patron = "<li><a href='([^']+)'[^>]+>([^<]+)</a></li>"
+    #logger.info("data="+data)
+
+    data = scrapertools.find_single_match(data,item.extra+"</a[^<]+<ul(.*?)</ul>")
+    #logger.info("data="+data)
+
+    patron = "<li><a.*?href='([^']+)'[^>]+>([^<]+)</a></li>"
     matches = re.compile(patron,re.DOTALL).findall(data)
 
     for scrapedurl,scrapedtitle in matches:
@@ -42,23 +51,19 @@ def mainlist(item):
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = ""
         plot = ""
-        if not title.startswith("Juegos") and not title.startswith("Musica"):
-            itemlist.append( Item(channel=__channel__, action="lista", title=title , url=url , thumbnail=thumbnail , plot=plot , fanart="http://pelisalacarta.mimediacenter.info/fanart/divxatope.jpg", folder=True) )
-
-    if len(itemlist)>0:
-        itemlist.append( Item(channel=__channel__ , action="search"    , title="Buscar" ))
+        itemlist.append( Item(channel=__channel__, action="lista", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 
     return itemlist
 
 def search(item,texto):
     logger.info("pelisalacarta.channels.divxatope search")
     if item.url=="":
-        item.url="http://www.divxatope.com/main.php?q="
-    texto = texto.replace(" ","+")
-    item.url = item.url+texto
+        item.url="http://www.divxatope.com/buscar/descargas"
+    item.extra = urllib.urlencode({'search':texto})
+
     try:
         return lista(item)
-    # Se captura la excepciÛn, para no interrumpir al buscador global si un canal falla
+    # Se captura la excepci?n, para no interrumpir al buscador global si un canal falla
     except:
         import sys
         for line in sys.exc_info():
@@ -69,46 +74,42 @@ def lista(item):
     logger.info("pelisalacarta.channels.divxatope lista")
     itemlist = []
 
-    # Descarga la p·gina
-    data = scrapertools.cachePage(item.url)
-    patron  = '<div class="torrent-container[^<]+'
-    patron += '<img class="torrent-image" src="([^"]+)"[^<]+'
-    patron += '<div class="torrent-info"[^<]+'
-    patron += '<h4><a href ="([^"]+)">([^<]+)</a[^<]+</h4>[^<]+'
-    patron += '<p>([^<]+)</p>[^<]+'
-    patron += '<p>Subido[^<]+<strong>[^<]+</strong[^<]+<a[^<]+</a><br />[^<]+'
-    patron += 'Descargas <strong><a href="." style="[^>]+>([^<]+)</a>'
+    '''
+    <li style="width:136px;height:263px;margin:0px 15px 0px 0px;">
+    <a href="http://www.divxatope.com/descargar/374639_ahi-os-quedais-web-screener-r6-espa√±ol-castellano-2014.html" title="Descargar Ahi Os Quedais Web  en DVD-Screener torrent gratis"><div  class='ribbon-estreno' ></div>                           <img class="torrent-image" src="http://www.divxatope.com/uploads/torrents/images/thumbnails2/6798_ahi--os--quedais.jpg" alt="Descargar Ahi Os Quedais Web  en DVD-Screener torrent gratis" style="width:130px;height:184px;" />
+    <h2 style="float:left;width:100%;margin:3px 0px 0px 0px;padding:0px 0px 3px 0px;line-height:12px;font-size:12px;height:23px;border-bottom:solid 1px #C2D6DB;">Ahi Os Quedais Web </h2>
+    <strong style="float:left;width:100%;text-align:center;color:#000;margin:0px;padding:3px 0px 0px 0px;font-size:11px;line-height:12px;">DVD-Screener<br>Espa√±ol Castellano                                                       </strong>
+    </a>
+    </li>
+    '''
+
+    # Descarga la pagina
+    if item.extra=="":
+        data = scrapertools.cachePage(item.url)
+    else:
+        data = scrapertools.cachePage(item.url , post=item.extra)
+    #logger.info("data="+data)
+
+    patron  = '<li[^<]+'
+    patron += '<a href="([^"]+)".*?'
+    patron += '<img class="[^"]+" src="([^"]+)"[^<]+'
+    patron += '<h2[^>]+">([^<]+)</h2[^<]+'
+    patron += '<strong[^>]+>(.*?)</strong>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
-    for scrapedthumbnail,scrapedurl,scrapedtitle,fecha,descargas in matches:
-        title = scrapedtitle.strip()+" ("+descargas+" descargas) ("+fecha+")"
+    for scrapedurl,scrapedthumbnail,scrapedtitle,calidad in matches:
+        title = scrapedtitle.strip()+" ("+scrapertools.htmlclean(calidad)+")"
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , fulltitle = title, url=url , thumbnail=thumbnail , plot=plot , viewmode="movie", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title , fulltitle = title, url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 
-    # Extrae el paginador
-    if item.extra == "":
-        pagina_actual = 1
-    else:
-        pagina_actual = int(item.extra)
-
-    patronvideos  = '<a class="paginator-items" href="([^"]+)" title="Pagina de torrent[^"]+">([^<]+)</a>'
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    
-    contador_pagina = 1
-    
-    for scrapedurl,scrapedtitle in matches:
-        if contador_pagina == (pagina_actual + 1):
-            title = ">> Ir a pag "+scrapedtitle+" de "+str(len(matches))
-            url = urlparse.urljoin(item.url,scrapedurl)
-            itemlist.append( Item(channel=__channel__, action="lista", title=title, url=url , extra="%d" % contador_pagina , folder=True) )
-            break
-        contador_pagina = contador_pagina + 1
+    next_page_url = scrapertools.find_single_match(data,'<li><a href="([^"]+)">Next</a></li>')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action=item.action, title=">> P√°gina siguiente" , url=urlparse.urljoin(item.url,next_page_url) , folder=True) )
 
     return itemlist
 
@@ -116,53 +117,82 @@ def findvideos(item):
     logger.info("pelisalacarta.channels.divxatope findvideos")
     itemlist=[]
 
-    # Averigua el PHPSESSID
-    login = LOGIN.replace("@","%40")
-    headers = scrapertools.get_headers_from_response("http://www.divxatope.com/index.php",post="login=%s&password=%s&Submit=ENTRAR" % (login,PASSWORD))
-    logger.info("headers="+str(headers))
-    request_headers=[ ["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:14.0) Gecko/20100101 Firefox/14.0.1"] ]
-    for header in headers:
-        if header[0]=="set-cookie":
-            #['set-cookie', 'PHPSESSID=d514b41a42fec11a7cae8bdb07fcef58; path=/']
-            #Cookie: PHPSESSID=82336dad3c64c9c4110e793aa54abc4a;
-            cookie_value = scrapertools.get_match(header[1],"PHPSESSID\=([a-z0-9]+)\;")
-            request_headers.append(["Cookie","PHPSESSID="+cookie_value])
+    # Descarga la pagina
+    item.url = item.url.replace("divxatope.com/descargar/","divxatope.com/ver-online/")
 
-    # Descarga la p·gina
-    data = scrapertools.cache_page(item.url,headers=request_headers)
+    '''
+    <div class="box1"><img src='http://www.divxatope.com/uploads/images/gestores/thumbs/1411605666_nowvideo.jpg' width='33' height='33'></div>
+    <div class="box2">nowvideo</div>
+    <div class="box3">Espa√±ol Castel</div>
+    <div class="box4">DVD-Screene</div>
+    <div class="box5"><a href="http://www.nowvideo.ch/video/affd21b283421" rel="nofollow" target="_blank">Ver Online</a></div>
+    '''
+    # Descarga la pagina
+    data = scrapertools.cachePage(item.url)
 
-    #logger.info("data="+data)
-    #<a id="downloadTorrent" class="btn-download-file_" style="padding:10px 0px 0px 30px;margin:0px 0px 0px 105px;font-size:21px;font-weight:bold;color:#fff;width:355px;height:38px;display:block;background:url('http://www.divxatope.com/images/btn-descarga-torrent.gif');" 
-    #href ="http://tumejorserie.com/redirectlink/index.php?domain=www-divx-com&link=uploads/torrents/attachments/7537_elementary_--_temporada_2_[hdtv][cap.223][espanol_castellano].torrent" title="7537_elementary_--_temporada_2_[hdtv][cap.223][espanol_castellano].torrent" target="_blank">Descargar Torrent</a>
-    # http://www.divxatope.com/uploads/torrents/attachments/7537_elementary_--_temporada_2_[hdtv][cap.223][espanol_castellano].torrent
-    link = scrapertools.find_single_match(data,'redirectlink/index.php\?domain=www-divx-com&link=(.*?\.torrent)')
-    if link!="":
-        link = "http://www.divxatope.com/"+link
-        logger.info("pelisalacarta.channels.divxatope torrent="+link)
-        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle = item.title, url=link , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
+    patron  = "<div class=\"box1\"[^<]+<img[^<]+</div[^<]+"
+    patron += '<div class="box2">([^<]+)</div[^<]+'
+    patron += '<div class="box3">([^<]+)</div[^<]+'
+    patron += '<div class="box4">([^<]+)</div[^<]+'
+    patron += '<div class="box5">(.*?)</div[^<]+'
+    patron += '<div class="box6">([^<]+)<'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
 
-    # Ahora busca los vÌdeos
-    itemlist.extend(servertools.find_video_items(data=data))
+    itemlist_ver = []
+    itemlist_descargar = []
 
-    for videoitem in itemlist:
-        videoitem.channel = __channel__
+    for servername,idioma,calidad,scrapedurl,comentarios in matches:
+        title = "Mirror en "+servername+" ("+calidad+")"+" ("+idioma+")"
+        if comentarios.strip()!="":
+            title = title + " ("+comentarios.strip()+")"
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = ""
+        plot = ""
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+        new_item = Item(channel=__channel__, action="extract_url", title=title , fulltitle = title, url=url , thumbnail=thumbnail , plot=plot , folder=True)
+        if comentarios.startswith("Ver en"):
+            itemlist_ver.append( new_item)
+        else:
+            itemlist_descargar.append( new_item )
 
-        fichero = scrapertools.get_filename_from_url(videoitem.url)
-        partes = fichero.split("/")
-        titulo = partes[ len(partes)-1 ]
-        videoitem.title = titulo + " - [" + videoitem.server+"]"
-        videoitem.fulltitle = item.fulltitle
+    for new_item in itemlist_ver:
+        itemlist.append(new_item)
+    
+    for new_item in itemlist_descargar:
+        itemlist.append(new_item)
+
+    if len(itemlist)==0:
+        itemlist = servertools.find_video_items(data=data)
+        for videoitem in itemlist:
+            videoitem.title = "Enlace encontrado en "+videoitem.server+" ("+scrapertools.get_filename_from_url(videoitem.url)+")"
+            videoitem.fulltitle = item.fulltitle
+            videoitem.thumbnail = item.thumbnail
+            videoitem.channel = __channel__
 
     return itemlist
 
-# VerificaciÛn autom·tica de canales: Esta funciÛn debe devolver "True" si todo est· ok en el canal.
+def extract_url(item):
+    logger.info("pelisalacarta.channels.divxatope extract_url")
+
+    itemlist = servertools.find_video_items(data=item.url)
+
+    for videoitem in itemlist:
+        videoitem.title = "Enlace encontrado en "+videoitem.server+" ("+scrapertools.get_filename_from_url(videoitem.url)+")"
+        videoitem.fulltitle = item.fulltitle
+        videoitem.thumbnail = item.thumbnail
+        videoitem.channel = __channel__
+
+    return itemlist    
+
+# Verificaci?n autom?tica de canales: Esta funci?n debe devolver "True" si todo est? ok en el canal.
 def test():
     bien = True
     
     # mainlist
     mainlist_items = mainlist(Item())
     
-    # Da por bueno el canal si alguno de los vÌdeos de "Novedades" devuelve mirrors
+    # Da por bueno el canal si alguno de los v?deos de "Novedades" devuelve mirrors
     for mainlist_item in mainlist_items:
         if "DVDRip Castellano" in mainlist_item.title:
             peliculas_items = lista(mainlist_item)
