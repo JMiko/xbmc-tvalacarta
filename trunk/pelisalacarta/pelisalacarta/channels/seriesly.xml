@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>seriesly</name>
-	<tag>30</tag>
-	<date>28/09/2014</date>
-	<changes>Mejora para sincronizar los vistos en la web con las series que hayas añadido desde el canal a la biblioteca (sólo para XBMC) (gracias a prunk)</changes>
+	<tag>31</tag>
+	<date>12/10/2014</date>
+	<changes>Corrige el que no se pueda acceder a algunas webs (gracias a prunk)</changes>
 </version>

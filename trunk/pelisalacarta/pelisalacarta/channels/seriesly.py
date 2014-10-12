@@ -568,10 +568,17 @@ def multiple_links(item):
 
 				if "plot" not in link : link["plot"]= " "
 
+				
+				url=""
+				if "op_data" in link:
+					if "url" in link:
+						url=link["op_data"]["url"]
+					
+
 				item=Item(channel=__channel__,
 							action = "play",
 							title = linktitle, 
-							 url = "",
+							 url = url,
 							thumbnail = item.thumbnail,
 							plot = link["plot"],
 							extra=link['video_url']+"?"+post,
@@ -622,8 +629,11 @@ def links(item):
         while(not exit and count < 5 and urlvideo==""):
             #A veces da error al intentar acceder
             try:
-                page = urllib2.urlopen(item.extra)
-                urlvideo = "\"" + page.geturl() + "\""
+                page = scrapertools.get_headers_from_response(item.extra)
+                logger.info(page)
+                for s in page:
+                	if "location" in s:
+		                urlvideo = "\"" + s[1] + "\""
                 exit = True
             except:
                 import traceback
@@ -1172,7 +1182,7 @@ def utilsMenu(item):
 	itemlist=[]
 	itemlist.append( Item(channel=__channel__, title="Borrar Temporales", action="deleteTemp", url="deleteTemp" ) )
 	try:
-		import xmbc
+		import xbmc
 		itemlist.append( Item(channel=__channel__, title="Marca como vistos (EXPERIMENTAL)", action="syncBibliteca", url="syncBibliteca" ) )
 	except:
 		pass
