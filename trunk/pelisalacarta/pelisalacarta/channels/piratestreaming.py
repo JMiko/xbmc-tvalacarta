@@ -29,7 +29,7 @@ def mainlist(item):
     itemlist = []
     itemlist.append( Item(channel=__channel__, title="Novità"     , action="peliculas", url="http://www.piratestreaming.com/film-aggiornamenti.php"))
     itemlist.append( Item(channel=__channel__, title="Per genere" , action="categorias", url="http://www.piratestreaming.com/"))
-    itemlist.append( Item(channel=__channel__, title="Cerca Film", action="search"))
+    itemlist.append( Item(channel=__channel__, title="Cerca", action="search"))
     return itemlist
     
 def search(item,texto):
@@ -129,6 +129,14 @@ def peliculas(item):
 
     for scrapedthumbnail,scrapedurl,scrapedtitle in matches:
         scrapedplot = ""
+        try:
+            res = urllib2.urlopen(scrapedurl)
+            daa = res.read()
+            da = daa.split('justify;">');
+            da = da[1].split('</p>')
+            scrapedplot = scrapertools.htmlclean(da[0]).strip()
+        except:
+            scrapedplot= "Trama non disponibile"
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
@@ -149,8 +157,16 @@ def peliculas(item):
     scrapertools.printMatches(matches)
 
     for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
-        scrapedplot = ""
-        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
+
+        try:
+            res = urllib2.urlopen(scrapedurl)
+            daa = res.read()
+            da = daa.split('justify;">');
+            da = da[1].split('</p>')
+            scrapedplot = scrapertools.htmlclean(da[0]).strip()
+        except:
+            scrapedplot= "Trama non disponibile"
+        if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], plot=["+scrapedplot+"], thumbnail=["+scrapedthumbnail+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     # Extrae el paginador
