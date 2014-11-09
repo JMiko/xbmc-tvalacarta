@@ -70,6 +70,7 @@ def do_search_results(tecleado):
 
     from pelisalacarta.channels import cineblog01
     itemlist.extend( cineblog01.search( Item() , tecleado) )
+    itemlist.extend( cineblog01.searchserie( Item() , tecleado) )
 
     from pelisalacarta.channels import cinetube
     itemlist.extend( cinetube.search( Item() , tecleado, "F") )
@@ -135,12 +136,8 @@ def do_search_results(tecleado):
     #from pelisalacarta.channels import seriesdanko
     #itemlist.extend( seriesdanko.search( Item() , tecleado) )
 
-    if config.get_setting("zampaseriesaccount")=="true":
-        from pelisalacarta.channels import zampaseries
-        itemlist.extend( zampaseries.search( Item() , tecleado) )
-
-    from pelisalacarta.channels import zpeliculas
-    itemlist.extend( zpeliculas.search( Item() , tecleado) )
+    from pelisalacarta.channels import veranime
+    itemlist.extend( veranime.search( Item() , tecleado) )
 
     itemlist.sort(key=lambda item: item.title.lower().strip())
     return itemlist
