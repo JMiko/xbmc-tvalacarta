@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta
 # XBMC Launcher (xbmc / xbmc-dharma / boxee)
@@ -22,7 +22,7 @@ def run():
     # Extract parameters from sys.argv
     params, fanart, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password = extract_parameters()
     logger.info("[launcher.py] fanart=%s, channel_name=%s, title=%s, fulltitle=%s, url=%s, thumbnail=%s, plot=%s, action=%s, server=%s, extra=%s, subtitle=%s, category=%s, show=%s, password=%s" % (fanart, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password))
-
+	
     try:
         # Accion por defecto - elegir canal
         if ( action=="selectchannel" ):
@@ -91,11 +91,7 @@ def run():
             if channel_name=="buscador":
                 import pelisalacarta.buscador as channel
             if channel_name=="personal" or channel_name=="personal2" or channel_name=="personal3" or channel_name=="personal4" or channel_name=="personal5":
-               Chann = config.get_setting("personalchannelurl"+channel_name[8:])
-               if Chann[-3:]=='.py' and os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , Chann):
-                  exec "import pelisalacarta.channels."+Chann[:-3]+" as channel"
-               else: 
-                  import pelisalacarta.channels.personal as channel
+                import pelisalacarta.channels.personal as channel
             elif os.path.exists( regular_channel_path ):
                 exec "import pelisalacarta.channels."+channel_name+" as channel"
             elif os.path.exists( regular_channel_path ):
@@ -303,6 +299,20 @@ def run():
                         itemlist = []
                     xbmctools.renderItems(itemlist, params, url, category)
 
+#For cineblog01
+                elif action=="searchserie":
+                    logger.info("[launcher.py] search")
+                    import xbmc
+                    keyboard = xbmc.Keyboard("")
+                    keyboard.doModal()
+                    if (keyboard.isConfirmed()):
+                        tecleado = keyboard.getText()
+                        tecleado = tecleado.replace(" ", "+")
+                        itemlist = channel.searchserie(item,tecleado)
+                    else:
+                        itemlist = []
+                    xbmctools.renderItems(itemlist, params, url, category)
+
                 else:
                     logger.info("[launcher.py] executing channel '"+action+"' method")
                     if action!="findvideos":
@@ -506,7 +516,7 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
     exec "episode_itemlist = channel."+action+"(item)"
 
     # Ordena los episodios para que funcione el filtro de first_episode
-    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title)
+    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title) 
 
     from servers import servertools
     from core import downloadtools
@@ -529,9 +539,6 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         if first_episode!="" and episode_title==first_episode:
             empezar = True
 
-        if episodio_ya_descargado(show_title,episode_title):
-            continue
-
         if not empezar:
             continue
 
@@ -549,7 +556,7 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         new_mirror_itemlist_6 = []
 
         for mirror_item in mirrors_itemlist:
-
+            
             # Si está en español va al principio, si no va al final
             if "(Español)" in mirror_item.title:
                 if best_server in mirror_item.title.lower():
@@ -626,3 +633,4 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
 
         if not descargado:
             logger.info("[launcher.py] download_all_episodes, EPISODIO NO DESCARGADO "+episode_title)
+
