@@ -100,7 +100,7 @@ def find_videos(text):
     
 	
 	#http://speedvideo.net/hs7djap7jwrw/Tekken.Kazuyas.Revenge.2014.iTALiAN.Subbed.DVDRiP.XViD.NeWZoNe.avi.html
-    patronvideos  = 'speedvideo.net/([A-Z0-9a-z]+)/'
+    patronvideos  = 'speedvideo.net/([A-Z0-9a-z]+)'
     logger.info("[speedvideo.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(text)
 
