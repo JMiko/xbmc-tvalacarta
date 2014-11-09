@@ -19,6 +19,7 @@ __category__ = "F,S,A"
 __type__ = "generic"
 __title__ = "Cineblog01 (IT)"
 __language__ = "IT"
+sito="http://www.cb01.tv"
 
 DEBUG = config.get_setting("debug")
 
@@ -28,15 +29,17 @@ def isGeneric():
 def mainlist(item):
     logger.info("[cineblog01.py] mainlist")
     itemlist = []
+	
 
     # Main options
-    itemlist.append( Item(channel=__channel__, action="peliculas"  , title="Film - Novità" , url="http://www.cineblog01.org/"))
-    itemlist.append( Item(channel=__channel__, action="menuvk"     , title="Film - VK senza blochi" , url="http://www.cineblog01.org/"))
-    itemlist.append( Item(channel=__channel__, action="menugeneros", title="Film - Per genere" , url="http://www.cineblog01.org/"))
-    itemlist.append( Item(channel=__channel__, action="menuanyos"  , title="Film - Per anno" , url="http://www.cineblog01.org/"))
+    itemlist.append( Item(channel=__channel__, action="peliculas"  , title="Film - Novita'" , url=sito))
+    #itemlist.append( Item(channel=__channel__, action="menuvk"     , title="Film - VK senza blochi" , url=sito))
+    itemlist.append( Item(channel=__channel__, action="menugeneros", title="Film - Per genere" , url=sito))
+    itemlist.append( Item(channel=__channel__, action="menuanyos"  , title="Film - Per anno" , url=sito))
     itemlist.append( Item(channel=__channel__, action="search"     , title="Film - Cerca" ))
-    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Serie" , url="http://www.cineblog01.info/serietv/" ))
-    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Anime" , url="http://www.cineblog01.info/anime/" ))
+    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Serie Tv" , url=sito+"/serietv/" ))
+    itemlist.append( Item(channel=__channel__, action="searchserie", title="Serie Tv - Cerca" ))
+    itemlist.append( Item(channel=__channel__, action="listserie"  , title="Anime" , url=sito+"/anime/" ))
 
     return itemlist
 
@@ -117,9 +120,23 @@ def menuanyos(item):
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto):
     logger.info("[cineblog01.py] "+item.url+" search "+texto)
-    item.url = "http://www.cineblog01.net/?s="+texto
+    item.url = "http://www.cb01.tv/?s="+texto
     try:
         return peliculas(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
+
+# Search serie 
+# by be4t5
+def searchserie(item,texto):
+    logger.info("[cineblog01.py] "+item.url+" search "+texto)
+    item.url = "http://www.cb01.tv/serietv/?s="+texto
+    try:
+        return listserie(item)
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys
@@ -131,7 +148,7 @@ def listcat(item):
     logger.info("[cineblog01.py] mainlist")
     itemlist = []
     if item.url =="":
-        item.url = "http://cineblog01.com/"
+        item.url = sito
         
     # Descarga la página
     data = scrapertools.cache_page(item.url)
@@ -154,7 +171,7 @@ def listcat(item):
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot))
 
     # Remove the next page mark
-    patronvideos = '<a href="(http://www.cineblog01.com/category/[0-9a-zA-Z]+/page/[0-9]+/)">Avanti >'
+    patronvideos = '<a href="(http://www.cb01.tv/category/[0-9a-zA-Z]+/page/[0-9]+/)">Avanti >'
     patronvideos += '/page/[0-9]+/)">Avanti >'
     matches = re.compile (patronvideos, re.DOTALL).findall (data)
     scrapertools.printMatches (matches)
@@ -174,7 +191,7 @@ def peliculas(item):
     itemlist = []
 
     if item.url =="":
-        item.url = "http://cineblog01.com/"
+        item.url = sito
 
     # Descarga la página
     data = scrapertools.cache_page(item.url)
@@ -192,10 +209,11 @@ def peliculas(item):
         scrapedtitle = scrapertools.unescape(match[2])
         scrapedurl = urlparse.urljoin(item.url,match[1])
         scrapedthumbnail = urlparse.urljoin(item.url,match[0])
+        scrapedthumbnail = scrapedthumbnail.replace(" ", "%20");
         scrapedplot = scrapertools.unescape(match[3])
         scrapedplot = scrapertools.htmlclean(scrapedplot).strip()
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie_with_plot"))
+        itemlist.append( Item(channel=__channel__, action="findvideos" , title=scrapedtitle , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot, viewmode="movie_with_plot", fanart=scrapedthumbnail))
 
     # Next page mark
     try:
@@ -207,7 +225,7 @@ def peliculas(item):
         scrapertools.printMatches (matches)
     
         if len(matches)>0:
-            scrapedtitle = ">> Next page"
+            scrapedtitle = ">> Avanti"
             scrapedurl = matches[0]
             scrapedthumbnail = ""
             scrapedplot = ""
