@@ -34,7 +34,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     page = page.split('file: "')
     link = page[1].split('"')
 
-    video_urls.append(["[junkyvideo]" + link[0] ,link[0]])
+    video_urls.append(["[junkyvideo]" ,link[0]])
     
     return video_urls
 
