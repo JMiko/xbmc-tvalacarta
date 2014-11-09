@@ -72,8 +72,8 @@ def search(item,texto):
     logger.info("[italiafilm.py] search "+texto)
     itemlist = []
     texto = texto.replace(" ","%20")
-    item.url = "http://italiafilm.tv"
-    item.extra = "do=search&subaction=search&story="+texto+"&x=0&y=0"
+    item.url = "http://italiafilm.tv/?s="+texto
+    #item.extra = "s="+texto
 
     try:
         return peliculas(item)
@@ -96,9 +96,11 @@ def peliculas(item):
     for match in matches:
 
         title = scrapertools.find_single_match(match,'<h3[^<]+<a href="[^"]+"[^<]+>([^<]+)</a>')
+        title = scrapertools.htmlclean(title).strip()
         url = scrapertools.find_single_match(match,'<h3[^<]+<a href="([^"]+)"')
         plot = scrapertools.find_single_match(match,'<p class="summary">(.*?)</p>')
-        thumbnail = scrapertools.find_single_match(match,'<img src="([^"]+)"')
+        plot = scrapertools.htmlclean(plot).strip()
+        thumbnail = scrapertools.find_single_match(match,'data-echo="([^"]+)"')
 
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
 
