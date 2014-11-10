@@ -91,7 +91,11 @@ def run():
             if channel_name=="buscador":
                 import pelisalacarta.buscador as channel
             if channel_name=="personal" or channel_name=="personal2" or channel_name=="personal3" or channel_name=="personal4" or channel_name=="personal5":
-                import pelisalacarta.channels.personal as channel
+                Chann = config.get_setting("personalchannelurl"+channel_name[8:])
+                if Chann[-3:]=='.py' and os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , Chann):
+                   exec "import pelisalacarta.channels."+Chann[:-3]+" as channel"
+                else:
+                   import pelisalacarta.channels.personal as channel
             elif os.path.exists( regular_channel_path ):
                 exec "import pelisalacarta.channels."+channel_name+" as channel"
             elif os.path.exists( regular_channel_path ):
@@ -295,20 +299,6 @@ def run():
                         tecleado = keyboard.getText()
                         tecleado = tecleado.replace(" ", "+")
                         itemlist = channel.search(item,tecleado)
-                    else:
-                        itemlist = []
-                    xbmctools.renderItems(itemlist, params, url, category)
-
-#For cineblog01
-                elif action=="searchserie":
-                    logger.info("[launcher.py] search")
-                    import xbmc
-                    keyboard = xbmc.Keyboard("")
-                    keyboard.doModal()
-                    if (keyboard.isConfirmed()):
-                        tecleado = keyboard.getText()
-                        tecleado = tecleado.replace(" ", "+")
-                        itemlist = channel.searchserie(item,tecleado)
                     else:
                         itemlist = []
                     xbmctools.renderItems(itemlist, params, url, category)
@@ -538,6 +528,9 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
 
         if first_episode!="" and episode_title==first_episode:
             empezar = True
+
+        if episodio_ya_descargado(show_title,episode_title):
+            continue
 
         if not empezar:
             continue

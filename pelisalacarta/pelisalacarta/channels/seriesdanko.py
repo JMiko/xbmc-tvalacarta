@@ -31,7 +31,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[seriesdanko.py] mainlist")
+    logger.info("pelisalacarta.channels.seriesdanko mainlist")
     item.url = 'http://seriesdanko.com/'
 
     itemlist = []
@@ -43,15 +43,13 @@ def mainlist(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("[seriesdanko.py] search")
-    item.url = "http://seriesdanko.com/gestion/pag_search.php"
-    
-    data = scrapertools.cache_page(item.url,post='q='+texto)
-    
-    return series(item,data)
+    logger.info("pelisalacarta.channels.seriesdanko search")
+    item.url = "http://seriesdanko.com/pag_search.php?q1="+texto
+
+    return series(item)
 
 def novedades(item):
-    logger.info("[seriesdanko.py] novedades")
+    logger.info("pelisalacarta.channels.seriesdanko novedades")
 
     itemlist = []
     extra = ""
@@ -94,7 +92,7 @@ def novedades(item):
     return itemlist
 
 def allserieslist(item):
-    logger.info("[seriesdanko.py] allserieslist")
+    logger.info("pelisalacarta.channels.seriesdanko allserieslist")
 
     Basechars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     BaseUrl = "http://seriesdanko.com/series.php?id=%s"
@@ -137,7 +135,7 @@ def allserieslist(item):
     return itemlist
 
 def letras(item):
-    logger.info("[seriesdanko.py] letras")
+    logger.info("pelisalacarta.channels.seriesdanko letras")
 
     itemlist=[]
     alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -163,7 +161,7 @@ def detalle_programa(item):
     return item
 
 def series(item,data=""):
-    logger.info("[seriesdanko.py] series")
+    logger.info("pelisalacarta.channels.seriesdanko series")
     itemlist = []
     
     # Descarga la página
@@ -202,7 +200,7 @@ def series(item,data=""):
     return itemlist
 
 def episodios(item):
-    logger.info("[seriesdanko.py] episodios")
+    logger.info("pelisalacarta.channels.seriesdanko episodios")
     
     if config.get_platform()=="xbmc" or config.get_platform()=="xbmcdharma":
         import xbmc
@@ -333,7 +331,7 @@ def episodios(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[seriesdanko.py] findvideos")
+    logger.info("pelisalacarta.channels.seriesdanko findvideos")
     
     # Descarga la página
     if config.get_platform()=="xbmceden":
@@ -406,7 +404,7 @@ def findvideos(item):
     return itemlist
 
 def play(item):
-    logger.info("[seriesdanko.py] play (url="+item.url+", server="+item.server+")" )
+    logger.info("pelisalacarta.channels.seriesdanko play (url="+item.url+", server="+item.server+")" )
 
     # Descarga la página
     if "seriesdanko" in item.url:

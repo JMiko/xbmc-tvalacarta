@@ -25,8 +25,11 @@ def get_video_url( page_url , premium = False , user="" , password="" , video_pa
     file_parameter = scrapertools.find_single_match(data,'flashvars\.file="([^"]+)"')
     logger.info("file_parameter="+file_parameter)
 
-    filekey_parameter = scrapertools.find_single_match(data,'fkz\="([^"]+)"')
+    filekey_parameter = scrapertools.find_single_match(data,'flashvars.filekey\="([^"]+)"')
     logger.info("filekey_parameter="+filekey_parameter)
+    if filekey_parameter=="":
+        filekey_parameter = scrapertools.find_single_match(data,'fkz="([^"]+)"')
+        logger.info("filekey_parameter="+filekey_parameter)
     #88%2E0%2E189%2E203%2Dd3cb0515a1ed66e5b297da999ed23b42%2D
     filekey_parameter = filekey_parameter.replace(".","%2E")
     filekey_parameter = filekey_parameter.replace("-","%2D")

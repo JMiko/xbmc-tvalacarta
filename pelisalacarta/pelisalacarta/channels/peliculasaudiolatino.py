@@ -39,7 +39,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Listado por géneros" , action="generos", url="http://www.peliculasaudiolatino.tv"))
     itemlist.append( Item(channel=__channel__, title="Listado por años" , action="anyos", url="http://www.peliculasaudiolatino.tv"))
     
-    itemlist.append( Item(channel=__channel__, title="Buscar" , action="search") )
+    itemlist.append( Item(channel=__channel__, title="Buscar..." , action="search") )
     return itemlist
 
 def peliculas(item):
@@ -101,10 +101,10 @@ def generos(item):
     data = scrapertools.cachePage(item.url)
 
     # Limita el bloque donde buscar
-    data = scrapertools.find_single_match(data,'<h2>GENEROS</h2>(.*?)</ul>')
+    data = scrapertools.find_single_match(data,'<span>Generos</span>(.*?)</div>')
 
     # Extrae las entradas
-    patron = '<li><a href="(/genre[^"]+)"[^>]+>([^<]+)</a></li>'
+    patron = '<li><a href="(http://www.peliculasaudiolatino.tv/genre[^"]+)"><span>([^<]+)</span></a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
                                           
@@ -152,12 +152,34 @@ def anyos(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    logger.info("channels.peliculasaudiolatino data="+data)
 
     # Limita el bloque donde buscar
-    #data = scrapertools.find_single_match(data,"<h4>Alfabeticamente </h4><br[^<]+<center>(.*?)</center>")
+    '''
+    <span>Ultimos A&ntilde;os</span></a>
+    <div class="columns two">
+    <ul class="one">
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2014.html"><span>2014</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2013.html"><span>2013</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2012.html"><span>2012</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2011.html"><span>2011</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2010.html"><span>2010</span></a>
+    </ul>
+    <ul class="two">
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2009.html"><span>2009</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2008.html"><span>2008</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2007.html"><span>2007</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2006.html"><span>2006</span></a>
+    <li><a href="http://www.peliculasaudiolatino.tv/year/2005.html"><span>2005</span></a>
+    </ul>
+    </div>
+
+    '''
+    data = scrapertools.find_single_match(data,"<span>Ultimos A.ntilde.os</span>(.*?)</div>")
+    logger.info("channels.peliculasaudiolatino data="+data)
 
     # Extrae las entradas
-    patron = '<a href="(/year[^"]+)[^>]+>([^<]+)</a>'
+    patron = '<li><a href="(http://www.peliculasaudiolatino.tv/year[^"]+)"><span>([^<]+)</span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if (DEBUG): scrapertools.printMatches(matches)
                                           
@@ -259,6 +281,8 @@ def play(item):
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/divxstage.php?url=","http://www.divxstage.net/video/")
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/tumi.php?url=","http://www.tumi.tv/")
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/playerto.php?url=","http://played.to/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/videoweed.php?url=","http://www.videoweed.es/file/");
+
     data2 = data2.replace("%26","&")
     logger.info("data2="+data2)
 

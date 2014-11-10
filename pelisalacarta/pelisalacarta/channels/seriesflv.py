@@ -316,13 +316,21 @@ def findvideos(item):
     <td width="84"><a href="http://www.seriesflv.net/goto/" data-key="qXFa+2QrDcOkQxTBiRWMDvjw9twofrTPwY6R3IV1tEU=" rel="nofollow" target="_blank" title="Reproducir..." class="btn btn-primary btn-xs bg2 enlace_link"><i class="glyphicon glyphicon-play"></i> Reproducir</a></td>
     <td width="96" class="usuario"><a href="http://www.seriesflv.net/usuario/natzuflv/" rel="nofollow" class="color1">Natzuflv</a></td>
     <td width="200">Hace 3 horas | </td>
+
+    <td width="45"><img width="20" src="http://www.seriesflv.net/images/lang/sub.png"></td>
+    <td width="86">2014-03-22</td>
+    <td width="134" style="text-align:left;"><img width="16" src="http://www.google.com/s2/favicons?domain=nowdownload.ch"> nowdownload</td>
+    <td width="84"><a href="http://www.seriesflv.net/goto/" rel="nofollow" target="_blank" title="Descargar...!" data-key="eZMOyiO7JKrg7YI9FegHR97/raBhS4x3qa1gc9S0yVQ=" class="btn btn-primary btn-xs bg2 enlace_link"><i class="glyphicon glyphicon-cloud-download"></i> Descargar</a></td>
+    <td width="96" class="usuario"><a href="http://www.seriesflv.net/usuario/mayaflv/" rel="nofollow" class="color1">MayaFLV</a></td>
+    <td width="200">Hace 7 meses | </td>
+
     '''
 
     patron  = '<tr[^<]+'
     patron += '<td[^<]+<img width="\d+" src="([^"]+)"></td[^<]+'
     patron += '<td[^<]+</td[^<]+'
     patron += '<td[^<]+<img[^>]+>([^<]+)</td[^<]+'
-    patron += '<td[^<]+<a href="([^"]+)" data-key="([^"]+)"[^<]+<i[^<]+</i[^<]+</a></td[^<]+'
+    patron += '<td[^<]+<a href="([^"]+)".*?data-key="([^"]+)"[^<]+<i[^<]+</i[^<]+</a></td[^<]+'
     patron += '<td[^<]+<a[^<]+</a></td[^<]+'
     patron += '<td[^>]+>([^<]+)</td>'
     matches = re.compile(patron,re.DOTALL).findall(data)

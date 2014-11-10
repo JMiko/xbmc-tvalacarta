@@ -31,7 +31,6 @@ def mainlist(item):
     itemlist = []
 
     itemlist.append( Item(channel=__channel__, action="novedades_episodios" , title="Últimos capítulos agregados"    , url="http://vertelenovelas.net/"))
-    itemlist.append( Item(channel=__channel__, action="series"              , title="Últimas telenovelas agregadas"  , url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="emision"             , title="Lista de telenovelas en emisión", url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="todas"               , title="Lista completa"                 , url="http://vertelenovelas.net/"))
     itemlist.append( Item(channel=__channel__, action="letras"              , title="Lista alfabética"               , url="http://vertelenovelas.net/"))
@@ -44,77 +43,21 @@ def novedades_episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    patron  = '<div class="not"><div class="tova"></div><a href="([^"]+)" title="([^"]+)"[^<]+'
-    patron += '<img class="[^"]+" src="([^"]+)"'
+    patron  = '<div class="premiere"[^<]+'
+    patron += '<div class="new"></div[^<]+'
+    patron += '<a href="([^"]+)"[^<]+'
+    patron += '<img class="cart feel" src="([^"]+)" alt="([^"]+)"[^<]+'
+    patron += '<span class="tit_ep tit">([^<]+)</span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
-    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        title = scrapedtitle.strip()
-        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
+    for scrapedurl,scrapedthumbnail,serie,scrapedtitle in matches:
+        title = serie+" "+scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapedthumbnail
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title , url=url , thumbnail=thumbnail, viewmode="movie", folder=True) )
 
-    return itemlist
-
-def series(item):
-    logger.info("[vertelenovelas.py] series")
-    itemlist = []
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    patron  = '<div class="not1"><a href="([^"]+)" title="([^"]+)"[^<]+'
-    patron += '<img class="[^"]+" src="([^"]+)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        title = scrapedtitle.strip()
-        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        url = urlparse.urljoin("http://vertelenovelas.net",scrapedurl)
-        thumbnail = scrapedthumbnail
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
-        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail, viewmode="movie", folder=True) )
-
-    if len(itemlist)==0:
-        patron  = '<article[^<]+'
-        patron += '<a href="([^"]+)"[^<]+'
-        patron += '<header>([^<]+)</header[^<]+'
-        patron += '<figure><img src="([^"]+)"'
-
-        matches = re.compile(patron,re.DOTALL).findall(data)
-        if DEBUG: scrapertools.printMatches(matches)
-
-        for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-            title = scrapedtitle.strip()
-            title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
-            url = urlparse.urljoin("http://vertelenovelas.net",scrapedurl)
-            thumbnail = scrapedthumbnail
-            if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
-            itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail, viewmode="movie", folder=True) )
-
-    return itemlist
-
-def canales(item):
-    logger.info("[vertelenovelas.py] canales")
-    itemlist = []
-
-    # Descarga la página
-    data = scrapertools.cachePage(item.url)
-
-    data = scrapertools.get_match(data,'<div class="ctit">TELENOVELAS POR CANALAES DE TELEVISION(.*?)</ul>')
-    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-
-    for scrapedurl,scrapedtitle in matches:
-        title = scrapedtitle.strip()
-        url = urlparse.urljoin(item.url,scrapedurl)
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
-        itemlist.append( Item(channel=__channel__, action="series", title=title , url=url , folder=True) )
-    
     return itemlist
 
 def letras(item):
@@ -123,8 +66,10 @@ def letras(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(data,'<div id="abc">(.*?)</ul>')
 
-    patron  = '<li class="menu-gen"><a href="(letra[^"]+)[^>]+>([^<]+)</a></li>'
+    #<li class="abc"><a href="letra/a/" title="Telenovelas que comienzan con la Letra A">A</a></li>
+    patron  = '<li[^<]+<a href="(letra[^"]+)[^>]+>([^<]+)</a></li>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -142,9 +87,13 @@ def episodios(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<ul class="anime_episodios"(.*?)</ul>')
-    #<li><a href="ver/rafaela-119.html">Capitulo 119</a></li>
-    patron  = '<li><a href="([^"]+)">([^<]+)</a>'
+
+    try:
+        data = scrapertools.get_match(data,'<div id="scroollllable"(.*?)</ul>')
+        patron  = '<li><a href="([^"]+)"><i class="fx icon-play"></i>([^<]+)</a>'
+    except:
+        patron  = '<li><a href="([^"]+)">([^<]+)</a>'
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -200,9 +149,8 @@ def todas(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<h2 class="title">Lista de Telenovelas</h2>(.*?)</ul>')
-    #<li><a href="abrazame-muy-fuerte.html" title="Abrazame muy fuerte" class="     El Canal de las es">Abrazame muy fuerte</a></li><li><a href="acorralada.html" title="Acorralada" class="Estados Unidos">Acorralada</a></li><li><a href="al-diablo-con-los-
-    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a>'
+    data = scrapertools.get_match(data,'<ul class="ntop">(.*?)</ul>')
+    patron  = '<li[^<]+<a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -220,8 +168,9 @@ def emision(item):
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<h2 class="title">Telenovelas en Emision</h2>(.*?)</ul>')
-    patron  = '<li><a href="([^"]+)[^>]+>([^<]+)</a></li>'
+
+    data = scrapertools.get_match(data,'<ul class="nemi">(.*?)</ul>')
+    patron  = '<li[^<]+<a href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if DEBUG: scrapertools.printMatches(matches)
 
@@ -233,18 +182,26 @@ def emision(item):
     
     return itemlist
 
-# Verificación automática de canales: Esta función debe devolver "True" si está ok el canal.
-def test():
+def series(item):
+    logger.info("[vertelenovelas.py] series")
+    itemlist=[]
 
-    # mainlist
-    mainlist_items = mainlist(Item())
-    novedades_items = novedades_episodios(mainlist_items[1])
-    # Da por bueno el canal si alguno de los vídeos de "Novedades" devuelve mirrors
-    bien = False
-    for singleitem in novedades_items:
-        mirrors = findvideos( item=singleitem )
-        if len(mirrors)>0:
-            bien = True
-            break
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
 
-    return bien
+    patron  = '<div class="novels"[^<]+'
+    patron += '<div[^<]+</div[^<]+'
+    patron += '<a href="([^"]+)"><img class="[^"]+" src="([^"]+)"[^<]+'
+    patron += '<span class="tit_no tit ellipsis">([^<]+)</span'
+    
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    if DEBUG: scrapertools.printMatches(matches)
+
+    for scrapedurl,scrapedthumbnail,scrapedtitle in matches:
+        title = scrapedtitle.strip()
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        if (DEBUG): logger.info("title=["+title+"], url=["+url+"]")
+        itemlist.append( Item(channel=__channel__, action="episodios", title=title , url=url , thumbnail=thumbnail, folder=True) )
+    
+    return itemlist

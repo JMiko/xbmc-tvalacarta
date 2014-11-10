@@ -105,6 +105,7 @@ class Unbaser(object):
                 raise TypeError('Unsupported base encoding.')
 
             self.unbase = self._dictunbaser
+        print "self.dictionary=", self.dictionary
 
     def __call__(self, string):
         return self.unbase(string)

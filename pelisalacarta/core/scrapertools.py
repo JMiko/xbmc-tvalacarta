@@ -29,7 +29,7 @@ logger.info("[scrapertools.py] init")
 
 # True - Muestra las cabeceras HTTP en el log
 # False - No las muestra
-DEBUG_LEVEL = True
+DEBUG_LEVEL = False
 
 CACHE_ACTIVA = "0"  # Automatica
 CACHE_SIEMPRE = "1" # Cachear todo
@@ -894,9 +894,10 @@ def htmlclean(cadena):
     cadena = cadena.replace("<tr>","")
     cadena = cadena.replace("</tr>","")
     cadena = cadena.replace("<![CDATA[","")
-    cadena = cadena.replace("<Br />","")
-    cadena = cadena.replace("<BR />","")
-    cadena = cadena.replace("<Br>","")
+    cadena = cadena.replace("<Br />"," ")
+    cadena = cadena.replace("<BR />"," ")
+    cadena = cadena.replace("<Br>"," ")
+    cadena = re.compile("<br[^>]*>",re.DOTALL).sub(" ",cadena)
 
     cadena = re.compile("<script.*?</script>",re.DOTALL).sub("",cadena)
 
@@ -959,8 +960,6 @@ def htmlclean(cadena):
     
     cadena = re.compile("<img[^>]*>",re.DOTALL).sub("",cadena)
     
-    cadena = re.compile("<br[^>]*>",re.DOTALL).sub("",cadena)
-
     cadena = re.compile("<object[^>]*>",re.DOTALL).sub("",cadena)
     cadena = cadena.replace("</object>","")
     cadena = re.compile("<param[^>]*>",re.DOTALL).sub("",cadena)

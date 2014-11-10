@@ -50,23 +50,6 @@ def find_videos(text):
     encontrados = set()
     devuelve = []
 
-    # http://www.tumi.tv/rzy0xuus6esv
-    patronvideos  = 'tumi.tv/([a-z0-9]+)'
-    logger.info("pelisalacarta.tumitv find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(text)
-
-    for match in matches:
-        titulo = "[tumi.tv]"
-        if match!="iframe":
-            #url = "http://www.tumi.tv/iframe-"+match+"-600x400.html"
-            url = "http://www.tumi.tv/embed-"+match+".html"
-            if url not in encontrados:
-                logger.info("  url="+url)
-                devuelve.append( [ titulo , url , 'tumitv' ] )
-                encontrados.add(url)
-            else:
-                logger.info("  url duplicada="+url)
-
     # http://www.tumi.tv/iframe-rzy0xuus6esv-600x400.html
     patronvideos  = 'tumi.tv/iframe-([a-z0-9]+)'
     logger.info("pelisalacarta.tumitv find_videos #"+patronvideos+"#")
@@ -83,5 +66,21 @@ def find_videos(text):
         else:
             logger.info("  url duplicada="+url)
 
+    # http://www.tumi.tv/rzy0xuus6esv
+    patronvideos  = 'tumi.tv/([a-z0-9]+)'
+    logger.info("pelisalacarta.tumitv find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+
+    for match in matches:
+        titulo = "[tumi.tv]"
+        if match!="iframe":
+            #url = "http://www.tumi.tv/iframe-"+match+"-600x400.html"
+            url = "http://www.tumi.tv/embed-"+match+".html"
+            if url not in encontrados:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'tumitv' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
     return devuelve

@@ -31,7 +31,23 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Categorie film", action="categorias", url="http://www.filmpertutti.eu", extra="Categorie Film"))
     itemlist.append( Item(channel=__channel__, title="Serie TV" , action="categorias", url="http://www.filmpertutti.eu", extra="Serie Tv"))
     itemlist.append( Item(channel=__channel__, title="Anime Cartoon", action="categorias", url="http://www.filmpertutti.eu", extra="Anime Cartoon"))
+    itemlist.append( Item(channel=__channel__, title="Search...", action="search"))
     return itemlist
+
+def search(item,texto):
+    logger.info("pelisalacarta.filmpertutti search")
+    if item.url=="":
+        item.url="http://www.filmpertutti.eu/search/"
+    texto = texto.replace(" ","+")
+    item.url = item.url+texto
+    try:
+        return peliculas(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def categorias(item):
     itemlist = []

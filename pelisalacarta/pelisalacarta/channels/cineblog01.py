@@ -38,7 +38,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="menuanyos"  , title="Film - Per anno" , url=sito))
     itemlist.append( Item(channel=__channel__, action="search"     , title="Film - Cerca" ))
     itemlist.append( Item(channel=__channel__, action="listserie"  , title="Serie Tv" , url=sito+"/serietv/" ))
-    itemlist.append( Item(channel=__channel__, action="searchserie", title="Serie Tv - Cerca" ))
+    itemlist.append( Item(channel=__channel__, action="search", title="Serie Tv - Cerca" , extra="serie"))
     itemlist.append( Item(channel=__channel__, action="listserie"  , title="Anime" , url=sito+"/anime/" ))
 
     return itemlist
@@ -120,23 +120,16 @@ def menuanyos(item):
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
 def search(item,texto):
     logger.info("[cineblog01.py] "+item.url+" search "+texto)
-    item.url = "http://www.cb01.tv/?s="+texto
-    try:
-        return peliculas(item)
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        return []
 
-# Search serie 
-# by be4t5
-def searchserie(item,texto):
-    logger.info("[cineblog01.py] "+item.url+" search "+texto)
-    item.url = "http://www.cb01.tv/serietv/?s="+texto
     try:
-        return listserie(item)
+
+        if item.extra=="serie":
+            item.url = "http://www.cb01.tv/serietv/?s="+texto
+            return listserie(item)
+        else:
+            item.url = "http://www.cb01.tv/?s="+texto
+            return peliculas(item)
+
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys

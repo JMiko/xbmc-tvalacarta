@@ -25,27 +25,43 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[oranline.py] mainlist")
+    logger.info("pelisalacarta.channels.oranline mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas"    , title="Peliculas"    , url="http://www.oranline.com/" ))
-    itemlist.append( Item(channel=__channel__ , action="novedades"    , title="Documentales" , url="http://oranline.com/Pel%C3%ADculas/documentales/" ))
+    itemlist.append( Item(channel=__channel__ , action="menupeliculas" , title="Peliculas" , url="http://www.oranline.com/" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas" , title="Documentales" , url="http://oranline.com/Pel%C3%ADculas/documentales/" ))
+    itemlist.append( Item(channel=__channel__ , action="search" , title="Buscar..." ))
 
     return itemlist
+
+def menupeliculas(item):
+    logger.info("pelisalacarta.channels.oranline menupeliculas")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__ , action="peliculas" , title="Novedades" , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="letras"    , title="Todas por orden alfabético" , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="generos"   , title="Últimas por géneros" , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+    itemlist.append( Item(channel=__channel__ , action="idiomas"   , title="Últimas por idioma" , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
+
+    return itemlist
+
+def search(item,texto):
+    logger.info("pelisalacarta.channels.oranline search")
+    if item.url=="":
+        item.url="http://www.oranline.com/?s="
+    texto = texto.replace(" ","+")
+    item.url = item.url+texto
+    try:
+        return peliculas(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def peliculas(item):
-    logger.info("[oranline.py] peliculas")
-
-    itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="novedades"    , title="Novedades"    , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
-    itemlist.append( Item(channel=__channel__ , action="letras"       , title="Alfabético"   , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
-    itemlist.append( Item(channel=__channel__ , action="generos"      , title="Géneros"      , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
-    itemlist.append( Item(channel=__channel__ , action="idiomas"      , title="Idiomas"      , url="http://oranline.com/Pel%C3%ADculas/peliculas/" ))
-
-    return itemlist
-
-def novedades(item):
-    logger.info("[oranline.py] novedades")
+    logger.info("pelisalacarta.channels.oranline peliculas")
     itemlist = []
 
     # Descarga la página
@@ -119,11 +135,11 @@ def novedades(item):
 
     try:
         next_page = scrapertools.get_match(data,"<a href='([^']+)'>\&rsaquo\;</a>")
-        itemlist.append( Item(channel=__channel__, action="novedades", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page) , folder=True) )
     except:
         try:
             next_page = scrapertools.get_match(data,"<span class='current'>\d+</span><a href='([^']+)'")
-            itemlist.append( Item(channel=__channel__, action="novedades", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page) , folder=True) )
+            itemlist.append( Item(channel=__channel__, action="peliculas", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page) , folder=True) )
         except:
             pass
         pass
@@ -131,7 +147,7 @@ def novedades(item):
     return itemlist
 
 def letras(item):
-    logger.info("[oranline.py] letras")
+    logger.info("pelisalacarta.channels.oranline letras")
     itemlist = []
 
     # Descarga la página
@@ -149,12 +165,12 @@ def letras(item):
         thumbnail=""
         plot=""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 
     return itemlist
 
 def generos(item):
-    logger.info("[oranline.py] generos")
+    logger.info("pelisalacarta.channels.oranline generos")
     itemlist = []
 
     # Descarga la página
@@ -173,12 +189,12 @@ def generos(item):
         thumbnail=""
         plot=""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 
     return itemlist
 
 def idiomas(item):
-    logger.info("[oranline.py] idiomas")
+    logger.info("pelisalacarta.channels.oranline idiomas")
     itemlist = []
 
     '''
@@ -209,12 +225,12 @@ def idiomas(item):
         thumbnail=""
         plot=""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="novedades", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title=title , url=url , thumbnail=thumbnail , plot=plot , folder=True) )
 
     return itemlist
 
 def get_main_page(url):
-    logger.info("[oranline.py] get_main_page")
+    logger.info("pelisalacarta.channels.oranline get_main_page")
 
     headers=[]
     headers.append(["User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"])
@@ -224,56 +240,7 @@ def get_main_page(url):
 
     # Descarga la página
     data = scrapertools.cachePage(url,headers=headers)
-    #logger.info("[oranline.py] data="+data)
-
-    '''
-    <form id="ChallengeForm" action="http://oranline.com/Pel%C3%ADculas/peliculas/" method="POST">
-    <input type="hidden" name="act" value="jschl"/>
-    <input type="hidden" name="jschl_vc" value="4b00fc195c8b540eff250c29db58a1ca"/>
-    <input type="hidden" id="jschl_answer" name="jschl_answer"/>
-    </form>
-    '''
-    if '<form id="ChallengeForm"' in data:
-        logger.info("[oranline.py] versión protegida")
-
-        # Prepara las cabeceras
-        headers.append(["Referer",url])
-        
-        # Prepara el post
-        #act=jschl&jschl_vc=ca5de909bd9058f267a3ef41ead567b7&jschl_answer=77
-        #var t,r,a;
-        #t = document.createElement('div'); t.innerHTML="<a href='/'>x</a>"; t = t.firstChild.href;
-        #r = t.match(/https?:\/\//)[0]; t = t.substr(r.length); t = t.substr(0,t.length-1);
-        #a = $('#jschl_answer');
-        #a.val(22+14*3);
-        #64
-        #l=13
-        #a.val(parseInt(a.val())+t.length);
-
-        #a.val(32+14*6);
-        #116
-        #l=13
-        #act=jschl&jschl_vc=b72895c6482d3b84ebc0f4c2fecad311&jschl_answer=129
-
-        url = scrapertools.get_match(data,'<form id="ChallengeForm" action="([^"]+)"')
-        act=scrapertools.get_match(data,'<input type="hidden" name="act" value="([^"]+)"')
-        jschl_vc=scrapertools.get_match(data,'<input type="hidden" name="jschl_vc" value="([^"]+)"')
-        jschl_answer=scrapertools.get_match(data,'a.val\(([^\)]+)\)')
-        jschl_answer=str(eval(jschl_answer)+13)
-
-        try:
-            import xmbctools
-            xmbctools.handle_wait(6,"Espera 5 segundos","Para acceder a oranline tienes que esperar 5 segundos")
-        except:
-            import time
-            time.sleep(6)
-        post = urllib.urlencode({'act':act,'jschl_vc':jschl_vc,'jschl_answer':jschl_answer})
-
-        # Llama
-        data = scrapertools.cache_page(url,post=post,headers=headers)
-    else:
-        logger.info("[oranline.py] versión normal")
-
+    #logger.info("pelisalacarta.channels.oranline data="+data)
 
     return data
 

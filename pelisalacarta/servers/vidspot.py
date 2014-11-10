@@ -7,18 +7,27 @@
 
 import urlparse,urllib2,urllib,re
 import os
+import re
 
 from core import scrapertools
 from core import logger
 from core import config
-from core import unpackerjs,unpackerjs3
 
 def test_video_exists( page_url ):
     logger.info("[vidspot.py] test_video_exists(page_url='%s')" % page_url)
 
+    # No existe / borrado: http://vidspot.net/8jcgbrzhujri
     data = scrapertools.cache_page(page_url)
-    if "File was deleted" in data:
-        return False,"Ha sido borrado de vidspot"
+    #logger.info("data="+data)
+    if "<b>File Not Found</b>" in data or "<b>Archivo no encontrado</b>" in data or '<b class="err">Deleted' in data or '<b class="err">Removed' in data or '<font class="err">No such' in data:
+        return False,"No existe o ha sido borrado de vidspot"
+    else:
+        # Existe: http://vidspot.net/6ltw8v1zaa7o
+        patron  = '<META NAME="description" CONTENT="(Archivo para descargar[^"]+)">'
+        matches = re.compile(patron,re.DOTALL).findall(data)
+        
+        if len(matches)>0:
+            return True,""
     
     return True,""
 
@@ -26,40 +35,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     logger.info("[vidspot.py] url="+page_url)
 
     # Normaliza la URL
-    try:
-        if not page_url.startswith("http://vidspot.net/embed-"):
-            videoid = scrapertools.get_match(page_url,"vidspot.net/([a-z0-9A-Z]+)")
-            page_url = "http://vidspot.net/embed-"+videoid+".html"
-    except:
-        import traceback
-        logger.info(traceback.format_exc())    
+    videoid = scrapertools.get_match(page_url,"http://vidspot.net/([a-z0-9A-Z]+)")
+    page_url = "http://vidspot.net/embed-"+videoid+"-728x400.html"
+    data = scrapertools.cache_page(page_url)
 
-    # Lo pide una vez
-    headers = [['User-Agent','Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14']]
-    data = scrapertools.cache_page( page_url , headers=headers )
-    logger.info("data="+data)
-    
-    try:
-        op = scrapertools.get_match(data,'<input type="hidden" name="op" value="([^"]+)"')
-        usr_login = ""
-        id = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)"')
-        fname = scrapertools.get_match(data,'<input type="hidden" name="fname" value="([^"]+)"')
-        referer = scrapertools.get_match(data,'<input type="hidden" name="referer" value="([^"]*)"')
-        method_free = scrapertools.get_match(data,'<input type="hidden" name="method_free" value="([^"]*)"')
-        submitbutton = scrapertools.get_match(data,'<input type="image"  id="submitButton".*?value="([^"]+)"').replace(" ","+")
-        
-        import time
-        time.sleep(10)
-        
-        # Lo pide una segunda vez, como si hubieras hecho click en el banner
-        #op=download1&usr_login=&id=d6fefkzvjc1z&fname=coriolanus.dvdr.mp4&referer=&method_free=1&x=109&y=17
-        post = "op="+op+"&usr_login="+usr_login+"&id="+id+"&fname="+fname+"&referer="+referer+"&method_free="+method_free+"&x=109&y=17"
-        headers.append(["Referer",page_url])
-        data = scrapertools.cache_page( page_url , post=post, headers=headers )
-        logger.info("data="+data)
-    except:
-        pass
-    
     # Extrae la URL
     match = re.compile('"file" : "(.+?)",').findall(data)
     media_url = ""
@@ -72,7 +51,10 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
             media_url = match[0]
 
     video_urls = []
-    video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidspot]",media_url])
+
+    if media_url!="":
+        media_url+= "&direct=false"
+        video_urls.append( [ scrapertools.get_filename_from_url(media_url)[-4:]+" [vidspot]",media_url])
 
     for video_url in video_urls:
         logger.info("[vidspot.py] %s - %s" % (video_url[0],video_url[1]))
@@ -96,58 +78,91 @@ def find_videos(data):
     encontrados.add("http://vidspot.net/embed-js.html")
     encontrados.add("http://vidspot.net/embed-player.html")
     encontrados.add("http://vidspot.net/embed-cgi.html")
+    encontrados.add("http://vidspot.net/embed-i.html")
+    encontrados.add("http://vidspot.net/images")
+    encontrados.add("http://vidspot.net/theme")
+    encontrados.add("http://vidspot.net/xupload")
+    encontrados.add("http://vidspot.net/s")
+    encontrados.add("http://vidspot.net/js")
+    encontrados.add("http://vidspot.net/jquery")
+    encontrados.add("http://vidspot.net/login")
+    encontrados.add("http://vidspot.net/make")
+    encontrados.add("http://vidspot.net/i")
+    encontrados.add("http://vidspot.net/faq")
+    encontrados.add("http://vidspot.net/tos")
+    encontrados.add("http://vidspot.net/premium")
+    encontrados.add("http://vidspot.net/checkfiles")
+    encontrados.add("http://vidspot.net/privacy")
+    encontrados.add("http://vidspot.net/refund")
+    encontrados.add("http://vidspot.net/links")
+    encontrados.add("http://vidspot.net/contact")
+
     devuelve = []
 
-    # http://vidspot.net/embed-d6fefkzvjc1z.html 
-    patronvideos  = 'vidspot.net/embed-([A-Za-z0-9]+)\.html'
+    # http://vidspot.net/3sw6tewl21sn
+    patronvideos  = 'vidspot.net/([a-z0-9]+)'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        for match in matches:
+            titulo = "[vidspot]"
+            url = "http://vidspot.net/"+match
+            if url not in encontrados and "embed" not in match:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'vidspot' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
-    for match in matches:
-        titulo = "[vidspot]"
-        url = "http://vidspot.net/embed-"+match+".html"
-        if url not in encontrados and match!="embed":
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'vidspot' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    # http://vidspot.net/6lgjjav5cymi
-    patronvideos  = 'vidspot.net/([A-Za-z0-9]+)'
+    # http://vidspot.net/embed-3sw6tewl21sn.html
+    patronvideos  = 'vidspot.net/embed-([a-z0-9]+).html'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        for match in matches:
+            titulo = "[vidspot]"
+            url = "http://vidspot.net/"+match
+            if url not in encontrados and "-728x400" not in match:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'vidspot' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
-    for match in matches:
-        titulo = "[vidspot]"
-        url = "http://vidspot.net/embed-"+match+".html"
-        if url not in encontrados and match!="embed":
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'vidspot' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
-    #http://www.cinetux.org/video/vidspot.php?id=gntpo9m3mifj
-    patronvideos  = 'vidspot.php\?id\=([A-Za-z0-9]+)'
+    # http://vidspot.net/embed-3sw6tewl21sn-728x400.html
+    patronvideos  = 'vidspot.net/embed-([a-z0-9]+)-728x400.html'
     logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        for match in matches:
+            titulo = "[vidspot]"
+            url = "http://vidspot.net/"+match
+            if url not in encontrados:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'vidspot' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
-    for match in matches:
-        titulo = "[vidspot]"
-        url = "http://vidspot.net/embed-"+match+".html"
-        if url not in encontrados and match!="embed":
-            logger.info("  url="+url)
-            devuelve.append( [ titulo , url , 'vidspot' ] )
-            encontrados.add(url)
-        else:
-            logger.info("  url duplicada="+url)
-
+    # http://www.cinetux.org/video/vidspot.php?id=3sw6tewl21sn
+    patronvideos  = 'vidspot.php\?id\=([a-z0-9]+)'
+    logger.info("[vidspot.py] find_videos #"+patronvideos+"#")
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    if len(matches)>0:
+        for match in matches:
+            titulo = "[vidspot]"
+            url = "http://vidspot.net/"+match
+            if url not in encontrados:
+                logger.info("  url="+url)
+                devuelve.append( [ titulo , url , 'vidspot' ] )
+                encontrados.add(url)
+            else:
+                logger.info("  url duplicada="+url)
 
     return devuelve
 
 def test():
 
-    video_urls = get_video_url("http://vidspot.net/embed-n75cvi4hogi4.html")
+    video_urls = get_video_url("http://vidspot.net/uhah7dmq2ydp")
 
     return len(video_urls)>0
