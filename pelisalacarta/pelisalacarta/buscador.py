@@ -68,6 +68,9 @@ def do_search_results(tecleado):
     from pelisalacarta.channels import bajui
     itemlist.extend( bajui.search( Item() , tecleado) )
 
+    from pelisalacarta.channels import filmpertutti
+    itemlist.extend( filmpertutti.search( Item() , tecleado) )
+
     from pelisalacarta.channels import cineblog01
     itemlist.extend( cineblog01.search( Item() , tecleado) )
     itemlist.extend( cineblog01.searchserie( Item() , tecleado) )
