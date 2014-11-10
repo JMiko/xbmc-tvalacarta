@@ -72,10 +72,13 @@ def find_videos(text):
 	
 	#http://cineblog01.pw/HR/go.php?id=6475
     temp  = text.split('<strong>Streaming')
-    tem = temp[1].split('Download')
-    patronvideos  = '(?:HR)/go.php\?id\=([A-Z0-9]+)'
-    logger.info("[backin.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(tem[0])
+    if (len(temp)>1):
+        tem = temp[1].split('Download')
+        patronvideos  = '(?:HR)/go.php\?id\=([A-Z0-9]+)'
+        logger.info("[backin.py] find_videos #"+patronvideos+"#")
+        matches = re.compile(patronvideos,re.DOTALL).findall(tem[0])
+    else:
+        matches=[]
     page = scrapertools.find_single_match(text,'rel="canonical" href="([^"]+)"')
     from lib import mechanize
     br = mechanize.Browser()
@@ -96,7 +99,30 @@ def find_videos(text):
             devuelve.append( [ titulo , url , 'backin' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url)        
+            logger.info("  url duplicada="+url)
+
+
+    #http://vcrypt.net/sb/0a8hqibleus5
+        #Filmpertutti.eu
+    tem = text.split('<p><strong>Download:<br />')
+    patronvideos  = 'http://vcrypt.net/sb/([^"]+)'
+    matches = re.compile(patronvideos,re.DOTALL).findall(tem[0])
+    page = scrapertools.find_single_match(text,'rel="canonical" href="([^"]+)"')
+
+    for match in matches:
+        titulo = "[backin]"
+        url = "http://vcrypt.net/sb/"+match
+        r = br.open(url)
+        data= r.read()
+        id = scrapertools.find_single_match(data,'/streams-([^"]+)-')
+        url = "http://backin.net/s/generating.php?code="+id
+        if url not in encontrados and id != "":
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'backin' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+            
     
     return devuelve
 
