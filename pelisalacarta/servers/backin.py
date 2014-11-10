@@ -76,12 +76,20 @@ def find_videos(text):
     patronvideos  = '(?:HR)/go.php\?id\=([A-Z0-9]+)'
     logger.info("[backin.py] find_videos #"+patronvideos+"#")
     matches = re.compile(patronvideos,re.DOTALL).findall(tem[0])
+    page = scrapertools.find_single_match(text,'rel="canonical" href="([^"]+)"')
+    from lib import mechanize
+    br = mechanize.Browser()
+    br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+    br.set_handle_robots(False)
 
     for match in matches:
         titulo = "[backin]"
-        data = "http://cineblog01.pw/HR/go.php?id="+match
-        data = scrapertools.cache_page(data)
-        id = scrapertools.find_single_match(data,'content="0; url=http://backin.net/([^"]+)"')
+        url = "http://cineblog01.pw/HR/go.php?id="+match
+        r = br.open(page)
+        req = br.click_link(url=url)
+        data = br.open(req)
+        data= data.read()
+        id = scrapertools.find_single_match(data,'http://backin.net/([^"]+)"')
         url = "http://backin.net/s/generating.php?code="+id
         if url not in encontrados and id != "":
             logger.info("  url="+url)
