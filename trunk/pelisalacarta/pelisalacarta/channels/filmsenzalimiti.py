@@ -34,6 +34,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, title="Film Sub Ita"   , action="novedades", url="http://www.filmsenzalimiti.net/genere/subita"))
     itemlist.append( Item(channel=__channel__, title="Serie TV"       , action="novedades", url="http://www.filmsenzalimiti.net/genere/serie-tv"))
     itemlist.append( Item(channel=__channel__, title="Film per genere", action="categorias", url="http://www.filmsenzalimiti.net/"))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Cerca" ))
     return itemlist
 
 def categorias(item):
@@ -54,6 +55,20 @@ def categorias(item):
         itemlist.append( Item(channel=__channel__, action="novedades", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
+
+
+def search(item,texto):
+    logger.info("[filmsenzalimiti.py] "+item.url+" search "+texto)
+    item.url = "http://www.filmsenzalimiti.co/?s="+texto
+    try:
+        return novedades(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
+
 
 def novedades(item):
     logger.info("[filmsenzalimiti.py] novedades")
@@ -80,8 +95,8 @@ def novedades(item):
 
     # Siguiente
     try:
-        pagina_siguiente = scrapertools.get_match(data,'<a href="([^"]+)" class="nextpostslink">')
-        itemlist.append( Item(channel=__channel__, action="novedades", title=">> Pagina seguente" , url=pagina_siguiente , folder=True) )
+        pagina_siguiente = scrapertools.get_match(data,'class="nextpostslink" rel="next" href="([^"]+)"')
+        itemlist.append( Item(channel=__channel__, action="novedades", title=">> Avanti" , url=pagina_siguiente , folder=True) )
     except:
         pass
 
