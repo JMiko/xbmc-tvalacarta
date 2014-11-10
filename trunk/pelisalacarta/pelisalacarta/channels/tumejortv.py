@@ -20,7 +20,7 @@ __language__ = "ES"
 
 DEBUG = config.get_setting("debug")
 
-BASE_URL = "http://anonymouse.org/cgi-bin/anon-www.cgi/http://www.tumejortv.com"
+BASE_URL = "http://www.tumejortv.com"
 
 def isGeneric():
     return True

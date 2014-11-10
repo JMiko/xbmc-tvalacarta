@@ -228,6 +228,8 @@ def episodios(item):
 
     ### paso 2: mostrar_capitulo.php ###
     data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+    
     patron = '<a class="nombre " href="javascript:mostrar_capitulo.([^\)]+).;">([^<]+)</a>'
     #patron = '<div id="item-([^"]+)" class="item  ">'
     matches = re.compile(patron,re.DOTALL).findall(data)

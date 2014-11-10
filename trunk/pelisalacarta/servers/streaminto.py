@@ -44,16 +44,27 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     #media_url = []
     try:
         host = scrapertools.get_match(data, patron_jpg)
-        flv = host+scrapertools.get_match(data, patron_flv).split("=")[1]+"/v.flv"
+        logger.info("[streaminto.py] host="+host)
+        flv_url = scrapertools.get_match(data, patron_flv)
+        logger.info("[streaminto.py] flv_url="+flv_url)
+        flv = host+flv_url.split("=")[1]+"/v.flv"
+        logger.info("[streaminto.py] flv="+flv)
         #rtmp = scrapertools.get_match(data, patron_rtmp)
     except:
+        logger.info("[streaminto.py] opcion 2")
         op = scrapertools.get_match(data,'<input type="hidden" name="op" value="([^"]+)"')
+        logger.info("[streaminto.py] op="+op)
         usr_login = ""
         id = scrapertools.get_match(data,'<input type="hidden" name="id" value="([^"]+)"')
+        logger.info("[streaminto.py] id="+id)
         fname = scrapertools.get_match(data,'<input type="hidden" name="fname" value="([^"]+)"')
+        logger.info("[streaminto.py] fname="+fname)
         referer = scrapertools.get_match(data,'<input type="hidden" name="referer" value="([^"]*)"')
+        logger.info("[streaminto.py] referer="+referer)
         hashstring = scrapertools.get_match(data,'<input type="hidden" name="hash" value="([^"]*)"')
+        logger.info("[streaminto.py] hashstring="+hashstring)
         imhuman = scrapertools.get_match(data,'<input type="submit" name="imhuman".*?value="([^"]+)"').replace(" ","+")
+        logger.info("[streaminto.py] imhuman="+imhuman)
         
         import time
         time.sleep(10)
@@ -132,6 +143,6 @@ def find_videos(data):
 
 def test():
 
-    video_urls = get_video_url("http://streamin.to/z3nnqbspjyne")
+    video_urls = get_video_url("http://streamin.to/embed-olnmqfuh1bml.html")
 
     return len(video_urls)>0

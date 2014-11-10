@@ -19,7 +19,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
     # Descarga
     data = scrapertools.cache_page( page_url )
-    logger.info("data=%s" % (data))
+    #logger.info("data=%s" % (data))
 
     video_key = scrapertools.get_match( data , 'video_key=([^&]+)&')
     try:
@@ -40,7 +40,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
 # Encuentra vídeos del servidor en el texto pasado
 def find_videos(data):
-    logger.info("[mail.ru.py] find_videos(data='%s')" % (data))
+    logger.info("[mail.ru.py] find_videos") #(data='%s')" % (data))
 
     encontrados = set()
 
@@ -48,7 +48,9 @@ def find_videos(data):
 
     titulo = "[mail.ru]"
     if "http://api.video.mail.ru/videos/embed/" in data:
-        url = data.replace("embed/","").replace(".html",".json")
+        #http://api.video.mail.ru/videos/embed/gmail.com/un.usuario/2/2816.html
+        url = scrapertools.find_single_match(data,"(http.//api.video.mail.ru/videos/embed/.*?.html)")
+        url = url.replace("embed/","").replace(".html",".json")
     else:
         id_page_url = scrapertools.get_match(data,'/_myvideo/(\d+).html')
         author_name = scrapertools.get_match(data,'/video/mail([^/]+)/')

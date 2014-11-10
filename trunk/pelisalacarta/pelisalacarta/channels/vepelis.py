@@ -95,6 +95,7 @@ def findvideos(item):
     for match in matches:
         url = match[1]
         title = "SERVIDOR: " + match[0]
+        title = unicode( title, "iso-8859-1" , errors="replace" ).encode("utf-8")
         itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.fulltitle, url=url , thumbnail=scrapedthumbnail , folder=False) )
 
     return itemlist
@@ -230,6 +231,7 @@ def listado2(item):
     for match in matches:
         scrapedurl = match[0] #urlparse.urljoin("",match[0])
         scrapedtitle = match[1] + ' - ' + match[4]
+        scrapedtitle = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
         scrapedthumbnail = match[2]
         #scrapedplot = match[0]
         #itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle , fulltitle=scrapedtitle, url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )

@@ -27,25 +27,25 @@ def isGeneric():
 def mainlist(item):
     logger.info("pelisalacarta.channels.shurweb getmainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Series"                   , action="letras"       , url="http://www.shurweb.org/series/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Series"                   , action="letras"       , url="http://www.tushurweb.com/series/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Peliculas"                , action="menupeliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Animacion"                , action="series"       , url="http://www.shurweb.org/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="peliculas"    , url="http://www.shurweb.org/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Animacion"                , action="series"       , url="http://www.tushurweb.com/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Documentales"             , action="peliculas"    , url="http://www.tushurweb.com/documentales/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
     itemlist.append( Item(channel=__channel__, title="Buscar"                   , action="search") )
     return itemlist
 
 def menupeliculas(item):
     logger.info("pelisalacarta.channels.shurweb menupeliculas")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Todas"     , action="peliculas", url="http://www.shurweb.org/peliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Acción"    , action="peliculas", url="http://www.shurweb.org/peliculas/accion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="00's"      , action="peliculas", url="http://www.shurweb.org/peliculas/00s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="90's"      , action="peliculas", url="http://www.shurweb.org/peliculas/90s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="80's"      , action="peliculas", url="http://www.shurweb.org/peliculas/80s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="70's"      , action="peliculas", url="http://www.shurweb.org/peliculas/70s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="60's"      , action="peliculas", url="http://www.shurweb.org/peliculas/60s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
-    itemlist.append( Item(channel=__channel__, title="Animación" , action="peliculas", url="http://www.shurweb.org/peliculas/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
-    itemlist.append( Item(channel=__channel__, title="Antiguas"  , action="peliculas", url="http://www.shurweb.org/peliculas/antiguas/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
+    itemlist.append( Item(channel=__channel__, title="Todas"     , action="peliculas", url="http://www.tushurweb.com/peliculas", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="10's"      , action="peliculas", url="http://www.tushurweb.com/peliculas/10s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="00's"      , action="peliculas", url="http://www.tushurweb.com/peliculas/00s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="90's"      , action="peliculas", url="http://www.tushurweb.com/peliculas/90s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="80's"      , action="peliculas", url="http://www.tushurweb.com/peliculas/80s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="70's"      , action="peliculas", url="http://www.tushurweb.com/peliculas/70s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="60's"      , action="peliculas", url="http://www.tushurweb.com/peliculas/60s/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg"))
+    itemlist.append( Item(channel=__channel__, title="Animación" , action="peliculas", url="http://www.tushurweb.com/peliculas/animacion/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
+    itemlist.append( Item(channel=__channel__, title="Antiguas"  , action="peliculas", url="http://www.tushurweb.com/peliculas/antiguas/", fanart="http://pelisalacarta.mimediacenter.info/fanart/shurweb.jpg") )
     return itemlist
 
 # Al llamarse "search" la función, el launcher pide un texto a buscar y lo añade como parámetro
@@ -55,7 +55,7 @@ def search(item,texto,categoria=""):
 
     texto = texto.replace(" ","+")
     try:
-        item.url = "http://www.shurweb.org/?s="+texto
+        item.url = "http://www.tushurweb.com/?s="+texto
         itemlist.extend(buscador(item))
         return itemlist
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
@@ -82,7 +82,7 @@ def buscador(item,paginacion=True):
         thumbnail = scrapedthumbnail
         if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
         
-        if url.startswith("http://www.shurweb.org/pelicula/"):
+        if url.startswith("http://www.tushurweb.com/pelicula/"):
             itemlist.append( Item(channel=__channel__, action='findvideos', title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot) )
         else:
             itemlist.append( Item(channel=__channel__, action='episodios', title=title , show=title , url=url , thumbnail=thumbnail , plot=plot) )
@@ -189,12 +189,12 @@ def peliculas(item):
 def test():
     from servers import servertools
 
-    item = Item(channel=__channel__, title="Peliculas", action="peliculas", url="http://www.shurweb.org/peliculas/")
+    item = Item(channel=__channel__, title="Peliculas", action="peliculas", url="http://www.tushurweb.com/peliculas/")
     peliculas_items = peliculas(item)
     if len(peliculas_items)==0:
         return False
 
-    item = Item(channel=__channel__, title="Series", action="series", url="http://www.shurweb.org/series/b/")
+    item = Item(channel=__channel__, title="Series", action="series", url="http://www.tushurweb.com/series/b/")
     series_items = series(item)
     if len(series_items)==0:
         return False

@@ -35,7 +35,7 @@ def mainlist(item):
     
     return itemlist
 
-def serach(item,texto):
+def search(item,texto):
     busqueda=texto.replace(" ","+")
     data = scrapertools.cachePage("http://sintonizzate.me/buscar/?q=" + busqueda)
     # Descarga la página

@@ -134,38 +134,49 @@ def porgeneros(item):
     logger.info("[zpeliculas.py] porgeneros")
 
     # Descarga la página
-    data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<div class="shortmovies">(.*?)<div class="navigation ignore-select" align="center">')
+    body = scrapertools.cachePage(item.url)
+    data = scrapertools.get_match(body,'<div class="shortmovies">(.*?)<div class="navigation ignore-select" align="center">')
     
     '''
     <div class="leftpane">
-    <div class="movieposter" title="Descargar El último pasajero">
-    <a href="http://www.zpeliculas.com/peliculas/p-accion/1525-el-ltimo-pasajero.html"><img src="http://i.imgur.com/NW3xI3E.jpg" width="110" height="150" alt="El último pasajero" title="Descargar El último pasajero" /></a>
-    <div class="shortname">El último pasajero</div>
+    <div class="movieposter" title="Descargar Sólo los amantes sobreviven">
+    <a href="http://www.zpeliculas.com/peliculas/p-drama/1634-slo-los-amantes-sobreviven.html"><img src="http://i.imgur.com/NBPgXrp.jpg" width="110" height="150" alt="Sólo los amantes sobreviven" title="Descargar Sólo los amantes sobreviven" /></a>
+    <div class="shortname">Sólo los amantes sobreviven</div>
     <div class="BDRip">BDRip</div>
     </div>
     </div>
+
     <div class="rightpane">
     <div style="display:block;overflow:hidden;">
-    <h2 class="title" title="El último pasajero"><a href="http://www.zpeliculas.com/peliculas/p-accion/1525-el-ltimo-pasajero.html">El último pasajero</a></h2>
+    <h2 class="title" title="Sólo los amantes sobreviven"><a href="http://www.zpeliculas.com/peliculas/p-drama/1634-slo-los-amantes-sobreviven.html">Sólo los amantes sobreviven</a></h2>
+
     <div style="height:105px; overflow:hidden;">
     <div class="small">
-    <div class="cats" title="Genero"><a href="http://www.zpeliculas.com/peliculas/p-accion/">Accion</a>, <a href="http://www.zpeliculas.com/peliculas/p-intriga/">Intriga</a>, <a href="http://www.zpeliculas.com/peliculas/p-thriller/">Thriller</a></div>
+    <div class="cats" title="Genero"><a href="http://www.zpeliculas.com/peliculas/p-drama/">Drama</a>, <a href="http://www.zpeliculas.com/peliculas/p-fantasia/">Fantasia</a>, <a href="http://www.zpeliculas.com/peliculas/p-romantica/">Romantica</a></div>
     <div class="year" title="A&ntilde;o">2013</div>
     <div class="ESP" title="Idioma">ESP</div>
-    <div class="FA" title="El último pasajero FA Official Website"><a href="http://www.filmaffinity.com/es/film419883.html" target="_blank" title="El último pasajero en filmaffinity">El último pasajero en FA</a></div>
+    <div class="FA" title="Sólo los amantes sobreviven FA Official Website"><a href="http://www.filmaffinity.com/es/film851633.html" target="_blank" title="Sólo los amantes sobreviven en filmaffinity">Sólo los amantes sobreviven en FA</a></div>
     </div>
     </div>
-    <div class="clear" style="height:2px;">
+    <div class="clear" style="height:2px;"></div>
+    <div style="float:right">
     '''
-    patron  = '<div class="leftpane">.*?<a href="(.*?)"><img src="(.*?)".*?alt="(.*?)".*?<div class="shortname">.*?</div>.*?<div.*?>(.*?)</div>.*?<div class="rightpane">.*?<div class="year" title="A&ntilde;o">(.*?)<.*?"Idioma">(.*?)</div>'
+    patron  = '<div class="leftpane">(.*?)<div style="float\:right">'
+    #<a href="(.*?)"><img src="(.*?)".*?alt="(.*?)".*?<div class="shortname">.*?</div>.*?<div.*?>(.*?)</div>.*?<div class="rightpane">.*?<div class="year" title="A&ntilde;o">(.*?)<.*?"Idioma">(.*?)</div>'
 
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
 
     itemlist = []
     
-    for scrapedurl, scrapedthumbnail, scrapedtitle, scrapedcalidad, scrapedyear, scrapedidioma in matches:
+    for match in matches:
+        scrapedurl = scrapertools.find_single_match(match,'<a href="([^"]+)"')
+        scrapedthumbnail = scrapertools.find_single_match(match,'<img src="([^"]+)"')
+        scrapedtitle = scrapertools.find_single_match(match,'<div class="shortname">([^<]+)')
+        scrapedcalidad = scrapertools.find_single_match(match,'<div class="shortname">[^<]+</div[^<]+<div class="[^"]+">([^<]+)')
+        scrapedyear = scrapertools.find_single_match(match,'<div class="year[^>]+>([^<]+)')
+        scrapedidioma = scrapertools.find_single_match(match,'<div class="year[^>]+>[^<]+</div[^<]+<div class[^>]+>([^<]+)')
+        
         title = scrapedtitle
         logger.info("title="+scrapedtitle)
         title = title + ' ('+scrapedyear+') ['+scrapedidioma+'] ['+scrapedcalidad+']'
@@ -176,17 +187,9 @@ def porgeneros(item):
         
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title, viewmode="movie", fanart=thumbnail))
 
-    data = data = scrapertools.cachePage(item.url)
-    data = scrapertools.get_match(data,'<div class="navigation ignore-select" align="center">.*?<div class="clear"></div>(.*?)<div class="clear"></div>')
-    #<span>1</span> <a href="http://www.zpeliculas.com/peliculas/p-accion/page/2/">2</a>
-
-    patron='<span>.*?</span>.*?href="(.*?)"'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    scrapertools.printMatches(matches)
-    for scrapedurl2 in matches:
-        pagina=scrapedurl2
-        if "Anterior" not in pagina:
-            itemlist.append( Item(channel=__channel__, action="porgeneros" , title="Página siguiente >>" , url=pagina, thumbnail="", plot=plot, show=title, viewmode="movie", fanart=thumbnail))
+    next_page = scrapertools.find_single_match(body,'<a href="([^"]+)">Siguiente')
+    if next_page!="":
+        itemlist.append( Item(channel=__channel__, action="porgeneros" , title="Página siguiente >>" , url=next_page, thumbnail="", plot="", show="", viewmode="movie", fanart=thumbnail))
     
     return itemlist
 
@@ -224,8 +227,6 @@ def destacadas(item):
         itemlist.append( Item(channel=__channel__, action="findvideos" , title=title , url=url, thumbnail=thumbnail, plot=plot, show=title, viewmode="movie", fanart=thumbnail))
         
     return itemlist
-
-
 
 def sugeridas(item):
     logger.info("[zpeliculas.py] sugeridas")

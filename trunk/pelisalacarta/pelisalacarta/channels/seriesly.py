@@ -119,7 +119,6 @@ def categorias(item):
 		itemlist.append( Item(channel=__channel__, title="Vistas", action="categoria", url='Vistas', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Favoritas", action="categoria", url='Favouritas', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Pendientes", action="categoria", url='Pendientes', extra=item.url) )
-		itemlist.append( Item(channel=__channel__, title="Peliculas Mas Vistas", action="mas_vistas", url=item.url ) )
 		itemlist.append( Item(channel=__channel__, title="Peliculas Por Categorias", action="menu_cat", url=item.url, extra="cat" ) )
 		
    
@@ -127,20 +126,17 @@ def categorias(item):
 		itemlist.append( Item(channel=__channel__, title="Viendo", action="categoria", url='Viendo', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Finalizadas", action="categoria", url='Finalizada', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Pendientes", action="categoria", url='Pendiente', extra=item.url) )
-		itemlist.append( Item(channel=__channel__, title="Series Mas Vistas", action="mas_vistas" , url=item.url ) )
 		itemlist.append( Item(channel=__channel__, title="Series Por Categorias", action="menu_cat", url=item.url, extra="cat" ) )
 		
 	elif item.url=="documentaries":
 		itemlist.append( Item(channel=__channel__, title="Vistos", action="categoria", url='Vistas', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Favoritas", action="categoria", url='Favoritas', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Pendientes", action="categoria", url='Pendientes', extra=item.url) )
-		itemlist.append( Item(channel=__channel__,title="Documentales mas vistos",action="mas_vistas",url=item.url))
 
 	elif item.url=="tvshows":
 		itemlist.append( Item(channel=__channel__, title="Viendo", action="categoria", url='Viendo', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Finalizadas", action="categoria", url='Finalizada', extra=item.url) )
 		itemlist.append( Item(channel=__channel__, title="Pendientes", action="categoria", url='Pendiente', extra=item.url) )
-		itemlist.append( Item(channel=__channel__, title="Tvshows Mas Vistos", action="mas_vistas" , url=item.url ) )
 		itemlist.append( Item(channel=__channel__, title="Tvshows Por Categorias", action="menu_cat", url=item.url, extra="cat" ) )
 		
 	
@@ -309,11 +305,11 @@ def mas_vistas(item):
    
 	# Obtiene de nuevo los tokens
 	auth_token, user_token = getCredentials()
-	post = 'auth_token=%s&user_token=%s&limit=100' % ( qstr(auth_token), qstr(user_token) )
-   
+	post = 'auth_token=%s&user_token=%s&limit=100&order=most_viewed' % ( qstr(auth_token), qstr(user_token) )
+
 	# Extrae las entradas (carpetas)
 	tipo=item.url
-	url="http://api.series.ly/v2/media/most_seen/"+tipo
+	url="http://api.series.ly/v2/media/browse/"+tipo
 	topInfo = load_json(scrapertools.cache_page(url, post=post))
 
 	if "error" in topInfo:

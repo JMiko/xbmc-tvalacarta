@@ -90,7 +90,7 @@ def lista(item):
         data = scrapertools.cachePage(item.url , post=item.extra)
     #logger.info("data="+data)
 
-    patron  = '<li[^<]+'
+    patron  = '<li [^<]+'
     patron += '<a href="([^"]+)".*?'
     patron += '<img class="[^"]+" src="([^"]+)"[^<]+'
     patron += '<h2[^>]+">([^<]+)</h2[^<]+'
@@ -109,7 +109,11 @@ def lista(item):
 
     next_page_url = scrapertools.find_single_match(data,'<li><a href="([^"]+)">Next</a></li>')
     if next_page_url!="":
-        itemlist.append( Item(channel=__channel__, action=item.action, title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page_url) , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="lista", title=">> Página siguiente" , url=urlparse.urljoin(item.url,next_page_url) , folder=True) )
+    else:
+        next_page_url = scrapertools.find_single_match(data,'<li><input type="button" class="btn-submit" value="Siguiente" onClick="paginar..(\d+)')
+        if next_page_url!="":
+            itemlist.append( Item(channel=__channel__, action="lista", title=">> Página siguiente" , url=item.url, extra=item.extra+"&pg="+next_page_url, folder=True) )
 
     return itemlist
 

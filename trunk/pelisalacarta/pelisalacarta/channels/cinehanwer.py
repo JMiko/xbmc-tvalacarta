@@ -64,8 +64,7 @@ def calidades(item):
     itemlist = []
     
     for scrapedurl,scrapedtitle in matches:
-        title = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        title = title.strip()
+        title = scrapedtitle.strip()
         thumbnail = ""
         plot = ""
         url = urlparse.urljoin(item.url,scrapedurl)
@@ -88,8 +87,7 @@ def generos(item):
     itemlist = []
     
     for scrapedurl,scrapedtitle in matches:
-        title = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        title = title.strip()
+        title = scrapedtitle.strip()
         thumbnail = ""
         plot = ""
         url = urlparse.urljoin(item.url,scrapedurl)
@@ -253,8 +251,7 @@ def peliculas(item):
     itemlist = []
     
     for scrapedurl,scrapedtitle,scrapedthumbnail,scrapedplot in matches:
-        title = unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")
-        title = title.strip()
+        title = scrapedtitle.strip()
         title = scrapertools.htmlclean(title)
         thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
         plot = scrapertools.htmlclean(scrapedplot)
