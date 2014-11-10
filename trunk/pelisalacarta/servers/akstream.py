@@ -70,9 +70,12 @@ def find_videos(text):
 	
 	#http://cineblog01.pw/HR/go.php?id=6475
     temp  = text.split('<strong>Streaming')
-    tem = temp[1].split('Download')
-    patronvideos  = '(?:HR)/go.php\?id\=([A-Z0-9]+)'
-    matches = re.compile(patronvideos,re.DOTALL).findall(tem[0])
+    if (len(temp)>1):
+        tem = temp[1].split('Download')
+        patronvideos  = '(?:HR)/go.php\?id\=([A-Z0-9]+)'
+        matches = re.compile(patronvideos,re.DOTALL).findall(tem[0])
+    else:
+        matches=[]
     
     br = mechanize.Browser()
     br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
@@ -93,7 +96,29 @@ def find_videos(text):
             devuelve.append( [ titulo , url , 'akstream' ] )
             encontrados.add(url)
         else:
-            logger.info("  url duplicada="+url) 
+            logger.info("  url duplicada="+url)
+
+    	#http://vcrypt.net/sak/0a8hqibleus5
+        #Filmpertutti.eu
+    patronvideos  = 'http://vcrypt.net/sak/([^"]+)'
+    matches = re.compile(patronvideos,re.DOTALL).findall(text)
+    page = scrapertools.find_single_match(text,'rel="canonical" href="([^"]+)"')
+
+    for match in matches:
+        titulo = "[Akstream]"
+        url = "http://vcrypt.net/sak/"+match
+        r = br.open(url)
+        data= r.read()
+        id = scrapertools.find_single_match(data,'akstream.net/v/([^"]+)"')
+        url = "http://akstream.net/v/"+id
+        if url not in encontrados and id != "":
+            logger.info("  url="+url)
+            devuelve.append( [ titulo , url , 'akstream' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    
 
     return devuelve
 
