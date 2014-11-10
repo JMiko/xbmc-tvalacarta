@@ -27,27 +27,13 @@ def isGeneric():
 def mainlist(item):
     logger.info("pelisalacarta.filmpertutti mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Ultimi film inseriti", action="peliculas", url="http://www.filmpertutti.eu"))
-    itemlist.append( Item(channel=__channel__, title="Categorie film", action="categorias", url="http://www.filmpertutti.eu", extra="Categorie Film"))
-    itemlist.append( Item(channel=__channel__, title="Serie TV" , action="categorias", url="http://www.filmpertutti.eu", extra="Serie Tv"))
-    itemlist.append( Item(channel=__channel__, title="Anime Cartoon", action="categorias", url="http://www.filmpertutti.eu", extra="Anime Cartoon"))
-    itemlist.append( Item(channel=__channel__, title="Search...", action="search"))
+    itemlist.append( Item(channel=__channel__, title="Ultimi film inseriti", action="peliculas", url="http://www.filmxtutti.org/"))
+    itemlist.append( Item(channel=__channel__, title="Categorie film", action="categorias", url="http://www.filmxtutti.org/", extra="Categorie Film"))
+    itemlist.append( Item(channel=__channel__, title="Serie TV" , action="categorias", url="http://www.filmxtutti.org/", extra="Serie Tv"))
+    itemlist.append( Item(channel=__channel__, title="Anime Cartoon", action="categorias", url="http://www.filmxtutti.org/", extra="Anime Cartoon"))
+    itemlist.append( Item(channel=__channel__, action="search"     , title="Cerca" ))
     return itemlist
 
-def search(item,texto):
-    logger.info("pelisalacarta.filmpertutti search")
-    if item.url=="":
-        item.url="http://www.filmpertutti.eu/search/"
-    texto = texto.replace(" ","+")
-    item.url = item.url+texto
-    try:
-        return peliculas(item)
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
-    except:
-        import sys
-        for line in sys.exc_info():
-            logger.error( "%s" % line )
-        return []
 
 def categorias(item):
     itemlist = []
@@ -68,6 +54,18 @@ def categorias(item):
         itemlist.append( Item(channel=__channel__, action="peliculas", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
 
     return itemlist
+
+def search(item,texto):
+    logger.info("[filmpertutti.py] "+item.url+" search "+texto)
+    item.url = "http://www.filmpertutti.eu/search/"+texto
+    try:
+        return peliculas(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def peliculas(item):
     logger.info("pelisalacarta.filmpertutti peliculas")
