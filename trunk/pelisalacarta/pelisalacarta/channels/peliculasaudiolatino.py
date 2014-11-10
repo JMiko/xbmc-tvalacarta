@@ -281,8 +281,10 @@ def play(item):
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/divxstage.php?url=","http://www.divxstage.net/video/")
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/tumi.php?url=","http://www.tumi.tv/")
     data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/playerto.php?url=","http://played.to/")
-    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/videoweed.php?url=","http://www.videoweed.es/file/");
-
+    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/videoweed.php?url=","http://www.videoweed.es/file/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/netu.php?url=","http://netu.tv/watch_video.php?v=")
+    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/powvideo.php?url=","http://powvideo.net/")
+    data2 = data2.replace("http://www.peliculasaudiolatino.tv/show/streamin.php?url=","http://streamin.to/")
     data2 = data2.replace("%26","&")
     logger.info("data2="+data2)
 
