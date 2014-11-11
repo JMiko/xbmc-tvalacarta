@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para nowvideo
@@ -121,18 +121,43 @@ def find_videos(data):
     page = scrapertools.find_single_match(data,'canonical" href="http://www.cb01.tv/serietv/([^"]+)"')
     page2 = scrapertools.find_single_match(data,'title">Telef([^"]+)</span>')
     page3 = scrapertools.find_single_match(data,'content="http://www.piratestreaming.../serietv/([^"]+)"')
+
+    #Recupera titoli serie tv
+    patronvideos  = '(?:\n|<br/>)([^";]*"http://(?:www.)?nowvideo.../video/)?(?(1)([a-z0-9]+)" target="_blank"(?: rel="nofollow")?>([^<]*)<|[^\n]*?([0-9][0-9]?(?:\xc3\x97|&#215;)[0-9][0-9]?[^<]+)[^\n]*?nowvideo.../video/([a-z0-9]+))'
+    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+
+    #
     patronvideos  = 'nowvideo.../video/([a-z0-9]+)'
     logger.info("[nowvideo.py] find_videos #"+patronvideos+"#")
-    matches = re.compile(patronvideos,re.DOTALL).findall(data)
+    notitle = re.compile(patronvideos,re.DOTALL).findall(data)
 
     for match in matches:
         titulo = "[nowvideo]"
-        url = "http://www.nowvideo.sx/video/"+match
-        d = scrapertools.cache_page(url)
-        ma = scrapertools.find_single_match(d,'(?<=<h4>)([^<]+)(?=</h4>)')
-        ma=titulo+" "+ma
+        if match[0] == "":
+            url = "http://www.nowvideo.sx/video/"+match[4]
+            ma = titulo + match[3]
+        else:
+            url = "http://www.nowvideo.sx/video/"+match[1]
+            ma = titulo + match[2]
+        ma = scrapertools.unescape(ma)
         if url not in encontrados:
             logger.info("  url="+url)
+            if page != "" or page2 != "" or page3 != "":
+                devuelve.append( [ ma , url , 'nowvideo' ] )
+            else:
+                devuelve.append( [ titulo , url , 'nowvideo' ] )
+            encontrados.add(url)
+        else:
+            logger.info("  url duplicada="+url)
+
+    for match in notitle:
+        titulo = "[nowvideo]"
+        url = "http://www.nowvideo.sx/video/"+match
+        if url not in encontrados:
+            logger.info("  url="+url)
+            d = scrapertools.cache_page(url)
+            ma = scrapertools.find_single_match(d,'(?<=<h4>)([^<]+)(?=</h4>)')
+            ma=titulo+" "+ma
             if page != "" or page2 != "" or page3 != "":
                 devuelve.append( [ ma , url , 'nowvideo' ] )
             else:
