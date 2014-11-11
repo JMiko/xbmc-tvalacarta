@@ -47,11 +47,8 @@ def busqueda(item):
     logger.info("[newpct1.py] busqueda")
     itemlist=[]
 
-    data = re.sub(
-        r'\n|\r|\t|\s{2}|<!--.*?-->|<i class="icon[^>]+"></i>',
-        "",
-        scrapertools.cache_page(item.url)
-    )
+    data = re.sub(r'\n|\r|\t|\s{2}|<!--.*?-->|<i class="icon[^>]+"></i>',"",scrapertools.cache_page(item.url))
+    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
     patron = '<ul class="buscar-list">(.*?)</ul>'
     fichas = scrapertools.get_match(data,patron)
@@ -88,6 +85,7 @@ def submenu(item):
     itemlist=[]
 
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
+    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
     patron = '<li><a href="http://www.newpct1.com/'+item.extra+'/">.*?<ul>(.*?)</ul>'
     data = scrapertools.get_match(data,patron)
@@ -109,8 +107,7 @@ def alfabeto(item):
     itemlist = []
 
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
-
-    #
+    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
     patron = '<ul class="alfabeto">(.*?)</ul>'
     data = scrapertools.get_match(data,patron)
@@ -131,6 +128,7 @@ def listado(item):
     itemlist = []
 
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
+    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
     patron = '<ul class="'+item.extra+'">(.*?)</ul>'
     fichas = scrapertools.get_match(data,patron)
@@ -166,11 +164,8 @@ def episodios(item):
     logger.info("[newpct1.py] episodios")
     itemlist=[]
 
-    data = re.sub(
-        r'\n|\r|\t|\s{2}|<!--.*?-->|<i class="icon[^>]+"></i>',
-        "",
-        scrapertools.cache_page(item.url)
-    )
+    data = re.sub(r'\n|\r|\t|\s{2}|<!--.*?-->|<i class="icon[^>]+"></i>',"",scrapertools.cache_page(item.url))
+    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
     patron = '<ul class="buscar-list">(.*?)</ul>'
     fichas = scrapertools.get_match(data,patron)
@@ -212,42 +207,57 @@ def findvideos(item):
     item.url = item.url.replace("1.com/","1.com/descarga-torrent/")
 
     # Descarga la página
-    #data = scrapertools.cache_page(item.url)
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
+    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
+
+    title = scrapertools.find_single_match(data,"<h1><strong>([^<]+)</strong>[^<]+</h1>")
+    title+= scrapertools.find_single_match(data,"<h1><strong>[^<]+</strong>([^<]+)</h1>")
+    caratula = scrapertools.find_single_match(data,'<div class="entry-left">.*?src="([^"]+)"')
 
     #<a href="http://tumejorjuego.com/download/index.php?link=descargar-torrent/058310_yo-frankenstein-blurayrip-ac3-51.html" title="Descargar torrent de Yo Frankenstein " class="btn-torrent" target="_blank">Descarga tu Archivo torrent!</a>
 
     patron = '<a href="([^"]+)" title="[^"]+" class="btn-torrent" target="_blank">'
 
-    link = scrapertools.find_single_match(data,patron)
-    if link!="":
-        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle = item.title, url=link , thumbnail=item.thumbnail , plot=item.plot , folder=False) )
+    # escraped torrent
+    url = scrapertools.find_single_match(data,patron)
+    if url!="":
+        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=title+" [torrent]", fulltitle=title, url=url , thumbnail=caratula, plot=item.plot, folder=False) )
 
-    ## Ahora busca los vídeos
-    #<div class="box5"><a href='http://i3x561r488.1fichier.com/' rel='nofollow' id='descargar' target='_blank'>DESCARGAR</a></div>
+    # escraped ver vídeos, descargar vídeos un link, múltiples liks
     data = data.replace("'",'"')
+    data = data.replace('javascript:;" onClick="popup("http://www.newpct1.com/pct1/library/include/ajax/get_modallinks.php?links=',"")
+    data = data.replace("http://tumejorserie.com/descargar/url_encript.php?link=","")
+    data = data.replace("$!","#!")
 
-    ## Éstos son los enlaces que nos interesan
-    #patron = '<div class="box5"><a href="([^"]+)"'
-    patron = "http://www.newpct1.com/pct1/library/include/ajax/get_modallinks.php?links=([^,]+),"
-    data = re.compile(patron,re.DOTALL).findall(data)
-    d = ""
-    if link!="":
-        import servers.torrent as torrent
-        d = torrent.from_torrent_url(link)+"\n"
-    for l in data:
-        d+=l.replace(" ","\n")+"\n"
+    patron_descargar = '<div id="tab2"[^>]+>.*?</ul>'
+    patron_ver = '<div id="tab3"[^>]+>.*?</ul>'
 
-    data = d
-    itemlist.extend(servertools.find_video_items(data=data))
+    match_ver = scrapertools.find_single_match(data,patron_ver)
+    match_descargar = scrapertools.find_single_match(data,patron_descargar)
 
-    for videoitem in itemlist:
-        videoitem.channel = __channel__
-        fichero = scrapertools.get_filename_from_url(videoitem.url)
-        partes = fichero.split("/")
-        titulo = partes[ len(partes)-1 ]
-        videoitem.title = titulo + " - [" + videoitem.server+"]"
-        videoitem.fulltitle = item.fulltitle
+    patron = '<div class="box1"><img src="([^"]+)".*?' # logo
+    patron+= '<div class="box2">([^<]+)</div>'         # servidor
+    patron+= '<div class="box3">([^<]+)</div>'         # idioma
+    patron+= '<div class="box4">([^<]+)</div>'         # calidad
+    patron+= '<div class="box5"><a href="([^"]+)".*?'  # enlace
+    patron+= '<div class="box6">([^<]+)</div>'         # titulo
+
+    enlaces_ver = re.compile(patron,re.DOTALL).findall(match_ver)
+    enlaces_descargar = re.compile(patron,re.DOTALL).findall(match_descargar)
+
+    for logo, servidor, idioma, calidad, enlace, titulo in enlaces_ver:
+        servidor = servidor.replace("played","playedto")
+        titulo = titulo+" ["+servidor+"]"
+        itemlist.append( Item(channel=__channel__, action="play", server=servidor, title=titulo , fulltitle = item.title, url=enlace , thumbnail=logo , plot=item.plot , folder=False) )
+
+    for logo, servidor, idioma, calidad, enlace, titulo in enlaces_descargar:
+        servidor = servidor.replace("uploaded","uploadedto")
+        partes = enlace.split(" ")
+        p = 1
+        for enlace in partes:
+            parte_titulo = titulo+" (%s/%s)" % (p,len(partes)) + " ["+servidor+"]"
+            p+= 1
+            itemlist.append( Item(channel=__channel__, action="play", server=servidor, title=parte_titulo , fulltitle = item.title, url=enlace , thumbnail=logo , plot=item.plot , folder=False) )
 
     return itemlist
 
