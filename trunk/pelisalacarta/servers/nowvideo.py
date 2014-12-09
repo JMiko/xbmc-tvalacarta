@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # pelisalacarta - XBMC Plugin
 # Conector para nowvideo
@@ -100,7 +100,7 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
 
         location = scrapertools.get_match(data,'url=(.+?)&title')
 
-        mobile="http://www.nowvideo.at/mobile/video.php?id="+ video_id+"&download=2"
+        mobile="http://www.nowvideo.sx/mobile/video.php?id="+ video_id+"&download=2"
         data = scrapertools.cache_page(mobile)
         location = scrapertools.get_match(data,'<source src="([^"]+)" type="video/flv">')
         video_urls.append( [ "[nowvideo]",location ] )
