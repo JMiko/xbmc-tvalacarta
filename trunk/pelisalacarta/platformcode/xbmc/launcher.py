@@ -10,6 +10,7 @@ import os,sys
 
 from core import logger
 from core import config
+from core import scrapertools
 
 PLUGIN_NAME = "pelisalacarta"
 
@@ -208,7 +209,7 @@ def run():
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
                 elif action=="add_serie_to_library":
-                    logger.info("[launcher.py] add_serie_to_library, show="+item.show)
+                    logger.info("[launcher.py] add_serie_to_library, show=#"+item.show+"#")
                     from platformcode.xbmc import library
                     import xbmcgui
                 
@@ -266,7 +267,10 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
                     
                     #Lista con series para actualizar
-                    nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
+                    nombre_fichero_config_canal = os.path.join( config.get_library_path() , "series.xml" )
+                    if not os.path.exists(nombre_fichero_config_canal):
+                        nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
+
                     logger.info("nombre_fichero_config_canal="+nombre_fichero_config_canal)
                     if not os.path.exists(nombre_fichero_config_canal):
                         f = open( nombre_fichero_config_canal , "w" )
@@ -276,7 +280,8 @@ def run():
                         f.close()
                         f = open( nombre_fichero_config_canal , "w" )
                         f.write(contenido)
-                    f.write(item.show+","+item.url+","+item.channel+"\n")
+                    from platformcode.xbmc import library
+                    f.write( library.title_to_folder_name(item.show)+","+item.url+","+item.channel+"\n")
                     f.close();
 
                 elif action=="download_all_episodes":
@@ -483,7 +488,19 @@ def extract_parameters():
 
     return params, fanart, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password
 
-def download_all_episodes(item,channel,first_episode=""):
+def episodio_ya_descargado(show_title,episode_title):
+
+    ficheros = os.listdir( "." )
+
+    for fichero in ficheros:
+        #logger.info("fichero="+fichero)
+        if fichero.lower().startswith(show_title.lower()) and scrapertools.find_single_match(fichero,"(\d+x\d+)")==episode_title:
+            logger.info("encontrado!")
+            return True
+
+    return False
+
+def download_all_episodes(item,channel,first_episode="",preferred_server="vidspot",filter_language=""):
     logger.info("[launcher.py] download_all_episodes, show="+item.show)
     show_title = item.show
 
@@ -496,11 +513,15 @@ def download_all_episodes(item,channel,first_episode=""):
         item.extra = item.extra.split("###")[1]
 
     exec "episode_itemlist = channel."+action+"(item)"
+
+    # Ordena los episodios para que funcione el filtro de first_episode
+    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title) 
+
     from servers import servertools
     from core import downloadtools
     from core import scrapertools
 
-    best_server = "streamcloud"
+    best_server = preferred_server
     worst_server = "moevideos"
 
     # Para cada episodio
@@ -517,11 +538,18 @@ def download_all_episodes(item,channel,first_episode=""):
         if first_episode!="" and episode_title==first_episode:
             empezar = True
 
+        if episodio_ya_descargado(show_title,episode_title):
+            continue
+
         if not empezar:
             continue
 
         # Extrae los mirrors
-        mirrors_itemlist = channel.findvideos(episode_item)
+        try:
+            mirrors_itemlist = channel.findvideos(episode_item)
+        except:
+            mirrors_itemlist = servertools.find_video_items(episode_item)
+        print mirrors_itemlist
 
         descargado = False
 
@@ -540,6 +568,11 @@ def download_all_episodes(item,channel,first_episode=""):
                     new_mirror_itemlist_1.append(mirror_item)
                 else:
                     new_mirror_itemlist_2.append(mirror_item)
+            elif "(Latino)" in mirror_item.title:
+                if best_server in mirror_item.title.lower():
+                    new_mirror_itemlist_3.append(mirror_item)
+                else:
+                    new_mirror_itemlist_4.append(mirror_item)
             elif "(VOS)" in mirror_item.title:
                 if best_server in mirror_item.title.lower():
                     new_mirror_itemlist_3.append(mirror_item)
@@ -558,13 +591,26 @@ def download_all_episodes(item,channel,first_episode=""):
 
             if "(Español)" in mirror_item.title:
                 idioma="(Español)"
+                codigo_idioma="es"
+            elif "(Latino)" in mirror_item.title:
+                idioma="(Latino)"
+                codigo_idioma="lat"
             elif "(VOS)" in mirror_item.title:
                 idioma="(VOS)"
+                codigo_idioma="vos"
             elif "(VO)" in mirror_item.title:
                 idioma="(VO)"
+                codigo_idioma="vo"
             else:
                 idioma="(Desconocido)"
-            logger.info("[launcher.py] download_all_episodes, downloading mirror")
+                codigo_idioma="desconocido"
+
+            logger.info("[launcher.py] filter_language=#"+filter_language+"#, codigo_idioma=#"+codigo_idioma+"#")
+            if filter_language=="" or (filter_language!="" and filter_language==codigo_idioma):
+                logger.info("[launcher.py] download_all_episodes, downloading mirror")
+            else:
+                logger.info("[launcher.py] language "+codigo_idioma+" filtered, skipping")
+                continue
 
             if hasattr(channel, 'play'):
                 video_items = channel.play(mirror_item)
@@ -598,7 +644,7 @@ def download_all_episodes(item,channel,first_episode=""):
                         return
                     else:
                         logger.info("[launcher.py] download_all_episodes, download error, try another mirror")
-                        break
+                        continue
 
                 else:
                     logger.info("[launcher.py] download_all_episodes, downloading mirror not available... trying next")
