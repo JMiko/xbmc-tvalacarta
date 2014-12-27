@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #------------------------------------------------------------
 # tvalacarta
 # XBMC Launcher (xbmc / xbmc-dharma / boxee)
@@ -22,7 +22,7 @@ def run():
     # Extract parameters from sys.argv
     params, fanart, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password = extract_parameters()
     logger.info("[launcher.py] fanart=%s, channel_name=%s, title=%s, fulltitle=%s, url=%s, thumbnail=%s, plot=%s, action=%s, server=%s, extra=%s, subtitle=%s, category=%s, show=%s, password=%s" % (fanart, channel_name, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, category, show, password))
-	
+
     try:
         # Accion por defecto - elegir canal
         if ( action=="selectchannel" ):
@@ -91,11 +91,7 @@ def run():
             if channel_name=="buscador":
                 import pelisalacarta.buscador as channel
             if channel_name=="personal" or channel_name=="personal2" or channel_name=="personal3" or channel_name=="personal4" or channel_name=="personal5":
-                Chann = config.get_setting("personalchannelurl"+channel_name[8:])
-                if Chann[-3:]=='.py' and os.path.join( config.get_runtime_path(), PLUGIN_NAME , 'channels' , Chann):
-                   exec "import pelisalacarta.channels."+Chann[:-3]+" as channel"
-                else:
-                   import pelisalacarta.channels.personal as channel
+                import pelisalacarta.channels.personal as channel
             elif os.path.exists( regular_channel_path ):
                 exec "import pelisalacarta.channels."+channel_name+" as channel"
             elif os.path.exists( regular_channel_path ):
@@ -212,7 +208,7 @@ def run():
                     library.savelibrary( titulo=item.fulltitle , url=item.url , thumbnail=item.thumbnail , server=item.server , plot=item.plot , canal=item.channel , category="Cine" , Serie=item.show.strip() , verbose=False, accion="play_from_library", pedirnombre=False, subtitle=item.subtitle )
 
                 elif action=="add_serie_to_library":
-                    logger.info("[launcher.py] add_serie_to_library, show=#"+item.show+"#")
+                    logger.info("[launcher.py] add_serie_to_library, show="+item.show)
                     from platformcode.xbmc import library
                     import xbmcgui
                 
@@ -270,10 +266,7 @@ def run():
                     xbmctools.renderItems(itemlist, params, url, category)
                     
                     #Lista con series para actualizar
-                    nombre_fichero_config_canal = os.path.join( config.get_library_path() , "series.xml" )
-                    if not os.path.exists(nombre_fichero_config_canal):
-                        nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
-
+                    nombre_fichero_config_canal = os.path.join( config.get_data_path() , "series.xml" )
                     logger.info("nombre_fichero_config_canal="+nombre_fichero_config_canal)
                     if not os.path.exists(nombre_fichero_config_canal):
                         f = open( nombre_fichero_config_canal , "w" )
@@ -283,8 +276,7 @@ def run():
                         f.close()
                         f = open( nombre_fichero_config_canal , "w" )
                         f.write(contenido)
-                    from platformcode.xbmc import library
-                    f.write( library.title_to_folder_name(item.show)+","+item.url+","+item.channel+"\n")
+                    f.write(item.show+","+item.url+","+item.channel+"\n")
                     f.close();
 
                 elif action=="download_all_episodes":
@@ -491,7 +483,7 @@ def extract_parameters():
 
     return params, fanart, channel, title, fulltitle, url, thumbnail, plot, action, server, extra, subtitle, viewmode, category, show, password
 
-def download_all_episodes(item,channel,first_episode="",preferred_server="vidspot"):
+def download_all_episodes(item,channel,first_episode=""):
     logger.info("[launcher.py] download_all_episodes, show="+item.show)
     show_title = item.show
 
@@ -504,15 +496,11 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         item.extra = item.extra.split("###")[1]
 
     exec "episode_itemlist = channel."+action+"(item)"
-
-    # Ordena los episodios para que funcione el filtro de first_episode
-    episode_itemlist = sorted(episode_itemlist, key=lambda Item: Item.title) 
-
     from servers import servertools
     from core import downloadtools
     from core import scrapertools
 
-    best_server = preferred_server
+    best_server = "streamcloud"
     worst_server = "moevideos"
 
     # Para cada episodio
@@ -529,15 +517,11 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         if first_episode!="" and episode_title==first_episode:
             empezar = True
 
-        if episodio_ya_descargado(show_title,episode_title):
-            continue
-
         if not empezar:
             continue
 
         # Extrae los mirrors
         mirrors_itemlist = channel.findvideos(episode_item)
-        print mirrors_itemlist
 
         descargado = False
 
@@ -556,11 +540,6 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
                     new_mirror_itemlist_1.append(mirror_item)
                 else:
                     new_mirror_itemlist_2.append(mirror_item)
-            elif "(Latino)" in mirror_item.title:
-                if best_server in mirror_item.title.lower():
-                    new_mirror_itemlist_3.append(mirror_item)
-                else:
-                    new_mirror_itemlist_4.append(mirror_item)
             elif "(VOS)" in mirror_item.title:
                 if best_server in mirror_item.title.lower():
                     new_mirror_itemlist_3.append(mirror_item)
@@ -619,7 +598,7 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
                         return
                     else:
                         logger.info("[launcher.py] download_all_episodes, download error, try another mirror")
-                        continue
+                        break
 
                 else:
                     logger.info("[launcher.py] download_all_episodes, downloading mirror not available... trying next")
