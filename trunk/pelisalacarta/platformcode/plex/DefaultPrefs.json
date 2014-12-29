@@ -186,6 +186,26 @@
     "secure": "true"
   },
   {
+    "id": "playmaxaccount",
+    "label": "Cuenta playmax",
+    "type": "bool",
+    "default": "false"
+  },
+  {
+    "id": "playmaxuser",
+    "label": "Usuario",
+    "type": "text",
+    "default": ""
+  },
+  {
+    "id": "playmaxpassword",
+    "label": "Password",
+    "type": "text",
+    "option": "hidden",
+    "default": "",
+    "secure": "true"
+  },
+  {
     "id": "personalchannel",
     "label": "Canal personal",
     "type": "bool",

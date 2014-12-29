@@ -469,7 +469,7 @@ def findvideos(item):
         logger.info("nombre_servidor="+nombre_servidor)
         
         title = "Ver en "+nombre_servidor+" ("+idioma+") (Calidad "+calidad_video.strip()+", audio "+calidad_audio.strip()+")"
-        url = scrapertools.find_single_match(match,'action="([^"]+)"')
+        url = urlparse.urljoin( item.url , scrapertools.find_single_match(match,'action="([^"]+)"') )
         thumbnail = thumb_servidor
         plot = ""
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")

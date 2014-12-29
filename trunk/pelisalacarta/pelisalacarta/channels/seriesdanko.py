@@ -195,7 +195,7 @@ def series(item,data=""):
         scrapedtitle = scrapedtitle.replace("&uacute","&uacute;")
         scrapedtitle = scrapertools.entityunescape(scrapedtitle)
         scrapedurl = urlparse.urljoin( item.url , scrapedurl )
-        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot="" , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="episodios", title=scrapedtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot="", show=scrapedtitle , folder=True) )
 
     return itemlist
 
@@ -264,8 +264,22 @@ def episodios(item):
     itemlist = []
     for match in matches:
         scrapedtitle = match[1].replace("\n","").replace("\r","")
-        scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
+        logger.info("scrapedtitle="+scrapedtitle)
+        ## Eliminado para la opción "Añadir esta serie a la biblioteca de XBMC" (15-12-2014)
+        #scrapedtitle = scrapertools.remove_show_from_title(scrapedtitle,item.show)
         
+        episode_code = scrapertools.find_single_match(scrapedtitle,"(\d+X\d+)")
+        logger.info("episode_code="+episode_code)
+        if episode_code!="":
+            season_number = scrapertools.find_single_match(scrapedtitle,"(\d+)X\d+")
+            logger.info("season_number="+season_number)
+            episode_number = scrapertools.find_single_match(scrapedtitle,"\d+X(\d+)")
+            logger.info("episode_number="+episode_number)
+            new_episode_code = season_number+"x"+episode_number
+            logger.info("new_episode_code="+new_episode_code)
+            scrapedtitle = scrapedtitle.replace(episode_code,new_episode_code)
+            logger.info("scrapedtitle="+scrapedtitle)
+
         #[1x01 - Capitulo 01]
         #patron = "(\d+x\d+) - Capitulo \d+"
         #matches = re.compile(patron,re.DOTALL).findall(scrapedtitle)
@@ -278,9 +292,9 @@ def episodios(item):
         elif "la.png" in match[2]:
             subtitle = " (Latino)"
         elif "vo.png" in match[2]:
-            subtitle = " (Version Original)"
+            subtitle = " (VO)"
         elif "vos.png" in match[2]:
-            subtitle = " (Subtitulado)"
+            subtitle = " (VOS)"
         elif "ca.png"  in match[2]:
             subtitle = " (Catalan)"
         elif "ga.jpg"  in match[2]:
@@ -305,8 +319,13 @@ def episodios(item):
             item.fulltitle = scrapedtitle + subtitle 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
+        ## Añadido show para la opción "Añadir esta serie a la biblioteca de XBMC" (15-12-2014)
         # Añade al listado de XBMC
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, show = item.show , context="4", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=scrapedtitle+subtitle , url=scrapedurl , thumbnail=scrapedthumbnail , plot=scrapedplot , fulltitle = item.fulltitle, context="4", show=item.show, folder=True) )
+
+    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0:
+        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="episodios###", show=item.show))
+        itemlist.append( Item(channel=item.channel, title="Descargar todos los episodios de la serie", url=item.url, action="download_all_episodes", extra="episodios###", show=item.show))
 
     #xbmc.executebuiltin("Container.Content(Movies)")
     
@@ -350,17 +369,21 @@ def findvideos(item):
                 scrapedurl = urlparse.urljoin(item.url,re.compile(r"href='(.+?)'").findall(match)[0])
             except:continue
            
+            ## Modificado para que se vea el servidor en el título (15-12-2014)
             try:
                 scrapedthumbnail = re.compile(r"src='(.+?)'").findall(match)[1]
-                if "megavideo" in scrapedthumbnail:
-                    mega = " [Megavideo]"
-                elif "megaupload" in scrapedthumbnail:
-                    mega = " [Megaupload]"
-                else:
-                    mega = ""
+                servidor = re.compile(r"servidores/([^\.]+)\.").findall(scrapedthumbnail)[0]
+                servidor = " [" + servidor + "]"
+                #if "megavideo" in scrapedthumbnail:
+                #    mega = " [Megavideo]"
+                #elif "megaupload" in scrapedthumbnail:
+                #    mega = " [Megaupload]"
+                #else:
+                #    mega = ""
                 if not scrapedthumbnail.startswith("http"):
                     scrapedthumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
-            except:continue
+            #except:continue
+            except: servidor = ""
             try:
                 subtitle = re.compile(r"src='(.+?)'").findall(match)[0]
                 if "es.png" in subtitle:
@@ -387,7 +410,9 @@ def findvideos(item):
                 except:
                     opcion = "Ver"
                 
-                scrapedtitle = opcion + " video" + subtitle + mega
+                ## Modificado para que se vea el servidor en el título (15-12-2014)
+                #scrapedtitle = opcion + " video " + subtitle + mega
+                scrapedtitle = opcion + " video " + subtitle + servidor
             except:
                 scrapedtitle = item.title
             scrapedplot = ""

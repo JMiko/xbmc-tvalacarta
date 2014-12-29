@@ -135,7 +135,8 @@ def series(item):
    
     #Paginador
     #<div class="paginator"> &nbsp;<a href="/lista-de-series/C/">&lt;</a>&nbsp;<a href="/lista-de-series/C/">1</a>&nbsp;<strong>2</strong>&nbsp;<a href="/lista-de-series/C/200">3</a>&nbsp;<a href="/lista-de-series/C/200">&gt;</a>&nbsp; </div>
-    matches = re.compile('<div class="paginator">.*?<a href="([^"]+)".*?</div>', re.S).findall(data)
+    matches = re.compile('<a href="([^"]+)">></a>', re.S).findall(data)
+    #matches = re.compile('<div class="paginator">.*?<a href="([^"]+)".*?</div>', re.S).findall(data)
     if len(matches)>0:
         paginador = Item(channel=__channel__, action="series" , title="!Página siguiente" , url=urlparse.urljoin(item.url,matches[0]), thumbnail=item.thumbnail, plot="", extra = "" , show=item.show,fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg")
     else:
@@ -153,11 +154,13 @@ def series(item):
         break
     
     #<li><a href="/serie/al-descubierto" title="Al descubierto">Al descubierto</a></li>
-    matches = re.compile('<li>.*?href="([^"]+)".*?title="([^"]+)".*?</li>', re.S).findall(data)
+    #matches = re.compile('<li>.*?href="([^"]+)".*?title="([^"]+)".*?</li>', re.S).findall(data)
+    matches = re.compile('title="([^"]+)" href="([^"]+)"', re.S).findall(data)
     #scrapertools.printMatches(matches)
 
     for match in matches:
-        itemlist.append( Item(channel=__channel__, action="episodios" , title=match[1], fulltitle=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1],fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg" ))
+        #itemlist.append( Item(channel=__channel__, action="episodios" , title=match[1], fulltitle=match[1] , url=urlparse.urljoin(item.url,match[0]), thumbnail="", plot="", extra = "" , show=match[1],fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg" ))
+        itemlist.append( Item(channel=__channel__, action="episodios" , title=match[0], fulltitle=match[0] , url=urlparse.urljoin(item.url,match[1]), thumbnail="", plot="", extra = "" , show=match[0],fanart="http://pelisalacarta.mimediacenter.info/fanart/seriesyonkis.jpg" ))
 
     if len(itemlist)>0 and config.get_platform() in ("wiimc","rss") and item.channel<>"wiideoteca":
         itemlist.append( Item(channel=__channel__, action="add_serie_to_wiideoteca", title=">> Agregar Serie a Wiideoteca <<", fulltitle=item.fulltitle , url=item.url , thumbnail="", plot="", extra="") )

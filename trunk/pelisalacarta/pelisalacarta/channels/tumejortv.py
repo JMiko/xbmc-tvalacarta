@@ -26,7 +26,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[tumejortv.py] mainlist")
+    logger.info("pelisalacarta.channels.tumejortv mainlist")
     
     itemlist = []
 
@@ -38,20 +38,47 @@ def mainlist(item):
     return itemlist
 
 def search(item,texto):
-    return []
+    logger.info("pelisalacarta.channels.tumejortv search")
+    texto = texto.replace(" ","+")
+    if item.url=="":
+        item.url=BASE_URL+"/directorio/peliculas"
+    try:
+        if "peliculas_vo" in item.url:
+            item.url="http://www.tumejortv.com/directorio/videos/buscar"
+            item.extra = "antlo_buscar="+texto+"&antlo_buscar_donde=3"
+            return peliculas(item)
+        elif "series_vo" in item.url:
+            item.url="http://www.tumejortv.com/directorio/videos/buscar"
+            item.extra = "antlo_buscar="+texto+"&antlo_buscar_donde=4"
+            return series(item)
+        elif "peliculas" in item.url:
+            item.url="http://www.tumejortv.com/directorio/videos/buscar"
+            item.extra = "antlo_buscar="+texto+"&antlo_buscar_donde=1"
+            return peliculas(item)
+        elif "series" in item.url:
+            item.url="http://www.tumejortv.com/directorio/videos/buscar"
+            item.extra = "antlo_buscar="+texto+"&antlo_buscar_donde=2"
+            return series(item)
+    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error( "%s" % line )
+        return []
 
 def submenu(item):
-    logger.info("[tumejortv.py] submenu")
+    logger.info("pelisalacarta.channels.tumejortv submenu")
     
     itemlist = []
 
     itemlist.append( Item(channel=__channel__, action=item.extra        , title="Novedades"                  , url=item.url))
     itemlist.append( Item(channel=__channel__, action="alfabetico" , title="Todas por orden alfabetico" , url=item.url, extra=item.extra))
+    itemlist.append( Item(channel=__channel__, action="search" , title="Buscar..." , url=item.url, extra=item.extra))
 
     return itemlist
 
 def alfabetico(item):
-    logger.info("[tumejortv.py] alfabetico")
+    logger.info("pelisalacarta.channels.tumejortv alfabetico")
     
     itemlist=[]
     alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -64,11 +91,14 @@ def alfabetico(item):
 
 # Listado de novedades de la pagina principal
 def peliculas(item):
-    logger.info("[tumejortv.py] peliculas")
+    logger.info("pelisalacarta.channels.tumejortv peliculas")
 
     url = item.url
     # Descarga la pagina
-    data = scrapertools.cachePage(url)
+    if item.extra=="":
+        data = scrapertools.cachePage(url)
+    else:
+        data = scrapertools.cachePage(url,post=item.extra)
     #logger.info(data)
 
     # Extrae las peliculas
@@ -110,11 +140,14 @@ def peliculas(item):
     return itemlist
 
 def series(item,extended=True):
-    logger.info("[tumejortv.py] series")
+    logger.info("pelisalacarta.channels.tumejortv series")
 
     url = item.url
     # Descarga la pagina
-    data = scrapertools.cachePage(url)
+    if item.extra=="":
+        data = scrapertools.cachePage(url)
+    else:
+        data = scrapertools.cachePage(url,post=item.extra)
     #logger.info(data)
 
     # Extrae las series
@@ -167,7 +200,7 @@ def series(item,extended=True):
     return itemlist
 
 def findepisodios(item):
-    logger.info("[tumejortv.py] findepisodios")
+    logger.info("pelisalacarta.channels.tumejortv findepisodios")
     
     itemlist=[]
     
@@ -221,7 +254,7 @@ def findepisodios(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[tumejortv.py] findvideos")
+    logger.info("pelisalacarta.channels.tumejortv findvideos")
     
     if item.url.startswith("http://www.tumejortv.com"):
         item.url=item.url.replace("http://www.tumejortv.com",BASE_URL)
@@ -310,7 +343,7 @@ def findvideos(item):
     return itemlist
 
 def findvideospeliculas(item):
-    logger.info("[tumejortv.py] findvideospeliculas")
+    logger.info("pelisalacarta.channels.tumejortv findvideospeliculas")
 
     if item.url.startswith("http://www.tumejortv.com"):
         item.url=item.url.replace("http://www.tumejortv.com",BASE_URL)
@@ -378,7 +411,7 @@ def findvideospeliculas(item):
     return itemlist
 
 def findvideos_partes(item):
-    logger.info("[tumejortv.py] findvideospeliculas")
+    logger.info("pelisalacarta.channels.tumejortv findvideospeliculas")
 
     if item.url.startswith("http://www.tumejortv.com"):
         item.url=item.url.replace("http://www.tumejortv.com",BASE_URL)
@@ -391,7 +424,7 @@ def findvideos_partes(item):
     return itemlist
 
 def play(item):
-    logger.info("[tumejortv.py] play")
+    logger.info("pelisalacarta.channels.tumejortv play")
 
     from servers import servertools
     itemlist = servertools.find_video_items(data=item.url)

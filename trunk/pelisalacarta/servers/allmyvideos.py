@@ -39,6 +39,9 @@ def get_video_url( page_url , premium = False , user="" , password="", video_pas
     page_url = "http://allmyvideos.net/embed-"+videoid+"-728x400.html"
     data = scrapertools.cache_page(page_url)
 
+    if "File was banned" in data:
+        data = scrapertools.cache_page(page_url,post="op=download1&usr_login=&id="+videoid+"&fname=&referer=&method_free=1&x=147&y=25")
+
     # Extrae la URL
     match = re.compile('"file" : "(.+?)",').findall(data)
     media_url = ""
