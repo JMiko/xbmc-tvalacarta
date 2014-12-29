@@ -182,6 +182,67 @@ def peliculas(item):
 
     return itemlist
 
+def findvideos(item):
+    logger.info("[peliculasyonkis_generico.py] findvideos")
+    itemlist = []
+
+    data = scrapertools.cachePage(item.url)
+
+    #<tr>
+    #<td class="episode-server" data-value="0">
+    #<a href="http://www.peliculasyonkis.sx/enlace.php?t=1&p=Sr+y+Sra+Smith&h=allmyvideos_net&u=http%3A%2F%2Fallmyvideos.net%2Fy6tgdqihnmj3" title="" target="_blank" rel="nofollow">
+    #<img src="http://www.peliculasyonkis.sx/wp-content/themes/SeriesYonkis/img/veronline.png" alt="Ver Online" height="22" width="22"> Reproducir</a>
+    #<span class="public_sprite like_green vote_link_positive" title="Voto positivo">[positivo]</span>
+    #<span class="public_sprite dislike_red vote_link_negative" title="Voto negativo">[negativo]</span>
+    #</td>
+    #<td class="episode-uploader"><span title="Anónimo">Anónimo</span></td>
+    #<td class="episode-server-img">
+    #<a href="http://www.peliculasyonkis.sx/enlace.php?t=1&p=Sr+y+Sra+Smith&h=allmyvideos_net&u=http%3A%2F%2Fallmyvideos.net%2Fy6tgdqihnmj3" title="" target="_blank" rel="nofollow">
+    #<span class="server allmyvideos_net"></span>
+    #</a>
+    #</td>
+    #<td class="episode-lang">
+    #<span class="flags es" title="Español">Español</span>
+    #</td>
+    #<td class="episode-error bug center"><a href="#" class="errorlink"><img src="http://www.peliculasyonkis.sx/wp-content/themes/SeriesYonkis/img/bug.png" alt="error"></a></td>
+    #</tr>
+
+    patron = '<td class="episode-server" data-value="0">.*?'
+    patron+= 'href="[^&]+&p=([^&]+)&h=([^&]+)&u=([^"]+)" title="" target="_blank" rel="nofollow">.*?'
+    patron+= 'alt="([^"]+)".*?'
+    patron+= '<span class="flags[^>]+>([^<]+)</span>.*?'
+
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for title,server,url,medio,idioma in matches:
+
+        title = urllib.unquote(title).replace("+"," ")
+        server = server.split("_")
+        if len(server)>2: server = server[1]
+        else: server = server[0]
+
+        url = urllib.unquote(url)
+
+        title = medio + " " + title + " en " + server + " " + idioma
+        itemlist.append( Item(channel=__channel__, action="play" , title=title , url=url, thumbnail=item.thumbnail, plot=item.plot, folder=False))
+
+    return itemlist
+
+def play(item):
+    logger.info("[peliculasyonkis_generico.py] play")
+
+    #data = scrapertools.cache_page(item.url)
+
+    itemlist = servertools.find_video_items(data=item.url)
+
+    for videoitem in itemlist:
+        videoitem.title = item.title
+        videoitem.fulltitle = item.fulltitle
+        videoitem.thumbnail = item.thumbnail
+        videoitem.channel = __channel__
+
+    return itemlist    
+
 def listalfabetico(item):
     logger.info("[peliculasyonkis_generico.py] listalfabetico")
        

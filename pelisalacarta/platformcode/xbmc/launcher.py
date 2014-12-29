@@ -531,9 +531,14 @@ def download_all_episodes(item,channel,first_episode="",preferred_server="vidspo
         empezar = False
 
     for episode_item in episode_itemlist:
-        logger.info("[launcher.py] download_all_episodes, episode="+episode_item.title)
-        episode_title = scrapertools.get_match(episode_item.title,"(\d+x\d+)")
-        logger.info("[launcher.py] download_all_episodes, episode="+episode_title)
+        try:
+            logger.info("[launcher.py] download_all_episodes, episode="+episode_item.title)
+            episode_title = scrapertools.get_match(episode_item.title,"(\d+x\d+)")
+            logger.info("[launcher.py] download_all_episodes, episode="+episode_title)
+        except:
+            import traceback
+            logger.info(traceback.format_exc())
+            continue
 
         if first_episode!="" and episode_title==first_episode:
             empezar = True

@@ -179,7 +179,7 @@ def peliculas(item):
         if DEBUG: logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")        
         itemlist.append( Item(channel=__channel__, action='findvideos', title=title , fulltitle=title , url=url , thumbnail=thumbnail , plot=plot) )
 
-    next_page_url = scrapertools.find_single_match(data,'<li><a class="nextpostslink" href="([^"]+)">')
+    next_page_url = scrapertools.find_single_match(data,'<a class="nextpostslink" href="([^"]+)">')
     if next_page_url!="":
         itemlist.append( Item(channel=__channel__, action='peliculas', title=">> Página siguiente" , url=next_page_url , thumbnail="" , plot=plot) )
 

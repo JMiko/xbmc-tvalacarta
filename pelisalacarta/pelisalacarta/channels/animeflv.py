@@ -35,7 +35,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[animeflv.py] mainlist")
+    logger.info("pelisalacarta.channels.animeflv mainlist")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="novedades"     , title="Últimos episodios"   , url="http://animeflv.net/" ))
@@ -47,7 +47,7 @@ def mainlist(item):
     return itemlist
 
 def menuseries(item):
-    logger.info("[animeflv.py] menuseries")
+    logger.info("pelisalacarta.channels.animeflv menuseries")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="letras"  , title="Por orden alfabético" , url="http://animeflv.net/animes/?orden=nombre&mostrar=series" ))
@@ -57,7 +57,7 @@ def menuseries(item):
     return itemlist
 
 def menuovas(item):
-    logger.info("[animeflv.py] menuovas")
+    logger.info("pelisalacarta.channels.animeflv menuovas")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="letras"  , title="Por orden alfabético" , url="http://animeflv.net/animes/?orden=nombre&mostrar=ovas" ))
@@ -67,7 +67,7 @@ def menuovas(item):
     return itemlist
 
 def menupeliculas(item):
-    logger.info("[animeflv.py] menupeliculas")
+    logger.info("pelisalacarta.channels.animeflv menupeliculas")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="letras"  , title="Por orden alfabético" , url="http://animeflv.net/animes/?orden=nombre&mostrar=peliculas" ))
@@ -77,7 +77,7 @@ def menupeliculas(item):
     return itemlist
 
 def letras(item):
-    logger.info("[animeflv.py] letras")
+    logger.info("pelisalacarta.channels.animeflv letras")
 
     itemlist = []
     data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
@@ -96,7 +96,7 @@ def letras(item):
     return itemlist
 
 def generos(item):
-    logger.info("[animeflv.py] generos")
+    logger.info("pelisalacarta.channels.animeflv generos")
 
     itemlist = []
 
@@ -116,7 +116,7 @@ def generos(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("[animeflv.py] search")
+    logger.info("pelisalacarta.channels.animeflv search")
     if item.url=="":
         item.url="http://animeflv.net/animes/?buscar="
     texto = texto.replace(" ","+")
@@ -131,7 +131,7 @@ def search(item,texto):
         return []
 
 def novedades(item):
-    logger.info("[animeflv.py] novedades")
+    logger.info("pelisalacarta.channels.animeflv novedades")
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url , headers = ANIMEFLV_REQUEST_HEADERS)
@@ -162,7 +162,7 @@ def novedades(item):
     return itemlist
 
 def series(item):
-    logger.info("[animeflv.py] series")
+    logger.info("pelisalacarta.channels.animeflv series")
 
     # Descarga la pagina
     data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
@@ -210,7 +210,7 @@ def series(item):
     return itemlist
 
 def episodios(item):
-    logger.info("[animeflv.py] episodios")
+    logger.info("pelisalacarta.channels.animeflv episodios")
     itemlist = []
     
     # Descarga la pagina
@@ -250,7 +250,7 @@ def episodios(item):
     return itemlist
 
 def findvideos(item):
-    logger.info("[animeflv.py] findvideos")
+    logger.info("pelisalacarta.channels.animeflv findvideos")
 
     data = scrapertools.cache_page(item.url, headers = ANIMEFLV_REQUEST_HEADERS)
     data = scrapertools.get_match(data,"var videos \= (.*?)$")
