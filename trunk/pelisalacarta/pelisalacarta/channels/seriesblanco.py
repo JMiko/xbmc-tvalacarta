@@ -30,8 +30,8 @@ def mainlist(item):
     logger.info("pelisalacarta.seriesblanco mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="Series", action="series", url=host))
-    itemlist.append( Item(channel=__channel__, title="Buscar...", action="search", url=host))
+    itemlist.append( Item( channel=__channel__, title="Series", action="series", url=urlparse.urljoin(host,"lista_series/") ) )
+    itemlist.append( Item( channel=__channel__, title="Buscar...", action="search", url=host) )
 
     return itemlist
 
@@ -40,12 +40,14 @@ def search(item,texto):
 
     itemlist = []
 
-    item.url = "http://seriesblanco.com/search.php?q1=%s" % (texto)
+    item.url = urlparse.urljoin(host,"/search.php?q1=%s" % (texto))
     data = scrapertools.cache_page(item.url)
     data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;|<Br>|<BR>|<br>|<br/>|<br />|-\s","",data)
     data = re.sub(r"<!--.*?-->","",data)
 
-    patron = "<div style='float:left;width: 33%;text-align:center;'><a href='([^']+)' title='Capitulos de: ([^']+)'>"
+    #<div style='float:left;width: 620px;'><div style='float:left;width: 33%;text-align:center;'><a href='/serie/20/against-the-wall.html' '><img class='ict' src='http://4.bp.blogspot.com/-LBERI18Cq-g/UTendDO7iNI/AAAAAAAAPrk/QGqjmfdDreQ/s320/Against_the_Wall_Seriesdanko.jpg' alt='Capitulos de: Against The Wall' height='184' width='120'></a><br><div style='text-align:center;line-height:20px;height:20px;'><a href='/serie/20/against-the-wall.html' style='font-size: 11px;'> Against The Wall</a></div><br><br>
+
+    patron = "<div style='text-align:center;line-height:20px;height:20px;'><a href='([^']+)' style='font-size: 11px;'>([^<]+)</a>"
 
     matches = re.compile(patron,re.DOTALL).findall(data)
 
