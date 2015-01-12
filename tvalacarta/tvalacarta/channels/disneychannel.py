@@ -135,8 +135,17 @@ def partes(item):
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
 
         # Añade al listado
-        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , server="disneychannel", url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=False) )
+        itemlist.append( Item(channel=CHANNELNAME, title=scrapedtitle , action="play" , url=scrapedurl, thumbnail=scrapedthumbnail, plot=scrapedplot , show=item.show , folder=False) )
 
+    return itemlist
+
+def play(item):
+    #data = scrapertools.cache_page("http://web.pydowntv.com/api?url="+item.url)
+    #url = scrapertools.get_match(data,'"url_video"\: \["([^"]+)"\]')
+    data = scrapertools.cache_page("http://www.descargavideos.tv/?web="+item.url)
+    url = scrapertools.get_match(data,'linkHtml.*?\'(.*?)\',')
+    itemlist=[]
+    itemlist.append( Item(channel=item.channel, action="play", title=item.title, url=url, thumbnail=item.thumbnail, plot=item.plot, category=item.category, show=item.show, folder=False ))
     return itemlist
 
 # Verificación automática de canales: Esta función debe devolver "True" si todo está ok en el canal.
