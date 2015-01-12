@@ -89,6 +89,7 @@ def destacados(item):
         url=urlparse.urljoin(item.url,scrapedurl)
         title=scrapertools.htmlclean(scrapedtitle)
         thumbnail=scrapedthumbnail
+        thumbnail = thumbnail.replace("&amp;","&")
         plot=""
 
         if (DEBUG): logger.info("title=["+scrapedtitle+"], url=["+scrapedurl+"], thumbnail=["+scrapedthumbnail+"]")
@@ -209,11 +210,31 @@ def episodios(item):
     itemlist = []
 
     # Extrae los vídeos
+    '''
+    <li class="odd">
+    <span class="col_tit" id="2851919" name="progname">
+    <a href="/alacarta/videos/atencion-obras/atencion-obras-josep-maria-flotats-ferran-adria-sanchis-sinisterra/2851919/">Atención Obras - 07/11/14</a>
+    </span>
+    <span class="col_tip">
+    <span>Completo</span>
+    </span>
+    <span class="col_dur">55:35</span>
+    <span class="col_pop"><span title="32% popularidad" class="pc32"><em><strong><span>32%</span></strong></em></span></span>
+    <span class="col_fec">07 nov 2014</span>
+
+    <div id="popup2851919" class="tultip hddn"> 
+    <span id="progToolTip" class="tooltip curved">
+    <span class="pointer"></span>
+    <span class="cerrar" id="close2851919"></span>
+    <span class="titulo-tooltip"><a href="/alacarta/videos/atencion-obras/atencion-obras-josep-maria-flotats-ferran-adria-sanchis-sinisterra/2851919/" title="Ver Atención Obras - 07/11/14">Atención Obras - 07/11/14</a></span>
+    <span class="fecha">07 nov 2014</span>
+    <span class="detalle">Josep María Flotats&#160;trae al Teatro María Guerrero de Madrid&#160;&#8220;El juego del amor y del azar&#8221;&#160;de Pierre de Marivaux. Un texto que ya ha sido estrenado en el Teatre Nacional de Catalunya. C...</span>
+    '''
     patron  = '<li class="[^"]+">.*?'
-    patron += '<span class="col_tit"[^>]+>[^<]+'
-    patron += '<a href="([^"]+)">(.*?)</a>[^<]+'
+    patron += '<span class="col_tit"[^<]+'
+    patron += '<a href="([^"]+)">(.*?)</a[^<]+'
     patron += '</span>[^<]+'
-    patron += '<span class="col_tip">([^<]+)</span>[^<]+'
+    patron += '<span class="col_tip"[^<]+<span>([^<]+)</span[^<]+</span[^<]+'
     patron += '<span class="col_dur">([^<]+)</span>.*?'
     patron += '<span class="col_fec">([^<]+)</span>.*?'
     patron += '<span class="detalle">([^>]+)</span>'
