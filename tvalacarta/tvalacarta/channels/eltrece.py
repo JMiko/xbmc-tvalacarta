@@ -57,7 +57,7 @@ def programas(item):
         title = scrapertools.htmlclean(title)
 
         url = scrapertools.find_single_match(match,'article  about="([^"]+)"')
-        url = urlparse.urljoin(item.url,url)+"/capitulos-completos"
+        url = urlparse.urljoin(item.url,url)
 
         thumbnail = scrapertools.find_single_match(match,'data-uri="public\:\/\/([^"]+)"')
         thumbnail = "http://eltrecetv.cdncmd.com/sites/default/files/styles/298x168/public/"+thumbnail
@@ -84,7 +84,11 @@ def episodios(item):
 
     # Descarga la página
     data = scrapertools.cache_page( item.url )
-    data = scrapertools.find_single_match(data,'<h1>(.*?)<div class="wrapper-pager">')
+    item.url = urlparse.urljoin( item.url , scrapertools.find_single_match( data , 'href="(/[^\/]+/capitulos-completos)">Cap' ) )
+    
+    # Busca la opción de "Capítulos completos"
+    data = scrapertools.cache_page( item.url )
+    #data = scrapertools.find_single_match(data,'<h1>(.*?)$')
     patron  = '<(figure.*?)</div>'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
