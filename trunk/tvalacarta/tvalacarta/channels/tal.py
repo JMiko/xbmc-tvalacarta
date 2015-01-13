@@ -29,39 +29,75 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("tvalacarta.tal mainlist")    
+    logger.info("tvalacarta.channels.tal mainlist")
+
+    itemlist = []
+    itemlist.append( Item(channel=__channel__, title="Los más vistos" , url="http://tal.tv/es/" , action="ultimos" , extra="maisvistos", folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Lo más reciente" , url="http://tal.tv/es/" , action="ultimos" , extra="recentes", folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Series" , url="http://tal.tv/es/serie/" , action="series" , folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Por tema" , url="http://tal.tv/es/" , action="temas" , extra = "menuTemas" , folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Por país" , url="http://tal.tv/es/" , action="temas" , extra = "paises" , folder=True) )
+    itemlist.append( Item(channel=__channel__, title="Por asociado" , url="http://tal.tv/es/" , action="temas", extra = "cedente" , folder=True) )
+    return itemlist
+
+def ultimos(item):
+    logger.info("tvalacarta.channels.tal ultimos")    
     itemlist = []
 
-    item.url="http://tal.tv/es"
     # Descarga la página
     data = scrapertools.cachePage(item.url)
+    data = scrapertools.find_single_match(data,'<nav id="'+item.extra+'">(.*?)</nav>')
+
     '''
-    <li id="menu-item-1956" class="comportamento menu-item menu-item-type-taxonomy menu-item-object-tema menu-item-1956"><a href="http://tal.tv/es/tema/comportamento">Comportamiento</a></li>
+    <a href="http://tal.tv/es/video/meta-2/" >
+    <img width="236" height="135" src="http://tal.tv/wp-content/uploads/2011/10/P002585-236x135.jpg" class="attachment-webtv-video-thumb wp-post-image" alt="P002585" />                </a>
+    <a class="titulo" href="http://tal.tv/es/video/meta-2/">META 2</a>
+    <span class="play"></span>
+    <span class="duracao">00:24:30</span>
+    <span class="longline">El coleo de los cowboys de Meta y su típica danza joropo.</span>
     '''
-    '''patron  = '<div class="ProgDiv"[^<]+'
-    patron += '<div class="ImageDiv"[^<]+'
-    patron += '<img class="Image" alt="[^"]+" src="([^"]+)"/[^<]+'
-    patron += '</div[^<]+'
-    patron += '<div class="HSpacer"></div[^<]+'
-    patron += '<div class="TextDiv"[^<]+'
-    patron += '<div class="TextTitle"><a href="([^"]+)">([^<]+)</a></div[^<]+'
-    patron += '<div class="TextBody">([^<]+)<'''
-    patron = '<nav id="menu-temas"(.*?)</nav>'
+    patron = '<a href="([^"]+)"[^<]+'
+    patron += '<img width="\d+" height="\d+" src="([^"]+)"[^<]+</a>[^<]+'
+    patron += '<a class="titulo" href="[^"]+">([^<]+)</a[^<]+'
+    patron += '<span class="play"></span[^<]+'
+    patron += '<span class="duracao">([^<]+)</span[^<]+'
+    patron += '<span class="longline">([^<]+)</span>'
+    matches = re.compile(patron,re.DOTALL).findall(data)
+
+    for scrapedurl,scrapedthumbnail,scrapedtitle,duracion,scrapedplot in matches:
+        title = scrapedtitle+" ("+duracion+")"
+        url = urlparse.urljoin(item.url,scrapedurl)
+        thumbnail = urlparse.urljoin(item.url,scrapedthumbnail)
+        plot = scrapedplot
+        itemlist.append( Item(channel=__channel__, action="play", title=title, url=url, thumbnail=thumbnail, fanart=thumbnail, plot=plot, viewmode="movie_with_plot", folder=False))
+
+    return itemlist
+
+def temas(item):
+    logger.info("tvalacarta.channels.tal temas")    
+    itemlist = []
+
+    # Descarga la página
+    data = scrapertools.cachePage(item.url)
+    patron = '<nav id="'+item.extra+'(.*?)</nav>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     if matches:
         data= matches[0]
-    patron = '<li id="menu-item-[^"]+" class="[^"]+"><a[^<]+href="([^"]+)">([^<]+)</a></li>'
+    patron = '<a\s+href="([^"]+)[^>]+>([^<]+)</a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     
     for scrapedurl,scrapedtitle in matches:
         title = scrapertools.htmlclean(scrapedtitle)
         url = scrapedurl
-        itemlist.append( Item(channel=__channel__, action="programas", title=title, url=url, thumbnail="",  folder=True))
+        if not url.startswith("http://tal.tv/es"):
+            url = url.replace("http://tal.tv/","http://tal.tv/es/")
+        if url.startswith("http"):
+            itemlist.append( Item(channel=__channel__, action="videos", title=title, url=url, thumbnail="",  folder=True))
 
     return itemlist
 
-def programas(item):
-    logger.info("tvalacarta.tal programas")    
+def series(item):
+    logger.info("tvalacarta.channels.tal series")    
     itemlist = []
 
     '''
@@ -101,13 +137,14 @@ def programas(item):
         plot = scrapedplot
         itemlist.append( Item(channel=__channel__, action="episodios", title=title, url=url, thumbnail=thumbnail, plot=plot, folder=True))
 
-    if len(itemlist)==0:
-        itemlist = videos(item)
+    next_page_url = scrapertools.find_single_match(data,'<li><a href="([^"]+)" class="next">')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action="series", title=">> Página siguiente", url=urlparse.urljoin(item.url,next_page_url), thumbnail="",  folder=True))
 
     return itemlist
 
 def episodios(item):
-    logger.info("tvalacarta.tal episodios")    
+    logger.info("tvalacarta.channels.tal episodios")    
     itemlist = []
 
     '''
@@ -151,47 +188,52 @@ def episodios(item):
     return itemlist
 
 def videos(item):
-    logger.info("tvalacarta.tal videos")
+    logger.info("tvalacarta.channels.tal videos")
     itemlist = []
 
     # Descarga la página
     data = scrapertools.cachePage(item.url)
-    data = data.replace("\n", " ")
-    data = data.replace("\r", " ")
-    data = " ".join(data.split())
-    #logger.info(data)
-    '''
-    <li class="culinaria" >
-    <a href="http://tal.tv/es/video/paella-valenciana-mousse-de-parchita" >
-    <img width="134" height="77" src="http://tal.tv/wp-content/uploads/2011/10/P000929-134x77.jpg" class="attachment-video-thumb wp-post-image" alt="P000929" />            </a>
-    <h3><a href="http://tal.tv/es/video/paella-valenciana-mousse-de-parchita" >Probá la mousse de parchita que es sencilla. Después atrévase con la paella.</a></h3>
-    <div class="dados">
-    <div class="wrap-dados">
-    <div class="dados-content">
-    <h4>PAELLA VALENCIANA / MOUSSE…</h4>
-    <span class="duracao">00:21:40</span>
-    <span class="pais venezuela">Venezuela</span>
-    </div>
-    </div>
-    </div>
-    </li>
-    '''
-    patron  = '<li class="[^"]+"[^<]+<a href="([^"]+)"[^<]+<img width="\d+" height="\d+" src="([^"]+)".*?<h4>(.*?)</h4>'
+    data = scrapertools.find_single_match(data,'<section id="main-area">(.*?)</section>')
+
+    patron = "<li(.*?)</li>"
     matches = re.compile(patron,re.DOTALL).findall(data)
-    if DEBUG: scrapertools.printMatches(matches)
-    for scrapedurl, scrapedthumbnail,scrapedtitle in matches:
-        title = scrapertools.htmlclean(scrapedtitle)
-        thumbnail = scrapedthumbnail
-        url = scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=title, url=url, thumbnail=thumbnail,  folder=False))
-    patron = '<li><a href="([^"]+)" class="next">&gt;</a></li>'
-    matches = re.compile(patron,re.DOTALL).findall(data)
-    if matches:
-        itemlist.append( Item(channel=__channel__, action="videos", title="Página Siguiente", url=matches[0], thumbnail="",  folder=True))     
+
+    for match in matches:
+        logger.info("tvalacarta.channels.tal videos match="+match)    
+        '''
+        <a href="http://tal.tv/es/video/payara-a-la-lena-palo-a-pique/" >
+        <img width="134" height="77" src="http://tal.tv/wp-content/uploads/2011/10/P000949-134x77.jpg" class="attachment-video-thumb wp-post-image" alt="P000949" />            </a>
+        <h3><a href="http://tal.tv/es/video/payara-a-la-lena-palo-a-pique/" >Recetas de pescados de la Amazonia venezolana.</a></h3>
+        <div class="dados">
+        <div class="wrap-dados">
+        <div class="dados-content">
+        <h4>PAYARA A LA LEÑA, PALO…</h4>
+        <span class="duracao">00:23:40</span>
+        <span class="pais venezuela">Venezuela</span>
+        </div>
+        </div>
+        </div>
+        '''
+        duracion = scrapertools.find_single_match(match,'<span class="duracao">([^<]+)</span>')
+        pais = scrapertools.find_single_match(match,'<span class="pais[^>]+>([^<]+)</span>')
+        titulo = scrapertools.find_single_match(match,'<h4>([^<]+)</h4>')
+
+        if titulo!="":
+            title = titulo+" ("+duracion+") ("+pais+")"
+            url = scrapertools.find_single_match(match,'<a href="([^"]+)"')
+            thumbnail = scrapertools.find_single_match(match,'<img width="\d+" height="\d+" src="([^"]+)"')
+            plot = scrapertools.find_single_match(match,'<h3><a[^>]+>([^<]+)</a></h3>')
+
+            itemlist.append( Item(channel=__channel__, action="play", title=title, url=url, thumbnail=thumbnail, plot=plot, fanart=thumbnail, viewmode="movie_with_plot", folder=False))
+
+    next_page_url = scrapertools.find_single_match(data,'<li><a href="([^"]+)" class="next">')
+    if next_page_url!="":
+        itemlist.append( Item(channel=__channel__, action="videos", title=">> Página siguiente", url=urlparse.urljoin(item.url,next_page_url), thumbnail="",  folder=True))
+
     return itemlist
 
 def play(item):
-    logger.info("tvalacarta.tal play")    
+    logger.info("tvalacarta.channels.tal play")    
     
     itemlist = []
     data = scrapertools.cachePage(item.url)
