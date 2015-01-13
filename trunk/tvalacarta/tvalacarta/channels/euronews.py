@@ -94,27 +94,28 @@ def programas(item):
     data = scrapertools.cache_page(item.url)
 
     '''
-    <li>
-    <a name="europe weekly"></a>
+    <li id="europe-weekly">
     <a class="imgWrap" href="/programas/europe-weekly/" title="europe weekly">
     <img src="http://static.euronews.com/articles/programs/160x90_europe-weekly.jpg" alt="europe weekly"  title="europe weekly" />
     <div>
     <h2  class="programTitle">europe weekly</h2>
     <p  class="artTitle">europe Weekly Euronews le ofrece la última hora de la actualidad económica, financiera y empresarial a nivel internacional, con los eventos de la semana.</p>
-    <!--<span >Más europe weekly…</span>-->
     </div>
     <br style="clear:both;"/>
     </a>
     </li>
     '''
     patron  = '<li[^<]+'
-    patron += '<a name="([^"]+)"></a[^<]+'
-    patron += '<a class="imgWrap" href="([^"]+)"[^<]+'
-    patron += '<img src="([^"]+)"'
+    patron += '<a class="imgWrap" href="([^"]+)" title="([^"]+)"[^<]+'
+    patron += '<img src="([^"]+)"[^<]+'
+    patron += '<div[^<]+'
+    patron += '<h2[^<]+</h2[^<]+'
+    patron += '<p\s+class="artTitle">([^<]+)</p'
+
     matches = re.findall(patron,data,re.DOTALL)
     
-    for titulo,url,thumbnail in matches:
-        itemlist.append( Item(channel=CHANNELNAME, title=titulo, action="videos", url=urlparse.urljoin(item.url,url), thumbnail=thumbnail) )
+    for url,titulo,thumbnail,plot in matches:
+        itemlist.append( Item(channel=CHANNELNAME, title=titulo, action="videos", url=urlparse.urljoin(item.url,url), thumbnail=thumbnail, plot=plot, viewmode="movie_with_plot", fanart=thumbnail, folder=True) )
 
     return itemlist
 
