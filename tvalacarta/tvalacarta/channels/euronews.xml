@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>euronews</name>
-	<tag>1</tag>
-	<date>23/01/2012</date>
-	<changes>Reescrito de nuevo, ahora ya no usa el canal de youtube sino la web</changes>
+	<tag>2</tag>
+	<date>15/01/2015</date>
+	<changes>Arreglada seccion programas</changes>
 </version>
