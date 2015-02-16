@@ -223,6 +223,7 @@ def channels_history_list():
     itemlist.append( Item( title="Animeflv (14/10/2011)"             , channel="animeflv"             , language="ES" , category="A,VOS"   , type="generic" )) # MarioXD 14/10/2011
     itemlist.append( Item( title="Moviezet (01/10/2011)"             , channel="moviezet"             , language="ES" , category="F,S,VOS" , type="generic" )) # mrfluffy 01/10/2011
     #itemlist.append( Item( title="NewHD (05/05/2011)"                , channel="newhd"                , language="ES" , category="F"   , type="generic" )) # xextil 05/05/2011
+    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Serviporno (16/02/2015)"          , channel="serviporno"          , language="ES" , category="F" , type="generic"    ))
     return itemlist
 
 def channels_list():
@@ -356,6 +357,7 @@ def channels_list():
     #itemlist.append( Item( title="Seriespepito"          , channel="seriespepito"         , language="ES" , category="S,VOS"          , type="generic" ))
     itemlist.append( Item( title="Seriesyonkis"          , channel="seriesyonkis"         , language="ES" , category="S,A,VOS"        , type="generic" , extra="Series" ))
     itemlist.append( Item( title="Serie TV Sub ITA"          , channel="serietvsubita"         , language="IT" , category="S"        , type="generic" , extra="Series" ))
+    if config.get_setting("enableadultmode") == "true": itemlist.append( Item( title="Serviporno"          , channel="serviporno"          , language="ES" , category="F" , type="generic"    ))
     #itemlist.append( Item( title="ShurHD"       , channel="shurhd"             , language="ES"      , category="F,S" , type="generic"    ))
     itemlist.append( Item( title="Shurweb"       , channel="shurweb"             , language="ES"      , category="F,S,D,A" , type="generic"    ))
     itemlist.append( Item( title="Sintonizzate"       , channel="sintonizzate"             , language="ES"      , category="F,S,D,A" , type="generic"    ))
