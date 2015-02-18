@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>pelisadicto</name>
-	<tag>2</tag>
+	<tag>3</tag>
 	<date>18/02/2015</date>
-	<changes>Arreglada la paginación, la falta de algunas fichas, búsqueda y plot movido a findvideos para más fluidez</changes>
+	<changes>Resubido por fallos en version html</changes>
 </version>
