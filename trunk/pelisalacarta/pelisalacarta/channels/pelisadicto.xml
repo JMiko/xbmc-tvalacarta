@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>pelisadicto</name>
-	<tag>3</tag>
+	<tag>4</tag>
 	<date>18/02/2015</date>
-	<changes>Resubido por fallos en version html</changes>
+	<changes>Eliminado del patrón calidad de las fichas.</changes>
 </version>
