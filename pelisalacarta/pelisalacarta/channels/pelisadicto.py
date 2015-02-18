@@ -68,7 +68,13 @@ def porGenero(item):
 def search(item,texto):
     logger.info("[pelisadicto.py] search")
 
-    texto = texto.replace(" ","+")
+    '''
+    texto_get = texto.replace(" ","%20")
+    texto_post = texto.replace(" ","+")
+    item.url = "http://pelisadicto.com/buscar/%s?search=%s" % (texto_get,texto_post)
+    '''
+
+    texto_post = texto.replace(" ","+")
     item.url = "http://pelisadicto.com/buscar/%s" % texto
 
     try:
@@ -85,8 +91,16 @@ def search(item,texto):
 def agregadas(item):
     logger.info("[pelisadicto.py] agregadas")
     itemlist = []
-    
+    '''
     # Descarga la pagina
+    if "?search=" in item.url:
+        url_search = item.url.split("?search=")
+        data = scrapertools.cache_page(url_search[0], url_search[1])
+    else:
+        data = scrapertools.cache_page(item.url)
+    logger.info("data="+data)
+    '''
+
     data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
 
@@ -97,15 +111,14 @@ def agregadas(item):
 
     patron = 'href="([^"]+)".*?' # url
     patron+= 'src="([^"]+)" '    # thumbnail
-    patron+= 'alt="([^"]+)"/>'  # title
-    patron+= '<[^>]+>([^<]+)<'   # calidad
+    patron+= 'alt="([^"]+)'      # title
 
     matches = re.compile(patron,re.DOTALL).findall(fichas)
-    for url,thumbnail,title,calidad in matches:
+    for url,thumbnail,title in matches:
         url=urlparse.urljoin(item.url,url)
         thumbnail = urlparse.urljoin(url,thumbnail)
 
-        itemlist.append( Item(channel=__channel__, action="findvideos", title=title, fulltitle=title , url=url , thumbnail=thumbnail , show=title, viewmode="movie_with_plot") )
+        itemlist.append( Item(channel=__channel__, action="findvideos", title=title+" ", fulltitle=title , url=url , thumbnail=thumbnail , show=title, viewmode="movie_with_plot") )
 
     # Paginación
     try:
