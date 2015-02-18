@@ -6,7 +6,6 @@
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os, sys
-import xbmc, xbmcgui
 
 from core import logger
 from core import config
