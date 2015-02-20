@@ -30,15 +30,15 @@ def mainlist(item):
     logger.info("[newpct1.py] mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="submenu", title="Películas", url="http://www.newpct1.com/", extra="peliculas") )
-    itemlist.append( Item(channel=__channel__, action="submenu", title="Series", url="http://www.newpct1.com/", extra="series") )
+    itemlist.append( Item(channel=__channel__, action="submenu", title="Películas", url="http://www.newpct1.com/peliculas/") )
+    itemlist.append( Item(channel=__channel__, action="submenu", title="Series", url="http://www.newpct1.com/series/") )
     itemlist.append( Item(channel=__channel__, action="search", title="Buscar") )
 
     return itemlist
 
 def search(item,texto):
     logger.info("[newpct1.py] search")
-
+    #categoryIDR=767&categoryID=1343&idioma=&calidad=HDTV+720p+AC3+5.1&ordenar=Fecha&inon=Descendente&q=Boardwalk+Empire
     item.url = "http://www.newpct1.com/index.php?page=buscar&q=%s&ordenar=Nombre&inon=Ascendente" % texto
 
     return busqueda(item)
@@ -55,9 +55,11 @@ def busqueda(item):
 
     #<li><a href="http://www.newpct1.com/descargar/x-men-primera-generacion/40669/" title="Descargar DVDScreener X-Men Primera Generacion "><img src="http://www.newpct1.com/pictures/f/minis/40669_x-men-primera-generacion--.jpg" alt="Descargar DVDScreener X-Men Primera Generacion "></a> <div class="info"><a href="http://www.newpct1.com/descargar/x-men-primera-generacion/40669/" title="Descargar DVDScreener X-Men Primera Generacion "><h2 style="padding:0;">X-Men Primera Generacion [DVD Screener][Spanish][2011]</h2> </a><span class="votadas">6.50</span><span>08-07-2011</span><span>1.9 GB</span><span class="color"> <a href="http://www.newpct1.com/descargar/x-men-primera-generacion/40669/" title="Descargar DVDScreener X-Men Primera Generacion "> Descargar</a> </div> </li>
 
+    #<li><a href="http://www.newpct1.com/serie/the-big-bang-theory-/capitulo-811/" title="Descargar Serie HD The Big Bang Theory - Temporada 88x11"><img src="http://www.newpct1.com/pictures/c/minis/1869_the-big-bang-theory-.jpg" alt="Descargar Serie HD The Big Bang Theory - Temporada 8 "></a> <div class="info"><a href="http://www.newpct1.com/serie/the-big-bang-theory-/capitulo-811/" title="Descargar Serie HD The Big Bang Theory - Temporada 88x11"><h2 style="padding:0;"><strong style="color:red;background:none;"><font color='blue'><b><font color='blue'><b>The Big</b></font></b></font> Bang Theory - Temporada 8 </strong>- Temporada <span style="color:red;background:none;">[ 8 ]</span> Capitulo <span style="color:red;background:none;">[ 11 ] &nbsp;&nbsp;Español Castellano </span> Calidad  <span style="color:red;background:none;">[ HDTV 720p AC3 5.1 ]</span></h2> </a><span class="votadas"> <i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-empty"></i><i class="icon-star-empty"></i>6.50</span><span>20-12-2014</span><span>750 MB</span><span class="color"> <a href="http://www.newpct1.com/serie/the-big-bang-theory-/capitulo-811/" title="Descargar Serie HD The Big Bang Theory - Temporada 88x11"><i class="icon-cloud-download"></i> Descargar</a> </div> </li>
+
     patron  = '<img src="([^"]+)".*?'
     patron += '<a href="([^"]+)".*?'
-    patron += '<h2[^>]*>([^<]+)</h2> </a>'
+    patron += '<h2[^>]*>(.*?)</h2> </a>'
     patron += '<span class="votadas">([^<]+)</span>'
     patron += '<span>([^<]+)</span>'
     patron += '<span>([^<]+)</span>'
@@ -66,6 +68,7 @@ def busqueda(item):
 
     for scrapedthumbnail,scrapedurl,scrapedtitle,votos,fecha,peso in matches:
         url = scrapedurl
+        scrapedtitle = re.sub(r'(<.*?>)','',scrapedtitle)
         title = scrapedtitle+"["+votos+"]["+fecha+"]["+peso+"]"
         thumbnail = scrapedthumbnail
         itemlist.append( Item(channel=__channel__, action="findvideos", title=title, url=url, thumbnail=thumbnail) )
@@ -87,18 +90,23 @@ def submenu(item):
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
     data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
-    patron = '<li><a href="http://www.newpct1.com/'+item.extra+'/">.*?<ul>(.*?)</ul>'
+    #<li><a href="http://www.newpct1.com/peliculas/"><i class="icon-facetime-video"></i> Peliculas</a><ul><li><a href="http://www.newpct1.com/peliculas/" title="Peliculas en Castellano" >Peliculas Castellano</a></li><li><a href="http://www.newpct1.com/peliculas-latino/" title="Peliculas Latino">Peliculas Latino</a></li><li><a href="http://www.newpct1.com/estrenos-de-cine/" title="Estrenos de Cine">Estrenos de Cine</a></li><li><a href="http://www.newpct1.com/peliculas-hd/" title="Peliculas HD">Peliculas HD</a></li><li><a href="http://www.newpct1.com/peliculas-3d/" title="Peliculas en 3D" >Peliculas en 3D</a></li><li><a href="http://www.newpct1.com/otras-peliculas/" title="Otras Peliculas">Otras Peliculas</a></li><li><a href="http://www.newpct1.com/peliculas-vo/" title="Peliculas Subtituladas">Peliculas Subtituladas</a></li><li><a href="http://www.newpct1.com/anime/" title="Anime">Anime</a></li></ul></li>
+
+    patron = '<li><a href="'+item.url+'">.*?<ul>(.*?)</ul>'
     data = scrapertools.get_match(data,patron)
 
-    patron = '<a href="([^"]+)".*?>([^>]+)</a>'
+    patron = '<a href="([^"]+)" title="([^"]+)"'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
+    print "#### Newpct1 submenu #########################################"
     for scrapedurl,scrapedtitle in matches:
         title = scrapedtitle.strip()
         url = scrapedurl
-
+        print "title = %s" % title
+        print "url = %s" % url
         itemlist.append( Item(channel=__channel__, action="listado" ,title=title, url=url, extra="pelilist") )
         itemlist.append( Item(channel=__channel__, action="alfabeto" ,title=title+" [A-Z]", url=url, extra="pelilist") )
+    print "##############################################################"
     
     return itemlist
 
@@ -165,23 +173,53 @@ def episodios(item):
     itemlist=[]
 
     data = re.sub(r'\n|\r|\t|\s{2}|<!--.*?-->|<i class="icon[^>]+"></i>',"",scrapertools.cache_page(item.url))
+    data = re.sub(r'\[Cap[^\]]+\]',"",data)
+    #data = re.sub(r'</span> Calidad|</span></h2></a>',"",data)
+    #data = re.sub(r'Serie <strong style="color:red;background:none;">[^<]+</strong>[^<]+<span style="color:red;background:none;">[^<]+</span>[^<]+<span style="color:red;background:none;">[^<]+</span>',"[",data)
+
+    #data = data.replace('</span> Calidad <span style="color:red;background:none;">',']')
+
     data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
     patron = '<ul class="buscar-list">(.*?)</ul>'
     fichas = scrapertools.get_match(data,patron)
 
-    #<li><a href="http://www.newpct1.com/serie/forever/capitulo-101/" title="Serie Forever 1x01"><img src="http://www.newpct1.com/pictures/c/minis/1880_forever.jpg" alt="Serie Forever 1x01"></a> <div class="info"> <a href="http://www.newpct1.com/serie/forever/capitulo-101/" title="Serie Forever 1x01"><h2 style="padding:0;">Serie <strong style="color:red;background:none;">Forever - Temporada 1 </strong> - Temporada<span style="color:red;background:none;">[ 1 ]</span>Capitulo<span style="color:red;background:none;">[ 01 ]</span><span style="color:red;background:none;padding:0px;">Espa�ol Castellano</span> Calidad <span style="color:red;background:none;">[ HDTV ]</span></h2></a> <span>27-10-2014</span> <span>450 MB</span> <span class="color"><ahref="http://www.newpct1.com/serie/forever/capitulo-101/" title="Serie Forever 1x01"> Descargar</a> </div></li>
+    #fichas1 = fichas.replace('</li>','</li>\n')
+
+    #print "## fichas: %s\n" % (fichas1)
+
+    #<li><a href="http://www.newpct1.com/serie/the-big-bang-theory/capitulo-603/" title="Serie The Big Bang Theory 6x03"><img src="http://www.newpct1.com/pictures/c/minis/1092_the-big-bang-theory.jpg" alt="Serie The Big Bang Theory 6x03"></a> <div class="info"> <a href="http://www.newpct1.com/serie/the-big-bang-theory/capitulo-603/" title="Serie The Big Bang Theory 6x03"><h2 style="padding:0;">Serie <strong style="color:red;background:none;">The Big Bang Theory - Temporada 6 </strong> - Temporada<span style="color:red;background:none;">[ 6 ]</span>Capitulo<span style="color:red;background:none;">[ 03 ]</span><span style="color:red;background:none;padding:0px;">Español Castellano</span> Calidad <span style="color:red;background:none;">[ HDTV ]</span></h2></a> <span>02-11-2012</span> <span>225 MB</span> <span class="color"><ahref="http://www.newpct1.com/serie/the-big-bang-theory/capitulo-603/" title="Serie The Big Bang Theory 6x03"> Descargar</a> </div></li>
+
+    #<li><a href="http://www.newpct1.com/serie/the-big-bang-theory/capitulo-602/" title="Serie The Big Bang Theory 6x00"><img src="http://www.newpct1.com/pictures/c/minis/1092_the-big-bang-theory.jpg" alt="Serie The Big Bang Theory 6x00"></a> <div class="info"> <a href="http://www.newpct1.com/serie/the-big-bang-theory/capitulo-602/" title="Serie The Big Bang Theory 6x00"><h2 style="padding:0;">The Big Bang Theory - Temporada 6 [HDTV][Español Castellano]</h2></a> <span>26-10-2012</span> <span>230 MB</span> <span class="color"><ahref="http://www.newpct1.com/serie/the-big-bang-theory/capitulo-602/" title="Serie The Big Bang Theory 6x00"> Descargar</a> </div></li>
 
     patron  = '<a href="([^"]+)" title="([^"]+)">'
     patron += '<img src="([^"]+)".*?'
-    patron += '<span style=".*?0px;">([^<]+)</span>[^<]+'
-    patron += '<span style=".*?none;">([^<]+)</span>.*?'
+    patron += '(<h2 style="padding:0;">.*?)</a> '
     patron += '<span>([^<]+)</span> '
     patron += '<span>([^<]+)</span>'
 
     matches = re.compile(patron,re.DOTALL).findall(fichas)
 
-    for scrapedurl,scrapedtitle,scrapedthumbnail,idioma,calidad,fecha,peso in matches:
+    for scrapedurl,scrapedtitle,scrapedthumbnail,idioma_calidad,fecha,peso in matches:
+
+        try:
+            print "### [newpct1] episodios.for.try ### idioma_calidad: %s" % (idioma_calidad)
+            patron = '<span style=".*?0px;">([^<]+)</span>'
+            idioma = scrapertools.get_match(idioma_calidad, patron)
+            patron = '<span style=".*?none;">([^<]+)</span>'
+            calidad = scrapertools.get_match(idioma_calidad, patron)
+        except:
+            print "### [newpct1] episodios.for.except ### idioma_calidad: %s" % (idioma_calidad)
+            patron = '\[[^\]]+\](\[[^\]]+\])'
+            idioma = scrapertools.get_match(idioma_calidad, patron)
+            patron = '(\[[^\]]+\])\[[^\]]+\]'
+            calidad = scrapertools.get_match(idioma_calidad, patron)
+
+        #capt = scrapedurl[:-2]
+        #print "## capt: %s" % (capt)
+        #title = scrapedtitle[:-1]+capt
+        #print "## title: %s" % (title)
+
         url = scrapedurl
         title = scrapedtitle+" "+idioma+" "+calidad+"[ "+fecha+" ][ "+peso+" ]"
         thumbnail = scrapedthumbnail
@@ -190,6 +228,8 @@ def episodios(item):
     if "pagination" in data:
         patron = '<ul class="pagination">(.*?)</ul>'
         paginacion = scrapertools.get_match(data,patron)
+
+        #print "### paginacion: %s\n" % (paginacion)
 
         if "Next" in paginacion:
             url_next_page  = scrapertools.get_match(paginacion,'<a href="([^"]+)">Next</a>')
