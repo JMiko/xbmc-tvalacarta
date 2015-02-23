@@ -50,6 +50,7 @@ def videos(item):
     url= item.url
     while len(itemlist) < 25 and mas== True:
       data = scrapertools.downloadpage(url)
+      data = scrapertools.unescape(data)
       patron = '<div class="field field-name-title field-type-ds field-label-hidden view-mode-teaser"><div class="field-items"><div class="field-item even"><h1><a href="([^"]+)">([^"]+)</a></h1></div></div></div>  </div>'
       patron +='[^<]{4}<div class="group-left">[^<]{5}<div class="field field-name-field-imagen-del-video field-type-image field-label-hidden view-mode-teaser"><div class="field-items">'
       patron +='<figure class="clearfix field-item even"><a href="([^"]+)"><img class="image-style-medium" src="([^"]+)"'
@@ -100,6 +101,7 @@ def play(item):
     itemlist=[]
     # Descarga la página
     data = scrapertools.downloadpage(item.url)
+    data = scrapertools.unescape(data)
     logger.info(data)
     from servers import servertools
     itemlist.extend(servertools.find_video_items(data=data))
@@ -116,6 +118,7 @@ def listactrices(item):
     logger.info("[pornoactricesx.py] listcategorias")
     itemlist = []
     data = scrapertools.downloadpage(item.url)
+    data = scrapertools.unescape(data)
     patron = '<span class="field-content"><a href="([^"]+)">([^"]+)</a></span>  </span>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     for url, actriz in matches:
