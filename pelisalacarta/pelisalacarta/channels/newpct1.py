@@ -190,11 +190,13 @@ def completo(item):
         ultimo_action="listado"
         items_programas = listado(item)
         
-    #logger.info("[newpct1.py] completo: fanart= " + item.fanart)
+    if len(items_programas) ==0:
+            return itemlist # devolver lista vacia
+            
     salir = False
     while not salir:
 
-        # Saca la URL de la siguiente página
+        # Saca la URL de la siguiente página    
         ultimo_item = items_programas[ len(items_programas)-1 ]
        
         # Páginas intermedias
