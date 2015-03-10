@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <version>
 	<name>newpct1</name>
-	<tag>5</tag>
-	<date>04/03/15</date>
-	<changes>Añadida funcion episodios(item) para la actualizacion automatica de las series de la libreria</changes>
+	<tag>6</tag>
+	<date>10/03/15</date>
+	<changes>Corregido Bug en la actualizaciopn de las series</changes>
 </version>

@@ -181,6 +181,9 @@ def completo(item):
             fanart = oTvdb.get_graphics_by_serieId(serieID)
             if len(fanart)>0:
                 item.fanart = fanart[0]
+        else:
+            item_title= item.show
+            item.title= item.show
         
         items_programas = get_episodios(item)        
     else:
@@ -218,7 +221,7 @@ def completo(item):
             itemlist.extend( items_programas )
             salir = True          
             
-    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0 and (item.extra.startswith("serie") and item.extra != "serie_add"):
+    if (config.get_platform().startswith("xbmc") or config.get_platform().startswith("boxee")) and len(itemlist)>0 and (item.extra.startswith("serie") ):
         itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca de XBMC", url=item.url, action="add_serie_to_library", extra="completo###serie_add" , show= item.show))
     logger.info("[newpct1.py] completo items="+ str(len(itemlist)))
     return itemlist
@@ -226,7 +229,7 @@ def completo(item):
 def get_episodios(item):
     logger.info("[newpct1.py] get_episodios")
     itemlist=[]
-    #logger.info("[newpct1.py] serie=" +item.show)   
+    logger.info("[newpct1.py] get_episodios url=" +item.url)   
     data = re.sub(r'\n|\r|\t|\s{2}|<!--.*?-->|<i class="icon[^>]+"></i>',"",scrapertools.cache_page(item.url))
     data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
     
