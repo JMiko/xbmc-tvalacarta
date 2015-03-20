@@ -2,14 +2,14 @@
 <project name="pelisalacarta" default="package">
 	<description>pelisalacarta</description>
 
-    <property name="oldversion" value="3.2.73"/>
-    <property name="oldversionboxee" value="10.8"/>
-    <property name="oldversiondate" value="10/11/2014"/>
+    <property name="oldversion" value="3.9.0"/>
+    <property name="oldversionboxee" value="10.10"/>
+    <property name="oldversiondate" value="19/03/2015"/>
 
-    <property name="version" value="3.2.74"/>
-    <property name="versionboxee" value="10.9"/>
-    <property name="versiondate" value="29/12/2014"/>
-    <property name="versionchanges" value="New release"/>
+    <property name="version" value="3.9.99"/>
+    <property name="versionboxee" value="10.10"/>
+    <property name="versiondate" value="19/03/2015"/>
+    <property name="versionchanges" value="Last release of 3.X"/>
 
     <property name="target" value="target"/>
     <property file='${user.home}/build.properties'/>
